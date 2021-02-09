@@ -23,8 +23,8 @@ describe("Chatboxes", function () {
             const view = _converse.chatboxviews.get(contact_jid);
             mock.sendMessage(view, '/help');
 
-            await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el).length);
-            const info_messages = await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el));
+            await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view).length);
+            const info_messages = await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view));
             expect(info_messages.length).toBe(4);
             expect(info_messages.pop().textContent).toBe('/help: Show this menu');
             expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
@@ -56,7 +56,7 @@ describe("Chatboxes", function () {
             for (const i of Array(10).keys()) {
                 mock.sendMessage(view, `Message ${i}`);
             }
-            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 10);
+            await u.waitUntil(() => sizzle('converse-chat-message', view).length === 10);
 
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = '/clear';
@@ -66,7 +66,7 @@ describe("Chatboxes", function () {
                 keyCode: 13 // Enter
             });
             expect(window.confirm).toHaveBeenCalled();
-            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 0);
+            await u.waitUntil(() => sizzle('converse-chat-message', view).length === 0);
             done();
         }));
 
@@ -149,7 +149,7 @@ describe("Chatboxes", function () {
             spyOn(_converse.ChatBoxView.prototype, 'focus').and.callThrough();
             const view = await mock.openChatBoxFor(_converse, contact_jid);
             const rosterview = document.querySelector('converse-roster');
-            const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', rosterview.el).pop();
+            const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', rosterview).pop();
             await u.waitUntil(() => u.isVisible(el));
             const textarea = view.querySelector('.chat-textarea');
             await u.waitUntil(() => u.isVisible(textarea));
@@ -1104,12 +1104,12 @@ describe("Chatboxes", function () {
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            indicator_el = sizzle(selector, rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('1');
             msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread too');
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length > 1);
-            indicator_el = sizzle(selector, rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('2');
             done();
         }));
@@ -1131,13 +1131,13 @@ describe("Chatboxes", function () {
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            indicator_el = sizzle(selector, rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('1');
 
             msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread too');
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length === 2);
-            indicator_el = sizzle(selector, rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('2');
             done();
         }));
@@ -1154,7 +1154,7 @@ describe("Chatboxes", function () {
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            const select_msgs_indicator = () => sizzle(selector, rosterview.el).pop();
+            const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
             _converse.minimize.minimize(view.model);
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length);
@@ -1179,7 +1179,7 @@ describe("Chatboxes", function () {
             const chatbox = _converse.chatboxes.get(sender_jid);
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
             const selector = `a.open-chat:contains("${chatbox.get('nickname')}") .msgs-indicator`;
-            const select_msgs_indicator = () => sizzle(selector, rosterview.el).pop();
+            const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
             chatbox.save('scrolled', true);
             _converse.handleMessageStanza(msgFactory());
             const view = _converse.chatboxviews.get(sender_jid);
@@ -1204,7 +1204,7 @@ describe("Chatboxes", function () {
             const msg = 'This message will be received as unread, but eventually will be read';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, msg);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            const select_msgs_indicator = () => sizzle(selector, rosterview.el).pop();
+            const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
             chatbox.save('scrolled', true);
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => view.model.messages.length);

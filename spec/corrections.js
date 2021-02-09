@@ -125,7 +125,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.model.messages.at(2).get('correcting') === true);
         expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
         expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
-        await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view.el).pop()), 750);
+        await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view).pop()), 750);
 
         textarea.selectionEnd = 0; // Happens by pressing up,
                                 // but for some reason not in tests, so we set it manually.
@@ -137,7 +137,7 @@ describe("A Chat Message", function () {
         expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
         expect(view.model.messages.at(1).get('correcting')).toBe(true);
         expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
-        await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view.el)[1]), 500);
+        await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view)[1]), 500);
 
         textarea.value = 'It is the east, and Juliet is the sun.';
         view.onKeyDown({

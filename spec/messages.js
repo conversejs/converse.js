@@ -511,7 +511,7 @@ describe("A Chat Message", function () {
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
-        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual(message);
         expect(msg.innerHTML.replace(/<!---->/g, '')).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
         done();
@@ -530,7 +530,7 @@ describe("A Chat Message", function () {
         mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual(message);
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
             'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
@@ -549,7 +549,7 @@ describe("A Chat Message", function () {
         let message = 'This message contains a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
         mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-        let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
             'This message contains a hyperlink with forbidden query params: <a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0">https://www.opkode.com/?id=0</a>');
 
@@ -558,7 +558,7 @@ describe("A Chat Message", function () {
         message = 'Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
         mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
-        msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual('Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&s=1');
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
             'Another message with a hyperlink with forbidden query params: '+
@@ -723,8 +723,8 @@ describe("A Chat Message", function () {
         spyOn(view.model, 'sendMessage').and.callThrough();
         mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
-        await u.waitUntil(() => view.el.querySelector('.chat-content .chat-msg'), 1000);
-        const msg = view.el.querySelector('.chat-content .chat-msg .chat-msg__text');
+        await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'), 1000);
+        const msg = view.querySelector('.chat-content .chat-msg .chat-msg__text');
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
             `<a target="_blank" rel="noopener" href="https://pbs.twimg.com/media/string?format=jpg&amp;name=small">https://pbs.twimg.com/media/string?format=jpg&amp;name=small</a>`, 1000);
         done();
@@ -936,7 +936,7 @@ describe("A Chat Message", function () {
             expect(view.model.sendMessage).toHaveBeenCalled();
             expect(view.model.messages.length, 2);
             expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
-            expect(sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop().textContent).toEqual(message);
+            expect(sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop().textContent).toEqual(message);
             done();
         }));
 
@@ -953,7 +953,7 @@ describe("A Chat Message", function () {
             const message = '   \nThis message is sent from this chatbox \n     \n';
             await mock.sendMessage(view, message);
             expect(view.model.messages.at(0).get('message')).toEqual(message.trim());
-            const message_el = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            const message_el = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
             expect(message_el.textContent).toEqual(message.trim());
             done();
         }));
@@ -1380,7 +1380,7 @@ describe("A Chat Message", function () {
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => view.model.messages.length);
             expect(_converse.api.chatboxes.create).toHaveBeenCalled();
-            const last_message = await u.waitUntil(() => sizzle('.chat-content:last .chat-msg__text', view.el).pop());
+            const last_message = await u.waitUntil(() => sizzle('.chat-content:last .chat-msg__text', view).pop());
             const msg_txt = last_message.textContent;
             expect(msg_txt).toEqual(message);
             done();

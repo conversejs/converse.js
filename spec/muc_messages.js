@@ -375,7 +375,7 @@ describe("A Groupchat Message", function () {
         expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
         expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat chat-msg--with-avatar moderator owner');
+        expect(sizzle('.chat-msg', view).pop().classList.value.trim()).toBe('message chat-msg groupchat chat-msg--with-avatar moderator owner');
         let presence = $pres({
                 to:'romeo@montague.lit/orchard',
                 from:'lounge@montague.lit/romeo',
@@ -402,7 +402,7 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
         expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
         expect(view.model.messages.last().occupant.get('role')).toBe('participant');
-        expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat chat-msg--with-avatar participant member');
+        expect(sizzle('.chat-msg', view).pop().classList.value.trim()).toBe('message chat-msg groupchat chat-msg--with-avatar participant member');
 
         presence = $pres({
                 to:'romeo@montague.lit/orchard',
@@ -425,7 +425,7 @@ describe("A Groupchat Message", function () {
         expect(occupant.get('affiliation')).toBe('owner');
         expect(occupant.get('role')).toBe('moderator');
         expect(view.querySelectorAll('.chat-msg').length).toBe(3);
-        await u.waitUntil(() => sizzle('.chat-msg', view.el).pop().classList.value.trim() === 'message chat-msg groupchat chat-msg--with-avatar moderator owner');
+        await u.waitUntil(() => sizzle('.chat-msg', view).pop().classList.value.trim() === 'message chat-msg groupchat chat-msg--with-avatar moderator owner');
 
         const add_events = view.model.occupants._events.add.length;
         msg = $msg({

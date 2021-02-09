@@ -1681,7 +1681,7 @@ persistent_store
 ----------------
 
 * Default: ``localStorage``
-* Valid options: ``localStorage``, ``IndexedDB``, ``sessionStorage``, ``BrowserExtLocal``, ``BrowserExtSync``
+* Valid options: ``localStorage``, ``IndexedDB``, ``sessionStorage``, ``BrowserExtLocal``, ``BrowserExtSync``, ``none``
 
 Determines which store is used for storing persistent data.
 
@@ -1703,6 +1703,8 @@ Items in sync storage are synced by the browser and are available across all ins
 BrowserExtLocal represents the local storage area.
 Items in local storage are local to the machine the extension was installed on
 
+When using ``persistent_store: 'none'`` Converse will store data in-memory thus clearing all data across page reloads.
+It is useful if memory storage limitations are beinig reached and refetching data anew after a reload is acceptable.
 
 push_app_servers
 ----------------

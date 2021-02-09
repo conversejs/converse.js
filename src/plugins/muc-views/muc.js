@@ -81,7 +81,7 @@ export default class MUCView extends BaseChatView {
         this.model = _converse.chatboxes.get(jid);
         this.initDebounced();
 
-        api.listen.on('windowStateChanged', this.onWindowStateChanged);
+        api.listen.on('windowStateChanged', d => this.onWindowStateChanged(d));
 
         this.listenTo(
             this.model,

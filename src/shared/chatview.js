@@ -443,12 +443,12 @@ export default class BaseChatView extends ElementView {
         api.trigger('chatBoxScrolledDown', { 'chatbox': this.model }); // TODO: clean up
     }
 
-    onWindowStateChanged (state) {
-        if (state === 'visible') {
+    onWindowStateChanged (data) {
+        if (data.state === 'visible') {
             if (!this.model.isHidden() && this.model.get('num_unread', 0)) {
                 this.model.clearUnreadMsgCounter();
             }
-        } else if (state === 'hidden') {
+        } else if (data.state === 'hidden') {
             this.model.setChatState(_converse.INACTIVE, { 'silent': true });
             this.model.sendChatState();
         }

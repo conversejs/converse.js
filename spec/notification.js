@@ -297,17 +297,15 @@ describe("Notifications", function () {
             spyOn(converse.env, 'Favico').and.returnValue(favico);
             const message = 'This message will always increment the message counter from zero';
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msgFactory = function () {
-                    return $msg({
-                        from: sender_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: u.getUniqueId()
-                    })
-                    .c('body').t(message).up()
-                    .c('active', {'xmlns': Strophe.NS.CHATSTATES})
-                    .tree();
-             };
+            const msgFactory = () => $msg({
+                    from: sender_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: u.getUniqueId()
+                })
+                .c('body').t(message).up()
+                .c('active', {'xmlns': Strophe.NS.CHATSTATES})
+                .tree();
 
             // leave converse-chat page
             _converse.windowState = 'hidden';
@@ -315,10 +313,15 @@ describe("Notifications", function () {
             let view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => favico.badge.calls.count() === 1, 1000);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(1);
+            expect(view.model.get('num_unread')).toBe(1);
 
             // come back to converse-chat page
             _converse.saveWindowState({'type': 'focus'});
+
+
             await u.waitUntil(() => u.isVisible(view));
+            expect(view.model.get('num_unread')).toBe(0);
+
             await u.waitUntil(() => favico.badge.calls.count() === 2);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(0);
 

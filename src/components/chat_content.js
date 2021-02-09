@@ -1,4 +1,5 @@
 import "./message-history";
+import debounce from 'lodash/debounce';
 import { CustomElement } from './element.js';
 import { _converse, api } from "@converse/headless/core";
 import { html } from 'lit-element';
@@ -13,6 +14,7 @@ export default class ChatContent extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
+        this.debouncedScrolldown = debounce(this.scrollDown, 100);
         this.model = _converse.chatboxes.get(this.jid);
         this.listenTo(this.model.messages, 'add', this.requestUpdate);
         this.listenTo(this.model.messages, 'change', this.requestUpdate);
@@ -41,6 +43,10 @@ export default class ChatContent extends CustomElement {
             </converse-message-history>
             <div class="chat-content__notifications">${this.model.getNotificationsText()}</div>
         `;
+    }
+
+    updated () {
+        !this.model.get('scrolled') && this.debouncedScrolldown();
     }
 
     scrollDown () {

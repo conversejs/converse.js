@@ -95,7 +95,6 @@ export default class MUCView extends BaseChatView {
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
         this.listenTo(this.model.features, 'change:open', this.renderHeading);
-        this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 

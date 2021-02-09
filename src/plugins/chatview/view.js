@@ -61,7 +61,6 @@ export default class ChatView extends BaseChatView {
 
         // Need to be registered after render has been called.
         this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-        this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
 
         await this.model.messages.fetched;
@@ -200,22 +199,6 @@ export default class ChatView extends BaseChatView {
     getToolbarOptions () { // eslint-disable-line class-methods-use-this
         //  FIXME: can this be removed?
         return {};
-    }
-
-    /**
-     * Scrolls the chat down, *if* appropriate.
-     *
-     * Will only scroll down if we have received a message from
-     * ourselves, or if the chat was scrolled down before (i.e. the
-     * `scrolled` flag is `false`);
-     * @param { _converse.Message|_converse.ChatRoomMessage } [message]
-     *  - An optional message that serves as the cause for needing to scroll down.
-     */
-    maybeScrollDown (message) {
-        const new_own_msg = !message?.get('is_archived') && message?.get('sender') === 'me';
-        if ((new_own_msg || !this.model.get('scrolled')) && !this.model.isHidden()) {
-            this.debouncedScrollDown();
-        }
     }
 
     /**

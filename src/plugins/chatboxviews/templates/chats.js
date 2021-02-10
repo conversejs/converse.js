@@ -5,7 +5,8 @@ import { _converse, api } from '@converse/headless/core';
 export default () => {
     const { chatboxes, CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = _converse;
     const view_mode = api.settings.get('view_mode');
-
+    const connection = _converse?.connection;
+    const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
     return html`
         ${view_mode === 'overlayed' ? html`<converse-minimized-chats></converse-minimized-chats>` : ''}
         ${repeat(chatboxes, m => m.get('jid'), m => {
@@ -14,7 +15,7 @@ export default () => {
                     ${view_mode === 'overlayed' ? html`<converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>` : ''}
                     <converse-controlbox
                         id="controlbox"
-                        class="chatbox ${m.get('closed') ? 'hidden' : ''}"
+                        class="chatbox ${m.get('closed') ? 'hidden' : ''} ${logged_out ? 'logged-out': ''}"
                         style="${m.get('width') ? `width: ${m.get('width')}` : ''}"></converse-controlbox>
                 `;
             } else if (m.get('type') === CHATROOMS_TYPE) {

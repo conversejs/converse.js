@@ -16,6 +16,12 @@ class ConverseChats extends ElementView {
         this.listenTo(this.model, 'change:minimized', this.render);
         this.listenTo(this.model, 'destroy', this.render);
 
+        // Use listenTo instead of api.listen.to so that event handlers
+        // automatically get deregistered when the component is dismounted
+        this.listenTo(_converse, 'connected', this.render);
+        this.listenTo(_converse, 'reconnected', this.render);
+        this.listenTo(_converse, 'disconnected', this.render);
+
         const bg = document.getElementById('conversejs-bg');
         if (bg && !bg.innerHTML.trim()) {
             render(tpl_background_logo(), bg);

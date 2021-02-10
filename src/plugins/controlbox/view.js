@@ -58,13 +58,6 @@ class ControlBoxView extends ElementView {
         if (this.model.get('connected') && this.model.get('closed') === undefined) {
             this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
         }
-
-        const connection = _converse?.connection;
-        if (!connection?.connected || !connection?.authenticated || connection?.disconnecting) {
-            this.classList.add('logged-out');
-        } else {
-            this.classList.remove('logged-out');
-        }
     }
 
     close (ev) {

@@ -38,8 +38,7 @@ export default class ChatView extends BaseChatView {
         this.model = _converse.chatboxes.get(jid);
         this.initDebounced();
 
-        api.listen.on('windowStateChanged', d => this.onWindowStateChanged(d));
-
+        this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);

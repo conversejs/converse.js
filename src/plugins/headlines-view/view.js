@@ -20,12 +20,11 @@ class HeadlinesView extends BaseChatView {
         this.model = _converse.chatboxes.get(jid);
         this.initDebounced();
 
-        api.listen.on('windowStateChanged', d => this.onWindowStateChanged(d));
-
         this.model.disable_mam = true; // Don't do MAM queries for this box
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'show', this.show);
+        this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
 
         this.render();
 

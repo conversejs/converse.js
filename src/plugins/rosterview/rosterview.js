@@ -22,17 +22,14 @@ export default class RosterView extends ElementView {
     async initialize () {
         await api.waitUntil('rosterInitialized')
         this.debouncedRender = debounce(this.render, 100);
+        this.listenTo(_converse, 'rosterContactsFetched', this.render);
         this.listenTo(_converse.roster, "add", this.debouncedRender);
         this.listenTo(_converse.roster, "destroy", this.debouncedRender);
         this.listenTo(_converse.roster, "remove", this.debouncedRender);
         this.listenTo(_converse.roster, 'change', this.renderIfRelevantChange);
-
-        // FIXME Need to find a fix for this on the contact.presence
-        // this.listenTo(this.model.presence, "change:show", this.requestUpdate);
-
         this.listenTo(_converse.roster.state, "change", this.render);
         _converse.presences.on('change:show', () => this.debouncedRender());
-        api.listen.on('rosterContactsFetched', () => this.render());
+
         this.render();
         this.listenToRosterFilter();
         /**

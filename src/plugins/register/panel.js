@@ -38,7 +38,7 @@ class RegisterPanel extends ElementView {
         this.reset();
         const controlbox = _converse.chatboxes.get('controlbox');
         this.model = controlbox;
-        api.listen.on('connectionInitialized', () => this.registerHooks());
+        this.listenTo(_converse, 'connectionInitialized', this.registerHooks);
         this.listenTo(this.model, 'change:registration_status', this.render);
 
         const domain = api.settings.get('registration_domain');

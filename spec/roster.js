@@ -303,7 +303,7 @@ describe("The Contacts Roster", function () {
             expect(_.includes(filter.classList, "x")).toBeFalsy();
             expect(u.hasClass('hidden', rosterview.querySelector('.roster-filter-form .clear-input'))).toBeTruthy();
 
-            const isHidden = _.partial(u.hasClass, 'hidden');
+            const isHidden = (el) => u.hasClass('hidden', el);
             await u.waitUntil(() => !isHidden(rosterview.querySelector('.roster-filter-form .clear-input')), 900);
             rosterview.querySelector('.clear-input').click();
             expect(document.querySelector('.roster-filter').value).toBe("");
@@ -461,8 +461,8 @@ describe("The Contacts Roster", function () {
             // requesting and pending contacts are last.
             let group_titles = await u.waitUntil(() => {
                 const toggles = sizzle('.roster-group a.group-toggle', rosterview);
-                if (_.reduce(toggles, (result, t) => result && u.isVisible(t), true)) {
-                    return _.map(toggles, o => o.textContent.trim());
+                if (toggles.reduce((result, t) => result && u.isVisible(t), true)) {
+                    return toggles.map(o => o.textContent.trim());
                 } else {
                     return false;
                 }
@@ -473,8 +473,8 @@ describe("The Contacts Roster", function () {
             contact.set({'groups': ['secondgroup']});
             group_titles = await u.waitUntil(() => {
                 const toggles = sizzle('.roster-group[data-group="secondgroup"] a.group-toggle', rosterview);
-                if (_.reduce(toggles, (result, t) => result && u.isVisible(t), true)) {
-                    return _.map(toggles, o => o.textContent.trim());
+                if (toggles.reduce((result, t) => result && u.isVisible(t), true)) {
+                    return toggles.map(o => o.textContent.trim());
                 } else {
                     return false;
                 }
@@ -501,7 +501,7 @@ describe("The Contacts Roster", function () {
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => (sizzle('li', rosterview).filter(u.isVisible).length === 30));
             // Check that usernames appear alphabetically per group
-            _.each(groups, function (name) {
+            groups.forEach(name => {
                 const contacts = sizzle('.roster-group[data-group="'+name+'"] ul li', rosterview);
                 const names = contacts.map(o => o.textContent.trim());
                 expect(names).toEqual(_.clone(names).sort());
@@ -647,7 +647,7 @@ describe("The Contacts Roster", function () {
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => {
                 const el = rosterview.querySelector(`ul[data-group="Pending contacts"]`);
-                return u.isVisible(el) && _.filter(el.querySelectorAll('li'), li => u.isVisible(li)).length;
+                return u.isVisible(el) && Array.from(el.querySelectorAll('li')).filter(li => u.isVisible(li)).length;
             }, 700)
 
             const remove_el = await u.waitUntil(() => sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop());
@@ -709,7 +709,7 @@ describe("The Contacts Roster", function () {
             // Check that they are sorted alphabetically
             const el = await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`));
             const spans = el.querySelectorAll('.pending-xmpp-contact span');
-            const t = Array.from(spans).reduce((result, value) => result + _.trim(value.textContent), '');
+            const t = Array.from(spans).reduce((result, value) => result + value.textContent?.trim(), '');
             expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
             done();
         }));
@@ -862,8 +862,8 @@ describe("The Contacts Roster", function () {
                 for (let j=0; j<groups.length; j++) {
                     const group = groups[j];
                     const groupname = groupnames[j];
-                    const els = group.querySelectorAll('.current-xmpp-contact.online a.open-chat');
-                    const t = _.reduce(els, (result, value) => result + _.trim(value.textContent), '');
+                    const els = [...group.querySelectorAll('.current-xmpp-contact.online a.open-chat')];
+                    const t = els.reduce((result, value) => result + value.textContent?.trim(), '');
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
@@ -889,8 +889,8 @@ describe("The Contacts Roster", function () {
                 for (let j=0; j<groups.length; j++) {
                     const group = groups[j];
                     const groupname = groupnames[j];
-                    const els = group.querySelectorAll('.current-xmpp-contact.dnd a.open-chat');
-                    const t = _.reduce(els, (result, value) => result + _.trim(value.textContent), '');
+                    const els = [...group.querySelectorAll('.current-xmpp-contact.dnd a.open-chat')];
+                    const t = els.reduce((result, value) => result + value.textContent.trim(), '');
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
@@ -916,8 +916,8 @@ describe("The Contacts Roster", function () {
                 for (let j=0; j<groups.length; j++) {
                     const group = groups[j];
                     const groupname = groupnames[j];
-                    const els = group.querySelectorAll('.current-xmpp-contact.away a.open-chat');
-                    const t = _.reduce(els, (result, value) => result + _.trim(value.textContent), '');
+                    const els = [...group.querySelectorAll('.current-xmpp-contact.away a.open-chat')];
+                    const t = els.reduce((result, value) => result + value.textContent.trim(), '');
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
@@ -943,8 +943,8 @@ describe("The Contacts Roster", function () {
                 for (let j=0; j<groups.length; j++) {
                     const group = groups[j];
                     const groupname = groupnames[j];
-                    const els = group.querySelectorAll('.current-xmpp-contact.xa a.open-chat');
-                    const t = _.reduce(els, (result, value) => result + _.trim(value.textContent), '');
+                    const els = [...group.querySelectorAll('.current-xmpp-contact.xa a.open-chat')];
+                    const t = els.reduce((result, value) => result + value.textContenc?.trim(), '');
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
@@ -970,8 +970,8 @@ describe("The Contacts Roster", function () {
                 for (let j=0; j<groups.length; j++) {
                     const group = groups[j];
                     const groupname = groupnames[j];
-                    const els = group.querySelectorAll('.current-xmpp-contact.unavailable a.open-chat');
-                    const t = _.reduce(els, (result, value) => result + _.trim(value.textContent), '');
+                    const els = [...group.querySelectorAll('.current-xmpp-contact.unavailable a.open-chat')];
+                    const t = els.reduce((result, value) => result + value.textContent.trim(), '');
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
@@ -1255,12 +1255,12 @@ describe("The Contacts Roster", function () {
             // have the same attributes values as the original ones.
             attrs = ['jid', 'fullname', 'subscription', 'ask'];
             for (var i=0; i<attrs.length; i++) {
-                new_attrs = _.map(_.map(new_roster.models, 'attributes'), attrs[i]);
-                old_attrs = _.map(_.map(_converse.roster.models, 'attributes'), attrs[i]);
+                new_attrs = new_roster.models.map(m => m.attributes[attrs[i]]); // eslint-disable-line
+                old_attrs = _converse.roster.models.map(m => m.attributes[attrs[i]]); // eslint-disable-line
                 // Roster items in storage are not necessarily sorted,
                 // so we have to sort them here to do a proper
                 // comparison
-                expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
+                expect(new_attrs.sort()).toEqual(old_attrs.sort());
             }
             done();
         }));

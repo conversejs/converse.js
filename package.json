@@ -71,7 +71,6 @@
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.12.7",
     "@converse/headless": "file:src/headless",
-    "@converse/skeletor": "conversejs/skeletor#56a284bd36a07977d69c08d78e7c8c0fc9fc5c87",
     "@fortawesome/fontawesome-free": "5.14.0",
     "autoprefixer": "^9.8.6",
     "babel-eslint": "^10.1.0",

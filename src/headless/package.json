@@ -36,10 +36,11 @@
   },
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {
-    "@converse/skeletor": "conversejs/skeletor#56a284bd36a07977d69c08d78e7c8c0fc9fc5c87",
+    "@converse/skeletor": "conversejs/skeletor#cc542d7de6dd3d058552bc31ffa9d887d581f34d",
     "filesize": "^6.1.0",
     "localforage": "^1.9.0",
     "localforage-webextensionstorage-driver": "^2.0.0",
+    "localforage-driver-memory": "^1.0.5",
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
     "sizzle": "^2.3.5",

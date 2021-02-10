@@ -1,4 +1,4 @@
-/* global mock, converse, _ */
+/* global mock, converse */
 
 const { Strophe, u, sizzle, $iq } = converse.env;
 
@@ -161,7 +161,7 @@ describe("A chat room", function () {
             'nick': ' Othello'
         });
         await new Promise(resolve => _converse.api.listen.once('chatRoomViewInitialized', resolve));
-        expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
+        expect(!!_converse.chatboxviews.get(jid)).toBe(true);
 
         // Check that we don't auto-join if muc_respect_autojoin is false
         _converse.muc_respect_autojoin = false;

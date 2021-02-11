@@ -13,9 +13,7 @@ export default (o) => html`
 
                 <div class="chat-content__help"></div>
             </div>
-            <div class="bottom-panel">
-                <div class="message-form-container">
-            </div>
+            <converse-chat-bottom-panel jid=${o.jid} class="bottom-panel"> </converse-chat-bottom-panel>
         </div>
     </div>
 `;

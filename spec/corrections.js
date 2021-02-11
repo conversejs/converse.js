@@ -15,14 +15,15 @@ describe("A Chat Message", function () {
         const view = _converse.api.chatviews.get(contact_jid);
         const textarea = view.querySelector('textarea.chat-textarea');
         expect(textarea.value).toBe('');
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
         expect(textarea.value).toBe('');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -34,7 +35,7 @@ describe("A Chat Message", function () {
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
         expect(textarea.value).toBe('');
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -46,7 +47,7 @@ describe("A Chat Message", function () {
         spyOn(_converse.connection, 'send');
         let new_text = 'But soft, what light through yonder window breaks?';
         textarea.value = new_text;
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -80,7 +81,7 @@ describe("A Chat Message", function () {
 
         // Test that pressing the down arrow cancels message correction
         await u.waitUntil(() => textarea.value === '')
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -89,7 +90,7 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 40 // Down arrow
         });
@@ -100,7 +101,7 @@ describe("A Chat Message", function () {
 
         new_text = 'It is the east, and Juliet is the one.';
         textarea.value = new_text;
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -110,14 +111,14 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
         textarea.value =  'Arise, fair sun, and kill the envious moon';
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
 
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -129,7 +130,7 @@ describe("A Chat Message", function () {
 
         textarea.selectionEnd = 0; // Happens by pressing up,
                                 // but for some reason not in tests, so we set it manually.
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -140,7 +141,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view)[1]), 500);
 
         textarea.value = 'It is the east, and Juliet is the sun.';
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -176,7 +177,8 @@ describe("A Chat Message", function () {
         const textarea = view.querySelector('textarea.chat-textarea');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -203,7 +205,7 @@ describe("A Chat Message", function () {
 
         spyOn(_converse.connection, 'send');
         textarea.value = 'But soft, what light through yonder window breaks?';
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -520,16 +522,17 @@ describe("A Groupchat Message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.querySelector('textarea.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
         expect(textarea.value).toBe('');
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
         expect(textarea.value).toBe('');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -540,7 +543,7 @@ describe("A Groupchat Message", function () {
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
         expect(textarea.value).toBe('');
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -552,7 +555,7 @@ describe("A Groupchat Message", function () {
         spyOn(_converse.connection, 'send');
         const new_text = 'But soft, what light through yonder window breaks?'
         textarea.value = new_text;
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -597,7 +600,7 @@ describe("A Groupchat Message", function () {
 
         // Test that pressing the down arrow cancels message correction
         expect(textarea.value).toBe('');
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -606,7 +609,7 @@ describe("A Groupchat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             keyCode: 40 // Down arrow
         });

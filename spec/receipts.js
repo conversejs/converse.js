@@ -110,7 +110,8 @@ describe("A delivery receipt", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         const textarea = view.querySelector('textarea.chat-textarea');
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -131,7 +132,7 @@ describe("A delivery receipt", function () {
         // Also handle receipts with type 'chat'. See #1353
         spyOn(_converse, 'handleMessageStanza').and.callThrough();
         textarea.value = 'Another message';
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter

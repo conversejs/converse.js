@@ -1,4 +1,4 @@
-import BaseChatView from 'shared/chatview.js';
+import BaseChatView from 'shared/chat/baseview.js';
 import tpl_chatbox from 'templates/chatbox.js';
 import tpl_chat_head from './templates/chat-head.js';
 import { __ } from 'i18n';

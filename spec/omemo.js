@@ -112,7 +112,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be encrypted';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -238,7 +239,7 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => initializedOMEMO(_converse));
 
-        const toolbar = view.querySelector('.chat-toolbar');
+        const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
         const el = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         el.click();
         expect(view.model.get('omemo_active')).toBe(true);
@@ -293,7 +294,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be encrypted';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -457,7 +459,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This is an encrypted message from this device';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -504,15 +507,16 @@ describe("The OMEMO module", function() {
             }).tree();
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        const toolbar = view.querySelector('.chat-toolbar');
+        const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
         const toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         toggle.click();
         expect(view.model.get('omemo_active')).toBe(true);
         expect(view.model.get('omemo_supported')).toBe(true);
 
-        const textarea = view.querySelector('.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'This message will be encrypted';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -1229,7 +1233,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be sent encrypted';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13
@@ -1274,7 +1279,7 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => initializedOMEMO(_converse));
 
-        const toolbar = view.querySelector('.chat-toolbar');
+        const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
         let toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         expect(view.model.get('omemo_active')).toBe(undefined);
         expect(view.model.get('omemo_supported')).toBe(true);

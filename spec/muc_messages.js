@@ -17,7 +17,7 @@ describe("A Groupchat Message", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.api.chatviews.get(muc_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello world'
             const enter_event = {
                 'target': textarea,
@@ -25,7 +25,8 @@ describe("A Groupchat Message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            view.onKeyDown(enter_event);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter_event);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             const msg = view.model.messages.at(0);
@@ -510,9 +511,10 @@ describe("A Groupchat Message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.querySelector('textarea.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -584,9 +586,10 @@ describe("A Groupchat Message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.querySelector('textarea.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter

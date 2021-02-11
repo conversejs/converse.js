@@ -346,6 +346,10 @@
             }
         }
 
+        converse-muc-bottom-panel {
+            display: contents;
+        }
+
         .muc-bottom-panel {
             height: 3em;
             padding: 0.5em;
@@ -353,6 +357,11 @@
             font-size: var(--font-size-small);
             background-color: var(--chatroom-head-bg-color);
             color: white;
+
+            &.muc-bottom-panel--muted {
+                height: 8em;
+                width: 100%;
+            }
 
             &.muc-bottom-panel--nickname {
                 padding: 0;

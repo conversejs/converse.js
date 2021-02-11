@@ -1,10 +1,7 @@
 import debounce from 'lodash/debounce';
 import log from '@converse/headless/log';
-import tpl_chatbox_message_form from 'templates/chatbox_message_form.js';
 import tpl_spinner from 'templates/spinner.js';
-import tpl_toolbar from 'templates/toolbar.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
-import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import { html, render } from 'lit-html';
 
@@ -35,50 +32,6 @@ export default class BaseChatView extends ElementView {
             `,
             this.help_container
         );
-    }
-
-    renderMessageForm () {
-        const form_container = this.querySelector('.message-form-container');
-        render(
-            tpl_chatbox_message_form(
-                Object.assign(this.model.toJSON(), {
-                    'hint_value': this.querySelector('.spoiler-hint')?.value,
-                    'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
-                    'label_spoiler_hint': __('Optional hint'),
-                    'message_value': this.querySelector('.chat-textarea')?.value,
-                    'show_send_button': api.settings.get('show_send_button'),
-                    'show_toolbar': api.settings.get('show_toolbar'),
-                    'unread_msgs': __('You have unread messages')
-                })
-            ),
-            form_container
-        );
-        this.addEventListener('focusin', ev => this.emitFocused(ev));
-        this.addEventListener('focusout', ev => this.emitBlurred(ev));
-        this.renderToolbar();
-    }
-
-    renderToolbar () {
-        if (!api.settings.get('show_toolbar')) {
-            return this;
-        }
-        const options = Object.assign(
-            {
-                'model': this.model,
-                'chatview': this
-            },
-            this.model.toJSON(),
-            this.getToolbarOptions()
-        );
-        render(tpl_toolbar(options), this.querySelector('.chat-toolbar'));
-        /**
-         * Triggered once the _converse.ChatBoxView's toolbar has been rendered
-         * @event _converse#renderToolbar
-         * @type { _converse.ChatBoxView }
-         * @example _converse.api.listen.on('renderToolbar', view => { ... });
-         */
-        api.trigger('renderToolbar', this);
-        return this;
     }
 
     async getHeadingStandaloneButton (promise_or_data) { // eslint-disable-line class-methods-use-this
@@ -122,34 +75,6 @@ export default class BaseChatView extends ElementView {
             return;
         }
         this.afterShown();
-    }
-
-    emitBlurred (ev) {
-        if (this.contains(document.activeElement) || this.contains(ev.relatedTarget)) {
-            // Something else in this chatbox is still focused
-            return;
-        }
-        /**
-         * Triggered when the focus has been removed from a particular chat.
-         * @event _converse#chatBoxBlurred
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-         * @example _converse.api.listen.on('chatBoxBlurred', (view, event) => { ... });
-         */
-        api.trigger('chatBoxBlurred', this, ev);
-    }
-
-    emitFocused (ev) {
-        if (this.contains(ev.relatedTarget)) {
-            // Something else in this chatbox was already focused
-            return;
-        }
-        /**
-         * Triggered when the focus has been moved to a particular chat.
-         * @event _converse#chatBoxFocused
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-         * @example _converse.api.listen.on('chatBoxFocused', (view, event) => { ... });
-         */
-        api.trigger('chatBoxFocused', this, ev);
     }
 
     /**
@@ -199,67 +124,6 @@ export default class BaseChatView extends ElementView {
     }
 
 
-    getOwnMessages () {
-        return this.model.messages.filter({ 'sender': 'me' });
-    }
-
-    async clearMessages (ev) {
-        if (ev && ev.preventDefault) {
-            ev.preventDefault();
-        }
-        const result = confirm(__('Are you sure you want to clear the messages from this conversation?'));
-        if (result === true) {
-            await this.model.clearMessages();
-        }
-        return this;
-    }
-
-    editEarlierMessage () {
-        let message;
-        let idx = this.model.messages.findLastIndex('correcting');
-        if (idx >= 0) {
-            this.model.messages.at(idx).save('correcting', false);
-            while (idx > 0) {
-                idx -= 1;
-                const candidate = this.model.messages.at(idx);
-                if (candidate.get('editable')) {
-                    message = candidate;
-                    break;
-                }
-            }
-        }
-        message =
-            message ||
-            this.getOwnMessages()
-                .reverse()
-                .find(m => m.get('editable'));
-        if (message) {
-            message.save('correcting', true);
-        }
-    }
-
-    editLaterMessage () {
-        let message;
-        let idx = this.model.messages.findLastIndex('correcting');
-        if (idx >= 0) {
-            this.model.messages.at(idx).save('correcting', false);
-            while (idx < this.model.messages.length - 1) {
-                idx += 1;
-                const candidate = this.model.messages.at(idx);
-                if (candidate.get('editable')) {
-                    message = candidate;
-                    break;
-                }
-            }
-        }
-        if (message) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
-            message.save('correcting', true);
-        } else {
-            this.insertIntoTextArea('', true, false);
-        }
-    }
-
     async getHeadingDropdownItem (promise_or_data) { // eslint-disable-line class-methods-use-this
         const data = await promise_or_data;
         return html`
@@ -267,20 +131,6 @@ export default class BaseChatView extends ElementView {
                 ><i class="fa ${data.icon_class}"></i>${data.i18n_text}</a
             >
         `;
-    }
-
-    autocompleteInPicker (input, value) {
-        const emoji_dropdown = this.querySelector('converse-emoji-dropdown');
-        const emoji_picker = this.querySelector('converse-emoji-picker');
-        if (emoji_picker && emoji_dropdown) {
-            emoji_picker.model.set({
-                'ac_position': input.selectionStart,
-                'autocompleting': value,
-                'query': value
-            });
-            emoji_dropdown.showMenu();
-            return true;
-        }
     }
 
     showNewMessagesIndicator () {
@@ -334,29 +184,13 @@ export default class BaseChatView extends ElementView {
      * replaced with the new value.
      */
     insertIntoTextArea (value, replace = false, correcting = false, position) {
-        const textarea = this.querySelector('.chat-textarea');
-        if (correcting) {
-            u.addClass('correcting', textarea);
+        let bottom_panel;
+        if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
+            bottom_panel = this.querySelector('converse-muc-bottom-panel');
         } else {
-            u.removeClass('correcting', textarea);
+            bottom_panel = this.querySelector('converse-chat-bottom-panel');
         }
-        if (replace) {
-            if (position && typeof replace == 'string') {
-                textarea.value = textarea.value.replace(new RegExp(replace, 'g'), (match, offset) =>
-                    offset == position - replace.length ? value + ' ' : match
-                );
-            } else {
-                textarea.value = value;
-            }
-        } else {
-            let existing = textarea.value;
-            if (existing && existing[existing.length - 1] !== ' ') {
-                existing = existing + ' ';
-            }
-            textarea.value = existing + value + ' ';
-        }
-        this.updateCharCounter(textarea.value);
-        u.placeCaretAtEnd(textarea);
+        bottom_panel.insertIntoTextArea(value, replace, correcting, position);
     }
 
     /**
@@ -439,87 +273,6 @@ export default class BaseChatView extends ElementView {
         } else if (data.state === 'hidden') {
             this.model.setChatState(_converse.INACTIVE, { 'silent': true });
             this.model.sendChatState();
-        }
-    }
-
-    async onFormSubmitted (ev) {
-        ev.preventDefault();
-        const textarea = this.querySelector('.chat-textarea');
-        const message_text = textarea.value.trim();
-        if (
-            (api.settings.get('message_limit') && message_text.length > api.settings.get('message_limit')) ||
-            !message_text.replace(/\s/g, '').length
-        ) {
-            return;
-        }
-        if (!_converse.connection.authenticated) {
-            const err_msg = __('Sorry, the connection has been lost, and your message could not be sent');
-            api.alert('error', __('Error'), err_msg);
-            api.connection.reconnect();
-            return;
-        }
-        let spoiler_hint,
-            hint_el = {};
-        if (this.model.get('composing_spoiler')) {
-            hint_el = this.querySelector('form.sendXMPPMessage input.spoiler-hint');
-            spoiler_hint = hint_el.value;
-        }
-        u.addClass('disabled', textarea);
-        textarea.setAttribute('disabled', 'disabled');
-        this.querySelector('converse-emoji-dropdown')?.hideMenu();
-
-        const is_command = this.parseMessageForCommands(message_text);
-        const message = is_command ? null : await this.model.sendMessage(message_text, spoiler_hint);
-        if (is_command || message) {
-            hint_el.value = '';
-            textarea.value = '';
-            u.removeClass('correcting', textarea);
-            textarea.style.height = 'auto';
-            this.updateCharCounter(textarea.value);
-        }
-        if (message) {
-            /**
-             * Triggered whenever a message is sent by the user
-             * @event _converse#messageSend
-             * @type { _converse.Message }
-             * @example _converse.api.listen.on('messageSend', message => { ... });
-             */
-            api.trigger('messageSend', message);
-        }
-        if (api.settings.get('view_mode') === 'overlayed') {
-            // XXX: Chrome flexbug workaround. The .chat-content area
-            // doesn't resize when the textarea is resized to its original size.
-            const msgs_container = this.querySelector('.chat-content__messages');
-            msgs_container.parentElement.style.display = 'none';
-        }
-        textarea.removeAttribute('disabled');
-        u.removeClass('disabled', textarea);
-
-        if (api.settings.get('view_mode') === 'overlayed') {
-            // XXX: Chrome flexbug workaround.
-            const msgs_container = this.querySelector('.chat-content__messages');
-            msgs_container.parentElement.style.display = '';
-        }
-        // Suppress events, otherwise superfluous CSN gets set
-        // immediately after the message, causing rate-limiting issues.
-        this.model.setChatState(_converse.ACTIVE, { 'silent': true });
-        textarea.focus();
-    }
-
-    onEnterPressed (ev) {
-        return this.onFormSubmitted(ev);
-    }
-
-    updateCharCounter (chars) {
-        if (api.settings.get('message_limit')) {
-            const message_limit = this.querySelector('.message-limit');
-            const counter = api.settings.get('message_limit') - chars.length;
-            message_limit.textContent = counter;
-            if (counter < 1) {
-                u.addClass('error', message_limit);
-            } else {
-                u.removeClass('error', message_limit);
-            }
         }
     }
 }

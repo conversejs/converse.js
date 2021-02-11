@@ -17,9 +17,10 @@ describe("Chatrooms", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo')
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = view.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/register';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13

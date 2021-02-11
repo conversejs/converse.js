@@ -48,7 +48,8 @@ describe("Emojis", function () {
                 'keyCode': 9,
                 'key': 'Tab'
             }
-            view.onKeyDown(tab_event);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(tab_event);
             await u.waitUntil(() => view.querySelector('converse-emoji-picker .emoji-search').value === ':gri');
             await u.waitUntil(() =>  sizzle('.emojis-lists__container--search .insert-emoji', view).length === 3, 1000);
             let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', view);
@@ -88,7 +89,7 @@ describe("Emojis", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
 
             textarea.value = ':use';
-            view.onKeyDown(tab_event);
+            bottom_panel.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')));
             await u.waitUntil(() => input.value === ':use');
             visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
@@ -114,7 +115,8 @@ describe("Emojis", function () {
                 'keyCode': 9,
                 'key': 'Tab'
             }
-            view.onKeyDown(tab_event);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')));
 
             const picker = view.querySelector('converse-emoji-picker');
@@ -132,7 +134,7 @@ describe("Emojis", function () {
             emoji.click();
             await u.waitUntil(() => textarea.value === ':grinning: ');
             textarea.value = ':grinning: :';
-            view.onKeyDown(tab_event);
+            bottom_panel.onKeyDown(tab_event);
 
             await u.waitUntil(() => input.value === ':');
             input.value = ':grimacing';
@@ -165,7 +167,8 @@ describe("Emojis", function () {
                 'key': 'Tab'
             }
             textarea.value = ':';
-            view.onKeyDown(tab_event);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')));
             const picker = view.querySelector('converse-emoji-picker');
             const input = picker.querySelector('.emoji-search');
@@ -176,7 +179,7 @@ describe("Emojis", function () {
             expect(textarea.value).toBe(':100: ');
 
             textarea.value = ':';
-            view.onKeyDown(tab_event);
+            bottom_panel.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')));
             await u.waitUntil(() => input.value === ':');
             input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
@@ -282,7 +285,8 @@ describe("Emojis", function () {
             // emojis now renders normally again.
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = ':poop: :innocent:';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
@@ -292,7 +296,7 @@ describe("Emojis", function () {
             await u.waitUntil(() => view.content.querySelector(last_msg_sel).textContent === '💩 😇');
 
             expect(textarea.value).toBe('');
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 keyCode: 38 // Up arrow
             });
@@ -302,7 +306,7 @@ describe("Emojis", function () {
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector(sel)), 500);
             const edited_text = textarea.value += 'This is no longer an emoji-only message';
             textarea.value = edited_text;
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
@@ -314,7 +318,7 @@ describe("Emojis", function () {
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
             textarea.value = ':smile: Hello world!';
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
@@ -322,7 +326,7 @@ describe("Emojis", function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
 
             textarea.value = ':smile: :smiley: :imp:';
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
@@ -363,7 +367,8 @@ describe("Emojis", function () {
 
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = ':poop: :innocent:';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
@@ -414,7 +419,8 @@ describe("Emojis", function () {
 
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = 'Running tests for :converse:';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter

@@ -386,7 +386,8 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector(sel)?.textContent.trim());
             expect(view.querySelector(sel).textContent.trim()).toBe('Hello world')
 
-            view.querySelector('[name="nick"]').value = nick;
+            const nick_input = await u.waitUntil(() => view.querySelector('[name="nick"]'));
+            nick_input.value = nick;
             view.querySelector('.muc-nickname-form input[type="submit"]').click();
             _converse.connection.IQ_stanzas = [];
             await mock.getRoomFeatures(_converse, muc_jid);
@@ -2074,10 +2075,7 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             spyOn(_converse.api, "trigger").and.callThrough();
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            if (!view.querySelectorAll('.chat-area').length) {
-                view.renderChatArea();
-            }
-            var nick = mock.chatroom_names[0];
+            const nick = mock.chatroom_names[0];
             view.model.occupants.create({
                 'nick': nick,
                 'muc_jid': `${view.model.get('jid')}/${nick}`
@@ -2101,13 +2099,11 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             spyOn(_converse.api, "trigger").and.callThrough();
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            if (!view.querySelectorAll('.chat-area').length) {
-                view.renderChatArea();
-            }
             const text = 'This is a sent message';
-            const textarea = view.querySelector('.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = text;
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -2961,10 +2957,11 @@ describe("Groupchats", function () {
             spyOn(window, 'confirm').and.callFake(() => true);
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            let textarea = view.querySelector('.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
             textarea.value = '/help';
-            view.onKeyDown(enter);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter);
 
             await u.waitUntil(() => sizzle('converse-chat-help .chat-info', view).length);
             const chat_help_el = view.querySelector('converse-chat-help');
@@ -2997,7 +2994,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => chat_help_el.hidden);
 
             textarea.value = '/help';
-            view.onKeyDown(enter);
+            bottom_panel.onKeyDown(enter);
             await u.waitUntil(() => !chat_help_el.hidden);
             info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(18);
@@ -3012,7 +3009,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => chat_help_el.hidden);
 
             textarea.value = '/help';
-            view.onKeyDown(enter);
+            bottom_panel.onKeyDown(enter);
             await u.waitUntil(() => !chat_help_el.hidden);
             info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(9);
@@ -3025,10 +3022,9 @@ describe("Groupchats", function () {
 
             occupant.set('role', 'participant');
             // Role changes causes rerender, so we need to get the new textarea
-            textarea = view.querySelector('.chat-textarea');
 
             textarea.value = '/help';
-            view.onKeyDown(enter);
+            bottom_panel.onKeyDown(enter);
             await u.waitUntil(() => view.model.get('show_help_messages'));
             await u.waitUntil(() => !chat_help_el.hidden);
             info_messages = sizzle('.chat-info', chat_help_el);
@@ -3043,7 +3039,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => chat_help_el.hidden);
 
             textarea.value = '/help';
-            view.onKeyDown(enter);
+            bottom_panel.onKeyDown(enter);
             await u.waitUntil(() => !chat_help_el.hidden, 1000);
             info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(7);
@@ -3057,13 +3053,14 @@ describe("Groupchats", function () {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            var textarea = view.querySelector('.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             const enter = { 'target': textarea, 'preventDefault': function () {}, 'keyCode': 13 };
             spyOn(window, 'confirm').and.callFake(() => true);
             textarea.value = '/clear';
-            view.onKeyDown(enter);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter);
             textarea.value = '/help';
-            view.onKeyDown(enter);
+            bottom_panel.onKeyDown(enter);
 
             await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view).length);
             const info_messages = sizzle('.chat-info:not(.chat-event)', view);
@@ -3110,7 +3107,7 @@ describe("Groupchats", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
             expect(view.model.occupants.length).toBe(2);
 
-            const textarea = view.querySelector('.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             let sent_stanza;
             spyOn(_converse.connection, 'send').and.callFake((stanza) => {
                 sent_stanza = stanza;
@@ -3119,7 +3116,8 @@ describe("Groupchats", function () {
             // First check that an error message appears when a
             // non-existent nick is used.
             textarea.value = '/member chris Welcome to the club!';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3131,7 +3129,7 @@ describe("Groupchats", function () {
 
             // Now test with an existing nick
             textarea.value = '/member marc Welcome to the club!';
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3234,15 +3232,15 @@ describe("Groupchats", function () {
         it("takes /topic to set the groupchat topic", mock.initConverse([], {}, async function (done, _converse) {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view, 'clearMessages');
             let sent_stanza;
             spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                 sent_stanza = stanza;
             });
             // Check the alias /topic
-            const textarea = view.querySelector('.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/topic This is the groupchat subject';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3252,7 +3250,7 @@ describe("Groupchats", function () {
 
             // Check /subject
             textarea.value = '/subject This is a new subject';
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3266,7 +3264,7 @@ describe("Groupchats", function () {
 
             // Check case insensitivity
             textarea.value = '/Subject This is yet another subject';
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3279,7 +3277,7 @@ describe("Groupchats", function () {
 
             // Check unsetting the topic
             textarea.value = '/topic';
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3294,15 +3292,16 @@ describe("Groupchats", function () {
         it("takes /clear to clear messages", mock.initConverse([], {}, async function (done, _converse) {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view, 'clearMessages');
-            const textarea = view.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/clear';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            spyOn(bottom_panel, 'clearMessages');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.clearMessages).toHaveBeenCalled();
+            expect(bottom_panel.clearMessages).toHaveBeenCalled();
             done();
         }));
 
@@ -3317,7 +3316,7 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             spyOn(view.model, 'setAffiliation').and.callThrough();
-            spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
+            spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             let presence = $pres({
                     'from': 'lounge@montague.lit/annoyingGuy',
@@ -3332,14 +3331,15 @@ describe("Groupchats", function () {
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
 
-            var textarea = view.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/owner';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
             const err_msg = await u.waitUntil(() => view.querySelector('.chat-error'));
             expect(err_msg.textContent.trim()).toBe(
                 "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
@@ -3349,7 +3349,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/owner nobody You\'re responsible';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
             await u.waitUntil(() => view.querySelectorAll('.chat-error').length === 2);
             expect(Array.from(view.querySelectorAll('.chat-error')).pop().textContent.trim()).toBe(
                 "Error: couldn't find a groupchat participant based on your arguments");
@@ -3361,9 +3361,9 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/owner annoyingGuy You\'re responsible';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
 
-            expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
+            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setAffiliation).toHaveBeenCalled();
             // Check that the member list now gets updated
             expect(Strophe.serialize(sent_IQ)).toBe(
@@ -3405,7 +3405,7 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             spyOn(view.model, 'setAffiliation').and.callThrough();
-            spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
+            spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             let presence = $pres({
                     'from': 'lounge@montague.lit/annoyingGuy',
@@ -3420,14 +3420,15 @@ describe("Groupchats", function () {
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
 
-            const textarea = view.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/ban';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
 
@@ -3437,9 +3438,9 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/ban annoyingGuy You\'re annoying';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
 
-            expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setAffiliation).toHaveBeenCalled();
             // Check that the member list now gets updated
             expect(Strophe.serialize(sent_IQ)).toBe(
@@ -3483,7 +3484,7 @@ describe("Groupchats", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
 
             textarea.value = '/ban joe22';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
             await u.waitUntil(() => view.querySelector('converse-chat-message:last-child')?.textContent?.trim() ===
                 "Error: couldn't find a groupchat participant based on your arguments");
             done();
@@ -3502,7 +3503,7 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.api.chatviews.get(muc_jid);
             spyOn(view.model, 'setRole').and.callThrough();
-            spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
+            spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             let presence = $pres({
                     'from': 'lounge@montague.lit/annoying guy',
@@ -3517,14 +3518,15 @@ describe("Groupchats", function () {
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
 
-            const textarea = view.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/kick';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
             expect(view.model.setRole).not.toHaveBeenCalled();
@@ -3533,9 +3535,9 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/kick @annoying guy You\'re annoying';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
 
-            expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3591,7 +3593,7 @@ describe("Groupchats", function () {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
             spyOn(view.model, 'setRole').and.callThrough();
-            spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
+            spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             // New user enters the groupchat
             /* <presence
@@ -3618,15 +3620,16 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo and trustworthyguy have entered the groupchat");
 
-            const textarea = view.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/op';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
 
-            expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
@@ -3636,9 +3639,9 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/op trustworthyguy You\'re trustworthy';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
 
-            expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3680,9 +3683,9 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/deop trustworthyguy Perhaps not';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
 
-            expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
+            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3730,7 +3733,7 @@ describe("Groupchats", function () {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
             spyOn(view.model, 'setRole').and.callThrough();
-            spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
+            spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             // New user enters the groupchat
             /* <presence
@@ -3757,15 +3760,16 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo and annoyingGuy have entered the groupchat");
 
-            const textarea = view.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/mute';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
 
-            expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
             expect(view.model.setRole).not.toHaveBeenCalled();
@@ -3774,9 +3778,9 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/mute annoyingGuy You\'re annoying';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
 
-            expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3815,9 +3819,9 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/voice annoyingGuy Now you can talk again';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
 
-            expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
+            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3861,9 +3865,10 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             let view = _converse.api.chatviews.get(muc_jid);
             spyOn(_converse.api, 'confirm').and.callThrough();
-            let textarea = view.querySelector('.chat-textarea');
+            let textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
-            view.onFormSubmitted(new Event('submit'));
+            let bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onFormSubmitted(new Event('submit'));
             let modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
             await u.waitUntil(() => u.isVisible(modal));
 
@@ -3899,8 +3904,8 @@ describe("Groupchats", function () {
                 'from': view.model.get('jid'),
                 'to': _converse.connection.jid
             });
-            spyOn(_converse.api, "trigger").and.callThrough();
             expect(_converse.chatboxes.length).toBe(2);
+            spyOn(_converse.api, "trigger").and.callThrough();
             _converse.connection._dataRecv(mock.createRequest(result_stanza));
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
             await u.waitUntil(() => _converse.chatboxes.length === 1);
@@ -3911,9 +3916,10 @@ describe("Groupchats", function () {
             sent_IQs = _converse.connection.IQ_stanzas;
             await mock.openAndEnterChatRoom(_converse, new_muc_jid, 'romeo');
             view = _converse.api.chatviews.get(new_muc_jid);
-            textarea = view.querySelector('.chat-textarea');
+            textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onFormSubmitted(new Event('submit'));
             modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
             await u.waitUntil(() => u.isVisible(modal));
 
@@ -5194,9 +5200,10 @@ describe("Groupchats", function () {
             const muc_jid = 'trollbox@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll');
             const view = _converse.api.chatviews.get(muc_jid);
-            const textarea = view.querySelector('.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             textarea.value = 'Hello world';
-            view.onFormSubmitted(new Event('submit'));
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onFormSubmitted(new Event('submit'));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             let stanza = u.toStanza(`
@@ -5213,7 +5220,7 @@ describe("Groupchats", function () {
                 "Your message was not delivered because you weren't allowed to send it.");
 
             textarea.value = 'Hello again';
-            view.onFormSubmitted(new Event('submit'));
+            bottom_panel.onFormSubmitted(new Event('submit'));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
             stanza = u.toStanza(`
@@ -5248,7 +5255,7 @@ describe("Groupchats", function () {
             const muc_jid = 'trollbox@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll', features);
             const view = _converse.api.chatviews.get(muc_jid);
-            expect(_.isNull(view.querySelector('.chat-textarea'))).toBe(false);
+            await u.waitUntil(() => view.querySelector('.chat-textarea'));
 
             let stanza = u.toStanza(`
                 <presence
@@ -5271,12 +5278,12 @@ describe("Groupchats", function () {
             // the textarea becomes visible when the room's
             // configuration changes to be non-moderated
             view.model.features.set('moderated', false);
-            expect(view.querySelector('.muc-bottom-panel')).toBe(null);
-            let textarea = view.querySelector('.chat-textarea');
+            await u.waitUntil(() => view.querySelector('.muc-bottom-panel') === null);
+            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             expect(textarea === null).toBe(false);
 
             view.model.features.set('moderated', true);
-            expect(view.querySelector('.chat-textarea')).toBe(null);
+            await u.waitUntil(() => view.querySelector('.chat-textarea') === null);
             bottom_panel = view.querySelector('.muc-bottom-panel');
             expect(bottom_panel.textContent.trim()).toBe("You're not allowed to send messages in this room");
 
@@ -5299,10 +5306,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelector('.muc-bottom-panel') === null);
-
-            textarea = view.querySelector('.chat-textarea');
             expect(textarea === null).toBe(false);
-
             // Check now that things get restored when the user is given a voice
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() === "troll has been given a voice");
             done();

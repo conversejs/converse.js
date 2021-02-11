@@ -22,7 +22,6 @@ describe("Chatboxes", function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             mock.sendMessage(view, '/help');
-
             await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view).length);
             const info_messages = await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view));
             expect(info_messages.length).toBe(4);
@@ -60,7 +59,8 @@ describe("Chatboxes", function () {
 
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = '/clear';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
@@ -279,13 +279,14 @@ describe("Chatboxes", function () {
                     preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 };
-                view.onKeyDown(ev);
+                const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                bottom_panel.onKeyDown(ev);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-                view.onKeyUp(ev);
+                bottom_panel.onKeyUp(ev);
                 expect(counter.textContent).toBe('200');
 
                 textarea.value = 'hello world';
-                view.onKeyUp(ev);
+                bottom_panel.onKeyUp(ev);
                 expect(counter.textContent).toBe('189');
                 done();
             }));
@@ -430,7 +431,9 @@ describe("Chatboxes", function () {
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
-                    view.onKeyDown({
+
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -445,7 +448,7 @@ describe("Chatboxes", function () {
                     expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
                     // The notification is not sent again
-                    view.onKeyDown({
+                    bottom_panel.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -469,7 +472,8 @@ describe("Chatboxes", function () {
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
-                    view.onKeyDown({
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -578,7 +582,8 @@ describe("Chatboxes", function () {
                     spyOn(_converse.connection, 'send');
                     spyOn(view.model, 'setChatState').and.callThrough();
                     expect(view.model.get('chat_state')).toBe('active');
-                    view.onKeyDown({
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -602,14 +607,14 @@ describe("Chatboxes", function () {
                     // Test #359. A paused notification should not be sent
                     // out if the user simply types longer than the
                     // timeout.
-                    view.onKeyDown({
+                    bottom_panel.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.setChatState).toHaveBeenCalled();
                     expect(view.model.get('chat_state')).toBe('composing');
 
-                    view.onKeyDown({
+                    bottom_panel.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -697,7 +702,8 @@ describe("Chatboxes", function () {
                     let messages = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('message')));
                     expect(messages.length).toBe(1);
                     expect(view.model.get('chat_state')).toBe('active');
-                    view.onKeyDown({
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -924,18 +930,19 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.querySelector('.chat-msg'));
 
             message = '/clear';
-            spyOn(view, 'clearMessages').and.callThrough();
+            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            spyOn(bottom_panel, 'clearMessages').and.callThrough();
             spyOn(window, 'confirm').and.callFake(function () {
                 return true;
             });
             view.querySelector('.chat-textarea').value = message;
-            view.onKeyDown({
+            bottom_panel.onKeyDown({
                 target: view.querySelector('textarea.chat-textarea'),
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.clearMessages.calls.all().length).toBe(1);
-            await view.clearMessages.calls.all()[0].returnValue;
+            expect(bottom_panel.clearMessages.calls.all().length).toBe(1);
+            await bottom_panel.clearMessages.calls.all()[0].returnValue;
             expect(window.confirm).toHaveBeenCalled();
             expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
             stored_messages = await view.model.messages.browserStorage.findAll();

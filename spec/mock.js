@@ -438,10 +438,12 @@ window.addEventListener('converse-loaded', () => {
                 .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
     }
 
-    mock.sendMessage = function (view, message) {
+    mock.sendMessage = async function (view, message) {
         const promise = new Promise(resolve => view.model.messages.once('rendered', resolve));
-        view.querySelector('.chat-textarea').value = message;
-        view.onKeyDown({
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+        textarea.value = message;
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel') || view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
             target: view.querySelector('textarea.chat-textarea'),
             preventDefault: () => {},
             keyCode: 13

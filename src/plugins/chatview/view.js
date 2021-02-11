@@ -1,4 +1,5 @@
-import BaseChatView from 'shared/chatview.js';
+import 'plugins/chatview/bottom_panel.js';
+import BaseChatView from 'shared/chat/baseview.js';
 import UserDetailsModal from 'modals/user-details.js';
 import tpl_chatbox from 'templates/chatbox.js';
 import tpl_chatbox_head from 'templates/chatbox_head.js';
@@ -23,12 +24,6 @@ export default class ChatView extends BaseChatView {
     events = {
         'click .chatbox-navback': 'showControlBox',
         'click .new-msgs-indicator': 'viewUnreadMessages',
-        'click .send-button': 'onFormSubmitted',
-        'click .toggle-clear': 'clearMessages',
-        'input .chat-textarea': 'inputChanged',
-        'keydown .chat-textarea': 'onKeyDown',
-        'keyup .chat-textarea': 'onKeyUp',
-        'paste .chat-textarea': 'onPaste'
     }
 
     async initialize () {
@@ -39,7 +34,6 @@ export default class ChatView extends BaseChatView {
         this.initDebounced();
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
-        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
         this.listenTo(this.model, 'vcard:change', this.renderHeading);
@@ -80,7 +74,6 @@ export default class ChatView extends BaseChatView {
         render(result, this);
         this.content = this.querySelector('.chat-content');
         this.help_container = this.querySelector('.chat-content__help');
-        this.renderMessageForm();
         this.renderHeading();
         return this;
     }
@@ -103,20 +96,6 @@ export default class ChatView extends BaseChatView {
     showUserDetailsModal (ev) {
         ev.preventDefault();
         api.modal.show(UserDetailsModal, { model: this.model }, ev);
-    }
-
-    onDragOver (evt) { // eslint-disable-line class-methods-use-this
-        evt.preventDefault();
-    }
-
-    onDrop (evt) {
-        if (evt.dataTransfer.files.length == 0) {
-            // There are no files to be dropped, so this isn’t a file
-            // transfer operation.
-            return;
-        }
-        evt.preventDefault();
-        this.model.sendFiles(evt.dataTransfer.files);
     }
 
     async generateHeadingTemplate () {
@@ -195,11 +174,6 @@ export default class ChatView extends BaseChatView {
         return _converse.api.hook('getHeadingButtons', this, buttons);
     }
 
-    getToolbarOptions () { // eslint-disable-line class-methods-use-this
-        //  FIXME: can this be removed?
-        return {};
-    }
-
     /**
      * Given a message element, determine wether it should be
      * marked as a followup message to the previous element.
@@ -245,118 +219,6 @@ export default class ChatView extends BaseChatView {
             u.addClass('chat-msg--followup', next_el);
         } else {
             u.removeClass('chat-msg--followup', next_el);
-        }
-    }
-
-    parseMessageForCommands (text) {
-        const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
-        if (match) {
-            if (match[1] === 'clear') {
-                this.clearMessages();
-                return true;
-            } else if (match[1] === 'close') {
-                this.close();
-                return true;
-            } else if (match[1] === 'help') {
-                this.model.set({ 'show_help_messages': true });
-                return true;
-            }
-        }
-    }
-
-    onPaste (ev) {
-        if (ev.clipboardData.files.length !== 0) {
-            ev.preventDefault();
-            // Workaround for quirk in at least Firefox 60.7 ESR:
-            // It seems that pasted files disappear from the event payload after
-            // the event has finished, which apparently happens during async
-            // processing in sendFiles(). So we copy the array here.
-            this.model.sendFiles(Array.from(ev.clipboardData.files));
-            return;
-        }
-        this.updateCharCounter(ev.clipboardData.getData('text/plain'));
-    }
-
-    /**
-     * Event handler for when a depressed key goes up
-     * @private
-     * @method _converse.ChatBoxView#onKeyUp
-     */
-    onKeyUp (ev) {
-        this.updateCharCounter(ev.target.value);
-    }
-
-    /**
-     * Event handler for when a key is pressed down in a chat box textarea.
-     * @private
-     * @method _converse.ChatBoxView#onKeyDown
-     * @param { Event } ev
-     */
-    onKeyDown (ev) {
-        if (ev.ctrlKey) {
-            // When ctrl is pressed, no chars are entered into the textarea.
-            return;
-        }
-        if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
-            if (ev.keyCode === converse.keycodes.TAB) {
-                const value = u.getCurrentWord(ev.target, null, /(:.*?:)/g);
-                if (value.startsWith(':') && this.autocompleteInPicker(ev.target, value)) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                }
-            } else if (ev.keyCode === converse.keycodes.FORWARD_SLASH) {
-                // Forward slash is used to run commands. Nothing to do here.
-                return;
-            } else if (ev.keyCode === converse.keycodes.ESCAPE) {
-                return this.onEscapePressed(ev);
-            } else if (ev.keyCode === converse.keycodes.ENTER) {
-                return this.onEnterPressed(ev);
-            } else if (ev.keyCode === converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
-                const textarea = this.querySelector('.chat-textarea');
-                if (!textarea.value || u.hasClass('correcting', textarea)) {
-                    return this.editEarlierMessage();
-                }
-            } else if (
-                ev.keyCode === converse.keycodes.DOWN_ARROW &&
-                ev.target.selectionEnd === ev.target.value.length &&
-                u.hasClass('correcting', this.querySelector('.chat-textarea'))
-            ) {
-                return this.editLaterMessage();
-            }
-        }
-        if (
-            [
-                converse.keycodes.SHIFT,
-                converse.keycodes.META,
-                converse.keycodes.META_RIGHT,
-                converse.keycodes.ESCAPE,
-                converse.keycodes.ALT
-            ].includes(ev.keyCode)
-        ) {
-            return;
-        }
-        if (this.model.get('chat_state') !== _converse.COMPOSING) {
-            // Set chat state to composing if keyCode is not a forward-slash
-            // (which would imply an internal command and not a message).
-            this.model.setChatState(_converse.COMPOSING);
-        }
-    }
-
-    onEscapePressed (ev) {
-        ev.preventDefault();
-        const idx = this.model.messages.findLastIndex('correcting');
-        const message = idx >= 0 ? this.model.messages.at(idx) : null;
-        if (message) {
-            message.save('correcting', false);
-        }
-        this.insertIntoTextArea('', true, false);
-    }
-
-    inputChanged (ev) { // eslint-disable-line class-methods-use-this
-        const height = ev.target.scrollHeight + 'px';
-        if (ev.target.style.height != height) {
-            ev.target.style.height = 'auto';
-            ev.target.style.height = height;
         }
     }
 

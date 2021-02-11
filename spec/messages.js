@@ -527,7 +527,7 @@ describe("A Chat Message", function () {
         const view = _converse.api.chatviews.get(contact_jid);
         const message = 'This message contains a hyperlink: www.opkode.com';
         spyOn(view.model, 'sendMessage').and.callThrough();
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
@@ -547,7 +547,7 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         let message = 'This message contains a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
@@ -556,10 +556,10 @@ describe("A Chat Message", function () {
         // Test assigning a string to filter_url_query_params
         _converse.api.settings.set('filter_url_query_params', 'utm_medium');
         message = 'Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
-        expect(msg.textContent).toEqual('Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&s=1');
+        expect(msg.textContent).toEqual(message);
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
             'Another message with a hyperlink with forbidden query params: '+
             '<a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1">https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1</a>');
@@ -622,7 +622,7 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
         expect(view.model.sendMessage).toHaveBeenCalled();
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -632,7 +632,7 @@ describe("A Chat Message", function () {
             `</a>`);
 
         message += "?param1=val1&param2=val2";
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -643,7 +643,7 @@ describe("A Chat Message", function () {
 
         // Test now with two images in one message
         message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -653,7 +653,7 @@ describe("A Chat Message", function () {
         // Configured image URLs are rendered
         _converse.api.settings.set('image_urls_regex', /^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i);
         message = 'https://imgur.com/oxymPax';
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
         expect(view.content.querySelectorAll('.chat-content .chat-image').length).toBe(5);
 
@@ -674,11 +674,11 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
 
         message = base_url+"/logo/conversejs-filled.svg";
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 1, 1000)
         expect(view.content.querySelectorAll('.chat-content .chat-image').length).toBe(1);
@@ -698,7 +698,7 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
@@ -721,7 +721,7 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
         await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'), 1000);
         const msg = view.querySelector('.chat-content .chat-msg .chat-msg__text');

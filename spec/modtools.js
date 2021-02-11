@@ -8,10 +8,11 @@ const u = converse.env.utils;
 
 
 async function openModtools (_converse, view) {
-    const textarea = view.querySelector('.chat-textarea');
+    const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
     textarea.value = '/modtools';
     const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-    view.onKeyDown(enter);
+    const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+    bottom_panel.onKeyDown(enter);
     await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
     const modal = _converse.api.modal.get('converse-modtools-modal');
     await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -257,10 +258,11 @@ describe("The groupchat moderator tool", function () {
         ));
         await u.waitUntil(() => (view.model.occupants.length === 7), 1000);
 
-        const textarea = view.querySelector('.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = '/modtools';
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        view.onKeyDown(enter);
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown(enter);
         await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
 
         const modal = _converse.api.modal.get('converse-modtools-modal');
@@ -460,10 +462,11 @@ describe("The groupchat moderator tool", function () {
         const members = [{'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'}];
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
-        const textarea = view.querySelector('.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = '/modtools';
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        view.onKeyDown(enter);
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown(enter);
         await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
 
         const modal = _converse.api.modal.get('converse-modtools-modal');

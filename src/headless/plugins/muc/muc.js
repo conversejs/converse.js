@@ -11,6 +11,11 @@ import { isArchived } from '@converse/headless/shared/parsers';
 import { parseMemberListIQ, parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
+const OWNER_COMMANDS = ['owner'];
+const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
+const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
+const VISITOR_COMMANDS = ['nick'];
+
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 
 const MUCSession = Model.extend({
@@ -1211,6 +1216,127 @@ const ChatRoomMixin = {
             .c('x', { xmlns: Strophe.NS.XFORM, type: 'submit' });
         config.forEach(node => iq.cnode(node).up());
         return api.sendIQ(iq);
+    },
+
+    onCommandError (err) {
+        const { __ } = _converse;
+        log.fatal(err);
+        const message =
+            __('Sorry, an error happened while running the command.') +
+            ' ' +
+            __("Check your browser's developer console for details.");
+        this.createMessage({ message, 'type': 'error' });
+    },
+
+    getNickOrJIDFromCommandArgs (args) {
+        const { __ } = _converse;
+        if (u.isValidJID(args.trim())) {
+            return args.trim();
+        }
+        if (!args.startsWith('@')) {
+            args = '@' + args;
+        }
+        const [text, references] = this.parseTextForReferences(args); // eslint-disable-line no-unused-vars
+        if (!references.length) {
+            const message = __("Error: couldn't find a groupchat participant based on your arguments");
+            this.createMessage({ message, 'type': 'error' });
+            return;
+        }
+        if (references.length > 1) {
+            const message = __('Error: found multiple groupchat participant based on your arguments');
+            this.createMessage({ message, 'type': 'error' });
+            return;
+        }
+        const nick_or_jid = references.pop().value;
+        const reason = args.split(nick_or_jid, 2)[1];
+        if (reason && !reason.startsWith(' ')) {
+            const message = __("Error: couldn't find a groupchat participant based on your arguments");
+            this.createMessage({ message, 'type': 'error' });
+            return;
+        }
+        return nick_or_jid;
+    },
+
+    validateRoleOrAffiliationChangeArgs (command, args) {
+        const { __ } = _converse;
+        if (!args) {
+            const message = __(
+                'Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
+                command
+            );
+            this.createMessage({ message, 'type': 'error' });
+            return false;
+        }
+        return true;
+    },
+
+    getAllowedCommands () {
+        let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
+        if (this.config.get('changesubject') || ['owner', 'admin'].includes(this.getOwnAffiliation())) {
+            allowed_commands = [...allowed_commands, ...['subject', 'topic']];
+        }
+        const occupant = this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        if (this.verifyAffiliations(['owner'], occupant, false)) {
+            allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
+        } else if (this.verifyAffiliations(['admin'], occupant, false)) {
+            allowed_commands = allowed_commands.concat(ADMIN_COMMANDS);
+        }
+        if (this.verifyRoles(['moderator'], occupant, false)) {
+            allowed_commands = allowed_commands.concat(MODERATOR_COMMANDS).concat(VISITOR_COMMANDS);
+        } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
+            allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
+        }
+        allowed_commands.sort();
+
+        if (Array.isArray(api.settings.get('muc_disable_slash_commands'))) {
+            return allowed_commands.filter(c => !api.settings.get('muc_disable_slash_commands').includes(c));
+        } else {
+            return allowed_commands;
+        }
+    },
+
+    verifyAffiliations (affiliations, occupant, show_error = true) {
+        const { __ } = _converse;
+        if (!Array.isArray(affiliations)) {
+            throw new TypeError('affiliations must be an Array');
+        }
+        if (!affiliations.length) {
+            return true;
+        }
+        occupant = occupant || this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        if (occupant) {
+            const a = occupant.get('affiliation');
+            if (affiliations.includes(a)) {
+                return true;
+            }
+        }
+        if (show_error) {
+            const message = __('Forbidden: you do not have the necessary affiliation in order to do that.');
+            this.createMessage({ message, 'type': 'error' });
+        }
+        return false;
+    },
+
+    verifyRoles (roles, occupant, show_error = true) {
+        const { __ } = _converse;
+        if (!Array.isArray(roles)) {
+            throw new TypeError('roles must be an Array');
+        }
+        if (!roles.length) {
+            return true;
+        }
+        occupant = occupant || this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        if (occupant) {
+            const role = occupant.get('role');
+            if (roles.includes(role)) {
+                return true;
+            }
+        }
+        if (show_error) {
+            const message = __('Forbidden: you do not have the necessary role in order to do that.');
+            this.createMessage({ message, 'type': 'error' });
+        }
+        return false;
     },
 
     /**

@@ -306,7 +306,7 @@ describe("A sent groupchat message", function () {
                 })));
             await u.waitUntil(() => view.model.occupants.length === 2);
 
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello @Link Mauve'
             const enter_event = {
                 'target': textarea,
@@ -315,9 +315,10 @@ describe("A sent groupchat message", function () {
                 'keyCode': 13 // Enter
             }
             spyOn(_converse.connection, 'send');
-            view.onKeyDown(enter_event);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-            const msg = _converse.connection.send.calls.all()[1].args[0];
+            const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -365,7 +366,7 @@ describe("A sent groupchat message", function () {
             });
             await u.waitUntil(() => view.model.occupants.length === 5);
 
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
             const enter_event = {
                 'target': textarea,
@@ -374,7 +375,8 @@ describe("A sent groupchat message", function () {
                 'keyCode': 13 // Enter
             }
             spyOn(_converse.connection, 'send');
-            view.onKeyDown(enter_event);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
@@ -383,7 +385,7 @@ describe("A sent groupchat message", function () {
                     'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
             );
 
-            const msg = _converse.connection.send.calls.all()[1].args[0];
+            const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -404,14 +406,14 @@ describe("A sent groupchat message", function () {
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
-            await u.waitUntil(() => _converse.connection.send.calls.count() === 2);
+            await u.waitUntil(() => _converse.connection.send.calls.count() === 1);
 
             textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
-            view.onKeyDown(enter_event);
+            bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
                 'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
-            const correction = _converse.connection.send.calls.all()[2].args[0];
+            const correction = _converse.connection.send.calls.all()[1].args[0];
             expect(correction.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${correction.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -449,7 +451,7 @@ describe("A sent groupchat message", function () {
             await u.waitUntil(() => view.model.occupants.length === 5);
 
             spyOn(_converse.connection, 'send');
-            const textarea = view.querySelector('textarea.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
             const enter_event = {
                 'target': textarea,
@@ -457,7 +459,8 @@ describe("A sent groupchat message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            view.onKeyDown(enter_event);
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const msg = _converse.connection.send.calls.all()[1].args[0];
@@ -483,7 +486,7 @@ describe("A sent groupchat message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', [], members);
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.querySelector('textarea.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = "Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html";
         const enter_event = {
             'target': textarea,
@@ -491,7 +494,8 @@ describe("A sent groupchat message", function () {
             'stopPropagation': function stopPropagation () {},
             'keyCode': 13 // Enter
         }
-        view.onKeyDown(enter_event);
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown(enter_event);
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.innerHTML.replace(/<!---->/g, '')).toEqual(
             `Welcome <span class="mention">gibson</span> <span title=":poop:">💩</span> `+

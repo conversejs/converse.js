@@ -235,7 +235,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
-        mock.sendMessage(view, message);
+        await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();

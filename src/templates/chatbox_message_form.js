@@ -15,6 +15,12 @@ export default (o) => html`
             <textarea
                 autofocus
                 type="text"
+                @drop=${o.onDrop}
+                @input=${o.inputChanged}
+                @keydown=${o.onKeyDown}
+                @keyup=${o.onKeyUp}
+                @paste=${o.onPaste}
+                @change=${o.onChange}
                 class="chat-textarea suggestion-box__input
                     ${ o.show_send_button ? 'chat-textarea-send-button' : '' }
                     ${ o.composing_spoile ? 'spoiler' : '' }"

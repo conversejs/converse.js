@@ -62,7 +62,7 @@ export default class MUCView extends BaseChatView {
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.features, 'change:open', this.renderHeading);
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
-        this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
+        this.listenTo(this.model.session, 'change:connection_status', this.renderAfterTransition);
 
         // Bind so that we can pass it to addEventListener and removeEventListener
         this.onMouseMove = this.onMouseMove.bind(this);
@@ -83,7 +83,7 @@ export default class MUCView extends BaseChatView {
         // Register later due to await
         const user_settings = await _converse.api.user.settings.getModel();
         this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
-        this.onConnectionStatusChanged();
+        this.renderAfterTransition();
         this.model.maybeShow();
         this.scrollDown();
         /**
@@ -286,7 +286,6 @@ export default class MUCView extends BaseChatView {
     }
 
     onSidebarToggle () {
-        this.renderToolbar();
         this.querySelector('.occupants')?.setVisibility();
     }
 
@@ -432,24 +431,6 @@ export default class MUCView extends BaseChatView {
         if (!this.model.get('hidden') && !this.model.get('minimized')) {
             this.model.clearUnreadMsgCounter();
             this.scrollDown();
-        }
-    }
-
-    onConnectionStatusChanged () {
-        const conn_status = this.model.session.get('connection_status');
-        if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
-            this.renderNicknameForm();
-        } else if (conn_status === converse.ROOMSTATUS.PASSWORD_REQUIRED) {
-            this.renderPasswordForm();
-        } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
-            this.showSpinner();
-        } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
-            this.hideSpinner();
-            this.maybeFocus();
-        } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
-            this.showDisconnectMessage();
-        } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {
-            this.showDestroyedMessage();
         }
     }
 
@@ -722,15 +703,23 @@ export default class MUCView extends BaseChatView {
      */
     renderAfterTransition () {
         const conn_status = this.model.session.get('connection_status');
-        if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
+        if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
             this.renderNicknameForm();
-        } else if (conn_status == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
+        } else if (conn_status === converse.ROOMSTATUS.PASSWORD_REQUIRED) {
             this.renderPasswordForm();
-        } else if (conn_status == converse.ROOMSTATUS.ENTERED) {
+        } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
+            this.showSpinner();
+        } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
+            this.hideSpinner();
             this.hideChatRoomContents();
             u.showElement(this.querySelector('.chat-area'));
             this.querySelector('.occupants')?.setVisibility();
             this.scrollDown();
+            this.maybeFocus();
+        } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
+            this.showDisconnectMessage();
+        } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {
+            this.showDestroyedMessage();
         }
     }
 

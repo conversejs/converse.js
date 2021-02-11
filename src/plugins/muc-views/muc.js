@@ -1,14 +1,10 @@
-import './bottom_panel.js';
 import './config-form.js';
 import './password-form.js';
 import 'shared/autocomplete/index.js';
 import BaseChatView from 'shared/chat/baseview.js';
-import MUCInviteModal from 'modals/muc-invite.js';
 import ModeratorToolsModal from 'modals/moderator-tools.js';
-import RoomDetailsModal from 'modals/muc-details.js';
 import log from '@converse/headless/log';
 import tpl_muc from './templates/muc.js';
-import tpl_muc_head from './templates/muc_head.js';
 import tpl_muc_destroyed from './templates/muc_destroyed.js';
 import tpl_muc_disconnect from './templates/muc_disconnect.js';
 import tpl_muc_nickname_form from './templates/muc_nickname_form.js';
@@ -16,7 +12,6 @@ import tpl_spinner from 'templates/spinner.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { debounce } from 'lodash-es';
 import { render } from 'lit-html';
 
 const { sizzle } = converse.env;
@@ -53,14 +48,12 @@ export default class MUCView extends BaseChatView {
         this.initDebounced();
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
-        this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'change:hidden_occupants', this.onSidebarToggle);
         this.listenTo(this.model, 'change:minimized', () => this.afterShown());
         this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
         this.listenTo(this.model, 'show', this.show);
-        this.listenTo(this.model.features, 'change:open', this.renderHeading);
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model.session, 'change:connection_status', this.renderAfterTransition);
 
@@ -73,16 +66,9 @@ export default class MUCView extends BaseChatView {
         // Need to be registered after render has been called.
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
         this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-
-        this.model.occupants.forEach(o => this.onOccupantAdded(o));
-        this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
-        this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
         this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
         this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
 
-        // Register later due to await
-        const user_settings = await _converse.api.user.settings.getModel();
-        this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
         this.renderAfterTransition();
         this.model.maybeShow();
         this.scrollDown();
@@ -95,7 +81,7 @@ export default class MUCView extends BaseChatView {
         api.trigger('chatRoomViewInitialized', this);
     }
 
-    async render () {
+    render () {
         const sidebar_hidden = !this.shouldShowSidebar();
         this.setAttribute('id', this.model.get('box_id'));
         render(
@@ -126,7 +112,6 @@ export default class MUCView extends BaseChatView {
         // Render header as late as possible since it's async and we
         // want the rest of the DOM elements to be available ASAP.
         // Otherwise e.g. this.notifications is not yet defined when accessed elsewhere.
-        await this.renderHeading();
         !this.model.get('hidden') && this.show();
     }
 
@@ -157,17 +142,6 @@ export default class MUCView extends BaseChatView {
         ]
             .filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9)))
             .filter(line => this.model.getAllowedCommands().some(c => line.startsWith(c + '<', 9)));
-    }
-
-    /**
-     * Renders the MUC heading if any relevant attributes have changed.
-     * @private
-     * @method _converse.ChatRoomView#renderHeading
-     * @param { _converse.ChatRoom } [item]
-     */
-    async renderHeading () {
-        const tpl = await this.generateHeadingTemplate();
-        render(tpl, this.querySelector('.chat-head-chatroom'));
     }
 
     onStartResizeOccupants (ev) {
@@ -266,11 +240,6 @@ export default class MUCView extends BaseChatView {
         modal.show();
     }
 
-    showRoomDetailsModal (ev) {
-        ev.preventDefault();
-        api.modal.show(RoomDetailsModal, { 'model': this.model }, ev);
-    }
-
     showChatStateNotification (message) {
         if (message.get('sender') === 'me') {
             return;
@@ -287,139 +256,6 @@ export default class MUCView extends BaseChatView {
 
     onSidebarToggle () {
         this.querySelector('.occupants')?.setVisibility();
-    }
-
-    onOccupantAffiliationChanged (occupant) {
-        if (occupant.get('jid') === _converse.bare_jid) {
-            this.renderHeading();
-        }
-    }
-
-    /**
-     * Returns a list of objects which represent buttons for the groupchat header.
-     * @emits _converse#getHeadingButtons
-     * @private
-     * @method _converse.ChatRoomView#getHeadingButtons
-     */
-    getHeadingButtons (subject_hidden) {
-        const buttons = [];
-        buttons.push({
-            'i18n_text': __('Details'),
-            'i18n_title': __('Show more information about this groupchat'),
-            'handler': ev => this.showRoomDetailsModal(ev),
-            'a_class': 'show-muc-details-modal',
-            'icon_class': 'fa-info-circle',
-            'name': 'details'
-        });
-
-        if (this.model.getOwnAffiliation() === 'owner') {
-            buttons.push({
-                'i18n_text': __('Configure'),
-                'i18n_title': __('Configure this groupchat'),
-                'handler': ev => this.getAndRenderConfigurationForm(ev),
-                'a_class': 'configure-chatroom-button',
-                'icon_class': 'fa-wrench',
-                'name': 'configure'
-            });
-        }
-
-        if (this.model.invitesAllowed()) {
-            buttons.push({
-                'i18n_text': __('Invite'),
-                'i18n_title': __('Invite someone to join this groupchat'),
-                'handler': ev => this.showInviteModal(ev),
-                'a_class': 'open-invite-modal',
-                'icon_class': 'fa-user-plus',
-                'name': 'invite'
-            });
-        }
-
-        const subject = this.model.get('subject');
-        if (subject && subject.text) {
-            buttons.push({
-                'i18n_text': subject_hidden ? __('Show topic') : __('Hide topic'),
-                'i18n_title': subject_hidden
-                    ? __('Show the topic message in the heading')
-                    : __('Hide the topic in the heading'),
-                'handler': ev => this.toggleTopic(ev),
-                'a_class': 'hide-topic',
-                'icon_class': 'fa-minus-square',
-                'name': 'toggle-topic'
-            });
-        }
-
-        const conn_status = this.model.session.get('connection_status');
-        if (conn_status === converse.ROOMSTATUS.ENTERED) {
-            const allowed_commands = this.model.getAllowedCommands();
-            if (allowed_commands.includes('modtools')) {
-                buttons.push({
-                    'i18n_text': __('Moderate'),
-                    'i18n_title': __('Moderate this groupchat'),
-                    'handler': () => this.showModeratorToolsModal(),
-                    'a_class': 'moderate-chatroom-button',
-                    'icon_class': 'fa-user-cog',
-                    'name': 'moderate'
-                });
-            }
-            if (allowed_commands.includes('destroy')) {
-                buttons.push({
-                    'i18n_text': __('Destroy'),
-                    'i18n_title': __('Remove this groupchat'),
-                    'handler': ev => this.destroy(ev),
-                    'a_class': 'destroy-chatroom-button',
-                    'icon_class': 'fa-trash',
-                    'name': 'destroy'
-                });
-            }
-        }
-
-        if (!api.settings.get('singleton')) {
-            buttons.push({
-                'i18n_text': __('Leave'),
-                'i18n_title': __('Leave and close this groupchat'),
-                'handler': async ev => {
-                    ev.stopPropagation();
-                    const messages = [__('Are you sure you want to leave this groupchat?')];
-                    const result = await api.confirm(__('Confirm'), messages);
-                    result && this.close(ev);
-                },
-                'a_class': 'close-chatbox-button',
-                'standalone': api.settings.get('view_mode') === 'overlayed',
-                'icon_class': 'fa-sign-out-alt',
-                'name': 'signout'
-            });
-        }
-        return _converse.api.hook('getHeadingButtons', this, buttons);
-    }
-
-    /**
-     * Returns the groupchat heading TemplateResult to be rendered.
-     * @private
-     * @method _converse.ChatRoomView#generateHeadingTemplate
-     */
-    async generateHeadingTemplate () {
-        const subject_hidden = await this.model.isSubjectHidden();
-        const heading_btns = await this.getHeadingButtons(subject_hidden);
-        const standalone_btns = heading_btns.filter(b => b.standalone);
-        const dropdown_btns = heading_btns.filter(b => !b.standalone);
-        return tpl_muc_head(
-            Object.assign(this.model.toJSON(), {
-                _converse,
-                subject_hidden,
-                'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
-                'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
-                'title': this.model.getDisplayName()
-            })
-        );
-    }
-
-    toggleTopic () {
-        this.model.toggleSubjectHiddenState();
-    }
-
-    showInviteModal (ev) {
-        ev.preventDefault();
-        api.modal.show(MUCInviteModal, { 'model': new Model(), 'chatroomview': this }, ev);
     }
 
     /**
@@ -660,11 +496,6 @@ export default class MUCView extends BaseChatView {
         u.showElement(container);
     }
 
-    onOccupantAdded (occupant) {
-        if (occupant.get('jid') === _converse.bare_jid) {
-            this.renderHeading();
-        }
-    }
 
     /**
      * Working backwards, get today's most recent join/leave notification

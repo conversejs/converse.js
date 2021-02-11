@@ -1976,8 +1976,7 @@ describe("Groupchats", function () {
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.model.getOwnAffiliation()).toBe('owner');
             expect(view.model.features.get('open')).toBe(false);
-
-            expect(view.querySelector('.open-invite-modal')).not.toBe(null);
+            await u.waitUntil(() => view.querySelector('.open-invite-modal'));
 
             // Members can't invite if the room isn't open
             view.model.getOwnOccupant().set('affiliation', 'member');
@@ -2474,7 +2473,7 @@ describe("Groupchats", function () {
             expect(view.model.features.get('temporary')).toBe(true);
             expect(view.model.features.get('unmoderated')).toBe(true);
             expect(view.model.features.get('unsecured')).toBe(false);
-            expect(view.querySelector('.chatbox-title__text').textContent.trim()).toBe('Room');
+            await u.waitUntil(() => view.querySelector('.chatbox-title__text').textContent.trim() === 'Room');
 
             view.querySelector('.configure-chatroom-button').click();
 

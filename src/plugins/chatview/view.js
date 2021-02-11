@@ -1,8 +1,7 @@
+import 'plugins/chatview/heading.js';
 import 'plugins/chatview/bottom_panel.js';
 import BaseChatView from 'shared/chat/baseview.js';
-import UserDetailsModal from 'modals/user-details.js';
 import tpl_chatbox from 'templates/chatbox.js';
-import tpl_chatbox_head from 'templates/chatbox_head.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import { render } from 'lit-html';
@@ -36,19 +35,7 @@ export default class ChatView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
-        this.listenTo(this.model, 'vcard:change', this.renderHeading);
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
-
-        if (this.model.contact) {
-            this.listenTo(this.model.contact, 'destroy', this.renderHeading);
-        }
-        if (this.model.rosterContactAdded) {
-            this.model.rosterContactAdded.then(() => {
-                this.listenTo(this.model.contact, 'change:nickname', this.renderHeading);
-                this.renderHeading();
-            });
-        }
-
         this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);
         this.render();
 
@@ -74,7 +61,6 @@ export default class ChatView extends BaseChatView {
         render(result, this);
         this.content = this.querySelector('.chat-content');
         this.help_container = this.querySelector('.chat-content__help');
-        this.renderHeading();
         return this;
     }
 
@@ -91,87 +77,6 @@ export default class ChatView extends BaseChatView {
         // Used in mobile view, to navigate back to the controlbox
         _converse.chatboxviews.get('controlbox')?.show();
         this.hide();
-    }
-
-    showUserDetailsModal (ev) {
-        ev.preventDefault();
-        api.modal.show(UserDetailsModal, { model: this.model }, ev);
-    }
-
-    async generateHeadingTemplate () {
-        const vcard = this.model?.vcard;
-        const vcard_json = vcard ? vcard.toJSON() : {};
-        const i18n_profile = __("The User's Profile Image");
-        const avatar_data = Object.assign(
-            {
-                'alt_text': i18n_profile,
-                'extra_classes': '',
-                'height': 40,
-                'width': 40
-            },
-            vcard_json
-        );
-        const heading_btns = await this.getHeadingButtons();
-        const standalone_btns = heading_btns.filter(b => b.standalone);
-        const dropdown_btns = heading_btns.filter(b => !b.standalone);
-        return tpl_chatbox_head(
-            Object.assign(this.model.toJSON(), {
-                avatar_data,
-                'display_name': this.model.getDisplayName(),
-                'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
-                'showUserDetailsModal': ev => this.showUserDetailsModal(ev),
-                'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b))
-            })
-        );
-    }
-
-    /**
-     * Returns a list of objects which represent buttons for the chat's header.
-     * @async
-     * @emits _converse#getHeadingButtons
-     * @private
-     * @method _converse.ChatBoxView#getHeadingButtons
-     */
-    getHeadingButtons () {
-        const buttons = [
-            {
-                'a_class': 'show-user-details-modal',
-                'handler': ev => this.showUserDetailsModal(ev),
-                'i18n_text': __('Details'),
-                'i18n_title': __('See more information about this person'),
-                'icon_class': 'fa-id-card',
-                'name': 'details',
-                'standalone': api.settings.get('view_mode') === 'overlayed'
-            }
-        ];
-        if (!api.settings.get('singleton')) {
-            buttons.push({
-                'a_class': 'close-chatbox-button',
-                'handler': ev => this.close(ev),
-                'i18n_text': __('Close'),
-                'i18n_title': __('Close and end this conversation'),
-                'icon_class': 'fa-times',
-                'name': 'close',
-                'standalone': api.settings.get('view_mode') === 'overlayed'
-            });
-        }
-        /**
-         * *Hook* which allows plugins to add more buttons to a chat's heading.
-         * @event _converse#getHeadingButtons
-         * @example
-         *  api.listen.on('getHeadingButtons', (view, buttons) => {
-         *      buttons.push({
-         *          'i18n_title': __('Foo'),
-         *          'i18n_text': __('Foo Bar'),
-         *          'handler': ev => alert('Foo!'),
-         *          'a_class': 'toggle-foo',
-         *          'icon_class': 'fa-foo',
-         *          'name': 'foo'
-         *      });
-         *      return buttons;
-         *  });
-         */
-        return _converse.api.hook('getHeadingButtons', this, buttons);
     }
 
     /**

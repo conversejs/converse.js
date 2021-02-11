@@ -14,11 +14,6 @@ export default class BaseChatView extends ElementView {
         this.debouncedScrollDown = debounce(this.scrollDown, 100);
     }
 
-    async renderHeading () {
-        const tpl = await this.generateHeadingTemplate();
-        render(tpl, this.querySelector('.chat-head-chatbox'));
-    }
-
     renderHelpMessages () {
         render(
             html`
@@ -32,18 +27,6 @@ export default class BaseChatView extends ElementView {
             `,
             this.help_container
         );
-    }
-
-    async getHeadingStandaloneButton (promise_or_data) { // eslint-disable-line class-methods-use-this
-        const data = await promise_or_data;
-        return html`
-            <a
-                href="#"
-                class="chatbox-btn ${data.a_class} fa ${data.icon_class}"
-                @click=${data.handler}
-                title="${data.i18n_title}"
-            ></a>
-        `;
     }
 
     hideNewMessagesIndicator () {
@@ -75,6 +58,34 @@ export default class BaseChatView extends ElementView {
             return;
         }
         this.afterShown();
+    }
+
+    emitBlurred (ev) {
+        if (this.contains(document.activeElement) || this.contains(ev.relatedTarget)) {
+            // Something else in this chatbox is still focused
+            return;
+        }
+        /**
+         * Triggered when the focus has been removed from a particular chat.
+         * @event _converse#chatBoxBlurred
+         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+         * @example _converse.api.listen.on('chatBoxBlurred', (view, event) => { ... });
+         */
+        api.trigger('chatBoxBlurred', this, ev);
+    }
+
+    emitFocused (ev) {
+        if (this.contains(ev.relatedTarget)) {
+            // Something else in this chatbox was already focused
+            return;
+        }
+        /**
+         * Triggered when the focus has been moved to a particular chat.
+         * @event _converse#chatBoxFocused
+         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+         * @example _converse.api.listen.on('chatBoxFocused', (view, event) => { ... });
+         */
+        api.trigger('chatBoxFocused', this, ev);
     }
 
     /**
@@ -121,16 +132,6 @@ export default class BaseChatView extends ElementView {
             'contact': item.attributes,
             'message': item.get('status')
         });
-    }
-
-
-    async getHeadingDropdownItem (promise_or_data) { // eslint-disable-line class-methods-use-this
-        const data = await promise_or_data;
-        return html`
-            <a href="#" class="dropdown-item ${data.a_class}" @click=${data.handler} title="${data.i18n_title}"
-                ><i class="fa ${data.icon_class}"></i>${data.i18n_text}</a
-            >
-        `;
     }
 
     showNewMessagesIndicator () {

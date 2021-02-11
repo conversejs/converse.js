@@ -1,7 +1,5 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import tpl_chatbox from 'templates/chatbox.js';
-import tpl_chat_head from './templates/chat-head.js';
-import { __ } from 'i18n';
+import tpl_headlines from './templates/headlines.js';
 import { _converse, api } from '@converse/headless/core';
 import { render } from 'lit-html';
 
@@ -47,7 +45,7 @@ class HeadlinesView extends BaseChatView {
 
     render () {
         this.setAttribute('id', this.model.get('box_id'));
-        const result = tpl_chatbox(
+        const result = tpl_headlines(
             Object.assign(this.model.toJSON(), {
                 show_send_button: false,
                 show_toolbar: false,
@@ -55,7 +53,6 @@ class HeadlinesView extends BaseChatView {
         );
         render(result, this);
         this.content = this.querySelector('.chat-content');
-        this.renderHeading();
         return this;
     }
 
@@ -74,47 +71,6 @@ class HeadlinesView extends BaseChatView {
         // Override method in ChatBox. We don't show notifications for
         // headlines boxes.
         return [];
-    }
-
-    async generateHeadingTemplate () {
-        const heading_btns = await this.getHeadingButtons();
-        const standalone_btns = heading_btns.filter(b => b.standalone);
-        const dropdown_btns = heading_btns.filter(b => !b.standalone);
-        return tpl_chat_head(
-            Object.assign(this.model.toJSON(), {
-                'display_name': this.model.getDisplayName(),
-                'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
-                'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b))
-            })
-        );
-    }
-
-    /**
-     * Returns a list of objects which represent buttons for the headlines header.
-     * @async
-     * @emits _converse#getHeadingButtons
-     * @private
-     * @method _converse.HeadlinesBoxView#getHeadingButtons
-     */
-    getHeadingButtons () {
-        const buttons = [];
-        if (!api.settings.get('singleton')) {
-            buttons.push({
-                'a_class': 'close-chatbox-button',
-                'handler': ev => this.close(ev),
-                'i18n_text': __('Close'),
-                'i18n_title': __('Close these announcements'),
-                'icon_class': 'fa-times',
-                'name': 'close',
-                'standalone': api.settings.get('view_mode') === 'overlayed'
-            });
-        }
-        return _converse.api.hook('getHeadingButtons', this, buttons);
-    }
-
-    // Override to avoid the methods in converse-chatview
-    renderMessageForm () { // eslint-disable-line class-methods-use-this
-        return;
     }
 
     afterShown () { // eslint-disable-line class-methods-use-this

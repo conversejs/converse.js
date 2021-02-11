@@ -13,8 +13,7 @@ async function openModtools (_converse, view) {
     const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
     const bottom_panel = view.querySelector('converse-muc-bottom-panel');
     bottom_panel.onKeyDown(enter);
-    await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
-    const modal = _converse.api.modal.get('converse-modtools-modal');
+    const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
     await u.waitUntil(() => u.isVisible(modal.el), 1000);
     return modal;
 }
@@ -24,7 +23,6 @@ describe("The groupchat moderator tool", function () {
     it("allows you to set affiliations and roles",
             mock.initConverse([], {}, async function (done, _converse) {
 
-        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
         const muc_jid = 'lounge@montague.lit';
 
         let members = [
@@ -143,7 +141,6 @@ describe("The groupchat moderator tool", function () {
     it("allows you to filter affiliation search results",
             mock.initConverse([], {}, async function (done, _converse) {
 
-        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
         const muc_jid = 'lounge@montague.lit';
         const members = [
             {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
@@ -197,11 +194,9 @@ describe("The groupchat moderator tool", function () {
     it("allows you to filter role search results",
             mock.initConverse([], {}, async function (done, _converse) {
 
-        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', []);
         const view = _converse.chatboxviews.get(muc_jid);
-
         _converse.connection._dataRecv(mock.createRequest(
             $pres({to: _converse.jid, from: `${muc_jid}/nomorenicks`})
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
@@ -263,9 +258,8 @@ describe("The groupchat moderator tool", function () {
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
         const bottom_panel = view.querySelector('converse-muc-bottom-panel');
         bottom_panel.onKeyDown(enter);
-        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
 
-        const modal = _converse.api.modal.get('converse-modtools-modal');
+        const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
         const tab = modal.el.querySelector('#roles-tab');
@@ -307,7 +301,6 @@ describe("The groupchat moderator tool", function () {
     it("shows an error message if a particular affiliation list may not be retrieved",
             mock.initConverse([], {}, async function (done, _converse) {
 
-        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
         const muc_jid = 'lounge@montague.lit';
         const members = [
             {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
@@ -357,7 +350,6 @@ describe("The groupchat moderator tool", function () {
     it("shows an error message if a particular affiliation may not be set",
             mock.initConverse([], {}, async function (done, _converse) {
 
-        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
         const muc_jid = 'lounge@montague.lit';
         const members = [
             {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
@@ -422,7 +414,6 @@ describe("The groupchat moderator tool", function () {
     it("doesn't allow admins to make more admins",
             mock.initConverse([], {}, async function (done, _converse) {
 
-        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
         const muc_jid = 'lounge@montague.lit';
         const members = [
             {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
@@ -457,7 +448,6 @@ describe("The groupchat moderator tool", function () {
     it("lets the assignable affiliations and roles be configured via modtools_disable_assign",
             mock.initConverse([], {}, async function (done, _converse) {
 
-        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
         const muc_jid = 'lounge@montague.lit';
         const members = [{'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'}];
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
@@ -467,9 +457,8 @@ describe("The groupchat moderator tool", function () {
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
         const bottom_panel = view.querySelector('converse-muc-bottom-panel');
         bottom_panel.onKeyDown(enter);
-        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
 
-        const modal = _converse.api.modal.get('converse-modtools-modal');
+        const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
         const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
 
         expect(modal.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);

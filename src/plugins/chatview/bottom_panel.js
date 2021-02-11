@@ -76,36 +76,11 @@ export default class ChatBottomPanel extends ElementView {
     }
 
     emitFocused (ev) {
-        const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
-        if (chatview.contains(document.activeElement) || chatview.contains(ev.relatedTarget)) {
-            // Something else in this chatbox was already focused
-            return;
-        }
-        /**
-         * Triggered when the focus has been moved to a particular chat.
-         * @event _converse#chatBoxFocused
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-         * @example _converse.api.listen.on('chatBoxFocused', (view, event) => { ... });
-         */
-        api.trigger('chatBoxFocused', this, ev);
+        _converse.chatboxviews.get(this.getAttribute('jid'))?.emitFocused(ev);
     }
 
     emitBlurred (ev) {
-        const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
-        if (!chatview) {
-            return;
-        }
-        if (chatview.contains(document.activeElement) || chatview.contains(ev.relatedTarget)) {
-            // Something else in this chatbox is still focused
-            return;
-        }
-        /**
-         * Triggered when the focus has been removed from a particular chat.
-         * @event _converse#chatBoxBlurred
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-         * @example _converse.api.listen.on('chatBoxBlurred', (view, event) => { ... });
-         */
-        api.trigger('chatBoxBlurred', this, ev);
+        _converse.chatboxviews.get(this.getAttribute('jid'))?.emitBlurred(ev);
     }
 
     getToolbarOptions () { // eslint-disable-line class-methods-use-this

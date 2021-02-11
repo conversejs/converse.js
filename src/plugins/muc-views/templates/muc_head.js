@@ -1,5 +1,5 @@
-import '../components/dropdown.js';
-import { __ } from '../i18n';
+import 'components/dropdown.js';
+import { __ } from 'i18n';
 import { html } from "lit-html";
 import { until } from 'lit-html/directives/until.js';
 import { converse } from "@converse/headless/core";

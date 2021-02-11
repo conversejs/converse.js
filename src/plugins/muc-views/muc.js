@@ -6,12 +6,12 @@ import MUCInviteModal from 'modals/muc-invite.js';
 import ModeratorToolsModal from 'modals/moderator-tools.js';
 import RoomDetailsModal from 'modals/muc-details.js';
 import log from '@converse/headless/log';
-import tpl_chatroom from 'templates/chatroom.js';
-import tpl_chatroom_head from 'templates/chatroom_head.js';
-import tpl_muc_bottom_panel from 'templates/muc_bottom_panel.js';
-import tpl_muc_destroyed from 'templates/muc_destroyed.js';
-import tpl_muc_disconnect from 'templates/muc_disconnect.js';
-import tpl_muc_nickname_form from 'templates/muc_nickname_form.js';
+import tpl_muc from './templates/muc.js';
+import tpl_muc_head from './templates/muc_head.js';
+import tpl_muc_bottom_panel from './templates/muc_bottom_panel.js';
+import tpl_muc_destroyed from './templates/muc_destroyed.js';
+import tpl_muc_disconnect from './templates/muc_disconnect.js';
+import tpl_muc_nickname_form from './templates/muc_nickname_form.js';
 import tpl_spinner from 'templates/spinner.js';
 import { $pres, Strophe } from 'strophe.js/src/strophe';
 import { Model } from '@converse/skeletor/src/model.js';
@@ -129,7 +129,7 @@ export default class MUCView extends BaseChatView {
         const sidebar_hidden = !this.shouldShowSidebar();
         this.setAttribute('id', this.model.get('box_id'));
         render(
-            tpl_chatroom({
+            tpl_muc({
                 sidebar_hidden,
                 'model': this.model,
                 'occupants': this.model.occupants,
@@ -521,7 +521,7 @@ export default class MUCView extends BaseChatView {
         const heading_btns = await this.getHeadingButtons(subject_hidden);
         const standalone_btns = heading_btns.filter(b => b.standalone);
         const dropdown_btns = heading_btns.filter(b => !b.standalone);
-        return tpl_chatroom_head(
+        return tpl_muc_head(
             Object.assign(this.model.toJSON(), {
                 _converse,
                 subject_hidden,

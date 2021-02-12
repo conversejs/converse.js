@@ -1,5 +1,6 @@
-import '../heading.js';
 import '../bottom_panel.js';
+import '../heading.js';
+import '../sidebar.js';
 import { html } from "lit-html";
 
 export default (o) => html`

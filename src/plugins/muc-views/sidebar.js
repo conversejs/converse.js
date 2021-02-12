@@ -1,6 +1,6 @@
 import 'shared/autocomplete/index.js';
 import tpl_muc_sidebar from "templates/muc_sidebar.js";
-import { CustomElement } from './element.js';
+import { CustomElement } from 'components/element.js';
 import { api, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
@@ -20,6 +20,7 @@ export default class MUCSidebar extends CustomElement {
         this.listenTo(this.occupants, 'add', this.requestUpdate);
         this.listenTo(this.occupants, 'remove', this.requestUpdate);
         this.listenTo(this.occupants, 'change', this.requestUpdate);
+        this.chatroom.initialized.then(() => this.requestUpdate());
     }
 
     render () {

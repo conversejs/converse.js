@@ -4,7 +4,6 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import '../../components/muc-sidebar';
 import '../chatview/index.js';
 import '../modal.js';
 import MUCView from './muc.js';

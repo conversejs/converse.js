@@ -1,7 +1,7 @@
 import 'plugins/chatview/heading.js';
 import 'plugins/chatview/bottom_panel.js';
 import BaseChatView from 'shared/chat/baseview.js';
-import tpl_chatbox from 'templates/chatbox.js';
+import tpl_chat from './templates/chat.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import { render } from 'lit-html';
@@ -55,7 +55,7 @@ export default class ChatView extends BaseChatView {
     }
 
     render () {
-        const result = tpl_chatbox(Object.assign(
+        const result = tpl_chat(Object.assign(
             this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) })
         );
         render(result, this);

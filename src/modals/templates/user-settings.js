@@ -1,4 +1,3 @@
-import '../../components/adhoc-commands.js';
 import xss from "xss/dist/xss";
 import { __ } from '../../i18n';
 import { api } from "@converse/headless/core";

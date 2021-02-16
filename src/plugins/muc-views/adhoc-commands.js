@@ -1,7 +1,7 @@
 import 'shared/autocomplete/index.js';
 import log from "@converse/headless/log";
-import { CustomElement } from './element.js';
-import { __ } from '../i18n';
+import { CustomElement } from 'components/element.js';
+import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
 import { html } from "lit-html";
 

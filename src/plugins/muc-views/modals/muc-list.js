@@ -1,7 +1,7 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "modals/base.js";
 import log from "@converse/headless/log";
-import tpl_list_chatrooms_modal from "./templates/muc-list.js";
-import tpl_room_description from "templates/room_description.js";
+import tpl_list_chatrooms_modal from "../templates/muc-list.js";
+import tpl_muc_description from "../templates/muc_description.js";
 import tpl_spinner from "templates/spinner.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -23,7 +23,7 @@ function insertRoomInfo (el, stanza) {
     el.querySelector('a.room-info').classList.add('selected');
     el.insertAdjacentHTML(
         'beforeEnd',
-        u.getElementFromTemplateResult(tpl_room_description({
+        u.getElementFromTemplateResult(tpl_muc_description({
             'jid': stanza.getAttribute('from'),
             'desc': head(sizzle('field[var="muc#roominfo_description"] value', stanza))?.textContent,
             'occ': head(sizzle('field[var="muc#roominfo_occupants"] value', stanza))?.textContent,

@@ -1,8 +1,8 @@
-import { __ } from '../../i18n';
+import { __ } from 'i18n';
 import { html } from "lit-html";
 import { repeat } from 'lit-html/directives/repeat.js';
-import { modal_close_button, modal_header_close_button } from "./buttons.js"
-import spinner from "../../templates/spinner.js";
+import { modal_close_button, modal_header_close_button } from "modals/templates/buttons.js"
+import spinner from "templates/spinner.js";
 
 
 const form = (o) => {

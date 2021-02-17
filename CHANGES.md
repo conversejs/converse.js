@@ -17,6 +17,7 @@
 - New configuration setting: [send_chat_markers](https://conversejs.org/docs/html/configuration.html#send-chat-markers)
 - #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
 - Use the MUC stanza id when sending XEP-0333 markers
+- #2409: Integrate App Badging API for unread messages
 
 ### Breaking Changes
 

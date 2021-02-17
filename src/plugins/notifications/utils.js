@@ -25,6 +25,12 @@ export function areDesktopNotificationsEnabled () {
 
 export function clearFavicon () {
     favicon = null;
+
+    if (navigator.clearAppBadge) {
+      navigator.clearAppBadge().catch((error) => {
+        log.error("Could not clear unread count in app badge " + error);
+      });
+    }
 }
 
 export function updateUnreadFavicon () {
@@ -33,6 +39,12 @@ export function updateUnreadFavicon () {
         const chats = _converse.chatboxes.models;
         const num_unread = chats.reduce((acc, chat) => acc + (chat.get('num_unread') || 0), 0);
         favicon.badge(num_unread);
+
+        if (navigator.setAppBadge) {
+          navigator.setAppBadge(num_unread).catch((error) => {
+            log.error("Could set unread count in app badge - " + error);
+          });
+        }
     }
 }
 

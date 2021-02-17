@@ -5,6 +5,7 @@
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls
+- #2409: Integrate App Badging API for unread messages
 - Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
 - Bugfix: Use real JID in XEP-0372 references only when the MUC is non-anonymous
 - Bugfix: Connection protocol not updated based on XEP-0156 connection methods

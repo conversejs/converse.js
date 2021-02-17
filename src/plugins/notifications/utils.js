@@ -25,6 +25,8 @@ export function areDesktopNotificationsEnabled () {
 
 export function clearFavicon () {
     favicon = null;
+    navigator.clearAppBadge?.()
+        .catch(e => log.error("Could not clear unread count in app badge " + e));
 }
 
 export function updateUnreadFavicon () {
@@ -33,6 +35,8 @@ export function updateUnreadFavicon () {
         const chats = _converse.chatboxes.models;
         const num_unread = chats.reduce((acc, chat) => acc + (chat.get('num_unread') || 0), 0);
         favicon.badge(num_unread);
+        navigator.setAppBadge?.(num_unread)
+            .catch(e => log.error("Could set unread count in app badge - " + e));
     }
 }
 

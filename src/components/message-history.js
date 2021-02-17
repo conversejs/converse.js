@@ -47,6 +47,7 @@ const tpl_message = (o) => html`
         spoiler_hint=${o.spoiler_hint || ''}
         subject=${o.subject || ''}
         time=${o.time}
+        unfurl_metadata=${o.unfurl_metadata}
         username=${o.username}></converse-chat-message>
 `;
 

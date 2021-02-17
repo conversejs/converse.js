@@ -9,6 +9,12 @@
         }
     }
     .message {
+
+        .card--unfurl {
+            margin: 1em 0;
+            max-width: 18rem;
+        }
+
         .show-msg-author-modal {
             color: var(--text-color) !important;
         }

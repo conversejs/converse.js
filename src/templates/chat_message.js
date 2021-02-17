@@ -1,5 +1,6 @@
-import { html } from "lit-html";
+import 'shared/chat/unfurl';
 import { __ } from '../i18n';
+import { html } from "lit-html";
 import { renderAvatar } from './../templates/directives/avatar';
 
 
@@ -39,6 +40,14 @@ export default (o) => {
                         ?is_retracted="${o.is_retracted}"
                         message_type="${o.message_type}"></converse-message-actions>
                 </div>
+
+                ${ o.model.get('ogp_metadata')?.map(m =>
+                    html`<converse-message-unfurl
+                        jid="${o.jid}"
+                        description="${m['og:description']}"
+                        title="${m['og:title']}"
+                        image="${m['og:image']}"
+                        url="${m['og:url']}"></converse-message-unfurl>`) }
             </div>
         </div>`;
 }

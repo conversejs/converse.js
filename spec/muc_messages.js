@@ -59,7 +59,8 @@ describe("A Groupchat Message", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const nick = 'romeo';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
             const view = _converse.api.chatviews.get(muc_jid);
             let presence = u.toStanza(`
                 <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">

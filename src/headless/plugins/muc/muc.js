@@ -495,6 +495,7 @@ const ChatRoomMixin = {
      */
     async handleMessageStanza (stanza) {
         if (stanza.getAttribute('type') !== 'groupchat') {
+            this.handleMetadataFastening(stanza);
             this.handleForwardedMentions(stanza);
             return;
         }

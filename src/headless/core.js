@@ -56,6 +56,7 @@ Strophe.addNamespace('STYLING', 'urn:xmpp:styling:0');
 Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
+Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
 /**
  * Custom error for indicating timeouts

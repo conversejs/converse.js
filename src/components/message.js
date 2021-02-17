@@ -58,6 +58,7 @@ export default class Message extends CustomElement {
             spoiler_hint: { type: String },
             subject: { type: String },
             time: { type: String },
+            unfurl_metadata: { type: String },
             username: { type: String }
         }
     }

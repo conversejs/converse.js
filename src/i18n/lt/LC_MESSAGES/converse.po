@@ -8,18 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-30 14:49+0100\n"
-"Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
+"PO-Revision-Date: 2021-02-20 01:50+0000\n"
+"Last-Translator: Kornelijus Tvarijanavičius <kornelitvari@protonmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/lt/>\n"
 "Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
-"19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
-"1 : 2);\n"
-"X-Generator: Weblate 4.0-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
+"%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 4.5\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -53,7 +52,7 @@ msgstr "Pasirinkite kitą teikėją"
 
 #: dist/converse-no-dependencies.js:21844
 msgid "Hold tight, we're fetching the registration form…"
-msgstr "Palaukite, parsiunčiame registracijos formą..."
+msgstr "Palaukite, parsiunčiame registracijos formą…"
 
 #: dist/converse-no-dependencies.js:21848
 #: dist/converse-no-dependencies.js:70326
@@ -314,9 +313,8 @@ msgid ""
 msgstr "Jūsų žinutė nepristatyta kadangi nesate šiame grupiniame pokalbyje."
 
 #: dist/converse-no-dependencies.js:59721
-#, fuzzy
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Įvyko pasibaigusio laiko klaida bandant atšaukti žinutę"
+msgstr "Įvyko pasibaigusio laiko klaida bandant atšaukti žinutę."
 
 #: dist/converse-no-dependencies.js:60892
 #, fuzzy
@@ -355,9 +353,9 @@ msgid "Topic cleared by %1$s"
 msgstr "Temą ištrynė %1$s"
 
 #: dist/converse-no-dependencies.js:61743
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s buvo užblokuotas"
+msgstr "%1$s buvo užblokuotas %2$s"
 
 #: dist/converse-no-dependencies.js:61743
 #, javascript-format
@@ -370,9 +368,9 @@ msgid "%1$s's nickname has changed"
 msgstr "%1$s slapyvardis buvo pakeistas"
 
 #: dist/converse-no-dependencies.js:61747
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s buvo pašalintas"
+msgstr "%1$s buvo pašalintas %2$s"
 
 #: dist/converse-no-dependencies.js:61747
 #, javascript-format
@@ -400,9 +398,9 @@ msgid "%1$s is no longer an owner of this groupchat"
 msgstr "%1$s daugiau nėra šio kambario savininkas"
 
 #: dist/converse-no-dependencies.js:61781
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "1$s daugiau nėra uždrausta prieiga prie šio kambario"
+msgstr "%1$s daugiau nėra uždrausta prieiga prie šio kambario"
 
 #: dist/converse-no-dependencies.js:61788
 #, fuzzy, javascript-format
@@ -425,7 +423,7 @@ msgid ""
 "different one."
 msgstr ""
 "Jūsų pasirinktas slapyvardis rezervuotas arba jau naudojamas, prašome "
-"pasirinkti kitą"
+"pasirinkti kitą."
 
 #: dist/converse-no-dependencies.js:61954
 #, fuzzy
@@ -513,9 +511,8 @@ msgstr ""
 "norint užklausti vėl."
 
 #: dist/converse-no-dependencies.js:65374
-#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr "Įvyko pasibaigusio laiko klaida bandant atšaukti žinutę"
+msgstr "Įvyko pasibaigusio laiko klaida bandant atšaukti žinutę."
 
 #: dist/converse-no-dependencies.js:65389
 #, fuzzy
@@ -980,9 +977,8 @@ msgid "This is a trusted device"
 msgstr "Tai yra patikimas įrenginys"
 
 #: dist/converse-no-dependencies.js:86122
-#, fuzzy
 msgid "Password"
-msgstr "Slaptažodis:"
+msgstr "Slaptažodis"
 
 #: dist/converse-no-dependencies.js:86128
 msgid "Create an account"
@@ -1055,7 +1051,7 @@ msgstr "Minimizuoti šį pokalbio laukelį"
 
 #: dist/converse-no-dependencies.js:88780
 msgid "This user is a moderator."
-msgstr "Šis vartotojas yra moderatorius"
+msgstr "Šis vartotojas yra moderatorius."
 
 #: dist/converse-no-dependencies.js:88782
 msgid "This user can send messages in this groupchat."
@@ -1238,9 +1234,8 @@ msgid "conference.example.org"
 msgstr "conference.pavyzdys.lt"
 
 #: dist/converse-no-dependencies.js:89658
-#, fuzzy
 msgid "Groupchats found"
-msgstr "Rasti kambariai:"
+msgstr "Rasti kambariai"
 
 #: dist/converse-no-dependencies.js:89666
 #, fuzzy

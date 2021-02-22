@@ -12,10 +12,7 @@ const u = converse.env.utils;
  * In `overlayed` `view_mode` it's a box like the chat boxes, in `fullscreen`
  * `view_mode` it's a left-aligned sidebar.
  */
-class ControlBoxView extends ElementView {
-    events = {
-        'click a.close-chatbox-button': 'close'
-    }
+class ControlBox extends ElementView {
 
     initialize () {
         this.setModel();
@@ -49,7 +46,8 @@ class ControlBoxView extends ElementView {
     render () {
         render(tpl_controlbox({
             'sticky_controlbox': api.settings.get('sticky_controlbox'),
-            ...this.model.toJSON()
+            ...this.model.toJSON(),
+            'close': ev => this.close(ev)
         }), this);
 
     }
@@ -92,6 +90,6 @@ class ControlBoxView extends ElementView {
     }
 }
 
-api.elements.define('converse-controlbox', ControlBoxView);
+api.elements.define('converse-controlbox', ControlBox);
 
-export default ControlBoxView;
+export default ControlBox;

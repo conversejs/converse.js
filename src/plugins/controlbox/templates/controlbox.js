@@ -8,7 +8,7 @@ export default o => html`
             ${o.sticky_controlbox
                 ? ''
                 : html`
-                      <a class="chatbox-btn close-chatbox-button fa fa-times"></a>
+                      <a class="chatbox-btn close-chatbox-button fa fa-times" @click=${o.close}></a>
                   `}
         </div>
         <div class="controlbox-panes">

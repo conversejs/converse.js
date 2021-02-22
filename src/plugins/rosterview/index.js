@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "../modal";
-import "@converse/headless/plugins/chatboxes";
+import "@converse/headless/plugins/chatboxes/index.js";
 import "@converse/headless/plugins/roster/index.js";
 import "modals/add-contact.js";
 import './rosterview.js';

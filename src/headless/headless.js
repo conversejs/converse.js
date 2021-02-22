@@ -8,7 +8,7 @@ import "./plugins/bosh.js";         // XEP-0206 BOSH
 import "./plugins/caps.js";         // XEP-0115 Entity Capabilities
 import "./plugins/carbons.js";      // XEP-0280 Message Carbons
 import "./plugins/chat/index.js";   // RFC-6121 Instant messaging
-import "./plugins/chatboxes.js";
+import "./plugins/chatboxes/index.js";
 import "./plugins/disco.js";        // XEP-0030 Service discovery
 import "./plugins/headlines.js";    // Support for headline messages
 import "./plugins/mam/index.js";    // XEP-0313 Message Archive Management

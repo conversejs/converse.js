@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import './view.js';
-import '@converse/headless/plugins/chatboxes';
+import '@converse/headless/plugins/chatboxes/index.js';
 import 'components/converse.js';
 import ChatBoxViews from './container.js';
 import { ViewWithAvatar } from 'shared/avatar.js';

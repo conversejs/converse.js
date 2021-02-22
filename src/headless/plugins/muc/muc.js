@@ -495,17 +495,15 @@ const ChatRoomMixin = {
      */
     async handleMessageStanza (stanza) {
         if (stanza.getAttribute('type') !== 'groupchat') {
-            this.handleMetadataFastening(stanza);
             this.handleForwardedMentions(stanza);
             return;
-        }
-
-        if (isArchived(stanza)) {
+        } else if (isArchived(stanza)) {
             // MAM messages are handled in converse-mam.
             // We shouldn't get MAM messages here because
             // they shouldn't have a `type` attribute.
             return log.warn(`Received a MAM message with type "groupchat"`);
         }
+
         this.createInfoMessages(stanza);
         this.fetchFeaturesIfConfigurationChanged(stanza);
 
@@ -2128,11 +2126,13 @@ const ChatRoomMixin = {
         }
 
         if (
+            this.handleMetadataFastening(attrs) ||
             (await this.handleRetraction(attrs)) ||
             (await this.handleModeration(attrs)) ||
             (await this.handleSubjectChange(attrs))
         ) {
-            return this.removeNotification(attrs.nick, ['composing', 'paused']);
+            attrs.nick && this.removeNotification(attrs.nick, ['composing', 'paused']);
+            return;
         }
         this.setEditable(attrs, attrs.time);
 

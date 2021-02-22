@@ -23,7 +23,7 @@ describe("A Groupchat Message", function () {
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
         const metadata_stanza = u.toStanza(`
-            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}">
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
@@ -66,7 +66,7 @@ describe("A Groupchat Message", function () {
         expect(el.textContent).toBe('Check out https://www.youtube.com/watch?v=dQw4w9WgXcQ and https://duckduckgo.com');
 
         let metadata_stanza = u.toStanza(`
-            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}">
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
@@ -84,9 +84,10 @@ describe("A Groupchat Message", function () {
                 </apply-to>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 1);
 
         metadata_stanza = u.toStanza(`
-            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}">
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="https://duckduckgo.com/" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="DuckDuckGo" />

@@ -6,7 +6,6 @@ import log from '@converse/headless/log';
 import pick from "lodash/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
-import { getOpenGraphMetadata } from '@converse/headless/shared/parsers';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -489,19 +488,15 @@ const ChatBox = ModelWithContact.extend({
         return false;
     },
 
-    handleMetadataFastening (stanza) {
-        const attrs = getOpenGraphMetadata(stanza);
+    handleMetadataFastening (attrs) {
         if (attrs.ogp_for_id) {
-            if (attrs.ogp_for_id) {
-                const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
-                if (message) {
-                    const list = message.get('ogp_metadata') || [];
-                    list.push(pick(attrs, METADATA_ATTRIBUTES));
-                    message.save('ogp_metadata', list);
-                    return true;
-                } else {
-                    return false;
-                }
+            const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
+            if (message) {
+                const list = [...(message.get('ogp_metadata') || []), pick(attrs, METADATA_ATTRIBUTES)];
+                message.save('ogp_metadata', list);
+                return true;
+            } else {
+                return false;
             }
         }
         return false;

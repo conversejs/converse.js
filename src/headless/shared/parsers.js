@@ -126,15 +126,17 @@ export function getOpenGraphMetadata (stanza) {
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
         const meta = sizzle(`> meta[xmlns="${Strophe.NS.XHTML}"]`, fastening);
-        return meta.reduce((acc, el) => {
-            const property = el.getAttribute('property');
-            if (property) {
-                acc[property] = decodeHTMLEntities(el.getAttribute('content') || '');
-            }
-            return acc;
-        }, {
-            'ogp_for_id': applies_to_id,
-        });
+        if (meta.length) {
+            return meta.reduce((acc, el) => {
+                const property = el.getAttribute('property');
+                if (property) {
+                    acc[property] = decodeHTMLEntities(el.getAttribute('content') || '');
+                }
+                return acc;
+            }, {
+                'ogp_for_id': applies_to_id,
+            });
+        }
     }
     return {};
 }

@@ -1,12 +1,12 @@
 import "./emoji-picker-content.js";
-import DOMNavigator from "../shared/dom-navigator";
+import DOMNavigator from "shared/dom-navigator";
 import debounce from 'lodash/debounce';
-import { BaseDropdown } from "./dropdown.js";
-import { CustomElement } from './element.js';
-import { __ } from '../i18n';
+import { BaseDropdown } from "components/dropdown.js";
+import { CustomElement } from 'components/element.js';
+import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit-element";
-import { tpl_emoji_picker } from "../templates/emoji_picker.js";
+import { tpl_emoji_picker } from "./templates/emoji-picker.js";
 import { until } from 'lit-html/directives/until.js';
 
 const u = converse.env.utils;

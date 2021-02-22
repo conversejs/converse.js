@@ -1,6 +1,6 @@
 import { _converse } from '@converse/headless/core';
 import { html } from "lit-html";
-import { renderAvatar } from './directives/avatar.js';
+import { renderAvatar } from 'templates/directives/avatar.js';
 import { until } from 'lit-html/directives/until.js';
 
 

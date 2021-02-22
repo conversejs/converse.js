@@ -1,6 +1,6 @@
 import UserDetailsModal from 'modals/user-details.js';
 import debounce from 'lodash/debounce';
-import tpl_chatbox_head from 'templates/chatbox_head.js';
+import tpl_chatbox_head from './templates/chatbox_head.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";

@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 
 
 const occupant_title = (o) => {

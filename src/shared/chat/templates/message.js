@@ -1,7 +1,7 @@
 import 'shared/chat/unfurl';
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { html } from "lit-html";
-import { renderAvatar } from './../templates/directives/avatar';
+import { renderAvatar } from 'templates/directives/avatar';
 
 
 export default (o) => {

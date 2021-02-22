@@ -1,5 +1,5 @@
-import tpl_chatbox_message_form from 'templates/chatbox_message_form.js';
-import tpl_toolbar from 'templates/toolbar.js';
+import tpl_chatbox_message_form from './templates/chatbox_message_form.js';
+import tpl_toolbar from './templates/toolbar.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";

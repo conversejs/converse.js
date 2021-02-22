@@ -1,5 +1,5 @@
 import 'shared/autocomplete/index.js';
-import tpl_muc_sidebar from "templates/muc_sidebar.js";
+import tpl_muc_sidebar from "./templates/muc_sidebar.js";
 import { CustomElement } from 'components/element.js';
 import { api, converse } from "@converse/headless/core";
 

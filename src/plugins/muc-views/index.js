@@ -7,6 +7,8 @@
 import '../chatview/index.js';
 import '../modal.js';
 import './adhoc-commands.js';
+import 'shared/chat/chat-content.js';
+import 'shared/chat/toolbar.js';
 import MUCView from './muc.js';
 import MUCConfigForm from './config-form.js';
 import MUCPasswordForm from './password-form.js';

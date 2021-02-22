@@ -3,14 +3,14 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import '../../components/chat_content.js';
 import '../../components/help_messages.js';
-import '../../components/toolbar.js';
 import '../chatboxviews/index.js';
 import '../modal.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import 'shared/chat/chat-content.js';
+import 'shared/chat/toolbar.js';
 import ChatBoxView from './view.js';
 import chatview_api from './api.js';
+import { _converse, api, converse } from '@converse/headless/core';
 
 const { Strophe } = converse.env;
 

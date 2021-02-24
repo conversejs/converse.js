@@ -210,6 +210,7 @@ export function parseMessageForMUCCommands (muc, text) {
             break;
         }
         case 'help': {
+            muc.set({ 'show_help_messages': false }, { 'silent': true });
             muc.set({ 'show_help_messages': true });
             break;
         }

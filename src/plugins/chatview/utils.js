@@ -42,6 +42,7 @@ export function parseMessageForCommands (chat, text) {
             _converse.chatboxviews.get(chat.get('jid'))?.close();
             return true;
         } else if (match[1] === 'help') {
+            chat.set({ 'show_help_messages': false }, { 'silent': true });
             chat.set({ 'show_help_messages': true });
             return true;
         }

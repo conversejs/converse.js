@@ -9,7 +9,6 @@ import "converse-modal";
 import UserSettingsModal from "modals/user-settings";
 import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
-import sizzle from 'sizzle';
 import tpl_chat_status_modal from "templates/chat_status_modal";
 import tpl_profile from "templates/profile.js";
 import tpl_profile_modal from "templates/profile_modal";
@@ -17,7 +16,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
-const u = converse.env.utils;
+const { sizzle, u } = converse.env;
 
 
 converse.plugins.add('converse-profile', {

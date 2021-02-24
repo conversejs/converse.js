@@ -1,13 +1,12 @@
 import "./autocomplete.js"
 import log from "@converse/headless/log";
-import sizzle from "sizzle";
 import { CustomElement } from './element.js';
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/converse-core";
 import { html } from "lit-html";
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
-const { Strophe, $iq } = converse.env;
+const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
 
 

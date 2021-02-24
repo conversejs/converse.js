@@ -283,19 +283,20 @@ describe("The 'Add Contact' widget", function () {
 
         await mock.waitForRoster(_converse, 'all', 0);
 
-        const xhr = {
-            'open': function open () {},
-            'send': function () {
-                xhr.responseText = JSON.stringify([
+
+        class MockXHR extends XMLHttpRequest {
+            open () {} // eslint-disable-line
+            responseText  = ''
+            send () {
+                this.responseText = JSON.stringify([
                     {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
                     {"jid": "doc@brown.com", "fullname": "Doc Brown"}
                 ]);
-                xhr.onload();
+                this.onload();
             }
-        };
+        }
         const XMLHttpRequestBackup = window.XMLHttpRequest;
-        window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
-        XMLHttpRequest.and.callFake(() => xhr);
+        window.XMLHttpRequest = MockXHR;
 
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.el.querySelector('.add-contact').click()
@@ -340,36 +341,37 @@ describe("The 'Add Contact' widget", function () {
 
         await mock.waitForRoster(_converse, 'all');
         await mock.openControlBox(_converse);
-        var modal;
-        const xhr = {
-            'open': function open () {},
-            'send': function () {
+
+        class MockXHR extends XMLHttpRequest {
+            open () {} // eslint-disable-line
+            responseText  = ''
+            send () {
                 const value = modal.el.querySelector('input[name="name"]').value;
                 if (value === 'existing') {
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    xhr.responseText = JSON.stringify([{"jid": contact_jid, "fullname": mock.cur_names[0]}]);
+                    this.responseText = JSON.stringify([{"jid": contact_jid, "fullname": mock.cur_names[0]}]);
                 } else if (value === 'romeo') {
-                    xhr.responseText = JSON.stringify([{"jid": "romeo@montague.lit", "fullname": "Romeo Montague"}]);
+                    this.responseText = JSON.stringify([{"jid": "romeo@montague.lit", "fullname": "Romeo Montague"}]);
                 } else if (value === 'ambiguous') {
-                    xhr.responseText = JSON.stringify([
+                    this.responseText = JSON.stringify([
                         {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
                         {"jid": "doc@brown.com", "fullname": "Doc Brown"}
                     ]);
                 } else if (value === 'insufficient') {
-                    xhr.responseText = JSON.stringify([]);
+                    this.responseText = JSON.stringify([]);
                 } else {
-                    xhr.responseText = JSON.stringify([{"jid": "marty@mcfly.net", "fullname": "Marty McFly"}]);
+                    this.responseText = JSON.stringify([{"jid": "marty@mcfly.net", "fullname": "Marty McFly"}]);
                 }
-                xhr.onload();
+                this.onload();
             }
-        };
+        }
+
         const XMLHttpRequestBackup = window.XMLHttpRequest;
-        window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
-        XMLHttpRequest.and.callFake(() => xhr);
+        window.XMLHttpRequest = MockXHR;
 
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.el.querySelector('.add-contact').click()
-        modal = _converse.rosterview.add_contact_modal;
+        const modal = _converse.rosterview.add_contact_modal;
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
         expect(modal.jid_auto_complete).toBe(undefined);

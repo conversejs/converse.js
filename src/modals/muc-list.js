@@ -1,16 +1,14 @@
 import log from "@converse/headless/log";
-import sizzle from 'sizzle';
 import st from "@converse/headless/utils/stanza";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_room_description from "templates/room_description.html";
 import tpl_spinner from "templates/spinner.js";
 import { BootstrapModal } from "../converse-modal.js";
-import { Strophe, $iq } from 'strophe.js/src/strophe';
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { head } from "lodash-es";
 
-const u = converse.env.utils;
+const { u, Strophe, $iq, sizzle } = converse.env;
 
 
 /* Insert groupchat info (based on returned #disco IQ stanza)

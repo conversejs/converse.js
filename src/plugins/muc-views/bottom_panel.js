@@ -1,11 +1,12 @@
 import BottomPanel from 'plugins/chatview/bottom_panel.js';
 import debounce from 'lodash/debounce';
 import tpl_muc_bottom_panel from './templates/muc_bottom_panel.js';
-import { $pres, Strophe } from 'strophe.js/src/strophe';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getAutoCompleteListItem } from './utils.js';
 import { render } from 'lit-html';
+
+const { Strophe, $pres } = converse.env;
 
 
 const COMMAND_TO_AFFILIATION = {

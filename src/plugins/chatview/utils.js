@@ -24,7 +24,7 @@ export async function getHeadingStandaloneButton (promise_or_data) {
     `;
 }
 
-async function clearMessages (chat) {
+export async function clearMessages (chat) {
     const result = confirm(__('Are you sure you want to clear the messages from this conversation?'));
     if (result === true) {
         await chat.clearMessages();

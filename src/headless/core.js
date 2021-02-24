@@ -1563,7 +1563,11 @@ Object.assign(converse, {
         initPlugins();
         registerGlobalEventHandlers();
 
-        !History.started && _converse.router.history.start();
+        try {
+            !History.started && _converse.router.history.start();
+        } catch (e) {
+            log.error(e);
+        }
 
         if (api.settings.get("idle_presence_timeout") > 0) {
             api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.IDLE));

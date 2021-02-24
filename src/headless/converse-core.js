@@ -17,7 +17,6 @@ import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/connection.js';
-import { CustomElement } from '../components/element';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Router } from '@converse/skeletor/src/router.js';
@@ -1644,7 +1643,6 @@ Object.assign(converse, {
         $pres,
         'utils': u,
         Collection,
-        CustomElement,
         Model,
         Promise,
         Strophe,

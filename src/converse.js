@@ -36,7 +36,10 @@ import "./components/converse.js";
 
 import "../sass/converse.scss";
 
-import { converse } from "@converse/headless/converse-core";
+import { _converse, converse } from "@converse/headless/converse-core";
+import { CustomElement } from 'components/element';
+
+_converse.CustomElement = CustomElement;
 
 const WHITELISTED_PLUGINS = [
     'converse-autocomplete',

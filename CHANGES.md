@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.5 (Unreleased)
+
+- #2396: @converse/headless wrongly depends on `CustomElement` from the view layer
+
 ## 7.0.4 (2020-12-09)
 
 Bugfix: Set protocol after discovering connection methods

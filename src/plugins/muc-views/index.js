@@ -4,14 +4,15 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import '../chatview/index.js';
+import '../../components/help_messages.js';
+import '../chatboxviews/index.js';
 import '../modal.js';
 import './adhoc-commands.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/toolbar.js';
-import MUCView from './muc.js';
 import MUCConfigForm from './config-form.js';
 import MUCPasswordForm from './password-form.js';
+import MUCView from './muc.js';
 import log from '@converse/headless/log';
 import muc_api from './api.js';
 import { api, converse, _converse } from '@converse/headless/core';

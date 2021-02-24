@@ -179,6 +179,7 @@ src/headless/dist/converse-headless.min.js: src webpack.common.js node_modules @
 
 dist:: node_modules src/* | dist/converse.js dist/converse.css dist/website.css dist/website.min.css
 	npm run prod
+	npm run headless
 
 .PHONY: install
 install:: dist

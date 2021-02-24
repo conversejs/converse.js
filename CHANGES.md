@@ -4,7 +4,6 @@
 
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
-- #2396: @converse/headless wrongly depends on `CustomElement` from the view layer
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls
 - #2409: Integrate App Badging API for unread messages
 - Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
@@ -31,6 +30,23 @@ Removed events:
 * `chatBoxInsertedIntoDOM`
 * `bookmarkViewsInitialized`
 * `rosterGroupsFetched`
+
+## 7.0.5 (Unreleased)
+
+- #2377: The @converse/headless NPM package is missing the dist directory, causing import errors
+- #2396: @converse/headless wrongly depends on `CustomElement` from the view layer
+
+## 7.0.4 (2020-12-09)
+
+Bugfix: Set protocol after discovering connection methods
+
+Otherwise if an endpoint was passed in with `converse.initialize`, then
+that endpoint's protocol is (potentially wrongly) used.
+
+## 7.0.3 (2020-12-02)
+
+- Bugfix: `null` inserted by emoji picker and can't switch between skintones
+
 
 ## 7.0.2 (2020-11-23)
 

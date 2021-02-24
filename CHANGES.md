@@ -4,6 +4,7 @@
 
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
+- #2396: @converse/headless wrongly depends on `CustomElement` from the view layer
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls
 - #2409: Integrate App Badging API for unread messages
 - Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)

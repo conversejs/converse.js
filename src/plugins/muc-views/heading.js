@@ -2,7 +2,7 @@ import ChatHeading from 'plugins/chatview/heading.js';
 import MUCInviteModal from 'modals/muc-invite.js';
 import RoomDetailsModal from 'modals/muc-details.js';
 import debounce from 'lodash/debounce';
-import tpl_muc_head from './templates/muc_head.js';
+import tpl_muc_head from './templates/muc-head.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";

@@ -1,5 +1,5 @@
 import log from "@converse/headless/log";
-import tpl_muc_config_form from "templates/muc_config_form.js";
+import tpl_muc_config_form from "./templates/muc-config-form.js";
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";

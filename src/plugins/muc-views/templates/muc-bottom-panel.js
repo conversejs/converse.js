@@ -1,4 +1,4 @@
-import tpl_muc_nickname_form from './muc_nickname_form.js';
+import tpl_muc_nickname_form from './muc-nickname-form.js';
 import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
 import { html } from "lit-html";

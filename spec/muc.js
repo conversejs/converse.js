@@ -3294,13 +3294,13 @@ describe("Groupchats", function () {
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/clear';
             const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            spyOn(bottom_panel, 'clearMessages');
+            spyOn(window, 'confirm').and.callFake(() => false);
             bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(bottom_panel.clearMessages).toHaveBeenCalled();
+            expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
             done();
         }));
 

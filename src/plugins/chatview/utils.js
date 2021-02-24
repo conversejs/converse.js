@@ -1,3 +1,5 @@
+import { __ } from 'i18n';
+import { _converse } from "@converse/headless/core";
 import { html } from 'lit-html';
 
 
@@ -20,4 +22,28 @@ export async function getHeadingStandaloneButton (promise_or_data) {
             title="${data.i18n_title}"
         ></a>
     `;
+}
+
+async function clearMessages (chat) {
+    const result = confirm(__('Are you sure you want to clear the messages from this conversation?'));
+    if (result === true) {
+        await chat.clearMessages();
+    }
+}
+
+
+export function parseMessageForCommands (chat, text) {
+    const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
+    if (match) {
+        if (match[1] === 'clear') {
+            clearMessages(chat);
+            return true;
+        } else if (match[1] === 'close') {
+            _converse.chatboxviews.get(chat.get('jid'))?.close();
+            return true;
+        } else if (match[1] === 'help') {
+            chat.set({ 'show_help_messages': true });
+            return true;
+        }
+    }
 }

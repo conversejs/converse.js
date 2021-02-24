@@ -911,7 +911,7 @@ describe("Chatboxes", function () {
 
     describe("Special Messages", function () {
 
-        it("'/clear' can be used to clear messages in a conversation",
+        fit("'/clear' can be used to clear messages in a conversation",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
@@ -925,28 +925,21 @@ describe("Chatboxes", function () {
             await mock.sendMessage(view, message);
 
             expect(view.model.messages.length === 1).toBeTruthy();
-            let stored_messages = await view.model.messages.browserStorage.findAll();
+            const stored_messages = await view.model.messages.browserStorage.findAll();
             expect(stored_messages.length).toBe(1);
             await u.waitUntil(() => view.querySelector('.chat-msg'));
 
             message = '/clear';
             const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-            spyOn(bottom_panel, 'clearMessages').and.callThrough();
-            spyOn(window, 'confirm').and.callFake(function () {
-                return true;
-            });
+            spyOn(window, 'confirm').and.callFake(() => true);
             view.querySelector('.chat-textarea').value = message;
             bottom_panel.onKeyDown({
                 target: view.querySelector('textarea.chat-textarea'),
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(bottom_panel.clearMessages.calls.all().length).toBe(1);
-            await bottom_panel.clearMessages.calls.all()[0].returnValue;
-            expect(window.confirm).toHaveBeenCalled();
-            expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
-            stored_messages = await view.model.messages.browserStorage.findAll();
-            expect(stored_messages.length).toBe(0);
+            expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
+            await u.waitUntil(() => view.model.messages.length === 0);
             expect(_converse.api.trigger.calls.count(), 1);
             expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
             done();

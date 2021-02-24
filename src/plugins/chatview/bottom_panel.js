@@ -4,6 +4,7 @@ import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html, render } from 'lit-html';
+import { clearMessages, parseMessageForCommands } from './utils.js';
 
 const { u } = converse.env;
 
@@ -109,29 +110,13 @@ export default class ChatBottomPanel extends ElementView {
         ev.preventDefault();
     }
 
-    async clearMessages (ev) {
+    clearMessages (ev) {
         ev?.preventDefault?.();
-        const result = confirm(__('Are you sure you want to clear the messages from this conversation?'));
-        if (result === true) {
-            await this.model.clearMessages();
-        }
-        return this;
+        clearMessages(this.model);
     }
 
     parseMessageForCommands (text) {
-        const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
-        if (match) {
-            if (match[1] === 'clear') {
-                this.clearMessages();
-                return true;
-            } else if (match[1] === 'close') {
-                _converse.chatboxviews.get(this.getAttribute('jid'))?.close();
-                return true;
-            } else if (match[1] === 'help') {
-                this.model.set({ 'show_help_messages': true });
-                return true;
-            }
-        }
+        return parseMessageForCommands(this.model, text);
     }
 
     async onFormSubmitted () {

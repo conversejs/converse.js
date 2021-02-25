@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-09-24 09:01+0200\n"
+"PO-Revision-Date: 2021-02-26 18:50+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.5\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -67,7 +67,7 @@ msgstr "Kanseleer"
 #. Strophe
 #: dist/converse-no-dependencies.js:44600
 msgid "The connection has dropped, attempting to reconnect."
-msgstr "Die konneksie is onderbreek, probeer tans tans om te herkonnekteer."
+msgstr "Die konneksie is onderbreek, probeer tans om te herkonnekteer."
 
 #. Strophe
 #: dist/converse-no-dependencies.js:44850
@@ -493,14 +493,12 @@ msgstr ""
 "U kan hierdie webbladd herlaai om opnuut te probeer."
 
 #: dist/converse-no-dependencies.js:65374
-#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr "Die tyd is verstreke tydens die herroeping van die boodskap"
+msgstr "Die tyd het verstryk vir die navraag van die boodskap-argief."
 
 #: dist/converse-no-dependencies.js:65389
-#, fuzzy
 msgid "An error occurred while querying for archived messages."
-msgstr "Jammer, 'n fout het voorgekom tydens die aanstuur van u boodskap."
+msgstr "'n Fout het voorgekom tydens die opsoek van geargiveerde boodskappe."
 
 #: dist/converse-no-dependencies.js:66535
 msgid "My contacts"
@@ -569,7 +567,7 @@ msgstr "Boekmerk hierdie groepgesprek"
 
 #: dist/converse-no-dependencies.js:70324
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr "Betree outomaties hierdie groepgesprek sodra aangemeld"
+msgstr "Wil u outomaties na aanmelding aan hierdie groepsgesprek deelneem?"
 
 #: dist/converse-no-dependencies.js:70328
 msgid "The name for this bookmark:"
@@ -622,7 +620,7 @@ msgid "Download audio file \"%1$s\""
 msgstr "Laai oudio lêer af: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:73054
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download image file \"%1$s\""
 msgstr "Laai beeld af: \"%1$s\""
 
@@ -650,7 +648,7 @@ msgstr "Boodskap weergawes"
 
 #: dist/converse-no-dependencies.js:75512
 msgid "Retry"
-msgstr ""
+msgstr "Probeer weer"
 
 #: dist/converse-no-dependencies.js:75519
 msgid "Uploading file:"
@@ -1572,7 +1570,7 @@ msgid "%1$s are now moderators"
 msgstr "%1$s is nou moderators"
 
 #: dist/converse-no-dependencies.js:91523
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are no longer moderators"
 msgstr "%1$s is nie meer moderators nie"
 
@@ -1888,7 +1886,6 @@ msgid "%1$s says"
 msgstr "%1$s sê"
 
 #: dist/converse-no-dependencies.js:94083
-#, fuzzy
 msgid "Encrypted message received"
 msgstr "OMEMO Boodskap ontvang"
 
@@ -2145,11 +2142,12 @@ msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "Jammer, kon nie 'n ontvangde OMEMO-boodskap ontsleutel nie."
 
 #: dist/converse-no-dependencies.js:96601
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO because we don't have the JID for "
 "that user."
-msgstr "Jammer, kon nie 'n ontvangde OMEMO-boodskap ontsleutel nie."
+msgstr ""
+"Jammer, kon nie 'n ontvangde OMEMO-boodskap ontsleutel nie omdat ons nie die "
+"gebruiker XMPP adres het nie."
 
 #: dist/converse-no-dependencies.js:97147
 #, javascript-format

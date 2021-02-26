@@ -6,28 +6,24 @@ const u = converse.env.utils;
 
 function getChatBoxWidth (view) {
     if (view.model.get('id') === 'controlbox') {
-        const controlbox = view.model;
         // We return the width of the controlbox or its toggle,
         // depending on which is visible.
-        if (u.isVisible(controlbox.el)) {
-            return u.getOuterWidth(controlbox.el, true);
+        if (u.isVisible(view)) {
+            return u.getOuterWidth(view, true);
         } else {
             return u.getOuterWidth(_converse.controlboxtoggle.el, true);
         }
-    } else if (!view.model.get('minimized') && u.isVisible(view.el)) {
-        return u.getOuterWidth(view.el, true);
+    } else if (!view.model.get('minimized') && u.isVisible(view)) {
+        return u.getOuterWidth(view, true);
     }
     return 0;
 }
 
 function getShownChats () {
-    return _converse.chatboxviews.filter((view) =>
+    return _converse.chatboxviews.filter(el =>
         // The controlbox can take a while to close,
-        // so we need to check its state. That's why we checked
-        // the 'closed' state.
-        !view.model.get('minimized') &&
-            !view.model.get('closed') &&
-            u.isVisible(view.el)
+        // so we need to check its state. That's why we checked the 'closed' state.
+        !el.model.get('minimized') && !el.model.get('closed') && u.isVisible(el)
     );
 }
 
@@ -53,7 +49,7 @@ function getBoxesWidth (newchat) {
  * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
  */
 export async function trimChats (newchat) {
-    if (api.settings.get('no_trimming') || !api.connection.connected() || api.settings.get("view_mode") !== 'overlayed') {
+    if (_converse.isTestEnv() || api.settings.get('no_trimming') || !api.connection.connected() || api.settings.get("view_mode") !== 'overlayed') {
         return;
     }
     const shown_chats = getShownChats();
@@ -82,7 +78,7 @@ export async function trimChats (newchat) {
                 if (view) {
                     view.hide();
                 }
-                oldest_chat.minimize();
+                minimize(oldest_chat);
             } else {
                 break;
             }
@@ -105,21 +101,10 @@ function getOldestMaximizedChat (exclude_ids) {
     return model;
 }
 
-export function initMinimizedChats () {
-    _converse.minimized_chats?.remove();
-    _converse.minimized_chats = new _converse.MinimizedChats({model: _converse.chatboxes});
-    /**
-     * Triggered once the _converse.MinimizedChats instance has been initialized
-     * @event _converse#minimizedChatsInitialized
-     * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
-     */
-    api.trigger('minimizedChatsInitialized');
-}
-
 export function addMinimizeButtonToChat (view, buttons) {
     const data = {
         'a_class': 'toggle-chatbox-button',
-        'handler': ev => view.minimize(ev),
+        'handler': ev => minimize(ev, view.model),
         'i18n_text': __('Minimize'),
         'i18n_title': __('Minimize this chat'),
         'icon_class': "fa-minus",
@@ -134,7 +119,7 @@ export function addMinimizeButtonToChat (view, buttons) {
 export function addMinimizeButtonToMUC (view, buttons) {
     const data = {
         'a_class': 'toggle-chatbox-button',
-        'handler': ev => view.minimize(ev),
+        'handler': ev => minimize(ev, view.model),
         'i18n_text': __('Minimize'),
         'i18n_title': __('Minimize this groupchat'),
         'icon_class': "fa-minus",
@@ -144,4 +129,87 @@ export function addMinimizeButtonToMUC (view, buttons) {
     const names = buttons.map(t => t.name);
     const idx = names.indexOf('signout');
     return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
+}
+
+
+export function maximize (ev, chatbox) {
+    if (ev?.preventDefault) {
+        ev.preventDefault();
+    } else {
+        chatbox = ev;
+    }
+    u.safeSave(chatbox, {
+        'hidden': false,
+        'minimized': false,
+        'time_opened': new Date().getTime()
+    });
+}
+
+export function minimize (ev, chatbox) {
+    if (ev?.preventDefault) {
+        ev.preventDefault();
+    } else {
+        chatbox = ev;
+    }
+    u.safeSave(chatbox, {
+        'hidden': true,
+        'minimized': true,
+        'time_minimized': new Date().toISOString()
+    });
+}
+
+/**
+ * Handler which gets called when a {@link _converse#ChatBox} has it's
+ * `minimized` property set to false.
+ *
+ * Will trigger {@link _converse#chatBoxMaximized}
+ * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
+ */
+function onMaximized (view) {
+    if (!view.model.isScrolledUp()) {
+        view.model.clearUnreadMsgCounter();
+    }
+    view.model.setChatState(_converse.ACTIVE);
+    view.show();
+    /**
+     * Triggered when a previously minimized chat gets maximized
+     * @event _converse#chatBoxMaximized
+     * @type { _converse.ChatBoxView }
+     * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
+     */
+    api.trigger('chatBoxMaximized', view);
+    return view;
+}
+
+/**
+ * Handler which gets called when a {@link _converse#ChatBox} has it's
+ * `minimized` property set to true.
+ *
+ * Will trigger {@link _converse#chatBoxMinimized}
+ * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
+ */
+function onMinimized (view) {
+    // save the scroll position to restore it on maximize
+    if (view.model.collection && view.model.collection.browserStorage) {
+        view.model.save({ 'scroll': view.content.scrollTop });
+    } else {
+        view.model.set({ 'scroll': view.content.scrollTop });
+    }
+    view.model.setChatState(_converse.INACTIVE);
+    /**
+     * Triggered when a previously maximized chat gets Minimized
+     * @event _converse#chatBoxMinimized
+     * @type { _converse.ChatBoxView }
+     * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
+     */
+    api.trigger('chatBoxMinimized', view);
+    return view;
+}
+
+export function onMinimizedChanged (view) {
+    if (view.model.get('minimized')) {
+        onMinimized(view);
+    } else {
+        onMaximized(view);
+    }
 }

@@ -30,11 +30,10 @@ converse.plugins.add('converse-mam', {
         });
 
         Object.assign(api, mam_api);
-
         // This is mainly done to aid with tests
         Object.assign(_converse, { onMAMError, onMAMPreferences, handleMAMResult });
 
-        /************************ BEGIN Event Handlers ************************/
+        /************************ Event Handlers ************************/
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(NS.MAM));
         api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
         api.listen.on('chatRoomViewInitialized', view => {
@@ -64,6 +63,5 @@ converse.plugins.add('converse-mam', {
                 fetchNewestMessages(chat);
             }
         });
-        /************************ END Event Handlers **************************/
     }
 });

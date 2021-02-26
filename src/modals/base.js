@@ -2,7 +2,7 @@ import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
 import tpl_alert_component from "templates/alert.js";
 import { View } from '@converse/skeletor/src/view.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { api, converse } from "@converse/headless/core";
 import { render } from 'lit-html';
 
 const { sizzle } = converse.env;
@@ -46,7 +46,7 @@ const BaseModal = View.extend({
     },
 
     insertIntoDOM () {
-        const container_el = _converse.chatboxviews.el.querySelector("#converse-modals");
+        const container_el = document.querySelector("#converse-modals");
         container_el.insertAdjacentElement('beforeEnd', this.el);
     },
 

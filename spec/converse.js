@@ -5,11 +5,12 @@ const u = converse.env.utils;
 describe("Converse", function() {
 
     it("Can be inserted into a custom element after having been initialized",
-            mock.initConverse([], {'root': new DocumentFragment()}, async (done) => {
+            mock.initConverse([], {'root': new DocumentFragment()}, async (done, _converse) => {
 
-        expect(document.body.querySelector('div#conversejs')).toBe(null);
+        expect(document.body.querySelector('#conversejs')).toBe(null);
+        expect(_converse.root.firstElementChild.nodeName.toLowerCase()).toBe('converse-root');
         document.body.appendChild(document.createElement('converse-root'));
-        await u.waitUntil(() => document.body.querySelector('div#conversejs') !== null);
+        await u.waitUntil(() => document.body.querySelector('#conversejs') !== null);
         done();
     }));
 
@@ -292,7 +293,7 @@ describe("Converse", function() {
             expect(chat.get('box_id')).toBe(`box-${jid}`);
 
             const view = _converse.chatboxviews.get(jid);
-            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => u.isVisible(view));
             // Test for multiple JIDs
             mock.openChatBoxFor(_converse, jid2);
             await u.waitUntil(() => _converse.chatboxes.length == 3);
@@ -304,8 +305,7 @@ describe("Converse", function() {
         }));
 
         it("has a method 'open' which opens and returns a promise that resolves to a chat model", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesInitialized'], {},
-                async (done, _converse) => {
+                ['chatBoxesInitialized'], {}, async (done, _converse) => {
 
             const u = converse.env.utils;
             await mock.openControlBox(_converse);
@@ -325,7 +325,7 @@ describe("Converse", function() {
                 ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
             );
             const view = _converse.chatboxviews.get(jid);
-            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => u.isVisible(view));
             // Test for multiple JIDs
             const list = await _converse.api.chats.open([jid, jid2]);
             expect(Array.isArray(list)).toBeTruthy();

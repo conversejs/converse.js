@@ -1,4 +1,6 @@
-import { api, converse } from "@converse/headless/core";
+import tpl_converse from "../templates/converse.js";
+import { api } from '@converse/headless/core';
+import { CustomElement } from './element.js';
 
 
 /**
@@ -8,11 +10,16 @@ import { api, converse } from "@converse/headless/core";
  * It can be inserted into the DOM before or after Converse has loaded or been
  * initialized.
  */
-class ConverseRoot extends HTMLElement {
+class ConverseRoot extends CustomElement {
 
-    async connectedCallback () {
-        await api.waitUntil('initialized');
-        converse.insertInto(this);
+    render () { // eslint-disable-line class-methods-use-this
+        return tpl_converse();
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.classList.add(`converse-${api.settings.get('view_mode')}`);
+        this.setAttribute('id', 'conversejs');
     }
 }
 

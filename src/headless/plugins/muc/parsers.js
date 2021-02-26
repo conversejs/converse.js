@@ -6,6 +6,7 @@ import {
     getCorrectionAttributes,
     getEncryptionAttributes,
     getErrorAttributes,
+    getOpenGraphMetadata,
     getOutOfBandAttributes,
     getReceiptId,
     getReferences,
@@ -180,6 +181,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
         getSpoilerAttributes(stanza),
         getCorrectionAttributes(stanza, original_stanza),
         getStanzaIDs(stanza, original_stanza),
+        getOpenGraphMetadata(stanza),
         getRetractionAttributes(stanza, original_stanza),
         getModerationAttributes(stanza),
         getEncryptionAttributes(stanza, _converse)

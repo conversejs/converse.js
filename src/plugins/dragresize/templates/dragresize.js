@@ -1,7 +1,8 @@
-import { html } from "lit-html";
+import { html } from 'lit-html';
+import { onStartDiagonalResize, onStartHorizontalResize, onStartVerticalResize } from '../utils.js';
 
-export default  () => html`
-    <div class="dragresize dragresize-top"></div>
-    <div class="dragresize dragresize-topleft"></div>
-    <div class="dragresize dragresize-left"></div>
+export default () => html`
+    <div class="dragresize dragresize-top" @mousedown="${onStartVerticalResize}"></div>
+    <div class="dragresize dragresize-topleft" @mousedown="${onStartDiagonalResize}"></div>
+    <div class="dragresize dragresize-left" @mousedown="${onStartHorizontalResize}"></div>
 `;

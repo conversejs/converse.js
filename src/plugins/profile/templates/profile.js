@@ -11,15 +11,15 @@ export default (o) => {
     return html`
     <div class="userinfo controlbox-padded">
         <div class="controlbox-section profile d-flex">
-            <a class="show-profile" href="#">
+            <a class="show-profile" href="#" @click=${o.showProfileModal}>
                 <canvas class="avatar align-self-center" height="40" width="40"></canvas>
             </a>
             <span class="username w-100 align-self-center">${o.fullname}</span>
             ${show_settings_button  ? html`<a class="controlbox-heading__btn show-client-info fa fa-cog align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}></a>` : ''}
-            ${api.settings.get('allow_logout') ? html`<a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="${i18n_logout}"></a>` : ''}
+            ${api.settings.get('allow_logout') ? html`<a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="${i18n_logout}" @click=${o.logout}></a>` : ''}
         </div>
         <div class="d-flex xmpp-status">
-            <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal">
+            <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${o.showStatusChangeModal}>
                 <span class="${o.chat_status} w-100 align-self-center" data-value="${o.chat_status}">
                     <span class="
                         ${o.chat_status === 'online' && 'fa fa-circle chat-status chat-status--online'}

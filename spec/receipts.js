@@ -8,7 +8,7 @@ describe("A delivery receipt", function () {
 
     it("is emitted for a received message which requests it",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -34,7 +34,7 @@ describe("A delivery receipt", function () {
 
     it("is not emitted for a carbon message",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -64,7 +64,7 @@ describe("A delivery receipt", function () {
 
     it("is not emitted for an archived message",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -101,16 +101,17 @@ describe("A delivery receipt", function () {
 
     it("can be received for a sent message",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.chatboxviews.get(contact_jid);
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -126,12 +127,12 @@ describe("A delivery receipt", function () {
                 'id': u.getUniqueId(),
             }).c('received', {'id': msg_id, xmlns: Strophe.NS.RECEIPTS}).up().tree();
         _converse.connection._dataRecv(mock.createRequest(msg));
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__receipt').length === 1);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 1);
 
         // Also handle receipts with type 'chat'. See #1353
         spyOn(_converse, 'handleMessageStanza').and.callThrough();
         textarea.value = 'Another message';
-        view.onKeyDown({
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -147,7 +148,7 @@ describe("A delivery receipt", function () {
                 'id': u.getUniqueId(),
             }).c('received', {'id': msg_id, xmlns: Strophe.NS.RECEIPTS}).up().tree();
         _converse.connection._dataRecv(mock.createRequest(msg));
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__receipt').length === 2);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 2);
         expect(_converse.handleMessageStanza.calls.count()).toBe(1);
         done();
     }));

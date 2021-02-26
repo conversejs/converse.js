@@ -1,15 +1,35 @@
 import ModelWithContact from './model-with-contact.js';
 import filesize from "filesize";
+import isMatch from "lodash/isMatch";
+import isObject from "lodash/isObject";
 import log from '@converse/headless/log';
+import pick from "lodash/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
-import { find, isMatch, isObject, pick } from "lodash-es";
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
 const { Strophe, $msg } = converse.env;
 
 const u = converse.env.utils;
+
+const METADATA_ATTRIBUTES = [
+    "og:description",
+    "og:image",
+    "og:image:height",
+    "og:image:width",
+    "og:site_name",
+    "og:title",
+    "og:type",
+    "og:url",
+    "og:video:height",
+    "og:video:secure_url",
+    "og:video:tag",
+    "og:video:type",
+    "og:video:url",
+    "og:video:width"
+];
+
 
 /**
  * Represents an open/ongoing chat conversation.
@@ -103,7 +123,21 @@ const ChatBox = ModelWithContact.extend({
         this.notifications = new Model();
     },
 
-    afterMessagesFetched () {
+    getNotificationsText () {
+        const { __ } = _converse;
+        if (this.notifications?.get('chat_state') === _converse.COMPOSING) {
+            return __('%1$s is typing', this.getDisplayName());
+        } else if (this.notifications?.get('chat_state') === _converse.PAUSED) {
+            return __('%1$s has stopped typing', this.getDisplayName());
+        } else if (this.notifications?.get('chat_state') === _converse.GONE) {
+            return __('%1$s has gone away', this.getDisplayName());
+        } else {
+            return '';
+        }
+    },
+
+    afterMessagesFetched (messages) {
+        this.most_recent_cached_message = messages ? this.getMostRecentMessage(messages) : null;
         /**
          * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
          * `sessionStorage` but **NOT** from the server.
@@ -119,11 +153,12 @@ const ChatBox = ModelWithContact.extend({
             log.info(`Not re-fetching messages for ${this.get('jid')}`);
             return;
         }
+        this.most_recent_cached_message = null;
         this.messages.fetched_flag = true;
         const resolve = this.messages.fetched.resolve;
         this.messages.fetch({
             'add': true,
-            'success': () => { this.afterMessagesFetched(); resolve() },
+            'success': msgs => { this.afterMessagesFetched(msgs); resolve() },
             'error': () => { this.afterMessagesFetched(); resolve() }
         });
         return this.messages.fetched;
@@ -301,9 +336,10 @@ const ChatBox = ModelWithContact.extend({
         }
     },
 
-    getMostRecentMessage () {
-        for (let i=this.messages.length-1; i>=0; i--) {
-            const message = this.messages.at(i);
+    getMostRecentMessage (messages) {
+        messages = messages || this.messages;
+        for (let i=messages.length-1; i>=0; i--) {
+            const message = messages.at(i);
             if (message.get('type') === this.get('message_type')) {
                 return message;
             }
@@ -452,6 +488,20 @@ const ChatBox = ModelWithContact.extend({
         return false;
     },
 
+    handleMetadataFastening (attrs) {
+        if (attrs.ogp_for_id) {
+            const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
+            if (message) {
+                const list = [...(message.get('ogp_metadata') || []), pick(attrs, METADATA_ATTRIBUTES)];
+                message.save('ogp_metadata', list);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    },
+
     /**
      * Determines whether the passed in message attributes represent a
      * message which corrects a previously received message, or an
@@ -508,7 +558,7 @@ const ChatBox = ModelWithContact.extend({
                 this.getMessageBodyQueryAttrs(attrs)
             ].filter(s => s);
         const msgs = this.messages.models;
-        return find(msgs, m => queries.reduce((out, q) => (out || isMatch(m.attributes, q)), false));
+        return msgs.find(m => queries.reduce((out, q) => (out || isMatch(m.attributes, q)), false));
     },
 
     getOriginIdQueryAttrs (attrs) {
@@ -907,11 +957,13 @@ const ChatBox = ModelWithContact.extend({
             }
             u.safeSave(this, {'hidden': false});
         }
-        if (_converse.isUniView() && this.get('hidden')) {
+        if (_converse.isUniView()) {
             return;
         } else {
-            return this.trigger("show");
+            u.safeSave(this, {'hidden': false});
+            this.trigger('show');
         }
+        return this;
     },
 
     /**

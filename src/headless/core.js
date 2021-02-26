@@ -15,7 +15,6 @@ import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
-import { CustomElement } from '../components/element';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Router } from '@converse/skeletor/src/router.js';
@@ -38,13 +37,17 @@ Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
 Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+Strophe.addNamespace('MARKERS', 'urn:xmpp:chat-markers:0');
 Strophe.addNamespace('MENTIONS', 'urn:xmpp:mmn:0');
+Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
 Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:0');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
 Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
 Strophe.addNamespace('RAI', 'urn:xmpp:rai:0');
+Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
+Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:0');
 Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
@@ -56,6 +59,7 @@ Strophe.addNamespace('STYLING', 'urn:xmpp:styling:0');
 Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
+Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
 /**
  * Custom error for indicating timeouts
@@ -742,7 +746,6 @@ export const api = _converse.api = {
      * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
      * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
      * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
-     * * [roomsPanelRendered](/docs/html/events.html#roomsPanelRendered)
      *
      * The various plugins might also provide promises, and they do this by using the
      * `promises.add` api method.
@@ -1560,7 +1563,11 @@ Object.assign(converse, {
         initPlugins();
         registerGlobalEventHandlers();
 
-        !History.started && _converse.router.history.start();
+        try {
+            !History.started && _converse.router.history.start();
+        } catch (e) {
+            log.error(e);
+        }
 
         if (api.settings.get("idle_presence_timeout") > 0) {
             api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.IDLE));
@@ -1646,7 +1653,6 @@ Object.assign(converse, {
         $pres,
         'utils': u,
         Collection,
-        CustomElement,
         Model,
         Promise,
         Strophe,

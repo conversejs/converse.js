@@ -6,10 +6,8 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './panel.js';
 import '../controlbox/index.js';
-import ControlBoxRegistrationMixin from './controlbox-mixin.js';
-import RegisterPanel from './panel.js';
-import log from '@converse/headless/log';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 
@@ -27,23 +25,11 @@ Strophe.Status.CONFLICT = i + 3;
 Strophe.Status.NOTACCEPTABLE = i + 5;
 
 converse.plugins.add('converse-register', {
+
+    dependencies: ['converse-controlbox'],
+
     enabled () {
         return true;
-    },
-
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-
-        ControlBoxView: {
-            renderLoginPanel () {
-                // Also render a registration panel, when rendering the login panel.
-                this.__super__.renderLoginPanel.apply(this, arguments);
-                this.renderRegistrationPanel();
-                return this;
-            }
-        }
     },
 
     initialize () {
@@ -59,17 +45,10 @@ converse.plugins.add('converse-register', {
             'registration_domain': ''
         });
 
-        Object.assign(_converse.ControlBoxView.prototype, ControlBoxRegistrationMixin);
-
-        _converse.RegisterPanel = RegisterPanel;
-
-        function setActiveForm (value) {
-            api.waitUntil('controlBoxInitialized')
-                .then(() => {
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    controlbox.set({ 'active-form': value });
-                })
-                .catch(e => log.fatal(e));
+        async function setActiveForm (value) {
+            await api.waitUntil('controlBoxInitialized');
+            const controlbox = _converse.chatboxes.get('controlbox');
+            controlbox.set({ 'active-form': value });
         }
         _converse.router.route('converse/login', () => setActiveForm('login'));
         _converse.router.route('converse/register', () => setActiveForm('register'));

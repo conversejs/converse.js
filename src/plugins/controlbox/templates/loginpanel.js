@@ -67,7 +67,7 @@ const auth_fields = (o) => {
         </div>
         ${ (o.authentication !== o.EXTERNAL) ? password_input() : '' }
         ${ o.show_trust_checkbox ? trust_checkbox(o.show_trust_checkbox === 'off' ? false : true) : '' }
-        <fieldset class="buttons">
+        <fieldset class="form-group buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_login}"/>
         </fieldset>
         ${ show_register_link() ? register_link(o) : '' }

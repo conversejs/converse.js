@@ -1,6 +1,6 @@
 import { html } from "lit-html";
 
-export default  (o) => html`
+export default (o) => html`
     <fieldset class="form-group">
         ${o.label ? html`<label>${o.label}</label>` : '' }
         <img src="data:${o.type};base64,${o.data}">

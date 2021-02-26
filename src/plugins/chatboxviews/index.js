@@ -3,23 +3,13 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import '@converse/headless/plugins/chatboxes';
+import './view.js';
+import '@converse/headless/plugins/chatboxes/index.js';
 import 'components/converse.js';
-import ViewWithAvatar from 'shared/avatar.js';
-import ChatBoxViews from './view.js';
+import ChatBoxViews from './container.js';
+import { ViewWithAvatar } from 'shared/avatar.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
-function onChatBoxViewsInitialized () {
-    _converse.chatboxviews = new _converse.ChatBoxViews({
-        'model': _converse.chatboxes
-    });
-    /**
-     * Triggered once the _converse.ChatBoxViews view-colleciton has been initialized
-     * @event _converse#chatBoxViewsInitialized
-     * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
-     */
-    api.trigger('chatBoxViewsInitialized');
-}
 
 function calculateViewportHeightUnit () {
     const vh = window.innerHeight * 0.01;
@@ -47,13 +37,17 @@ converse.plugins.add('converse-chatboxviews', {
         });
 
         _converse.ViewWithAvatar = ViewWithAvatar;
-        _converse.ChatBoxViews = ChatBoxViews;
+        _converse.chatboxviews = new ChatBoxViews();
 
         /************************ BEGIN Event Handlers ************************/
-        api.listen.on('chatBoxesInitialized', onChatBoxViewsInitialized);
+        api.listen.on('chatBoxesInitialized', () => {
+            _converse.chatboxes.on('destroy', m => _converse.chatboxviews.remove(m.get('jid')));
+        });
+
         api.listen.on('cleanup', () => delete _converse.chatboxviews);
         api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
         api.listen.on('chatBoxViewsInitialized', calculateViewportHeightUnit);
+
         window.addEventListener('resize', calculateViewportHeightUnit);
         /************************ END Event Handlers ************************/
 

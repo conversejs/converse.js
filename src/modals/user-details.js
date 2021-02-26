@@ -85,7 +85,7 @@ const UserDetailsModal = BootstrapModal.extend({
     },
 
     removeContact (ev) {
-        if (ev && ev.preventDefault) { ev.preventDefault(); }
+        ev?.preventDefault?.();
         if (!api.settings.get('allow_contact_removal')) { return; }
         const result = confirm(__("Are you sure you want to remove this contact?"));
         if (result === true) {

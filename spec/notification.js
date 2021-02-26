@@ -1,4 +1,4 @@
-/*global mock, converse, _ */
+/*global mock, converse */
 
 const { Strophe } = converse.env;
 const $msg = converse.env.$msg;
@@ -12,12 +12,11 @@ describe("Notifications", function () {
             describe("an HTML5 Notification", function () {
 
                 it("is shown when a new private message is received",
-                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+                        mock.initConverse([], {}, async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current');
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                    spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
 
                     const message = 'This message will show a desktop notification';
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
@@ -30,31 +29,22 @@ describe("Notifications", function () {
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     await _converse.handleMessageStanza(msg); // This will emit 'message'
                     await u.waitUntil(() => _converse.api.chatviews.get(sender_jid));
-                    expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+                    expect(window.Notification).toHaveBeenCalled();
                     done();
                 }));
 
                 it("is shown when you are mentioned in a groupchat",
-                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+                        mock.initConverse([], {}, async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                     const view = _converse.api.chatviews.get('lounge@montague.lit');
-                    if (!view.el.querySelectorAll('.chat-area').length) {
+                    if (!view.querySelectorAll('.chat-area').length) {
                         view.renderChatArea();
                     }
-                    let no_notification = false;
-                    if (typeof window.Notification === 'undefined') {
-                        no_notification = true;
-                        window.Notification = function () {
-                            return {
-                                'close': function () {}
-                            };
-                        };
-                    }
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
 
                     // Test mention with setting false
                     const nick = mock.chatroom_names[0];
@@ -66,8 +56,7 @@ describe("Notifications", function () {
                     }).c('body').t(text).tree();
                     _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 0);
-                    expect(_converse.showMessageNotification).not.toHaveBeenCalled();
+                    expect(window.Notification).not.toHaveBeenCalled();
 
                     // Test reference
                     const message_with_ref = $msg({
@@ -79,27 +68,22 @@ describe("Notifications", function () {
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'0', 'end':'5', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).tree();
                     _converse.connection._dataRecv(mock.createRequest(message_with_ref));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+                    expect(window.Notification.calls.count()).toBe(1);
 
                     // Test mention with setting true
                     _converse.api.settings.set('notify_all_room_messages', true);
                     _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 2);
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
-                    if (no_notification) {
-                        delete window.Notification;
-                    }
+                    expect(window.Notification.calls.count()).toBe(2);
                     done();
                 }));
 
-                it("is shown for headline messages",
-                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+                it("is shown for headline messages", mock.initConverse([], {}, async (done, _converse) => {
 
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
+
+                    await mock.waitForRoster(_converse, 'current', 0);
                     const stanza = $msg({
                             'type': 'headline',
                             'from': 'notify.example.com',
@@ -112,18 +96,18 @@ describe("Notifications", function () {
                         .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
                     _converse.connection._dataRecv(mock.createRequest(stanza));
 
-                    await u.waitUntil(() => _converse.chatboxviews.keys().length);
+                    await u.waitUntil(() => _converse.chatboxviews.keys().length === 2);
                     const view = _converse.chatboxviews.get('notify.example.com');
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+                    expect(window.Notification).toHaveBeenCalled();
                     done();
                 }));
 
                 it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse((done, _converse) => {
                     _converse.allow_non_roster_messaging = false;
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
                     const stanza = $msg({
                             'type': 'headline',
                             'from': 'someone@notify.example.com',
@@ -135,25 +119,21 @@ describe("Notifications", function () {
                         .c('x', {'xmlns': 'jabber:x:oob'})
                         .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
                     _converse.connection._dataRecv(mock.createRequest(stanza));
-                    expect(
-                        _.includes(_converse.chatboxviews.keys(),
-                            'someone@notify.example.com')
-                        ).toBeFalsy();
-                    expect(_converse.showMessageNotification).not.toHaveBeenCalled();
+                    expect(_converse.chatboxviews.keys().includes('someone@notify.example.com')).toBeFalsy();
+                    expect(window.Notification).not.toHaveBeenCalled();
                     done();
                 }));
 
                 it("is shown when a user changes their chat state (if show_chat_state_notifications is true)",
-                        mock.initConverse(['rosterGroupsFetched'], {show_chat_state_notifications: true},
+                        mock.initConverse([], {show_chat_state_notifications: true},
                         async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current', 3);
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                    spyOn(_converse, 'showChatStateNotification');
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
                     const jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    _converse.roster.get(jid).presence.set('show', 'busy'); // This will emit 'contactStatusChanged'
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
-                    expect(_converse.showChatStateNotification).toHaveBeenCalled();
+                    _converse.roster.get(jid).presence.set('show', 'dnd');
+                    expect(window.Notification).toHaveBeenCalled();
                     done()
                 }));
             });
@@ -161,11 +141,10 @@ describe("Notifications", function () {
 
         describe("When a new contact request is received", function () {
             it("an HTML5 Notification is received", mock.initConverse((done, _converse) => {
-                spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                spyOn(_converse, 'showContactRequestNotification');
-                _converse.api.trigger('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
-                expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                expect(_converse.showContactRequestNotification).toHaveBeenCalled();
+                const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                spyOn(window, 'Notification').and.returnValue(stub);
+                _converse.api.trigger('contactRequest', {'getDisplayName': () => 'Peter Parker'});
+                expect(window.Notification).toHaveBeenCalled();
                 done();
             }));
         });
@@ -174,15 +153,16 @@ describe("Notifications", function () {
     describe("When play_sounds is set to true", function () {
         describe("A notification sound", function () {
 
-            it("is played when the current user is mentioned in a groupchat",
-                    mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
-
+            it("is played when the current user is mentioned in a groupchat", mock.initConverse([], {}, async (done, _converse) => {
                 mock.createContacts(_converse, 'current');
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 _converse.play_sounds = true;
-                spyOn(_converse, 'playSoundNotification');
+
+                const stub = jasmine.createSpyObj('MyAudio', ['play', 'canPlayType']);
+                spyOn(window, 'Audio').and.returnValue(stub);
+
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                if (!view.el.querySelectorAll('.chat-area').length) {
+                if (!view.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
                 }
                 let text = 'This message will play a sound because it mentions romeo';
@@ -194,8 +174,8 @@ describe("Notifications", function () {
                 }).c('body').t(text);
                 _converse.api.settings.set('notify_all_room_messages', true);
                 await view.model.handleMessageStanza(message.nodeTree);
-                await u.waitUntil(() => _converse.playSoundNotification.calls.count());
-                expect(_converse.playSoundNotification).toHaveBeenCalled();
+                await u.waitUntil(() => window.Audio.calls.count());
+                expect(window.Audio).toHaveBeenCalled();
 
                 text = "This message won't play a sound";
                 message = $msg({
@@ -205,7 +185,7 @@ describe("Notifications", function () {
                     type: 'groupchat'
                 }).c('body').t(text);
                 await view.model.handleMessageStanza(message.nodeTree);
-                expect(_converse.playSoundNotification, 1);
+                expect(window.Audio, 1);
                 _converse.play_sounds = false;
 
                 text = "This message won't play a sound because it is sent by romeo";
@@ -216,7 +196,7 @@ describe("Notifications", function () {
                     type: 'groupchat'
                 }).c('body').t(text);
                 await view.model.handleMessageStanza(message.nodeTree);
-                expect(_converse.playSoundNotification, 1);
+                expect(window.Audio, 1);
                 _converse.play_sounds = false;
                 done();
             }));
@@ -227,9 +207,7 @@ describe("Notifications", function () {
     describe("A Favicon Message Counter", function () {
 
         it("is incremented when the message is received and the window is not focused",
-                mock.initConverse(
-                    ['rosterGroupsFetched'], {'show_tab_notifications': false},
-                    async function (done, _converse) {
+                mock.initConverse([], {'show_tab_notifications': false}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -283,9 +261,7 @@ describe("Notifications", function () {
         }));
 
         it("is not incremented when the message is received and the window is focused",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -314,28 +290,22 @@ describe("Notifications", function () {
         }));
 
         it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
-
             const favico = jasmine.createSpyObj('favico', ['badge']);
             spyOn(converse.env, 'Favico').and.returnValue(favico);
-
             const message = 'This message will always increment the message counter from zero';
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msgFactory = function () {
-                    return $msg({
-                        from: sender_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: u.getUniqueId()
-                    })
-                    .c('body').t(message).up()
-                    .c('active', {'xmlns': Strophe.NS.CHATSTATES})
-                    .tree();
-             };
+            const msgFactory = () => $msg({
+                    from: sender_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: u.getUniqueId()
+                })
+                .c('body').t(message).up()
+                .c('active', {'xmlns': Strophe.NS.CHATSTATES})
+                .tree();
 
             // leave converse-chat page
             _converse.windowState = 'hidden';
@@ -343,10 +313,15 @@ describe("Notifications", function () {
             let view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => favico.badge.calls.count() === 1, 1000);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(1);
+            expect(view.model.get('num_unread')).toBe(1);
 
             // come back to converse-chat page
             _converse.saveWindowState({'type': 'focus'});
-            await u.waitUntil(() => u.isVisible(view.el));
+
+
+            await u.waitUntil(() => u.isVisible(view));
+            expect(view.model.get('num_unread')).toBe(0);
+
             await u.waitUntil(() => favico.badge.calls.count() === 2);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(0);
 
@@ -357,7 +332,7 @@ describe("Notifications", function () {
             // check that msg_counter is incremented from zero again
             await _converse.handleMessageStanza(msgFactory());
             view = _converse.chatboxviews.get(sender_jid);
-            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => u.isVisible(view));
             await u.waitUntil(() => favico.badge.calls.count() === 3);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(1);
             done();

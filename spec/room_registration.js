@@ -11,16 +11,16 @@ describe("Chatrooms", function () {
     describe("The /register commmand", function () {
 
         it("allows you to register your nickname in a room",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
+                mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},
                 async function (done, _converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo')
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = view.el.querySelector('.chat-textarea')
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/register';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -68,8 +68,7 @@ describe("Chatrooms", function () {
     describe("The auto_register_muc_nickname option", function () {
 
         it("allows you to automatically register your nickname when joining a room",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
+                mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},
                 async function (done, _converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';

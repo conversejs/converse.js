@@ -3,9 +3,9 @@
 describe("A headlines box", function () {
 
     it("will not open nor display non-headline messages",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
+        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { $msg } = converse.env;
         /* XMPP spam message:
          *
@@ -31,8 +31,9 @@ describe("A headlines box", function () {
     }));
 
     it("will open and display headline messages", mock.initConverse(
-            ['rosterGroupsFetched'], {}, async function (done, _converse) {
+            [], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { u, $msg} = converse.env;
         /* <message from='notify.example.com'
          *          to='romeo@im.example.com'
@@ -62,13 +63,14 @@ describe("A headlines box", function () {
         await u.waitUntil(() => _converse.chatboxviews.keys().includes('notify.example.com'));
         const view = _converse.chatboxviews.get('notify.example.com');
         expect(view.model.get('show_avatar')).toBeFalsy();
-        expect(view.el.querySelector('img.avatar')).toBe(null);
+        expect(view.querySelector('img.avatar')).toBe(null);
         done();
     }));
 
     it("will show headline messages in the controlbox", mock.initConverse(
-        ['rosterGroupsFetched'], {}, async function (done, _converse) {
+            [], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { u, $msg} = converse.env;
         /* <message from='notify.example.com'
          *          to='romeo@im.example.com'
@@ -96,16 +98,17 @@ describe("A headlines box", function () {
 
         _converse.connection._dataRecv(mock.createRequest(stanza));
         const view = _converse.chatboxviews.get('controlbox');
-        await u.waitUntil(() => view.el.querySelectorAll(".open-headline").length);
-        expect(view.el.querySelectorAll('.open-headline').length).toBe(1);
-        expect(view.el.querySelector('.open-headline').text).toBe('notify.example.com');
+        await u.waitUntil(() => view.querySelectorAll(".open-headline").length);
+        expect(view.querySelectorAll('.open-headline').length).toBe(1);
+        expect(view.querySelector('.open-headline').text).toBe('notify.example.com');
         done();
     }));
 
     it("will remove headline messages from the controlbox if closed", mock.initConverse(
-        ['rosterGroupsFetched'], {}, async function (done, _converse) {
+        [], {}, async function (done, _converse) {
 
         const { u, $msg} = converse.env;
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
         /* <message from='notify.example.com'
          *          to='romeo@im.example.com'
@@ -133,20 +136,21 @@ describe("A headlines box", function () {
 
         _converse.connection._dataRecv(mock.createRequest(stanza));
         const cbview = _converse.chatboxviews.get('controlbox');
-        await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length);
+        await u.waitUntil(() => cbview.querySelectorAll(".open-headline").length);
         const hlview = _converse.chatboxviews.get('notify.example.com');
-        await u.isVisible(hlview.el);
-        const close_el = await u.waitUntil(() => hlview.el.querySelector('.close-chatbox-button'));
+        await u.isVisible(hlview);
+        const close_el = await u.waitUntil(() => hlview.querySelector('.close-chatbox-button'));
         close_el.click();
-        await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length === 0);
-        expect(cbview.el.querySelectorAll('.open-headline').length).toBe(0);
+        await u.waitUntil(() => cbview.querySelectorAll(".open-headline").length === 0);
+        expect(cbview.querySelectorAll('.open-headline').length).toBe(0);
         done();
     }));
 
     it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { $msg } = converse.env;
         _converse.allow_non_roster_messaging = false;
         const stanza = $msg({

@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/strophe';
 import { _converse, api } from '@converse/headless/core';
+import { decodeHTMLEntities } from 'shared/utils';
 import { rejectMessage } from '@converse/headless/shared/actions';
 
 const { NS } = Strophe;
@@ -115,6 +116,26 @@ export function getCorrectionAttributes (stanza, original_stanza) {
                 replace_id,
                 'edited': time
             };
+        }
+    }
+    return {};
+}
+
+export function getOpenGraphMetadata (stanza) {
+    const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
+    if (fastening) {
+        const applies_to_id = fastening.getAttribute('id');
+        const meta = sizzle(`> meta[xmlns="${Strophe.NS.XHTML}"]`, fastening);
+        if (meta.length) {
+            return meta.reduce((acc, el) => {
+                const property = el.getAttribute('property');
+                if (property) {
+                    acc[property] = decodeHTMLEntities(el.getAttribute('content') || '');
+                }
+                return acc;
+            }, {
+                'ogp_for_id': applies_to_id,
+            });
         }
     }
     return {};

@@ -1,10 +1,7 @@
 import { MessageText } from '../../shared/message/text.js';
-import { api, converse } from  "@converse/headless/core";
+import { api } from  "@converse/headless/core";
 import { directive, html } from "lit-html";
 import { until } from 'lit-html/directives/until.js';
-
-
-const u = converse.env.utils;
 
 
 class MessageBodyRenderer {
@@ -12,19 +9,11 @@ class MessageBodyRenderer {
     constructor (component) {
         this.model = component.model;
         this.component = component;
-        this.chatview = u.ancestor(this.component, 'converse-chat-message')?.chatview;
-        // We jot down whether we were scrolled down before rendering, because when an
-        // image loads, it triggers 'scroll' and the chat will be marked as scrolled,
-        // which is technically true, but not what we want because the user
-        // didn't initiate the scrolling.
-        this.was_scrolled_up = this.chatview.model.get('scrolled');
-        this.text = this.component.model.getMessageText();
+        this.text = this.model.getMessageText();
     }
 
-    scrollDownOnImageLoad () {
-        if (!this.was_scrolled_up) {
-            this.chatview.scrollDown();
-        }
+    onImageLoaded () {
+        this.component.dispatchEvent(new CustomEvent('imageLoaded', { detail: this.component }));
     }
 
     async transform () {
@@ -35,7 +24,7 @@ class MessageBodyRenderer {
             this.model,
             offset,
             show_images,
-            () => this.scrollDownOnImageLoad(),
+            () => this.onImageLoaded(),
             ev => this.component.showImageModal(ev)
         );
         await text.addTemplates();

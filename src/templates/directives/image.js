@@ -1,6 +1,6 @@
 import { converse } from "@converse/headless/core";
 import { directive, html } from "lit-html";
-
+import URI from "urijs";
 
 /**
  * lit-html directive which attempts to render an <img> element from a URL.
@@ -21,7 +21,10 @@ export const renderImage = directive((src, href, onLoad, onClick) => part => {
             // Before giving up and falling back to just rendering a hyperlink,
             // we attach `.png` and try one more time.
             // This works with some Imgur URLs
-            part.setValue(renderImage(`${src}.png`, href, onLoad, onClick));
+            const uri = new URI(src);
+            const filename = uri.filename();
+            uri.filename(`${filename}.png`);
+            part.setValue(renderImage(uri.toString(), href, onLoad, onClick));
             part.commit();
         }
     }

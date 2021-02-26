@@ -4,23 +4,49 @@
 
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
+- #2400: Fixes infinite loop bug when appending .png to allowed image urls
+- #2409: Integrate App Badging API for unread messages
 - Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
 - Bugfix: Use real JID in XEP-0372 references only when the MUC is non-anonymous
 - Bugfix: Connection protocol not updated based on XEP-0156 connection methods
 - Bugfix: `null` inserted by emoji picker and can't switch between skintones
 - New hook: [getMessageActionButtons](https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons)
+- New hook: [shouldNotifyOfGroupMessage](https://conversejs.org/docs/html/api/-_converse.html#event:shouldNotifyOfGroupMessage)
 - File structure reordering: All plugins are now in `./plugins` folders.
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 - New configuration setting: [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
 - New configuration setting: [send_chat_markers](https://conversejs.org/docs/html/configuration.html#send-chat-markers)
 - #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
 - Use the MUC stanza id when sending XEP-0333 markers
+- Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
 
 ### Breaking Changes
 
 The [afterMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:afterMessageBodyTransformed) and [beforeMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:beforeMessageBodyTransformed) events now has a different signatures.
 When leaving a MUC, the message history is deleted. This means that decrypted
 OMEMO messages are gone and cannot be recovered on that device. See [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave).
+
+Removed events:
+* `chatBoxInsertedIntoDOM`
+* `bookmarkViewsInitialized`
+* `rosterGroupsFetched`
+
+## 7.0.5 (Unreleased)
+
+- #2377: The @converse/headless NPM package is missing the dist directory, causing import errors
+- #2396: @converse/headless wrongly depends on `CustomElement` from the view layer
+
+## 7.0.4 (2020-12-09)
+
+Bugfix: Set protocol after discovering connection methods
+
+Otherwise if an endpoint was passed in with `converse.initialize`, then
+that endpoint's protocol is (potentially wrongly) used.
+
+## 7.0.3 (2020-12-02)
+
+- Bugfix: `null` inserted by emoji picker and can't switch between skintones
+
 
 ## 7.0.2 (2020-11-23)
 

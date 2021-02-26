@@ -10,10 +10,9 @@ describe("A sent presence stanza", function () {
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     it("includes a entity capabilities node",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            (done, _converse) => {
+            mock.initConverse([], {}, async (done, _converse) => {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         _converse.api.disco.own.identities.clear();
         _converse.api.disco.own.features.clear();
 
@@ -66,16 +65,14 @@ describe("A sent presence stanza", function () {
     }));
 
     it("includes the saved status message",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async (done, _converse) => {
+        mock.initConverse([], {}, async (done, _converse) => {
 
         const { u, Strophe } = converse.env;
         mock.openControlBox(_converse);
         spyOn(_converse.connection, 'send').and.callThrough();
 
         const cbview = _converse.chatboxviews.get('controlbox');
-        const change_status_el = await u.waitUntil(() => cbview.el.querySelector('.change-status'));
+        const change_status_el = await u.waitUntil(() => cbview.querySelector('.change-status'));
         change_status_el.click()
         let modal = _converse.api.modal.get('modal-status-change');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -94,7 +91,7 @@ describe("A sent presence stanza", function () {
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
         await u.waitUntil(() => !u.isVisible(modal.el));
 
-        cbview.el.querySelector('.change-status').click()
+        cbview.querySelector('.change-status').click()
         modal = _converse.api.modal.get('modal-status-change');
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
         modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
@@ -116,9 +113,7 @@ describe("A sent presence stanza", function () {
 describe("A received presence stanza", function () {
 
     it("has its priority taken into account",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async (done, _converse) => {
+        mock.initConverse([], {}, async (done, _converse) => {
 
         const u = converse.env.utils;
         mock.openControlBox(_converse);

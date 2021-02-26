@@ -4,21 +4,24 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import '../../components/muc-sidebar';
-import '../chatview/index.js';
+import '../../components/help_messages.js';
+import '../chatboxviews/index.js';
 import '../modal.js';
-import ChatRoomViewMixin from './muc.js';
+import './adhoc-commands.js';
+import 'shared/chat/chat-content.js';
+import 'shared/chat/toolbar.js';
 import MUCConfigForm from './config-form.js';
 import MUCPasswordForm from './password-form.js';
+import MUCView from './muc.js';
 import log from '@converse/headless/log';
 import muc_api from './api.js';
-import { RoomsPanel, RoomsPanelViewMixin } from './rooms-panel.js';
 import { api, converse, _converse } from '@converse/headless/core';
 
 const { Strophe } = converse.env;
 
 function setMUCDomain (domain, controlboxview) {
-    controlboxview.getRoomsPanel().model.save('muc_domain', Strophe.getDomainFromJid(domain));
+    controlboxview.querySelector('converse-rooms-list')
+        .model.save('muc_domain', Strophe.getDomainFromJid(domain));
 }
 
 function setMUCDomainFromDisco (controlboxview) {
@@ -50,7 +53,7 @@ function setMUCDomainFromDisco (controlboxview) {
 
 function fetchAndSetMUCDomain (controlboxview) {
     if (controlboxview.model.get('connected')) {
-        if (!controlboxview.getRoomsPanel().model.get('muc_domain')) {
+        if (!controlboxview.querySelector('converse-rooms-list').model.get('muc_domain')) {
             if (api.settings.get('muc_domain') === undefined) {
                 setMUCDomainFromDisco(controlboxview);
             } else {
@@ -60,18 +63,10 @@ function fetchAndSetMUCDomain (controlboxview) {
     }
 }
 
-function openChatRoomFromURIClicked (ev) {
-    ev.preventDefault();
-    api.rooms.open(ev.target.href);
-}
-
-async function addView (model) {
-    const views = _converse.chatboxviews;
-    if (!views.get(model.get('id')) && model.get('type') === _converse.CHATROOMS_TYPE && model.isValid()) {
-        await model.initialized;
-        return views.add(model.get('id'), new _converse.ChatRoomView({ model }));
-    }
-}
+// function openChatRoomFromURIClicked (ev) {
+//     ev.preventDefault();
+//     api.rooms.open(ev.target.href);
+// }
 
 converse.plugins.add('converse-muc-views', {
     /* Dependencies are other plugins which might be
@@ -102,8 +97,6 @@ converse.plugins.add('converse-muc-views', {
     initialize () {
         const { _converse } = this;
 
-        api.promises.add(['roomsPanelRendered']);
-
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
@@ -129,16 +122,17 @@ converse.plugins.add('converse-muc-views', {
 
         _converse.MUCConfigForm = MUCConfigForm;
         _converse.MUCPasswordForm = MUCPasswordForm;
-        _converse.ChatRoomView = _converse.ChatBoxView.extend(ChatRoomViewMixin);
-        _converse.RoomsPanel = RoomsPanel;
-        _converse.ControlBoxView && Object.assign(_converse.ControlBoxView.prototype, RoomsPanelViewMixin);
+        _converse.ChatRoomView = MUCView;
 
         Object.assign(_converse.api, muc_api);
 
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxViewsInitialized', () => {
-            _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
-            _converse.chatboxes.on('add', addView);
+            // FIXME: Find a new way to implement this
+            // _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
+
+            // TODO: Remove
+            // _converse.chatboxes.on('add', addView);
         });
 
         api.listen.on('clearSession', () => {

@@ -1,15 +1,17 @@
+import log from '@converse/headless/log';
 import { CustomElement } from './element.js';
 import { __ } from '../i18n';
-import { api } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core";
 import { html } from 'lit-element';
 import { until } from 'lit-html/directives/until.js';
+
+const { Strophe, u } = converse.env;
 
 
 class MessageActions extends CustomElement {
 
     static get properties () {
         return {
-            chatview: { type: Object },
             model: { type: Object },
             editable: { type: Boolean },
             correcting: { type: Boolean },
@@ -20,6 +22,16 @@ class MessageActions extends CustomElement {
 
     render () {
         return html`${ until(this.renderActions(), '') }`;
+    }
+
+    async renderActions () {
+        const buttons = await this.getActionButtons();
+        const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
+        if (items.length) {
+            return html`<converse-dropdown class="chat-msg__actions" .items=${ items }></converse-dropdown>`;
+        } else {
+            return '';
+        }
     }
 
     static getActionsDropdownItem (o) {
@@ -36,12 +48,112 @@ class MessageActions extends CustomElement {
 
     onMessageEditButtonClicked (ev) {
         ev.preventDefault();
-        this.chatview.onMessageEditButtonClicked(this.model);
+        const currently_correcting = this.model.collection.findWhere('correcting');
+        // TODO: Use state intead of DOM querying
+        // Then this code can also be put on the model
+        const unsent_text = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.value;
+        if (unsent_text && (!currently_correcting || currently_correcting.get('message') !== unsent_text)) {
+            if (!confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'))) {
+                return;
+            }
+        }
+        if (currently_correcting !== this.model) {
+            currently_correcting?.save('correcting', false);
+            this.model.save('correcting', true);
+        } else {
+            this.model.save('correcting', false);
+        }
+    }
+
+    async onDirectMessageRetractButtonClicked () {
+        if (this.model.get('sender') !== 'me') {
+            return log.error("onMessageRetractButtonClicked called for someone else's this.model!");
+        }
+        const retraction_warning = __(
+            'Be aware that other XMPP/Jabber clients (and servers) may ' +
+            'not yet support retractions and that this this.model may not ' +
+            'be removed everywhere.'
+        );
+        const messages = [__('Are you sure you want to retract this this.model?')];
+        if (api.settings.get('show_retraction_warning')) {
+            messages[1] = retraction_warning;
+        }
+        const result = await api.confirm(__('Confirm'), messages);
+        if (result) {
+            const chatbox = this.model.collection.chatbox;
+            chatbox.retractOwnMessage(this.model);
+        }
+    }
+
+    /**
+     * Retract someone else's message in this groupchat.
+     * @private
+     * @param { _converse.Message } message - The message which we're retracting.
+     * @param { string } [reason] - The reason for retracting the message.
+     */
+    async retractOtherMessage (reason) {
+        const chatbox = this.model.collection.chatbox;
+        const result = await chatbox.retractOtherMessage(this.model, reason);
+        if (result === null) {
+            const err_msg = __(`A timeout occurred while trying to retract the message`);
+            api.alert('error', __('Error'), err_msg);
+            log(err_msg, Strophe.LogLevel.WARN);
+        } else if (u.isErrorStanza(result)) {
+            const err_msg = __(`Sorry, you're not allowed to retract this message.`);
+            api.alert('error', __('Error'), err_msg);
+            log(err_msg, Strophe.LogLevel.WARN);
+            log(result, Strophe.LogLevel.WARN);
+        }
+    }
+
+    async onMUCMessageRetractButtonClicked () {
+        const retraction_warning = __(
+            'Be aware that other XMPP/Jabber clients (and servers) may ' +
+            'not yet support retractions and that this this.model may not ' +
+            'be removed everywhere.'
+        );
+
+        if (this.model.mayBeRetracted()) {
+            const messages = [__('Are you sure you want to retract this this.model?')];
+            if (api.settings.get('show_retraction_warning')) {
+                messages[1] = retraction_warning;
+            }
+            if (await api.confirm(__('Confirm'), messages)) {
+                const chatbox = this.model.collection.chatbox;
+                chatbox.retractOwnMessage(this.model);
+            }
+        } else if (await this.model.mayBeModerated()) {
+            if (this.model.get('sender') === 'me') {
+                let messages = [__('Are you sure you want to retract this this.model?')];
+                if (api.settings.get('show_retraction_warning')) {
+                    messages = [messages[0], retraction_warning, messages[1]];
+                }
+                !!(await api.confirm(__('Confirm'), messages)) && this.retractOtherMessage();
+            } else {
+                let messages = [
+                    __('You are about to retract this this.model.'),
+                    __('You may optionally include a this.model, explaining the reason for the retraction.')
+                ];
+                if (api.settings.get('show_retraction_warning')) {
+                    messages = [messages[0], retraction_warning, messages[1]];
+                }
+                const reason = await api.prompt(__('this.model Retraction'), messages, __('Optional reason'));
+                reason !== false && this.retractOtherMessage(reason);
+            }
+        } else {
+            const err_msg = __(`Sorry, you're not allowed to retract this this.model`);
+            api.alert('error', __('Error'), err_msg);
+        }
     }
 
     onMessageRetractButtonClicked (ev) {
         ev.preventDefault();
-        this.chatview.onMessageRetractButtonClicked(this.model);
+        const chatbox = this.model.collection.chatbox;
+        if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+            this.onMUCMessageRetractButtonClicked();
+        } else {
+            this.onDirectMessageRetractButtonClicked();
+        }
     }
 
     async getActionButtons () {
@@ -82,16 +194,6 @@ class MessageActions extends CustomElement {
          *  });
          */
         return api.hook('getMessageActionButtons', this, buttons);
-    }
-
-    async renderActions () {
-        const buttons = await this.getActionButtons();
-        const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
-        if (items.length) {
-            return html`<converse-dropdown class="chat-msg__actions" .items=${ items }></converse-dropdown>`;
-        } else {
-            return '';
-        }
     }
 }
 

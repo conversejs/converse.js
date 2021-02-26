@@ -52,7 +52,10 @@ const ControlBoxMixin = {
         return _converse.ChatBox.prototype.maybeShow.call(this, force);
     },
 
-    onReconnection: function onReconnection () {}
+    onReconnection () {
+        this.save('connected', true);
+    }
+
 };
 
 export default ControlBoxMixin;

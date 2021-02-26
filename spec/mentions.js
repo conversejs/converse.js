@@ -1,20 +1,18 @@
 /*global mock, converse */
 
-const { Promise, Strophe, $msg, $pres } = converse.env;
+const { Strophe, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 
 
 describe("An incoming groupchat message", function () {
 
     it("is specially marked when you are mentioned in it",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
-        if (!view.el.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
+        if (!view.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
         const message = 'romeo: Your attention is required';
         const nick = mock.chatroom_names[0],
             msg = $msg({
@@ -24,16 +22,14 @@ describe("An incoming groupchat message", function () {
                 type: 'groupchat'
             }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+        expect(u.hasClass('mentioned', view.querySelector('.chat-msg'))).toBeTruthy();
         done();
     }));
 
 
     it("highlights all users mentioned via XEP-0372 references",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -62,12 +58,12 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
-        let message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
-        expect(message.classList.length).toEqual(1);
-        expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
+        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!---->/g, '') ===
             'hello <span class="mention">z3r0</span> '+
             '<span class="mention mention--self badge badge-info">tom</span> '+
             '<span class="mention">mr.robot</span>, how are you?');
+        let message = view.querySelector('.chat-msg__text')
+        expect(message.classList.length).toEqual(1);
 
         msg = $msg({
                 from: 'lounge@montague.lit/sw0rdf1sh',
@@ -77,7 +73,7 @@ describe("An incoming groupchat message", function () {
             }).c('body').t('https://conversejs.org/@gibson').up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'23', 'end':'29', 'type':'mention', 'uri':'xmpp:gibson@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
-        message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+        message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.classList.length).toEqual(1);
         expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
             'hello <span class="mention">z3r0</span> '+
@@ -87,9 +83,7 @@ describe("An incoming groupchat message", function () {
     }));
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -119,10 +113,10 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'16', 'end':'24', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
 
         await view.model.handleMessageStanza(msg);
-        const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
-        expect(message.classList.length).toEqual(1);
-        expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
+        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!---->/g, '') ===
             '<blockquote>hello <span class="mention">z3r0</span> <span class="mention mention--self badge badge-info">tom</span> <span class="mention">mr.robot</span>, how are you?</blockquote>');
+        const message = view.querySelector('.chat-msg__text');
+        expect(message.classList.length).toEqual(1);
         done();
     }));
 });
@@ -133,9 +127,7 @@ describe("A sent groupchat message", function () {
     describe("in which someone is mentioned", function () {
 
         it("gets parsed for mentions which get turned into references",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
 
@@ -265,9 +257,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("gets parsed for mentions as indicated with an @ preceded by a space or at the start of the text",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -299,9 +289,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("properly encodes the URIs in sent out references",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -318,7 +306,7 @@ describe("A sent groupchat message", function () {
                 })));
             await u.waitUntil(() => view.model.occupants.length === 2);
 
-            const textarea = view.el.querySelector('textarea.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello @Link Mauve'
             const enter_event = {
                 'target': textarea,
@@ -327,9 +315,10 @@ describe("A sent groupchat message", function () {
                 'keyCode': 13 // Enter
             }
             spyOn(_converse.connection, 'send');
-            view.onKeyDown(enter_event);
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            const msg = _converse.connection.send.calls.all()[1].args[0];
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter_event);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+            const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -343,9 +332,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("can get corrected and given new references",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
 
@@ -379,7 +366,7 @@ describe("A sent groupchat message", function () {
             });
             await u.waitUntil(() => view.model.occupants.length === 5);
 
-            const textarea = view.el.querySelector('textarea.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
             const enter_event = {
                 'target': textarea,
@@ -388,8 +375,9 @@ describe("A sent groupchat message", function () {
                 'keyCode': 13 // Enter
             }
             spyOn(_converse.connection, 'send');
-            view.onKeyDown(enter_event);
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter_event);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() =>
@@ -397,7 +385,7 @@ describe("A sent groupchat message", function () {
                     'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
             );
 
-            const msg = _converse.connection.send.calls.all()[1].args[0];
+            const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -410,22 +398,22 @@ describe("A sent groupchat message", function () {
                             `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
 
-            const action = await u.waitUntil(() => view.el.querySelector('.chat-msg .chat-msg__action'));
+            const action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action'));
             action.style.opacity = 1;
             action.click();
 
             expect(textarea.value).toBe('hello @z3r0 @gibson @mr.robot, how are you?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
-            await u.waitUntil(() => _converse.connection.send.calls.count() === 2);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+            await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
+            await u.waitUntil(() => _converse.connection.send.calls.count() === 1);
 
             textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
-            view.onKeyDown(enter_event);
-            await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+            bottom_panel.onKeyDown(enter_event);
+            await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
                 'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
-            const correction = _converse.connection.send.calls.all()[2].args[0];
+            const correction = _converse.connection.send.calls.all()[1].args[0];
             expect(correction.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${correction.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -442,9 +430,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("includes a XEP-0372 references to that person",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                    async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -465,7 +451,7 @@ describe("A sent groupchat message", function () {
             await u.waitUntil(() => view.model.occupants.length === 5);
 
             spyOn(_converse.connection, 'send');
-            const textarea = view.el.querySelector('textarea.chat-textarea');
+            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
             const enter_event = {
                 'target': textarea,
@@ -473,8 +459,9 @@ describe("A sent groupchat message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            view.onKeyDown(enter_event);
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+            bottom_panel.onKeyDown(enter_event);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const msg = _converse.connection.send.calls.all()[1].args[0];
             expect(msg.toLocaleString())
@@ -493,15 +480,13 @@ describe("A sent groupchat message", function () {
     });
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const members = [{'jid': 'gibson@gibson.net', 'nick': 'gibson', 'affiliation': 'member'}];
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', [], members);
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = "Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html";
         const enter_event = {
             'target': textarea,
@@ -509,8 +494,9 @@ describe("A sent groupchat message", function () {
             'stopPropagation': function stopPropagation () {},
             'keyCode': 13 // Enter
         }
-        view.onKeyDown(enter_event);
-        const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown(enter_event);
+        const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.innerHTML.replace(/<!---->/g, '')).toEqual(
             `Welcome <span class="mention">gibson</span> <span title=":poop:">💩</span> `+
             `We have a guide on how to do that here: `+

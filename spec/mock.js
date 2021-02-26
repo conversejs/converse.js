@@ -148,9 +148,7 @@ window.addEventListener('converse-loaded', () => {
         const model = await _converse.api.controlbox.open('controlbox');
         await u.waitUntil(() => model.get('connected'));
         await mock.openControlBox(_converse);
-        const view = await _converse.chatboxviews.get('controlbox');
-        const roomspanel = view.roomspanel;
-        roomspanel.el.querySelector('.show-add-muc-modal').click();
+        document.querySelector('converse-rooms-list .show-add-muc-modal').click();
         mock.closeControlBox(_converse);
         const modal = _converse.api.modal.get('add-chatroom-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1500)
@@ -440,11 +438,13 @@ window.addEventListener('converse-loaded', () => {
                 .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
     }
 
-    mock.sendMessage = function (view, message) {
+    mock.sendMessage = async function (view, message) {
         const promise = new Promise(resolve => view.model.messages.once('rendered', resolve));
-        view.el.querySelector('.chat-textarea').value = message;
-        view.onKeyDown({
-            target: view.el.querySelector('textarea.chat-textarea'),
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+        textarea.value = message;
+        const bottom_panel = view.querySelector('converse-chat-bottom-panel') || view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
+            target: view.querySelector('textarea.chat-textarea'),
             preventDefault: () => {},
             keyCode: 13
         });
@@ -641,7 +641,7 @@ window.addEventListener('converse-loaded', () => {
             'view_mode': mock.view_mode
         }, settings || {}));
 
-        _converse.ChatBoxViews.prototype.trimChat = function () {};
+        window._converse = _converse;
 
         _converse.api.vcard.get = function (model, force) {
             let jid;

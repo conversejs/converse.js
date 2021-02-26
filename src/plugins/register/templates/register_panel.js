@@ -40,13 +40,13 @@ const tpl_fetch_form_buttons = () => {
     const i18n_existing_account = __('Already have a chat account?');
     const i18n_login = __('Log in here');
     return html`
-        <fieldset class="buttons">
+        <fieldset class="form-group buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_register}" />
-            <div class="switch-form">
-                <p>${i18n_existing_account}</p>
-                <p><a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a></p>
-            </div>
         </fieldset>
+        <div class="switch-form">
+            <p>${i18n_existing_account}</p>
+            <p><a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a></p>
+        </div>
     `;
 };
 

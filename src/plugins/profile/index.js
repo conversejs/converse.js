@@ -22,12 +22,5 @@ converse.plugins.add('converse-profile', {
         });
 
         _converse.XMPPStatusView = XMPPStatusView;
-
-        /******************** Event Handlers ********************/
-        api.listen.on('controlBoxPaneInitialized', async view => {
-            await api.waitUntil('VCardsInitialized');
-            _converse.xmppstatusview = new _converse.XMPPStatusView({'model': _converse.xmppstatus});
-            view.el.insertAdjacentElement('afterBegin', _converse.xmppstatusview.render().el);
-        });
     }
 });

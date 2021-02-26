@@ -23,6 +23,7 @@ export class RosterFilterView extends ElementView {
         model.id = `_converse.rosterfilter-${_converse.bare_jid}`;
         model.browserStorage = _converse.createStore(model.id);
         this.model = model;
+        _converse.roster_filter = model;
 
         this.liveFilter = debounce(() => {
             this.model.save({'filter_text': this.querySelector('.roster-filter').value});
@@ -39,7 +40,6 @@ export class RosterFilterView extends ElementView {
         this.listenTo(_converse.roster, "destroy", this.render);
         this.listenTo(_converse.roster, "remove", this.render);
         _converse.presences.on('change:show', this.render, this);
-        api.listen.on('rosterContactsFetchedAndProcessed', () => this.render());
 
         this.model.fetch();
         this.render();

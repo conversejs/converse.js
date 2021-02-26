@@ -1,4 +1,4 @@
-import tpl_muc_password_form from "templates/muc_password_form.js";
+import tpl_muc_password_form from "./templates/muc-password-form.js";
 import { View } from '@converse/skeletor/src/view.js';
 
 

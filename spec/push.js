@@ -13,7 +13,7 @@ describe("XEP-0357 Push Notifications", function () {
 
     it("can be enabled",
         mock.initConverse(
-            ['rosterGroupsFetched'], {
+            [], {
                 'push_app_servers': [{
                     'jid': 'push-5@client.example',
                     'node': 'yxs32uqsflafdk3iuqo'
@@ -51,7 +51,7 @@ describe("XEP-0357 Push Notifications", function () {
 
     it("can be enabled for a MUC domain",
         mock.initConverse(
-            ['rosterGroupsFetched'], {
+            [], {
                 'enable_muc_push': true,
                 'push_app_servers': [{
                     'jid': 'push-5@client.example',
@@ -68,10 +68,7 @@ describe("XEP-0357 Push Notifications", function () {
             _converse, _converse.bare_jid, [],
             ['urn:xmpp:push:0']);
 
-        let iq = await u.waitUntil(() => _.filter(
-            IQ_stanzas,
-            iq => sizzle(`iq[type="set"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length
-        ).pop());
+        let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(`iq[type="set"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length).pop());
 
         expect(Strophe.serialize(iq)).toBe(
             `<iq id="${iq.getAttribute('id')}" type="set" xmlns="jabber:client">`+
@@ -111,7 +108,7 @@ describe("XEP-0357 Push Notifications", function () {
 
     it("can be disabled",
         mock.initConverse(
-            ['rosterGroupsFetched'], {
+            [], {
                 'push_app_servers': [{
                     'jid': 'push-5@client.example',
                     'node': 'yxs32uqsflafdk3iuqo',
@@ -127,9 +124,7 @@ describe("XEP-0357 Push Notifications", function () {
             _converse.bare_jid,
             [{'category': 'account', 'type':'registered'}],
             ['urn:xmpp:push:0'], [], 'info');
-        const stanza = await u.waitUntil(
-            () => _.filter(IQ_stanzas, iq => iq.querySelector('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]')).pop()
-        );
+        const stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]')).pop());
         expect(Strophe.serialize(stanza)).toEqual(
             `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                 '<disable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
@@ -146,8 +141,7 @@ describe("XEP-0357 Push Notifications", function () {
 
 
     it("can require a secret token to be included",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {
+        mock.initConverse([], {
                 'push_app_servers': [{
                     'jid': 'push-5@client.example',
                     'node': 'yxs32uqsflafdk3iuqo',
@@ -168,9 +162,7 @@ describe("XEP-0357 Push Notifications", function () {
                 [{'category': 'account', 'type':'registered'}],
                 ['urn:xmpp:push:0'], [], 'info');
 
-        const stanza = await u.waitUntil(
-            () => _.filter(IQ_stanzas, iq => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
-        );
+        const stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop());
         expect(Strophe.serialize(stanza)).toEqual(
             `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                 '<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0">'+

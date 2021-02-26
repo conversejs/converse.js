@@ -8,9 +8,7 @@ const u = converse.env.utils;
 describe("A XEP-0333 Chat Marker", function () {
 
     it("is sent when a markable message is received from a roster contact",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -39,9 +37,7 @@ describe("A XEP-0333 Chat Marker", function () {
     }));
 
     it("is not sent when a markable message is received from someone not on the roster",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
-            async function (done, _converse) {
+            mock.initConverse([], {'allow_non_roster_messaging': true}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const contact_jid = 'someone@montague.lit';
@@ -74,9 +70,7 @@ describe("A XEP-0333 Chat Marker", function () {
     }));
 
     it("is ignored if it's a carbon copy of one that I sent from a different client",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+        mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
@@ -97,8 +91,8 @@ describe("A XEP-0333 Chat Marker", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);
 
         stanza = u.toStanza(
@@ -116,31 +110,30 @@ describe("A XEP-0333 Chat Marker", function () {
         spyOn(_converse.api, "trigger").and.callThrough();
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);
         done();
     }));
 
 
     it("may be returned for a MUC message",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        view.onKeyDown({
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelector('.chat-msg .chat-msg__body').textContent.trim())
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelector('.chat-msg .chat-msg__text').textContent.trim())
             .toBe("But soft, what light through yonder airlock breaks?");
 
         const msg_obj = view.model.messages.at(0);
@@ -150,8 +143,8 @@ describe("A XEP-0333 Chat Marker", function () {
                 <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
         stanza = u.toStanza(`
             <message xml:lang="en" to="romeo@montague.lit/orchard"
@@ -159,8 +152,8 @@ describe("A XEP-0333 Chat Marker", function () {
                 <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
         stanza = u.toStanza(`
             <message xml:lang="en" to="romeo@montague.lit/orchard"
@@ -169,18 +162,19 @@ describe("A XEP-0333 Chat Marker", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
         stanza = u.toStanza(`
             <message xml:lang="en" to="romeo@montague.lit/orchard"
                      from="lounge@montague.lit/some1" type="groupchat" xmlns="jabber:client">
                 <body>'tis I!</body>
+                <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
         done();
     }));
 });

@@ -5,9 +5,7 @@ const u = converse.env.utils;
 describe("The User Details Modal", function () {
 
     it("can be used to remove a contact",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         _converse.api.trigger('rosterContactsFetched');
@@ -15,8 +13,9 @@ describe("The User Details Modal", function () {
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
         await u.waitUntil(() => _converse.chatboxes.length > 1);
+
         const view = _converse.chatboxviews.get(contact_jid);
-        let show_modal_button = view.el.querySelector('.show-user-details-modal');
+        let show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
         const modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -27,7 +26,7 @@ describe("The User Details Modal", function () {
         remove_contact_button.click();
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden'), 1000);
         await u.waitUntil(() => !u.isVisible(modal.el));
-        show_modal_button = view.el.querySelector('.show-user-details-modal');
+        show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
         remove_contact_button = modal.el.querySelector('button.remove-contact');
         expect(remove_contact_button === null).toBeTruthy();
@@ -35,7 +34,7 @@ describe("The User Details Modal", function () {
     }));
 
     it("shows an alert when an error happened while removing the contact",
-            mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         _converse.api.trigger('rosterContactsFetched');
@@ -43,7 +42,7 @@ describe("The User Details Modal", function () {
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid)
         const view = _converse.chatboxviews.get(contact_jid);
-        let show_modal_button = view.el.querySelector('.show-user-details-modal');
+        let show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
         let modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 2000);
@@ -61,12 +60,12 @@ describe("The User Details Modal", function () {
         expect(u.ancestor(header, '.modal-content').querySelector('.modal-body p').textContent.trim())
             .toBe("Sorry, there was an error while trying to remove Mercutio as a contact.");
         document.querySelector('.alert-danger  button.close').click();
-        show_modal_button = view.el.querySelector('.show-user-details-modal');
+        show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
         modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 2000)
 
-        show_modal_button = view.el.querySelector('.show-user-details-modal');
+        show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
         await u.waitUntil(() => u.isVisible(modal.el), 2000)
 

@@ -4,17 +4,13 @@ const { u, sizzle, $msg } = converse.env;
 
 describe("A Groupchat Message", function () {
 
-    it("supports the /me command",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
-
+    it("supports the /me command", mock.initConverse([], {}, async function (done, _converse) {
         await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
         await mock.waitForRoster(_converse, 'current');
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
-        if (!view.el.querySelectorAll('.chat-area').length) {
+        if (!view.querySelectorAll('.chat-area').length) {
             view.renderChatArea();
         }
         let message = '/me is tired';
@@ -27,8 +23,8 @@ describe("A Groupchat Message", function () {
             }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.content).pop());
-        expect(view.el.querySelector('.chat-msg__author').textContent.includes('**Dyon van de Wege')).toBeTruthy();
-        expect(view.el.querySelector('.chat-msg__text').textContent.trim()).toBe('is tired');
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.trim() === 'is tired');
+        expect(view.querySelector('.chat-msg__author').textContent.includes('**Dyon van de Wege')).toBeTruthy();
 
         message = '/me is as well';
         msg = $msg({
@@ -38,9 +34,9 @@ describe("A Groupchat Message", function () {
             type: 'groupchat'
         }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
-        expect(sizzle('.chat-msg__author:last', view.el).pop().textContent.includes('**Romeo Montague')).toBeTruthy();
-        expect(sizzle('.chat-msg__text:last', view.el).pop().textContent.trim()).toBe('is as well');
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
+        await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text')).pop().textContent.trim() === 'is as well');
+        expect(sizzle('.chat-msg__author:last', view).pop().textContent.includes('**Romeo Montague')).toBeTruthy();
 
         // Check rendering of a mention inside a me message
         const msg_text = "/me mentions romeo";
@@ -52,8 +48,8 @@ describe("A Groupchat Message", function () {
             }).c('body').t(msg_text).up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'13', 'end':'19', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text').length === 3);
-        await u.waitUntil(() => sizzle('.chat-msg__text:last', view.el).pop().innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
+        await u.waitUntil(() => sizzle('.chat-msg__text:last', view).pop().innerHTML.replace(/<!---->/g, '') ===
             'mentions <span class="mention mention--self badge badge-info">romeo</span>');
         done();
     }));
@@ -61,7 +57,7 @@ describe("A Groupchat Message", function () {
 
 describe("A Message", function () {
 
-    it("supports the /me command", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
+    it("supports the /me command", mock.initConverse([], {}, async function (done, _converse) {
         await mock.waitForRoster(_converse, 'current');
         await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
@@ -79,16 +75,16 @@ describe("A Message", function () {
 
         await _converse.handleMessageStanza(msg);
         const view = _converse.chatboxviews.get(sender_jid);
-        await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
-        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
-        expect(view.el.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
-        expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
+        await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(view.querySelectorAll('.chat-msg--action').length).toBe(1);
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.trim() === 'is tired');
+        expect(view.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
 
         message = '/me is as well';
         await mock.sendMessage(view, message);
-        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
-        await u.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Romeo Montague');
-        const last_el = sizzle('.chat-msg__text:last', view.el).pop();
+        expect(view.querySelectorAll('.chat-msg--action').length).toBe(2);
+        await u.waitUntil(() => sizzle('.chat-msg__author:last', view).pop().textContent.trim() === '**Romeo Montague');
+        const last_el = sizzle('.chat-msg__text:last', view).pop();
         await u.waitUntil(() => last_el.textContent === 'is as well');
         expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
 
@@ -97,18 +93,18 @@ describe("A Message", function () {
         message = 'This a normal message';
         await mock.sendMessage(view, message);
         const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__text';
-        await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message);
-        let el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
+        await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === message);
+        let el = view.querySelector('converse-chat-message:last-child .chat-msg__body');
         expect(u.hasClass('chat-msg--followup', el)).toBeFalsy();
 
         message = '/me wrote a 3rd person message';
         await mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message.replace('/me ', ''));
-        el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
-        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
+        await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === message.replace('/me ', ''));
+        el = view.querySelector('converse-chat-message:last-child .chat-msg__body');
+        expect(view.querySelectorAll('.chat-msg--action').length).toBe(3);
 
-        expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('wrote a 3rd person message');
-        expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
+        expect(sizzle('.chat-msg__text:last', view).pop().textContent).toBe('wrote a 3rd person message');
+        expect(u.isVisible(sizzle('.chat-msg__author:last', view).pop())).toBeTruthy();
         done();
     }));
 });

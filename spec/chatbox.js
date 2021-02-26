@@ -13,7 +13,7 @@ describe("Chatboxes", function () {
 
     describe("A Chatbox", function () {
 
-        it("has a /help command to show the available commands", mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
+        it("has a /help command to show the available commands", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
@@ -22,9 +22,8 @@ describe("Chatboxes", function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             mock.sendMessage(view, '/help');
-
-            await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el).length);
-            const info_messages = await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el));
+            await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view).length);
+            const info_messages = await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view));
             expect(info_messages.length).toBe(4);
             expect(info_messages.pop().textContent).toBe('/help: Show this menu');
             expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
@@ -40,7 +39,7 @@ describe("Chatboxes", function () {
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
             const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
-            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === 'hello world');
+            await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === 'hello world');
             done();
         }));
 
@@ -56,24 +55,24 @@ describe("Chatboxes", function () {
             for (const i of Array(10).keys()) {
                 mock.sendMessage(view, `Message ${i}`);
             }
-            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 10);
+            await u.waitUntil(() => sizzle('converse-chat-message', view).length === 10);
 
-            const textarea = view.el.querySelector('textarea.chat-textarea');
+            const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = '/clear';
-            view.onKeyDown({
+            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            bottom_panel.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             expect(window.confirm).toHaveBeenCalled();
-            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 0);
+            await u.waitUntil(() => sizzle('converse-chat-message', view).length === 0);
             done();
         }));
 
 
         it("is created when you click on a roster item", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                ['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -84,8 +83,9 @@ describe("Chatboxes", function () {
             spyOn(_converse.minimize, 'trimChats');
             expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
-            const online_contacts = _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group li').length, 700);
+            const online_contacts = rosterview.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
             expect(online_contacts.length).toBe(17);
             let el = online_contacts[0];
             el.click();
@@ -102,8 +102,8 @@ describe("Chatboxes", function () {
         }));
 
         it("opens when a new message is received", mock.initConverse(
-            ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
-            async function (done, _converse) {
+                [], {'allow_non_roster_messaging': true},
+                async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -122,10 +122,7 @@ describe("Chatboxes", function () {
             done();
         }));
 
-        it("doesn't open when a message without body is received", mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
-
+        it("doesn't open when a message without body is received", mock.initConverse([], {}, async function (done, _converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const stanza = u.toStanza(`
@@ -142,34 +139,30 @@ describe("Chatboxes", function () {
         }));
 
         it("is focused if its already open and you click on its corresponding roster item",
-            mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {'auto_focus': true}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
             expect(_converse.chatboxes.length).toEqual(1);
 
             const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            spyOn(_converse.ChatBoxView.prototype, 'focus').and.callThrough();
             const view = await mock.openChatBoxFor(_converse, contact_jid);
-            const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
+            const rosterview = document.querySelector('converse-roster');
+            const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', rosterview).pop();
             await u.waitUntil(() => u.isVisible(el));
-            const textarea = view.el.querySelector('.chat-textarea');
+            const textarea = view.querySelector('.chat-textarea');
             await u.waitUntil(() => u.isVisible(textarea));
             textarea.blur();
-            spyOn(view.model, 'maybeShow').and.callThrough();
-            spyOn(view, 'focus').and.callThrough();
             el.click();
-            await u.waitUntil(() => view.model.maybeShow.calls.count(), 1000);
-            expect(view.model.maybeShow).toHaveBeenCalled();
+            await u.waitUntil(() => view.focus.calls.count(), 1000);
             expect(view.focus).toHaveBeenCalled();
             expect(_converse.chatboxes.length).toEqual(2);
             done();
         }));
 
         it("can be saved to, and retrieved from, browserStorage",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             spyOn(_converse.minimize, 'trimChats');
             await mock.waitForRoster(_converse, 'current');
@@ -193,30 +186,28 @@ describe("Chatboxes", function () {
             // have the same attributes values as the original ones.
             const attrs = ['id', 'box_id', 'visible'];
             let new_attrs, old_attrs;
-            for (var i=0; i<attrs.length; i++) {
+            for (let i=0; i<attrs.length; i++) {
                 new_attrs = _.map(_.map(newchatboxes.models, 'attributes'), attrs[i]);
                 old_attrs = _.map(_.map(_converse.chatboxes.models, 'attributes'), attrs[i]);
                 expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
             }
-            _converse.rosterview.render();
             done();
         }));
 
         it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
             await mock.openChatBoxFor(_converse, contact_jid);
             const chatview = _converse.chatboxviews.get(contact_jid);
             spyOn(chatview, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
             // We need to rebind all events otherwise our spy won't be called
             chatview.delegateEvents();
-            chatview.el.querySelector('.close-chatbox-button').click();
+            chatview.querySelector('.close-chatbox-button').click();
             expect(chatview.close).toHaveBeenCalled();
             await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
@@ -224,19 +215,17 @@ describe("Chatboxes", function () {
         }));
 
         it("will be removed from browserStorage when closed",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
-            spyOn(_converse.minimize, 'trimChats');
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+            spyOn(_converse.minimize, 'trimChats');
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
             spyOn(_converse.api, "trigger").and.callThrough();
-
+            const promise = new Promise(resolve => _converse.api.listen.once('controlBoxClosed', resolve));
             mock.closeControlBox();
-            await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
-            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+            await promise;
             expect(_converse.chatboxes.length).toEqual(1);
             expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
             mock.openChatBoxes(_converse, 6);
@@ -265,65 +254,60 @@ describe("Chatboxes", function () {
         describe("A chat toolbar", function () {
 
             it("shows the remaining character count if a message_limit is configured",
-                mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},
-                    async function (done, _converse) {
+                    mock.initConverse(['chatBoxesFetched'], {'message_limit': 200}, async function (done, _converse) {
 
                 await mock.waitForRoster(_converse, 'current', 3);
                 await mock.openControlBox(_converse);
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const toolbar = view.el.querySelector('.chat-toolbar');
+                const toolbar = view.querySelector('.chat-toolbar');
                 const counter = toolbar.querySelector('.message-limit');
                 expect(counter.textContent).toBe('200');
                 view.insertIntoTextArea('hello world');
                 expect(counter.textContent).toBe('188');
 
                 toolbar.querySelector('.toggle-emojis').click();
-                const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__lists'));
+                const picker = await u.waitUntil(() => view.querySelector('.emoji-picker__lists'));
                 const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                 item.click()
                 expect(counter.textContent).toBe('179');
 
-                const textarea = view.el.querySelector('.chat-textarea');
+                const textarea = view.querySelector('.chat-textarea');
                 const ev = {
                     target: textarea,
                     preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 };
-                view.onKeyDown(ev);
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                view.onKeyUp(ev);
+                const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                bottom_panel.onKeyDown(ev);
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+                bottom_panel.onKeyUp(ev);
                 expect(counter.textContent).toBe('200');
 
                 textarea.value = 'hello world';
-                view.onKeyUp(ev);
+                bottom_panel.onKeyUp(ev);
                 expect(counter.textContent).toBe('189');
                 done();
             }));
 
 
             it("does not show a remaining character count if message_limit is zero",
-                mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 0},
-                    async function (done, _converse) {
+                    mock.initConverse(['chatBoxesFetched'], {'message_limit': 0}, async function (done, _converse) {
 
                 await mock.waitForRoster(_converse, 'current', 3);
                 await mock.openControlBox(_converse);
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const counter = view.el.querySelector('.chat-toolbar .message-limit');
+                const counter = view.querySelector('.chat-toolbar .message-limit');
                 expect(counter).toBe(null);
                 done();
             }));
 
 
             it("can contain a button for starting a call",
-                mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    async function (done, _converse) {
+                    mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
@@ -336,7 +320,7 @@ describe("Chatboxes", function () {
                 _converse.visible_toolbar_buttons.call = false;
                 await mock.openChatBoxFor(_converse, contact_jid);
                 let view = _converse.chatboxviews.get(contact_jid);
-                toolbar = view.el.querySelector('.chat-toolbar');
+                toolbar = view.querySelector('.chat-toolbar');
                 call_button = toolbar.querySelector('.toggle-call');
                 expect(call_button === null).toBeTruthy();
                 view.close();
@@ -345,7 +329,7 @@ describe("Chatboxes", function () {
                 _converse.visible_toolbar_buttons.call = true; // enable the button
                 await mock.openChatBoxFor(_converse, contact_jid);
                 view = _converse.chatboxviews.get(contact_jid);
-                toolbar = view.el.querySelector('.chat-toolbar');
+                toolbar = view.querySelector('.chat-toolbar');
                 call_button = toolbar.querySelector('.toggle-call');
                 call_button.click();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
@@ -355,11 +339,7 @@ describe("Chatboxes", function () {
 
         describe("A Chat Status Notification", function () {
 
-            it("does not open a new chatbox",
-                mock.initConverse(
-                    ['rosterGroupsFetched'], {},
-                    async function (done, _converse) {
-
+            it("does not open a new chatbox", mock.initConverse([], {}, async function (done, _converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -383,14 +363,13 @@ describe("Chatboxes", function () {
             describe("An active notification", function () {
 
                 it("is sent when the user opens a chat box",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openControlBox(_converse);
-                    u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     spyOn(_converse.connection, 'send');
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
@@ -406,20 +385,20 @@ describe("Chatboxes", function () {
                 }));
 
                 it("is sent when the user maximizes a minimized a chat box", mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    async function (done, _converse) {
+                        ['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current', 1);
                     await mock.openControlBox(_converse);
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
-                    view.model.minimize();
+                    _converse.minimize.minimize(view.model);
                     expect(view.model.get('chat_state')).toBe('inactive');
                     spyOn(_converse.connection, 'send');
-                    view.model.maximize();
+                    _converse.minimize.maximize(view.model);
                     await u.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
                     expect(_converse.connection.send).toHaveBeenCalled();
                     const calls = _.filter(_converse.connection.send.calls.all(), function (call) {
@@ -439,22 +418,23 @@ describe("Chatboxes", function () {
             describe("A composing notification", function () {
 
                 it("is sent as soon as the user starts typing a message which is not a command",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
-                    view.onKeyDown({
-                        target: view.el.querySelector('textarea.chat-textarea'),
+
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
@@ -468,8 +448,8 @@ describe("Chatboxes", function () {
                     expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
                     // The notification is not sent again
-                    view.onKeyDown({
-                        target: view.el.querySelector('textarea.chat-textarea'),
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
@@ -478,22 +458,23 @@ describe("Chatboxes", function () {
                 }));
 
                 it("is NOT sent out if send_chat_state_notifications doesn't allow it",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {'send_chat_state_notifications': []},
+                    mock.initConverse(['chatBoxesFetched'], {'send_chat_state_notifications': []},
                         async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
-                    view.onKeyDown({
-                        target: view.el.querySelector('textarea.chat-textarea'),
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
@@ -501,17 +482,14 @@ describe("Chatboxes", function () {
                     done();
                 }));
 
-                it("will be shown if received",
-                    mock.initConverse(
-                        ['rosterGroupsFetched'], {},
-                        async function (done, _converse) {
-
+                it("will be shown if received", mock.initConverse([], {}, async function (done, _converse) {
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
 
                     // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, sender_jid);
 
                     // <composing> state
@@ -525,7 +503,7 @@ describe("Chatboxes", function () {
                     _converse.connection._dataRecv(mock.createRequest(msg));
                     const view = _converse.chatboxviews.get(sender_jid);
                     let csn = mock.cur_names[1] + ' is typing';
-                    await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === csn);
+                    await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === csn);
                     expect(view.model.messages.length).toEqual(0);
 
                     // <paused> state
@@ -537,7 +515,7 @@ describe("Chatboxes", function () {
                         }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     _converse.connection._dataRecv(mock.createRequest(msg));
                     csn = mock.cur_names[1] + ' has stopped typing';
-                    await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === csn);
+                    await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === csn);
 
                     msg = $msg({
                             from: sender_jid,
@@ -547,15 +525,13 @@ describe("Chatboxes", function () {
                         }).c('body').t('hello world').tree();
                     await _converse.handleMessageStanza(msg);
                     const msg_el = await u.waitUntil(() => view.content.querySelector('.chat-msg'));
-                    await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === '');
+                    await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === '');
                     expect(msg_el.querySelector('.chat-msg__text').textContent).toBe('hello world');
                     done();
                 }));
 
                 it("is ignored if it's a composing carbon message sent by this user from a different client",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                     await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
@@ -584,7 +560,7 @@ describe("Chatboxes", function () {
 
                     await u.waitUntil(() => u.shouldCreateMessage.calls.count());
                     expect(view.model.messages.length).toEqual(0);
-                    const el = view.el.querySelector('.chat-content__notifications');
+                    const el = view.querySelector('.chat-content__notifications');
                     expect(el.textContent).toBe('');
                     done();
                 }));
@@ -593,22 +569,22 @@ describe("Chatboxes", function () {
             describe("A paused notification", function () {
 
                 it("is sent if the user has stopped typing since 30 seconds",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openControlBox(_converse);
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group li').length, 700);
                     _converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     spyOn(_converse.connection, 'send');
                     spyOn(view.model, 'setChatState').and.callThrough();
                     expect(view.model.get('chat_state')).toBe('active');
-                    view.onKeyDown({
-                        target: view.el.querySelector('textarea.chat-textarea'),
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
@@ -631,29 +607,26 @@ describe("Chatboxes", function () {
                     // Test #359. A paused notification should not be sent
                     // out if the user simply types longer than the
                     // timeout.
-                    view.onKeyDown({
-                        target: view.el.querySelector('textarea.chat-textarea'),
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.setChatState).toHaveBeenCalled();
                     expect(view.model.get('chat_state')).toBe('composing');
 
-                    view.onKeyDown({
-                        target: view.el.querySelector('textarea.chat-textarea'),
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
                     done();
                 }));
 
-                it("will be shown if received",
-                        mock.initConverse(
-                            ['rosterGroupsFetched'], {},
-                            async function (done, _converse) {
-
+                it("will be shown if received", mock.initConverse([], {}, async function (done, _converse) {
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     // TODO: only show paused state if the previous state was composing
                     // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                     spyOn(_converse.api, "trigger").and.callThrough();
@@ -669,15 +642,13 @@ describe("Chatboxes", function () {
 
                     _converse.connection._dataRecv(mock.createRequest(msg));
                     const csn = mock.cur_names[1] +  ' has stopped typing';
-                    await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === csn);
+                    await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === csn);
                     expect(view.model.messages.length).toEqual(0);
                     done();
                 }));
 
                 it("will not be shown if it's a paused carbon message that this user sent from a different client",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                     await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
@@ -703,7 +674,7 @@ describe("Chatboxes", function () {
                     _converse.connection._dataRecv(mock.createRequest(msg));
                     await u.waitUntil(() => u.shouldCreateMessage.calls.count());
                     expect(view.model.messages.length).toEqual(0);
-                    const el = view.el.querySelector('.chat-content__notifications');
+                    const el = view.querySelector('.chat-content__notifications');
                     expect(el.textContent).toBe('');
                     done();
                     done();
@@ -713,9 +684,7 @@ describe("Chatboxes", function () {
             describe("An inactive notification", function () {
 
                 it("is sent if the user has stopped typing since 2 minutes",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     const sent_stanzas = _converse.connection.sent_stanzas;
                     // Make the timeouts shorter so that we can test
@@ -725,15 +694,17 @@ describe("Chatboxes", function () {
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openControlBox(_converse);
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 1000);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 1000);
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     await u.waitUntil(() => view.model.get('chat_state') === 'active');
                     let messages = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('message')));
                     expect(messages.length).toBe(1);
                     expect(view.model.get('chat_state')).toBe('active');
-                    view.onKeyDown({
-                        target: view.el.querySelector('textarea.chat-textarea'),
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     await u.waitUntil(() => view.model.get('chat_state') === 'composing', 600);
@@ -776,9 +747,7 @@ describe("Chatboxes", function () {
                 }));
 
                 it("is sent when the user a minimizes a chat box",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                    mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
@@ -787,7 +756,7 @@ describe("Chatboxes", function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     spyOn(_converse.connection, 'send');
-                    view.minimize();
+                    _converse.minimize.minimize(view.model);
                     expect(view.model.get('chat_state')).toBe('inactive');
                     expect(_converse.connection.send).toHaveBeenCalled();
                     var stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
@@ -797,14 +766,13 @@ describe("Chatboxes", function () {
                 }));
 
                 it("is sent if the user closes a chat box",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openControlBox(_converse);
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     const view = await mock.openChatBoxFor(_converse, contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
@@ -821,9 +789,7 @@ describe("Chatboxes", function () {
                 }));
 
                 it("will clear any other chat status notifications",
-                    mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
@@ -831,7 +797,7 @@ describe("Chatboxes", function () {
                     // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                     await mock.openChatBoxFor(_converse, sender_jid);
                     const view = _converse.chatboxviews.get(sender_jid);
-                    expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
+                    expect(view.querySelectorAll('.chat-event').length).toBe(0);
                     // Insert <composing> message, to also check that
                     // text messages are inserted correctly with
                     // temporary chat events in the chat contents.
@@ -843,7 +809,7 @@ describe("Chatboxes", function () {
                         .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                         .tree();
                     _converse.connection._dataRecv(mock.createRequest(msg));
-                    const csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
+                    const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                     expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
                     expect(view.model.messages.length).toBe(0);
 
@@ -855,18 +821,14 @@ describe("Chatboxes", function () {
                         }).c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     _converse.connection._dataRecv(mock.createRequest(msg));
 
-                    await u.waitUntil(() => !view.el.querySelector('.chat-content__notifications').textContent);
+                    await u.waitUntil(() => !view.querySelector('.chat-content__notifications').textContent);
                     done();
                 }));
             });
 
             describe("A gone notification", function () {
 
-                it("will be shown if received",
-                    mock.initConverse(
-                        ['rosterGroupsFetched'], {},
-                        async function (done, _converse) {
-
+                it("will be shown if received", mock.initConverse([], {}, async function (done, _converse) {
                     await mock.waitForRoster(_converse, 'current', 3);
                     await mock.openControlBox(_converse);
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -881,7 +843,7 @@ describe("Chatboxes", function () {
                     _converse.connection._dataRecv(mock.createRequest(msg));
 
                     const view = _converse.chatboxviews.get(sender_jid);
-                    const csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
+                    const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                     expect(csntext).toEqual(mock.cur_names[1] + ' has gone away');
                     done();
                 }));
@@ -889,17 +851,14 @@ describe("Chatboxes", function () {
 
             describe("On receiving a message correction", function () {
 
-                it("will be removed",
-                    mock.initConverse(
-                        ['rosterGroupsFetched'], {},
-                        async function (done, _converse) {
-
+                it("will be removed", mock.initConverse([], {}, async function (done, _converse) {
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
 
                     // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                    const rosterview = document.querySelector('converse-roster');
+                    await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, sender_jid);
 
                     // Original message
@@ -928,7 +887,7 @@ describe("Chatboxes", function () {
                     }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     _converse.connection._dataRecv(mock.createRequest(msg));
 
-                    const csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
+                    const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                     expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
 
                     // Edited message
@@ -943,7 +902,7 @@ describe("Chatboxes", function () {
                         .c('replace', {'xmlns': Strophe.NS.MESSAGE_CORRECT, 'id': original_id }).tree();
 
                     await _converse.handleMessageStanza(edited);
-                    await u.waitUntil(() => !view.el.querySelector('.chat-content__notifications').textContent);
+                    await u.waitUntil(() => !view.querySelector('.chat-content__notifications').textContent);
                     done();
                 }));
             });
@@ -952,10 +911,8 @@ describe("Chatboxes", function () {
 
     describe("Special Messages", function () {
 
-        it("'/clear' can be used to clear messages in a conversation",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+        fit("'/clear' can be used to clear messages in a conversation",
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -968,27 +925,21 @@ describe("Chatboxes", function () {
             await mock.sendMessage(view, message);
 
             expect(view.model.messages.length === 1).toBeTruthy();
-            let stored_messages = await view.model.messages.browserStorage.findAll();
+            const stored_messages = await view.model.messages.browserStorage.findAll();
             expect(stored_messages.length).toBe(1);
-            await u.waitUntil(() => view.el.querySelector('.chat-msg'));
+            await u.waitUntil(() => view.querySelector('.chat-msg'));
 
             message = '/clear';
-            spyOn(view, 'clearMessages').and.callThrough();
-            spyOn(window, 'confirm').and.callFake(function () {
-                return true;
-            });
-            view.el.querySelector('.chat-textarea').value = message;
-            view.onKeyDown({
-                target: view.el.querySelector('textarea.chat-textarea'),
+            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            spyOn(window, 'confirm').and.callFake(() => true);
+            view.querySelector('.chat-textarea').value = message;
+            bottom_panel.onKeyDown({
+                target: view.querySelector('textarea.chat-textarea'),
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.clearMessages.calls.all().length).toBe(1);
-            await view.clearMessages.calls.all()[0].returnValue;
-            expect(window.confirm).toHaveBeenCalled();
-            expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
-            stored_messages = await view.model.messages.browserStorage.findAll();
-            expect(stored_messages.length).toBe(0);
+            expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
+            await u.waitUntil(() => view.model.messages.length === 0);
             expect(_converse.api.trigger.calls.count(), 1);
             expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
             done();
@@ -998,9 +949,7 @@ describe("Chatboxes", function () {
     describe("A ChatBox's Unread Message Count", function () {
 
         it("is incremented when the message is received and ChatBoxView is scrolled up",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
@@ -1021,9 +970,7 @@ describe("Chatboxes", function () {
         }));
 
         it("is not incremented when the message is received and ChatBoxView is scrolled down",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1040,11 +987,9 @@ describe("Chatboxes", function () {
         }));
 
         it("is incremented when message is received, chatbox is scrolled down and the window is not focused",
-            mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
-
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = function () {
                 return mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
@@ -1066,9 +1011,7 @@ describe("Chatboxes", function () {
         }));
 
         it("is incremented when message is received, chatbox is scrolled up and the window is not focused",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1091,9 +1034,7 @@ describe("Chatboxes", function () {
         }));
 
         it("is cleared when ChatBoxView was scrolled down and the window become focused",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1112,16 +1053,14 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 1);
             expect(sent_stanzas[0].querySelector('received')).toBeDefined();
             _converse.saveWindowState({'type': 'focus'});
-            expect(chatbox.get('num_unread')).toBe(0);
             await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
             expect(sent_stanzas[1].querySelector('displayed')).toBeDefined();
+            expect(chatbox.get('num_unread')).toBe(0);
             done();
         }));
 
         it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1151,14 +1090,13 @@ describe("Chatboxes", function () {
     describe("A RosterView's Unread Message Count", function () {
 
         it("is updated when message is received and chatbox is scrolled up",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             let msg, indicator_el;
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
             chatbox.save('scrolled', true);
@@ -1166,112 +1104,107 @@ describe("Chatboxes", function () {
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            indicator_el = sizzle(selector, _converse.rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('1');
             msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread too');
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length > 1);
-            indicator_el = sizzle(selector, _converse.rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('2');
             done();
         }));
 
         it("is updated when message is received and chatbox is minimized",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             let indicator_el, msg;
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
-            var chatboxview = _converse.chatboxviews.get(sender_jid);
-            chatboxview.minimize();
+            _converse.minimize.minimize(chatbox);
 
             msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            indicator_el = sizzle(selector, _converse.rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('1');
 
             msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread too');
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length === 2);
-            indicator_el = sizzle(selector, _converse.rosterview.el).pop();
+            indicator_el = sizzle(selector, rosterview).pop();
             expect(indicator_el.textContent).toBe('2');
             done();
         }));
 
         it("is cleared when chatbox is maximzied after receiving messages in minimized mode",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
-            view.minimize();
+            const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
+            _converse.minimize.minimize(view.model);
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length);
             expect(select_msgs_indicator().textContent).toBe('1');
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length > 1);
             expect(select_msgs_indicator().textContent).toBe('2');
-            view.model.maximize();
+            _converse.minimize.minimize(view.model);
             u.waitUntil(() => typeof select_msgs_indicator() === 'undefined');
             done();
         }));
 
         it("is cleared when unread messages are viewed which were received in scrolled-up chatbox",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
             const selector = `a.open-chat:contains("${chatbox.get('nickname')}") .msgs-indicator`;
-            const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
+            const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
             chatbox.save('scrolled', true);
             _converse.handleMessageStanza(msgFactory());
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => view.model.messages.length);
             expect(select_msgs_indicator().textContent).toBe('1');
             view.viewUnreadMessages();
-            _converse.rosterview.render();
-            expect(select_msgs_indicator()).toBeUndefined();
+            rosterview.render();
+            await u.waitUntil(() => select_msgs_indicator() === undefined);
             done();
         }));
 
         it("is not cleared after user clicks on roster view when chatbox is already opened and scrolled up",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
             const msg = 'This message will be received as unread, but eventually will be read';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, msg);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
-            const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
+            const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
             chatbox.save('scrolled', true);
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => view.model.messages.length);

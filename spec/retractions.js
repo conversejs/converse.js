@@ -6,7 +6,7 @@ const u = converse.env.utils;
 
 async function sendAndThenRetractMessage (_converse, view) {
     view.model.sendMessage('hello world');
-    await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text').length === 1);
+    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
     const msg_obj = view.model.messages.last();
     const reflection_stanza = u.toStanza(`
         <message xmlns="jabber:client"
@@ -20,9 +20,9 @@ async function sendAndThenRetractMessage (_converse, view) {
             <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
         </message>`);
     await view.model.handleMessageStanza(reflection_stanza);
-    await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
+    await u.waitUntil(() => view.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
 
-    const retract_button = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .chat-msg__action-retract'));
+    const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
     retract_button.click();
     await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
     const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
@@ -37,9 +37,7 @@ describe("Message Retractions", function () {
     describe("A groupchat message retraction", function () {
 
         it("is not applied if it's not from the right author",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -53,7 +51,7 @@ describe("Message Retractions", function () {
             `);
             const view = _converse.api.chatviews.get(muc_jid);
             await view.model.handleMessageStanza(received_stanza);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
             expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
 
@@ -69,7 +67,7 @@ describe("Message Retractions", function () {
             _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1);
             expect(await view.model.handleRetraction.calls.first().returnValue).toBe(true);
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.model.messages.length).toBe(2);
             expect(view.model.messages.at(1).get('retracted')).toBeTruthy();
             expect(view.model.messages.at(1).get('is_ephemeral')).toBeFalsy();
@@ -81,9 +79,7 @@ describe("Message Retractions", function () {
         }));
 
         it("can be received before the message it pertains to",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
@@ -119,7 +115,7 @@ describe("Message Retractions", function () {
             `);
             _converse.connection._dataRecv(mock.createRequest(received_stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 2);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1, 1000);
             expect(view.model.messages.length).toBe(1);
 
             const message = view.model.messages.at(0)
@@ -137,9 +133,7 @@ describe("Message Retractions", function () {
     describe("A groupchat message moderator retraction", function () {
 
         it("can be received before the message it pertains to",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
@@ -179,8 +173,8 @@ describe("Message Retractions", function () {
             _converse.connection._dataRecv(mock.createRequest(received_stanza));
             await u.waitUntil(() => view.model.handleModeration.calls.count() === 2);
 
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.model.messages.length).toBe(1);
 
             const message = view.model.messages.at(0)
@@ -198,9 +192,7 @@ describe("Message Retractions", function () {
     describe("A message retraction", function () {
 
         it("can be received before the message it pertains to",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const date = (new Date()).toISOString();
             await mock.waitForRoster(_converse, 'current', 1);
@@ -227,7 +219,7 @@ describe("Message Retractions", function () {
             expect(message.get('dangling_retraction')).toBe(true);
             expect(message.get('is_ephemeral')).toBe(false);
             expect(message.get('retracted')).toBeTruthy();
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(0);
 
             const stanza = u.toStanza(`
                 <message xmlns="jabber:client"
@@ -255,11 +247,7 @@ describe("Message Retractions", function () {
 
     describe("A Received Chat Message", function () {
 
-        it("can be followed up by a retraction",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
+        it("can be followed up by a retraction", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -279,7 +267,7 @@ describe("Message Retractions", function () {
 
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
             stanza = u.toStanza(`
                 <message xmlns="jabber:client"
@@ -295,7 +283,7 @@ describe("Message Retractions", function () {
 
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 2);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
 
             const retraction_stanza =  u.toStanza(`
                 <message id="${u.getUniqueId()}"
@@ -309,33 +297,29 @@ describe("Message Retractions", function () {
                 </message>
             `);
             _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
 
             expect(view.model.messages.length).toBe(2);
 
             const message = view.model.messages.at(1);
             expect(message.get('retracted')).toBeTruthy();
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(msg_el.textContent.trim()).toBe('Mercutio has removed this message');
-            expect(u.hasClass('chat-msg--followup', view.el.querySelector('.chat-msg--retracted'))).toBe(true);
+            expect(u.hasClass('chat-msg--followup', view.querySelector('.chat-msg--retracted'))).toBe(true);
             done();
         }));
     });
 
     describe("A Sent Chat Message", function () {
 
-        it("can be retracted by its author",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
+        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);
 
             view.model.sendMessage('hello world');
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
             const message = view.model.messages.at(0);
             expect(view.model.messages.length).toBe(1);
@@ -343,14 +327,14 @@ describe("Message Retractions", function () {
             expect(message.get('editable')).toBeTruthy();
 
 
-            const retract_button = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .chat-msg__action-retract'));
+            const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
             await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
             submit_button.click();
 
             const sent_stanzas = _converse.connection.sent_stanzas;
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
 
             const msg_obj = view.model.messages.at(0);
             const retraction_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('message apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
@@ -365,8 +349,8 @@ describe("Message Retractions", function () {
             expect(view.model.messages.length).toBe(1);
             expect(message.get('retracted')).toBeTruthy();
             expect(message.get('editable')).toBeFalsy();
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(el.textContent.trim()).toBe('Romeo Montague has removed this message');
             done();
         }));
@@ -375,11 +359,7 @@ describe("Message Retractions", function () {
 
     describe("A Received Groupchat Message", function () {
 
-        it("can be followed up by a retraction by the author",
-                mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    async function (done, _converse) {
-
+        it("can be followed up by a retraction by the author", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
@@ -393,7 +373,7 @@ describe("Message Retractions", function () {
             `);
             const view = _converse.api.chatviews.get(muc_jid);
             await view.model.handleMessageStanza(received_stanza);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
             expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
 
@@ -407,12 +387,12 @@ describe("Message Retractions", function () {
             _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
 
             // We opportunistically save the message as retracted, even before receiving the retraction message
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
             expect(view.model.messages.at(0).get('editable')).toBe(false);
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(msg_el.textContent.trim()).toBe('eve has removed this message');
             expect(msg_el.querySelector('.chat-msg--retracted q')).toBe(null);
             done();
@@ -420,9 +400,7 @@ describe("Message Retractions", function () {
 
 
         it("can be retracted by a moderator, with the IQ response received before the retraction message",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -443,7 +421,7 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
 
             const reason = "This content is inappropriate for this forum!"
-            const retract_button = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .chat-msg__action-retract'));
+            const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
 
             await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
@@ -472,15 +450,15 @@ describe("Message Retractions", function () {
             _converse.connection._dataRecv(mock.createRequest(result_iq));
 
             // We opportunistically save the message as retracted, even before receiving the retraction message
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
             expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
 
-            const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has removed this message');
 
             const qel = msg_el.querySelector('q');
@@ -506,9 +484,7 @@ describe("Message Retractions", function () {
         }));
 
         it("can not be retracted if the MUC doesn't support message moderation",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -523,8 +499,8 @@ describe("Message Retractions", function () {
                 </message>
             `);
             await view.model.handleMessageStanza(received_stanza);
-            await u.waitUntil(() => view.el.querySelector('.chat-msg__content'));
-            expect(view.el.querySelector('.chat-msg__content .chat-msg__action-retract')).toBe(null);
+            await u.waitUntil(() => view.querySelector('.chat-msg__content'));
+            expect(view.querySelector('.chat-msg__content .chat-msg__action-retract')).toBe(null);
             const result = await view.model.canModerateMessages();
             expect(result).toBe(false);
             done();
@@ -532,9 +508,7 @@ describe("Message Retractions", function () {
 
 
         it("can be retracted by a moderator, with the retraction message received before the IQ response",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -553,7 +527,7 @@ describe("Message Retractions", function () {
             await u.waitUntil(() => view.model.messages.length === 1);
             expect(view.model.messages.length).toBe(1);
 
-            const retract_button = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .chat-msg__action-retract'));
+            const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
             await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
 
@@ -579,13 +553,13 @@ describe("Message Retractions", function () {
                 </message>`);
             await view.model.handleMessageStanza(retraction);
 
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(msg_el.textContent).toBe('romeo has removed this message');
-            const qel = view.el.querySelector('.chat-msg--retracted .chat-msg__message q');
+            const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
             expect(qel.textContent).toBe('This content is inappropriate for this forum!');
 
             const result_iq = $iq({'from': muc_jid, 'id': stanza.getAttribute('id'), 'to': _converse.bare_jid, 'type': 'result'});
@@ -602,11 +576,7 @@ describe("Message Retractions", function () {
 
     describe("A Sent Groupchat Message", function () {
 
-        it("can be retracted by its author",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
+        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
@@ -615,7 +585,7 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
             const retraction_stanza = await sendAndThenRetractMessage(_converse, view);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1, 1000);
             console.log('XXX: First message retracted by author');
 
             const msg_obj = view.model.messages.last();
@@ -654,16 +624,14 @@ describe("Message Retractions", function () {
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             expect(view.model.messages.last().get('is_ephemeral')).toBe(false);
             expect(view.model.messages.last().get('editable')).toBe(false);
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent).toBe('romeo has removed this message');
             done();
         }));
 
         it("can be retracted by its author, causing an error message in response",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -672,13 +640,13 @@ describe("Message Retractions", function () {
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
-            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.includes("romeo is no longer a moderator"));
+            await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.includes("romeo is no longer a moderator"));
             const retraction_stanza = await sendAndThenRetractMessage(_converse, view);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1, 1000);
 
             expect(view.model.messages.length).toBe(1);
             await u.waitUntil(() => view.model.messages.last().get('retracted'), 1000);
-            const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('romeo has removed this message');
 
             const message = view.model.messages.last();
@@ -697,22 +665,20 @@ describe("Message Retractions", function () {
                 </message>`);
 
             _converse.connection._dataRecv(mock.createRequest(error));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__error').length === 1, 1000);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 0, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 1, 1000);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 0, 1000);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
             expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
             expect(view.model.messages.at(0).get('editable')).toBe(false);
 
-            const errmsg = view.el.querySelector('.chat-msg__error');
+            const errmsg = view.querySelector('.chat-msg__error');
             expect(errmsg.textContent.trim()).toBe("You're not allowed to retract your message.");
             done();
         }));
 
         it("can be retracted by its author, causing a timeout error in response",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             _converse.STANZA_TIMEOUT = 1;
 
@@ -723,34 +689,30 @@ describe("Message Retractions", function () {
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
-            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.includes("romeo is no longer a moderator"))
+            await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.includes("romeo is no longer a moderator"))
             await sendAndThenRetractMessage(_converse, view);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
-            const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('romeo has removed this message');
 
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 0);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 0);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
             expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
             expect(view.model.messages.at(0).get('editable')).toBeTruthy();
 
-            const error_messages = view.el.querySelectorAll('.chat-msg__error');
+            const error_messages = view.querySelectorAll('.chat-msg__error');
             expect(error_messages.length).toBe(1);
             expect(error_messages[0].textContent.trim()).toBe('A timeout happened while while trying to retract your message.');
             done();
         }));
 
 
-        it("can be retracted by a moderator",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
+        it("can be retracted by a moderator", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
@@ -759,7 +721,7 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
 
             view.model.sendMessage('Visit this site to get free bitcoin');
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             const stanza_id = 'retraction-id-1';
             const msg_obj = view.model.messages.at(0);
             const reflection_stanza = u.toStanza(`
@@ -774,7 +736,7 @@ describe("Message Retractions", function () {
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
             await view.model.handleMessageStanza(reflection_stanza);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('editable')).toBe(true);
 
@@ -799,9 +761,7 @@ describe("Message Retractions", function () {
         }));
 
         it("can be retracted by the sender if they're a moderator",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {'allow_message_retraction': 'moderator'},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {'allow_message_retraction': 'moderator'}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -811,7 +771,7 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
 
             view.model.sendMessage('Visit this site to get free bitcoin');
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             const stanza_id = 'retraction-id-1';
             const msg_obj = view.model.messages.at(0);
             const reflection_stanza = u.toStanza(`
@@ -826,11 +786,11 @@ describe("Message Retractions", function () {
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
             await view.model.handleMessageStanza(reflection_stanza);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('editable')).toBe(true);
 
-            const retract_button = await u.waitUntil(() => view.msgs_container.querySelector('.chat-msg__content .chat-msg__action-retract'));
+            const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
             await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
@@ -853,15 +813,15 @@ describe("Message Retractions", function () {
             _converse.connection._dataRecv(mock.createRequest(result_iq));
 
             // We opportunistically save the message as retracted, even before receiving the retraction message
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(undefined);
             expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
 
-            const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has removed this message');
             expect(msg_el.querySelector('q')).toBe(null);
 
@@ -967,9 +927,9 @@ describe("Message Retractions", function () {
             expect(await view.model.handleRetraction.calls.first().returnValue).toBe(false);
             expect(await view.model.handleRetraction.calls.all()[1].returnValue).toBe(false);
             expect(await view.model.handleRetraction.calls.all()[2].returnValue).toBe(true);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('Mercutio has removed this message');
             expect(u.hasClass('chat-msg--followup', el.parentElement)).toBe(false);
             done();
@@ -1043,10 +1003,10 @@ describe("Message Retractions", function () {
             message = view.model.messages.at(0);
             expect(message.get('retracted')).toBeTruthy();
             expect(message.get('is_tombstone')).toBe(true);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('eve has removed this message');
             done();
         }));
@@ -1128,13 +1088,13 @@ describe("Message Retractions", function () {
             expect(message.get('is_tombstone')).toBe(true);
             expect(message.get('moderation_reason')).toBe("This message contains inappropriate content");
 
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length, 500);
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length, 500);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
-            expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('A moderator has removed this message');
-            const qel = view.el.querySelector('.chat-msg--retracted .chat-msg__message q');
+            const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
             expect(qel.textContent.trim()).toBe('This message contains inappropriate content');
             done();
         }));

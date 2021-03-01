@@ -43,7 +43,7 @@ export default (o) => {
 
                 ${ o.model.get('ogp_metadata')?.map(m =>
                     html`<converse-message-unfurl
-                        jid="${o.jid}"
+                        jid="${o.model.collection.chatbox?.get('jid')}"
                         description="${m['og:description']}"
                         title="${m['og:title']}"
                         image="${m['og:image']}"

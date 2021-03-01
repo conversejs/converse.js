@@ -2133,12 +2133,6 @@ const ChatRoomMixin = {
             }
             const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
             if (message) {
-                if (!attrs['og:url'] || !message.get('body').includes(attrs['og:url'])) {
-                    // For security purposes, we don't show metadata for a URL not actually
-                    // included in the original message
-                    log.warn("Not showing OGP data because we can't find the relevant URL in the original message");
-                    return false;
-                }
                 const old_list = (message.get('ogp_metadata') || []);
                 if (old_list.filter(m => m['og:url'] === attrs['og:url']).length) {
                     // Don't add metadata for the same URL again

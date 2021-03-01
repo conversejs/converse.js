@@ -13,24 +13,6 @@ const { Strophe, $msg } = converse.env;
 
 const u = converse.env.utils;
 
-const METADATA_ATTRIBUTES = [
-    "og:description",
-    "og:image",
-    "og:image:height",
-    "og:image:width",
-    "og:site_name",
-    "og:title",
-    "og:type",
-    "og:url",
-    "og:video:height",
-    "og:video:secure_url",
-    "og:video:tag",
-    "og:video:type",
-    "og:video:url",
-    "og:video:width"
-];
-
-
 /**
  * Represents an open/ongoing chat conversation.
  *
@@ -483,20 +465,6 @@ const ChatBox = ModelWithContact.extend({
                 delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
                 message.save(new_attrs);
                 return true;
-            }
-        }
-        return false;
-    },
-
-    handleMetadataFastening (attrs) {
-        if (attrs.ogp_for_id) {
-            const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
-            if (message) {
-                const list = [...(message.get('ogp_metadata') || []), pick(attrs, METADATA_ATTRIBUTES)];
-                message.save('ogp_metadata', list);
-                return true;
-            } else {
-                return false;
             }
         }
         return false;

@@ -16,6 +16,23 @@ const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revo
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
 const VISITOR_COMMANDS = ['nick'];
 
+const METADATA_ATTRIBUTES = [
+    "og:description",
+    "og:image",
+    "og:image:height",
+    "og:image:width",
+    "og:site_name",
+    "og:title",
+    "og:type",
+    "og:url",
+    "og:video:height",
+    "og:video:secure_url",
+    "og:video:tag",
+    "og:video:type",
+    "og:video:url",
+    "og:video:width"
+];
+
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 
 const MUCSession = Model.extend({
@@ -2102,6 +2119,29 @@ const ChatRoomMixin = {
         const actors_per_role_change = converse.MUC_ROLE_CHANGES_LIST.reduce(reducer, {});
         this.notifications.set(Object.assign(actors_per_chat_state, actors_per_traffic_state, actors_per_role_change));
         window.setTimeout(() => this.removeNotification(actor, state), 10000);
+    },
+
+    handleMetadataFastening (attrs) {
+        if (attrs.ogp_for_id) {
+            if (attrs.from !== this.get('jid')) {
+                // For now we only allow metadata from the MUC itself and not
+                // from individual users who are deemed less trustworthy.
+                return false;
+            }
+            const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
+            if (message) {
+                if (!attrs['og:url'] || !message.get('body').includes(attrs['og:url'])) {
+                    // For security purposes, we don't show metadata for a URL not actually
+                    // included in the original message
+                    log.warn("Not showing OGP data because we can't find the relevant URL in the original message");
+                    return false;
+                }
+                const list = [...(message.get('ogp_metadata') || []), pick(attrs, METADATA_ATTRIBUTES)];
+                message.save('ogp_metadata', list);
+                return true;
+            }
+        }
+        return false;
     },
 
     /**

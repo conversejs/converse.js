@@ -911,7 +911,7 @@ describe("Chatboxes", function () {
 
     describe("Special Messages", function () {
 
-        fit("'/clear' can be used to clear messages in a conversation",
+        it("'/clear' can be used to clear messages in a conversation",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');

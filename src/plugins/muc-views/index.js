@@ -135,7 +135,7 @@ converse.plugins.add('converse-muc-views', {
             // _converse.chatboxes.on('add', addView);
         });
 
-        api.listen.on('clearSession', () => {
+        api.listen.on('clearsession', () => {
             const view = _converse.chatboxviews.get('controlbox');
             if (view && view.roomspanel) {
                 view.roomspanel.model.destroy();

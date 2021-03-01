@@ -1471,6 +1471,20 @@ a nickname configured for it), you'll see the message history (if the
 server supports `XEP-0313 Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_)
 and the nickname form at the bottom.
 
+muc_show_ogp_unfurls
+--------------------
+
+* Default: ``true``
+
+Supports showing extra metadata (picture and description) for URLs contained in
+groupchat messages.
+
+The metadat must come from the MUC itself, metadata sent from participants
+themselves will not be shown.
+
+For Prosody XMPP server, `mod_ogp <https://modules.prosody.im/mod_ogp.html>`_ can be used.
+
+
 muc_subscribe_to_rai
 --------------------
 

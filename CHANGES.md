@@ -16,6 +16,7 @@
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 - New configuration setting: [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
 - New configuration setting: [send_chat_markers](https://conversejs.org/docs/html/configuration.html#send-chat-markers)
+- New configuration setting: [muc_show_ogp_unfurls](https://conversejs.org/docs/html/configuration.html#muc-show-ogp-unfurls)
 - #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
 - Use the MUC stanza id when sending XEP-0333 markers
 - Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)

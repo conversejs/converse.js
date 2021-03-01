@@ -19,10 +19,10 @@ export default class MessageUnfurl extends CustomElement {
         return tpl_unfurl(Object.assign({
             'onload': () => this.onImageLoad()
         }, {
-            description: this.description,
-            image: this.image,
-            title: this.title,
-            url: this.url
+            description: this.description || '',
+            image: this.image || '',
+            title: this.title || '',
+            url: this.url || ''
         }));
     }
 

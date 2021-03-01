@@ -44,10 +44,10 @@ export default (o) => {
                 ${ o.model.get('ogp_metadata')?.map(m =>
                     html`<converse-message-unfurl
                         jid="${o.model.collection.chatbox?.get('jid')}"
-                        description="${m['og:description']}"
-                        title="${m['og:title']}"
-                        image="${m['og:image']}"
-                        url="${m['og:url']}"></converse-message-unfurl>`) }
+                        description="${m['og:description'] || ''}"
+                        title="${m['og:title'] || ''}"
+                        image="${m['og:image'] || ''}"
+                        url="${m['og:url'] || ''}"></converse-message-unfurl>`) }
             </div>
         </div>`;
 }

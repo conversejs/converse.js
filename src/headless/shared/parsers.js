@@ -127,7 +127,7 @@ export function getOpenGraphMetadata (stanza) {
         const applies_to_id = fastening.getAttribute('id');
         const meta = sizzle(`> meta[xmlns="${Strophe.NS.XHTML}"]`, fastening);
         if (meta.length) {
-            return meta.reduce((acc, el) => {
+            const data = meta.reduce((acc, el) => {
                 const property = el.getAttribute('property');
                 if (property) {
                     acc[property] = decodeHTMLEntities(el.getAttribute('content') || '');
@@ -136,6 +136,10 @@ export function getOpenGraphMetadata (stanza) {
             }, {
                 'ogp_for_id': applies_to_id,
             });
+
+            if ("og:description" in data || "og:title" in data || "og:image" in data) {
+                return data;
+            }
         }
     }
     return {};

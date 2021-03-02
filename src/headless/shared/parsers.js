@@ -127,10 +127,15 @@ export function getOpenGraphMetadata (stanza) {
         const applies_to_id = fastening.getAttribute('id');
         const meta = sizzle(`> meta[xmlns="${Strophe.NS.XHTML}"]`, fastening);
         if (meta.length) {
+            const msg_limit = api.settings.get('message_limit');
             const data = meta.reduce((acc, el) => {
                 const property = el.getAttribute('property');
                 if (property) {
-                    acc[property] = decodeHTMLEntities(el.getAttribute('content') || '');
+                    let value = decodeHTMLEntities(el.getAttribute('content') || '');
+                    if (msg_limit && property === 'og:description' && value.length >= msg_limit) {
+                        value = `${value.slice(0, msg_limit)}${decodeHTMLEntities('&#8230;')}`;
+                    }
+                    acc[property] = value;
                 }
                 return acc;
             }, {

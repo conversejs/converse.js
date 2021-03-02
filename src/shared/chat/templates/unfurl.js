@@ -8,6 +8,7 @@ export default (o) => {
         <div class="card-body">
             <a href="${o.url}" target="_blank" rel="noopener"><h5 class="card-title">${o.title}</h5></a>
             <p class="card-text">${u.addHyperlinks(o.description)}</p>
+            <p class="card-text"><a href="${o.url}" target="_blank" rel="noopener">${u.getURI(o.url).domain()}</a></p>
         </div>
     </div>`;
 }

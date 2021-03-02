@@ -221,4 +221,44 @@ describe("A Groupchat Message", function () {
         expect(unfurls.length).toBe(1);
         done();
     }));
+
+    it("will not render an unfurl image if the domain is not in show_images_inline",
+            mock.initConverse(['chatBoxesFetched'],
+            {'show_images_inline': []},
+            async function (done, _converse) {
+
+        const nick = 'romeo';
+        const muc_jid = 'lounge@montague.lit';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const view = _converse.api.chatviews.get(muc_jid);
+
+        const message_stanza = u.toStanza(`
+            <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
+                <body>https://www.youtube.com/watch?v=dQw4w9WgXcQ</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
+                <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
+                <markable xmlns="urn:xmpp:chat-markers:0"/>
+            </message>`);
+        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+
+        const metadata_stanza = u.toStanza(`
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
+                <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:title" content="Rick Astley - Never Gonna Give You Up (Video)" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
+                </apply-to>
+            </message>`);
+        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+
+        const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
+        expect(unfurl.querySelector('.card-img-top')).toBe(null);
+        done();
+    }));
+
 });

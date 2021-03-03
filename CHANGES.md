@@ -36,6 +36,7 @@ Removed events:
 
 - #2377: The @converse/headless NPM package is missing the dist directory, causing import errors
 - #2396: @converse/headless wrongly depends on `CustomElement` from the view layer
+- #2381: Converse does not reflect the browser language
 
 ## 7.0.4 (2020-12-09)
 

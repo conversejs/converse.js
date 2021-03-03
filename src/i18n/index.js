@@ -16,12 +16,12 @@ function detectLocale (library_check) {
      * @param { Function } library_check - Returns a boolean indicating whether
      *   the locale is supported.
      */
-    var locale, i;
+    let locale;
     if (window.navigator.userLanguage) {
         locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
     }
     if (window.navigator.languages && !locale) {
-        for (i=0; i<window.navigator.languages.length && !locale; i++) {
+        for (let i=0; i<window.navigator.languages.length && !locale; i++) {
             locale = isLocaleAvailable(window.navigator.languages[i], library_check);
         }
     }
@@ -113,7 +113,8 @@ Object.assign(i18n, {
             _converse.locale = 'en';
         } else {
             try {
-                _converse.locale = i18n.getLocale(api.settings.get('i18n'), api.settings.get("locales"));
+                const preferred_locale = api.settings.get('i18n');
+                _converse.locale = i18n.getLocale(preferred_locale, api.settings.get("locales"));
                 await fetchTranslations(_converse);
             } catch (e) {
                 log.fatal(e.message);

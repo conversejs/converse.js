@@ -15,10 +15,13 @@ export default class ChatBottomPanel extends ElementView {
         'click .toggle-clear': 'clearMessages',
     }
 
-    connectedCallback () {
+    async connectedCallback () {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
+
+        await this.model.initialized;
+        this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.render();
     }
 
@@ -74,6 +77,19 @@ export default class ChatBottomPanel extends ElementView {
         this.addEventListener('focusin', ev => this.emitFocused(ev));
         this.addEventListener('focusout', ev => this.emitBlurred(ev));
         this.renderToolbar();
+    }
+
+    onMessageCorrecting (message) {
+        if (message.get('correcting')) {
+            this.insertIntoTextArea(u.prefixMentions(message), true, true);
+        } else {
+            const currently_correcting = this.model.messages.findWhere('correcting');
+            if (currently_correcting && currently_correcting !== message) {
+                this.insertIntoTextArea(u.prefixMentions(message), true, true);
+            } else {
+                this.insertIntoTextArea('', true, false);
+            }
+        }
     }
 
     emitFocused (ev) {

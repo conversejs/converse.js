@@ -264,7 +264,7 @@ describe("Chatboxes", function () {
                 const toolbar = view.querySelector('.chat-toolbar');
                 const counter = toolbar.querySelector('.message-limit');
                 expect(counter.textContent).toBe('200');
-                view.insertIntoTextArea('hello world');
+                view.getBottomPanel().insertIntoTextArea('hello world');
                 expect(counter.textContent).toBe('188');
 
                 toolbar.querySelector('.toggle-emojis').click();

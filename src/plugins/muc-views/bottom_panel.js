@@ -15,12 +15,10 @@ export default class MUCBottomPanel extends BottomPanel {
     }
 
     async connectedCallback () {
-        super.connectedCallback();
+        // this.model gets set in the super method and we also wait there for this.model.initialized
+        await super.connectedCallback();
         this.debouncedRender = debounce(this.render, 100);
-        this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
-
-        await this.model.initialized;
         this.listenTo(this.model, 'change:hidden_occupants', this.debouncedRender);
         this.listenTo(this.model.features, 'change:moderated', this.debouncedRender);
         this.listenTo(this.model.occupants, 'add', this.renderIfOwnOccupant)

@@ -152,46 +152,12 @@ export default class BaseChatView extends ElementView {
         }
     }
 
-    onEmojiReceivedFromPicker (emoji) {
-        const model = this.querySelector('converse-emoji-picker').model;
-        const autocompleting = model.get('autocompleting');
-        const ac_position = model.get('ac_position');
-        this.insertIntoTextArea(emoji, autocompleting, false, ac_position);
-    }
-
-    onMessageCorrecting (message) {
-        if (message.get('correcting')) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
-        } else {
-            const currently_correcting = this.model.messages.findWhere('correcting');
-            if (currently_correcting && currently_correcting !== message) {
-                this.insertIntoTextArea(u.prefixMentions(message), true, true);
-            } else {
-                this.insertIntoTextArea('', true, false);
-            }
-        }
-    }
-
-    /**
-     * Insert a particular string value into the textarea of this chat box.
-     * @private
-     * @method _converse.ChatBoxView#insertIntoTextArea
-     * @param {string} value - The value to be inserted.
-     * @param {(boolean|string)} [replace] - Whether an existing value
-     *  should be replaced. If set to `true`, the entire textarea will
-     *  be replaced with the new value. If set to a string, then only
-     *  that string will be replaced *if* a position is also specified.
-     * @param {integer} [position] - The end index of the string to be
-     * replaced with the new value.
-     */
-    insertIntoTextArea (value, replace = false, correcting = false, position) {
-        let bottom_panel;
+    getBottomPanel () {
         if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
-            bottom_panel = this.querySelector('converse-muc-bottom-panel');
+            return this.querySelector('converse-muc-bottom-panel');
         } else {
-            bottom_panel = this.querySelector('converse-chat-bottom-panel');
+            return this.querySelector('converse-chat-bottom-panel');
         }
-        bottom_panel.insertIntoTextArea(value, replace, correcting, position);
     }
 
     /**

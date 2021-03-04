@@ -54,7 +54,6 @@ export default class MUCView extends BaseChatView {
         this.listenTo(this.model, 'change:minimized', () => this.afterShown());
         this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
         this.listenTo(this.model, 'show', this.show);
-        this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model.session, 'change:connection_status', this.renderAfterTransition);
 
         // Bind so that we can pass it to addEventListener and removeEventListener

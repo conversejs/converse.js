@@ -17,6 +17,8 @@ const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
 const VISITOR_COMMANDS = ['nick'];
 
 const METADATA_ATTRIBUTES = [
+    "og:article:author",
+    "og:article:published_time",
     "og:description",
     "og:image",
     "og:image:height",

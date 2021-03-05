@@ -147,3 +147,10 @@ A heartfelt thanks for everyone who has supported this project over the years.
 Many people have contributed testing, bugfixes, features and corrections.
 
 We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapay](https://liberapay.com/jcbrand).
+
+## Sponsors
+
+![Blokt Crypto & Privacy](https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/blokt.png)
+![Codefirst](https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/codefirst.png)
+![KeyCDN](https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/keycdn.png)
+![Mailbox](https://raw.githubusercontent.com/conversejs/converse.js/logo/mailbox.svg)

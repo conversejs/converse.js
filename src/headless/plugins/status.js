@@ -251,7 +251,7 @@ converse.plugins.add('converse-status', {
                  * @param { String } type
                  * @param { String } to
                  * @param { String } [status] - An optional status message
-                 * @param { Array[Element]|Array[Strophe.Builder]|Element|Strophe.Builder } [child_nodes]
+                 * @param { Element[]|Strophe.Builder[]|Element|Strophe.Builder } [child_nodes]
                  *  Nodes(s) to be added as child nodes of the `presence` XML element.
                  */
                 async send (type, to, status, child_nodes) {

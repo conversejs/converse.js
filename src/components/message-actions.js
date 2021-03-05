@@ -12,11 +12,13 @@ class MessageActions extends CustomElement {
 
     static get properties () {
         return {
-            model: { type: Object },
-            editable: { type: Boolean },
             correcting: { type: Boolean },
-            message_type: { type: String },
+            editable: { type: Boolean },
+            hide_url_previews: { type: Boolean },
             is_retracted: { type: Boolean },
+            message_type: { type: String },
+            model: { type: Object },
+            unfurls: { type: Number }
         }
     }
 
@@ -147,13 +149,26 @@ class MessageActions extends CustomElement {
     }
 
     onMessageRetractButtonClicked (ev) {
-        ev.preventDefault();
+        ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
         if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
             this.onMUCMessageRetractButtonClicked();
         } else {
             this.onDirectMessageRetractButtonClicked();
         }
+    }
+
+    onHidePreviewsButtonClicked (ev) {
+        ev?.preventDefault?.();
+        if (this.hide_url_previews) {
+            this.model.save({
+                'hide_url_previews': false,
+                'url_preview_transition': 'fade-in'
+            });
+        } else {
+            this.model.set('url_preview_transition', 'fade-out');
+        }
+
     }
 
     async getActionButtons () {
@@ -178,6 +193,29 @@ class MessageActions extends CustomElement {
                 'name': 'retract'
             });
         }
+
+        const ogp_metadata = this.model.get('ogp_metadata') || [];
+        const chatbox = this.model.collection.chatbox;
+        if (chatbox.get('type') === _converse.CHATROOMS_TYPE &&
+                api.settings.get('muc_show_ogp_unfurls') &&
+                ogp_metadata.length) {
+
+            let title;
+            const hidden_preview = this.hide_url_previews;
+            if (ogp_metadata.length > 1) {
+                title = hidden_preview ? __('Show URL previews') : __('Hide URL previews');
+            } else {
+                title = hidden_preview ? __('Show URL preview') : __('Hide URL preview');
+            }
+            buttons.push({
+                'i18n_text': title,
+                'handler': ev => this.onHidePreviewsButtonClicked(ev),
+                'button_class': 'chat-msg__action-hide-previews',
+                'icon_class': this.hide_url_previews ? 'fas fa-eye' : 'fas fa-eye-slash',
+                'name': 'hide'
+            });
+        }
+
         /**
          * *Hook* which allows plugins to add more message action buttons
          * @event _converse#getMessageActionButtons

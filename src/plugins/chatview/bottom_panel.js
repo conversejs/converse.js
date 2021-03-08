@@ -376,6 +376,7 @@ export default class ChatBottomPanel extends ElementView {
     }
 
     onPaste (ev) {
+        ev.stopPropagation();
         if (ev.clipboardData.files.length !== 0) {
             ev.preventDefault();
             // Workaround for quirk in at least Firefox 60.7 ESR:

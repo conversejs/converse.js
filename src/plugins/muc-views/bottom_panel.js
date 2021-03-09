@@ -45,7 +45,7 @@ export default class MUCBottomPanel extends BottomPanel {
         return Object.assign(super.getToolbarOptions(), {
             'is_groupchat': true,
             'label_hide_occupants': __('Hide the list of participants'),
-            'show_occupants_toggle': _converse.visible_toolbar_buttons.toggle_occupants
+            'show_occupants_toggle': api.settings.get('visible_toolbar_buttons').toggle_occupants
         });
     }
 

@@ -154,9 +154,11 @@ describe("Notifications", function () {
         describe("A notification sound", function () {
 
             it("is played when the current user is mentioned in a groupchat", mock.initConverse([], {}, async (done, _converse) => {
-                mock.createContacts(_converse, 'current');
+
+                await mock.waitForRoster(_converse, 'current');
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                _converse.play_sounds = true;
+                const { api } = _converse;
+                api.settings.set('play_sounds', true);
 
                 const stub = jasmine.createSpyObj('MyAudio', ['play', 'canPlayType']);
                 spyOn(window, 'Audio').and.returnValue(stub);
@@ -186,7 +188,7 @@ describe("Notifications", function () {
                 }).c('body').t(text);
                 await view.model.handleMessageStanza(message.nodeTree);
                 expect(window.Audio, 1);
-                _converse.play_sounds = false;
+                api.settings.set('play_sounds', false);
 
                 text = "This message won't play a sound because it is sent by romeo";
                 message = $msg({
@@ -197,7 +199,6 @@ describe("Notifications", function () {
                 }).c('body').t(text);
                 await view.model.handleMessageStanza(message.nodeTree);
                 expect(window.Audio, 1);
-                _converse.play_sounds = false;
                 done();
             }));
         });

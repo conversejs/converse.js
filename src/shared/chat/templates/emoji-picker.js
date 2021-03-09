@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { _converse, converse, api } from "@converse/headless/core";
+import { converse, api } from "@converse/headless/core";
 import { html } from "lit-html";
 
 const u = converse.env.utils;
@@ -9,7 +9,7 @@ const emoji_category = (o) => {
     return html`
         <li data-category="${o.category}"
             class="emoji-category ${o.category} ${(o.current_category === o.category) ? 'picked' : ''}"
-            title="${__(_converse.emoji_category_labels[o.category])}">
+            title="${__(api.settings.get('emoji_category_labels')[o.category])}">
 
             <a class="pick-category"
                @click=${o.onCategoryPicked}

@@ -279,7 +279,7 @@ const ChatBox = ModelWithContact.extend({
         if (!attrs.jid) {
             return 'Ignored ChatBox without JID';
         }
-        const room_jids = _converse.auto_join_rooms.map(s => isObject(s) ? s.jid : s);
+        const room_jids = api.settings.get('auto_join_rooms').map(s => isObject(s) ? s.jid : s);
         const auto_join = api.settings.get('auto_join_private_chats').concat(room_jids);
         if (api.settings.get("singleton") && !auto_join.includes(attrs.jid) && !api.settings.get('auto_join_on_invite')) {
             const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;

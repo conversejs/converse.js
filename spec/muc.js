@@ -507,6 +507,7 @@ describe("Groupchats", function () {
             it("will fetch the member list if muc_fetch_members is true",
                     mock.initConverse([], {'muc_fetch_members': true}, async function (done, _converse) {
 
+                const { api } = _converse;
                 let sent_IQs = _converse.connection.IQ_stanzas;
                 const muc_jid = 'lounge@montague.lit';
                 await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -535,7 +536,7 @@ describe("Groupchats", function () {
 
                 _converse.connection.IQ_stanzas = [];
                 sent_IQs = _converse.connection.IQ_stanzas;
-                _converse.muc_fetch_members = false;
+                api.settings.set('muc_fetch_members', false);
                 await mock.openAndEnterChatRoom(_converse, 'orchard@montague.lit', 'romeo');
                 view = _converse.chatboxviews.get('orchard@montague.lit');
                 expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(0);
@@ -543,7 +544,7 @@ describe("Groupchats", function () {
 
                 _converse.connection.IQ_stanzas = [];
                 sent_IQs = _converse.connection.IQ_stanzas;
-                _converse.muc_fetch_members = ['admin'];
+                api.settings.set('muc_fetch_members', ['admin']);
                 await mock.openAndEnterChatRoom(_converse, 'courtyard@montague.lit', 'romeo');
                 view = _converse.chatboxviews.get('courtyard@montague.lit');
                 expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(1);
@@ -552,7 +553,7 @@ describe("Groupchats", function () {
 
                 _converse.connection.IQ_stanzas = [];
                 sent_IQs = _converse.connection.IQ_stanzas;
-                _converse.muc_fetch_members = ['owner'];
+                api.settings.set('muc_fetch_members', ['owner']);
                 await mock.openAndEnterChatRoom(_converse, 'garden@montague.lit', 'romeo');
                 view = _converse.chatboxviews.get('garden@montague.lit');
                 expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(1);
@@ -4131,6 +4132,7 @@ describe("Groupchats", function () {
         it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
+            const { api } = _converse;
             const muc_jid = 'conflicting@muc.montague.lit'
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
             /* <presence
@@ -4144,7 +4146,7 @@ describe("Groupchats", function () {
              *  </error>
              *  </presence>
              */
-            _converse.muc_nickname_from_jid = true;
+            api.settings.set('muc_nickname_from_jid', true);
 
             const attrs = {
                 'from': `${muc_jid}/romeo`,

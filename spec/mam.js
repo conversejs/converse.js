@@ -997,9 +997,11 @@ describe("Message Archive Management", function () {
         it("is set once server support for MAM has been confirmed",
                 mock.initConverse([], {}, async function (done, _converse) {
 
+            const { api } = _converse;
+
             const entity = await _converse.api.disco.entities.get(_converse.domain);
             spyOn(_converse, 'onMAMPreferences').and.callThrough();
-            _converse.message_archiving = 'never';
+            api.settings.set('message_archiving', 'never');
 
             const feature = new Model({
                 'var': Strophe.NS.MAM

@@ -735,8 +735,9 @@ describe("A Chat Message", function () {
                 ['chatBoxesFetched'], {},
                 async function (done, _converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
-        _converse.time_format = 'hh:mm';
+        api.settings.set('time_format', 'hh:mm');
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid)
         const view = _converse.api.chatviews.get(contact_jid);
@@ -751,7 +752,7 @@ describe("A Chat Message", function () {
         expect(msg_author.textContent.trim()).toBe('Romeo Montague');
 
         const msg_time = view.querySelector('.chat-content .chat-msg:last-child .chat-msg__time');
-        const time = dayjs(msg_object.get('time')).format(_converse.time_format);
+        const time = dayjs(msg_object.get('time')).format(api.settings.get('time_format'));
         expect(msg_time.textContent).toBe(time);
         done();
     }));
@@ -1097,7 +1098,8 @@ describe("A Chat Message", function () {
 
                 await mock.waitForRoster(_converse, 'current', 0);
 
-                spyOn(_converse.api, "trigger").and.callThrough();
+                const { api } = _converse;
+                spyOn(api, "trigger").and.callThrough();
                 const message = 'This is a received message from someone not on the roster';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const msg = $msg({
@@ -1117,7 +1119,7 @@ describe("A Chat Message", function () {
                 let view = _converse.chatboxviews.get(sender_jid);
                 expect(view).not.toBeDefined();
 
-                _converse.allow_non_roster_messaging = true;
+                api.settings.set('allow_non_roster_messaging', true);
                 await _converse.handleMessageStanza(msg);
                 view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
@@ -1344,13 +1346,14 @@ describe("A Chat Message", function () {
         it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
                 mock.initConverse([], {}, async function (done, _converse) {
 
+            const { api } = _converse;
             await mock.waitForRoster(_converse, 'current');
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length)
             // Send a message from a different resource
             spyOn(converse.env.log, 'error');
             spyOn(_converse.api.chatboxes, 'create').and.callThrough();
-            _converse.filter_by_resource = true;
+            api.settings.set('filter_by_resource', true);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             let msg = $msg({
                     from: sender_jid,
@@ -1365,7 +1368,7 @@ describe("A Chat Message", function () {
                 "Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
             );
             expect(_converse.api.chatboxes.create).not.toHaveBeenCalled();
-            _converse.filter_by_resource = false;
+            api.settings.set('filter_by_resource', false);
 
             const message = "This message sent to a different resource will be shown";
             msg = $msg({

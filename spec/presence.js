@@ -32,6 +32,7 @@ describe("A sent presence stanza", function () {
     }));
 
     it("has a given priority", mock.initConverse(['statusInitialized'], {}, (done, _converse) => {
+        const { api } = _converse;
         let pres = _converse.xmppstatus.constructPresence('online', null, 'Hello world');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
@@ -40,7 +41,7 @@ describe("A sent presence stanza", function () {
                 `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
-        _converse.priority = 2;
+        api.settings.set('priority', 2);
         pres = _converse.xmppstatus.constructPresence('away', null, 'Going jogging');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
@@ -51,7 +52,7 @@ describe("A sent presence stanza", function () {
             `</presence>`
         );
 
-        delete _converse.priority;
+        api.settings.set('priority', undefined);
         pres = _converse.xmppstatus.constructPresence('dnd', null, 'Doing taxes');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+

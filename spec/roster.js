@@ -513,7 +513,6 @@ describe("The Contacts Roster", function () {
         it("remembers whether it is closed or opened",
                 mock.initConverse([], {}, async function (done, _converse) {
 
-            _converse.roster_groups = true;
             await mock.waitForRoster(_converse, 'current', 0);
             mock.openControlBox(_converse);
 
@@ -736,10 +735,9 @@ describe("The Contacts Roster", function () {
 
         it("will be hidden when appearing under a collapsed group",
             mock.initConverse(
-                [], {},
+                [], {'roster_groups': false},
                 async function (done, _converse) {
 
-            _converse.roster_groups = false;
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('li', rosterview).filter(u.isVisible).length, 500);

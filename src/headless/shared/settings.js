@@ -63,6 +63,10 @@ export function initAppSettings (settings) {
     assignIn(app_settings, DEFAULT_SETTINGS, allowed_settings);
 }
 
+export function getInitSettings () {
+    return init_settings;
+}
+
 export function getAppSetting (key) {
     if (Object.keys(DEFAULT_SETTINGS).includes(key)) {
         return app_settings[key];

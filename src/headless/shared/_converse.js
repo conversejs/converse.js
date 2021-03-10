@@ -4,7 +4,7 @@ import u from '@converse/headless/utils/core';
 import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { Router } from '@converse/skeletor/src/router.js';
 import { TimeoutError } from '@converse/headless/shared/errors';
-import { getAppSettings } from '@converse/headless/shared/settings';
+import { getInitSettings } from '@converse/headless/shared/settings';
 
 
 /**
@@ -77,7 +77,7 @@ const _converse = {
     TimeoutError: TimeoutError,
 
     isTestEnv: () => {
-        return getAppSettings()['bosh_service_url'] === 'montague.lit/http-bind';
+        return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
     },
 
     /**

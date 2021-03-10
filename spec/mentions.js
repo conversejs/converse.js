@@ -381,7 +381,7 @@ describe("A sent groupchat message", function () {
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() =>
-                view.content.querySelector(last_msg_sel).innerHTML.replace(/<!---->/g, '') ===
+                view.querySelector(last_msg_sel).innerHTML.replace(/<!---->/g, '') ===
                     'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
             );
 

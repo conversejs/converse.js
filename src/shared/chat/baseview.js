@@ -3,7 +3,6 @@ import log from '@converse/headless/log';
 import tpl_spinner from 'templates/spinner.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { html, render } from 'lit-html';
 
 const u = converse.env.utils;
 
@@ -12,21 +11,6 @@ export default class BaseChatView extends ElementView {
     initDebounced () {
         this.markScrolled = debounce(this._markScrolled, 100);
         this.debouncedScrollDown = debounce(this.scrollDown, 100);
-    }
-
-    renderHelpMessages () {
-        render(
-            html`
-                <converse-chat-help
-                    .model=${this.model}
-                    .messages=${this.getHelpMessages()}
-                    ?hidden=${!this.model.get('show_help_messages')}
-                    type="info"
-                    chat_type="${this.model.get('type')}"
-                ></converse-chat-help>
-            `,
-            this.help_container
-        );
     }
 
     hideNewMessagesIndicator () {
@@ -103,19 +87,20 @@ export default class BaseChatView extends ElementView {
     }
 
     addSpinner (append = false) {
+        const content = this.querySelector('.chat-content');
         if (this.querySelector('.spinner') === null) {
             const el = u.getElementFromTemplateResult(tpl_spinner());
             if (append) {
-                this.content.insertAdjacentElement('beforeend', el);
+                content.insertAdjacentElement('beforeend', el);
                 this.scrollDown();
             } else {
-                this.content.insertAdjacentElement('afterbegin', el);
+                content.insertAdjacentElement('afterbegin', el);
             }
         }
     }
 
     clearSpinner () {
-        this.content.querySelectorAll('.spinner').forEach(u.removeElement);
+        this.querySelectorAll('.chat-content .spinner').forEach(u.removeElement);
     }
 
     onStatusMessageChanged (item) {

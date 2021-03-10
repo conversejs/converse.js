@@ -140,6 +140,13 @@
                 width: 100%;
                 overflow: hidden;
 
+                converse-muc-chatarea {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: row;
+                    flex-flow: nowrap;
+                }
+
                 .row {
                     flex-direction: row;
                 }

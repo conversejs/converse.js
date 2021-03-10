@@ -190,10 +190,11 @@ function onMaximized (view) {
  */
 function onMinimized (view) {
     // save the scroll position to restore it on maximize
+    const content = view.querySelector('.chat-content__messages');
     if (view.model.collection && view.model.collection.browserStorage) {
-        view.model.save({ 'scroll': view.content.scrollTop });
+        view.model.save({ 'scroll': content.scrollTop });
     } else {
-        view.model.set({ 'scroll': view.content.scrollTop });
+        view.model.set({ 'scroll': content.scrollTop });
     }
     view.model.setChatState(_converse.INACTIVE);
     /**

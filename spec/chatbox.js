@@ -37,7 +37,7 @@ describe("Chatboxes", function () {
                     id: u.getUniqueId()
                 }).c('body').t('hello world').tree();
             await _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
             const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
             await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === 'hello world');
             done();
@@ -524,7 +524,7 @@ describe("Chatboxes", function () {
                             id: u.getUniqueId()
                         }).c('body').t('hello world').tree();
                     await _converse.handleMessageStanza(msg);
-                    const msg_el = await u.waitUntil(() => view.content.querySelector('.chat-msg'));
+                    const msg_el = await u.waitUntil(() => view.querySelector('.chat-msg'));
                     await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === '');
                     expect(msg_el.querySelector('.chat-msg__text').textContent).toBe('hello world');
                     done();

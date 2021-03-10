@@ -73,7 +73,7 @@ const RosterContacts = Collection.extend({
         if (u.isErrorObject(result)) {
             log.error(result);
             // Force a full roster refresh
-            _converse.session.set('roster_cached', false)
+            _converse.session.save('roster_cached', false)
             this.data.save('version', undefined);
         }
 

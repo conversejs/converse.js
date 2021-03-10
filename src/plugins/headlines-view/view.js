@@ -52,7 +52,6 @@ class HeadlinesView extends BaseChatView {
             })
         );
         render(result, this);
-        this.content = this.querySelector('.chat-content');
         return this;
     }
 

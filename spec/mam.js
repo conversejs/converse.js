@@ -267,8 +267,8 @@ describe("Message Archive Management", function () {
                 </iq>`);
             _converse.connection._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 5);
-            await u.waitUntil(() => view.content.querySelectorAll('.chat-msg__text').length);
-            await u.waitUntil(() => Array.from(view.content.querySelectorAll('.chat-msg__text'))
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+            await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
                 .map(e => e.textContent).join(' ') === "2nd Message 3rd Message 4th Message 5th Message 6th Message", 1000);
             done();
         }));
@@ -455,7 +455,7 @@ describe("Message Archive Management", function () {
                         <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('is_archived')).toBe(false);
                 expect(view.model.messages.at(0).get('stanza_id trek-radio@conference.lightwitch.org')).toBe('45fbbf2a-1059-479d-9283-c8effaf05621');
@@ -480,7 +480,7 @@ describe("Message Archive Management", function () {
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = view.model.getDuplicateMessage.calls.all()[0].returnValue
                 expect(result instanceof _converse.Message).toBe(true);
-                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
                 await u.waitUntil(() => view.model.updateMessage.calls.count());
                 expect(view.model.messages.length).toBe(1);
@@ -502,7 +502,7 @@ describe("Message Archive Management", function () {
                         <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
                 // Not sure whether such a race-condition might pose a problem
                 // in "real-world" situations.
                 stanza = u.toStanza(
@@ -524,7 +524,7 @@ describe("Message Archive Management", function () {
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
                 expect(result instanceof _converse.Message).toBe(true);
-                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.querySelectorAll('.chat-msg').length).toBe(1);
                 done();
             }));
 
@@ -550,8 +550,8 @@ describe("Message Archive Management", function () {
                         </result>
                     </message>`);
                 _converse.handleMAMResult(view.model, { 'messages': [stanza] });
-                await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
+                expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
                 stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="discuss@conference.conversejs.org">
@@ -574,7 +574,7 @@ describe("Message Archive Management", function () {
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
                 expect(result instanceof _converse.Message).toBe(true);
-                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.querySelectorAll('.chat-msg').length).toBe(1);
                 done();
             }))
         });

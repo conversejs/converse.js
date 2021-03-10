@@ -63,7 +63,6 @@ export default class MUCView extends BaseChatView {
         await this.render();
 
         // Need to be registered after render has been called.
-        this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
         this.listenTo(this.model.messages, 'add', this.onMessageAdded);
         this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
         this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
@@ -85,7 +84,8 @@ export default class MUCView extends BaseChatView {
         this.setAttribute('id', this.model.get('box_id'));
         render(
             tpl_muc({
-                sidebar_hidden,
+                'chatview': this,
+                'conn_status': this.model.session.get('connection_status'),
                 'model': this.model,
                 'occupants': this.model.occupants,
                 'show_sidebar':
@@ -93,13 +93,13 @@ export default class MUCView extends BaseChatView {
                     this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED,
                 'markScrolled': ev => this.markScrolled(ev),
                 'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
-                'show_send_button': _converse.show_send_button
+                'show_send_button': _converse.show_send_button,
+                sidebar_hidden,
             }),
             this
         );
 
         this.notifications = this.querySelector('.chat-content__notifications');
-        this.content = this.querySelector('.chat-content');
         this.help_container = this.querySelector('.chat-content__help');
 
         if (
@@ -112,35 +112,6 @@ export default class MUCView extends BaseChatView {
         // want the rest of the DOM elements to be available ASAP.
         // Otherwise e.g. this.notifications is not yet defined when accessed elsewhere.
         !this.model.get('hidden') && this.show();
-    }
-
-    getHelpMessages () {
-        const setting = api.settings.get('muc_disable_slash_commands');
-        const disabled_commands = Array.isArray(setting) ? setting : [];
-        return [
-            `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
-            `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
-            `<strong>/clear</strong>: ${__('Clear the chat area')}`,
-            `<strong>/close</strong>: ${__('Close this groupchat')}`,
-            `<strong>/deop</strong>: ${__('Change user role to participant')}`,
-            `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
-            `<strong>/help</strong>: ${__('Show this menu')}`,
-            `<strong>/kick</strong>: ${__('Kick user from groupchat')}`,
-            `<strong>/me</strong>: ${__('Write in 3rd person')}`,
-            `<strong>/member</strong>: ${__('Grant membership to a user')}`,
-            `<strong>/modtools</strong>: ${__('Opens up the moderator tools GUI')}`,
-            `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`,
-            `<strong>/nick</strong>: ${__('Change your nickname')}`,
-            `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
-            `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
-            `<strong>/register</strong>: ${__('Register your nickname')}`,
-            `<strong>/revoke</strong>: ${__("Revoke the user's current affiliation")}`,
-            `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
-            `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
-            `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
-        ]
-            .filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9)))
-            .filter(line => this.model.getAllowedCommands().some(c => line.startsWith(c + '<', 9)));
     }
 
     onStartResizeOccupants (ev) {
@@ -361,7 +332,7 @@ export default class MUCView extends BaseChatView {
     renderNicknameForm () {
         if (api.settings.get('muc_show_logs_before_join')) {
             this.hideSpinner();
-            u.showElement(this.querySelector('.chat-area'));
+            u.showElement(this.querySelector('converse-muc-chatarea'));
         } else {
             const form = this.querySelector('.muc-nickname-form');
             const tpl_result = tpl_muc_nickname_form(this.model.toJSON());
@@ -443,8 +414,7 @@ export default class MUCView extends BaseChatView {
     }
 
     showDestroyedMessage () {
-        u.hideElement(this.querySelector('.chat-area'));
-        u.hideElement(this.querySelector('.occupants'));
+        u.hideElement(this.querySelector('converse-muc-chatarea'));
         sizzle('.spinner', this).forEach(u.removeElement);
 
         const reason = this.model.get('destroyed_reason');
@@ -472,8 +442,7 @@ export default class MUCView extends BaseChatView {
         if (!message) {
             return;
         }
-        u.hideElement(this.querySelector('.chat-area'));
-        u.hideElement(this.querySelector('.occupants'));
+        u.hideElement(this.querySelector('converse-muc-chatarea'));
         sizzle('.spinner', this).forEach(u.removeElement);
 
         const messages = [message];
@@ -542,7 +511,7 @@ export default class MUCView extends BaseChatView {
         } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
             this.hideSpinner();
             this.hideChatRoomContents();
-            u.showElement(this.querySelector('.chat-area'));
+            u.showElement(this.querySelector('converse-muc-chatarea'));
             this.querySelector('.occupants')?.setVisibility();
             this.scrollDown();
             this.maybeFocus();

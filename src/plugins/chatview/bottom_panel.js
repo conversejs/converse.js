@@ -19,10 +19,10 @@ export default class ChatBottomPanel extends ElementView {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
-
         await this.model.initialized;
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.render();
+        api.listen.on('chatBoxScrolledDown', () => this.hideNewMessagesIndicator());
     }
 
     render () {
@@ -77,6 +77,10 @@ export default class ChatBottomPanel extends ElementView {
         this.addEventListener('focusin', ev => this.emitFocused(ev));
         this.addEventListener('focusout', ev => this.emitBlurred(ev));
         this.renderToolbar();
+    }
+
+    hideNewMessagesIndicator () {
+        this.querySelector('.new-msgs-indicator')?.classList.add('hidden');
     }
 
     onMessageCorrecting (message) {

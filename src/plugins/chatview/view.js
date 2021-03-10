@@ -1,10 +1,10 @@
 import 'plugins/chatview/heading.js';
 import 'plugins/chatview/bottom_panel.js';
+import { html, render } from 'lit-html';
 import BaseChatView from 'shared/chat/baseview.js';
 import tpl_chat from './templates/chat.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { render } from 'lit-html';
 
 const u = converse.env.utils;
 const { dayjs } = converse.env;
@@ -58,9 +58,23 @@ export default class ChatView extends BaseChatView {
             this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) })
         );
         render(result, this);
-        this.content = this.querySelector('.chat-content');
         this.help_container = this.querySelector('.chat-content__help');
         return this;
+    }
+
+    renderHelpMessages () {
+        render(
+            html`
+                <converse-chat-help
+                    .model=${this.model}
+                    .messages=${this.getHelpMessages()}
+                    ?hidden=${!this.model.get('show_help_messages')}
+                    type="info"
+                    chat_type="${this.model.get('type')}"
+                ></converse-chat-help>
+            `,
+            this.help_container
+        );
     }
 
     getHelpMessages () { // eslint-disable-line class-methods-use-this

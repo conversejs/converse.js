@@ -13,6 +13,12 @@ export default class BaseChatView extends ElementView {
         this.debouncedScrollDown = debounce(this.scrollDown, 100);
     }
 
+    disconnectedCallback () {
+        super.disconnectedCallback();
+        const jid = this.getAttribute('jid');
+        _converse.chatboxviews.remove(jid, this);
+    }
+
     hideNewMessagesIndicator () {
         const new_msgs_indicator = this.querySelector('.new-msgs-indicator');
         if (new_msgs_indicator !== null) {
@@ -195,7 +201,7 @@ export default class BaseChatView extends ElementView {
                 'scrollTop': null
             });
         }
-        this.querySelector('.chat-content__messages').scrollDown();
+        this.querySelector('.chat-content__messages')?.scrollDown();
         this.onScrolledDown();
     }
 

@@ -133,9 +133,9 @@ describe("XEP-0437 Room Activity Indicators", function () {
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await muc_creation_promise;
 
-        const view = api.chatviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        expect(view.model.get('hidden')).toBe(true);
+        const model = _converse.chatboxes.get(muc_jid);
+        await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        expect(model.get('hidden')).toBe(true);
 
 
         const getSentPresences = () => sent_stanzas.filter(s => s.nodeName === 'presence');
@@ -156,8 +156,8 @@ describe("XEP-0437 Room Activity Indicators", function () {
             `</presence>`
         );
 
-        await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
-        expect(view.model.get('has_activity')).toBe(false);
+        await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
+        expect(model.get('has_activity')).toBe(false);
 
         const room_el = await u.waitUntil(() => document.querySelector("converse-rooms-list .available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
@@ -171,7 +171,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         `);
         _converse.connection._dataRecv(mock.createRequest(activity_stanza));
 
-        await u.waitUntil(() => view.model.get('has_activity'));
+        await u.waitUntil(() => model.get('has_activity'));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
         done();
     }));

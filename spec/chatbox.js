@@ -119,6 +119,7 @@ describe("Chatboxes", function () {
             await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             await u.waitUntil(() => message_promise);
             expect(_converse.chatboxviews.keys().length).toBe(2);
+            expect(_converse.chatboxviews.keys().pop()).toBe(sender_jid);
             done();
         }));
 
@@ -198,6 +199,7 @@ describe("Chatboxes", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
+            await mock.openControlBox(_converse);
             const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
@@ -372,8 +374,8 @@ describe("Chatboxes", function () {
                     u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     spyOn(_converse.connection, 'send');
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    const view = _converse.chatboxviews.get(contact_jid);
-                    expect(view.model.get('chat_state')).toBe('active');
+                    const model = _converse.chatboxes.get(contact_jid);
+                    expect(model.get('chat_state')).toBe('active');
                     expect(_converse.connection.send).toHaveBeenCalled();
                     const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
@@ -394,12 +396,12 @@ describe("Chatboxes", function () {
                     const rosterview = document.querySelector('converse-roster');
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    const view = _converse.chatboxviews.get(contact_jid);
-                    _converse.minimize.minimize(view.model);
-                    expect(view.model.get('chat_state')).toBe('inactive');
+                    const model = _converse.chatboxes.get(contact_jid);
+                    _converse.minimize.minimize(model);
+                    expect(model.get('chat_state')).toBe('inactive');
                     spyOn(_converse.connection, 'send');
-                    _converse.minimize.maximize(view.model);
-                    await u.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
+                    _converse.minimize.maximize(model);
+                    await u.waitUntil(() => model.get('chat_state') === 'active', 1000);
                     expect(_converse.connection.send).toHaveBeenCalled();
                     const calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                         return call.args[0] instanceof Strophe.Builder;
@@ -427,7 +429,7 @@ describe("Chatboxes", function () {
                     const rosterview = document.querySelector('converse-roster');
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    var view = _converse.chatboxviews.get(contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
@@ -468,7 +470,7 @@ describe("Chatboxes", function () {
                     const rosterview = document.querySelector('converse-roster');
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    var view = _converse.chatboxviews.get(contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
@@ -1162,7 +1164,7 @@ describe("Chatboxes", function () {
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length > 1);
             expect(select_msgs_indicator().textContent).toBe('2');
-            _converse.minimize.minimize(view.model);
+            _converse.minimize.maximize(view.model);
             u.waitUntil(() => typeof select_msgs_indicator() === 'undefined');
             done();
         }));

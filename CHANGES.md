@@ -32,6 +32,9 @@ Removed events:
 * `bookmarkViewsInitialized`
 * `rosterGroupsFetched`
 
+The `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
+payload and not the `view` since it might not be exist at that time.
+
 ## 7.0.5 (Unreleased)
 
 - #2377: The @converse/headless NPM package is missing the dist directory, causing import errors

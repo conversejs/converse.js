@@ -227,7 +227,7 @@ describe("The 'Add Contact' widget", function () {
             mock.initConverse([], {'autocomplete_add_contact': false}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'all', 0);
-        mock.openControlBox(_converse);
+        await mock.openControlBox(_converse);
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('add-contact-modal');
@@ -274,6 +274,7 @@ describe("The 'Add Contact' widget", function () {
         const XMLHttpRequestBackup = window.XMLHttpRequest;
         window.XMLHttpRequest = MockXHR;
 
+        await mock.openControlBox(_converse);
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('add-contact-modal');

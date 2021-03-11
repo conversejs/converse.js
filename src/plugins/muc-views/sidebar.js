@@ -1,10 +1,7 @@
 import 'shared/autocomplete/index.js';
 import tpl_muc_sidebar from "./templates/muc-sidebar.js";
 import { CustomElement } from 'components/element.js';
-import { api, converse } from "@converse/headless/core";
-
-const u = converse.env.utils;
-
+import { api } from "@converse/headless/core";
 
 export default class MUCSidebar extends CustomElement {
 
@@ -29,18 +26,6 @@ export default class MUCSidebar extends CustomElement {
             {'occupants': [...this.occupants.models] }
         ));
         return tpl;
-    }
-
-    shouldShow () {
-        return !this.chatroom.get('hidden_occupants') &&
-            this.chatroom.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
-    }
-
-    setVisibility () {
-        // TODO: We're still manually showing/hiding stuff in ChatRoomView,
-        // eventually we want everything to render declaratively, after which this
-        // method won't be necessary anymore
-        this.shouldShow() ? u.showElement(this) : u.hideElement(this);
     }
 }
 

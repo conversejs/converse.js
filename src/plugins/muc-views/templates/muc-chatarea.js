@@ -22,6 +22,8 @@ export default (o) => html`
     </div>
     <div class="disconnect-container hidden"></div>
     <converse-muc-sidebar class="occupants col-md-3 col-4 ${o.show_sidebar ? '' : 'hidden' }"
+        style="flex: 0 0 ${o.occupants_width}px"
+        @mousedown=${o.onMousedown}
         .occupants=${o.occupants}
         .chatroom=${o.model}></converse-muc-sidebar>
 `;

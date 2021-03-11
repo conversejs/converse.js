@@ -36,7 +36,6 @@ export default class MUCView extends BaseChatView {
         'click .occupant-nick': function (ev) {
             this.insertIntoTextArea(ev.target.textContent);
         },
-        'mousedown .dragresize-occupants-left': 'onStartResizeOccupants',
         'submit .muc-nickname-form': 'submitNickname'
     }
 
@@ -50,15 +49,10 @@ export default class MUCView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
-        this.listenTo(this.model, 'change:hidden_occupants', this.onSidebarToggle);
         this.listenTo(this.model, 'change:minimized', () => this.afterShown());
         this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.session, 'change:connection_status', this.renderAfterTransition);
-
-        // Bind so that we can pass it to addEventListener and removeEventListener
-        this.onMouseMove = this.onMouseMove.bind(this);
-        this.onMouseUp = this.onMouseUp.bind(this);
 
         await this.render();
 
@@ -80,7 +74,6 @@ export default class MUCView extends BaseChatView {
     }
 
     render () {
-        const sidebar_hidden = !this.shouldShowSidebar();
         this.setAttribute('id', this.model.get('box_id'));
         render(
             tpl_muc({
@@ -93,8 +86,7 @@ export default class MUCView extends BaseChatView {
                     this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED,
                 'markScrolled': ev => this.markScrolled(ev),
                 'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
-                'show_send_button': _converse.show_send_button,
-                sidebar_hidden,
+                'show_send_button': _converse.show_send_button
             }),
             this
         );
@@ -112,76 +104,6 @@ export default class MUCView extends BaseChatView {
         // want the rest of the DOM elements to be available ASAP.
         // Otherwise e.g. this.notifications is not yet defined when accessed elsewhere.
         !this.model.get('hidden') && this.show();
-    }
-
-    onStartResizeOccupants (ev) {
-        this.resizing = true;
-        this.addEventListener('mousemove', this.onMouseMove);
-        this.addEventListener('mouseup', this.onMouseUp);
-
-        const sidebar_el = this.querySelector('converse-muc-sidebar');
-        const style = window.getComputedStyle(sidebar_el);
-        this.width = parseInt(style.width.replace(/px$/, ''), 10);
-        this.prev_pageX = ev.pageX;
-    }
-
-    onMouseMove (ev) {
-        if (this.resizing) {
-            ev.preventDefault();
-            const delta = this.prev_pageX - ev.pageX;
-            this.resizeSidebarView(delta, ev.pageX);
-            this.prev_pageX = ev.pageX;
-        }
-    }
-
-    onMouseUp (ev) {
-        if (this.resizing) {
-            ev.preventDefault();
-            this.resizing = false;
-            this.removeEventListener('mousemove', this.onMouseMove);
-            this.removeEventListener('mouseup', this.onMouseUp);
-            const sidebar_el = this.querySelector('converse-muc-sidebar');
-            const element_position = sidebar_el.getBoundingClientRect();
-            const occupants_width = this.calculateSidebarWidth(element_position, 0);
-            const attrs = { occupants_width };
-            _converse.connection.connected ? this.model.save(attrs) : this.model.set(attrs);
-        }
-    }
-
-    resizeSidebarView (delta, current_mouse_position) {
-        const sidebar_el = this.querySelector('converse-muc-sidebar');
-        const element_position = sidebar_el.getBoundingClientRect();
-        if (this.is_minimum) {
-            this.is_minimum = element_position.left < current_mouse_position;
-        } else if (this.is_maximum) {
-            this.is_maximum = element_position.left > current_mouse_position;
-        } else {
-            const occupants_width = this.calculateSidebarWidth(element_position, delta);
-            sidebar_el.style.flex = '0 0 ' + occupants_width + 'px';
-        }
-    }
-
-    calculateSidebarWidth (element_position, delta) {
-        let occupants_width = element_position.width + delta;
-        const room_width = this.clientWidth;
-        // keeping display in boundaries
-        if (occupants_width < room_width * 0.2) {
-            // set pixel to 20% width
-            occupants_width = room_width * 0.2;
-            this.is_minimum = true;
-        } else if (occupants_width > room_width * 0.75) {
-            // set pixel to 75% width
-            occupants_width = room_width * 0.75;
-            this.is_maximum = true;
-        } else if (room_width - occupants_width < 250) {
-            // resize occupants if chat-area becomes smaller than 250px (min-width property set in css)
-            occupants_width = room_width - 250;
-            this.is_maximum = true;
-        } else {
-            this.is_maximum = false;
-            this.is_minimum = false;
-        }
-        return occupants_width;
     }
 
     /**
@@ -215,17 +137,6 @@ export default class MUCView extends BaseChatView {
             return;
         }
         return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
-    }
-
-    shouldShowSidebar () {
-        return (
-            !this.model.get('hidden_occupants') &&
-            this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED
-        );
-    }
-
-    onSidebarToggle () {
-        this.querySelector('.occupants')?.setVisibility();
     }
 
     /**
@@ -512,7 +423,6 @@ export default class MUCView extends BaseChatView {
             this.hideSpinner();
             this.hideChatRoomContents();
             u.showElement(this.querySelector('converse-muc-chatarea'));
-            this.querySelector('.occupants')?.setVisibility();
             this.scrollDown();
             this.maybeFocus();
         } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {

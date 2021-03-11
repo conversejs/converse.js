@@ -71,11 +71,6 @@ export default class MUCBottomPanel extends BottomPanel {
         this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
     }
 
-    /**
-     * Hide the right sidebar containing the chat occupants.
-     * @private
-     * @method _converse.ChatRoomView#hideOccupants
-     */
     hideOccupants (ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();

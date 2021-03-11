@@ -23,6 +23,12 @@ export default class MUCChatArea extends CustomElement {
         this.model = _converse.chatboxes.get(this.jid);
         this.markScrolled = debounce(this._markScrolled, 100);
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
+        this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
+
+        // Bind so that we can pass it to addEventListener and removeEventListener
+        this.onMouseMove = this._onMouseMove.bind(this);
+        this.onMouseUp = this._onMouseUp.bind(this);
     }
 
     render () {
@@ -31,6 +37,8 @@ export default class MUCChatArea extends CustomElement {
             'jid': this.jid,
             'model': this.model,
             'occupants': this.model.occupants,
+            'occupants_width': this.model.get('occupants_width'),
+            'onMousedown': ev => this.onMousedown(ev),
             'show_help_messages': this.model.get('show_help_messages'),
             'show_send_button': _converse.show_send_button,
             'show_sidebar': this.shouldShowSidebar(),
@@ -123,6 +131,81 @@ export default class MUCChatArea extends CustomElement {
          * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
          */
         api.trigger('chatBoxScrolledDown', { 'chatbox': this.model });
+    }
+
+    onMousedown (ev) {
+        if (u.hasClass('dragresize-occupants-left', ev.target)) {
+            this.onStartResizeOccupants(ev);
+        }
+    }
+
+    onStartResizeOccupants (ev) {
+        this.resizing = true;
+        this.addEventListener('mousemove', this.onMouseMove);
+        this.addEventListener('mouseup', this.onMouseUp);
+
+        const sidebar_el = this.querySelector('converse-muc-sidebar');
+        const style = window.getComputedStyle(sidebar_el);
+        this.width = parseInt(style.width.replace(/px$/, ''), 10);
+        this.prev_pageX = ev.pageX;
+    }
+
+    _onMouseMove (ev) {
+        if (this.resizing) {
+            ev.preventDefault();
+            const delta = this.prev_pageX - ev.pageX;
+            this.resizeSidebarView(delta, ev.pageX);
+            this.prev_pageX = ev.pageX;
+        }
+    }
+
+    _onMouseUp (ev) {
+        if (this.resizing) {
+            ev.preventDefault();
+            this.resizing = false;
+            this.removeEventListener('mousemove', this.onMouseMove);
+            this.removeEventListener('mouseup', this.onMouseUp);
+            const sidebar_el = this.querySelector('converse-muc-sidebar');
+            const element_position = sidebar_el.getBoundingClientRect();
+            const occupants_width = this.calculateSidebarWidth(element_position, 0);
+            u.safeSave(this.model, { occupants_width });
+        }
+    }
+
+    calculateSidebarWidth (element_position, delta) {
+        let occupants_width = element_position.width + delta;
+        const room_width = this.clientWidth;
+        // keeping display in boundaries
+        if (occupants_width < room_width * 0.2) {
+            // set pixel to 20% width
+            occupants_width = room_width * 0.2;
+            this.is_minimum = true;
+        } else if (occupants_width > room_width * 0.75) {
+            // set pixel to 75% width
+            occupants_width = room_width * 0.75;
+            this.is_maximum = true;
+        } else if (room_width - occupants_width < 250) {
+            // resize occupants if chat-area becomes smaller than 250px (min-width property set in css)
+            occupants_width = room_width - 250;
+            this.is_maximum = true;
+        } else {
+            this.is_maximum = false;
+            this.is_minimum = false;
+        }
+        return occupants_width;
+    }
+
+    resizeSidebarView (delta, current_mouse_position) {
+        const sidebar_el = this.querySelector('converse-muc-sidebar');
+        const element_position = sidebar_el.getBoundingClientRect();
+        if (this.is_minimum) {
+            this.is_minimum = element_position.left < current_mouse_position;
+        } else if (this.is_maximum) {
+            this.is_maximum = element_position.left > current_mouse_position;
+        } else {
+            const occupants_width = this.calculateSidebarWidth(element_position, delta);
+            sidebar_el.style.flex = '0 0 ' + occupants_width + 'px';
+        }
     }
 }
 

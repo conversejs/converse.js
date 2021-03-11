@@ -21,9 +21,9 @@ export default (o) => html`
         <converse-muc-bottom-panel jid="${o.jid}" class="bottom-panel"></converse-muc-bottom-panel>
     </div>
     <div class="disconnect-container hidden"></div>
-    <converse-muc-sidebar class="occupants col-md-3 col-4 ${o.show_sidebar ? '' : 'hidden' }"
+    <converse-muc-sidebar
+        class="occupants col-md-3 col-4 ${o.show_sidebar ? '' : 'hidden' }"
         style="flex: 0 0 ${o.occupants_width}px"
-        @mousedown=${o.onMousedown}
-        .occupants=${o.occupants}
-        .chatroom=${o.model}></converse-muc-sidebar>
+        jid=${o.jid}
+        @mousedown=${o.onMousedown}></converse-muc-sidebar>
 `;

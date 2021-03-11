@@ -30,7 +30,6 @@ export default class MUCView extends BaseChatView {
     is_chatroom = true
     events = {
         'click .chatbox-navback': 'showControlBox',
-        'click .hide-occupants': 'hideOccupants',
         'click .new-msgs-indicator': 'viewUnreadMessages',
         // Arrow functions don't work here because you can't bind a different `this` param to them.
         'click .occupant-nick': function (ev) {
@@ -161,20 +160,6 @@ export default class MUCView extends BaseChatView {
             _converse.router.navigate('');
         }
         return _converse.ChatBoxView.prototype.close.apply(this, arguments);
-    }
-
-    /**
-     * Hide the right sidebar containing the chat occupants.
-     * @private
-     * @method _converse.ChatRoomView#hideOccupants
-     */
-    hideOccupants (ev) {
-        if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-        }
-        this.model.save({ 'hidden_occupants': true });
-        this.scrollDown();
     }
 
     getReason (args) { // eslint-disable-line class-methods-use-this

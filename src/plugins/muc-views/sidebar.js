@@ -1,32 +1,45 @@
 import 'shared/autocomplete/index.js';
 import tpl_muc_sidebar from "./templates/muc-sidebar.js";
 import { CustomElement } from 'components/element.js';
-import { api } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core";
+
+const { u } = converse.env;
 
 export default class MUCSidebar extends CustomElement {
 
     static get properties () {
         return {
-            chatroom: { type: Object },
-            occupants: { type: Object}
+            jid: { type: String }
         }
     }
 
     connectedCallback () {
         super.connectedCallback();
-        this.listenTo(this.occupants, 'add', this.requestUpdate);
-        this.listenTo(this.occupants, 'remove', this.requestUpdate);
-        this.listenTo(this.occupants, 'change', this.requestUpdate);
-        this.chatroom.initialized.then(() => this.requestUpdate());
+        this.model = _converse.chatboxes.get(this.jid);
+        this.listenTo(this.model.occupants, 'add', this.requestUpdate);
+        this.listenTo(this.model.occupants, 'remove', this.requestUpdate);
+        this.listenTo(this.model.occupants, 'change', this.requestUpdate);
+        this.model.initialized.then(() => this.requestUpdate());
     }
 
     render () {
         const tpl = tpl_muc_sidebar(Object.assign(
-            this.chatroom.toJSON(),
-            {'occupants': [...this.occupants.models] }
+            this.model.toJSON(), {
+                'occupants': [...this.model.occupants.models],
+                'closeSidebar': ev => this.closeSidebar(ev),
+            }
         ));
         return tpl;
     }
+
+    closeSidebar(ev) {
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+        u.safeSave(this.model, { 'hidden_occupants': true });
+        // FIXME: do this declaratively
+        _converse.chatboxviews.get(this.jid)?.scrollDown();
+    }
+
 }
 
 api.elements.define('converse-muc-sidebar', MUCSidebar);

@@ -1,7 +1,7 @@
 import 'shared/registry';
 import 'components/dropdown.js';
-import 'components/message-actions.js';
-import 'components/message-body.js';
+import './message-actions.js';
+import './message-body.js';
 import MessageVersionsModal from 'modals/message-versions.js';
 import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';

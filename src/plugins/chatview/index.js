@@ -3,10 +3,10 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import '../../components/help_messages.js';
 import '../chatboxviews/index.js';
 import '../modal.js';
 import 'shared/chat/chat-content.js';
+import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';
 import ChatBoxView from './view.js';
 import chatview_api from './api.js';

@@ -1,4 +1,4 @@
-import BottomPanel from 'plugins/chatview/bottom_panel.js';
+import BottomPanel from 'plugins/chatview/bottom-panel.js';
 import debounce from 'lodash/debounce';
 import tpl_muc_bottom_panel from './templates/muc-bottom-panel.js';
 import { __ } from 'i18n';

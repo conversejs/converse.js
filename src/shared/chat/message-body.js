@@ -1,8 +1,8 @@
-import '../shared/registry.js';
-import ImageModal from '../modals/image.js';
-import { CustomElement } from './element.js';
+import 'shared/registry.js';
+import ImageModal from 'modals/image.js';
+import { CustomElement } from 'components/element.js';
 import { api } from "@converse/headless/core";
-import { renderBodyText } from './../templates/directives/body';
+import { renderBodyText } from 'templates/directives/body';
 
 
 export default class MessageBody extends CustomElement {

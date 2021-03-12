@@ -1,5 +1,5 @@
 import 'plugins/chatview/heading.js';
-import 'plugins/chatview/bottom_panel.js';
+import 'plugins/chatview/bottom-panel.js';
 import { html, render } from 'lit-html';
 import BaseChatView from 'shared/chat/baseview.js';
 import tpl_chat from './templates/chat.js';

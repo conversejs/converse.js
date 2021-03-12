@@ -1,5 +1,5 @@
 import '../chatarea.js';
-import '../bottom_panel.js';
+import '../bottom-panel.js';
 import '../heading.js';
 import '../sidebar.js';
 import { html } from "lit-html";

@@ -20,6 +20,7 @@
 - #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
 - Use the MUC stanza id when sending XEP-0333 markers
 - Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
+- Add a Description Of A Project (DOAP) file
 
 ### Breaking Changes
 

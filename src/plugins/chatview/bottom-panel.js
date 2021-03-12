@@ -109,10 +109,14 @@ export default class ChatBottomPanel extends ElementView {
     }
 
     inputChanged (ev) { // eslint-disable-line class-methods-use-this
-        const height = ev.target.scrollHeight + 'px';
-        if (ev.target.style.height != height) {
-            ev.target.style.height = 'auto';
-            ev.target.style.height = height;
+        if (ev.target.value) {
+            const height = ev.target.scrollHeight + 'px';
+            if (ev.target.style.height != height) {
+                ev.target.style.height = 'auto';
+                ev.target.style.height = height;
+            }
+        } else {
+            ev.target.style = '';
         }
     }
 
@@ -139,7 +143,9 @@ export default class ChatBottomPanel extends ElementView {
         return parseMessageForCommands(this.model, text);
     }
 
-    async onFormSubmitted () {
+    async onFormSubmitted (ev) {
+        ev?.preventDefault?.();
+
         const textarea = this.querySelector('.chat-textarea');
         const message_text = textarea.value.trim();
         if (

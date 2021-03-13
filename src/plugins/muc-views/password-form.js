@@ -1,30 +1,39 @@
 import tpl_muc_password_form from "./templates/muc-password-form.js";
-import { View } from '@converse/skeletor/src/view.js';
+import { CustomElement } from 'components/element';
+import { _converse, api } from "@converse/headless/core";
 
 
-const MUCPasswordForm = View.extend({
-    className: 'chatroom-form-container muc-password-form',
+class MUCPasswordForm extends CustomElement {
 
-    initialize (attrs) {
-        this.chatroomview = attrs.chatroomview;
-        this.listenTo(this.model, 'change:validation_message', this.render);
+    static get properties () {
+        return {
+            'jid': { type: String }
+        }
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.model = _converse.chatboxes.get(this.jid);
+        this.listenTo(this.model, 'change:password_validation_message', this.render);
         this.render();
-    },
+    }
 
-    toHTML () {
+    render () {
         return tpl_muc_password_form({
             'jid': this.model.get('jid'),
             'submitPassword': ev => this.submitPassword(ev),
-            'validation_message':  this.model.get('validation_message')
+            'validation_message':  this.model.get('password_validation_message')
         });
-    },
+    }
 
     submitPassword (ev) {
         ev.preventDefault();
-        const password = this.el.querySelector('input[type=password]').value;
-        this.chatroomview.model.join(this.chatroomview.model.get('nick'), password);
-        this.model.set('validation_message', null);
+        const password = this.querySelector('input[type=password]').value;
+        this.model.join(this.model.get('nick'), password);
+        this.model.set('password_validation_message', null);
     }
-});
+}
+
+api.elements.define('converse-muc-password-form', MUCPasswordForm);
 
 export default MUCPasswordForm;

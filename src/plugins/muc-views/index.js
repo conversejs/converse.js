@@ -19,6 +19,11 @@ import { api, converse, _converse } from '@converse/headless/core';
 
 const { Strophe } = converse.env;
 
+converse.MUC.VIEWS = {
+    CONFIG: 'config-form',
+    BOOKMARK: 'bookmark-form'
+}
+
 function setMUCDomain (domain, controlboxview) {
     controlboxview.querySelector('converse-rooms-list')
         .model.save('muc_domain', Strophe.getDomainFromJid(domain));

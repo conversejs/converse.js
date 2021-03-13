@@ -20,7 +20,6 @@ const COMMAND_TO_ROLE = {
     'voice': 'participant'
 };
 
-
 export function getAutoCompleteListItem (text, input) {
     input = input.trim();
     const element = document.createElement('li');

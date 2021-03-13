@@ -1,3 +1,15 @@
+converse-muc-config-form {
+    width: 100%;
+    overflow: auto;
+}
+
+converse-muc-disconnected,
+converse-muc-destroyed {
+    padding: 2em;
+    width: 100%;
+    height: 100%;
+}
+
 #conversejs.converse-embedded,
 #conversejs {
     .badge--muc {
@@ -324,7 +336,7 @@
                         }
                     }
                 }
-                .chatroom-form-container {
+                .muc-form-container {
                     background-color: white;
                     border: 0;
                     color: var(--text-color);
@@ -376,7 +388,7 @@
                 padding: 0;
                 height: 16em;
 
-                .chatroom-form-container {
+                .muc-form-container {
                     .chatroom-form {
                         padding-top: 2em;
                         padding-bottom: 0;
@@ -528,7 +540,7 @@
                     }
                     .chatroom-body {
                         height: 100%;
-                        .chatroom-form-container {
+                        .muc-form-container {
                             height: 100%;
                             position: relative;
                         }

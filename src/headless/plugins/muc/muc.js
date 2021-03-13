@@ -2576,16 +2576,8 @@ const ChatRoomMixin = {
                     // Accept default configuration
                     this.sendConfiguration().then(() => this.refreshDiscoInfo());
                 } else {
-                    /**
-                     * Triggered when a new room has been created which first needs to be configured
-                     * and when `auto_configure` is set to `false`.
-                     * Used by `_converse.ChatRoomView` in order to know when to render the
-                     * configuration form for a new room.
-                     * @event _converse.ChatRoom#configurationNeeded
-                     * @example _converse.api.listen.on('configurationNeeded', () => { ... });
-                     */
-                    this.trigger('configurationNeeded');
-                    return; // We haven't yet entered the groupchat, so bail here.
+                    this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
+                    return;
                 }
             } else if (!this.features.get('fetched')) {
                 // The features for this groupchat weren't fetched.

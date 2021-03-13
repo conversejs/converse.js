@@ -1,7 +1,7 @@
 /*global mock, converse */
 
 const Model = converse.env.Model;
-const { sizzle, u } = converse.env;
+const { $pres, $iq, Strophe, sizzle, u } = converse.env;
 
 describe("Groupchats", function () {
 

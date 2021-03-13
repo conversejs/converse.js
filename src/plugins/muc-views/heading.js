@@ -56,7 +56,7 @@ export default class MUCHeading extends ChatHeading {
     }
 
     getAndRenderConfigurationForm () {
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.getAndRenderConfigurationForm();
+        this.model.session.set('view', converse.MUC.VIEWS.CONFIG);
     }
 
     showModeratorToolsModal () {
@@ -86,7 +86,7 @@ export default class MUCHeading extends ChatHeading {
             buttons.push({
                 'i18n_text': __('Configure'),
                 'i18n_title': __('Configure this groupchat'),
-                'handler': ev => this.getAndRenderConfigurationForm(ev),
+                'handler': () => this.getAndRenderConfigurationForm(),
                 'a_class': 'configure-chatroom-button',
                 'icon_class': 'fa-wrench',
                 'name': 'configure'

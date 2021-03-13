@@ -118,6 +118,10 @@
             padding-bottom: 0;
         }
 
+        &.converse-form--spinner {
+            height: 100%;
+        }
+
         &.converse-centered-form {
             min-height: 66%;
             text-align: center;

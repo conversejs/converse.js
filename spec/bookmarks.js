@@ -27,21 +27,20 @@ describe("A chat room", function () {
         await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
         await mock.returnMemberLists(_converse, muc_jid, [], ['member', 'admin', 'owner']);
 
-        spyOn(view, 'renderBookmarkForm').and.callThrough();
-        spyOn(view, 'closeForm').and.callThrough();
         await u.waitUntil(() => view.querySelector('.toggle-bookmark') !== null);
         const toggle = view.querySelector('.toggle-bookmark');
         expect(toggle.title).toBe('Bookmark this groupchat');
         toggle.click();
-        expect(view.renderBookmarkForm).toHaveBeenCalled();
 
-        view.querySelector('.button-cancel').click();
-        expect(view.closeForm).toHaveBeenCalled();
+        const cancel_button = await u.waitUntil(() => view.querySelector('.button-cancel'));
+        expect(view.model.session.get('view')).toBe('bookmark-form');
+        cancel_button.click();
+
+        await u.waitUntil(() => view.model.session.get('view') === null);
         expect(u.hasClass('on-button', toggle), false);
         expect(toggle.title).toBe('Bookmark this groupchat');
 
         toggle.click();
-        expect(view.renderBookmarkForm).toHaveBeenCalled();
 
         /* Client uploads data:
          * --------------------
@@ -75,13 +74,13 @@ describe("A chat room", function () {
          *  </iq>
          */
         expect(view.model.get('bookmarked')).toBeFalsy();
-        const form = view.querySelector('.chatroom-form');
+        const form = await u.waitUntil(() => view.querySelector('.chatroom-form'));
         form.querySelector('input[name="name"]').value = 'Play&apos;s the Thing';
         form.querySelector('input[name="autojoin"]').checked = 'checked';
         form.querySelector('input[name="nick"]').value = 'JC';
 
         const IQ_stanzas = _converse.connection.IQ_stanzas;
-        view.querySelector('.muc-bookmark-form .btn-primary').click();
+        view.querySelector('converse-muc-bookmark-form .btn-primary').click();
 
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('iq publish[node="storage:bookmarks"]', s).length).pop());

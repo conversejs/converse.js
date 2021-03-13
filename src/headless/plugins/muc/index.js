@@ -37,7 +37,9 @@ converse.MUC_TRAFFIC_STATES_LIST = Object.values(converse.MUC_TRAFFIC_STATES);
 converse.MUC_ROLE_CHANGES = { OP: 'op', DEOP: 'deop', VOICE: 'voice', MUTE: 'mute' };
 converse.MUC_ROLE_CHANGES_LIST = Object.values(converse.MUC_ROLE_CHANGES);
 
-converse.MUC_INFO_CODES = {
+converse.MUC = {};
+
+converse.MUC.INFO_CODES = {
     'visibility_changes': ['100', '102', '103', '172', '173', '174'],
     'self': ['110'],
     'non_privacy_changes': ['104', '201'],
@@ -241,15 +243,15 @@ converse.plugins.add('converse-muc', {
             'muc_nickname_from_jid': false,
             'muc_send_probes': false,
             'muc_show_info_messages': [
-                ...converse.MUC_INFO_CODES.visibility_changes,
-                ...converse.MUC_INFO_CODES.self,
-                ...converse.MUC_INFO_CODES.non_privacy_changes,
-                ...converse.MUC_INFO_CODES.muc_logging_changes,
-                ...converse.MUC_INFO_CODES.nickname_changes,
-                ...converse.MUC_INFO_CODES.disconnect_messages,
-                ...converse.MUC_INFO_CODES.affiliation_changes,
-                ...converse.MUC_INFO_CODES.join_leave_events,
-                ...converse.MUC_INFO_CODES.role_changes
+                ...converse.MUC.INFO_CODES.visibility_changes,
+                ...converse.MUC.INFO_CODES.self,
+                ...converse.MUC.INFO_CODES.non_privacy_changes,
+                ...converse.MUC.INFO_CODES.muc_logging_changes,
+                ...converse.MUC.INFO_CODES.nickname_changes,
+                ...converse.MUC.INFO_CODES.disconnect_messages,
+                ...converse.MUC.INFO_CODES.affiliation_changes,
+                ...converse.MUC.INFO_CODES.join_leave_events,
+                ...converse.MUC.INFO_CODES.role_changes
             ],
             'muc_show_logs_before_join': false,
             'muc_show_ogp_unfurls': true,

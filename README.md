@@ -78,6 +78,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0066](https://xmpp.org/extensions/xep-0066.html) Out of Band Data
 - [XEP-0077](https://xmpp.org/extensions/xep-0077.html) In-band registration
 - [XEP-0085](https://xmpp.org/extensions/xep-0085.html) Chat State Notifications
+- [XEP-0115](https://xmpp.org/extensions/xep-0115.html) Entity Capabilities
 - [XEP-0124](https://xmpp.org/extensions/xep-0124.html) Bidirectional-streams Over Synchronous HTTP (BOSH)
 - [XEP-0144](https://xmpp.org/extensions/xep-0144.html) Roster item exchange
 - [XEP-0156](https://xmpp.org/extensions/xep-0156.html) Discovering Alternative XMPP Connection Methods

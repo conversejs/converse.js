@@ -73,7 +73,6 @@ configuration settings should now be accessed via `_converse.api.settings.get` a
 Soon we'll deprecate the latter, so prepare now.
 
 - #515 Add support for XEP-0050 Ad-Hoc commands
-- #1083 Add support for XEP-0393 Message Styling
 - #2231: add sort_by_query and remove sort_by_length
 - #1313: Stylistic improvements to the send button
 - #1481: MUC OMEMO: Error No record for device

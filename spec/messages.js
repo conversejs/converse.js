@@ -1281,9 +1281,6 @@ describe("A Chat Message", function () {
                 await mock.openChatBoxFor(_converse, contact_jid);
 
                 const messages = _converse.connection.sent_stanzas.filter(s => s.nodeName === 'message');
-                if (messages.length > 1) {
-                    debugger;
-                }
                 expect(messages.length).toBe(1);
                 expect(Strophe.serialize(messages[0])).toBe(
                     `<message id="${messages[0].getAttribute('id')}" to="tybalt@montague.lit" type="chat" xmlns="jabber:client">`+

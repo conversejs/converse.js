@@ -336,7 +336,7 @@ export default class ChatBottomPanel extends ElementView {
             } else if (ev.keyCode === converse.keycodes.ESCAPE) {
                 return this.onEscapePressed(ev, this);
             } else if (ev.keyCode === converse.keycodes.ENTER) {
-                return this.onFormSubmitted();
+                return this.onFormSubmitted(ev);
             } else if (ev.keyCode === converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                 const textarea = this.querySelector('.chat-textarea');
                 if (!textarea.value || u.hasClass('correcting', textarea)) {

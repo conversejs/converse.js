@@ -45,6 +45,6 @@
     "pluggable.js": "2.0.1",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "1.4.1"
+    "strophe.js": "strophe/strophejs#ae0131a48a2080c51a8f6f312ecc46361e96b098"
   }
 }

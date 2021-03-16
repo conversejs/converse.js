@@ -309,6 +309,48 @@ const ChatBox = ModelWithContact.extend({
         }
     },
 
+    editEarlierMessage () {
+        let message;
+        let idx = this.messages.findLastIndex('correcting');
+        if (idx >= 0) {
+            this.messages.at(idx).save('correcting', false);
+            while (idx > 0) {
+                idx -= 1;
+                const candidate = this.messages.at(idx);
+                if (candidate.get('editable')) {
+                    message = candidate;
+                    break;
+                }
+            }
+        }
+        message =
+            message ||
+            this.messages.filter({ 'sender': 'me' })
+                .reverse()
+                .find(m => m.get('editable'));
+        if (message) {
+            message.save('correcting', true);
+        }
+    },
+
+    editLaterMessage () {
+        let message;
+        let idx = this.messages.findLastIndex('correcting');
+        if (idx >= 0) {
+            this.messages.at(idx).save('correcting', false);
+            while (idx < this.messages.length - 1) {
+                idx += 1;
+                const candidate = this.messages.at(idx);
+                if (candidate.get('editable')) {
+                    message = candidate;
+                    message.save('correcting', true);
+                    break;
+                }
+            }
+        }
+        return message;
+    },
+
     getOldestMessage () {
         for (let i=0; i<this.messages.length; i++) {
             const message = this.messages.at(i);

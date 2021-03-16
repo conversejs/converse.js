@@ -258,52 +258,6 @@ export default class ChatBottomPanel extends ElementView {
         this.insertIntoTextArea('', true, false);
     }
 
-    editEarlierMessage () {
-        let message;
-        let idx = this.model.messages.findLastIndex('correcting');
-        if (idx >= 0) {
-            this.model.messages.at(idx).save('correcting', false);
-            while (idx > 0) {
-                idx -= 1;
-                const candidate = this.model.messages.at(idx);
-                if (candidate.get('editable')) {
-                    message = candidate;
-                    break;
-                }
-            }
-        }
-        message =
-            message ||
-            this.model.messages.filter({ 'sender': 'me' })
-                .reverse()
-                .find(m => m.get('editable'));
-        if (message) {
-            message.save('correcting', true);
-        }
-    }
-
-    editLaterMessage () {
-        let message;
-        let idx = this.model.messages.findLastIndex('correcting');
-        if (idx >= 0) {
-            this.model.messages.at(idx).save('correcting', false);
-            while (idx < this.model.messages.length - 1) {
-                idx += 1;
-                const candidate = this.model.messages.at(idx);
-                if (candidate.get('editable')) {
-                    message = candidate;
-                    break;
-                }
-            }
-        }
-        if (message) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
-            message.save('correcting', true);
-        } else {
-            this.insertIntoTextArea('', true, false);
-        }
-    }
-
     autocompleteInPicker (input, value) {
         const emoji_dropdown = this.querySelector('converse-emoji-dropdown');
         const emoji_picker = this.querySelector('converse-emoji-picker');
@@ -340,14 +294,14 @@ export default class ChatBottomPanel extends ElementView {
             } else if (ev.keyCode === converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                 const textarea = this.querySelector('.chat-textarea');
                 if (!textarea.value || u.hasClass('correcting', textarea)) {
-                    return this.editEarlierMessage();
+                    return this.model.editEarlierMessage();
                 }
             } else if (
                 ev.keyCode === converse.keycodes.DOWN_ARROW &&
                 ev.target.selectionEnd === ev.target.value.length &&
                 u.hasClass('correcting', this.querySelector('.chat-textarea'))
             ) {
-                return this.editLaterMessage();
+                return this.model.editLaterMessage();
             }
         }
         if (

@@ -267,7 +267,7 @@ export const _converse = {
 }
 
 
-_converse.VERSION_NAME = "v7.0.4";
+_converse.VERSION_NAME = "v7.0.5";
 
 Object.assign(_converse, Events);
 

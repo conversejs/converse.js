@@ -1,6 +1,6 @@
 # Changelog
 
-## 7.0.5 (Unreleased)
+## 7.0.5 (2021-03-16)
 
 - #2377: The @converse/headless NPM package is missing the dist directory, causing import errors
 - #2396: @converse/headless wrongly depends on `CustomElement` from the view layer

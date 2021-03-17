@@ -29,7 +29,6 @@ export default class ChatView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
-        this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);
         this.render();
 
         // Need to be registered after render has been called.
@@ -131,25 +130,6 @@ export default class ChatView extends BaseChatView {
             u.addClass('chat-msg--followup', next_el);
         } else {
             u.removeClass('chat-msg--followup', next_el);
-        }
-    }
-
-    onPresenceChanged (item) {
-        const show = item.get('show');
-        const fullname = this.model.getDisplayName();
-
-        let text;
-        if (u.isVisible(this)) {
-            if (show === 'offline') {
-                text = __('%1$s has gone offline', fullname);
-            } else if (show === 'away') {
-                text = __('%1$s has gone away', fullname);
-            } else if (show === 'dnd') {
-                text = __('%1$s is busy', fullname);
-            } else if (show === 'online') {
-                text = __('%1$s is online', fullname);
-            }
-            text && this.model.createMessage({ 'message': text, 'type': 'info' });
         }
     }
 

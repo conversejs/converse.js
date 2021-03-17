@@ -58,8 +58,11 @@ const ChatBox = ModelWithContact.extend({
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
             this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
             await this.setRosterContact(jid);
+            this.presence.on('change:show', this.onPresenceChanged);
         }
         this.on('change:chat_state', this.sendChatState, this);
+
+
         await this.fetchMessages();
         /**
          * Triggered once a {@link _converse.ChatBox} has been created and initialized.
@@ -273,6 +276,23 @@ const ChatBox = ModelWithContact.extend({
             await this.clearMessages();
         }
         this.announceReconnection();
+    },
+
+    onPresenceChanged (item) {
+        const { __ } = _converse;
+        const show = item.get('show');
+        const fullname = this.getDisplayName();
+        let text;
+        if (show === 'offline') {
+            text = __('%1$s has gone offline', fullname);
+        } else if (show === 'away') {
+            text = __('%1$s has gone away', fullname);
+        } else if (show === 'dnd') {
+            text = __('%1$s is busy', fullname);
+        } else if (show === 'online') {
+            text = __('%1$s is online', fullname);
+        }
+        text && this.createMessage({ 'message': text, 'type': 'info' });
     },
 
     validate (attrs) {

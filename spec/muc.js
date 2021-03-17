@@ -250,6 +250,33 @@ describe("Groupchats", function () {
             done();
         }));
 
+        it("shows a new messages indicator when you're scrolled up",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.chatboxviews.get(muc_jid);
+            const message = u.toStanza(`
+                <message xmlns="jabber:client" type="groupchat" id="918172de-d5c5-4da4-b388-446ef4a05bec" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
+                    <body>Wherefore art though?</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="918172de-d5c5-4da4-b388-446ef4a05bec"/>
+                    <stanza-id xmlns="urn:xmpp:sid:0" id="88cc9c93-a8f4-4dd5-b02a-d19855eb6303" by="${muc_jid}"/>
+                    <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:47Z" from="juliet@shakespeare.lit"/>
+                </message>`);
+
+            view.model.save('scrolled', true); // hack
+            _converse.connection._dataRecv(mock.createRequest(message));
+
+            await u.waitUntil(() => view.model.messages.length);
+            const chat_new_msgs_indicator = view.querySelector('.new-msgs-indicator');
+            await u.waitUntil(() => u.isVisible(chat_new_msgs_indicator));
+            chat_new_msgs_indicator.click();
+            expect(view.model.get('scrolled')).toBeFalsy();
+            await u.waitUntil(() => !u.isVisible(chat_new_msgs_indicator));
+            done();
+        }));
+
 
         describe("upon being entered", function () {
 

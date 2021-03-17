@@ -18,12 +18,6 @@ const { dayjs } = converse.env;
 export default class ChatView extends BaseChatView {
     length = 200
     className = 'chatbox hidden'
-    is_chatroom = false // Leaky abstraction from MUC
-
-    events = {
-        'click .chatbox-navback': 'showControlBox',
-        'click .new-msgs-indicator': 'viewUnreadMessages',
-    }
 
     async initialize () {
         const jid = this.getAttribute('jid');
@@ -186,11 +180,6 @@ export default class ChatView extends BaseChatView {
         this.model.setChatState(_converse.ACTIVE);
         this.scrollDown();
         this.maybeFocus();
-    }
-
-    viewUnreadMessages () {
-        this.model.save({ 'scrolled': false, 'scrollTop': null });
-        this.scrollDown();
     }
 }
 

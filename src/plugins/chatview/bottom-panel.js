@@ -58,18 +58,19 @@ export default class ChatBottomPanel extends ElementView {
             tpl_chatbox_message_form(
                 Object.assign(this.model.toJSON(), {
                     'onDrop': ev => this.onDrop(ev),
-                    'inputChanged': ev => this.inputChanged(ev),
-                    'onKeyDown': ev => this.onKeyDown(ev),
-                    'onKeyUp': ev => this.onKeyUp(ev),
-                    'onPaste': ev => this.onPaste(ev),
-                    'onChange': ev => this.updateCharCounter(ev.target.value),
                     'hint_value': this.querySelector('.spoiler-hint')?.value,
+                    'inputChanged': ev => this.inputChanged(ev),
                     'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
                     'label_spoiler_hint': __('Optional hint'),
                     'message_value': this.querySelector('.chat-textarea')?.value,
+                    'onChange': ev => this.updateCharCounter(ev.target.value),
+                    'onKeyDown': ev => this.onKeyDown(ev),
+                    'onKeyUp': ev => this.onKeyUp(ev),
+                    'onPaste': ev => this.onPaste(ev),
                     'show_send_button': api.settings.get('show_send_button'),
                     'show_toolbar': api.settings.get('show_toolbar'),
-                    'unread_msgs': __('You have unread messages')
+                    'unread_msgs': __('You have unread messages'),
+                    'viewUnreadMessages': ev => this.viewUnreadMessages(ev),
                 })
             ),
             form_container
@@ -77,6 +78,12 @@ export default class ChatBottomPanel extends ElementView {
         this.addEventListener('focusin', ev => this.emitFocused(ev));
         this.addEventListener('focusout', ev => this.emitBlurred(ev));
         this.renderToolbar();
+    }
+
+    viewUnreadMessages (ev) {
+        ev?.preventDefault?.();
+        this.model.save({ 'scrolled': false, 'scrollTop': null });
+        _converse.chatboxviews.get(this.getAttribute('jid'))?.scrollDown();
     }
 
     hideNewMessagesIndicator () {

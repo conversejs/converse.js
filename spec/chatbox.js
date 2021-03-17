@@ -1187,8 +1187,8 @@ describe("Chatboxes", function () {
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => view.model.messages.length);
             expect(select_msgs_indicator().textContent).toBe('1');
-            view.viewUnreadMessages();
-            rosterview.render();
+            const chat_new_msgs_indicator = view.querySelector('.new-msgs-indicator');
+            chat_new_msgs_indicator.click();
             await u.waitUntil(() => select_msgs_indicator() === undefined);
             done();
         }));

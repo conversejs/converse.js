@@ -32,9 +32,9 @@ export const DEFAULT_SETTINGS = {
     keepalive: true,
     loglevel: 'info',
     locales: [
-        'af', 'ar', 'bg', 'ca', 'cs', 'de', 'el', 'eo', 'es', 'eu', 'en', 'fa', 'fi', 'fr',
+        'af', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'eo', 'es', 'eu', 'en', 'fa', 'fi', 'fr',
         'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'lt', 'nb', 'nl', 'mr', 'oc',
-        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
+        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'sv', 'th', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
     ],
     nickname: undefined,
     password: undefined,

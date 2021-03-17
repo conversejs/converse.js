@@ -19,15 +19,22 @@ module.exports = merge(common, {
         rules: [
         {
             test: /\.js$/,
+            include: /src/,
             use: {
                 loader: 'babel-loader',
                 options: {
                     presets: [
                         ["@babel/preset-env", {
                             "targets": {
-                                "browsers": ["ie 8"]
+                                "browsers": ["ie 11"]
                             }
                         }]
+                    ],
+                    plugins: [
+                        '@babel/plugin-proposal-class-properties',
+                        '@babel/plugin-proposal-nullish-coalescing-operator',
+                        '@babel/plugin-proposal-optional-chaining',
+                        '@babel/plugin-syntax-dynamic-import'
                     ]
                 }
             }
@@ -49,14 +56,17 @@ module.exports = merge(common, {
         }]
     },
     externals: [{
-        "lodash": "lodash",
-        "lodash.noconflict": "lodash.noconflict",
-        "strophe": "strophe",
-        "window": "window",
-        "filesize": "filesize",
-        "jed": "jed",
-        "sizzle": "sizzle",
-        "twemoji": "twemoji",
-        "urijs": "urijs"
+        'pluggable.js': 'pluggable',
+        '@converse/skeletor': 'skeletor',
+        'localforage': 'localforage',
+        'filesize': 'filesize',
+        'jed': 'jed',
+        'lodash': 'lodash',
+        'lodash.noconflict': 'lodash.noconflict',
+        'sizzle': 'sizzle',
+        'strophe.js': 'strophe',
+        'twemoji': 'twemoji',
+        'urijs': 'urijs',
+        'window': 'window',
     }]
 });

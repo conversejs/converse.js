@@ -21,7 +21,8 @@ export default (o) => {
         return tpl_occupant(Object.assign({
             'jid': '',
             'hint_show': PRETTY_CHAT_STATUS[occupant.get('show')],
-            'hint_occupant': i18n_occupant_hint(occupant)
+            'hint_occupant': i18n_occupant_hint(occupant),
+            'onOccupantClicked': o.onOccupantClicked
         }, occupant.toJSON()));
     });
 

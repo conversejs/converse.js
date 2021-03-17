@@ -207,8 +207,6 @@ describe("Chatboxes", function () {
             const chatview = _converse.chatboxviews.get(contact_jid);
             spyOn(chatview, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
-            // We need to rebind all events otherwise our spy won't be called
-            chatview.delegateEvents();
             chatview.querySelector('.close-chatbox-button').click();
             expect(chatview.close).toHaveBeenCalled();
             await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));

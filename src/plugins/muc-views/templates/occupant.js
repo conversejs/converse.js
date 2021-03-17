@@ -32,7 +32,7 @@ export default (o) => {
                     <div class="occupant-status occupant-${o.show} circle" title="${o.hint_show}"></div>
                 </div>
                 <div class="col occupant-nick-badge">
-                    <span class="occupant-nick">${o.nick || o.jid}</span>
+                    <span class="occupant-nick" @click=${o.onOccupantClicked}>${o.nick || o.jid}</span>
                     <span class="occupant-badges">
                         ${ (o.affiliation === "owner") ? html`<span class="badge badge-groupchat">${i18n_owner}</span>` : '' }
                         ${ (o.affiliation === "admin") ? html`<span class="badge badge-info">${i18n_admin}</span>` : '' }

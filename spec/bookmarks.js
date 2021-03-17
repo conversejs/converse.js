@@ -235,7 +235,6 @@ describe("A chat room", function () {
 
             spyOn(view, 'toggleBookmark').and.callThrough();
             spyOn(_converse.bookmarks, 'sendBookmarkStanza').and.callThrough();
-            view.delegateEvents();
 
             _converse.bookmarks.create({
                 'jid': view.model.get('jid'),

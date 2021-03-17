@@ -29,9 +29,6 @@ describe("The Controlbox", function () {
         spyOn(view, 'close').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
 
-        // We need to rebind all events otherwise our spy won't be called
-        view.delegateEvents();
-
         view.querySelector('.close-chatbox-button').click();
         expect(view.close).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxClosed', jasmine.any(Object));

@@ -19,12 +19,6 @@ import { html, render } from "lit-html";
 export default class MUCView extends BaseChatView {
     length = 300
     is_chatroom = true
-    events = {
-        // Arrow functions don't work here because you can't bind a different `this` param to them.
-        'click .occupant-nick': function (ev) {
-            this.insertIntoTextArea(ev.target.textContent);
-        }
-    }
 
     async initialize () {
         const jid = this.getAttribute('jid');

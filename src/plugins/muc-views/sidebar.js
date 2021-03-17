@@ -27,6 +27,7 @@ export default class MUCSidebar extends CustomElement {
             this.model.toJSON(), {
                 'occupants': [...this.model.occupants.models],
                 'closeSidebar': ev => this.closeSidebar(ev),
+                'onOccupantClicked': ev => this.onOccupantClicked(ev),
             }
         ));
         return tpl;
@@ -40,6 +41,11 @@ export default class MUCSidebar extends CustomElement {
         _converse.chatboxviews.get(this.jid)?.scrollDown();
     }
 
+    onOccupantClicked (ev) {
+        ev?.preventDefault?.();
+        const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
+        chatview?.getBottomPanel().insertIntoTextArea(`@${ev.target.textContent}`);
+    }
 }
 
 api.elements.define('converse-muc-sidebar', MUCSidebar);

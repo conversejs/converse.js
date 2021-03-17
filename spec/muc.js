@@ -2608,7 +2608,6 @@ describe("Groupchats", function () {
             spyOn(view, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
             spyOn(view.model, 'leave');
-            view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
             spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             const button = await u.waitUntil(() => view.querySelector('.close-chatbox-button'));
             button.click();

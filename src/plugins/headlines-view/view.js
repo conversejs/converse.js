@@ -5,11 +5,6 @@ import { render } from 'lit-html';
 
 
 class HeadlinesView extends BaseChatView {
-    events = {
-        'click .close-chatbox-button': 'close',
-        'click .toggle-chatbox-button': 'minimize',
-        'keypress textarea.chat-textarea': 'onKeyDown'
-    }
 
     async initialize () {
         const jid = this.getAttribute('jid');

@@ -1222,7 +1222,6 @@ describe("The OMEMO module", function() {
         expect(toggle === null).toBe(false);
         expect(u.hasClass('fa-unlock', toggle.querySelector('converse-icon'))).toBe(true);
         expect(u.hasClass('fa-lock', toggle.querySelector('.converse-icon'))).toBe(false);
-        view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
         toolbar.querySelector('.toggle-omemo').click();
         expect(view.model.get('omemo_active')).toBe(true);
 

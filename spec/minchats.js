@@ -78,7 +78,6 @@ describe("A Groupchat", function () {
         await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         spyOn(_converse.api, "trigger").and.callThrough();
-        view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
         const button = await u.waitUntil(() => view.querySelector('.toggle-chatbox-button'));
         button.click();
 
@@ -109,8 +108,6 @@ describe("A Chatbox", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const chatview = _converse.chatboxviews.get(contact_jid);
         spyOn(_converse.api, "trigger").and.callThrough();
-        // We need to rebind all events otherwise our spy won't be called
-        chatview.delegateEvents();
         chatview.querySelector('.toggle-chatbox-button').click();
 
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
-"PO-Revision-Date: 2021-02-26 18:50+0000\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
+"PO-Revision-Date: 2021-03-17 10:12+0100\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -745,7 +745,6 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
 msgstr "Is u seker u wil hierdie boodskap herroep?"
 
@@ -773,14 +772,13 @@ msgstr "U is op die punt om hierdie boodskap te herroep."
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 "U kan opsioneel 'n verklaring insluit wat die rede vir die herroeping bevat."
 
 #: dist/converse-no-dependencies.js:76173
-#, fuzzy
-msgid "this.model Retraction"
+msgid "Message Retraction"
 msgstr "Boodskap Herroeping"
 
 #: dist/converse-no-dependencies.js:76173
@@ -788,7 +786,6 @@ msgid "Optional reason"
 msgstr "Opsionele rede"
 
 #: dist/converse-no-dependencies.js:76184
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
 msgstr "Jammer, u word nie toegelaat om die boodskap te herroep nie."
 
@@ -2475,6 +2472,10 @@ msgstr "Spraaksaam"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Langer afwesig"
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Boodskap Herroeping"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

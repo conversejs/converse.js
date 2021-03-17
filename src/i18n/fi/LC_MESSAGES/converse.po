@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2020-11-18 18:40+0100\n"
 "Last-Translator: Janne E <pyskoovits@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
@@ -770,15 +770,15 @@ msgstr "Olet perumassa tämän viestin."
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 "Voit valinnaisesti sisällyttää viestin, joka selittää peruuttamisen syyn."
 
 #: dist/converse-no-dependencies.js:76173
 #, fuzzy
-msgid "this.model Retraction"
-msgstr "Viestin peruuttaminen"
+msgid "Message Retraction"
+msgstr "Viestiversiot"
 
 #: dist/converse-no-dependencies.js:76173
 msgid "Optional reason"
@@ -2489,6 +2489,10 @@ msgstr "Puhelias"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Laajennettu pois"
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Viestin peruuttaminen"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

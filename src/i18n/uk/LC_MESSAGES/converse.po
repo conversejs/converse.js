@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2020-11-18 18:39+0100\n"
 "Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
@@ -772,15 +772,15 @@ msgstr "Видалити повідомлення"
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
 
 #: dist/converse-no-dependencies.js:76173
 #, fuzzy
-msgid "this.model Retraction"
-msgstr "Повідомлення"
+msgid "Message Retraction"
+msgstr "Видозміни повідомлення"
 
 #: dist/converse-no-dependencies.js:76173
 msgid "Optional reason"
@@ -2522,6 +2522,10 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr ""
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Повідомлення"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

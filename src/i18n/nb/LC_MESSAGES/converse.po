@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2020-11-21 10:28+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -777,7 +777,7 @@ msgstr "Du har uleste meldinger"
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 "Du er i ferd med å invitere %1$s til sludringen \"%2$s\". Du kan eventuelt "
@@ -785,7 +785,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76173
 #, fuzzy
-msgid "this.model Retraction"
+msgid "Message Retraction"
 msgstr "Meldingsversjoner"
 
 #: dist/converse-no-dependencies.js:76173
@@ -2564,6 +2564,10 @@ msgstr "Pratsom"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Utvidet lediggang"
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Meldingsversjoner"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

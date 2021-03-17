@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 5.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2021-03-01 04:53+0000\n"
 "Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
@@ -734,14 +734,14 @@ msgstr "Anda yakin ingin menarik pesan ini?"
 
 #: dist/converse-no-dependencies.js:76166
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76173
 #, fuzzy
-msgid "this.model Retraction"
-msgstr "Penarikan Pesan"
+msgid "Message Retraction"
+msgstr "Versi pesan"
 
 #: dist/converse-no-dependencies.js:76173
 msgid "Optional reason"
@@ -2421,6 +2421,10 @@ msgstr "Cerewet"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Diperpanjang"
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Penarikan Pesan"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2020-04-04 18:09+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/conversejs/"
@@ -739,13 +739,14 @@ msgstr "คุณไม่ได้รับอนุญาตให้ส่ง
 
 #: dist/converse-no-dependencies.js:76166
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76173
-msgid "this.model Retraction"
-msgstr ""
+#, fuzzy
+msgid "Message Retraction"
+msgstr "รุ่นของข้อความ"
 
 #: dist/converse-no-dependencies.js:76173
 msgid "Optional reason"

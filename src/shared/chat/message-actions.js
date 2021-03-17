@@ -69,7 +69,7 @@ class MessageActions extends CustomElement {
 
     async onDirectMessageRetractButtonClicked () {
         if (this.model.get('sender') !== 'me') {
-            return log.error("onMessageRetractButtonClicked called for someone else's this.model!");
+            return log.error("onMessageRetractButtonClicked called for someone else's message!");
         }
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
@@ -134,12 +134,12 @@ class MessageActions extends CustomElement {
             } else {
                 let messages = [
                     __('You are about to retract this message.'),
-                    __('You may optionally include a this.model, explaining the reason for the retraction.')
+                    __('You may optionally include a message, explaining the reason for the retraction.')
                 ];
                 if (api.settings.get('show_retraction_warning')) {
                     messages = [messages[0], retraction_warning, messages[1]];
                 }
-                const reason = await api.prompt(__('this.model Retraction'), messages, __('Optional reason'));
+                const reason = await api.prompt(__('Message Retraction'), messages, __('Optional reason'));
                 reason !== false && this.retractOtherMessage(reason);
             }
         } else {

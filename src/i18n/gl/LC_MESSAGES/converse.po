@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2020-12-19 10:29+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
@@ -751,7 +751,7 @@ msgstr "Vas a eliminar esta mensaxe."
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 "De xeito opcional poderías deixar un aviso, explicando a razón de tela "
@@ -759,8 +759,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76173
 #, fuzzy
-msgid "this.model Retraction"
-msgstr "Eliminación da mensaxe"
+msgid "Message Retraction"
+msgstr "Versións da mensaxe"
 
 #: dist/converse-no-dependencies.js:76173
 msgid "Optional reason"
@@ -2444,6 +2444,10 @@ msgstr "Falador"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Fóra por longo tempo"
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Eliminación da mensaxe"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2019-11-08 17:04+0000\n"
 "Last-Translator: Guybrush Threepwood <weblate.oleg@buda.cloud>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
@@ -792,7 +792,7 @@ msgstr "Имате непрочетени съобщения"
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 "Ще поканите %1$s в стаята за разговори „%2$s“. Можете по желание да включите "
@@ -800,7 +800,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76173
 #, fuzzy
-msgid "this.model Retraction"
+msgid "Message Retraction"
 msgstr "Архивиране на съобщения"
 
 #: dist/converse-no-dependencies.js:76173
@@ -2566,6 +2566,10 @@ msgstr "Приказлив(а)"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Дълго отсъстващ(а)"
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "Архивиране на съобщения"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

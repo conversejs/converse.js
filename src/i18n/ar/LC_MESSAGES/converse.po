@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:46+0100\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
 "PO-Revision-Date: 2020-05-08 03:15+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
@@ -755,13 +755,13 @@ msgstr "لقد ورَدَت إليك رسائل غير مقروءة"
 
 #: dist/converse-no-dependencies.js:76166
 msgid ""
-"You may optionally include a this.model, explaining the reason for the "
+"You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76173
 #, fuzzy
-msgid "this.model Retraction"
+msgid "Message Retraction"
 msgstr "أرشفة الرسائل"
 
 #: dist/converse-no-dependencies.js:76173
@@ -2445,6 +2445,10 @@ msgstr "كثيرة الدردشة"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "تمديد فترة الغياب"
+
+#, fuzzy
+#~ msgid "this.model Retraction"
+#~ msgstr "أرشفة الرسائل"
 
 #, fuzzy
 #~ msgid "Sorry, you're not allowed to retract this this.model"

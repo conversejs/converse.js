@@ -6,6 +6,7 @@
 import "../../components/brand-heading";
 import "../chatview/index.js";
 import './loginpanel.js';
+import './navback.js';
 import ControlBoxMixin from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';

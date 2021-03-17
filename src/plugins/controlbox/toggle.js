@@ -16,14 +16,9 @@ class ControlBoxToggle extends CustomElement {
 
     render () {
         return tpl_controlbox_toggle({
-            'onClick': ev => this.onClick(ev),
+            'onClick': showControlBox,
             'hide': !this.model?.get('closed')
         });
-    }
-
-    onClick (e) { // eslint-disable-line class-methods-use-this
-        e.preventDefault();
-        showControlBox();
     }
 }
 

@@ -1,6 +1,6 @@
 #conversejs {
 
-    .chatbox-navback {
+    converse-controlbox-navback {
         display: none;
     }
     .flyout {
@@ -639,13 +639,13 @@
         converse-chats.converse-fullscreen {
             .chatbox {
                 .box-flyout {
-                    .chatbox-navback {
+                    converse-controlbox-navback {
                         margin: auto 0;
                         margin-right: 1em;
                         display: flex;
                         .fa-arrow-left {
                             &:before {
-                                color: white;
+                                color: var(--chat-head-text-color);
                             }
                         }
                     }

@@ -11,15 +11,8 @@ describe("The Controlbox", function () {
     it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
             mock.initConverse([], {}, function (done, _converse) {
 
-        const toggle = document.querySelector('converse-controlbox-toggle');
-        spyOn(toggle, 'onClick').and.callThrough();
-        spyOn(toggle, 'showControlBox').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
-        // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
-        toggle.delegateEvents();
         document.querySelector('.toggle-controlbox').click();
-        expect(toggle.onClick).toHaveBeenCalled();
-        expect(toggle.showControlBox).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
         const el = document.querySelector("#controlbox");
         expect(u.isVisible(el)).toBe(true);

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2021-03-05 03:50+0000\n"
 "Last-Translator: Tomáš Obšívač <tomasek@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
@@ -735,14 +735,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Opravdu chcete odstranit tento kontakt?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -764,7 +764,7 @@ msgstr "Nemáte povolení vytvářet nové skupinové chaty."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Chystáte se tuto zprávu odvolat."
 
 #: dist/converse-no-dependencies.js:76166
@@ -785,8 +785,8 @@ msgstr "Nepovinný důvod"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "Omlouváme se, nemáte oprávnění odvolat tuto zprávu"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Nemáte povolení vytvářet nové skupinové chaty."
 
 #: dist/converse-no-dependencies.js:76246
 #, fuzzy
@@ -2496,6 +2496,10 @@ msgstr "Hovorný/á"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Na delší dobu pryč"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Omlouváme se, nemáte oprávnění odvolat tuto zprávu"
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2021-02-20 01:50+0000\n"
 "Last-Translator: Kornelijus Tvarijanavičius <kornelitvari@protonmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
@@ -760,7 +760,7 @@ msgstr "Turite neišsiųstą žinutę, kuri dings jei tęsite. Ar esate tikri?"
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "Turite žinoti, kad kiti XMPP/Jabber klientai (ir serveriai) gali dar "
 "nepalaikyti žinutės atšaukimo ir ši žinutė galbūt nebus pašalinta visur."
@@ -769,7 +769,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Ar tikrai norite atšaukti šią žinutę?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -792,7 +792,7 @@ msgstr "Deja, jums neleidžiama atšaukti šios žinutės."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Jūs tuoj atšauksite šią žinutę."
 
 #: dist/converse-no-dependencies.js:76166
@@ -814,7 +814,7 @@ msgstr "Neprivaloma priežastis"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr "Deja, jums neleidžiama atšaukti šios žinutės."
 
 #: dist/converse-no-dependencies.js:76246
@@ -2569,6 +2569,10 @@ msgstr "Kalbus"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Ilgai pasišalinęs"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Deja, jums neleidžiama atšaukti šios žinutės."
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

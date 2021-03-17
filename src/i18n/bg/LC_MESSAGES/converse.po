@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2019-11-08 17:04+0000\n"
 "Last-Translator: Guybrush Threepwood <weblate.oleg@buda.cloud>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
@@ -756,14 +756,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Сигурни ли сте, че искате да премахнете този познат?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -786,7 +786,7 @@ msgstr "Нямате права за създаване на нови стаи."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Имате непрочетени съобщения"
 
 #: dist/converse-no-dependencies.js:76166
@@ -810,7 +810,7 @@ msgstr "Съвет (незадължително)"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr "Нямате права за създаване на нови стаи."
 
 #: dist/converse-no-dependencies.js:76246
@@ -2566,6 +2566,10 @@ msgstr "Приказлив(а)"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Дълго отсъстващ(а)"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Нямате права за създаване на нови стаи."
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-12-23 21:29+0000\n"
 "Last-Translator: Quentin PAGÈS <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
@@ -748,14 +748,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Volètz vertadièrament suprimir aqueste messatge ?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -779,7 +779,7 @@ msgstr "Avètz pas lo drech de cambiar aquò"
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Avètz de nòus messatges"
 
 #: dist/converse-no-dependencies.js:76166
@@ -803,7 +803,7 @@ msgstr "Indici opcional"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr "Avètz pas lo drech de cambiar aquò"
 
 #: dist/converse-no-dependencies.js:76246
@@ -2530,6 +2530,10 @@ msgstr "Charraire"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Absent de longa"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Avètz pas lo drech de cambiar aquò"
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

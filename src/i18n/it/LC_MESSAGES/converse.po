@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-11-18 18:41+0100\n"
 "Last-Translator: random r <epsilin@yopmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
@@ -752,7 +752,7 @@ msgstr "Hai un messaggio non inviato che sarà perso se continui. Sei sicuro?"
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "Tieni conto che altri client (e server) XMPP/Jabber potrebbero non "
 "supportare ancora il ritiro e questo messaggio potrebbe non essere rimosso "
@@ -762,7 +762,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Sei sicuro di voler ritirare questo messaggio?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -783,7 +783,7 @@ msgstr "Scusa, non ti è consentito di ritirare questo messaggio."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Stai per ritirare questo messaggio."
 
 #: dist/converse-no-dependencies.js:76166
@@ -805,8 +805,8 @@ msgstr "Motivazione facoltativa"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "Scusa, non ti è consentito di ritirare questo messaggio"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Scusa, non ti è consentito di ritirare questo messaggio."
 
 #: dist/converse-no-dependencies.js:76246
 msgid "Cancel Editing"
@@ -2513,6 +2513,10 @@ msgstr "Chiaccherone"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Lontano da molto tempo"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Scusa, non ti è consentito di ritirare questo messaggio"
 
 #, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 5.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-02-10 03:50+0000\n"
 "Last-Translator: Prachi Joshi <josprachi@yahoo.com>\n"
 "Language-Team: Marathi <https://hosted.weblate.org/projects/conversejs/"
@@ -695,13 +695,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76015
@@ -721,8 +721,9 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76166
-msgid "You are about to retract this this.model."
-msgstr ""
+#, fuzzy
+msgid "You are about to retract this message."
+msgstr "हा संदेश मागे घ्या"
 
 #: dist/converse-no-dependencies.js:76166
 msgid ""
@@ -740,7 +741,7 @@ msgid "Optional reason"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76184
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76246
@@ -2366,9 +2367,6 @@ msgstr ""
 
 #~ msgid "Edit this message"
 #~ msgstr "हा संदेश संपादित करा"
-
-#~ msgid "Retract this message"
-#~ msgstr "हा संदेश मागे घ्या"
 
 #~ msgid "Full Name:"
 #~ msgstr "पूर्ण नाव:"

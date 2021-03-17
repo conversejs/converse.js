@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-12-19 10:29+0000\n"
 "Last-Translator: LL Magical <lolayami2004@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -725,7 +725,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "Esteja ciente de que outros clientes de XMPP/Jabber (e servidores) podem "
 "ainda não suportar retrações e que esta mensagem pode não ser excluída em "
@@ -735,7 +735,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Tem certeza que deseja retrair esta mensagem?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -756,7 +756,7 @@ msgstr "Desculpe, você não está autorizado a retrair esta mensagem."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Você está a ponto de retirar esta mensagem."
 
 #: dist/converse-no-dependencies.js:76166
@@ -779,8 +779,8 @@ msgstr "Motivo opcional"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "Desculpe, você não está autorizado a retrair esta mensagem"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Desculpe, você não está autorizado a retrair esta mensagem."
 
 #: dist/converse-no-dependencies.js:76246
 msgid "Cancel Editing"
@@ -2465,6 +2465,10 @@ msgstr "Conversar"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Ausência Longa"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Desculpe, você não está autorizado a retrair esta mensagem"
 
 #, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

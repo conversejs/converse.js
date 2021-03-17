@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-11-18 18:28+0100\n"
 "Last-Translator: Andrey <andrey@mailbox.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
@@ -724,14 +724,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Вы уверены, что хотите удалить этот контакт?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -753,7 +753,7 @@ msgstr "Вам не разрешено создавать новые комна�
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Вы собираетесь отозвать это сообщение."
 
 #: dist/converse-no-dependencies.js:76166
@@ -777,8 +777,8 @@ msgstr "Опционная подсказка"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "Извините, вы не можете отозвать это сообщение"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Вам не разрешено создавать новые комнаты."
 
 #: dist/converse-no-dependencies.js:76246
 msgid "Cancel Editing"
@@ -2495,6 +2495,10 @@ msgstr "Болтливый"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Нет на месте долгое время"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Извините, вы не можете отозвать это сообщение"
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

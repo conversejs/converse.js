@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2021-01-20 09:32+0000\n"
 "Last-Translator: Lilian Wang <li330wang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -696,7 +696,7 @@ msgstr "您将会丢失一条未送出的消息。确定要继续吗？"
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "注意并非所有 XMPP/Jabber 用户端软件皆支持消息回收功能，这条消息有可能会未被收"
 "回。"
@@ -705,7 +705,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "您确定要收回这条消息吗？"
 
 #: dist/converse-no-dependencies.js:76015
@@ -726,7 +726,7 @@ msgstr "抱歉，您不能收回这条消息。"
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "您在收回这条消息。"
 
 #: dist/converse-no-dependencies.js:76166
@@ -747,8 +747,8 @@ msgstr "可选原因"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "抱歉，您不能收回这条消息"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "抱歉，您不能收回这条消息。"
 
 #: dist/converse-no-dependencies.js:76246
 msgid "Cancel Editing"
@@ -2386,6 +2386,10 @@ msgstr "正在对话"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "离开了一段时间"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "抱歉，您不能收回这条消息"
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

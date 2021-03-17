@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2021-01-10 12:32+0000\n"
 "Last-Translator: Isak Holmström <isak@iah.io>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/conversejs/"
@@ -695,13 +695,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76015
@@ -721,7 +721,7 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76166
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76166
@@ -739,7 +739,7 @@ msgid "Optional reason"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76184
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76246

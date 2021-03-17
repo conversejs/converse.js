@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2019-01-24 10:04+0000\n"
 "Last-Translator: Chinmay Sharma <infy.chinmaysharma@gmail.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/conversejs/"
@@ -707,14 +707,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -736,7 +736,7 @@ msgstr "इस कमरे के बारे में और जानका
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "क्या आप वाकई \"%1$s\" के बुकमार्क को हटाना चाहते हैं?"
 
 #: dist/converse-no-dependencies.js:76166
@@ -755,7 +755,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #: dist/converse-no-dependencies.js:76246
@@ -2412,6 +2412,10 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "इस कमरे के बारे में और जानकारी दिखाएं"
 
 #~ msgid "Clear all messages"
 #~ msgstr "सारे सन्देश हटाएं"

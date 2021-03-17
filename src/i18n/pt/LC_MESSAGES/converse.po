@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-11-18 18:25+0100\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
@@ -751,14 +751,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Tem a certeza de que deseja retrair esta mensagem?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -779,7 +779,7 @@ msgstr "Desculpe, não está autorizado a retrair esta mensagem."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Está prestes a retrair esta mensagem."
 
 #: dist/converse-no-dependencies.js:76166
@@ -801,7 +801,7 @@ msgstr "Motivo opcional"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr "Desculpe, não está autorizado a retrair esta mensagem."
 
 #: dist/converse-no-dependencies.js:76246
@@ -2510,6 +2510,10 @@ msgstr "Conversar"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Ausência Longa"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Desculpe, não está autorizado a retrair esta mensagem."
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

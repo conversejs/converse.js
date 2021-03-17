@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-11-18 18:41+0100\n"
 "Last-Translator: Michal Biesiada <blade-14@o2.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
@@ -748,7 +748,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "Bądź świadomy, że inni klienci (i serwery) XMPP/Jabber mogą jeszcze nie "
 "obsługiwać zwijania i że ta wiadomość może nie być wszędzie usuwana."
@@ -757,7 +757,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Jesteś pewien, że chcesz wycofać tę wiadomość?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -778,7 +778,7 @@ msgstr "Przepraszam, nie wolno ci wycofać tej wiadomości."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Masz zamiar wycofać tę wiadomość."
 
 #: dist/converse-no-dependencies.js:76166
@@ -799,7 +799,7 @@ msgstr "Opcjonalny powód"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr "Przepraszam, nie wolno ci wycofać tej wiadomości."
 
 #: dist/converse-no-dependencies.js:76246
@@ -2526,6 +2526,10 @@ msgstr "Gotowy do rozmowy"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Dłuższa nieobecność"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Przepraszam, nie wolno ci wycofać tej wiadomości."
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

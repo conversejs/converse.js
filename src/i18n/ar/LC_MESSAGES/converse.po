@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-05-08 03:15+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
@@ -720,14 +720,14 @@ msgstr "لديك رسالة غير مرسلة ستفقدها إذا تابعت. 
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "هل أنت متأكد أنك تريد سحب هذه الرسالة؟"
 
 #: dist/converse-no-dependencies.js:76015
@@ -750,7 +750,7 @@ msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "لقد ورَدَت إليك رسائل غير مقروءة"
 
 #: dist/converse-no-dependencies.js:76166
@@ -771,8 +771,8 @@ msgstr "دليل اختياري"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "عذراً، لا يُسمح لك بسحب هذه الرسالة"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
 
 #: dist/converse-no-dependencies.js:76246
 #, fuzzy
@@ -2445,6 +2445,10 @@ msgstr "كثيرة الدردشة"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "تمديد فترة الغياب"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "عذراً، لا يُسمح لك بسحب هذه الرسالة"
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

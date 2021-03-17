@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-11-18 18:40+0100\n"
 "Last-Translator: Janne E <pyskoovits@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
@@ -734,7 +734,7 @@ msgstr "Sinulla on lähettämätön viesti, joka katoaa, jos jatkat. Oletko varm
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "Huomaa, että muut XMPP / Jabber-asiakkaat (ja palvelimet) eivät ehkä vielä "
 "tue peruuttamista ja että tätä viestiä ei välttämättä poisteta kaikkialta."
@@ -743,7 +743,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Haluatko varmasti peruuttaa tämän viestin?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -764,7 +764,7 @@ msgstr "Valitettavasti et saa peruuttaa tätä viestiä."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Olet perumassa tämän viestin."
 
 #: dist/converse-no-dependencies.js:76166
@@ -786,8 +786,8 @@ msgstr "Valinnainen syy"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "Valitettavasti et voi peruuttaa tätä viestiä"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Valitettavasti et saa peruuttaa tätä viestiä."
 
 #: dist/converse-no-dependencies.js:76246
 #, fuzzy
@@ -2489,6 +2489,10 @@ msgstr "Puhelias"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Laajennettu pois"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Valitettavasti et voi peruuttaa tätä viestiä"
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

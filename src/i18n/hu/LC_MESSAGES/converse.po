@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-11-18 18:47+0100\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
@@ -720,7 +720,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "Vegye figyelembe, hogy más XMPP/Jabber kliensek (és kiszolgálók) még lehet, "
 "hogy nem támogatják a visszavonást, így lehet, hogy az üzenet nem lesz "
@@ -730,7 +730,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Valóban visszavonja ezt az üzenetet?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -751,7 +751,7 @@ msgstr "Nem vonhatja vissza ezt az üzenetet."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Az üzenet visszavonására készül."
 
 #: dist/converse-no-dependencies.js:76166
@@ -772,8 +772,8 @@ msgstr "Nem kötelező ok"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "Sajnáljuk, nem vonhatja vissza ezt az üzenetet"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Nem vonhatja vissza ezt az üzenetet."
 
 #: dist/converse-no-dependencies.js:76246
 msgid "Cancel Editing"
@@ -2454,6 +2454,10 @@ msgstr "Beszédes"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Hosszú távollét"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Sajnáljuk, nem vonhatja vissza ezt az üzenetet"
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

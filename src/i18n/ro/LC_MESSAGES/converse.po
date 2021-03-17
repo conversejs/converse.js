@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-12-14 01:29+0000\n"
 "Last-Translator: Sergiu <adinfinitvm@wail.ch>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/conversejs/"
@@ -752,14 +752,14 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76008
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Sunteți sigur că doriți să eliminați acest contact?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -782,7 +782,7 @@ msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Aveți mesaje necitite"
 
 #: dist/converse-no-dependencies.js:76166
@@ -806,7 +806,7 @@ msgstr "Indiciu opțional"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
+msgid "Sorry, you're not allowed to retract this message"
 msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #: dist/converse-no-dependencies.js:76246
@@ -2484,6 +2484,10 @@ msgstr ""
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Nu aveți permisiunea de a crea noi grupuri de discuții."
 
 #, fuzzy, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

@@ -73,10 +73,10 @@ class MessageActions extends CustomElement {
         }
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
-            'not yet support retractions and that this this.model may not ' +
+            'not yet support retractions and that this message may not ' +
             'be removed everywhere.'
         );
-        const messages = [__('Are you sure you want to retract this this.model?')];
+        const messages = [__('Are you sure you want to retract this message?')];
         if (api.settings.get('show_retraction_warning')) {
             messages[1] = retraction_warning;
         }
@@ -111,12 +111,12 @@ class MessageActions extends CustomElement {
     async onMUCMessageRetractButtonClicked () {
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
-            'not yet support retractions and that this this.model may not ' +
+            'not yet support retractions and that this message may not ' +
             'be removed everywhere.'
         );
 
         if (this.model.mayBeRetracted()) {
-            const messages = [__('Are you sure you want to retract this this.model?')];
+            const messages = [__('Are you sure you want to retract this message?')];
             if (api.settings.get('show_retraction_warning')) {
                 messages[1] = retraction_warning;
             }
@@ -126,14 +126,14 @@ class MessageActions extends CustomElement {
             }
         } else if (await this.model.mayBeModerated()) {
             if (this.model.get('sender') === 'me') {
-                let messages = [__('Are you sure you want to retract this this.model?')];
+                let messages = [__('Are you sure you want to retract this message?')];
                 if (api.settings.get('show_retraction_warning')) {
                     messages = [messages[0], retraction_warning, messages[1]];
                 }
                 !!(await api.confirm(__('Confirm'), messages)) && this.retractOtherMessage();
             } else {
                 let messages = [
-                    __('You are about to retract this this.model.'),
+                    __('You are about to retract this message.'),
                     __('You may optionally include a this.model, explaining the reason for the retraction.')
                 ];
                 if (api.settings.get('show_retraction_warning')) {
@@ -143,7 +143,7 @@ class MessageActions extends CustomElement {
                 reason !== false && this.retractOtherMessage(reason);
             }
         } else {
-            const err_msg = __(`Sorry, you're not allowed to retract this this.model`);
+            const err_msg = __(`Sorry, you're not allowed to retract this message`);
             api.alert('error', __('Error'), err_msg);
         }
     }

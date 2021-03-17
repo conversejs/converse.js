@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 09:33+0100\n"
+"POT-Creation-Date: 2021-03-17 09:46+0100\n"
 "PO-Revision-Date: 2020-11-22 18:56+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
@@ -743,7 +743,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
-"retractions and that this this.model may not be removed everywhere."
+"retractions and that this message may not be removed everywhere."
 msgstr ""
 "Beachten Sie, dass andere XMPP/Jabber-Clients (und Server) möglicherweise "
 "noch keinen Widerruf unterstützen und dass diese Nachricht möglicherweise "
@@ -753,7 +753,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76105
 #: dist/converse-no-dependencies.js:76142
 #, fuzzy
-msgid "Are you sure you want to retract this this.model?"
+msgid "Are you sure you want to retract this message?"
 msgstr "Sind Sie sicher, dass Sie diese Nachricht widerrufen wollen?"
 
 #: dist/converse-no-dependencies.js:76015
@@ -776,7 +776,7 @@ msgstr "Es tut uns leid, Sie dürfen diese Nachricht nicht widerrufen."
 
 #: dist/converse-no-dependencies.js:76166
 #, fuzzy
-msgid "You are about to retract this this.model."
+msgid "You are about to retract this message."
 msgstr "Sie sind dabei, diese Nachricht zu widerrufen."
 
 #: dist/converse-no-dependencies.js:76166
@@ -799,8 +799,8 @@ msgstr "Optionaler Grund"
 
 #: dist/converse-no-dependencies.js:76184
 #, fuzzy
-msgid "Sorry, you're not allowed to retract this this.model"
-msgstr "Es tut uns leid, Sie dürfen diese Nachricht nicht widerrufen"
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Es tut uns leid, Sie dürfen diese Nachricht nicht widerrufen."
 
 #: dist/converse-no-dependencies.js:76246
 msgid "Cancel Editing"
@@ -2512,6 +2512,10 @@ msgstr "Gesprächsbereit"
 #: dist/converse-no-dependencies.js:107884
 msgid "Extended Away"
 msgstr "Länger nicht anwesend"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this this.model"
+#~ msgstr "Es tut uns leid, Sie dürfen diese Nachricht nicht widerrufen"
 
 #, javascript-format
 #~ msgid "%1$s has exited the room due to a technical issue"

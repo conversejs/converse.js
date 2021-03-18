@@ -462,7 +462,7 @@ describe("A sent groupchat message", function () {
             bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
-            const msg = _converse.connection.send.calls.all()[1].args[0];
+            const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+

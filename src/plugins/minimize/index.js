@@ -18,6 +18,8 @@ import {
 } from './utils.js';
 import { debounce } from 'lodash-es';
 
+import './styles/minimize.scss';
+
 const { dayjs } = converse.env;
 
 

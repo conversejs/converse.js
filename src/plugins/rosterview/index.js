@@ -13,6 +13,8 @@ import { RosterFilter, RosterFilterView } from './filterview.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { highlightRosterItem } from './utils.js';
 
+import './styles/roster.scss';
+
 
 converse.plugins.add('converse-rosterview', {
 

@@ -12,6 +12,8 @@ import { _converse, api, converse } from '@converse/headless/core';
 import { bookmarkableChatRoomView, eventMethods } from './mixins.js';
 import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
 
+import './styles/bookmarks.scss';
+
 
 converse.plugins.add('converse-bookmark-views', {
     /* Plugin dependencies are other plugins which might be

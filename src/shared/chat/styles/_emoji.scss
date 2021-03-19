@@ -1,4 +1,10 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
 #conversejs {
+    @import "bootstrap/scss/media";
+
     .chatbox {
         img.emoji {
             height: 1.2em;

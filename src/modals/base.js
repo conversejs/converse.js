@@ -5,6 +5,8 @@ import { View } from '@converse/skeletor/src/view.js';
 import { api, converse } from "@converse/headless/core";
 import { render } from 'lit-html';
 
+import './styles/_modal.scss';
+
 const { sizzle } = converse.env;
 const u = converse.env.utils;
 

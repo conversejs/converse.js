@@ -4,9 +4,12 @@
  * @license Mozilla Public License (MPLv2)
  */
 
+
 import "@converse/headless/headless";
 import "i18n";
 import "shared/registry.js";
+
+import 'shared/styles/index.scss';
 
 /* START: Removable components
  * --------------------
@@ -33,7 +36,6 @@ import "./plugins/singleton.js";
 /* END: Removable components */
 
 import "./components/converse.js";
-import "../sass/converse.scss";
 
 import { _converse, converse } from "@converse/headless/core";
 import { CustomElement } from 'components/element';

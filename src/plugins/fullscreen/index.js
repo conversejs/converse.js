@@ -3,11 +3,14 @@
  * @license Mozilla Public License (MPLv2)
  * @copyright 2020, the Converse.js contributors
  */
-import "./chatview/index.js";
-import "./controlbox/index.js";
-import "./singleton.js";
+import "plugins/chatview/index.js";
+import "plugins/controlbox/index.js";
+import "plugins/singleton.js";
 import "@converse/headless/plugins/muc/index.js";
 import { api, converse } from "@converse/headless/core";
+
+import './styles/fullscreen.scss';
+import './styles/background.scss';
 
 
 converse.plugins.add('converse-fullscreen', {

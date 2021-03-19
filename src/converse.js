@@ -19,7 +19,7 @@ import "./plugins/bookmark-views/index.js";       // Views for XEP-0048 Bookmark
 import "./plugins/chatview/index.js";       // Renders standalone chat boxes for single user chat
 import "./plugins/controlbox/index.js";     // The control box
 import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them
-import "./plugins/fullscreen.js";
+import "./plugins/fullscreen/index.js";
 import "./plugins/headlines-view/index.js";
 import "./plugins/mam-views.js";
 import "./plugins/minimize/index.js";             // Allows chat boxes to be minimized

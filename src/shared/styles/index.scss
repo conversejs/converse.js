@@ -37,11 +37,11 @@
 @import "./font-awesome.scss";
 @import "variables";
 
+@import "mixins";
 @import "core";
 @import "forms";
 @import "toolbar";
 @import "chatbox";
-@import "controlbox";
 @import "roster";
 @import "lists";
 @import "chatrooms";

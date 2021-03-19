@@ -1,11 +1,3 @@
-@mixin fade-in {
-    opacity: 0;  /* make things invisible upon start */
-    animation-name: fadein;
-    animation-fill-mode: forwards;
-    animation-duration: 0.5s;
-    animation-timing-function: ease;
-}
-
 body.converse-fullscreen {
     margin: 0;
     background-color: var(--global-background-color);

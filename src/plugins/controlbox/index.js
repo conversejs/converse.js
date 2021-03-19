@@ -15,6 +15,8 @@ import log from '@converse/headless/log';
 import { _converse, api, converse } from '@converse/headless/core';
 import { addControlBox } from './utils.js';
 
+import './styles/_controlbox.scss';
+
 const u = converse.env.utils;
 
 

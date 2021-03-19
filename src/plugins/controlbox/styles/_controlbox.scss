@@ -1,3 +1,8 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "shared/styles/_variables.scss";
+@import "shared/styles/_mixins.scss";
+
 #conversejs {
     .oauth-providers {
         text-align: center;

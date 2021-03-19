@@ -7,7 +7,9 @@
  */
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
+
+@import "./font-awesome.scss";
+@import "mixins";
 
 #conversejs {
     @import "bootstrap/scss/root";
@@ -34,14 +36,11 @@
     @import "bootstrap/scss/utilities";
 }
 
-@import "./font-awesome.scss";
 @import "variables";
 
-@import "mixins";
 @import "core";
 @import "forms";
 @import "toolbar";
-@import "chatbox";
 @import "roster";
 @import "lists";
 @import "chatrooms";

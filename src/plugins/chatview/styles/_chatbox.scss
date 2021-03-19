@@ -1,8 +1,15 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "shared/styles/_variables.scss";
+
 #conversejs {
+    @import "bootstrap/scss/media";
 
     converse-controlbox-navback {
         display: none;
     }
+
     .flyout {
         position: absolute;
 

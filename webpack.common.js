@@ -1,7 +1,7 @@
 /* global __dirname, module, process */
 const path = require('path');
 
-let bootstrap_ignore_modules = ['carousel', 'scrollspy'];
+let bootstrap_ignore_modules = ['carousel', 'scrollspy', 'tooltip', 'toast'];
 
 const BOOTSTRAP_IGNORE_MODULES = (process.env.BOOTSTRAP_IGNORE_MODULES || '').replace(/ /g, '').trim();
 if (BOOTSTRAP_IGNORE_MODULES.length > 0) {

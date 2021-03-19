@@ -9,7 +9,7 @@ import { html } from "lit-element";
 import { tpl_emoji_picker } from "./templates/emoji-picker.js";
 import { until } from 'lit-html/directives/until.js';
 
-import './styles/_emoji.scss';
+import './styles/emoji.scss';
 
 const u = converse.env.utils;
 

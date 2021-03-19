@@ -5,6 +5,8 @@ import { _converse, api, converse } from "@converse/headless/core";
 import { html } from 'lit-element';
 import { until } from 'lit-html/directives/until.js';
 
+import './styles/toolbar.scss';
+
 const Strophe = converse.env.Strophe
 
 

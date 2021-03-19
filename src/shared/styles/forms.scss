@@ -1,4 +1,8 @@
 #conversejs {
+    @import "bootstrap/scss/forms";
+    @import "bootstrap/scss/input-group";
+    @import "bootstrap/scss/custom-forms";
+
     .btn--small {
         font-size: 80%;
         font-weight: normal;

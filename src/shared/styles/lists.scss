@@ -1,4 +1,11 @@
 #conversejs {
+    @import "bootstrap/scss/list-group";
+
+    .list-group-item.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color-dark);
+    }
+
     .list-container {
         text-align: left;
         padding: 0.3em 0;

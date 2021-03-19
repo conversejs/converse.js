@@ -17,19 +17,11 @@
     @import "bootstrap/scss/type";
     @import "bootstrap/scss/images";
     @import "bootstrap/scss/grid";
-    @import "bootstrap/scss/forms";
-    @import "bootstrap/scss/buttons";
     @import "bootstrap/scss/transitions";
     @import "bootstrap/scss/dropdown";
-    @import "bootstrap/scss/button-group";
-    @import "bootstrap/scss/input-group";
-    @import "bootstrap/scss/custom-forms";
     @import "bootstrap/scss/nav";
-    @import "bootstrap/scss/card";
-    @import "bootstrap/scss/badge";
     @import "bootstrap/scss/alert";
     @import "bootstrap/scss/media";
-    @import "bootstrap/scss/list-group";
     @import "bootstrap/scss/close";
     @import "bootstrap/scss/tooltip";
     @import "bootstrap/scss/popover";
@@ -39,6 +31,8 @@
 @import "variables";
 
 @import "core";
+@import "buttons";
+@import "badges";
 @import "forms";
 @import "toolbar";
 @import "lists";

@@ -32,32 +32,6 @@
       overflow-y: none;
     }
 
-    converse-chats {
-      &.converse-overlayed {
-          height: 3em;
-          > .row {
-              flex-direction: row-reverse;
-          }
-      }
-
-      &.converse-fullscreen,
-      &.converse-mobile {
-          flex-wrap: nowrap;
-          width: 100vw;
-      }
-      &.converse-embedded {
-          box-sizing: border-box;
-          *, *:before, *:after {
-              box-sizing: border-box;
-          }
-          bottom: auto;
-          height: 100%; // When embedded, it fills the containing element
-          position: relative;
-          right: auto;
-          width: 100%;
-      }
-    }
-
     converse-brand-heading {
         text-align: center;
     }
@@ -155,13 +129,6 @@
 
     .popover {
         position: fixed;
-    }
-
-    .converse-chatboxes {
-        z-index: 1031; // One more than bootstrap navbar
-        position: fixed;
-        bottom: 0;
-        right: 0;
     }
 
     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
@@ -302,25 +269,6 @@
 
     .circle {
         border-radius: 50%;
-    }
-
-    .badge {
-        line-height: 1;
-        font-weight: normal;
-        font-size: 90%;
-    }
-
-    .btn {
-        font-weight: normal;
-        color: #fff;
-        .fa, .far, .fas {
-            color: #fff;
-            margin-right: 0.5em;
-
-            &.only-icon {
-              margin-right: 0;
-            }
-        }
     }
 
     .no-text-select {
@@ -490,104 +438,6 @@
     .nav-pills .nav-link.active,
     .nav-pills .show > .nav-link {
         background-color: var(--primary-color);
-    }
-
-    .list-group-item.active {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color-dark);
-    }
-
-    .badge {
-        text-shadow: none;
-        color: white;
-    }
-
-    .badge-light {
-        color: var(--text-color);
-    }
-
-    .btn-primary, .button-primary, .badge-primary {
-        background-color: var(--primary-color);
-        border-color: transparent;
-        &:focus, &:hover, &:active {
-            background-color: var(--primary-color-dark) !important;
-            border-color: transparent !important;
-        }
-    }
-
-    .btn--transparent {
-        background: transparent;
-        border: none;
-    }
-
-    .btn-circle {
-        width: 30px;
-        height: 30px;
-        text-align: center;
-        padding: 0.5em 0;
-        font-size: var(--font-size-small);
-        line-height: 1.428571429;
-        border-radius: 50%;
-    }
-
-    .btn {
-      &.fa {
-        color: white !important;
-      }
-    }
-
-    .badge-groupchat {
-        background-color: var(--chatroom-badge-color);
-        border-color: transparent;
-        &:hover {
-            background-color: var(--chatroom-badge-hover-color);
-            border-color: transparent;
-        }
-        &.active {
-            background-color: var(--chatroom-badge-hover-color) !important;
-            border-color: transparent !important;
-        }
-    }
-
-    .btn-info, .badge-info {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        &:hover {
-            background-color: var(--primary-color-dark);
-            border-color: var(--primary-color-dark);
-        }
-    }
-
-    .button-cancel,
-    .btn-secondary, .badge-secondary {
-        color: white;
-        background-color: var(--secondary-color);
-        border-color: var(--secondary-color);
-        &:hover {
-            background-color: var(--secondary-color-dark);
-            border-color: var(--secondary-color-dark);
-        }
-    }
-
-    .btn-warning {
-        color: white;
-        background-color: var(--warning-color);
-        border-color: var(--warning-color);
-        &:hover {
-            color: white;
-            background-color: var(--warning-color-dark);
-            border-color: var(--warning-color-dark)
-        }
-    }
-
-    .btn-danger {
-        color: white;
-        background-color: var(--danger-color);
-        border-color: var(--danger-color) !important;
-        &:hover {
-            background-color: var(--danger-color-dark);
-            border-color: var(--danger-color-dark);
-        }
     }
 }
 

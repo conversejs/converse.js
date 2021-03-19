@@ -1,0 +1,43 @@
+#conversejs {
+    @import "bootstrap/scss/badge";
+
+    .badge {
+        color: white;
+        font-size: 90%;
+        font-weight: normal;
+        line-height: 1;
+        text-shadow: none;
+    }
+
+    .badge-light {
+        color: var(--text-color);
+    }
+
+    .badge-primary {
+        background-color: var(--primary-color);
+        border-color: transparent;
+        &:focus, &:hover, &:active {
+            background-color: var(--primary-color-dark) !important;
+            border-color: transparent !important;
+        }
+    }
+
+    .badge-info {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        &:hover {
+            background-color: var(--primary-color-dark);
+            border-color: var(--primary-color-dark);
+        }
+    }
+
+    .badge-secondary {
+        color: white;
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        &:hover {
+            background-color: var(--secondary-color-dark);
+            border-color: var(--secondary-color-dark);
+        }
+    }
+}

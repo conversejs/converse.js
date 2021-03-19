@@ -10,6 +10,8 @@ import ChatBoxViews from './container.js';
 import { ViewWithAvatar } from 'shared/avatar.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
+import './styles/chats.scss';
+
 
 function calculateViewportHeightUnit () {
     const vh = window.innerHeight * 0.01;

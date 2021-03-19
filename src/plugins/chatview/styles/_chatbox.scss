@@ -551,16 +551,6 @@
             font-size: var(--font-size-huge);
         }
 
-        &.converse-chatboxes {
-            z-index: 1031; // One more than bootstrap navbar
-            position: inherit;
-            flex-wrap: nowrap;
-            bottom: auto;
-            height: 100%;
-            width: 100%;
-            margin-left: -15px;
-        }
-
         .chatbox {
             .box-flyout {
                 bottom: 0;

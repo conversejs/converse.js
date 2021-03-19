@@ -9,23 +9,6 @@
         }
     }
     .message {
-
-        .card--unfurl {
-            margin: 1em 0;
-            @include media-breakpoint-down(sm) {
-                max-width: 95%;
-            }
-            @include media-breakpoint-up(md) {
-                max-width: 75%;
-            }
-            @include media-breakpoint-up(lg) {
-                max-width: 66%;
-            }
-            @include media-breakpoint-up(xl) {
-                max-width: 50%;
-            }
-        }
-
         .show-msg-author-modal {
             color: var(--text-color) !important;
         }

@@ -17,6 +17,8 @@ import log from '@converse/headless/log';
 import muc_api from './api.js';
 import { api, converse, _converse } from '@converse/headless/core';
 
+import './styles/muc.scss';
+
 const { Strophe } = converse.env;
 
 converse.MUC.VIEWS = {

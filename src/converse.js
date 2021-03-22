@@ -35,8 +35,6 @@ import "./plugins/rosterview/index.js";
 import "./plugins/singleton.js";
 /* END: Removable components */
 
-import "./components/converse.js";
-
 import { _converse, converse } from "@converse/headless/core";
 import { CustomElement } from 'components/element';
 

@@ -1,6 +1,6 @@
-import tpl_converse from "../templates/converse.js";
+import tpl_root from "./templates/root.js";
 import { api } from '@converse/headless/core';
-import { CustomElement } from './element.js';
+import { CustomElement } from 'components/element.js';
 
 
 /**
@@ -13,7 +13,7 @@ import { CustomElement } from './element.js';
 class ConverseRoot extends CustomElement {
 
     render () { // eslint-disable-line class-methods-use-this
-        return tpl_converse();
+        return tpl_root();
     }
 
     connectedCallback () {

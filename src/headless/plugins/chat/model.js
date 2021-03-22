@@ -976,23 +976,21 @@ const ChatBox = ModelWithContact.extend({
     },
 
     maybeShow (force) {
-        if (force) {
-            if (_converse.isUniView()) {
+        if (_converse.isUniView()) {
+            const filter = c => !c.get('hidden') &&
+                c.get('jid') !== this.get('jid') &&
+                c.get('id') !== 'controlbox';
+            const other_chats = _converse.chatboxes.filter(filter);
+            if (force || other_chats.length === 0) {
                 // We only have one chat visible at any one time.
                 // So before opening a chat, we make sure all other chats are hidden.
-                const filter = c => !c.get('hidden') &&
-                    c.get('jid') !== this.get('jid') &&
-                    c.get('id') !== 'controlbox';
-                _converse.chatboxes.filter(filter).forEach(c => u.safeSave(c, {'hidden': true}));
+                other_chats.forEach(c => u.safeSave(c, {'hidden': true}));
+                u.safeSave(this, {'hidden': false});
             }
-            u.safeSave(this, {'hidden': false});
-        }
-        if (_converse.isUniView()) {
             return;
-        } else {
-            u.safeSave(this, {'hidden': false});
-            this.trigger('show');
         }
+        u.safeSave(this, {'hidden': false});
+        this.trigger('show');
         return this;
     },
 

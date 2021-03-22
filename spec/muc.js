@@ -104,6 +104,18 @@ describe("Groupchats", function () {
 
     describe("A Groupchat", function () {
 
+        it("will be visible when opened as the first chat in fullscreen-view",
+                mock.initConverse(['discoInitialized'],
+                    { 'view_mode': 'fullscreen', 'auto_join_rooms': ['orchard@chat.shakespeare.lit']},
+                    async function (done, _converse) {
+
+            const { api } = _converse;
+            await api.waitUntil('roomsAutoJoined');
+            const room = await api.rooms.get('orchard@chat.shakespeare.lit');
+            expect(room.get('hidden')).toBe(false);
+            return done();
+        }));
+
         it("Can be configured to show cached messages before being joined",
             mock.initConverse(['discoInitialized'],
                 {

@@ -20,6 +20,7 @@ import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
+import { initStorage } from '@converse/headless/shared/utils.js';
 import {
     clearUserSettings,
     extendAppSettings,
@@ -347,7 +348,13 @@ export const api = _converse.api = {
          * @method _converse.api.user.logout
          * @example _converse.api.user.logout();
          */
-        logout () {
+        async logout () {
+            /**
+             * Triggered before the user is logged out
+             * @event _converse#beforeLogout
+             */
+            await api.trigger('beforeLogout', {'synchronous': true});
+
             const promise = u.getResolveablePromise();
             const complete = () => {
                 // Recreate all the promises
@@ -773,19 +780,6 @@ function initPersistentStorage () {
     _converse.storage['persistent'] = Storage.localForage.createInstance(config);
 }
 
-
-_converse.getDefaultStore = function () {
-    if (_converse.config.get('trusted')) {
-        const is_non_persistent = api.settings.get('persistent_store') === 'sessionStorage';
-        return is_non_persistent ? 'session': 'persistent';
-    } else {
-        return 'session';
-    }
-}
-
-_converse.createStore = createStore;
-
-
 function initPlugins () {
     // If initialize gets called a second time (e.g. during tests), then we
     // need to re-apply all plugins (for a new converse instance), and we
@@ -993,8 +987,8 @@ async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (_converse.session?.get('id') !== id) {
-        _converse.session = new Model({id});
-        _converse.session.browserStorage = createStore(id, is_shared_session ? "persistent" : "session");
+        _converse.session = new Model({ id });
+        initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
 
         if (!is_shared_session && _converse.session.get('active')) {

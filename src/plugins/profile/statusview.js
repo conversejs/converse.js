@@ -28,9 +28,8 @@ class ProfileView extends ElementViewWithAvatar {
     async initialize () {
         this.model = _converse.xmppstatus;
         this.listenTo(this.model, "change", this.render);
-        this.listenTo(this.model.vcard, "change", this.render);
-
         await api.waitUntil('VCardsInitialized');
+        this.listenTo(this.model.vcard, "change", this.render);
         this.render();
     }
 

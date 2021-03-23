@@ -1,5 +1,4 @@
 /**
- * @module converse-roster
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
@@ -13,6 +12,7 @@ import { Presence, Presences } from './presence.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { clearPresences, initRoster, updateUnreadCounter } from './utils.js';
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 const { $pres } = converse.env;
 
@@ -168,7 +168,7 @@ converse.plugins.add('converse-roster', {
             } else {
                 _converse.presences = new _converse.Presences();
                 const id = `converse.presences-${_converse.bare_jid}`;
-                _converse.presences.browserStorage = _converse.createStore(id, "session");
+                initStorage(_converse.presences, id, 'session');
                 // We might be continuing an existing session, so we fetch
                 // cached presence data.
                 _converse.presences.fetch();

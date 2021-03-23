@@ -1,6 +1,7 @@
 import log from '@converse/headless/log';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { restoreOMEMOSession } from './utils.js';
 
 const { Strophe, $build, $iq, sizzle } = converse.env;
@@ -14,9 +15,13 @@ const DeviceList = Model.extend({
     idAttribute: 'jid',
 
     initialize () {
+        this.initDevices();
+    },
+
+    initDevices () {
         this.devices = new _converse.Devices();
         const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
-        this.devices.browserStorage = _converse.createStore(id);
+        initStorage(this.devices, id);
         this.fetchDevices();
     },
 

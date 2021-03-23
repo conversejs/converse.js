@@ -6,6 +6,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit-element";
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { tpl_emoji_picker } from "./templates/emoji-picker.js";
 import { until } from 'lit-html/directives/until.js';
 
@@ -296,7 +297,7 @@ export class EmojiDropdown extends BaseDropdown {
                 await api.emojis.initialize()
                 const id = `converse.emoji-${_converse.bare_jid}-${this.chatview.model.get('jid')}`;
                 this.model = new _converse.EmojiPicker({'id': id});
-                this.model.browserStorage = _converse.createStore(id);
+                initStorage(this.model, id);
                 await new Promise(resolve => this.model.fetch({'success': resolve, 'error': resolve}));
                 // We never want still be in the autocompleting state upon page load
                 this.model.set({'autocompleting': null, 'ac_position': null});

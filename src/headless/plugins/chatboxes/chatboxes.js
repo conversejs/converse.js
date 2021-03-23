@@ -1,5 +1,6 @@
 import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api } from "../../core.js";
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 const ChatBoxes = Collection.extend({
     comparator: 'time_opened',
@@ -24,7 +25,7 @@ const ChatBoxes = Collection.extend({
 
     onConnected (reconnecting) {
         if (reconnecting) { return; }
-        this.browserStorage = _converse.createStore(`converse.chatboxes-${_converse.bare_jid}`);
+        initStorage(this, `converse.chatboxes-${_converse.bare_jid}`);
         this.fetch({
             'add': true,
             'success': c => this.onChatBoxesFetched(c)

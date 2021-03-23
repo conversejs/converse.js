@@ -1,6 +1,7 @@
 import tpl_bookmarks_list from './templates/list.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { render } from 'lit-html';
 
 const { Strophe } = converse.env;
@@ -19,7 +20,7 @@ export default class BookmarksView extends ElementView {
 
         const id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
         this.model = new _converse.BookmarksList({ id });
-        this.model.browserStorage = _converse.createStore(id);
+        initStorage(this.model, id);
         this.model.fetch({ 'success': () => this.render(), 'error': () => this.render() });
     }
 

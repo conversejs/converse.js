@@ -4,6 +4,7 @@ import log from '@converse/headless/log';
 import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit-html';
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -405,8 +406,8 @@ export function registerPEPPushHandler () {
 export function restoreOMEMOSession () {
     if (_converse.omemo_store === undefined) {
         const id = `converse.omemosession-${_converse.bare_jid}`;
-        _converse.omemo_store = new _converse.OMEMOStore({ 'id': id });
-        _converse.omemo_store.browserStorage = _converse.createStore(id);
+        _converse.omemo_store = new _converse.OMEMOStore({ id });
+        initStorage(_converse.omemo_store, id);
     }
     return _converse.omemo_store.fetchSession();
 }
@@ -433,8 +434,7 @@ export async function initOMEMO () {
     }
     _converse.devicelists = new _converse.DeviceLists();
     const id = `converse.devicelists-${_converse.bare_jid}`;
-    _converse.devicelists.browserStorage = _converse.createStore(id);
-
+    initStorage(_converse.devicelists, id);
     try {
         await fetchOwnDevices();
         await restoreOMEMOSession();

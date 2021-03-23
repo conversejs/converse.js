@@ -4,6 +4,7 @@ import { ElementView } from '@converse/skeletor/src/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { render } from 'lit-html';
 
 const { Strophe } = converse.env;
@@ -31,10 +32,8 @@ export class RoomsList extends ElementView {
 
     initialize () {
         const id = `converse.roomspanel${_converse.bare_jid}`;
-        this.model = new (RoomsListModel.extend({
-            id,
-            'browserStorage': _converse.createStore(id)
-        }))();
+        this.model = new RoomsListModel({ id });
+        initStorage(this.model, id);
         this.model.fetch();
 
         this.listenTo(_converse.chatboxes, 'add', this.renderIfChatRoom)

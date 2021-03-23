@@ -11,6 +11,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { isArchived } from '@converse/headless/shared/parsers';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
@@ -346,7 +347,7 @@ const ChatRoomMixin = {
     restoreSession () {
         const id = `muc.session-${_converse.bare_jid}-${this.get('jid')}`;
         this.session = new MUCSession({ id });
-        this.session.browserStorage = _converse.createStore(id, 'session');
+        initStorage(this.session, id, 'session');
         return new Promise(r => this.session.fetch({ 'success': r, 'error': r }));
     },
 
@@ -362,10 +363,12 @@ const ChatRoomMixin = {
             )
         );
         this.features.browserStorage = _converse.createStore(id, 'session');
+        this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
         id = `converse.muc-config-{_converse.bare_jid}-${this.get('jid')}`;
         this.config = new Model();
         this.config.browserStorage = _converse.createStore(id, 'session');
+        this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     },
 
     initOccupants () {
@@ -373,6 +376,7 @@ const ChatRoomMixin = {
         const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
         this.occupants.browserStorage = _converse.createStore(id, 'session');
         this.occupants.chatroom = this;
+        this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.browserStorage.flush());
     },
 
     fetchOccupants () {

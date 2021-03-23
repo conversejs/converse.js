@@ -6,6 +6,7 @@ import log from '@converse/headless/log';
 import pick from "lodash/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -62,7 +63,6 @@ const ChatBox = ModelWithContact.extend({
         }
         this.on('change:chat_state', this.sendChatState, this);
 
-
         await this.fetchMessages();
         /**
          * Triggered once a {@link _converse.ChatBox} has been created and initialized.
@@ -96,7 +96,8 @@ const ChatBox = ModelWithContact.extend({
             api.trigger('afterMessagesFetched', this);
         });
         this.messages.chatbox = this;
-        this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey());
+        initStorage(this.messages, this.getMessagesCacheKey());
+
         this.listenTo(this.messages, 'change:upload', message => {
             if (message.get('upload') === _converse.SUCCESS) {
                 api.send(this.createMessageStanza(message));
@@ -852,8 +853,7 @@ const ChatBox = ModelWithContact.extend({
     async createMessage (attrs, options) {
         attrs.time = attrs.time || (new Date()).toISOString();
         await this.messages.fetched;
-        const p = this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options));
-        return p;
+        return this.messages.create(attrs, options);
     },
 
     /**

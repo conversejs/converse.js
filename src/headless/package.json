@@ -36,16 +36,16 @@
   },
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {
-    "@converse/skeletor": "conversejs/skeletor#482acb03ff4ec92a5cabccf023294912a574132c",
+    "@converse/skeletor": "0.0.3",
     "filesize": "^6.1.0",
     "localforage": "^1.9.0",
+    "localforage-driver-memory": "^1.0.5",
     "localforage-setitems": "^1.4.0",
     "localforage-webextensionstorage-driver": "^2.0.0",
-    "localforage-driver-memory": "^1.0.5",
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "strophe/strophejs#ae0131a48a2080c51a8f6f312ecc46361e96b098"
+    "strophe.js": "1.4.2"
   }
 }

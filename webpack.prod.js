@@ -19,7 +19,7 @@ const plugins = [
             {from: 'logo/conversejs-filled-512.png', to: 'images/logo'},
             {from: 'logo/conversejs-filled-192.svg', to: 'images/logo'},
             {from: 'logo/conversejs-filled-512.svg', to: 'images/logo'},
-            {from: 'sass/webfonts', to: 'webfonts'}
+            {from: 'src/shared/styles/webfonts', to: 'webfonts'}
         ]
     }),
     new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
@@ -62,4 +62,3 @@ module.exports = merge(common, {
         }]
     }
 });
-

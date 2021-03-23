@@ -267,6 +267,7 @@ describe("A groupchat shown in the groupchats list", function () {
         await mock.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC');
         expect(_converse.chatboxes.length).toBe(2);
 
+        await mock.openControlBox(_converse);
         const controlbox = _converse.chatboxviews.get('controlbox');
         const lview = controlbox.querySelector('converse-rooms-list');
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length);

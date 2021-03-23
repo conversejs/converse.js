@@ -6,6 +6,7 @@
 import "../../components/brand-heading";
 import "../chatview/index.js";
 import './loginpanel.js';
+import './navback.js';
 import ControlBoxMixin from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';
@@ -13,6 +14,8 @@ import controlbox_api from './api.js';
 import log from '@converse/headless/log';
 import { _converse, api, converse } from '@converse/headless/core';
 import { addControlBox } from './utils.js';
+
+import './styles/_controlbox.scss';
 
 const u = converse.env.utils;
 

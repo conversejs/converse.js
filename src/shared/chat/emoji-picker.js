@@ -9,6 +9,8 @@ import { html } from "lit-element";
 import { tpl_emoji_picker } from "./templates/emoji-picker.js";
 import { until } from 'lit-html/directives/until.js';
 
+import './styles/emoji.scss';
+
 const u = converse.env.utils;
 
 
@@ -148,7 +150,9 @@ export default class EmojiPicker extends CustomElement {
     }
 
     insertIntoTextArea (value) {
-        this.chatview.onEmojiReceivedFromPicker(value);
+        const autocompleting = this.model.get('autocompleting');
+        const ac_position = this.model.get('ac_position');
+        this.chatview.getBottomPanel().insertIntoTextArea(value, autocompleting, false, ac_position);
         this.model.set({'autocompleting': null, 'query': '', 'ac_position': null});
     }
 

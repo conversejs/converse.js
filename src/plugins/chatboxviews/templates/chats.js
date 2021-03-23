@@ -2,6 +2,13 @@ import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { _converse, api } from '@converse/headless/core';
 
+
+function shouldShowChat (c) {
+    const { CONTROLBOX_TYPE } = _converse;
+    return c.get('type') === CONTROLBOX_TYPE || !(c.get('hidden') || c.get('minimized'));
+}
+
+
 export default () => {
     const { chatboxes, CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = _converse;
     const view_mode = api.settings.get('view_mode');
@@ -9,7 +16,7 @@ export default () => {
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
     return html`
         ${view_mode === 'overlayed' ? html`<converse-minimized-chats></converse-minimized-chats>` : ''}
-        ${repeat(chatboxes, m => m.get('jid'), m => {
+        ${repeat(chatboxes.filter(shouldShowChat), m => m.get('jid'), m => {
             if (m.get('type') === CONTROLBOX_TYPE) {
                 return html`
                     ${view_mode === 'overlayed' ? html`<converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>` : ''}
@@ -20,15 +27,15 @@ export default () => {
                 `;
             } else if (m.get('type') === CHATROOMS_TYPE) {
                 return html`
-                    <converse-muc jid="${m.get('jid')}" class="chatbox chatroom ${(m.get('hidden') || m.get('minimized')) ? 'hidden' : ''}"></converse-muc>
+                    <converse-muc jid="${m.get('jid')}" class="chatbox chatroom"></converse-muc>
                 `;
             } else if (m.get('type') === HEADLINES_TYPE) {
                 return html`
-                    <converse-headlines jid="${m.get('jid')}" class="chatbox headlines ${(m.get('hidden') || m.get('minimized')) ? 'hidden' : ''}"></converse-headlines>
+                    <converse-headlines jid="${m.get('jid')}" class="chatbox headlines"></converse-headlines>
                 `;
             } else {
                 return html`
-                    <converse-chat jid="${m.get('jid')}" class="chatbox ${(m.get('hidden') || m.get('minimized')) ? 'hidden' : ''}"></converse-chat>
+                    <converse-chat jid="${m.get('jid')}" class="chatbox"></converse-chat>
                 `;
             }
         })}

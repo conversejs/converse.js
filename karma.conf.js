@@ -58,6 +58,7 @@ module.exports = function(config) {
       { pattern: "spec/me-messages.js", type: 'module' },
       { pattern: "spec/mentions.js", type: 'module' },
       { pattern: "spec/retractions.js", type: 'module' },
+      { pattern: "spec/muc-api.js", type: 'module' },
       { pattern: "spec/muc.js", type: 'module' },
       { pattern: "spec/modtools.js", type: 'module' },
       { pattern: "spec/room_registration.js", type: 'module' },

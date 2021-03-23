@@ -145,13 +145,24 @@ export function maximize (ev, chatbox) {
     });
 }
 
-export function minimize (ev, chatbox) {
+export function minimize (ev, model) {
     if (ev?.preventDefault) {
         ev.preventDefault();
     } else {
-        chatbox = ev;
+        model = ev;
     }
-    u.safeSave(chatbox, {
+    // save the scroll position to restore it on maximize
+    const view = _converse.chatboxviews.get(model.get('jid'));
+    const scroll = view.querySelector('.chat-content__messages')?.scrollTop;
+    if (scroll) {
+        if (model.collection && model.collection.browserStorage) {
+            model.save({ scroll });
+        } else {
+            model.set({ scroll });
+        }
+    }
+    model.setChatState(_converse.INACTIVE);
+    u.safeSave(model, {
         'hidden': true,
         'minimized': true,
         'time_minimized': new Date().toISOString()
@@ -165,20 +176,18 @@ export function minimize (ev, chatbox) {
  * Will trigger {@link _converse#chatBoxMaximized}
  * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
  */
-function onMaximized (view) {
-    if (!view.model.isScrolledUp()) {
-        view.model.clearUnreadMsgCounter();
+function onMaximized (model) {
+    if (!model.isScrolledUp()) {
+        model.clearUnreadMsgCounter();
     }
-    view.model.setChatState(_converse.ACTIVE);
-    view.show();
+    model.setChatState(_converse.ACTIVE);
     /**
      * Triggered when a previously minimized chat gets maximized
      * @event _converse#chatBoxMaximized
      * @type { _converse.ChatBoxView }
      * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
      */
-    api.trigger('chatBoxMaximized', view);
-    return view;
+    api.trigger('chatBoxMaximized', model);
 }
 
 /**
@@ -188,28 +197,20 @@ function onMaximized (view) {
  * Will trigger {@link _converse#chatBoxMinimized}
  * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
  */
-function onMinimized (view) {
-    // save the scroll position to restore it on maximize
-    if (view.model.collection && view.model.collection.browserStorage) {
-        view.model.save({ 'scroll': view.content.scrollTop });
-    } else {
-        view.model.set({ 'scroll': view.content.scrollTop });
-    }
-    view.model.setChatState(_converse.INACTIVE);
+function onMinimized (model) {
     /**
      * Triggered when a previously maximized chat gets Minimized
      * @event _converse#chatBoxMinimized
      * @type { _converse.ChatBoxView }
      * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
      */
-    api.trigger('chatBoxMinimized', view);
-    return view;
+    api.trigger('chatBoxMinimized', model);
 }
 
-export function onMinimizedChanged (view) {
-    if (view.model.get('minimized')) {
-        onMinimized(view);
+export function onMinimizedChanged (model) {
+    if (model.get('minimized')) {
+        onMinimized(model);
     } else {
-        onMaximized(view);
+        onMaximized(model);
     }
 }

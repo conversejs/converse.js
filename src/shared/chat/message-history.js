@@ -2,12 +2,9 @@ import "./message";
 import dayjs from 'dayjs';
 import tpl_new_day from "templates/new_day.js";
 import { CustomElement } from 'components/element.js';
-import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { html } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
-
-const i18n_no_history = __('No message history available.');
 
 const tpl_message = (o) => html`
     <converse-chat-message
@@ -115,9 +112,7 @@ export default class MessageHistory extends CustomElement {
 
     render () {
         const msgs = this.messages;
-        return msgs.length ?
-            html`${repeat(msgs, m => m.get('id'), m => this.renderMessage(m)) }` :
-            html`<div class="empty-history-feedback form-help"><span>${i18n_no_history}</span></div>`;
+        return msgs.length ? html`${repeat(msgs, m => m.get('id'), m => this.renderMessage(m)) }` : '';
     }
 
     renderMessage (model) {

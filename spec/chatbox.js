@@ -37,7 +37,7 @@ describe("Chatboxes", function () {
                     id: u.getUniqueId()
                 }).c('body').t('hello world').tree();
             await _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
             const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
             await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === 'hello world');
             done();
@@ -119,6 +119,7 @@ describe("Chatboxes", function () {
             await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             await u.waitUntil(() => message_promise);
             expect(_converse.chatboxviews.keys().length).toBe(2);
+            expect(_converse.chatboxviews.keys().pop()).toBe(sender_jid);
             done();
         }));
 
@@ -198,6 +199,7 @@ describe("Chatboxes", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
+            await mock.openControlBox(_converse);
             const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
@@ -205,8 +207,6 @@ describe("Chatboxes", function () {
             const chatview = _converse.chatboxviews.get(contact_jid);
             spyOn(chatview, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
-            // We need to rebind all events otherwise our spy won't be called
-            chatview.delegateEvents();
             chatview.querySelector('.close-chatbox-button').click();
             expect(chatview.close).toHaveBeenCalled();
             await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
@@ -264,7 +264,7 @@ describe("Chatboxes", function () {
                 const toolbar = view.querySelector('.chat-toolbar');
                 const counter = toolbar.querySelector('.message-limit');
                 expect(counter.textContent).toBe('200');
-                view.insertIntoTextArea('hello world');
+                view.getBottomPanel().insertIntoTextArea('hello world');
                 expect(counter.textContent).toBe('188');
 
                 toolbar.querySelector('.toggle-emojis').click();
@@ -372,8 +372,8 @@ describe("Chatboxes", function () {
                     u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     spyOn(_converse.connection, 'send');
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    const view = _converse.chatboxviews.get(contact_jid);
-                    expect(view.model.get('chat_state')).toBe('active');
+                    const model = _converse.chatboxes.get(contact_jid);
+                    expect(model.get('chat_state')).toBe('active');
                     expect(_converse.connection.send).toHaveBeenCalled();
                     const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
@@ -394,12 +394,12 @@ describe("Chatboxes", function () {
                     const rosterview = document.querySelector('converse-roster');
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    const view = _converse.chatboxviews.get(contact_jid);
-                    _converse.minimize.minimize(view.model);
-                    expect(view.model.get('chat_state')).toBe('inactive');
+                    const model = _converse.chatboxes.get(contact_jid);
+                    _converse.minimize.minimize(model);
+                    expect(model.get('chat_state')).toBe('inactive');
                     spyOn(_converse.connection, 'send');
-                    _converse.minimize.maximize(view.model);
-                    await u.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
+                    _converse.minimize.maximize(model);
+                    await u.waitUntil(() => model.get('chat_state') === 'active', 1000);
                     expect(_converse.connection.send).toHaveBeenCalled();
                     const calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                         return call.args[0] instanceof Strophe.Builder;
@@ -427,7 +427,7 @@ describe("Chatboxes", function () {
                     const rosterview = document.querySelector('converse-roster');
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    var view = _converse.chatboxviews.get(contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
@@ -468,7 +468,7 @@ describe("Chatboxes", function () {
                     const rosterview = document.querySelector('converse-roster');
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
-                    var view = _converse.chatboxviews.get(contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
@@ -524,7 +524,7 @@ describe("Chatboxes", function () {
                             id: u.getUniqueId()
                         }).c('body').t('hello world').tree();
                     await _converse.handleMessageStanza(msg);
-                    const msg_el = await u.waitUntil(() => view.content.querySelector('.chat-msg'));
+                    const msg_el = await u.waitUntil(() => view.querySelector('.chat-msg'));
                     await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === '');
                     expect(msg_el.querySelector('.chat-msg__text').textContent).toBe('hello world');
                     done();
@@ -911,7 +911,7 @@ describe("Chatboxes", function () {
 
     describe("Special Messages", function () {
 
-        fit("'/clear' can be used to clear messages in a conversation",
+        it("'/clear' can be used to clear messages in a conversation",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
@@ -1162,7 +1162,7 @@ describe("Chatboxes", function () {
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length > 1);
             expect(select_msgs_indicator().textContent).toBe('2');
-            _converse.minimize.minimize(view.model);
+            _converse.minimize.maximize(view.model);
             u.waitUntil(() => typeof select_msgs_indicator() === 'undefined');
             done();
         }));
@@ -1185,8 +1185,8 @@ describe("Chatboxes", function () {
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => view.model.messages.length);
             expect(select_msgs_indicator().textContent).toBe('1');
-            view.viewUnreadMessages();
-            rosterview.render();
+            const chat_new_msgs_indicator = view.querySelector('.new-msgs-indicator');
+            chat_new_msgs_indicator.click();
             await u.waitUntil(() => select_msgs_indicator() === undefined);
             done();
         }));

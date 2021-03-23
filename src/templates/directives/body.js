@@ -13,7 +13,7 @@ class MessageBodyRenderer {
     }
 
     onImageLoaded () {
-        this.component.dispatchEvent(new CustomEvent('imageLoaded', { detail: this.component }));
+        this.component.dispatchEvent(new CustomEvent('imageLoaded', { detail: this.component, 'bubbles': true }));
     }
 
     async transform () {

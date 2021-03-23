@@ -1,43 +1,41 @@
 import log from "@converse/headless/log";
 import tpl_muc_config_form from "./templates/muc-config-form.js";
-import { View } from '@converse/skeletor/src/view.js';
+import { CustomElement } from 'components/element';
 import { __ } from 'i18n';
-import { api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core";
 
 const { sizzle } = converse.env;
 const u = converse.env.utils;
 
 
-const MUCConfigForm = View.extend({
-    className: 'chatroom-form-container muc-config-form',
+class MUCConfigForm extends CustomElement {
 
-    initialize (attrs) {
-        this.chatroomview = attrs.chatroomview;
-        this.listenTo(this.chatroomview.model.features, 'change:passwordprotected', this.render);
-        this.listenTo(this.chatroomview.model.features, 'change:config_stanza', this.render);
-        this.render();
-    },
-
-    toHTML () {
-        const stanza = u.toStanza(this.model.get('config_stanza'));
-        const whitelist = api.settings.get('roomconfig_whitelist');
-        let fields = sizzle('field', stanza);
-        if (whitelist.length) {
-            fields = fields.filter(f => whitelist.includes(f.getAttribute('var')));
+    static get properties () {
+        return {
+            'jid': { type: String }
         }
-        const password_protected = this.model.features.get('passwordprotected');
-        const options = {
-            'new_password': !password_protected,
-            'fixed_username': this.model.get('jid')
-        };
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.model = _converse.chatboxes.get(this.jid);
+        this.listenTo(this.model.features, 'change:passwordprotected', this.requestUpdate);
+        this.listenTo(this.model.session, 'change:config_stanza', this.requestUpdate);
+        this.getConfig();
+    }
+
+    render () {
         return tpl_muc_config_form({
-            'closeConfigForm': ev => this.closeConfigForm(ev),
-            'fields': fields.map(f => u.xForm2TemplateResult(f, stanza, options)),
-            'instructions': stanza.querySelector('instructions')?.textContent,
+            'model': this.model,
+            'closeConfigForm': ev => this.closeForm(ev),
             'submitConfigForm': ev => this.submitConfigForm(ev),
-            'title': stanza.querySelector('title')?.textContent
         });
-    },
+    }
+
+    async getConfig () {
+        const iq = await this.model.fetchRoomConfiguration();
+        this.model.session.set('config_stanza', iq.outerHTML);
+    }
 
     async submitConfigForm (ev) {
         ev.preventDefault();
@@ -53,13 +51,15 @@ const MUCConfigForm = View.extend({
             api.alert('error', __('Error'), message);
         }
         await this.model.refreshDiscoInfo();
-        this.chatroomview.closeForm();
-    },
-
-    closeConfigForm (ev) {
-        ev.preventDefault();
-        this.chatroomview.closeForm();
+        this.closeForm();
     }
-});
+
+    closeForm (ev) {
+        ev?.preventDefault?.();
+        this.model.session.set('view', null);
+    }
+}
+
+api.elements.define('converse-muc-config-form', MUCConfigForm);
 
 export default MUCConfigForm

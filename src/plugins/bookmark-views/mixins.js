@@ -22,7 +22,6 @@ export const bookmarkableChatRoomView = {
     },
 
     renderBookmarkForm () {
-        this.hideChatRoomContents();
         if (!this.bookmark_form) {
             this.bookmark_form = new _converse.MUCBookmarkForm({
                 'model': this.model,
@@ -38,7 +37,7 @@ export const bookmarkableChatRoomView = {
         ev?.preventDefault();
         const models = _converse.bookmarks.where({ 'jid': this.model.get('jid') });
         if (!models.length) {
-            this.renderBookmarkForm();
+            this.model.session.set('view', converse.MUC.VIEWS.BOOKMARK);
         } else {
             models.forEach(model => model.destroy());
         }
@@ -60,13 +59,13 @@ export const eventMethods = {
         }
     },
 
-    addBookmarkViaEvent (ev) {
+    async addBookmarkViaEvent (ev) {
         /* Add a bookmark as determined by the passed in
          * event.
          */
         ev.preventDefault();
         const jid = ev.target.getAttribute('data-room-jid');
-        api.rooms.open(jid, { 'bring_to_foreground': true });
-        _converse.chatboxviews.get(jid).renderBookmarkForm();
+        const room = await api.rooms.open(jid, { 'bring_to_foreground': true });
+        room.session.save('view', converse.MUC.VIEWS.BOOKMARK);
     }
 }

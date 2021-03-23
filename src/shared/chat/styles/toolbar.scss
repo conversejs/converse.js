@@ -1,0 +1,215 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+#conversejs {
+
+    .send-button {
+        border-radius: 0;
+        bottom: var(--send-button-bottom);
+        color: var(--inverse-link-color);
+    }
+
+    .chatbox {
+        .send-button {
+            background-color: var(--chat-head-color);
+        }
+    }
+
+    .chatroom {
+        .send-button {
+            background-color: var(--muc-toolbar-btn-color);
+        }
+    }
+
+    .chat-toolbar {
+
+        .toolbar-buttons {
+            width: 100%;
+            display: inline-block;
+
+            .message-limit {
+                padding: 0.5em;
+                font-weight: bold;
+            }
+        }
+
+        .unverified a,
+        .unverified {
+            color: #cf5300;
+        }
+        .private a,
+        .private {
+            color: #4b7003;
+        }
+        li {
+            cursor: pointer;
+            display: inline-block;
+            list-style: none;
+            padding: 0 0.5em;
+            &:hover {
+                cursor: pointer;
+            }
+            .toolbar-menu {
+                background-color: #fff;
+                bottom: 1.7rem;
+                box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
+                height: auto;
+                margin-bottom: 0;
+                min-width: 21rem;
+                position: absolute;
+                right: 0;
+                top: auto;
+                z-index: $zindex-dropdown;
+
+                &.otr-menu {
+                    left: -6em;
+                    min-width: 15rem;
+
+                    &.show {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                }
+
+                a {
+                    color: var(--link-color);
+                }
+            }
+            &.toggle-otr {
+                ul {
+                    z-index: 99;
+                    li {
+                        &:hover {
+                            background-color: var(--highlight-color);
+                        }
+                        display: block;
+                        padding: 7px;
+                        a {
+                            display: block;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    converse-chat-toolbar {
+        background-color: white;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        margin: 0;
+        width: 100%;
+
+        .fa, .fa:hover,
+        .far, .far:hover,
+        .fas, .fas:hover {
+            color: var(--chat-head-color);
+            font-size: var(--font-size-large);
+            svg {
+                fill: var(--chat-head-color);
+            }
+        }
+        .unencrypted a,
+        .unencrypted {
+            color: var(--text-color);
+            .toolbar-menu {
+                a {
+                    color: var(--link-color);
+                }
+            }
+        }
+
+        button {
+            margin-top: 0.4em;
+            border: 1px transparent solid;
+            background-color: transparent;
+
+            &.send-button {
+                padding-top: 0.2em;
+                padding-bottom: 0.2em;
+                margin: 0;
+                margin-top: -1px;
+            }
+        }
+    }
+
+    .chatbox {
+        converse-chat-toolbar {
+            border-top: var(--chatbox-message-input-border-top);
+            color: var(--chat-toolbar-btn-color);
+            background-color: white;
+            .fas, .fas:hover,
+            .far, .far:hover,
+            .fa, .fa:hover {
+                color: var(--chat-toolbar-btn-color);
+            }
+            button {
+                &:focus {
+                    outline-color: var(--chat-toolbar-btn-color) !important;
+                }
+                &:disabled .fa {
+                    color: var(--chat-toolbar-btn-disabled-color);
+                    &:hover {
+                        color: var(--chat-toolbar-btn-disabled-color);
+                    }
+                    svg, svg:hover {
+                        fill: var(--chat-toolbar-btn-disabled-color);
+                    }
+                }
+            }
+        }
+    }
+
+    .chatroom {
+        converse-chat-toolbar {
+            border-top: var(--chatroom-message-input-border-top);
+            color: var(--muc-toolbar-btn-color);
+            .fas, .fas:hover,
+            .far, .far:hover,
+            .fa, .fa:hover {
+                color: var(--muc-toolbar-btn-color);
+                font-size: var(--font-size-large);
+                svg {
+                    fill: var(--muc-toolbar-btn-color);
+                }
+            }
+            button {
+                &:focus {
+                    outline-color: var(--muc-toolbar-btn-color) !important;
+                }
+                &:disabled .fa {
+                    color: var(--muc-toolbar-btn-disabled-color);
+                    &:hover {
+                        color: var(--muc-toolbar-btn-disabled-color);
+                    }
+                    svg, svg:hover {
+                        fill: var(--muc-toolbar-btn-disabled-color);
+                    }
+                }
+            }
+        }
+    }
+
+    converse-chats {
+        &.converse-overlayed  {
+            .chat-toolbar {
+                li {
+                    .toolbar-menu {
+                        min-width: 235px;
+                    }
+                }
+            }
+            .chatroom {
+                .chat-toolbar {
+                    li {
+                        .toolbar-menu {
+                            min-width: 280px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -16,6 +16,25 @@ const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revo
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
 const VISITOR_COMMANDS = ['nick'];
 
+const METADATA_ATTRIBUTES = [
+    "og:article:author",
+    "og:article:published_time",
+    "og:description",
+    "og:image",
+    "og:image:height",
+    "og:image:width",
+    "og:site_name",
+    "og:title",
+    "og:type",
+    "og:url",
+    "og:video:height",
+    "og:video:secure_url",
+    "og:video:tag",
+    "og:video:type",
+    "og:video:url",
+    "og:video:width"
+];
+
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 
 const MUCSession = Model.extend({
@@ -2104,6 +2123,31 @@ const ChatRoomMixin = {
         window.setTimeout(() => this.removeNotification(actor, state), 10000);
     },
 
+    handleMetadataFastening (attrs) {
+        if (!api.settings.get('muc_show_ogp_unfurls')) {
+            return false;
+        }
+        if (attrs.ogp_for_id) {
+            if (attrs.from !== this.get('jid')) {
+                // For now we only allow metadata from the MUC itself and not
+                // from individual users who are deemed less trustworthy.
+                return false;
+            }
+            const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
+            if (message) {
+                const old_list = (message.get('ogp_metadata') || []);
+                if (old_list.filter(m => m['og:url'] === attrs['og:url']).length) {
+                    // Don't add metadata for the same URL again
+                    return false;
+                }
+                const list = [...old_list, pick(attrs, METADATA_ATTRIBUTES)];
+                message.save('ogp_metadata', list);
+                return true;
+            }
+        }
+        return false;
+    },
+
     /**
      * Handler for all MUC messages sent to this groupchat. This method
      * shouldn't be called directly, instead {@link _converse.ChatRoom#queueMessage}
@@ -2532,16 +2576,8 @@ const ChatRoomMixin = {
                     // Accept default configuration
                     this.sendConfiguration().then(() => this.refreshDiscoInfo());
                 } else {
-                    /**
-                     * Triggered when a new room has been created which first needs to be configured
-                     * and when `auto_configure` is set to `false`.
-                     * Used by `_converse.ChatRoomView` in order to know when to render the
-                     * configuration form for a new room.
-                     * @event _converse.ChatRoom#configurationNeeded
-                     * @example _converse.api.listen.on('configurationNeeded', () => { ... });
-                     */
-                    this.trigger('configurationNeeded');
-                    return; // We haven't yet entered the groupchat, so bail here.
+                    this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
+                    return;
                 }
             } else if (!this.features.get('fetched')) {
                 // The features for this groupchat weren't fetched.

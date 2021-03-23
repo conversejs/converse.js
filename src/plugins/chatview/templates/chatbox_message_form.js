@@ -2,7 +2,7 @@ import { html } from "lit-html";
 
 
 export default (o) => html`
-    <div class="new-msgs-indicator hidden">▼ ${ o.unread_msgs } ▼</div>
+    <div class="new-msgs-indicator hidden" @click=${ev => o.viewUnreadMessages(ev)}>▼ ${ o.unread_msgs } ▼</div>
     <form class="setNicknameButtonForm hidden">
         <input type="submit" class="btn btn-primary" name="join" value="Join"/>
     </form>

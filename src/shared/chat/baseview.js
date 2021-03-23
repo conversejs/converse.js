@@ -3,7 +3,6 @@ import log from '@converse/headless/log';
 import tpl_spinner from 'templates/spinner.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { html, render } from 'lit-html';
 
 const u = converse.env.utils;
 
@@ -14,19 +13,10 @@ export default class BaseChatView extends ElementView {
         this.debouncedScrollDown = debounce(this.scrollDown, 100);
     }
 
-    renderHelpMessages () {
-        render(
-            html`
-                <converse-chat-help
-                    .model=${this.model}
-                    .messages=${this.getHelpMessages()}
-                    ?hidden=${!this.model.get('show_help_messages')}
-                    type="info"
-                    chat_type="${this.model.get('type')}"
-                ></converse-chat-help>
-            `,
-            this.help_container
-        );
+    disconnectedCallback () {
+        super.disconnectedCallback();
+        const jid = this.getAttribute('jid');
+        _converse.chatboxviews.remove(jid, this);
     }
 
     hideNewMessagesIndicator () {
@@ -103,19 +93,20 @@ export default class BaseChatView extends ElementView {
     }
 
     addSpinner (append = false) {
+        const content = this.querySelector('.chat-content');
         if (this.querySelector('.spinner') === null) {
             const el = u.getElementFromTemplateResult(tpl_spinner());
             if (append) {
-                this.content.insertAdjacentElement('beforeend', el);
+                content.insertAdjacentElement('beforeend', el);
                 this.scrollDown();
             } else {
-                this.content.insertAdjacentElement('afterbegin', el);
+                content.insertAdjacentElement('afterbegin', el);
             }
         }
     }
 
     clearSpinner () {
-        this.content.querySelectorAll('.spinner').forEach(u.removeElement);
+        this.querySelectorAll('.chat-content .spinner').forEach(u.removeElement);
     }
 
     onStatusMessageChanged (item) {
@@ -152,46 +143,12 @@ export default class BaseChatView extends ElementView {
         }
     }
 
-    onEmojiReceivedFromPicker (emoji) {
-        const model = this.querySelector('converse-emoji-picker').model;
-        const autocompleting = model.get('autocompleting');
-        const ac_position = model.get('ac_position');
-        this.insertIntoTextArea(emoji, autocompleting, false, ac_position);
-    }
-
-    onMessageCorrecting (message) {
-        if (message.get('correcting')) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
-        } else {
-            const currently_correcting = this.model.messages.findWhere('correcting');
-            if (currently_correcting && currently_correcting !== message) {
-                this.insertIntoTextArea(u.prefixMentions(message), true, true);
-            } else {
-                this.insertIntoTextArea('', true, false);
-            }
-        }
-    }
-
-    /**
-     * Insert a particular string value into the textarea of this chat box.
-     * @private
-     * @method _converse.ChatBoxView#insertIntoTextArea
-     * @param {string} value - The value to be inserted.
-     * @param {(boolean|string)} [replace] - Whether an existing value
-     *  should be replaced. If set to `true`, the entire textarea will
-     *  be replaced with the new value. If set to a string, then only
-     *  that string will be replaced *if* a position is also specified.
-     * @param {integer} [position] - The end index of the string to be
-     * replaced with the new value.
-     */
-    insertIntoTextArea (value, replace = false, correcting = false, position) {
-        let bottom_panel;
+    getBottomPanel () {
         if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
-            bottom_panel = this.querySelector('converse-muc-bottom-panel');
+            return this.querySelector('converse-muc-bottom-panel');
         } else {
-            bottom_panel = this.querySelector('converse-chat-bottom-panel');
+            return this.querySelector('converse-chat-bottom-panel');
         }
-        bottom_panel.insertIntoTextArea(value, replace, correcting, position);
     }
 
     /**
@@ -244,7 +201,7 @@ export default class BaseChatView extends ElementView {
                 'scrollTop': null
             });
         }
-        this.querySelector('.chat-content__messages').scrollDown();
+        this.querySelector('.chat-content__messages')?.scrollDown();
         this.onScrolledDown();
     }
 

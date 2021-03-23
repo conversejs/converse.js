@@ -1,0 +1,493 @@
+#conversejs {
+    bottom: 0;
+    height: 100%;
+    position: fixed;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    color: var(--text-color);
+    font-family: var(--normal-font);
+    font-size: var(--font-size);
+    direction: ltr;
+    z-index: 1031; // One more than bootstrap navbar
+
+    textarea:disabled {
+        background-color: #EEE !important;
+    }
+
+    .subdued {
+        opacity: 0.35;
+    }
+
+    .fit-content {
+        width: fit-content !important;
+        max-width: fit-content !important;
+    }
+
+    .nopadding {
+        padding: 0 !important;
+    }
+
+    .no-scrolling {
+      overflow-x: none;
+      overflow-y: none;
+    }
+
+    converse-brand-heading {
+        text-align: center;
+    }
+
+    .brand-heading {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: flex-start;
+        font-family: var(--branding-font);
+        color: var(--link-color);
+        margin-bottom: 0.75em;
+
+      .brand-name-wrapper {
+        display: flex;
+        white-space: nowrap;
+        margin: auto;
+      }
+
+      .brand-name {
+          color: var(--link-color);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-top: -0.25em;
+
+          .byline {
+              font-family: var(--heading-font);
+              font-size: 0.3em;
+              margin-bottom: 0.75em;
+              margin-left: -2.7em;
+              opacity: 0.55;
+              word-spacing: 5px;
+          }
+      }
+
+      .brand-subtitle {
+          color: var(--text-color);
+      }
+
+      .brand-name__text {
+          font-size: 120%;
+          vertical-align: text-bottom;
+      }
+
+      .converse-svg-logo {
+          color: var(--link-color);
+          height: 1.5em;
+          margin-right: 0.25em;
+          margin-bottom: -0.25em;
+          .cls-1 {
+              isolation: isolate;
+          }
+          .cls-2 {
+              opacity: 0.5;
+              mix-blend-mode: multiply;
+          }
+          .cls-3 {
+              fill: var(--link-color);
+          }
+          .cls-4 {
+              fill: var(--link-color);
+          }
+      }
+  }
+
+  .brand-heading--inverse {
+        .converse-svg-logo {
+            margin-bottom: 0em;
+            margin-top: -0.2em;
+        }
+        .byline {
+            margin: 0;
+            font-family: var(--heading-font);
+            font-size: 0.25em;
+            opacity: 0.55;
+            margin-left: -7em;
+            word-spacing: 5px;
+        }
+    }
+
+    .dropdown-item {
+      padding: 0.5rem 1rem;
+      .fa {
+        width: 1.25em;
+        margin-right: 0.75rem;
+      }
+      &:active, &.selected {
+        color: white !important;
+        background-color: var(--list-item-open-color);
+        .fa {
+          color: white !important;
+        }
+      }
+    }
+
+    .popover {
+        position: fixed;
+    }
+
+    ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: var(--subdued-color);
+    }
+    ::-moz-placeholder { /* Firefox 19+ */
+        color: var(--subdued-color);
+    }
+    :-ms-input-placeholder { /* IE 10+ */
+        color: var(--subdued-color);
+    }
+    :-moz-placeholder { /* Firefox 18- */
+        color: var(--subdued-color);
+    }
+    ::placeholder {
+        color: var(--subdued-color);
+    }
+
+    ::selection {
+        background-color: var(--highlight-color);
+    }
+    ::-moz-selection {
+        background-color: var(--highlight-color);
+    }
+
+    @media screen and (max-width: $mobile-portrait-length) {
+        margin: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 5px;
+    }
+    @media screen and (max-height: $mobile-landscape-height) {
+        margin: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 5px;
+    }
+
+    ul li { height: auto; }
+    div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
+    pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
+    fieldset, form, legend, table, caption, tbody,
+    tfoot, thead, tr, th, td, article, aside, details,
+    embed, figure, figcaption, footer, header, hgroup, menu,
+    nav, output, ruby, section, summary, time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font: inherit;
+        vertical-align: baseline;
+    }
+
+    textarea,
+    input[type=submit], input[type=button],
+    input[type=text], input[type=password],
+    button {
+        font-size: var(--font-size);
+        min-height: 0;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    ol, ul {
+        list-style: none;
+    }
+
+    li {
+        height: 10px;
+    }
+
+    ul, ol, dl {
+        font: inherit;
+        margin: 0;
+    }
+
+    a {
+      cursor: pointer;
+    }
+
+    a, a:visited, a:not([href]):not([tabindex]) {
+        text-decoration: none;
+        color: var(--link-color);
+        text-shadow: none;
+        cursor: pointer;
+        &:hover {
+            color: var(--link-hover-color);
+            text-decoration: none;
+            text-shadow: none;
+        }
+
+        &.fa, &.far, &.fas {
+            color: var(--subdued-color);
+            &:hover {
+                color: var(--gray-color);
+            }
+        }
+    }
+
+    svg {
+        border-radius: var(--chatbox-border-radius);
+    }
+
+    .fa, .far, .fas {
+        color: var(--subdued-color);
+    }
+
+    .fa:hover, .far:hover, .fas:hover {
+        color: var(--gray-color);
+    }
+
+    q {
+      quotes: "“" "”" "‘" "’";
+      &.reason {
+        display: inline;
+      }
+    }
+    q:before {
+        content: open-quote;
+    }
+    q:after {
+        content: close-quote;
+    }
+
+    .helptext {
+        font-size: var(--font-size-tiny);
+        color: var(--text-color-lighten-15-percent);
+    }
+
+    .selected {
+        color: var(--link-color) !important;
+    }
+
+    .circle {
+        border-radius: 50%;
+    }
+
+    .no-text-select {
+        -webkit-touch-callout: none;
+        user-select: none;
+    }
+
+    @keyframes colorchange-chatmessage {
+        0%   {background-color: rgba(141, 216, 174, 1);}
+        25%  {background-color: rgba(141, 216, 174, 0.75);}
+        50%  {background-color: rgba(141, 216, 174, 0.5);}
+        75%  {background-color: rgba(141, 216, 174, 0.25);}
+        100% {background-color: transparent;}
+    }
+    @-webkit-keyframes colorchange-chatmessage {
+        0%   {background-color: rgba(141, 216, 174, 1);}
+        25%  {background-color: rgba(141, 216, 174, 0.75);}
+        50%  {background-color: rgba(141, 216, 174, 0.5);}
+        75%  {background-color: rgba(141, 216, 174, 0.25);}
+        100% {background-color: transparent;}
+    }
+
+    @keyframes colorchange-chatmessage-muc {
+        0%   {background-color: rgba(255, 181, 162, 1);}
+        25%  {background-color: rgba(255, 181, 162, 0.75);}
+        50%  {background-color: rgba(255, 181, 162, 0.5);}
+        75%  {background-color: rgba(255, 181, 162, 0.25);}
+        100% {background-color: transparent;}
+    }
+    @-webkit-keyframes colorchange-chatmessage-muc {
+        0%   {background-color: rgba(255, 181, 162, 1);}
+        25%  {background-color: rgba(255, 181, 162, 0.75);}
+        50%  {background-color: rgba(255, 181, 162, 0.5);}
+        75%  {background-color: rgba(255, 181, 162, 0.25);}
+        100% {background-color: transparent;}
+    }
+    @keyframes fadein {
+        0% { opacity: 0 }
+        100% { opacity: 1 }
+    }
+    @-webkit-keyframes fadein {
+        0% { opacity: 0 }
+        100% { opacity: 1 }
+    }
+    @-webkit-keyframes fadeOut {
+        0% { opacity: 1; visibility: visible; }
+        100% { opacity: 0; visibility: hidden;  }
+    }
+    @keyframes fadeOut {
+        0% { opacity: 1; visibility: visible; }
+        100% { opacity: 0; visibility: hidden;  }
+    }
+
+    .fade-in {
+        @include fade-in;
+    }
+
+    .visible {
+        opacity:0;  /* make things invisible upon start */
+        animation-name: fadein;
+        animation-fill-mode: forwards;
+        animation-duration: 500ms;
+        animation-timing-function: ease;
+    }
+
+    .hidden {
+        opacity: 0 !important;
+        display: none !important;
+    }
+
+    .fade-out {
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        animation-name: fadeOut;
+        animation-timing-function: ease-in-out;
+    }
+
+    .collapsed {
+        height: 0 !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+    }
+
+    .locked {
+        padding-right: 22px;
+    }
+
+
+    @keyframes spin  {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(359deg);
+        }
+    }
+
+    .spinner {
+        animation: spin 2s infinite, linear;
+        width: 1em;
+        display: block;
+        text-align: center;
+        padding: 0.5em 0;
+        font-size: 24px;
+    }
+    .left {
+        float: left;
+    }
+    .right {
+        float: right;
+    }
+    .centered {
+        text-align: center;
+        display: block;
+        margin: auto;
+    }
+    .hor_centered {
+        width: 100%;
+        text-align: center;
+        display: block;
+        margin: 0 auto;
+        clear: both;
+    }
+
+    .error {
+        color: var(--error-color) !important;
+    }
+    .info {
+        color: var(--info-color);
+    }
+    .reg-feedback {
+        font-size: 85%;
+        margin-bottom: 1em;
+    }
+
+    .reg-feedback,
+    #converse-login .conn-feedback {
+        display: block;
+        text-align: center;
+        width: 100%;
+    }
+
+    .avatar {
+        border-radius: var(--avatar-border-radius);
+        border: var(--avatar-border);
+        background-color: var(--avatar-background-color);
+    }
+
+    .avatar-autocomplete {
+        margin-right: 0.5em;
+        vertical-align: middle;
+    }
+
+    .activated {
+        display: block !important;
+    }
+
+    .form-help {
+        color: var(--subdued-color);
+        font-size: 90%;
+    }
+
+    .form-control--labeled {
+        margin-top: 0.5em;
+    }
+
+    .nav-pills .nav-link.active,
+    .nav-pills .show > .nav-link {
+        background-color: var(--primary-color);
+    }
+}
+
+@media screen and (max-width: 575px) {
+    body {
+      .converse-brand {
+        font-size: 3.75em;
+      }
+    }
+    #conversejs:not(.converse-embedded)  {
+        .chatbox  {
+            .chat-body {
+                border-radius: var(--chatbox-border-radius);
+            }
+        }
+        .flyout {
+            border-radius: var(--chatbox-border-radius);
+        }
+    }
+}
+
+
+@media screen and (min-width: 576px) {
+    #conversejs .offset-sm-2 {
+        margin-left: 16.666667%;
+    }
+}
+@media screen and (min-width: 768px) {
+    #conversejs .offset-md-2 {
+        margin-left: 16.666667%;
+    }
+    #conversejs .offset-md-3 {
+        margin-left: 25%;
+    }
+}
+@media screen and (min-width: 992px) {
+    #conversejs .offset-lg-2 {
+        margin-left: 16.666667%;
+    }
+    #conversejs .offset-lg-3 {
+        margin-left: 25%;
+    }
+}
+@media screen and (min-width: 1200px) {
+    #conversejs .offset-xl-2 {
+        margin-left: 16.666667%;
+    }
+}
+@media screen and (max-height: 450px) {
+  #conversejs {
+    left: 0;
+  }
+}

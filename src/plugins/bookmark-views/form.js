@@ -1,24 +1,29 @@
 import tpl_muc_bookmark_form from './templates/form.js';
-import { View } from '@converse/skeletor/src/view.js';
-import { _converse } from '@converse/headless/core';
+import { CustomElement } from 'components/element';
+import { _converse, api } from "@converse/headless/core";
 
 
-const MUCBookmarkForm = View.extend({
-    className: 'muc-bookmark-form chatroom-form-container',
+class MUCBookmarkForm extends CustomElement {
 
-    initialize (attrs) {
-        this.chatroomview = attrs.chatroomview;
-        this.render();
-    },
+    static get properties () {
+        return {
+            'jid': { type: String }
+        }
+    }
 
-    toHTML () {
+    connectedCallback () {
+        super.connectedCallback();
+        this.model = _converse.chatboxes.get(this.jid);
+    }
+
+    render () {
         return tpl_muc_bookmark_form(
             Object.assign(this.model.toJSON(), {
                 'onCancel': ev => this.closeBookmarkForm(ev),
                 'onSubmit': ev => this.onBookmarkFormSubmitted(ev)
             })
         );
-    },
+    }
 
     onBookmarkFormSubmitted (ev) {
         ev.preventDefault();
@@ -29,12 +34,14 @@ const MUCBookmarkForm = View.extend({
             'nick': ev.target.querySelector('input[name=nick]')?.value
         });
         this.closeBookmarkForm(ev);
-    },
+    }
 
     closeBookmarkForm (ev) {
         ev.preventDefault();
-        this.chatroomview.closeForm();
+        this.model.session.save('view', null);
     }
-});
+}
+
+api.elements.define('converse-muc-bookmark-form', MUCBookmarkForm);
 
 export default MUCBookmarkForm;

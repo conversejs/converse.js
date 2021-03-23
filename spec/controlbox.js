@@ -11,15 +11,8 @@ describe("The Controlbox", function () {
     it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
             mock.initConverse([], {}, function (done, _converse) {
 
-        const toggle = document.querySelector('converse-controlbox-toggle');
-        spyOn(toggle, 'onClick').and.callThrough();
-        spyOn(toggle, 'showControlBox').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
-        // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
-        toggle.delegateEvents();
         document.querySelector('.toggle-controlbox').click();
-        expect(toggle.onClick).toHaveBeenCalled();
-        expect(toggle.showControlBox).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
         const el = document.querySelector("#controlbox");
         expect(u.isVisible(el)).toBe(true);
@@ -35,9 +28,6 @@ describe("The Controlbox", function () {
 
         spyOn(view, 'close').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
-
-        // We need to rebind all events otherwise our spy won't be called
-        view.delegateEvents();
 
         view.querySelector('.close-chatbox-button').click();
         expect(view.close).toHaveBeenCalled();
@@ -227,7 +217,7 @@ describe("The 'Add Contact' widget", function () {
             mock.initConverse([], {'autocomplete_add_contact': false}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'all', 0);
-        mock.openControlBox(_converse);
+        await mock.openControlBox(_converse);
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('add-contact-modal');
@@ -274,6 +264,7 @@ describe("The 'Add Contact' widget", function () {
         const XMLHttpRequestBackup = window.XMLHttpRequest;
         window.XMLHttpRequest = MockXHR;
 
+        await mock.openControlBox(_converse);
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('add-contact-modal');

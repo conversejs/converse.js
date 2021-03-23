@@ -38,16 +38,20 @@ export default (o) => {
                         ?correcting="${o.correcting}"
                         ?editable="${o.editable}"
                         ?is_retracted="${o.is_retracted}"
+                        ?hide_url_previews="${o.model.get('hide_url_previews')}"
+                        unfurls="${o.model.get('ogp_metadata')?.length}"
                         message_type="${o.message_type}"></converse-message-actions>
                 </div>
 
-                ${ o.model.get('ogp_metadata')?.map(m =>
+                ${ !o.model.get('hide_url_previews') ? o.model.get('ogp_metadata')?.map(m =>
                     html`<converse-message-unfurl
-                        jid="${o.jid}"
-                        description="${m['og:description']}"
-                        title="${m['og:title']}"
-                        image="${m['og:image']}"
-                        url="${m['og:url']}"></converse-message-unfurl>`) }
+                        @animationend="${o.onUnfurlAnimationEnd}"
+                        class="${o.model.get('url_preview_transition')}"
+                        jid="${o.model.collection.chatbox?.get('jid')}"
+                        description="${m['og:description'] || ''}"
+                        title="${m['og:title'] || ''}"
+                        image="${m['og:image'] || ''}"
+                        url="${m['og:url'] || ''}"></converse-message-unfurl>`) : '' }
             </div>
         </div>`;
 }

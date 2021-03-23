@@ -1,13 +1,13 @@
 import 'shared/registry';
 import 'components/dropdown.js';
-import 'components/message-actions.js';
-import 'components/message-body.js';
+import './message-actions.js';
+import './message-body.js';
 import MessageVersionsModal from 'modals/message-versions.js';
 import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
-import tpl_chat_message from './templates/message.js';
+import tpl_message from './templates/message.js';
 import tpl_spinner from 'templates/spinner.js';
 import { CustomElement } from 'components/element.js';
 import { __ } from 'i18n';
@@ -126,7 +126,7 @@ export default class Message extends CustomElement {
     }
 
     renderChatMessage () {
-        return tpl_chat_message(this);
+        return tpl_message(this);
     }
 
     shouldShowAvatar () {
@@ -143,6 +143,15 @@ export default class Message extends CustomElement {
             'width': 36,
             image,
         };
+    }
+
+    onUnfurlAnimationEnd () {
+        if (this.model.get('url_preview_transition') === 'fade-out') {
+            this.model.save({
+                'hide_url_previews': !this.model.get('hide_url_previews'),
+                'url_preview_transition': 'fade-in'
+            });
+        }
     }
 
     async onRetryClicked () {

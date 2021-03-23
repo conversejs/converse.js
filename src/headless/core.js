@@ -1,28 +1,44 @@
 /**
- * @module converse-core
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import './polyfill';
 import Storage from '@converse/skeletor/src/storage.js';
+import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
+import debounce from 'lodash/debounce';
+import i18n from '@converse/headless/shared/i18n';
+import invoke from 'lodash/invoke';
+import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
+import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '@converse/headless/log';
 import pluggable from 'pluggable.js/src/pluggable';
-import syncDriver from 'localforage-webextensionstorage-driver/sync';
-import localDriver from 'localforage-webextensionstorage-driver/local';
 import sizzle from 'sizzle';
+import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
+import {
+    clearUserSettings,
+    extendAppSettings,
+    getAppSetting,
+    getUserSettings,
+    initAppSettings,
+    updateAppSettings,
+    updateUserSettings
+} from '@converse/headless/shared/settings';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { Router } from '@converse/skeletor/src/router.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
-import { assignIn, debounce, invoke, isFunction, isObject, pick } from 'lodash-es';
+import { TimeoutError } from '@converse/headless/shared/errors';
+import { createStore, replacePromise } from '@converse/headless/shared/utils';
 import { html } from 'lit-element';
 import { sprintf } from 'sprintf-js';
 
+export { _converse };
+export { i18n };
 
 dayjs.extend(advancedFormat);
 
@@ -61,12 +77,6 @@ Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
-/**
- * Custom error for indicating timeouts
- * @namespace _converse
- */
-class TimeoutError extends Error {}
-
 
 // Core plugins are whitelisted automatically
 // These are just the @converse/headless plugins, for the full converse,
@@ -93,222 +103,12 @@ const CORE_PLUGINS = [
 ];
 
 
-// Default configuration values
-// ----------------------------
-const DEFAULT_SETTINGS = {
-    allow_non_roster_messaging: false,
-    assets_path: '/dist',
-    authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
-    auto_login: false, // Currently only used in connection with anonymous login
-    auto_reconnect: true,
-    blacklisted_plugins: [],
-    clear_cache_on_logout: false,
-    connection_options: {},
-    credentials_url: null, // URL from where login credentials can be fetched
-    discover_connection_methods: true,
-    geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
-    geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
-    i18n: 'en',
-    idle_presence_timeout: 300, // Seconds after which an idle presence is sent
-    jid: undefined,
-    keepalive: true,
-    loglevel: 'info',
-    locales: [
-        'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fi', 'fr',
-        'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'mr', 'oc',
-        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
-    ],
-    nickname: undefined,
-    password: undefined,
-    persistent_store: 'localStorage',
-    rid: undefined,
-    root: window.document,
-    sid: undefined,
-    singleton: false,
-    strict_plugin_dependencies: false,
-    view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
-    websocket_url: undefined,
-    whitelisted_plugins: []
-};
-
-
-const CONNECTION_STATUS = {};
-CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
-CONNECTION_STATUS[Strophe.Status.AUTHENTICATING] = 'AUTHENTICATING';
-CONNECTION_STATUS[Strophe.Status.AUTHFAIL] = 'AUTHFAIL';
-CONNECTION_STATUS[Strophe.Status.CONNECTED] = 'CONNECTED';
-CONNECTION_STATUS[Strophe.Status.CONNECTING] = 'CONNECTING';
-CONNECTION_STATUS[Strophe.Status.CONNFAIL] = 'CONNFAIL';
-CONNECTION_STATUS[Strophe.Status.DISCONNECTED] = 'DISCONNECTED';
-CONNECTION_STATUS[Strophe.Status.DISCONNECTING] = 'DISCONNECTING';
-CONNECTION_STATUS[Strophe.Status.ERROR] = 'ERROR';
-CONNECTION_STATUS[Strophe.Status.RECONNECTING] = 'RECONNECTING';
-CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT';
-
-
-/**
- * @namespace i18n
- */
-export const i18n = {
-    initialize () {},
-
-    /**
-     * Overridable string wrapper method which can be used to provide i18n
-     * support.
-     *
-     * The default implementation in @converse/headless simply calls sprintf
-     * with the passed in arguments.
-     *
-     * If you install the full version of Converse, then this method gets
-     * overwritten in src/i18n/index.js to return a translated string.
-     * @method __
-     * @private
-     * @memberOf i18n
-     * @param { String } str
-     */
-    __ (...args) {
-        return sprintf(...args);
-    }
-};
-
-/**
- * A private, closured object containing the private api (via {@link _converse.api})
- * as well as private methods and internal data-structures.
- * @global
- * @namespace _converse
- */
-export const _converse = {
-    log,
-    CONNECTION_STATUS,
-    templates: {},
-    promises: {
-        'initialized': u.getResolveablePromise()
-    },
-
-    STATUS_WEIGHTS: {
-        'offline':      6,
-        'unavailable':  5,
-        'xa':           4,
-        'away':         3,
-        'dnd':          2,
-        'chat':         1, // We currently don't differentiate between "chat" and "online"
-        'online':       1
-    },
-    ANONYMOUS: 'anonymous',
-    CLOSED: 'closed',
-    EXTERNAL: 'external',
-    LOGIN: 'login',
-    LOGOUT: 'logout',
-    OPENED: 'opened',
-    PREBIND: 'prebind',
-
-    /**
-     * @constant
-     * @type { integer }
-     */
-    STANZA_TIMEOUT: 10000,
-
-    SUCCESS: 'success',
-    FAILURE: 'failure',
-
-    // Generated from css/images/user.svg
-    DEFAULT_IMAGE_TYPE: 'image/svg+xml',
-    DEFAULT_IMAGE: "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==",
-
-    TIMEOUTS: {
-        // Set as module attr so that we can override in tests.
-        PAUSED: 10000,
-        INACTIVE: 90000
-    },
-
-    // XEP-0085 Chat states
-    // https://xmpp.org/extensions/xep-0085.html
-    INACTIVE: 'inactive',
-    ACTIVE: 'active',
-    COMPOSING: 'composing',
-    PAUSED: 'paused',
-    GONE: 'gone',
-
-    // Chat types
-    PRIVATE_CHAT_TYPE: 'chatbox',
-    CHATROOMS_TYPE: 'chatroom',
-    HEADLINES_TYPE: 'headline',
-    CONTROLBOX_TYPE: 'controlbox',
-
-    default_connection_options: {'explicitResourceBinding': true},
-    router: new Router(),
-
-    TimeoutError: TimeoutError,
-
-    isTestEnv: () => {
-        return initialization_settings.bosh_service_url === 'montague.lit/http-bind';
-    },
-
-    /**
-     * Translate the given string based on the current locale.
-     * @method __
-     * @private
-     * @memberOf _converse
-     * @param { String } str
-     */
-    '__': (...args) => i18n.__(...args),
-
-    /**
-     * A no-op method which is used to signal to gettext that the passed in string
-     * should be included in the pot translation file.
-     *
-     * In contrast to the double-underscore method, the triple underscore method
-     * doesn't actually translate the strings.
-     *
-     * One reason for this method might be because we're using strings we cannot
-     * send to the translation function because they require variable interpolation
-     * and we don't yet have the variables at scan time.
-     *
-     * @method ___
-     * @private
-     * @memberOf _converse
-     * @param { String } str
-     */
-    '___': str => str
-}
-
-
 _converse.VERSION_NAME = "v7.0.3dev";
 
 Object.assign(_converse, Events);
 
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
-
-
-let user_settings; // User settings, populated via api.users.settings
-let initialization_settings = {}; // Container for settings passed in via converse.initialize
-
-
-function initSettings (settings) {
-    _converse.settings = {};
-    initialization_settings = settings;
-    // Allow only whitelisted settings to be overwritten via converse.initialize
-    const allowed_settings = pick(settings, Object.keys(DEFAULT_SETTINGS));
-    assignIn(_converse.settings, DEFAULT_SETTINGS, allowed_settings);
-    assignIn(_converse, DEFAULT_SETTINGS, allowed_settings); // FIXME: remove
-}
-
-
-function initUserSettings () {
-    if (!_converse.bare_jid) {
-        const msg = "No JID to fetch user settings for";
-        log.error(msg);
-        throw Error(msg);
-    }
-    if (!user_settings?.fetched) {
-        const id = `converse.user-settings.${_converse.bare_jid}`;
-        user_settings = new Model({id});
-        user_settings.browserStorage = createStore(id);
-        user_settings.fetched = user_settings.fetch({'promise': true});
-    }
-    return user_settings.fetched;
-}
 
 
 /**
@@ -581,13 +381,13 @@ export const api = _converse.api = {
         settings: {
             /**
              * Returns the user settings model. Useful when you want to listen for change events.
+             * @async
              * @method _converse.api.user.settings.getModel
              * @returns {Promise<Model>}
              * @example const settings = await _converse.api.user.settings.getModel();
              */
-            async getModel () {
-                await initUserSettings();
-                return user_settings;
+            getModel () {
+                return getUserSettings();
             },
 
             /**
@@ -599,7 +399,7 @@ export const api = _converse.api = {
              * @example _converse.api.user.settings.get("foo");
              */
             async get (key, fallback) {
-                await initUserSettings();
+                const user_settings = await getUserSettings();
                 return user_settings.get(key) === undefined ? fallback : user_settings.get(key);
             },
 
@@ -617,24 +417,23 @@ export const api = _converse.api = {
              *     "baz": "buz"
              * });
              */
-            async set (key, val) {
-                await initUserSettings();
+            set (key, val) {
                 if (isObject(key)) {
-                    return user_settings.save(key, {'promise': true});
+                    return updateUserSettings(key, {'promise': true});
                 } else {
                     const o = {};
                     o[key] = val;
-                    return user_settings.save(o, {'promise': true});
+                    return updateUserSettings(o, {'promise': true});
                 }
             },
 
             /**
              * Clears all the user settings
+             * @async
              * @method _converse.api.user.settings.clear
              */
-            async clear () {
-                await initUserSettings();
-                user_settings.clear();
+            clear () {
+                return clearUserSettings();
             }
         }
     },
@@ -670,14 +469,7 @@ export const api = _converse.api = {
          * });
          */
         extend (settings) {
-            u.merge(DEFAULT_SETTINGS, settings);
-            // When updating the settings, we need to avoid overwriting the
-            // initialization_settings (i.e. the settings passed in via converse.initialize).
-            const allowed_keys = Object.keys(pick(settings,Object.keys(DEFAULT_SETTINGS)));
-            const allowed_site_settings = pick(initialization_settings, allowed_keys);
-            const updated_settings = assignIn(pick(settings, allowed_keys), allowed_site_settings);
-            u.merge(_converse.settings, updated_settings);
-            u.merge(_converse, updated_settings); // FIXME: remove
+            return extendAppSettings(settings);
         },
 
         update (settings) {
@@ -692,9 +484,7 @@ export const api = _converse.api = {
          * @example _converse.api.settings.get("play_sounds");
          */
         get (key) {
-            if (Object.keys(DEFAULT_SETTINGS).includes(key)) {
-                return _converse[key];
-            }
+            return getAppSetting(key);
         },
 
         /**
@@ -716,15 +506,7 @@ export const api = _converse.api = {
          * });
          */
         set (key, val) {
-            const o = {};
-            if (isObject(key)) {
-                assignIn(_converse, pick(key, Object.keys(DEFAULT_SETTINGS)));
-                assignIn(_converse.settings, pick(key, Object.keys(DEFAULT_SETTINGS)));
-            } else if (typeof key === 'string') {
-                o[key] = val;
-                assignIn(_converse, pick(o, Object.keys(DEFAULT_SETTINGS)));
-                assignIn(_converse.settings, pick(o, Object.keys(DEFAULT_SETTINGS)));
-            }
+            updateAppSettings(key, val);
         }
     },
 
@@ -938,20 +720,6 @@ export const api = _converse.api = {
 };
 
 
-function replacePromise (name) {
-    const existing_promise = _converse.promises[name];
-    if (!existing_promise) {
-        throw new Error(`Tried to replace non-existing promise: ${name}`);
-    }
-    if (existing_promise.replace) {
-        const promise = u.getResolveablePromise();
-        promise.replace = existing_promise.replace;
-        _converse.promises[name] = promise;
-    } else {
-        log.debug(`Not replacing promise "${name}"`);
-    }
-}
-
 _converse.isUniView = function () {
     /* We distinguish between UniView and MultiView instances.
      *
@@ -972,7 +740,6 @@ async function initSessionStorage () {
         })
     };
 }
-
 
 function initPersistentStorage () {
     if (api.settings.get('persistent_store') === 'sessionStorage') {
@@ -1014,12 +781,6 @@ _converse.getDefaultStore = function () {
     } else {
         return 'session';
     }
-}
-
-
-function createStore (id, storage) {
-    const s = _converse.storage[storage || _converse.getDefaultStore()];
-    return new Storage(id, s);
 }
 
 _converse.createStore = createStore;
@@ -1531,7 +1292,7 @@ Object.assign(converse, {
         await cleanup();
 
         setUnloadEvent();
-        initSettings(settings);
+        initAppSettings(settings);
         _converse.strict_plugin_dependencies = settings.strict_plugin_dependencies; // Needed by pluggable.js
         log.setLogLevel(api.settings.get("loglevel"));
 

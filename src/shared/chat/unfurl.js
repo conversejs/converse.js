@@ -2,6 +2,8 @@ import { CustomElement } from 'components/element.js';
 import { _converse, api } from "@converse/headless/core";
 import tpl_unfurl from './templates/unfurl.js';
 
+import './styles/unfurl.scss';
+
 
 export default class MessageUnfurl extends CustomElement {
 
@@ -19,10 +21,10 @@ export default class MessageUnfurl extends CustomElement {
         return tpl_unfurl(Object.assign({
             'onload': () => this.onImageLoad()
         }, {
-            description: this.description,
-            image: this.image,
-            title: this.title,
-            url: this.url
+            description: this.description || '',
+            image: this.image || '',
+            title: this.title || '',
+            url: this.url || ''
         }));
     }
 

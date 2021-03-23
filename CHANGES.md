@@ -4,6 +4,7 @@
 
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
+- #2348: `auto_join_room` not showing the room in `fullscreen` `view_mode`.
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls
 - #2409: Integrate App Badging API for unread messages
 - Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
@@ -16,9 +17,11 @@
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 - New configuration setting: [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
 - New configuration setting: [send_chat_markers](https://conversejs.org/docs/html/configuration.html#send-chat-markers)
+- New configuration setting: [muc_show_ogp_unfurls](https://conversejs.org/docs/html/configuration.html#muc-show-ogp-unfurls)
 - #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
 - Use the MUC stanza id when sending XEP-0333 markers
 - Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
+- Add a Description Of A Project (DOAP) file
 
 ### Breaking Changes
 
@@ -31,10 +34,14 @@ Removed events:
 * `bookmarkViewsInitialized`
 * `rosterGroupsFetched`
 
+The `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
+payload and not the `view` since it might not be exist at that time.
+
 ## 7.0.5 (Unreleased)
 
 - #2377: The @converse/headless NPM package is missing the dist directory, causing import errors
 - #2396: @converse/headless wrongly depends on `CustomElement` from the view layer
+- #2381: Converse does not reflect the browser language
 
 ## 7.0.4 (2020-12-09)
 
@@ -68,7 +75,6 @@ configuration settings should now be accessed via `_converse.api.settings.get` a
 Soon we'll deprecate the latter, so prepare now.
 
 - #515 Add support for XEP-0050 Ad-Hoc commands
-- #1083 Add support for XEP-0393 Message Styling
 - #2231: add sort_by_query and remove sort_by_length
 - #1313: Stylistic improvements to the send button
 - #1481: MUC OMEMO: Error No record for device

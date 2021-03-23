@@ -21,13 +21,14 @@ export default (o) => {
         return tpl_occupant(Object.assign({
             'jid': '',
             'hint_show': PRETTY_CHAT_STATUS[occupant.get('show')],
-            'hint_occupant': i18n_occupant_hint(occupant)
+            'hint_occupant': i18n_occupant_hint(occupant),
+            'onOccupantClicked': o.onOccupantClicked
         }, occupant.toJSON()));
     });
 
     return html`
         <div class="occupants-header">
-            <i class="hide-occupants fa fa-times"></i>
+            <i class="hide-occupants fa fa-times" @click=${o.closeSidebar}></i>
             <div class="occupants-header--title">
                 <span class="occupants-heading">${i18n_participants}</span>
             </div>

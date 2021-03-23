@@ -314,19 +314,19 @@ describe("A sent groupchat message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            spyOn(_converse.connection, 'send');
             const bottom_panel = view.querySelector('converse-muc-bottom-panel');
             bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-            const msg = _converse.connection.send.calls.all()[0].args[0];
-            expect(msg.toLocaleString())
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
+            expect(Strophe.serialize(msg))
+                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
                         `xmlns="jabber:client">`+
                             `<body>hello Link Mauve</body>`+
                             `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                             `<reference begin="6" end="16" type="mention" uri="xmpp:lounge@montague.lit/Link%20Mauve" xmlns="urn:xmpp:reference:0"/>`+
-                            `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                            `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
             done();
         }));
@@ -374,20 +374,20 @@ describe("A sent groupchat message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            spyOn(_converse.connection, 'send');
             const bottom_panel = view.querySelector('converse-muc-bottom-panel');
             bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() =>
-                view.content.querySelector(last_msg_sel).innerHTML.replace(/<!---->/g, '') ===
+                view.querySelector(last_msg_sel).innerHTML.replace(/<!---->/g, '') ===
                     'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
             );
 
-            const msg = _converse.connection.send.calls.all()[0].args[0];
-            expect(msg.toLocaleString())
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
+            expect(Strophe.serialize(msg))
+                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
                         `xmlns="jabber:client">`+
                             `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
@@ -395,7 +395,7 @@ describe("A sent groupchat message", function () {
                             `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                             `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                             `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                            `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
 
             const action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action'));
@@ -406,16 +406,15 @@ describe("A sent groupchat message", function () {
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
-            await u.waitUntil(() => _converse.connection.send.calls.count() === 1);
 
             textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
             bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
                 'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
-            const correction = _converse.connection.send.calls.all()[1].args[0];
-            expect(correction.toLocaleString())
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${correction.nodeTree.getAttribute("id")}" `+
+            const correction = sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop();
+            expect(Strophe.serialize(correction))
+                .toBe(`<message from="romeo@montague.lit/orchard" id="${correction.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
                         `xmlns="jabber:client">`+
                             `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
@@ -423,8 +422,8 @@ describe("A sent groupchat message", function () {
                             `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                             `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                             `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<replace id="${msg.nodeTree.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                            `<origin-id id="${correction.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                            `<replace id="${msg.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
+                            `<origin-id id="${correction.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
             done();
         }));
@@ -463,7 +462,7 @@ describe("A sent groupchat message", function () {
             bottom_panel.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
-            const msg = _converse.connection.send.calls.all()[1].args[0];
+            const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+

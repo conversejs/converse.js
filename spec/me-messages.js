@@ -22,7 +22,7 @@ describe("A Groupchat Message", function () {
                 'type': 'groupchat'
             }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
-        await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.content).pop());
+        await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view).pop());
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.trim() === 'is tired');
         expect(view.querySelector('.chat-msg__author').textContent.includes('**Dyon van de Wege')).toBeTruthy();
 

@@ -4,11 +4,11 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import '../../components/help_messages.js';
 import '../chatboxviews/index.js';
 import '../modal.js';
 import './adhoc-commands.js';
 import 'shared/chat/chat-content.js';
+import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';
 import MUCConfigForm from './config-form.js';
 import MUCPasswordForm from './password-form.js';
@@ -17,7 +17,14 @@ import log from '@converse/headless/log';
 import muc_api from './api.js';
 import { api, converse, _converse } from '@converse/headless/core';
 
+import './styles/muc.scss';
+
 const { Strophe } = converse.env;
+
+converse.MUC.VIEWS = {
+    CONFIG: 'config-form',
+    BOOKMARK: 'bookmark-form'
+}
 
 function setMUCDomain (domain, controlboxview) {
     controlboxview.querySelector('converse-rooms-list')
@@ -135,7 +142,7 @@ converse.plugins.add('converse-muc-views', {
             // _converse.chatboxes.on('add', addView);
         });
 
-        api.listen.on('clearSession', () => {
+        api.listen.on('clearsession', () => {
             const view = _converse.chatboxviews.get('controlbox');
             if (view && view.roomspanel) {
                 view.roomspanel.model.destroy();

@@ -16,7 +16,7 @@ export default (o) => {
         return (o.can_edit) ? tpl_can_edit() : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`;
     } else if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
         if (api.settings.get('muc_show_logs_before_join')) {
-            return html`<span class="muc-bottom-panel muc-bottom-panel--nickname">${tpl_muc_nickname_form(o.model.toJSON())}</span>`;
+            return html`<span class="muc-bottom-panel muc-bottom-panel--nickname">${tpl_muc_nickname_form(o.model)}</span>`;
         }
     } else {
         return '';

@@ -1,10 +1,10 @@
 import 'plugins/chatview/heading.js';
-import 'plugins/chatview/bottom_panel.js';
+import 'plugins/chatview/bottom-panel.js';
+import { html, render } from 'lit-html';
 import BaseChatView from 'shared/chat/baseview.js';
 import tpl_chat from './templates/chat.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { render } from 'lit-html';
 
 const u = converse.env.utils;
 const { dayjs } = converse.env;
@@ -18,12 +18,6 @@ const { dayjs } = converse.env;
 export default class ChatView extends BaseChatView {
     length = 200
     className = 'chatbox hidden'
-    is_chatroom = false // Leaky abstraction from MUC
-
-    events = {
-        'click .chatbox-navback': 'showControlBox',
-        'click .new-msgs-indicator': 'viewUnreadMessages',
-    }
 
     async initialize () {
         const jid = this.getAttribute('jid');
@@ -35,8 +29,6 @@ export default class ChatView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
-        this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
-        this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);
         this.render();
 
         // Need to be registered after render has been called.
@@ -59,9 +51,23 @@ export default class ChatView extends BaseChatView {
             this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) })
         );
         render(result, this);
-        this.content = this.querySelector('.chat-content');
         this.help_container = this.querySelector('.chat-content__help');
         return this;
+    }
+
+    renderHelpMessages () {
+        render(
+            html`
+                <converse-chat-help
+                    .model=${this.model}
+                    .messages=${this.getHelpMessages()}
+                    ?hidden=${!this.model.get('show_help_messages')}
+                    type="info"
+                    chat_type="${this.model.get('type')}"
+                ></converse-chat-help>
+            `,
+            this.help_container
+        );
     }
 
     getHelpMessages () { // eslint-disable-line class-methods-use-this
@@ -127,25 +133,6 @@ export default class ChatView extends BaseChatView {
         }
     }
 
-    onPresenceChanged (item) {
-        const show = item.get('show');
-        const fullname = this.model.getDisplayName();
-
-        let text;
-        if (u.isVisible(this)) {
-            if (show === 'offline') {
-                text = __('%1$s has gone offline', fullname);
-            } else if (show === 'away') {
-                text = __('%1$s has gone away', fullname);
-            } else if (show === 'dnd') {
-                text = __('%1$s is busy', fullname);
-            } else if (show === 'online') {
-                text = __('%1$s is online', fullname);
-            }
-            text && this.model.createMessage({ 'message': text, 'type': 'info' });
-        }
-    }
-
     async close (ev) {
         ev?.preventDefault?.();
         if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
@@ -173,11 +160,6 @@ export default class ChatView extends BaseChatView {
         this.model.setChatState(_converse.ACTIVE);
         this.scrollDown();
         this.maybeFocus();
-    }
-
-    viewUnreadMessages () {
-        this.model.save({ 'scrolled': false, 'scrollTop': null });
-        this.scrollDown();
     }
 }
 

@@ -322,7 +322,7 @@ describe("The Contacts Roster", function () {
             _converse.roster.get(jid).presence.set('show', 'online');
             jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             _converse.roster.get(jid).presence.set('show', 'dnd');
-            mock.openControlBox(_converse);
+            await mock.openControlBox(_converse);
             const rosterview = document.querySelector('converse-roster');
             const button = rosterview.querySelector('span[data-type="state"]');
             button.click();
@@ -488,7 +488,7 @@ describe("The Contacts Roster", function () {
 
             await mock.waitForRoster(_converse, 'current', 0);
             const groups = ['Colleagues', 'friends'];
-            mock.openControlBox(_converse);
+            await mock.openControlBox(_converse);
             for (let i=0; i<mock.cur_names.length; i++) {
                 _converse.roster.create({
                     jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
@@ -513,9 +513,8 @@ describe("The Contacts Roster", function () {
         it("remembers whether it is closed or opened",
                 mock.initConverse([], {}, async function (done, _converse) {
 
-            _converse.roster_groups = true;
             await mock.waitForRoster(_converse, 'current', 0);
-            mock.openControlBox(_converse);
+            await mock.openControlBox(_converse);
 
             let i=0, j=0;
             const groups = {
@@ -569,8 +568,8 @@ describe("The Contacts Roster", function () {
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'all', 0);
-            const rosterview = document.querySelector('converse-roster');
             await mock.openControlBox(_converse);
+            const rosterview = document.querySelector('converse-roster');
             _converse.roster.create({
                 jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 subscription: 'none',
@@ -736,10 +735,9 @@ describe("The Contacts Roster", function () {
 
         it("will be hidden when appearing under a collapsed group",
             mock.initConverse(
-                [], {},
+                [], {'roster_groups': false},
                 async function (done, _converse) {
 
-            _converse.roster_groups = false;
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('li', rosterview).filter(u.isVisible).length, 500);
@@ -1074,7 +1072,7 @@ describe("The Contacts Roster", function () {
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, "current", 0);
-            mock.openControlBox(_converse);
+            await mock.openControlBox(_converse);
             let names = [];
             const addName = function (item) {
                 if (!u.hasClass('request-actions', item)) {

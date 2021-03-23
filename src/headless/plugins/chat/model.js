@@ -13,24 +13,6 @@ const { Strophe, $msg } = converse.env;
 
 const u = converse.env.utils;
 
-const METADATA_ATTRIBUTES = [
-    "og:description",
-    "og:image",
-    "og:image:height",
-    "og:image:width",
-    "og:site_name",
-    "og:title",
-    "og:type",
-    "og:url",
-    "og:video:height",
-    "og:video:secure_url",
-    "og:video:tag",
-    "og:video:type",
-    "og:video:url",
-    "og:video:width"
-];
-
-
 /**
  * Represents an open/ongoing chat conversation.
  *
@@ -76,8 +58,11 @@ const ChatBox = ModelWithContact.extend({
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
             this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
             await this.setRosterContact(jid);
+            this.presence.on('change:show', item => this.onPresenceChanged(item));
         }
         this.on('change:chat_state', this.sendChatState, this);
+
+
         await this.fetchMessages();
         /**
          * Triggered once a {@link _converse.ChatBox} has been created and initialized.
@@ -293,11 +278,28 @@ const ChatBox = ModelWithContact.extend({
         this.announceReconnection();
     },
 
+    onPresenceChanged (item) {
+        const { __ } = _converse;
+        const show = item.get('show');
+        const fullname = this.getDisplayName();
+        let text;
+        if (show === 'offline') {
+            text = __('%1$s has gone offline', fullname);
+        } else if (show === 'away') {
+            text = __('%1$s has gone away', fullname);
+        } else if (show === 'dnd') {
+            text = __('%1$s is busy', fullname);
+        } else if (show === 'online') {
+            text = __('%1$s is online', fullname);
+        }
+        text && this.createMessage({ 'message': text, 'type': 'info' });
+    },
+
     validate (attrs) {
         if (!attrs.jid) {
             return 'Ignored ChatBox without JID';
         }
-        const room_jids = _converse.auto_join_rooms.map(s => isObject(s) ? s.jid : s);
+        const room_jids = api.settings.get('auto_join_rooms').map(s => isObject(s) ? s.jid : s);
         const auto_join = api.settings.get('auto_join_private_chats').concat(room_jids);
         if (api.settings.get("singleton") && !auto_join.includes(attrs.jid) && !api.settings.get('auto_join_on_invite')) {
             const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
@@ -325,6 +327,48 @@ const ChatBox = ModelWithContact.extend({
             });
             msg.error = error;
         }
+    },
+
+    editEarlierMessage () {
+        let message;
+        let idx = this.messages.findLastIndex('correcting');
+        if (idx >= 0) {
+            this.messages.at(idx).save('correcting', false);
+            while (idx > 0) {
+                idx -= 1;
+                const candidate = this.messages.at(idx);
+                if (candidate.get('editable')) {
+                    message = candidate;
+                    break;
+                }
+            }
+        }
+        message =
+            message ||
+            this.messages.filter({ 'sender': 'me' })
+                .reverse()
+                .find(m => m.get('editable'));
+        if (message) {
+            message.save('correcting', true);
+        }
+    },
+
+    editLaterMessage () {
+        let message;
+        let idx = this.messages.findLastIndex('correcting');
+        if (idx >= 0) {
+            this.messages.at(idx).save('correcting', false);
+            while (idx < this.messages.length - 1) {
+                idx += 1;
+                const candidate = this.messages.at(idx);
+                if (candidate.get('editable')) {
+                    message = candidate;
+                    message.save('correcting', true);
+                    break;
+                }
+            }
+        }
+        return message;
     },
 
     getOldestMessage () {
@@ -483,20 +527,6 @@ const ChatBox = ModelWithContact.extend({
                 delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
                 message.save(new_attrs);
                 return true;
-            }
-        }
-        return false;
-    },
-
-    handleMetadataFastening (attrs) {
-        if (attrs.ogp_for_id) {
-            const message = this.messages.findWhere({'origin_id': attrs.ogp_for_id});
-            if (message) {
-                const list = [...(message.get('ogp_metadata') || []), pick(attrs, METADATA_ATTRIBUTES)];
-                message.save('ogp_metadata', list);
-                return true;
-            } else {
-                return false;
             }
         }
         return false;
@@ -946,23 +976,21 @@ const ChatBox = ModelWithContact.extend({
     },
 
     maybeShow (force) {
-        if (force) {
-            if (_converse.isUniView()) {
+        if (_converse.isUniView()) {
+            const filter = c => !c.get('hidden') &&
+                c.get('jid') !== this.get('jid') &&
+                c.get('id') !== 'controlbox';
+            const other_chats = _converse.chatboxes.filter(filter);
+            if (force || other_chats.length === 0) {
                 // We only have one chat visible at any one time.
                 // So before opening a chat, we make sure all other chats are hidden.
-                const filter = c => !c.get('hidden') &&
-                    c.get('jid') !== this.get('jid') &&
-                    c.get('id') !== 'controlbox';
-                _converse.chatboxes.filter(filter).forEach(c => u.safeSave(c, {'hidden': true}));
+                other_chats.forEach(c => u.safeSave(c, {'hidden': true}));
+                u.safeSave(this, {'hidden': false});
             }
-            u.safeSave(this, {'hidden': false});
-        }
-        if (_converse.isUniView()) {
             return;
-        } else {
-            u.safeSave(this, {'hidden': false});
-            this.trigger('show');
         }
+        u.safeSave(this, {'hidden': false});
+        this.trigger('show');
         return this;
     },
 

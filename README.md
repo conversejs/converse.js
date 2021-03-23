@@ -61,6 +61,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 -   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://conversejs.github.io/pluggable.js/)
 -   Chat statuses (online, busy, away, offline)
 -   Anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html)
+-   URL Previews (requires server support, for example [mod_ogp](https://modules.prosody.im/mod_ogp.html)
 -   Translated into over 30 languages
 
 ### Supported XMPP Extensions
@@ -77,6 +78,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0066](https://xmpp.org/extensions/xep-0066.html) Out of Band Data
 - [XEP-0077](https://xmpp.org/extensions/xep-0077.html) In-band registration
 - [XEP-0085](https://xmpp.org/extensions/xep-0085.html) Chat State Notifications
+- [XEP-0115](https://xmpp.org/extensions/xep-0115.html) Entity Capabilities
 - [XEP-0124](https://xmpp.org/extensions/xep-0124.html) Bidirectional-streams Over Synchronous HTTP (BOSH)
 - [XEP-0144](https://xmpp.org/extensions/xep-0144.html) Roster item exchange
 - [XEP-0156](https://xmpp.org/extensions/xep-0156.html) Discovering Alternative XMPP Connection Methods
@@ -149,3 +151,26 @@ A heartfelt thanks for everyone who has supported this project over the years.
 Many people have contributed testing, bugfixes, features and corrections.
 
 We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapay](https://liberapay.com/jcbrand).
+
+## Sponsors
+
+<p>
+  <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Blokt Crypto & Privacy" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/blokt.png" width="200">
+  </a>
+</p>
+<p>
+  <a href="https://www.codefirst.co.uk?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Codefirst" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/codefirst.png" width="200">
+  </a>
+</p>
+<p>
+  <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="KeyCDN" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/keycdn.png" width="200">
+  </a>
+</p>
+<p>
+  <a href="https://mailbox.org?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Mailbox - Email and cloud storage" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/mailbox.svg" width="120">
+  </a>
+</p>

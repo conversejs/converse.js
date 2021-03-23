@@ -1,47 +1,24 @@
 import tpl_controlbox_toggle from "./templates/toggle.js";
-import { ElementView } from '@converse/skeletor/src/element.js';
-import { _converse, api, converse } from "@converse/headless/core";
-import { addControlBox } from './utils.js';
-import { render } from 'lit-html';
-
-const u = converse.env.utils;
+import { CustomElement } from 'components/element.js';
+import { _converse, api } from "@converse/headless/core";
+import { showControlBox } from './utils.js';
 
 
-class ControlBoxToggle extends ElementView {
+class ControlBoxToggle extends CustomElement {
 
-    async initialize () {
-        await api.waitUntil('initialized');
-        this.render();
+    async connectedCallback () {
+        super.connectedCallback();
+        await api.waitUntil('initialized')
+        this.model = _converse.chatboxes.get('controlbox');
+        this.listenTo(this.model, 'change:closed', () => this.requestUpdate());
+        this.requestUpdate();
     }
 
     render () {
-        const controlbox = _converse.chatboxes.get('controlbox');
-        render(tpl_controlbox_toggle({
-            'onClick': (ev) => this.onClick(ev),
-            'hide': !controlbox.get('closed')
-        }), this);
-    }
-
-    showControlBox () { // eslint-disable-line class-methods-use-this
-        let controlbox = _converse.chatboxes.get('controlbox');
-        if (!controlbox) {
-            controlbox = addControlBox();
-        }
-        u.safeSave(controlbox, {'closed': false});
-    }
-
-    onClick (e) {
-        e.preventDefault();
-        if (u.isVisible(_converse.root.querySelector("#controlbox"))) {
-            const controlbox = _converse.chatboxes.get('controlbox');
-            if (api.connection.connected) {
-                controlbox.save({closed: true});
-            } else {
-                controlbox.trigger('hide');
-            }
-        } else {
-            this.showControlBox();
-        }
+        return tpl_controlbox_toggle({
+            'onClick': showControlBox,
+            'hide': !this.model?.get('closed')
+        });
     }
 }
 

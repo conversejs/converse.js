@@ -267,7 +267,7 @@ describe("Emojis", function () {
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
             const view = _converse.api.chatviews.get(sender_jid);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector('.chat-msg__text')));
+            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.querySelector('.chat-msg__text')));
 
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
@@ -279,7 +279,7 @@ describe("Emojis", function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
             let sel = '.message:last-child .chat-msg__text';
-            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector(sel)));
+            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.querySelector(sel)));
 
             // Test that a modified message that no longer contains only
             // emojis now renders normally again.
@@ -293,7 +293,7 @@ describe("Emojis", function () {
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
-            await u.waitUntil(() => view.content.querySelector(last_msg_sel).textContent === '💩 😇');
+            await u.waitUntil(() => view.querySelector(last_msg_sel).textContent === '💩 😇');
 
             expect(textarea.value).toBe('');
             bottom_panel.onKeyDown({
@@ -314,7 +314,7 @@ describe("Emojis", function () {
             await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
                 .filter(el => el.textContent === edited_text).length);
             expect(view.model.messages.models.length).toBe(3);
-            let message = view.content.querySelector(last_msg_sel);
+            let message = view.querySelector(last_msg_sel);
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
             textarea.value = ':smile: Hello world!';
@@ -333,7 +333,7 @@ describe("Emojis", function () {
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 5);
 
-            message = view.content.querySelector('.message:last-child .chat-msg__text');
+            message = view.querySelector('.message:last-child .chat-msg__text');
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
             done()
         }));
@@ -355,11 +355,11 @@ describe("Emojis", function () {
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
             const view = _converse.api.chatviews.get(contact_jid);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            await u.waitUntil(() => view.content.querySelector('.chat-msg__text').innerHTML.replace(/<!---->/g, '') ===
+            await u.waitUntil(() => view.querySelector('.chat-msg__text').innerHTML.replace(/<!---->/g, '') ===
                 '<img class="emoji" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">');
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
-            let message = view.content.querySelector(last_msg_sel);
+            let message = view.querySelector(last_msg_sel);
             await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
             let imgs = message.querySelectorAll('.emoji');
             expect(imgs.length).toBe(1);
@@ -374,7 +374,7 @@ describe("Emojis", function () {
                 keyCode: 13 // Enter
             });
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            message = view.content.querySelector(last_msg_sel);
+            message = view.querySelector(last_msg_sel);
             await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
             imgs = message.querySelectorAll('.emoji');
             expect(imgs.length).toBe(2);

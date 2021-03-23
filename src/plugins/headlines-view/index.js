@@ -8,6 +8,8 @@ import './view.js';
 import { HeadlinesPanelMixin, HeadlinesPanel } from './panel.js';
 import { _converse, converse } from '@converse/headless/core';
 
+import './styles/headlines.scss';
+
 
 converse.plugins.add('converse-headlines-view', {
     /* Plugin dependencies are other plugins which might be

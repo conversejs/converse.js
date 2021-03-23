@@ -18,6 +18,8 @@ import {
 } from './utils.js';
 import { debounce } from 'lodash-es';
 
+import './styles/minimize.scss';
+
 const { dayjs } = converse.env;
 
 
@@ -118,17 +120,17 @@ converse.plugins.add('converse-minimize', {
         _converse.minimize.minimize = minimize;
         _converse.minimize.maximize = maximize;
 
+        function onChatInitialized (model) {
+            model.on( 'change:minimized', () => onMinimizedChanged(model));
+        }
+
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxViewInitialized', view => _converse.minimize.trimChats(view));
         api.listen.on('chatRoomViewInitialized', view => _converse.minimize.trimChats(view));
         api.listen.on('chatBoxMaximized', view => _converse.minimize.trimChats(view));
         api.listen.on('controlBoxOpened', view => _converse.minimize.trimChats(view));
-        api.listen.on('chatBoxViewInitialized', v => v.listenTo(v.model, 'change:minimized', () => onMinimizedChanged(v)));
-
-        api.listen.on('chatRoomViewInitialized', view => {
-            view.listenTo(view.model, 'change:minimized', () => onMinimizedChanged(view));
-            view.model.get('minimized') && view.hide();
-        });
+        api.listen.on('chatBoxInitialized', onChatInitialized);
+        api.listen.on('chatRoomInitialized', onChatInitialized);
 
         api.listen.on('getHeadingButtons', (view, buttons) => {
             if (view.model.get('type') === _converse.CHATROOMS_TYPE) {

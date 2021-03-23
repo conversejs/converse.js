@@ -105,11 +105,11 @@ export default {
                 throw new TypeError(err_msg);
             } else if (typeof jids === 'string') {
                 const room = await api.rooms.get(jids, attrs, true);
-                room && room.maybeShow(force);
+                !attrs.hidden && room?.maybeShow(force);
                 return room;
             } else {
                 const rooms = await Promise.all(jids.map(jid => api.rooms.get(jid, attrs, true)));
-                rooms.forEach(r => r.maybeShow(force));
+                rooms.forEach(r => !attrs.hidden && r.maybeShow(force));
                 return rooms;
             }
         },

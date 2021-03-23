@@ -26,7 +26,7 @@
     "src/**/*.json"
   ],
   "scripts": {
-    "serve": "webpack-dev-server --config webpack.serve.js",
+    "serve": "webpack serve --config webpack.serve.js",
     "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
     "headless": "webpack --config webpack.headless.js",
     "nodeps": "webpack --config webpack.nodeps.js",
@@ -122,7 +122,7 @@
     "urijs": "^1.19.6",
     "webpack": "^4.43.0",
     "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^3.11.0",
+    "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3",
     "xss": "^1.0.8"
   },

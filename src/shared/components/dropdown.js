@@ -1,4 +1,4 @@
-import DOMNavigator from "../shared/dom-navigator.js";
+import DOMNavigator from "shared/dom-navigator.js";
 import { CustomElement } from './element.js';
 import { converse, api } from "@converse/headless/core";
 import { html } from 'lit-element';

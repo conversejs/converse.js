@@ -1,6 +1,6 @@
-import 'components/icons.js';
+import 'shared/components/icons.js';
 import xss from 'xss/dist/xss';
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless/core';
 import { html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';

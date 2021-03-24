@@ -1,7 +1,7 @@
-import 'shared/registry';
-import 'components/dropdown.js';
 import './message-actions.js';
 import './message-body.js';
+import 'shared/components/dropdown.js';
+import 'shared/registry';
 import MessageVersionsModal from 'modals/message-versions.js';
 import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
@@ -9,12 +9,12 @@ import dayjs from 'dayjs';
 import filesize from 'filesize';
 import tpl_message from './templates/message.js';
 import tpl_spinner from 'templates/spinner.js';
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
 import { getDerivedMessageProps } from './message-history';
 import { html } from 'lit-element';
-import { renderAvatar } from 'templates/directives/avatar';
+import { renderAvatar } from 'shared/directives/avatar';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

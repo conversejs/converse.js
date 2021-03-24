@@ -1,8 +1,8 @@
+import UserSettingsModal from 'modals/user-settings';
+import tpl_profile from './templates/profile.js';
 import { ElementViewWithAvatar } from 'shared/avatar.js';
-import UserSettingsModal from "modals/user-settings";
-import tpl_profile from "./templates/profile.js";
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api } from '@converse/headless/core';
 import { render } from 'lit-html';
 
 

@@ -1,4 +1,4 @@
-import "components/image-picker.js";
+import "shared/components/image-picker.js";
 import spinner from "templates/spinner.js";
 import { __ } from 'i18n';
 import { _converse, converse } from  "@converse/headless/core";

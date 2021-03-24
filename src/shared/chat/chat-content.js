@@ -1,6 +1,6 @@
 import "./message-history";
 import debounce from 'lodash/debounce';
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from "@converse/headless/core";
 import { html } from 'lit-element';
 

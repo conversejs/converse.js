@@ -1,5 +1,5 @@
-import 'components/dropdown.js';
-import 'shared/rich-text.js';
+import 'shared/components/dropdown.js';
+import 'shared/components/rich-text.js';
 import { __ } from 'i18n';
 import { _converse } from "@converse/headless/core";
 import { html } from "lit-html";

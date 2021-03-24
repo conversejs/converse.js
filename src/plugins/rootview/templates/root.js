@@ -1,4 +1,4 @@
-import 'components/font-awesome.js';
+import 'shared/components/font-awesome.js';
 import { api } from '@converse/headless/core';
 import { html } from 'lit-html';
 

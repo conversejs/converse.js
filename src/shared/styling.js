@@ -5,7 +5,7 @@
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
 import { html } from 'lit-element';
-import { renderStylingDirectiveBody } from '../../templates/directives/styling.js';
+import { renderStylingDirectiveBody } from 'shared/directives/styling.js';
 
 
 const styling_directives = ['*', '_', '~', '`', '```', '>'];

@@ -1,6 +1,6 @@
 import debounce from 'lodash-es/debounce';
 import tpl_muc_chatarea from './templates/muc-chatarea.js';
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 

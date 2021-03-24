@@ -1,5 +1,5 @@
-import { ElementView } from "@converse/skeletor/src/element";
-import tpl_avatar from 'templates/avatar.js';
+import tpl_avatar from 'shared/templates/avatar.js';
+import { ElementView } from '@converse/skeletor/src/element';
 import { View } from '@converse/skeletor/src/view';
 import { converse } from '@converse/headless/core';
 

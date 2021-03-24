@@ -3,7 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "../../components/brand-heading";
+import "shared/components/brand-heading";
 import "../chatview/index.js";
 import './loginpanel.js';
 import './navback.js';

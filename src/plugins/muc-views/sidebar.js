@@ -1,6 +1,6 @@
 import 'shared/autocomplete/index.js';
 import tpl_muc_sidebar from "./templates/muc-sidebar.js";
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from "@converse/headless/core";
 
 const { u } = converse.env;

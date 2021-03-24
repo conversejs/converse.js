@@ -36,7 +36,7 @@ import "./plugins/singleton.js";
 /* END: Removable components */
 
 import { _converse, converse } from "@converse/headless/core";
-import { CustomElement } from 'components/element';
+import { CustomElement } from 'shared/components/element';
 
 _converse.CustomElement = CustomElement;
 

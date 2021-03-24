@@ -35,6 +35,7 @@ export default class MUCChatArea extends CustomElement {
         return tpl_muc_chatarea({
             'help_messages': this.getHelpMessages(),
             'jid': this.jid,
+            'markScrolled': ev => this.markScrolled(ev),
             'model': this.model,
             'occupants': this.model.occupants,
             'occupants_width': this.model.get('occupants_width'),

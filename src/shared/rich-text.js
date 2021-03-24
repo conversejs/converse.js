@@ -17,6 +17,14 @@ export default class RichText extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.offset = 0;
+        this.mentions = [];
+        this.render_styling = false;
+        this.show_images = false;
+    }
+
     render () {
         const options = {
             nick: this.nick,

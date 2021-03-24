@@ -589,7 +589,7 @@ describe("Groupchats", function () {
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 5);
-                await u.waitUntil(() => view.querySelector('.chat-head__desc').textContent.replace(/<!---->/g, '') === '');
+                await u.waitUntil(() => view.querySelector('.chat-head__desc') === null);
                 await u.waitUntil(() => view.querySelector('converse-chat-message:last-child .chat-info').textContent.trim() === "Topic cleared by some1");
                 done();
             }));

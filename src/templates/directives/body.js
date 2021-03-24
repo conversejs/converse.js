@@ -18,14 +18,19 @@ class MessageBodyRenderer {
 
     async transform () {
         const show_images = api.settings.get('show_images_inline');
+        const render_styling = !this.model.get('is_unstyled') && api.settings.get('allow_message_styling');
         const offset = 0;
         const text = new MessageText(
             this.text,
-            this.model,
             offset,
-            show_images,
-            () => this.onImageLoaded(),
-            ev => this.component.showImageModal(ev)
+            this.model.get('references'),
+            {
+                'nick': this.model.collection.chatbox.get('nick'),
+                'onImgClick': () => this.onImageLoaded(),
+                'onImgLoad': ev => this.component.showImageModal(ev),
+                render_styling,
+                show_images,
+            }
         );
         await text.addTemplates();
         return text.payload;

@@ -39,25 +39,30 @@ export class MessageText extends String {
     /**
      * Create a new {@link MessageText} instance.
      * @param { String } text - The text to be annotated
-     * @param { Message } model - The model representing the message to which
-     *  this MessageText instance belongs
      * @param { Integer } offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
      *  MessageText instances can be nested when templates call directives
      *  which create new MessageText instances (as happens with XEP-393 styling directives).
-     * @param { Boolean } show_images - Whether image URLs should be rendered as <img> tags.
-     * @param { Function } onImgLoad - Callback for when an inline rendered image has been loaded
-     * @param { Function } onImgClick - Callback for when an inline rendered image has been clicked
+     * @param { Array } mentions - An array of mention references
+     * @param { Object } options
+     * @param { Object } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
+     * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
+     * @param { Boolean } options.show_images - Whether image URLs should be rendered as <img> tags.
+     * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked
+     * @param { Function } options.onImgLoad - Callback for when an inline rendered image has been loaded
      */
-    constructor (text, model, offset=0, show_images, onImgLoad, onImgClick) {
+    constructor (text, offset=0, mentions=[], options={}) {
         super(text);
-        this.model = model;
+        this.mentions = mentions;
+        this.nick = options?.nick;
         this.offset = offset;
-        this.onImgClick = onImgClick;
-        this.onImgLoad = onImgLoad;
-        this.references = [];
-        this.show_images = show_images;
+        this.onImgClick = options?.onImgClick;
+        this.onImgLoad = options?.onImgLoad;
+        this.options = options;
         this.payload = [];
+        this.references = [];
+        this.render_styling = options?.render_styling;
+        this.show_images = options?.show_images;
     }
 
     /**
@@ -136,21 +141,14 @@ export class MessageText extends String {
      */
     addMentions (text, local_offset) {
         const full_offset = local_offset+this.offset;
-        if (!this.model.collection) {
-            // This model doesn't belong to a collection anymore, so it must be
-            // have been removed in the meantime and can be ignored.
-            log.debug('addMentions: ignoring dangling model');
-            return;
-        }
-        const nick = this.model.collection.chatbox.get('nick');
-        this.model.get('references')?.forEach(ref => {
+        this.mentions?.forEach(ref => {
             const begin = Number(ref.begin)-full_offset;
             if (begin < 0 || begin >= full_offset+text.length) {
                 return;
             }
             const end = Number(ref.end)-full_offset;
             const mention = text.slice(begin, end);
-            if (mention === nick) {
+            if (mention === this.nick) {
                 this.addTemplateResult(
                     begin+local_offset,
                     end+local_offset,
@@ -171,9 +169,6 @@ export class MessageText extends String {
      * them.
      */
     addStyling () {
-        if (this.model.get('is_unstyled') || !api.settings.get('allow_message_styling')) {
-            return;
-        }
         let i = 0;
         const references = [];
         if (containsDirectives(this)) {
@@ -192,7 +187,7 @@ export class MessageText extends String {
                     const text = this.slice(slice_begin, slice_end);
                     references.push({
                         'begin': i,
-                        'template': getDirectiveTemplate(d, text, this.model, offset),
+                        'template': getDirectiveTemplate(d, text, offset, this.mentions, this.options),
                         end,
                     });
                     i = end;
@@ -254,7 +249,7 @@ export class MessageText extends String {
          */
         await api.trigger('beforeMessageBodyTransformed', this, {'Synchronous': true});
 
-        this.addStyling();
+        this.render_styling && this.addStyling();
         this.addAnnotations(this.addMentions);
         this.addAnnotations(this.addHyperlinks);
         this.addAnnotations(this.addMapURLs);

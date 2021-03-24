@@ -356,11 +356,6 @@ u.filterQueryParamsFromURL = function (url) {
     return parsed_uri.removeQuery(paramsArray).toString();
 };
 
-u.httpToGeoUri = function(text, _converse) {
-    const replacement = 'geo:$1,$2';
-    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
-};
-
 u.slideInAllElements = function (elements, duration=300) {
     return Promise.all(Array.from(elements).map(e => u.slideIn(e, duration)));
 };

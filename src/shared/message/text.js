@@ -18,12 +18,12 @@ const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
 
 
 /**
- * @class MessageText
- * A String subclass that is used to represent the rich text
- * of a chat message.
+ * @class RichText
+ * A String subclass that is used to render rich text (i.e. text that contains
+ * hyperlinks, images, mentions, styling etc.).
  *
  * The "rich" parts of the text is represented by lit-html TemplateResult
- * objects which are added via the {@link MessageText.addTemplateResult}
+ * objects which are added via the {@link RichText.addTemplateResult}
  * method and saved as metadata.
  *
  * By default Converse adds TemplateResults to support emojis, hyperlinks,
@@ -31,18 +31,18 @@ const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
  *
  * 3rd party plugins can listen for the `beforeMessageBodyTransformed`
  * and/or `afterMessageBodyTransformed` events and then call
- * `addTemplateResult` on the MessageText instance in order to add their own
+ * `addTemplateResult` on the RichText instance in order to add their own
  * rich features.
  */
-export class MessageText extends String {
+export class RichText extends String {
 
     /**
-     * Create a new {@link MessageText} instance.
+     * Create a new {@link RichText} instance.
      * @param { String } text - The text to be annotated
      * @param { Integer } offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
-     *  MessageText instances can be nested when templates call directives
-     *  which create new MessageText instances (as happens with XEP-393 styling directives).
+     *  RichText instances can be nested when templates call directives
+     *  which create new RichText instances (as happens with XEP-393 styling directives).
      * @param { Array } mentions - An array of mention references
      * @param { Object } options
      * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
@@ -137,7 +137,7 @@ export class MessageText extends String {
      * rendering them.
      * @param { String } text
      * @param { Integer } local_offset - The index of the passed in text relative to
-     *  the start of this MessageText instance (which is not necessarily the same as the
+     *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
     addMentions (text, local_offset) {
@@ -210,7 +210,7 @@ export class MessageText extends String {
 
 
     /**
-     * Look for plaintext (i.e. non-templated) sections of this MessageText
+     * Look for plaintext (i.e. non-templated) sections of this RichText
      * instance and add references via the passed in function.
      * @param { Function } func
      */
@@ -233,7 +233,7 @@ export class MessageText extends String {
     /**
      * Parse the text and add template references for rendering the "rich" parts.
      *
-     * @param { MessageText } text
+     * @param { RichText } text
      * @param { Boolean } show_images - Should URLs of images be rendered as `<img>` tags?
      * @param { Function } onImgLoad
      * @param { Function } onImgClick
@@ -243,8 +243,8 @@ export class MessageText extends String {
          * Synchronous event which provides a hook for transforming a chat message's body text
          * before the default transformations have been applied.
          * @event _converse#beforeMessageBodyTransformed
-         * @param { MessageText } text - A {@link MessageText } instance. You
-         *  can call {@link MessageText#addTemplateResult } on it in order to
+         * @param { RichText } text - A {@link RichText } instance. You
+         *  can call {@link RichText#addTemplateResult } on it in order to
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
          */
@@ -262,8 +262,8 @@ export class MessageText extends String {
          * Synchronous event which provides a hook for transforming a chat message's body text
          * after the default transformations have been applied.
          * @event _converse#afterMessageBodyTransformed
-         * @param { MessageText } text - A {@link MessageText } instance. You
-         *  can call {@link MessageText#addTemplateResult} on it in order to
+         * @param { RichText } text - A {@link RichText } instance. You
+         *  can call {@link RichText#addTemplateResult} on it in order to
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
          */
@@ -281,7 +281,7 @@ export class MessageText extends String {
      * This method can be used to add new template results to this message's
      * text.
      *
-     * @method MessageText.addTemplateResult
+     * @method RichText.addTemplateResult
      * @param { Number } begin - The starting index of the plain message text
      * which is being replaced with markup.
      * @param { Number } end - The ending index of the plain message text
@@ -303,7 +303,7 @@ export class MessageText extends String {
     /**
      * Take the annotations and return an array of text and TemplateResult
      * instances to be rendered to the DOM.
-     * @method MessageText#marshall
+     * @method RichText#marshall
      */
     marshall () {
         let list = [this.toString()];

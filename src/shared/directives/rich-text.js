@@ -1,4 +1,4 @@
-import { MessageText } from 'shared/message/text.js';
+import { RichText } from 'shared/message/text.js';
 import { directive, html } from "lit-html";
 import { until } from 'lit-html/directives/until.js';
 
@@ -13,7 +13,7 @@ class RichTextRenderer {
     }
 
     async transform () {
-        const text = new MessageText(this.text, this.offset, this.mentions, this.options);
+        const text = new RichText(this.text, this.offset, this.mentions, this.options);
         await text.addTemplates();
         return text.payload;
     }

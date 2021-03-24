@@ -45,7 +45,7 @@ export class MessageText extends String {
      *  which create new MessageText instances (as happens with XEP-393 styling directives).
      * @param { Array } mentions - An array of mention references
      * @param { Object } options
-     * @param { Object } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
+     * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
      * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
      * @param { Boolean } options.show_images - Whether image URLs should be rendered as <img> tags.
      * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked

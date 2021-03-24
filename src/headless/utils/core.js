@@ -528,6 +528,11 @@ u.getUniqueId = function (suffix) {
     }
 }
 
+u.httpToGeoUri = function(text, _converse) {
+    const replacement = 'geo:$1,$2';
+    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
+};
+
 
 /**
  * Clears the specified timeout and interval.

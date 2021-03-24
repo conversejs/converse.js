@@ -48,6 +48,7 @@ export class MessageText extends String {
      * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
      * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
      * @param { Boolean } options.show_images - Whether image URLs should be rendered as <img> tags.
+     * @param { Boolean } options.show_me_message - Whether /me messages should be rendered differently
      * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked
      * @param { Function } options.onImgLoad - Callback for when an inline rendered image has been loaded
      */
@@ -269,7 +270,7 @@ export class MessageText extends String {
         await api.trigger('afterMessageBodyTransformed', this, {'Synchronous': true});
 
         this.payload = this.marshall();
-        this.trimMeMessage();
+        this.options.show_me_message && this.trimMeMessage();
         this.payload = this.payload.map(item => isString(item) ? item : item.template);
     }
 

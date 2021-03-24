@@ -34,6 +34,7 @@ export default class MessageBody extends CustomElement {
             'onImgLoad': () => this.onImgLoad(),
             'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
             'show_images': api.settings.get('show_images_inline'),
+            'show_me_message': true
         }
         return renderRichText(this.text, offset, mentions, options, callback);
     }

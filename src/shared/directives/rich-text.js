@@ -24,9 +24,10 @@ class RichTextRenderer {
 }
 
 
-const renderRichText = directive((text, offset, mentions, options) => part => {
+const renderRichText = directive((text, offset, mentions, options, callback) => part => {
     const renderer = new RichTextRenderer(text, offset, mentions, options);
     part.setValue(renderer.render());
+    callback();
 });
 
 export default renderRichText;

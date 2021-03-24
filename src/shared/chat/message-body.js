@@ -1,8 +1,8 @@
 import 'shared/registry.js';
 import ImageModal from 'modals/image.js';
+import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'components/element.js';
 import { api } from "@converse/headless/core";
-import { renderBodyText } from 'templates/directives/body';
 
 
 export default class MessageBody extends CustomElement {
@@ -15,13 +15,27 @@ export default class MessageBody extends CustomElement {
         }
     }
 
-    showImageModal (ev) { // eslint-disable-line class-methods-use-this
+    onImgClick (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         api.modal.create(ImageModal, {'src': ev.target.src}, ev).show(ev);
     }
 
+    onImgLoad () {
+        this.dispatchEvent(new CustomEvent('imageLoaded', { detail: this, 'bubbles': true }));
+    }
+
     render () {
-        return renderBodyText(this);
+        const callback = () => this.model.collection?.trigger('rendered', this.model);
+        const offset = 0;
+        const mentions = this.model.get('references');
+        const options = {
+            'nick': this.model.collection.chatbox.get('nick'),
+            'onImgClick': this.onImgClick,
+            'onImgLoad': () => this.onImgLoad(),
+            'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
+            'show_images': api.settings.get('show_images_inline'),
+        }
+        return renderRichText(this.text, offset, mentions, options, callback);
     }
 }
 

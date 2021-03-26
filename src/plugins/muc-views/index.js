@@ -7,73 +7,17 @@
 import '../chatboxviews/index.js';
 import '../modal.js';
 import './adhoc-commands.js';
-import 'shared/chat/chat-content.js';
-import 'shared/chat/help-messages.js';
-import 'shared/chat/toolbar.js';
-import MUCConfigForm from './config-form.js';
-import MUCPasswordForm from './password-form.js';
 import MUCView from './muc.js';
-import log from '@converse/headless/log';
 import muc_api from './api.js';
-import { api, converse, _converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless/core';
+import { fetchAndSetMUCDomain } from './utils.js';
 
 import './styles/muc.scss';
-
-const { Strophe } = converse.env;
 
 converse.MUC.VIEWS = {
     CONFIG: 'config-form',
     BOOKMARK: 'bookmark-form'
 }
-
-function setMUCDomain (domain, controlboxview) {
-    controlboxview.querySelector('converse-rooms-list')
-        .model.save('muc_domain', Strophe.getDomainFromJid(domain));
-}
-
-function setMUCDomainFromDisco (controlboxview) {
-    /* Check whether service discovery for the user's domain
-     * returned MUC information and use that to automatically
-     * set the MUC domain in the "Add groupchat" modal.
-     */
-    function featureAdded (feature) {
-        if (!feature) {
-            return;
-        }
-        if (feature.get('var') === Strophe.NS.MUC) {
-            feature.entity.getIdentity('conference', 'text').then(identity => {
-                if (identity) {
-                    setMUCDomain(feature.get('from'), controlboxview);
-                }
-            });
-        }
-    }
-    api.waitUntil('discoInitialized')
-        .then(() => {
-            api.listen.on('serviceDiscovered', featureAdded);
-            // Features could have been added before the controlbox was
-            // initialized. We're only interested in MUC
-            _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({ 'var': Strophe.NS.MUC })));
-        })
-        .catch(e => log.error(e));
-}
-
-function fetchAndSetMUCDomain (controlboxview) {
-    if (controlboxview.model.get('connected')) {
-        if (!controlboxview.querySelector('converse-rooms-list').model.get('muc_domain')) {
-            if (api.settings.get('muc_domain') === undefined) {
-                setMUCDomainFromDisco(controlboxview);
-            } else {
-                setMUCDomain(api.settings.get('muc_domain'), controlboxview);
-            }
-        }
-    }
-}
-
-// function openChatRoomFromURIClicked (ev) {
-//     ev.preventDefault();
-//     api.rooms.open(ev.target.href);
-// }
 
 converse.plugins.add('converse-muc-views', {
     /* Dependencies are other plugins which might be
@@ -89,17 +33,6 @@ converse.plugins.add('converse-muc-views', {
      * an error will be raised if the plugin is not found.
      */
     dependencies: ['converse-modal', 'converse-controlbox', 'converse-chatview'],
-
-    overrides: {
-        ControlBoxView: {
-            renderControlBoxPane () {
-                this.__super__.renderControlBoxPane.apply(this, arguments);
-                if (api.settings.get('allow_muc')) {
-                    this.renderRoomsPanel();
-                }
-            }
-        }
-    },
 
     initialize () {
         const { _converse } = this;
@@ -127,20 +60,9 @@ converse.plugins.add('converse-muc-views', {
             }
         });
 
-        _converse.MUCConfigForm = MUCConfigForm;
-        _converse.MUCPasswordForm = MUCPasswordForm;
         _converse.ChatRoomView = MUCView;
 
         Object.assign(_converse.api, muc_api);
-
-        /************************ BEGIN Event Handlers ************************/
-        api.listen.on('chatBoxViewsInitialized', () => {
-            // FIXME: Find a new way to implement this
-            // _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
-
-            // TODO: Remove
-            // _converse.chatboxes.on('add', addView);
-        });
 
         api.listen.on('clearsession', () => {
             const view = _converse.chatboxviews.get('controlbox');
@@ -158,6 +80,5 @@ converse.plugins.add('converse-muc-views', {
             fetchAndSetMUCDomain(view);
             view.model.on('change:connected', () => fetchAndSetMUCDomain(view));
         });
-        /************************ END Event Handlers ************************/
     }
 });

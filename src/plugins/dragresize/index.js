@@ -43,14 +43,6 @@ converse.plugins.add('converse-dragresize', {
                 });
                 return result;
             }
-        },
-
-        ControlBoxView: {
-            renderControlBoxPane () {
-                const result = this.__super__.renderControlBoxPane.apply(this, arguments);
-                this.initDragResize().setDimensions();
-                return result;
-            }
         }
     },
 

@@ -1,5 +1,9 @@
-import { html } from "lit-html";
+import '../bottom-panel.js';
+import '../sidebar.js';
+import 'shared/chat/chat-content.js';
+import 'shared/chat/help-messages.js';
 import { _converse } from '@converse/headless/core';
+import { html } from "lit-html";
 
 export default (o) => html`
     <div class="chat-area">

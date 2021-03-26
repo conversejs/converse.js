@@ -1,4 +1,3 @@
-import '../bottom-panel.js';
 import '../chatarea.js';
 import '../config-form.js';
 import '../destroyed.js';
@@ -6,7 +5,6 @@ import '../disconnected.js';
 import '../heading.js';
 import '../nickname-form.js';
 import '../password-form.js';
-import '../sidebar.js';
 import tpl_spinner from 'templates/spinner.js';
 import { converse } from "@converse/headless/core";
 import { html } from "lit-html";

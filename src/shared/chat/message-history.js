@@ -1,6 +1,6 @@
 import "./message";
 import dayjs from 'dayjs';
-import tpl_new_day from "templates/new_day.js";
+import tpl_new_day from "./templates/new-day.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from "@converse/headless/core";
 import { html } from 'lit-element';

@@ -1,6 +1,8 @@
 import log from "@converse/headless/log";
+import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { html } from "lit-html";
 import { parseMessageForCommands } from 'plugins/chatview/utils.js';
 
 const { Strophe, $pres, $iq, sizzle, u } = converse.env;
@@ -62,6 +64,29 @@ export function fetchAndSetMUCDomain (controlboxview) {
                 setMUCDomain(api.settings.get('muc_domain'), controlboxview);
             }
         }
+    }
+}
+
+
+export function getChatRoomBodyTemplate (o) {
+    const view = o.model.session.get('view');
+    const jid = o.model.get('jid');
+    const RS = converse.ROOMSTATUS;
+    const conn_status =  o.model.session.get('connection_status');
+
+    if (view === converse.MUC.VIEWS.CONFIG) {
+        return html`<converse-muc-config-form class="muc-form-container" jid="${jid}"></converse-muc-config-form>`;
+    } else if (view === converse.MUC.VIEWS.BOOKMARK) {
+        return html`<converse-muc-bookmark-form class="muc-form-container" jid="${jid}"></converse-muc-bookmark-form>`;
+    } else {
+        return html`
+            ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
+            ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>` : '' }
+            ${ conn_status == RS.CONNECTING ? tpl_spinner() : '' }
+            ${ conn_status == RS.NICKNAME_REQUIRED ? o.getNicknameRequiredTemplate() : '' }
+            ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
+            ${ conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : '' }
+        `;
     }
 }
 

@@ -75,13 +75,6 @@ export default class MUCView extends BaseChatView {
         modal.show();
     }
 
-    showChatStateNotification (message) {
-        if (message.get('sender') === 'me') {
-            return;
-        }
-        return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
-    }
-
     /**
      * Callback method that gets called after the chat has become visible.
      * @private

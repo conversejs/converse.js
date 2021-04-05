@@ -1,6 +1,6 @@
 import debounce from 'lodash-es/debounce';
 import tpl_muc_chatarea from './templates/muc-chatarea.js';
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 
@@ -35,6 +35,7 @@ export default class MUCChatArea extends CustomElement {
         return tpl_muc_chatarea({
             'help_messages': this.getHelpMessages(),
             'jid': this.jid,
+            'markScrolled': ev => this.markScrolled(ev),
             'model': this.model,
             'occupants': this.model.occupants,
             'occupants_width': this.model.get('occupants_width'),

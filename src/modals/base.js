@@ -83,7 +83,7 @@ const BaseModal = View.extend({
         if (ev) {
             ev.preventDefault();
             this.trigger_el = ev.target;
-            this.trigger_el.classList.add('selected');
+            !u.hasClass('chat-image', this.trigger_el) && u.addClass('selected', this.trigger_el);
         }
         this.modal.show();
     }

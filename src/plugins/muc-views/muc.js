@@ -1,6 +1,3 @@
-import './config-form.js';
-import './password-form.js';
-import 'shared/autocomplete/index.js';
 import BaseChatView from 'shared/chat/baseview.js';
 import ModeratorToolsModal from 'modals/moderator-tools.js';
 import log from '@converse/headless/log';
@@ -61,12 +58,6 @@ export default class MUCView extends BaseChatView {
             }),
             this
         );
-        this.notifications = this.querySelector('.chat-content__notifications');
-        this.help_container = this.querySelector('.chat-content__help');
-
-        // Render header as late as possible since it's async and we
-        // want the rest of the DOM elements to be available ASAP.
-        // Otherwise e.g. this.notifications is not yet defined when accessed elsewhere.
         !this.model.get('hidden') && this.show();
     }
 
@@ -82,13 +73,6 @@ export default class MUCView extends BaseChatView {
             modal = api.modal.create(ModeratorToolsModal, { model, _converse, 'chatroomview': this });
         }
         modal.show();
-    }
-
-    showChatStateNotification (message) {
-        if (message.get('sender') === 'me') {
-            return;
-        }
-        return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
     }
 
     /**
@@ -113,10 +97,6 @@ export default class MUCView extends BaseChatView {
             _converse.router.navigate('');
         }
         return _converse.ChatBoxView.prototype.close.apply(this, arguments);
-    }
-
-    getReason (args) { // eslint-disable-line class-methods-use-this
-        return args.includes(',') ? args.slice(args.indexOf(',') + 1).trim() : null;
     }
 
     async destroy () {

@@ -1,17 +1,16 @@
-import 'components/dropdown.js';
+import 'shared/components/dropdown.js';
+import 'shared/components/rich-text.js';
 import { __ } from 'i18n';
+import { _converse } from "@converse/headless/core";
 import { html } from "lit-html";
 import { until } from 'lit-html/directives/until.js';
-import { _converse, converse } from "@converse/headless/core";
-
-const u = converse.env.utils;
 
 const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b, ''));
 
 export default (o) => {
     const i18n_hide_topic = __('Hide the groupchat topic');
     const i18n_bookmarked = __('This groupchat is bookmarked');
-    const subject = o.subject ? u.addHyperlinks(o.subject.text) : '';
+    const subject = o.subject ? o.subject.text : '';
     const show_subject = (subject && !o.subject_hidden);
     return html`
         <div class="chatbox-title ${ show_subject ? '' :  "chatbox-title--no-desc"}">
@@ -24,6 +23,8 @@ export default (o) => {
                 ${ o.dropdown_btns.length ? html`<converse-dropdown .items=${o.dropdown_btns}></converse-dropdown>` : '' }
             </div>
         </div>
-        ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">${subject}</p>` : '' }
+        ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">
+            <converse-rich-text text=${subject} render_styling></converse-rich-text>
+          </p>` : '' }
     `;
 }

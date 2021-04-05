@@ -18,12 +18,12 @@ const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
 
 
 /**
- * @class MessageText
- * A String subclass that is used to represent the rich text
- * of a chat message.
+ * @class RichText
+ * A String subclass that is used to render rich text (i.e. text that contains
+ * hyperlinks, images, mentions, styling etc.).
  *
  * The "rich" parts of the text is represented by lit-html TemplateResult
- * objects which are added via the {@link MessageText.addTemplateResult}
+ * objects which are added via the {@link RichText.addTemplateResult}
  * method and saved as metadata.
  *
  * By default Converse adds TemplateResults to support emojis, hyperlinks,
@@ -31,33 +31,39 @@ const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
  *
  * 3rd party plugins can listen for the `beforeMessageBodyTransformed`
  * and/or `afterMessageBodyTransformed` events and then call
- * `addTemplateResult` on the MessageText instance in order to add their own
+ * `addTemplateResult` on the RichText instance in order to add their own
  * rich features.
  */
-export class MessageText extends String {
+export class RichText extends String {
 
     /**
-     * Create a new {@link MessageText} instance.
+     * Create a new {@link RichText} instance.
      * @param { String } text - The text to be annotated
-     * @param { Message } model - The model representing the message to which
-     *  this MessageText instance belongs
      * @param { Integer } offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
-     *  MessageText instances can be nested when templates call directives
-     *  which create new MessageText instances (as happens with XEP-393 styling directives).
-     * @param { Boolean } show_images - Whether image URLs should be rendered as <img> tags.
-     * @param { Function } onImgLoad - Callback for when an inline rendered image has been loaded
-     * @param { Function } onImgClick - Callback for when an inline rendered image has been clicked
+     *  RichText instances can be nested when templates call directives
+     *  which create new RichText instances (as happens with XEP-393 styling directives).
+     * @param { Array } mentions - An array of mention references
+     * @param { Object } options
+     * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
+     * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
+     * @param { Boolean } options.show_images - Whether image URLs should be rendered as <img> tags.
+     * @param { Boolean } options.show_me_message - Whether /me messages should be rendered differently
+     * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked
+     * @param { Function } options.onImgLoad - Callback for when an inline rendered image has been loaded
      */
-    constructor (text, model, offset=0, show_images, onImgLoad, onImgClick) {
+    constructor (text, offset=0, mentions=[], options={}) {
         super(text);
-        this.model = model;
+        this.mentions = mentions;
+        this.nick = options?.nick;
         this.offset = offset;
-        this.onImgClick = onImgClick;
-        this.onImgLoad = onImgLoad;
-        this.references = [];
-        this.show_images = show_images;
+        this.onImgClick = options?.onImgClick;
+        this.onImgLoad = options?.onImgLoad;
+        this.options = options;
         this.payload = [];
+        this.references = [];
+        this.render_styling = options?.render_styling;
+        this.show_images = options?.show_images;
     }
 
     /**
@@ -131,26 +137,19 @@ export class MessageText extends String {
      * rendering them.
      * @param { String } text
      * @param { Integer } local_offset - The index of the passed in text relative to
-     *  the start of this MessageText instance (which is not necessarily the same as the
+     *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
     addMentions (text, local_offset) {
         const full_offset = local_offset+this.offset;
-        if (!this.model.collection) {
-            // This model doesn't belong to a collection anymore, so it must be
-            // have been removed in the meantime and can be ignored.
-            log.debug('addMentions: ignoring dangling model');
-            return;
-        }
-        const nick = this.model.collection.chatbox.get('nick');
-        this.model.get('references')?.forEach(ref => {
+        this.mentions?.forEach(ref => {
             const begin = Number(ref.begin)-full_offset;
             if (begin < 0 || begin >= full_offset+text.length) {
                 return;
             }
             const end = Number(ref.end)-full_offset;
             const mention = text.slice(begin, end);
-            if (mention === nick) {
+            if (mention === this.nick) {
                 this.addTemplateResult(
                     begin+local_offset,
                     end+local_offset,
@@ -171,9 +170,6 @@ export class MessageText extends String {
      * them.
      */
     addStyling () {
-        if (this.model.get('is_unstyled') || !api.settings.get('allow_message_styling')) {
-            return;
-        }
         let i = 0;
         const references = [];
         if (containsDirectives(this)) {
@@ -192,7 +188,7 @@ export class MessageText extends String {
                     const text = this.slice(slice_begin, slice_end);
                     references.push({
                         'begin': i,
-                        'template': getDirectiveTemplate(d, text, this.model, offset),
+                        'template': getDirectiveTemplate(d, text, offset, this.mentions, this.options),
                         end,
                     });
                     i = end;
@@ -214,7 +210,7 @@ export class MessageText extends String {
 
 
     /**
-     * Look for plaintext (i.e. non-templated) sections of this MessageText
+     * Look for plaintext (i.e. non-templated) sections of this RichText
      * instance and add references via the passed in function.
      * @param { Function } func
      */
@@ -237,7 +233,7 @@ export class MessageText extends String {
     /**
      * Parse the text and add template references for rendering the "rich" parts.
      *
-     * @param { MessageText } text
+     * @param { RichText } text
      * @param { Boolean } show_images - Should URLs of images be rendered as `<img>` tags?
      * @param { Function } onImgLoad
      * @param { Function } onImgClick
@@ -247,14 +243,14 @@ export class MessageText extends String {
          * Synchronous event which provides a hook for transforming a chat message's body text
          * before the default transformations have been applied.
          * @event _converse#beforeMessageBodyTransformed
-         * @param { MessageText } text - A {@link MessageText } instance. You
-         *  can call {@link MessageText#addTemplateResult } on it in order to
+         * @param { RichText } text - A {@link RichText } instance. You
+         *  can call {@link RichText#addTemplateResult } on it in order to
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
          */
         await api.trigger('beforeMessageBodyTransformed', this, {'Synchronous': true});
 
-        this.addStyling();
+        this.render_styling && this.addStyling();
         this.addAnnotations(this.addMentions);
         this.addAnnotations(this.addHyperlinks);
         this.addAnnotations(this.addMapURLs);
@@ -266,15 +262,15 @@ export class MessageText extends String {
          * Synchronous event which provides a hook for transforming a chat message's body text
          * after the default transformations have been applied.
          * @event _converse#afterMessageBodyTransformed
-         * @param { MessageText } text - A {@link MessageText } instance. You
-         *  can call {@link MessageText#addTemplateResult} on it in order to
+         * @param { RichText } text - A {@link RichText } instance. You
+         *  can call {@link RichText#addTemplateResult} on it in order to
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
          */
         await api.trigger('afterMessageBodyTransformed', this, {'Synchronous': true});
 
         this.payload = this.marshall();
-        this.trimMeMessage();
+        this.options.show_me_message && this.trimMeMessage();
         this.payload = this.payload.map(item => isString(item) ? item : item.template);
     }
 
@@ -285,7 +281,7 @@ export class MessageText extends String {
      * This method can be used to add new template results to this message's
      * text.
      *
-     * @method MessageText.addTemplateResult
+     * @method RichText.addTemplateResult
      * @param { Number } begin - The starting index of the plain message text
      * which is being replaced with markup.
      * @param { Number } end - The ending index of the plain message text
@@ -307,7 +303,7 @@ export class MessageText extends String {
     /**
      * Take the annotations and return an array of text and TemplateResult
      * instances to be rendered to the DOM.
-     * @method MessageText#marshall
+     * @method RichText#marshall
      */
     marshall () {
         let list = [this.toString()];

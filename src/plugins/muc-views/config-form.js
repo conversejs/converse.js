@@ -1,6 +1,6 @@
 import log from "@converse/headless/log";
 import tpl_muc_config_form from "./templates/muc-config-form.js";
-import { CustomElement } from 'components/element';
+import { CustomElement } from 'shared/components/element';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 

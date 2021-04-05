@@ -1,5 +1,5 @@
 import tpl_dragresize from "../templates/dragresize.js";
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 
 
 class ConverseDragResize extends CustomElement {

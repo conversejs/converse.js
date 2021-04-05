@@ -1,5 +1,5 @@
 import tpl_muc_destroyed from './templates/muc-destroyed.js';
-import { CustomElement } from 'components/element';
+import { CustomElement } from 'shared/components/element';
 import { _converse, api } from "@converse/headless/core";
 
 

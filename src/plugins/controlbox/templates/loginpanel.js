@@ -1,4 +1,4 @@
-import 'components/brand-heading.js';
+import 'shared/components/brand-heading.js';
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";

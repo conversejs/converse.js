@@ -1,4 +1,4 @@
-import tpl_avatar from '../avatar.js';
+import tpl_avatar from 'shared/templates/avatar.js';
 import { directive } from "lit-html";
 
 

@@ -1,6 +1,8 @@
 import log from "@converse/headless/log";
+import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { html } from "lit-html";
 import { parseMessageForCommands } from 'plugins/chatview/utils.js';
 
 const { Strophe, $pres, $iq, sizzle, u } = converse.env;
@@ -19,6 +21,75 @@ const COMMAND_TO_ROLE = {
     'op': 'moderator',
     'voice': 'participant'
 };
+
+
+function setMUCDomain (domain, controlboxview) {
+    controlboxview.querySelector('converse-rooms-list')
+        .model.save('muc_domain', Strophe.getDomainFromJid(domain));
+}
+
+function setMUCDomainFromDisco (controlboxview) {
+    /* Check whether service discovery for the user's domain
+     * returned MUC information and use that to automatically
+     * set the MUC domain in the "Add groupchat" modal.
+     */
+    function featureAdded (feature) {
+        if (!feature) {
+            return;
+        }
+        if (feature.get('var') === Strophe.NS.MUC) {
+            feature.entity.getIdentity('conference', 'text').then(identity => {
+                if (identity) {
+                    setMUCDomain(feature.get('from'), controlboxview);
+                }
+            });
+        }
+    }
+    api.waitUntil('discoInitialized')
+        .then(() => {
+            api.listen.on('serviceDiscovered', featureAdded);
+            // Features could have been added before the controlbox was
+            // initialized. We're only interested in MUC
+            _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({ 'var': Strophe.NS.MUC })));
+        })
+        .catch(e => log.error(e));
+}
+
+export function fetchAndSetMUCDomain (controlboxview) {
+    if (controlboxview.model.get('connected')) {
+        if (!controlboxview.querySelector('converse-rooms-list').model.get('muc_domain')) {
+            if (api.settings.get('muc_domain') === undefined) {
+                setMUCDomainFromDisco(controlboxview);
+            } else {
+                setMUCDomain(api.settings.get('muc_domain'), controlboxview);
+            }
+        }
+    }
+}
+
+
+export function getChatRoomBodyTemplate (o) {
+    const view = o.model.session.get('view');
+    const jid = o.model.get('jid');
+    const RS = converse.ROOMSTATUS;
+    const conn_status =  o.model.session.get('connection_status');
+
+    if (view === converse.MUC.VIEWS.CONFIG) {
+        return html`<converse-muc-config-form class="muc-form-container" jid="${jid}"></converse-muc-config-form>`;
+    } else if (view === converse.MUC.VIEWS.BOOKMARK) {
+        return html`<converse-muc-bookmark-form class="muc-form-container" jid="${jid}"></converse-muc-bookmark-form>`;
+    } else {
+        return html`
+            ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
+            ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>` : '' }
+            ${ conn_status == RS.CONNECTING ? tpl_spinner() : '' }
+            ${ conn_status == RS.NICKNAME_REQUIRED ? o.getNicknameRequiredTemplate() : '' }
+            ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
+            ${ conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : '' }
+        `;
+    }
+}
+
 
 export function getAutoCompleteListItem (text, input) {
     input = input.trim();

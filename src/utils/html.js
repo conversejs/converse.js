@@ -356,43 +356,6 @@ u.filterQueryParamsFromURL = function (url) {
     return parsed_uri.removeQuery(paramsArray).toString();
 };
 
-u.addHyperlinks = function (text) {
-    const objs = [];
-    const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
-    try {
-        URI.withinString(text, (url, start, end) => {
-            objs.push({url, start, end})
-            return url;
-        } , parse_options);
-    } catch (error) {
-        log.debug(error);
-        return [text];
-    }
-
-    let list = [text];
-    if (objs.length) {
-        objs.sort((a, b) => b.start - a.start)
-            .forEach(url_obj => {
-                const text = list.shift();
-                const url_text = text.slice(url_obj.start, url_obj.end);
-                list = [
-                    text.slice(0, url_obj.start),
-                    u.convertUrlToHyperlink(url_text),
-                    text.slice(url_obj.end),
-                    ...list
-                ];
-            });
-    } else {
-        list = [text];
-    }
-    return list;
-}
-
-u.httpToGeoUri = function(text, _converse) {
-    const replacement = 'geo:$1,$2';
-    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
-};
-
 u.slideInAllElements = function (elements, duration=300) {
     return Promise.all(Array.from(elements).map(e => u.slideIn(e, duration)));
 };

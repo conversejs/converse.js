@@ -1,7 +1,7 @@
-import { __ } from '../../i18n';
-import { html } from "lit-html";
-import avatar from "../../templates/avatar.js";
-import { modal_close_button, modal_header_close_button } from "./buttons.js"
+import avatar from 'shared/templates/avatar.js';
+import { __ } from 'i18n';
+import { html } from 'lit-html';
+import { modal_close_button, modal_header_close_button } from './buttons.js'
 
 
 const device_fingerprint = (o) => {

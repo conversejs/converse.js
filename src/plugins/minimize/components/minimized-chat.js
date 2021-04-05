@@ -1,5 +1,5 @@
 import tpl_trimmed_chat from "../templates/trimmed_chat.js";
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { api, _converse } from "@converse/headless/core";
 import { maximize } from  '../utils.js';
 

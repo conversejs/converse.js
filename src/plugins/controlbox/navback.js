@@ -1,5 +1,5 @@
 import tpl_controlbox_navback from "./templates/navback.js";
-import { CustomElement } from 'components/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
 
 

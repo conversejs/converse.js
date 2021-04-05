@@ -1,7 +1,7 @@
 import { __ } from 'i18n';
 import { api } from "@converse/headless/core";
 import { html } from "lit-html";
-import { renderAvatar } from 'templates/directives/avatar';
+import { renderAvatar } from 'shared/directives/avatar';
 
 export default  (o) => {
    const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', o.display_name, o.jid);

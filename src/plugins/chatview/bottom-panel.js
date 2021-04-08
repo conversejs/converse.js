@@ -186,15 +186,6 @@ export default class ChatBottomPanel extends ElementView {
             textarea.style.height = 'auto';
             this.updateCharCounter(textarea.value);
         }
-        if (message) {
-            /**
-             * Triggered whenever a message is sent by the user
-             * @event _converse#messageSend
-             * @type { _converse.Message }
-             * @example _converse.api.listen.on('messageSend', message => { ... });
-             */
-            api.trigger('messageSend', message);
-        }
         if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround. The .chat-content area
             // doesn't resize when the textarea is resized to its original size.

@@ -1903,7 +1903,7 @@ describe("Groupchats", function () {
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
-            expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('sendMessage', jasmine.any(Object));
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
             // Let's check that if we receive the same message again, it's

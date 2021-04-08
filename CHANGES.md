@@ -33,6 +33,7 @@ Removed events:
 * `chatBoxInsertedIntoDOM`
 * `bookmarkViewsInitialized`
 * `rosterGroupsFetched`
+* `messageSend` (use `sendMessage` instead)
 
 The `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
 payload and not the `view` since it might not be exist at that time.

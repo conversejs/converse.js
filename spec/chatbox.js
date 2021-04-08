@@ -940,8 +940,7 @@ describe("Chatboxes", function () {
             });
             expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
             await u.waitUntil(() => view.model.messages.length === 0);
-            expect(_converse.api.trigger.calls.count(), 1);
-            expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
+            await u.waitUntil(() => !view.querySelectorAll('.chat-msg__body').length);
             done();
         }));
     });

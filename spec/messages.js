@@ -936,7 +936,6 @@ describe("A Chat Message", function () {
             await mock.sendMessage(view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
             expect(view.model.messages.length, 2);
-            expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
             expect(sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop().textContent).toEqual(message);
             done();
         }));

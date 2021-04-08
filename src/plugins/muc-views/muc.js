@@ -19,8 +19,8 @@ export default class MUCView extends BaseChatView {
 
     async initialize () {
         const jid = this.getAttribute('jid');
-        _converse.chatboxviews.add(jid, this);
         this.model = _converse.chatboxes.get(jid);
+        _converse.chatboxviews.add(jid, this);
         this.initDebounced();
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);

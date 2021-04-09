@@ -143,8 +143,8 @@ dist/converse.js:: node_modules
 dist/converse.css:: node_modules
 	npm run dev
 
-dist/website.css:: node_modules
-	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@
+dist/website.css:: node_modules src
+	$(SASS) --source-map true --include-path $(BOOTSTRAP) src/shared/styles/website.scss $@
 
 dist/website.min.css:: node_modules dist/website.css
 	$(CLEANCSS) dist/website.css > $@

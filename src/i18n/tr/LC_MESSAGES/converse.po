@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-17 12:35+0100\n"
-"PO-Revision-Date: 2020-12-16 10:29+0000\n"
+"PO-Revision-Date: 2021-04-10 06:04+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #. Strophe
 #: dist/converse-no-dependencies.js:42989
@@ -727,7 +727,6 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76031
 #: dist/converse-no-dependencies.js:76122
-#, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
@@ -739,7 +738,6 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76032
 #: dist/converse-no-dependencies.js:76129
 #: dist/converse-no-dependencies.js:76166
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
 msgstr "Bu mesajı geri çekmek istediğinizden emin misiniz?"
 
@@ -760,12 +758,10 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr "Üzgünüm, bu mesajı geri çekmenize izin verilmiyor."
 
 #: dist/converse-no-dependencies.js:76190
-#, fuzzy
 msgid "You are about to retract this message."
 msgstr "Bu mesajı geri çekmek üzeresiniz."
 
 #: dist/converse-no-dependencies.js:76190
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
@@ -774,18 +770,16 @@ msgstr ""
 "ekleyebilirsiniz."
 
 #: dist/converse-no-dependencies.js:76197
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Mesaj versiyonları"
+msgstr "Mesaj Geri Çekme"
 
 #: dist/converse-no-dependencies.js:76197
 msgid "Optional reason"
 msgstr "İsteğe bağlı neden"
 
 #: dist/converse-no-dependencies.js:76208
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Üzgünüm, bu mesajı geri çekmenize izin verilmiyor."
+msgstr "Üzgünüm, bu mesajı geri çekmenize izin verilmiyor"
 
 #: dist/converse-no-dependencies.js:76270
 msgid "Cancel Editing"
@@ -801,19 +795,19 @@ msgstr "Geri çek"
 
 #: dist/converse-no-dependencies.js:76316
 msgid "Show URL previews"
-msgstr ""
+msgstr "URL ön izlemelerini göster"
 
 #: dist/converse-no-dependencies.js:76316
 msgid "Hide URL previews"
-msgstr ""
+msgstr "URL ön izlemelerini gizle"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Show URL preview"
-msgstr ""
+msgstr "URL ön izlemesini göster"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Hide URL preview"
-msgstr ""
+msgstr "URL ön izlemesini gizle"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:76429
@@ -993,7 +987,7 @@ msgstr "Bu kişi hakkında daha fazla bilgi göster"
 
 #: dist/converse-no-dependencies.js:82976
 msgid "Close and end this conversation"
-msgstr "Bu sohbeti kapat ve sonlandır"
+msgstr "Bu konuşmayı kapat ve sonlandır"
 
 #: dist/converse-no-dependencies.js:83478
 msgid "Hidden message"
@@ -1204,7 +1198,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94078
 msgid "Loading configuration form"
-msgstr ""
+msgstr "Yapılandırma formu yükleniyor"
 
 #: dist/converse-no-dependencies.js:94373
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1460,10 +1454,10 @@ msgid "Allow muted user to post messages"
 msgstr "Sessiz kullanıcının mesaj göndermesine izin ver"
 
 #: dist/converse-no-dependencies.js:96345
-#, fuzzy
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
-msgstr "Konuşma taşındı. Girmek için aşağıya tıklayın."
+msgstr ""
+"Konuşma yeni bir adrese taşındı. Girmek için aşağıdaki bağlantıya tıklayın."
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:96353
@@ -1471,9 +1465,9 @@ msgid "This groupchat no longer exists"
 msgstr "Bu grup sohbeti artık mevcut değil"
 
 #: dist/converse-no-dependencies.js:96355
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "Verilen sebep: \"%1$s\"."
+msgstr "Şu neden verildi: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:96851
 #, javascript-format

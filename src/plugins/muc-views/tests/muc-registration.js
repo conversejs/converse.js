@@ -7,7 +7,6 @@ const $iq = converse.env.$iq,
 
 describe("Chatrooms", function () {
 
-
     describe("The /register commmand", function () {
 
         it("allows you to register your nickname in a room",

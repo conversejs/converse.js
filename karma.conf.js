@@ -33,7 +33,6 @@ module.exports = function(config) {
       { pattern: "spec/http-file-upload.js", type: 'module' },
       { pattern: "spec/mam.js", type: 'module' },
       { pattern: "spec/markers.js", type: 'module' },
-      { pattern: "spec/omemo.js", type: 'module' },
       { pattern: "spec/ping.js", type: 'module' },
       { pattern: "spec/presence.js", type: 'module' },
       { pattern: "spec/protocol.js", type: 'module' },
@@ -69,6 +68,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/rai.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/xss.js", type: 'module' },
       { pattern: "src/plugins/notifications/tests/notification.js", type: 'module' },
+      { pattern: "src/plugins/omemo/tests/omemo.js", type: 'module' },
       { pattern: "src/plugins/register/tests/register.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' }
     ],

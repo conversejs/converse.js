@@ -1,7 +1,7 @@
 /* global libsignal */
 import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit-html';
 
@@ -13,7 +13,7 @@ const KEY_ALGO = {
     'length': 128
 };
 
-const omemo = (converse.env.omemo = {
+export const omemo = {
     async encryptMessage (plaintext) {
         // The client MUST use fresh, randomly generated key/IV pairs
         // with AES-128 in Galois/Counter Mode (GCM).
@@ -57,7 +57,7 @@ const omemo = (converse.env.omemo = {
         };
         return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
     }
-});
+}
 
 export function parseEncryptedMessage (stanza, attrs) {
     if (attrs.is_encrypted && attrs.encrypted.key) {
@@ -234,10 +234,11 @@ export function addKeysToMessageStanza (stanza, dicts, iv) {
     return Promise.resolve(stanza);
 }
 
-function parseBundle (bundle_el) {
-    /* Given an XML element representing a user's OMEMO bundle, parse it
-     * and return a map.
-     */
+/**
+ * Given an XML element representing a user's OMEMO bundle, parse it
+ * and return a map.
+ */
+export function parseBundle (bundle_el) {
     const signed_prekey_public_el = bundle_el.querySelector('signedPreKeyPublic');
     const signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature');
     const prekeys = sizzle(`prekeys > preKeyPublic`, bundle_el).map(el => ({

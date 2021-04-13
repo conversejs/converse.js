@@ -1,9 +1,10 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "modals/base.js";
 import log from "@converse/headless/log";
-import tpl_moderator_tools_modal from "./templates/moderator-tools.js";
+import tpl_moderator_tools_modal from "../templates/moderator-tools.js";
 import { AFFILIATIONS, ROLES } from "@converse/headless/plugins/muc/index.js";
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
+import { getAffiliationList, setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js'
 
 const { Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -33,7 +34,8 @@ export default BootstrapModal.extend({
             const chatroom = this.chatroomview.model;
             const affiliation = this.model.get('affiliation');
             if (this.shouldFetchAffiliationsList()) {
-                this.users_with_affiliation = await chatroom.getAffiliationList(affiliation);
+                const muc_jid = chatroom.get('jid');
+                this.users_with_affiliation = await getAffiliationList(affiliation, muc_jid);
             } else {
                 this.users_with_affiliation = chatroom.getOccupantsWithAffiliation(affiliation);
             }
@@ -157,8 +159,9 @@ export default BootstrapModal.extend({
             'reason': data.get('reason')
         }
         const current_affiliation = this.model.get('affiliation');
+        const muc_jid = this.chatroomview.model.get('jid');
         try {
-            await this.chatroomview.model.setAffiliation(affiliation, [attrs]);
+            await setAffiliation(affiliation, muc_jid, [attrs]);
         } catch (e) {
             if (e === null) {
                 this.alert(__('Timeout error while trying to set the affiliation'), 'danger');

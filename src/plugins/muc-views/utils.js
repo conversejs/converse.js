@@ -4,6 +4,7 @@ import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit-html";
 import { parseMessageForCommands } from 'plugins/chatview/utils.js';
+import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
 const { Strophe, $pres, $iq, sizzle, u } = converse.env;
 
@@ -187,10 +188,10 @@ function setRole (muc, command, args, required_affiliations = [], required_roles
 }
 
 
-function setAffiliation (muc, command, args, required_affiliations) {
+function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
     const affiliation = COMMAND_TO_AFFILIATION[command];
     if (!affiliation) {
-        throw Error(`ChatRoomView#setAffiliation called with invalid command: ${command}`);
+        throw Error(`verifyAffiliations called with invalid command: ${command}`);
     }
     if (!muc.verifyAffiliations(required_affiliations)) {
         return false;
@@ -223,8 +224,8 @@ function setAffiliation (muc, command, args, required_affiliations) {
     if (occupant && api.settings.get('auto_register_muc_nickname')) {
         attrs['nick'] = occupant.get('nick');
     }
-    muc
-        .setAffiliation(affiliation, [attrs])
+
+    setAffiliation(affiliation, muc.get('jid'), [attrs])
         .then(() => muc.occupants.fetchMembers())
         .catch(err => muc.onCommandError(err));
 }
@@ -249,11 +250,11 @@ export function parseMessageForMUCCommands (muc, text) {
 
     switch (command) {
         case 'admin': {
-            setAffiliation(muc, command, args, ['owner']);
+            verifyAndSetAffiliation(muc, command, args, ['owner']);
             break;
         }
         case 'ban': {
-            setAffiliation(muc, command, args, ['admin', 'owner']);
+            verifyAndSetAffiliation(muc, command, args, ['admin', 'owner']);
             break;
         }
         case 'modtools': {
@@ -293,7 +294,7 @@ export function parseMessageForMUCCommands (muc, text) {
             break;
         }
         case 'member': {
-            setAffiliation(muc, command, args, ['admin', 'owner']);
+            verifyAndSetAffiliation(muc, command, args, ['admin', 'owner']);
             break;
         }
         case 'nick': {
@@ -316,7 +317,7 @@ export function parseMessageForMUCCommands (muc, text) {
             break;
         }
         case 'owner':
-            setAffiliation(muc, command, args, ['owner']);
+            verifyAndSetAffiliation(muc, command, args, ['owner']);
             break;
         case 'op': {
             setRole(muc, command, args, ['admin', 'owner']);
@@ -336,7 +337,7 @@ export function parseMessageForMUCCommands (muc, text) {
             break;
         }
         case 'revoke': {
-            setAffiliation(muc, command, args, ['admin', 'owner']);
+            verifyAndSetAffiliation(muc, command, args, ['admin', 'owner']);
             break;
         }
         case 'topic':

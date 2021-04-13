@@ -1,7 +1,7 @@
+import spinner from "templates/spinner.js";
+import { __ } from 'i18n';
 import { html } from "lit-html";
-import { __ } from '../../i18n';
-import spinner from "../../templates/spinner.js";
-import { modal_header_close_button } from "./buttons.js"
+import { modal_header_close_button } from "modals/templates/buttons.js"
 
 
 function getRoleHelpText (role) {

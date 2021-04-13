@@ -13,7 +13,7 @@ import ChatRoomOccupant from './occupant.js';
 import ChatRoomOccupants from './occupants.js';
 import log from '../../log';
 import muc_api from './api.js';
-import muc_utils from './utils.js';
+import { computeAffiliationsDelta } from './affiliations/utils.js';
 import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection';
 import { _converse, api, converse } from '../../core.js';
@@ -265,7 +265,8 @@ converse.plugins.add('converse-muc', {
             );
         }
 
-        converse.env.muc_utils = muc_utils;
+        // This is for tests (at least until we can import modules inside tests)
+        converse.env.muc_utils = { computeAffiliationsDelta };
         Object.assign(api, muc_api);
 
         /* https://xmpp.org/extensions/xep-0045.html

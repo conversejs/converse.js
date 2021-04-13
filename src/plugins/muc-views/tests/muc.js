@@ -3107,7 +3107,6 @@ describe("Groupchats", function () {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view.model, 'setAffiliation').and.callThrough();
             spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             let presence = $pres({
@@ -3136,7 +3135,10 @@ describe("Groupchats", function () {
             expect(err_msg.textContent.trim()).toBe(
                 "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
 
-            expect(view.model.setAffiliation).not.toHaveBeenCalled();
+            const sel = 'iq[type="set"] query[xmlns="http://jabber.org/protocol/muc#admin"]';
+            const stanzas = _converse.connection.IQ_stanzas.filter(s => sizzle(sel, s).length);
+            expect(stanzas.length).toBe(0);
+
             // XXX: Calling onFormSubmitted directly, trying
             // again via triggering Event doesn't work for some weird
             // reason.
@@ -3146,7 +3148,7 @@ describe("Groupchats", function () {
             expect(Array.from(view.querySelectorAll('.chat-error')).pop().textContent.trim()).toBe(
                 "Error: couldn't find a groupchat participant based on your arguments");
 
-            expect(view.model.setAffiliation).not.toHaveBeenCalled();
+            expect(_converse.connection.IQ_stanzas.filter(s => sizzle(sel, s).length).length).toBe(0);
 
             // Call now with the correct of arguments.
             // XXX: Calling onFormSubmitted directly, trying
@@ -3156,7 +3158,6 @@ describe("Groupchats", function () {
             bottom_panel.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
-            expect(view.model.setAffiliation).toHaveBeenCalled();
             // Check that the member list now gets updated
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3196,7 +3197,6 @@ describe("Groupchats", function () {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view.model, 'setAffiliation').and.callThrough();
             spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
             let presence = $pres({
@@ -3224,7 +3224,10 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
 
-            expect(view.model.setAffiliation).not.toHaveBeenCalled();
+            const sel = 'iq[type="set"] query[xmlns="http://jabber.org/protocol/muc#admin"]';
+            const stanzas = _converse.connection.IQ_stanzas.filter(s => sizzle(sel, s).length);
+            expect(stanzas.length).toBe(0);
+
             // Call now with the correct amount of arguments.
             // XXX: Calling onFormSubmitted directly, trying
             // again via triggering Event doesn't work for some weird
@@ -3233,7 +3236,6 @@ describe("Groupchats", function () {
             bottom_panel.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
-            expect(view.model.setAffiliation).toHaveBeenCalled();
             // Check that the member list now gets updated
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+

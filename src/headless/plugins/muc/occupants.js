@@ -3,6 +3,7 @@ import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection';
 import { Strophe } from 'strophe.js/src/strophe';
 import { _converse, api } from '../../core.js';
+import { getAffiliationList } from './affiliations/utils.js';
 
 const MUC_ROLE_WEIGHTS = {
     'moderator': 1,
@@ -43,7 +44,8 @@ const ChatRoomOccupants = Collection.extend({
         if (affiliations.length === 0) {
             return;
         }
-        const aff_lists = await Promise.all(affiliations.map(a => this.chatroom.getAffiliationList(a)));
+        const muc_jid = this.chatroom.get('jid');
+        const aff_lists = await Promise.all(affiliations.map(a => getAffiliationList(a, muc_jid)));
         const new_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
         const known_affiliations = affiliations.filter(
             a => !u.isErrorObject(aff_lists[affiliations.indexOf(a)])

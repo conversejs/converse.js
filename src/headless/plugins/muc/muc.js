@@ -1,14 +1,14 @@
 import log from '../../log';
-import muc_utils from './utils.js';
 import p from '../../utils/parse-helpers';
 import sizzle from 'sizzle';
 import u from '../../utils/form';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
+import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { debounce, intersection, invoke, isElement, pick, zipObject } from 'lodash-es';
 import { isArchived } from '@converse/headless/shared/parsers';
-import { parseMemberListIQ, parseMUCMessage, parseMUCPresence } from './parsers.js';
+import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
 const OWNER_COMMANDS = ['owner'];
@@ -1137,29 +1137,6 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Send IQ stanzas to the server to set an affiliation for
-     * the provided JIDs.
-     * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-     *
-     * Prosody doesn't accept multiple JIDs' affiliations
-     * being set in one IQ stanza, so as a workaround we send
-     * a separate stanza for each JID.
-     * Related ticket: https://issues.prosody.im/345
-     *
-     * @private
-     * @method _converse.ChatRoom#setAffiliation
-     * @param { string } affiliation - The affiliation
-     * @param { object } members - A map of jids, affiliations and
-     *      optionally reasons. Only those entries with the
-     *      same affiliation as being currently set will be considered.
-     * @returns { Promise } A promise which resolves and fails depending on the XMPP server response.
-     */
-    setAffiliation (affiliation, members) {
-        members = members.filter(m => m.affiliation === undefined || m.affiliation === affiliation);
-        return Promise.all(members.map(m => this.sendAffiliationIQ(affiliation, m)));
-    },
-
-    /**
      * Given a <field> element, return a copy with a <value> child if
      * we can find a value for it in this rooms config.
      * @private
@@ -1389,46 +1366,6 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Send an IQ stanza specifying an affiliation change.
-     * @private
-     * @method _converse.ChatRoom#
-     * @param { String } affiliation: affiliation
-     *     (could also be stored on the member object).
-     * @param { Object } member: Map containing the member's jid and
-     *     optionally a reason and affiliation.
-     */
-    sendAffiliationIQ (affiliation, member) {
-        const iq = $iq({ to: this.get('jid'), type: 'set' })
-            .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
-            .c('item', {
-                'affiliation': member.affiliation || affiliation,
-                'nick': member.nick,
-                'jid': member.jid
-            });
-        if (member.reason !== undefined) {
-            iq.c('reason', member.reason);
-        }
-        return api.sendIQ(iq);
-    },
-
-    /**
-     * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
-     *
-     * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-     * @private
-     * @method _converse.ChatRoom#setAffiliations
-     * @param { Object[] } members
-     * @param { string } members[].jid - The JID of the user whose affiliation will change
-     * @param { Array } members[].affiliation - The new affiliation for this user
-     * @param { string } [members[].reason] - An optional reason for the affiliation change
-     * @returns { Promise }
-     */
-    setAffiliations (members) {
-        const affiliations = [...new Set(members.map(m => m.affiliation))];
-        return Promise.all(affiliations.map(a => this.setAffiliation(a, members)));
-    },
-
-    /**
      * Send an IQ stanza to modify an occupant's role
      * @private
      * @method _converse.ChatRoom#setRole
@@ -1522,40 +1459,6 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
-     * Returns an array of {@link MemberListItem} objects, representing occupants
-     * that have the given affiliation.
-     * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-     * @private
-     * @method _converse.ChatRoom#getAffiliationList
-     * @param { ("admin"|"owner"|"member") } affiliation
-     * @returns { Promise<MemberListItem[]> }
-     */
-    async getAffiliationList (affiliation) {
-        const iq = $iq({ to: this.get('jid'), type: 'get' })
-            .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
-            .c('item', { 'affiliation': affiliation });
-        const result = await api.sendIQ(iq, null, false);
-        if (result === null) {
-            const err_msg = `Error: timeout while fetching ${affiliation} list for MUC ${this.get('jid')}`;
-            const err = new Error(err_msg);
-            log.warn(err_msg);
-            log.warn(result);
-            return err;
-        }
-        if (u.isErrorStanza(result)) {
-            const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
-            const err = new Error(err_msg);
-            log.warn(err_msg);
-            log.warn(result);
-            return err;
-        }
-        return parseMemberListIQ(result)
-            .filter(p => p)
-            .sort((a, b) => (a.nick < b.nick ? -1 : a.nick > b.nick ? 1 : 0));
-    },
-
-    /**
      * Fetch the lists of users with the given affiliations.
      * Then compute the delta between those users and
      * the passed in members, and if it exists, send the delta
@@ -1569,10 +1472,11 @@ const ChatRoomMixin = {
      *  to update the list.
      */
     async updateMemberLists (members) {
+        const muc_jid = this.get('jid');
         const all_affiliations = ['member', 'admin', 'owner'];
-        const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
+        const aff_lists = await Promise.all(all_affiliations.map(a => getAffiliationList(a, muc_jid)));
         const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
-        await this.setAffiliations(muc_utils.computeAffiliationsDelta(true, false, members, old_members));
+        await setAffiliations(muc_jid, computeAffiliationsDelta(true, false, members, old_members));
         await this.occupants.fetchMembers();
     },
 

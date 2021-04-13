@@ -1,5 +1,5 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import ModeratorToolsModal from 'modals/moderator-tools.js';
+import ModeratorToolsModal from './modals/moderator-tools.js';
 import log from '@converse/headless/log';
 import tpl_muc from './templates/muc.js';
 import { Model } from '@converse/skeletor/src/model.js';

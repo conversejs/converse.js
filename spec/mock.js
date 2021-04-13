@@ -323,13 +323,13 @@ window.addEventListener('converse-loaded', () => {
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
 
         await room_creation_promise;
-        const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        const model = _converse.chatboxes.get(muc_jid);
+        await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
 
         const affs = _converse.muc_fetch_members;
         const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
         await mock.returnMemberLists(_converse, muc_jid, members, all_affiliations);
-        return view.model.messages.fetched;
+        return model.messages.fetched;
     };
 
     mock.createContact = async function (_converse, name, ask, requesting, subscription) {

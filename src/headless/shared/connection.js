@@ -247,6 +247,12 @@ export class Connection extends Strophe.Connection {
      * @param { String } message
      */
     onConnectStatusChanged (status, message) {
+        /**
+         * Synchronous event triggered on connection status change
+         * @event _converse#onConnectStatusChanged
+         */
+        api.trigger('connectionStatusChange', { status, message });
+        
         const { __ } = _converse;
         log.debug(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {

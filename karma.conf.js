@@ -43,6 +43,7 @@ module.exports = function(config) {
       { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/utils.js", type: 'module' },
       { pattern: "spec/xmppstatus.js", type: 'module' },
+      { pattern: "src/headless/plugins/muc/tests/affiliations.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/me-messages.js", type: 'module' },

@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 import tpl_headline_list from "templates/headline_list.js";
 
 

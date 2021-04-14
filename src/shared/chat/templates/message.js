@@ -1,6 +1,6 @@
 import 'shared/chat/unfurl';
 import { __ } from 'i18n';
-import { html } from "lit-html";
+import { html } from "lit";
 import { renderAvatar } from 'shared/directives/avatar';
 
 

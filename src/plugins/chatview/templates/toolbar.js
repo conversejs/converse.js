@@ -1,6 +1,6 @@
 import 'shared/chat/toolbar.js';
 import { api } from '@converse/headless/core.js';
-import { html } from "lit-html";
+import { html } from "lit";
 
 export default (o) => {
     const message_limit = api.settings.get('message_limit');

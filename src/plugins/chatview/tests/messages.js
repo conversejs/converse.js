@@ -512,7 +512,7 @@ describe("A Chat Message", function () {
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual(message);
-        expect(msg.innerHTML.replace(/<!---->/g, '')).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
+        expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
         done();
     }));
 
@@ -531,7 +531,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual(message);
-        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '') ===
             'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
         done();
     }));
@@ -549,7 +549,7 @@ describe("A Chat Message", function () {
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
-        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '') ===
             'This message contains a hyperlink with forbidden query params: <a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0">https://www.opkode.com/?id=0</a>');
 
         // Test assigning a string to filter_url_query_params
@@ -559,7 +559,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual(message);
-        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '') ===
             'Another message with a hyperlink with forbidden query params: '+
             '<a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1">https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1</a>');
         done();
@@ -577,7 +577,7 @@ describe("A Chat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-        expect(view.querySelector('.chat-msg__text').innerHTML.replace(/<!---->/g, '')).toBe('Hey\nHave you heard the news?');
+        expect(view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '')).toBe('Hey\nHave you heard the news?');
         stanza = u.toStanza(`
             <message from="${contact_jid}"
                      type="chat"
@@ -586,7 +586,7 @@ describe("A Chat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
-        const text = view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '');
+        const text = view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!-.*?->/g, '');
         expect(text).toBe('Hey\n\u200B\nHave you heard the news?');
         stanza = u.toStanza(`
             <message from="${contact_jid}"
@@ -596,7 +596,7 @@ describe("A Chat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
-        expect(view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '')).toBe('Hey\nHave you heard\nthe news?');
+        expect(view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!-.*?->/g, '')).toBe('Hey\nHave you heard\nthe news?');
 
         stanza = u.toStanza(`
             <message from="${contact_jid}"
@@ -607,7 +607,7 @@ describe("A Chat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
         await u.waitUntil(() => {
-            const text = view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '');
+            const text = view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!-.*?->/g, '');
             return text === 'Hey\nHave you heard\n\u200B\nthe news?\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>';
         });
         done();
@@ -1301,7 +1301,7 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you heard this funny audio?');
             let media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
+            expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
                 `<audio controls="" src="https://montague.lit/audio.mp3"></audio>    `+
                 `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">Download audio file "audio.mp3"</a>`);
 
@@ -1316,9 +1316,9 @@ describe("A Chat Message", function () {
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             msg = view.querySelector('.chat-msg:last-child .chat-msg__text');
-            expect(msg.innerHTML.replace(/<!---->/g, '')).toEqual('Have you heard this funny audio?'); // Emtpy
+            expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you heard this funny audio?'); // Emtpy
             media = view.querySelector('.chat-msg:last-child .chat-msg__media');
-            expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
+            expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
                 `<audio controls="" src="https://montague.lit/audio.mp3"></audio>    `+
                 `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">`+
                 `Download audio file "audio.mp3"</a>`);
@@ -1349,8 +1349,8 @@ describe("A Chat Message", function () {
             expect(msg.classList.length).toBe(1);
             expect(msg.textContent).toEqual('Have you seen this funny video?');
             let media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<!----><video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video><!---->`);
+            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
+                `<video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video>`);
 
 
             // If the <url> and <body> contents is the same, don't duplicate.
@@ -1364,10 +1364,10 @@ describe("A Chat Message", function () {
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             msg = view.querySelector('.chat-msg:last-child .chat-msg__text');
-            expect(msg.innerHTML.replace(/<!---->/g, '')).toEqual('Have you seen this funny video?');
+            expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you seen this funny video?');
             media = view.querySelector('.chat-msg:last-child .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<!----><video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video><!---->`);
+            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
+                `<video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video>`);
             done();
         }));
 
@@ -1395,8 +1395,8 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you downloaded this funny file?');
             const media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<!----><a target="_blank" rel="noopener" href="https://montague.lit/funny.pdf"><!---->Download file "funny.pdf"<!----></a><!---->`);
+            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
+                `<a target="_blank" rel="noopener" href="https://montague.lit/funny.pdf">Download file "funny.pdf"</a>`);
             done();
         }));
 
@@ -1428,7 +1428,7 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you seen this funny image?');
             const media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+            expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                 `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                 `Download image file "conversejs-filled.svg"</a>`);
             done();

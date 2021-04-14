@@ -49,7 +49,7 @@ describe("A Groupchat Message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'13', 'end':'19', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
-        await u.waitUntil(() => sizzle('.chat-msg__text:last', view).pop().innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => sizzle('.chat-msg__text:last', view).pop().innerHTML.replace(/<!-.*?->/g, '') ===
             'mentions <span class="mention mention--self badge badge-info">romeo</span>');
         done();
     }));

@@ -16,7 +16,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
         expect(view.model.sendMessage).toHaveBeenCalled();
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
-        expect(msg.innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+        expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                 `<img class="chat-image img-thumbnail" src="https://conversejs.org/logo/conversejs-filled.svg">`+
             `</a>`);
@@ -26,7 +26,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
-        expect(msg.innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+        expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg?param1=val1&amp;param2=val2">`+
                 `<img class="chat-image img-thumbnail" src="${message.replace(/&/g, '&amp;')}">`+
             `</a>`);
@@ -91,7 +91,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
-        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
+        await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '').trim() ==
             `<a target="_blank" rel="noopener" href="https://conversejs.org/logo/non-existing.svg">https://conversejs.org/logo/non-existing.svg</a>`, 1000);
         done();
     }));
@@ -114,7 +114,7 @@ describe("A Chat Message", function () {
         expect(view.model.sendMessage).toHaveBeenCalled();
         await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'), 1000);
         const msg = view.querySelector('.chat-content .chat-msg .chat-msg__text');
-        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
+        await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '').trim() ==
             `<a target="_blank" rel="noopener" href="https://pbs.twimg.com/media/string?format=jpg&amp;name=small">https://pbs.twimg.com/media/string?format=jpg&amp;name=small</a>`, 1000);
         done();
     }));

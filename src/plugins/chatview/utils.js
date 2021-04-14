@@ -1,6 +1,6 @@
 import { __ } from 'i18n';
 import { _converse } from "@converse/headless/core";
-import { html } from 'lit-html';
+import { html } from 'lit';
 
 
 export async function getHeadingDropdownItem (promise_or_data) {

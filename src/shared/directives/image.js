@@ -1,22 +1,27 @@
-import { converse } from "@converse/headless/core";
-import { directive, html } from "lit-html";
-import URI from "urijs";
+import URI from 'urijs';
+import { AsyncDirective } from 'lit/async-directive.js';
+import { converse } from '@converse/headless/core';
+import { directive } from 'lit/directive.js';
+import { html } from 'lit';
 
-/**
- * lit-html directive which attempts to render an <img> element from a URL.
- * It will fall back to rendering an <a> element if it can't.
- *
- * @param { String } src - The value that will be assigned to the `src` attribute of the `<img>` element.
- * @param { String } href - The value that will be assigned to the `href` attribute of the `<img>` element.
- * @param { Function } onLoad - A callback function to be called once the image has loaded.
- * @param { Function } onClick - A callback function to be called once the image has been clicked.
-*/
-export const renderImage = directive((src, href, onLoad, onClick) => part => {
-    function onError () {
+class ImageDirective extends AsyncDirective {
+    render (src, href, onLoad, onClick) {
+        return html`
+            <a href="${href}" class="chat-image__link" target="_blank" rel="noopener"
+                ><img
+                    class="chat-image img-thumbnail"
+                    src="${src}"
+                    @click=${onClick}
+                    @error=${() => this.onError(src, href, onLoad, onClick)}
+                    @load=${onLoad}
+            /></a>
+        `;
+    }
+
+    onError (src, href, onLoad, onClick) {
         const u = converse.env.utils;
         if (u.isURLWithImageExtension(src)) {
-            part.setValue(u.convertUrlToHyperlink(href));
-            part.commit();
+            this.setValue(u.convertUrlToHyperlink(href));
         } else {
             // Before giving up and falling back to just rendering a hyperlink,
             // we attach `.png` and try one more time.
@@ -24,15 +29,18 @@ export const renderImage = directive((src, href, onLoad, onClick) => part => {
             const uri = new URI(src);
             const filename = uri.filename();
             uri.filename(`${filename}.png`);
-            part.setValue(renderImage(uri.toString(), href, onLoad, onClick));
-            part.commit();
+            this.setValue(renderImage(uri.toString(), href, onLoad, onClick));
         }
     }
-    part.setValue(
-        html`<a href="${href}"
-                class="chat-image__link"
-                target="_blank"
-                rel="noopener"
-            ><img class="chat-image img-thumbnail" src="${src}" @click=${onClick} @error=${onError} @load=${onLoad}/></a>`
-    );
-});
+}
+
+/**
+ * lit directive which attempts to render an <img> element from a URL.
+ * It will fall back to rendering an <a> element if it can't.
+ *
+ * @param { String } src - The value that will be assigned to the `src` attribute of the `<img>` element.
+ * @param { String } href - The value that will be assigned to the `href` attribute of the `<img>` element.
+ * @param { Function } onLoad - A callback function to be called once the image has loaded.
+ * @param { Function } onClick - A callback function to be called once the image has been clicked.
+ */
+export const renderImage = directive(ImageDirective);

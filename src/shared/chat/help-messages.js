@@ -2,8 +2,8 @@ import 'shared/components/icons.js';
 import xss from 'xss/dist/xss';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless/core';
-import { html } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { html } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 
 export default class ChatHelp extends CustomElement {

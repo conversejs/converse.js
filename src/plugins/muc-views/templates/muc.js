@@ -5,7 +5,7 @@ import '../disconnected.js';
 import '../heading.js';
 import '../nickname-form.js';
 import '../password-form.js';
-import { html } from "lit-html";
+import { html } from "lit";
 import { getChatRoomBodyTemplate } from '../utils.js';
 
 

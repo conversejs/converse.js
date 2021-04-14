@@ -1,6 +1,6 @@
 import { __ } from '../i18n';
 import { api } from "@converse/headless/core";
-import { directive, html } from "lit-html";
+import { directive, html } from "lit";
 
 
 const i18n_retract_message = __('Retract this message');

@@ -1,6 +1,7 @@
+import { Directive, directive } from 'lit/directive.js';
 import { RichText } from 'shared/rich-text.js';
-import { directive, html } from "lit-html";
-import { until } from 'lit-html/directives/until.js';
+import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 
 
 class RichTextRenderer {
@@ -24,10 +25,15 @@ class RichTextRenderer {
 }
 
 
-const renderRichText = directive((text, offset, mentions, options, callback) => part => {
-    const renderer = new RichTextRenderer(text, offset, mentions, options);
-    part.setValue(renderer.render());
-    callback?.();
-});
+class RichTextDirective extends Directive {
+    render (text, offset, mentions, options, callback) { // eslint-disable-line class-methods-use-this
+        const renderer = new RichTextRenderer(text, offset, mentions, options);
+        const result =renderer.render();
+        callback?.();
+        return result;
+    }
+}
 
+
+const renderRichText = directive(RichTextDirective);
 export default renderRichText;

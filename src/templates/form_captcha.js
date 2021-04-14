@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 
 export default (o) => html`
     <fieldset class="form-group">

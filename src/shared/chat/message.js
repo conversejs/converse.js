@@ -12,7 +12,7 @@ import tpl_spinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
-import { html } from 'lit-element';
+import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
 
 const { Strophe } = converse.env;

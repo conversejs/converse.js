@@ -53,7 +53,7 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         expect(_converse.connection.send).toHaveBeenCalled();
-        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!---->/g, '') === new_text);
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text);
 
         const msg = _converse.connection.send.calls.all()[0].args[0];
         expect(msg.toLocaleString())
@@ -107,7 +107,7 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
-            .filter(m => m.textContent.replace(/<!---->/g, '') === new_text).length);
+            .filter(m => m.textContent.replace(/<!-.*?->/g, '') === new_text).length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
         textarea.value =  'Arise, fair sun, and kill the envious moon';
@@ -345,8 +345,7 @@ describe("A Chat Message", function () {
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const older_msgs = modal.el.querySelectorAll('.older-msg');
             expect(older_msgs.length).toBe(2);
-            expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
-            expect(older_msgs[0].childNodes[2].textContent).toBe('But soft, what light through yonder airlock breaks?');
+            expect(older_msgs[0].textContent.includes('But soft, what light through yonder airlock breaks?')).toBe(true);
             expect(view.model.messages.models.length).toBe(1);
             done();
         }));

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { __ } from '../../i18n';
-import { html } from "lit-html";
+import { html } from "lit";
 import { modal_close_button, modal_header_close_button } from "./buttons.js"
 
 

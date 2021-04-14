@@ -25,7 +25,7 @@ describe("A outgoing groupchat Message", function () {
 
         const msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
-        await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             'This <span class="styling-directive">*</span><b>message mentions <span class="mention mention--self badge badge-info">romeo</span></b><span class="styling-directive">*</span>');
         done();
     }));

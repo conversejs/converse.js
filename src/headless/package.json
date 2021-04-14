@@ -36,7 +36,7 @@
   },
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {
-    "@converse/skeletor": "0.0.3",
+    "@converse/skeletor": "conversejs/skeletor#fe855404babc08cbb1018231eb49a7b7e497539c",
     "filesize": "^6.1.0",
     "localforage": "^1.9.0",
     "localforage-driver-memory": "^1.0.5",

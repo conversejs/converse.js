@@ -1,17 +1,20 @@
+import { Directive, directive } from 'lit/directive.js';
 import { RichText } from 'shared/rich-text.js';
-import { directive, html } from 'lit-html';
-import { until } from 'lit-html/directives/until.js';
+import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
 
 async function transform (t) {
     await t.addTemplates();
     return t.payload;
 }
 
-function renderer (text, offset, mentions, options) {
-    const t = new RichText(text, offset, mentions, Object.assign(options, { 'show_images': false }));
-    return html`${until(transform(t), html`${t}`)}`;
+
+class StylingDirective extends Directive {
+
+    render (txt, offset, mentions, options) { // eslint-disable-line class-methods-use-this
+        const t = new RichText(txt, offset, mentions, Object.assign(options, { 'show_images': false }));
+        return html`${until(transform(t), html`${t}`)}`;
+    }
 }
 
-export const renderStylingDirectiveBody = directive((txt, offset, mentions, options) =>
-    p => p.setValue(renderer(txt, offset, mentions, options))
-);
+export const renderStylingDirectiveBody = directive(StylingDirective);

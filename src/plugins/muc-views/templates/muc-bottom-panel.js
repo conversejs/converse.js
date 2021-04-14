@@ -1,7 +1,7 @@
 import tpl_muc_nickname_form from './muc-nickname-form.js';
 import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
-import { html } from "lit-html";
+import { html } from "lit";
 
 
 const tpl_can_edit = () => html`

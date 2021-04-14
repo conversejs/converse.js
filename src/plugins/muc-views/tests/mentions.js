@@ -58,7 +58,7 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!-.*?->/g, '') ===
             'hello <span class="mention">z3r0</span> '+
             '<span class="mention mention--self badge badge-info">tom</span> '+
             '<span class="mention">mr.robot</span>, how are you?');
@@ -75,7 +75,7 @@ describe("An incoming groupchat message", function () {
         await view.model.handleMessageStanza(msg);
         message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.classList.length).toEqual(1);
-        expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
+        expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             'hello <span class="mention">z3r0</span> '+
             '<span class="mention mention--self badge badge-info">tom</span> '+
             '<span class="mention">mr.robot</span>, how are you?');
@@ -113,7 +113,7 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'16', 'end':'24', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
 
         await view.model.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!---->/g, '') ===
+        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!-.*?->/g, '') ===
             '<blockquote>hello <span class="mention">z3r0</span> <span class="mention mention--self badge badge-info">tom</span> <span class="mention">mr.robot</span>, how are you?</blockquote>');
         const message = view.querySelector('.chat-msg__text');
         expect(message.classList.length).toEqual(1);
@@ -380,7 +380,7 @@ describe("A sent groupchat message", function () {
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() =>
-                view.querySelector(last_msg_sel).innerHTML.replace(/<!---->/g, '') ===
+                view.querySelector(last_msg_sel).innerHTML.replace(/<!-.*?->/g, '') ===
                     'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
             );
 
@@ -496,7 +496,7 @@ describe("A sent groupchat message", function () {
         const bottom_panel = view.querySelector('converse-muc-bottom-panel');
         bottom_panel.onKeyDown(enter_event);
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
-        expect(message.innerHTML.replace(/<!---->/g, '')).toEqual(
+        expect(message.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
             `Welcome <span class="mention">gibson</span> <span title=":poop:">💩</span> `+
             `We have a guide on how to do that here: `+
             `<a target="_blank" rel="noopener" href="https://conversejs.org/docs/html/index.html">https://conversejs.org/docs/html/index.html</a>`);

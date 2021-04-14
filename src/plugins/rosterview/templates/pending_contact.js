@@ -1,6 +1,6 @@
 import { __ } from 'i18n';
 import { api } from "@converse/headless/core";
-import { html } from "lit-html";
+import { html } from "lit";
 
 const tpl_pending_contact = o => html`<span class="pending-contact-name" title="JID: ${o.jid}">${o.display_name}</span>`;
 

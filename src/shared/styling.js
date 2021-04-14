@@ -4,7 +4,7 @@
  * @description Utility functions to help with parsing XEP-393 message styling hints
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
-import { html } from 'lit-element';
+import { html } from 'lit';
 import { renderStylingDirectiveBody } from 'shared/directives/styling.js';
 
 

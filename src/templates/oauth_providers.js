@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 
 const tpl_provider = (o, provider) => html`
     <p class="oauth-provider">

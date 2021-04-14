@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { html } from "lit-html";
+import { html } from "lit";
 
 const tpl_moved = (o) => {
     const i18n_moved = __('The conversation has moved to a new address. Click the link below to enter.');

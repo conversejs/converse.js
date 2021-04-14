@@ -1,6 +1,6 @@
 import { __ } from 'i18n';
 import { _converse, converse } from "@converse/headless/core";
-import { html } from "lit-html";
+import { html } from "lit";
 import { toggleGroup } from '../utils.js';
 
 const { u } = converse.env;

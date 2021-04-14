@@ -9,7 +9,7 @@ import utils from "@converse/headless/utils/form";
 import { ElementView } from "@converse/skeletor/src/element";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 // Strophe methods for building stanzas
 const { Strophe, sizzle, $iq } = converse.env;

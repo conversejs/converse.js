@@ -1,7 +1,7 @@
 import tpl_controlbox from './templates/controlbox.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 const u = converse.env.utils;
 

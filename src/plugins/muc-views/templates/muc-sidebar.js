@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 import { __ } from 'i18n';
 import tpl_occupant from "./occupant.js";
 

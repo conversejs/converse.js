@@ -198,7 +198,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         _converse.minimize.minimize(view.model);
         const unread_count = selectUnreadMsgCount();
         expect(u.isVisible(unread_count)).toBeTruthy();
-        expect(unread_count.innerHTML.replace(/<!---->/g, '')).toBe('1');
+        expect(unread_count.innerHTML.replace(/<!-.*?->/g, '')).toBe('1');
         done();
     }));
 
@@ -216,7 +216,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         await u.waitUntil(() => view.model.messages.length);
         const unread_count = selectUnreadMsgCount();
         expect(u.isVisible(unread_count)).toBeTruthy();
-        expect(unread_count.innerHTML.replace(/<!---->/g, '')).toBe('1');
+        expect(unread_count.innerHTML.replace(/<!-.*?->/g, '')).toBe('1');
         done();
     }));
 
@@ -233,7 +233,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
-        await u.waitUntil(() => msg.innerHTML.replace(/\<!----\>/g, '') ===
+        await u.waitUntil(() => msg.innerHTML.replace(/\<!-.*?-\>/g, '') ===
             '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
             'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
         done();

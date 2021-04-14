@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 import tpl_command_form from './ad-hoc-command-form.js';
 
 export default (o, command) => html`

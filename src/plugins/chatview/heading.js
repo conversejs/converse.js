@@ -5,7 +5,7 @@ import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 
 export default class ChatHeading extends ElementView {

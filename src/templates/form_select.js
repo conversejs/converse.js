@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 
 const tpl_option = (o) => html`<option value="${o.value}" ?selected="${o.selected}">${o.label}</option>`;
 

@@ -3,7 +3,7 @@ import tpl_roster from "./templates/roster.js";
 import { ElementView } from "@converse/skeletor/src/element";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/core";
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 const u = converse.env.utils;
 

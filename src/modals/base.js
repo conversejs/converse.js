@@ -3,7 +3,7 @@ import log from "@converse/headless/log";
 import tpl_alert_component from "templates/alert.js";
 import { View } from '@converse/skeletor/src/view.js';
 import { api, converse } from "@converse/headless/core";
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 import './styles/_modal.scss';
 

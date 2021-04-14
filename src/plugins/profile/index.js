@@ -2,13 +2,13 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "modals/chat-status.js";
-import "modals/profile.js";
-import "../modal.js";
-import "@converse/headless/plugins/status";
-import "@converse/headless/plugins/vcard";
-import XMPPStatusView from './statusview.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import '../modal.js';
+import './statusview.js';
+import '@converse/headless/plugins/status';
+import '@converse/headless/plugins/vcard';
+import 'modals/chat-status.js';
+import 'modals/profile.js';
+import { api, converse } from '@converse/headless/core';
 
 
 converse.plugins.add('converse-profile', {
@@ -20,7 +20,5 @@ converse.plugins.add('converse-profile', {
             'allow_adhoc_commands': true,
             'show_client_info': true
         });
-
-        _converse.XMPPStatusView = XMPPStatusView;
     }
 });

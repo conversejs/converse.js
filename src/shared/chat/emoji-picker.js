@@ -5,10 +5,10 @@ import { BaseDropdown } from "shared/components/dropdown.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { html } from "lit-element";
+import { html } from "lit";
 import { initStorage } from '@converse/headless/shared/utils.js';
 import { tpl_emoji_picker } from "./templates/emoji-picker.js";
-import { until } from 'lit-html/directives/until.js';
+import { until } from 'lit/directives/until.js';
 
 import './styles/emoji.scss';
 

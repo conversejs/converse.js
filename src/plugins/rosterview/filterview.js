@@ -4,7 +4,7 @@ import { ElementView } from '@converse/skeletor/src/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/shared/utils.js';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 export const RosterFilter = Model.extend({
     initialize () {

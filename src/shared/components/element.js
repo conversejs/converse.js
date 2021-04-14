@@ -1,4 +1,4 @@
-import { LitElement } from 'lit-element';
+import { LitElement } from 'lit';
 import { Events } from '@converse/skeletor/src/events.js';
 
 

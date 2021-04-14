@@ -16,7 +16,7 @@ OXIPNG			?= oxipng
 PAPER		 	=
 RJS				?= ./node_modules/.bin/r.js
 NPX				?= ./node_modules/.bin/npx
-SASS			?= ./node_modules/.bin/node-sass
+SASS			?= ./node_modules/.bin/sass
 SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS		=
@@ -144,7 +144,7 @@ dist/converse.css:: node_modules
 	npm run dev
 
 dist/website.css:: node_modules src
-	$(SASS) --source-map true --include-path $(BOOTSTRAP) src/shared/styles/website.scss $@
+	$(SASS) --load-path=$(BOOTSTRAP) src/shared/styles/website.scss $@
 
 dist/website.min.css:: node_modules dist/website.css
 	$(CLEANCSS) dist/website.css > $@

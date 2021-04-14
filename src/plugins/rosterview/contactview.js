@@ -9,7 +9,7 @@ import { _converse, api, converse } from "@converse/headless/core";
 const u = converse.env.utils;
 
 
-class RosterContact extends CustomElement {
+export default class RosterContact extends CustomElement {
 
     static get properties () {
         return {

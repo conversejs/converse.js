@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 import { navigateToControlBox } from '../utils.js';
 
 export default  (jid) => {

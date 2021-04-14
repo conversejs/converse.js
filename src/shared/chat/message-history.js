@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import tpl_new_day from "./templates/new-day.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from "@converse/headless/core";
-import { html } from 'lit-element';
-import { repeat } from 'lit-html/directives/repeat.js';
+import { html } from 'lit';
+import { repeat } from 'lit/directives/repeat.js';
 
 
 // Return a TemplateResult indicating a new day if the passed in message is

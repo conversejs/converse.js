@@ -1,5 +1,5 @@
-import { html } from 'lit-html';
-import { repeat } from 'lit-html/directives/repeat.js';
+import { html } from 'lit';
+import { repeat } from 'lit/directives/repeat.js';
 import { _converse, api } from '@converse/headless/core';
 
 

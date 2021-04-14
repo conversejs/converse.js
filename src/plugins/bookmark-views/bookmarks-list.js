@@ -2,7 +2,7 @@ import tpl_bookmarks_list from './templates/list.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import { initStorage } from '@converse/headless/shared/utils.js';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

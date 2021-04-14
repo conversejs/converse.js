@@ -5,7 +5,7 @@ import tpl_muc from './templates/muc.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { html, render } from "lit-html";
+import { html, render } from "lit";
 
 /**
  * Mixin which turns a ChatBoxView into a ChatRoomView

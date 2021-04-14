@@ -7,7 +7,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import { html, css } from 'lit-element';
+import { html, css } from 'lit';
 import { CustomElement } from './element.js';
 
 

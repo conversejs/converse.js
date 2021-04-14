@@ -10,8 +10,8 @@
         "jasmine": true,
         "es6": true
     },
-    "plugins": ["lodash"],
-    "extends": ["eslint:recommended", "plugin:lodash/canonical"],
+    "plugins": [],
+    "extends": ["eslint:recommended"],
     "globals": {
         "Uint8Array": true,
         "Promise": true,
@@ -21,20 +21,6 @@
         "window": true
     },
     "rules": {
-        "lodash/prefer-lodash-chain": "off",
-        "lodash/prefer-lodash-method": "off",
-        "lodash/import-scope": "off",
-        "lodash/prefer-constant": "off",
-        "lodash/prefer-get": "off",
-        "lodash/prefer-includes": "off",
-        "lodash/prefer-invoke-map": "off",
-        "lodash/prefer-is-nil": "off",
-        "lodash/prefer-lodash-typecheck": "off",
-        "lodash/prefer-noop": "off",
-        "lodash/prefer-startswith": "off",
-        "lodash/preferred-alias": "off",
-        "lodash/matches-prop-shorthand": "off",
-        "lodash/prop-shorthand": "off",
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
         "array-callback-return": "error",

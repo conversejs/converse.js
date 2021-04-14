@@ -3,7 +3,7 @@ import tpl_toolbar from './templates/toolbar.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { html, render } from 'lit-html';
+import { html, render } from 'lit';
 import { clearMessages, parseMessageForCommands } from './utils.js';
 
 const { u } = converse.env;

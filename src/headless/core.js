@@ -2,7 +2,6 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import './polyfill';
 import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
@@ -36,7 +35,7 @@ import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
 import { createStore, replacePromise } from '@converse/headless/shared/utils';
 import { getOpenPromise } from '@converse/openpromise';
-import { html } from 'lit-element';
+import { html } from 'lit';
 import { sprintf } from 'sprintf-js';
 
 export { _converse };

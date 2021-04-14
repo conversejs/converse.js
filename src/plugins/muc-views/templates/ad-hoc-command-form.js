@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { html } from "lit-html";
+import { html } from "lit";
 
 export default (o, command) => {
     const i18n_hide = __('Hide');

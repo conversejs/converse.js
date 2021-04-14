@@ -1,5 +1,5 @@
 import { api } from "@converse/headless/core";
-import { html } from "lit-html";
+import { html } from "lit";
 
 const tpl_requesting_contact = o => html`<span class="req-contact-name w-100" title="JID: ${o.jid}">${o.display_name}</span>`;
 

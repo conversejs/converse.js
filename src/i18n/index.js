@@ -79,7 +79,7 @@ async function fetchTranslations (_converse) {
         return;
     }
     const { default: data } = await import(/*webpackChunkName: "locales/[request]" */ `../i18n/${locale}/LC_MESSAGES/converse.po`);
-    await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${dayjs_locale}`);
+    await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${dayjs_locale}.js`);
     dayjs.locale(getLocale(dayjs_locale, l => dayjs.locale(l)));
     jed_instance = new Jed(data);
 }

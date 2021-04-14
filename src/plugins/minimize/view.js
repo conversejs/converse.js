@@ -3,10 +3,10 @@ import tpl_chats_panel from './templates/chats-panel.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api } from '@converse/headless/core';
 import { initStorage } from '@converse/headless/shared/utils.js';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 
-class MinimizedChats extends ElementView {
+export default class MinimizedChats extends ElementView {
 
     async initialize () {
         this.model = _converse.chatboxes;

@@ -1,6 +1,6 @@
 import 'shared/components/font-awesome.js';
 import { api } from '@converse/headless/core';
-import { html } from 'lit-html';
+import { html } from 'lit';
 
 export default () => {
     let extra_classes = api.settings.get('singleton') ? 'converse-singleton' : '';

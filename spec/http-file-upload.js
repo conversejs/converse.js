@@ -305,11 +305,11 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</message>`);
                     const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
-                    expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(img_link_el.outerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
 
-                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `Download image file "conversejs-filled.svg"</a>`);
                     XMLHttpRequest.prototype.send = send_backup;
@@ -409,11 +409,11 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</message>`);
                     const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
-                    expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(img_link_el.outerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
 
-                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `Download image file "conversejs-filled.svg"</a>`);
 

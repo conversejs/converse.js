@@ -1,6 +1,6 @@
 import { _converse } from '@converse/headless/core';
-import { html } from "lit-html";
-import { until } from 'lit-html/directives/until.js';
+import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 
 
 export default (o) => {

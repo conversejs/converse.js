@@ -120,9 +120,11 @@ export default class MUCChatArea extends CustomElement {
     onScrolledDown () {
         if (!this.model.isHidden()) {
             this.model.clearUnreadMsgCounter();
-            // Clear location hash if set to one of the messages in our history
-            const hash = window.location.hash;
-            hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+            if (api.settings.get('allow_url_history_change')) {
+                // Clear location hash if set to one of the messages in our history
+                const hash = window.location.hash;
+                hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+            }
         }
         /**
          * Triggered once the chat's message area has been scrolled down to the bottom.

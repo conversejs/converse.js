@@ -3,6 +3,7 @@ import tpl_muc_chatarea from './templates/muc-chatarea.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
+import { getAppSetting } from '@converse/headless/shared/settings';
 
 
 const { u } = converse.env;
@@ -122,7 +123,9 @@ export default class MUCChatArea extends CustomElement {
             this.model.clearUnreadMsgCounter();
             // Clear location hash if set to one of the messages in our history
             const hash = window.location.hash;
-            hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+            if(getAppSetting('allow_url_history_change')) {
+                hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+            }
         }
         /**
          * Triggered once the chat's message area has been scrolled down to the bottom.

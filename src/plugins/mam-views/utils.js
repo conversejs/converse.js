@@ -1,5 +1,6 @@
 import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
 import { _converse } from '@converse/headless/core';
+import { getAppSetting } from '@converse/headless/shared/settings';
 
 export async function fetchMessagesOnScrollUp (view) {
     if (view.model.messages.length) {
@@ -15,7 +16,9 @@ export async function fetchMessagesOnScrollUp (view) {
                 await fetchArchivedMessages(view.model, { 'end': oldest_message.get('time') });
             }
             view.clearSpinner();
-            _converse.router.history.navigate(`#${oldest_message.get('msgid')}`);
+            if(getAppSetting('allow_url_history_change')) {
+                _converse.router.history.navigate(`#${oldest_message.get('msgid')}`);
+            }
         }
     }
 }

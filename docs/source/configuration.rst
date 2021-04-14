@@ -250,6 +250,12 @@ Support for `XEP-0077: In band registration <https://xmpp.org/extensions/xep-007
 
 Allow XMPP account registration showing the corresponding UI register form interface.
 
+allow_url_history_change
+------------------
+
+* Default:  ``true``
+
+Allow Converse to change the browser url bar through the History API <https://developer.mozilla.org/en-US/docs/Web/API/History_API>.
 
 allow_user_trust_override
 -------------------------

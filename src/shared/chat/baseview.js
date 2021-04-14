@@ -3,6 +3,7 @@ import log from '@converse/headless/log';
 import tpl_spinner from 'templates/spinner.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { getAppSetting } from '@converse/headless/shared/settings';
 
 const u = converse.env.utils;
 
@@ -211,7 +212,9 @@ export default class BaseChatView extends ElementView {
             this.model.clearUnreadMsgCounter();
             // Clear location hash if set to one of the messages in our history
             const hash = window.location.hash;
-            hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+            if(getAppSetting('allow_url_history_change')) {
+                hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+            }
         }
         /**
          * Triggered once the chat's message area has been scrolled down to the bottom.

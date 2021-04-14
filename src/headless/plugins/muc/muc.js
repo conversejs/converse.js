@@ -394,7 +394,6 @@ const ChatRoomMixin = {
                 from,
                 type,
                 affiliation,
-                'nick': Strophe.getNodeFromJid(jid),
                 'states': [],
                 'show': type == 'unavailable' ? 'offline' : 'online',
                 'role': item.getAttribute('role'),

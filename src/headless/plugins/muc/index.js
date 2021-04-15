@@ -46,7 +46,7 @@ converse.MUC.INFO_CODES = {
     'non_privacy_changes': ['104', '201'],
     'muc_logging_changes': ['170', '171'],
     'nickname_changes': ['210', '303'],
-    'disconnect_messages': ['301', '307', '321', '322', '332', '333'],
+    'disconnected': ['301', '307', '321', '322', '332', '333'],
     'affiliation_changes': [...converse.AFFILIATION_CHANGES_LIST],
     'join_leave_events': [...converse.MUC_TRAFFIC_STATES_LIST],
     'role_changes': [...converse.MUC_ROLE_CHANGES_LIST]
@@ -104,7 +104,8 @@ converse.ROOMSTATUS = {
     PASSWORD_REQUIRED: 3,
     DISCONNECTED: 4,
     ENTERED: 5,
-    DESTROYED: 6
+    DESTROYED: 6,
+    BANNED: 7
 };
 
 
@@ -249,7 +250,7 @@ converse.plugins.add('converse-muc', {
                 ...converse.MUC.INFO_CODES.non_privacy_changes,
                 ...converse.MUC.INFO_CODES.muc_logging_changes,
                 ...converse.MUC.INFO_CODES.nickname_changes,
-                ...converse.MUC.INFO_CODES.disconnect_messages,
+                ...converse.MUC.INFO_CODES.disconnected,
                 ...converse.MUC.INFO_CODES.affiliation_changes,
                 ...converse.MUC.INFO_CODES.join_leave_events,
                 ...converse.MUC.INFO_CODES.role_changes

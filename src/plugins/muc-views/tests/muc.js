@@ -3872,7 +3872,8 @@ describe("Groupchats", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
 
             const el = await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'));
-            expect(el.textContent.trim()).toBe('You have been banned from this groupchat.');
+            expect(el.textContent.trim()).toBe('You have been banned from this groupchat');
+            expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.BANNED);
             done();
         }));
 

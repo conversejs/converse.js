@@ -86,6 +86,7 @@ export function getChatRoomBodyTemplate (o) {
             ${ conn_status == RS.CONNECTING ? tpl_spinner() : '' }
             ${ conn_status == RS.NICKNAME_REQUIRED ? o.getNicknameRequiredTemplate() : '' }
             ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
+            ${ conn_status == RS.BANNED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
             ${ conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : '' }
         `;
     }

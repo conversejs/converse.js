@@ -1,12 +1,16 @@
+import debounce from 'lodash-es/debounce';
+import invoke from 'lodash-es/invoke';
+import isElement from 'lodash-es/isElement';
 import log from '../../log';
 import p from '../../utils/parse-helpers';
+import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import u from '../../utils/form';
+import zipObject from 'lodash-es/zipObject';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
-import { debounce, intersection, invoke, isElement, pick, zipObject } from 'lodash-es';
 import { isArchived } from '@converse/headless/shared/parsers';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
@@ -2097,7 +2101,7 @@ const ChatRoomMixin = {
         const text = pres.querySelector('error text')?.textContent;
         if (text) {
             if (this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-                this.setDisconnectionMessage(text);
+                this.setDisconnectionState(text);
             } else {
                 const attrs = {
                     'type': 'error',
@@ -2119,9 +2123,11 @@ const ChatRoomMixin = {
         if (!x) {
             return;
         }
-        const codes = sizzle('status', x).map(s => s.getAttribute('code'));
-        const disconnection_codes = intersection(codes, Object.keys(_converse.muc.disconnect_messages));
-        const disconnected = is_self && disconnection_codes.length > 0;
+        const disconnection_codes = Object.keys(_converse.muc.disconnect_messages);
+        const codes = sizzle('status', x)
+            .map(s => s.getAttribute('code'))
+            .filter(c => disconnection_codes.includes(c));
+        const disconnected = is_self && codes.length > 0;
         if (!disconnected) {
             return;
         }
@@ -2132,8 +2138,9 @@ const ChatRoomMixin = {
         const item = x.querySelector('item');
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
         const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
-        const message = _converse.muc.disconnect_messages[disconnection_codes[0]];
-        this.setDisconnectionMessage(message, reason, actor);
+        const message = _converse.muc.disconnect_messages[codes[0]];
+        const status = codes.includes('301') ? converse.ROOMSTATUS.BANNED : converse.ROOMSTATUS.DISCONNECTED;
+        this.setDisconnectionState(message, reason, actor, status);
     },
 
     getActionInfoMessage (code, nick, actor) {
@@ -2304,13 +2311,22 @@ const ChatRoomMixin = {
         codes.forEach(code => this.createInfoMessage(code, stanza, is_self));
     },
 
-    setDisconnectionMessage (message, reason, actor) {
+    /**
+     * Set parameters regarding disconnection from this room. This helps to
+     * communicate to the user why they were disconnected.
+     * @param { String } message - The disconnection message, as received from (or
+     *  implied by) the server.
+     * @param { String } reason - The reason provided for the disconnection
+     * @param { String } actor - The person (if any) responsible for this disconnection
+     * @param { Integer } status - The status code (see `converse.ROOMSTATUS`)
+     */
+    setDisconnectionState (message, reason, actor, status=converse.ROOMSTATUS.DISCONNECTED) {
         this.save({
             'disconnection_message': message,
             'disconnection_reason': reason,
             'disconnection_actor': actor
         });
-        this.session.save({ 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+        this.session.save({ 'connection_status': status });
     },
 
     onNicknameClash (presence) {
@@ -2356,18 +2372,22 @@ const ChatRoomMixin = {
             }
             if (error.querySelector('registration-required')) {
                 const message = __('You are not on the member list of this groupchat.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('forbidden')) {
-                const message = __('You have been banned from this groupchat.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(
+                    _converse.muc.disconnect_messages[301],
+                    reason,
+                    null,
+                    converse.ROOMSTATUS.BANNED
+                );
             }
         } else if (error_type === 'cancel') {
             if (error.querySelector('not-allowed')) {
                 const message = __('You are not allowed to create new groupchats.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('not-acceptable')) {
                 const message = __("Your nickname doesn't conform to this groupchat's policies.");
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
                 const moved_jid = sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error)
                     .pop()
@@ -2379,14 +2399,14 @@ const ChatRoomMixin = {
                 this.onNicknameClash(stanza);
             } else if (error.querySelector('item-not-found')) {
                 const message = __('This groupchat does not (yet) exist.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('service-unavailable')) {
                 const message = __('This groupchat has reached its maximum number of participants.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('remote-server-not-found')) {
                 const message = __('Remote server not found');
                 const feedback = reason ? __('The explanation given is: "%1$s".', reason) : undefined;
-                this.setDisconnectionMessage(message, feedback);
+                this.setDisconnectionState(message, feedback);
             }
         }
     },
@@ -2451,18 +2471,14 @@ const ChatRoomMixin = {
      */
     async onOwnPresence (stanza) {
         await this.occupants.fetched;
-        if (stanza.getAttribute('type') !== 'unavailable') {
-            const old_status = this.session.get('connection_status');
-            if (old_status !== converse.ROOMSTATUS.ENTERED) {
-                // Set connection_status before creating the occupant, but
-                // only trigger afterwards, so that plugins can access the
-                // occupant in their event handlers.
-                this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, { 'silent': true });
-                this.updateOccupantsOnPresence(stanza);
-                this.session.trigger('change:connection_status', this.session, old_status);
-            } else {
-                this.updateOccupantsOnPresence(stanza);
-            }
+        const old_status = this.session.get('connection_status');
+        if (stanza.getAttribute('type') !== 'unavailable' && old_status !== converse.ROOMSTATUS.ENTERED) {
+            // Set connection_status before creating the occupant, but
+            // only trigger afterwards, so that plugins can access the
+            // occupant in their event handlers.
+            this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, { 'silent': true });
+            this.updateOccupantsOnPresence(stanza);
+            this.session.trigger('change:connection_status', this.session, old_status);
         } else {
             this.updateOccupantsOnPresence(stanza);
         }

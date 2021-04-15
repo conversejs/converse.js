@@ -124,7 +124,7 @@ function getDirectiveLength (d, text, i) {
         return 0;
     } else {
         const substring = text.slice(i+1);
-        let j;
+        let j = 0;
         let idx = substring.indexOf(d);
         while (idx !== -1) {
             if (isDirectiveEnd(d, i+1+idx, text)) return idx+1+2*d.length;

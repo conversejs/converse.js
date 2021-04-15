@@ -422,14 +422,13 @@ describe("XEP-0363: HTTP File Upload", function () {
                 }));
 
                 it("shows an error message if the file is too large",
-                        mock.initConverse([], {}, async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     const IQ_stanzas = _converse.connection.IQ_stanzas;
                     const IQ_ids =  _converse.connection.IQ_ids;
 
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
-                    await u.waitUntil(() => _.filter(
-                        IQ_stanzas,
+                    await u.waitUntil(() => IQ_stanzas.filter(
                         iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                     );
 

@@ -6,48 +6,6 @@ import { _converse, api } from "@converse/headless/core";
 import { html } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 
-const tpl_message = (o) => html`
-    <converse-chat-message
-        .hats=${o.hats}
-        .model=${o.model}
-        ?correcting=${o.correcting}
-        ?editable=${o.editable}
-        ?has_mentions=${o.has_mentions}
-        ?is_delayed=${o.is_delayed}
-        ?is_encrypted=${!!o.is_encrypted}
-        ?is_first_unread=${o.is_first_unread}
-        ?is_me_message=${o.is_me_message}
-        ?is_only_emojis=${o.is_only_emojis}
-        ?is_retracted=${o.is_retracted}
-        ?is_spoiler=${o.is_spoiler}
-        ?is_spoiler_visible=${o.is_spoiler_visible}
-        ?retractable=${o.retractable}
-        edited=${o.edited || ''}
-        error=${o.error || ''}
-        error_text=${o.error_text || ''}
-        filename=${o.filename || ''}
-        filesize=${o.filesize || ''}
-        from=${o.from}
-        message_type=${o.type || ''}
-        moderated_by=${o.moderated_by || ''}
-        moderation_reason=${o.moderation_reason || ''}
-        msgid=${o.msgid}
-        occupant_affiliation=${o.model.occupant ? o.model.occupant.get('affiliation') : ''}
-        occupant_role=${o.model.occupant ? o.model.occupant.get('role') : ''}
-        oob_url=${o.oob_url || ''}
-        pretty_type=${o.pretty_type}
-        progress=${o.progress || 0 }
-        reason=${o.reason || ''}
-        received=${o.received || ''}
-        retry_event_id=${o.retry_event_id || ''}
-        sender=${o.sender}
-        spoiler_hint=${o.spoiler_hint || ''}
-        subject=${o.subject || ''}
-        time=${o.time}
-        unfurl_metadata=${o.unfurl_metadata}
-        username=${o.username}></converse-chat-message>
-`;
-
 
 // Return a TemplateResult indicating a new day if the passed in message is
 // more than a day later than its predecessor.
@@ -88,19 +46,6 @@ _converse.getHats = function (model) {
 }
 
 
-export function getDerivedMessageProps (chatbox, model) {
-    const is_groupchat = model.get('type') === 'groupchat';
-    return {
-        'has_mentions': is_groupchat && model.get('sender') === 'them' && chatbox.isUserMentioned(model),
-        'hats': _converse.getHats(model),
-        'is_first_unread': chatbox.get('first_unread_id') === model.get('id'),
-        'is_me_message': model.isMeCommand(),
-        'is_retracted': model.get('retracted') || model.get('moderated') === 'retracted',
-        'username': model.getDisplayName(),
-    }
-}
-
-
 export default class MessageHistory extends CustomElement {
 
     static get properties () {
@@ -121,13 +66,10 @@ export default class MessageHistory extends CustomElement {
         }
         const day = getDayIndicator(model);
         const templates = day ? [day] : [];
-        const message = tpl_message(
-            Object.assign(
-                model.toJSON(),
-                getDerivedMessageProps(this.model, model),
-                { model }
-            )
-        );
+        const message = html`<converse-chat-message
+            jid="${this.model.get('jid')}"
+            mid="${model.get('id')}"></converse-chat-message>`
+
         return [...templates, message];
     }
 }

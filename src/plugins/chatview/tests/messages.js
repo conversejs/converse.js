@@ -867,7 +867,7 @@ describe("A Chat Message", function () {
         expect(view.querySelector(`${nth_child(4)} .chat-msg__text`).textContent).toBe(
             "A delayed message, sent 5 minutes since we started");
 
-        expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(5)))).toBe(true);
+        expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(5)))).toBe(false);
         expect(view.querySelector(`${nth_child(5)} .chat-msg__text`).textContent).toBe(
             "Another message 14 minutes since we started");
 
@@ -900,10 +900,10 @@ describe("A Chat Message", function () {
         expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(4)))).toBe(false);
         expect(view.querySelector(`${nth_child(4)} .chat-msg__text`).textContent).toBe(
             "A carbon message 4 minutes later");
-        expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(5)))).toBe(false);
+        expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(5)))).toBe(true);
         expect(view.querySelector(`${nth_child(5)} .chat-msg__text`).textContent).toBe(
             "A delayed message, sent 5 minutes since we started");
-        expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(6)))).toBe(true);
+        expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(6)))).toBe(false);
         expect(view.querySelector(`${nth_child(6)} .chat-msg__text`).textContent).toBe(
             "Another message 14 minutes since we started");
         expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(7)))).toBe(true);

@@ -42,11 +42,8 @@ window.addEventListener('converse-loaded', () => {
     const { u, sizzle, Strophe, dayjs, $iq, $msg, $pres } = converse.env;
 
     mock.waitUntilDiscoConfirmed = async function (_converse, entity_jid, identities, features=[], items=[], type='info') {
-        const iq = await u.waitUntil(() => {
-            return _converse.connection.IQ_stanzas.filter(
-                iq => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq).length
-            ).pop();
-        }, 300);
+        const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
+        const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop(), 300);
         const stanza = $iq({
             'type': 'result',
             'from': entity_jid,

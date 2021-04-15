@@ -57,6 +57,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/mam-views/tests/mam.js", type: 'module' },
       { pattern: "src/plugins/minimize/tests/minchats.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/autocomplete.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/corrections.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/hats.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/mentions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/modtools.js", type: 'module' },

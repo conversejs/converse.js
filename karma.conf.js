@@ -68,6 +68,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/muc.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muclist.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/rai.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/styling.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/xss.js", type: 'module' },
       { pattern: "src/plugins/notifications/tests/notification.js", type: 'module' },
       { pattern: "src/plugins/omemo/tests/omemo.js", type: 'module' },

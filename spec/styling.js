@@ -386,4 +386,42 @@ describe("An incoming chat Message", function () {
             `<blockquote>What do you think of it <span class="mention">romeo</span>?</blockquote>\n Did you see this <span class="mention">romeo</span>?`);
         done();
     }));
+
+    it("won't style invalid block quotes",
+        mock.initConverse(['chatBoxesFetched'], {},
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.api.chatviews.get(contact_jid);
+        const msg_text = '```\ncode```';
+        const msg = $msg({
+                    from: contact_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: (new Date()).getTime()
+                }).c('body').t(msg_text).up()
+                    .c('reference', {
+                        'xmlns':'urn:xmpp:reference:0',
+                        'begin':'26',
+                        'end':'31',
+                        'type':'mention',
+                        'uri': _converse.bare_jid
+                    })
+                    .c('reference', {
+                        'xmlns':'urn:xmpp:reference:0',
+                        'begin':'51',
+                        'end':'56',
+                        'type':'mention',
+                        'uri': _converse.bare_jid
+                    }).nodeTree;
+        await _converse.handleMessageStanza(msg);
+
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+        const msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') === '```\ncode```');
+        done();
+    }));
 });

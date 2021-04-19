@@ -19,7 +19,7 @@ export default class MUCView extends BaseChatView {
 
     async initialize () {
         const jid = this.getAttribute('jid');
-        this.model = _converse.chatboxes.get(jid);
+        this.model = await api.rooms.get(jid);
         _converse.chatboxviews.add(jid, this);
         this.initDebounced();
 

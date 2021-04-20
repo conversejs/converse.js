@@ -133,8 +133,7 @@ describe("A spoiler message", function () {
          * </message>"
          */
         const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
-        const spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
-        expect(spoiler_el === null).toBeFalsy();
+        const spoiler_el = await u.waitUntil(() => stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]'));
         expect(spoiler_el.textContent).toBe('');
 
         const spoiler = 'This is the spoiler';

@@ -394,7 +394,7 @@ export const api = _converse.api = {
              * Get the value of a particular user setting.
              * @method _converse.api.user.settings.get
              * @param {String} key - The setting name
-             * @param {*} fallback - An optional fallback value if the user setting is undefined
+             * @param {*} [fallback] - An optional fallback value if the user setting is undefined
              * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
              * @example _converse.api.user.settings.get("foo");
              */

@@ -1,7 +1,7 @@
+import invokeMap from 'lodash-es/invokeMap';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { invokeMap } from 'lodash-es';
 
 const { u } = converse.env;
 

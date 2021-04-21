@@ -1,8 +1,8 @@
+import debounce from "lodash-es/debounce";
 import tpl_roster_filter from "./templates/roster_filter.js";
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
-import { debounce } from "lodash-es";
 import { render } from 'lit-html';
 
 export const RosterFilter = Model.extend({

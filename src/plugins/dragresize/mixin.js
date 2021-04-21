@@ -1,6 +1,6 @@
+import debounce from 'lodash-es/debounce';
 import { _converse } from '@converse/headless/core';
 import { applyDragResistance } from './utils.js';
-import { debounce } from 'lodash-es';
 
 const DragResizableMixin = {
     initDragResize () {

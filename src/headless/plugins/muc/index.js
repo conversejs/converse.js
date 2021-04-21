@@ -1,24 +1,23 @@
 /**
- * @module converse-muc
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Implements the non-view logic for XEP-0045 Multi-User Chat
  */
 import '../chat/index.js';
-import '../disco';
+import '../disco/index.js';
 import '../emoji/index.js';
 import ChatRoomMessageMixin from './message.js';
 import ChatRoomMixin from './muc.js';
 import ChatRoomOccupant from './occupant.js';
 import ChatRoomOccupants from './occupants.js';
-import log from '../../log';
-import muc_api from './api.js';
 import affiliations_api from './affiliations/api.js';
-import { computeAffiliationsDelta } from './affiliations/utils.js';
+import isObject from 'lodash-es/isObject';
+import log from '@converse/headless/log';
+import muc_api from './api.js';
 import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection';
 import { _converse, api, converse } from '../../core.js';
-import { isObject } from 'lodash-es';
+import { computeAffiliationsDelta } from './affiliations/utils.js';
 
 export const ROLES = ['moderator', 'participant', 'visitor'];
 export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];

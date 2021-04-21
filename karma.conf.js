@@ -27,7 +27,6 @@ module.exports = function(config) {
 
       { pattern: "spec/converse.js", type: 'module' },
       { pattern: "spec/corrections.js", type: 'module' },
-      { pattern: "spec/disco.js", type: 'module' },
       { pattern: "spec/emojis.js", type: 'module' },
       { pattern: "spec/eventemitter.js", type: 'module' },
       { pattern: "spec/http-file-upload.js", type: 'module' },
@@ -44,6 +43,7 @@ module.exports = function(config) {
       { pattern: "spec/utils.js", type: 'module' },
       { pattern: "spec/xmppstatus.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/affiliations.js", type: 'module' },
+      { pattern: "src/headless/plugins/tests/disco.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/me-messages.js", type: 'module' },

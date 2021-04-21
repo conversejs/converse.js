@@ -4,6 +4,7 @@
  * @description This is the DOM/HTML utilities module.
  */
 import URI from "urijs";
+import isFunction from "lodash-es/isFunction";
 import log from '@converse/headless/log';
 import tpl_audio from  "../templates/audio.js";
 import tpl_file from "../templates/file.js";
@@ -20,7 +21,6 @@ import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 import { api, converse } from  "@converse/headless/core";
 import { html, render } from "lit-html";
-import { isFunction } from "lodash-es";
 
 const { sizzle } = converse.env;
 

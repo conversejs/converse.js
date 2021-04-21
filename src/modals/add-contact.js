@@ -1,9 +1,10 @@
 import 'shared/autocomplete/index.js';
 import BootstrapModal from "./base.js";
+import compact from 'lodash-es/compact';
+import debounce from 'lodash-es/debounce';
 import tpl_add_contact_modal from "./templates/add-contact.js";
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { compact, debounce } from "lodash-es";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

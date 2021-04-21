@@ -2,9 +2,10 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import difference from 'lodash-es/difference';
+import indexOf from 'lodash-es/indexOf';
 import log from "@converse/headless/log";
 import { api, converse } from '@converse/headless/core.js';
-import { difference, indexOf } from 'lodash-es';
 import { parseMemberListIQ } from '../parsers.js';
 
 const { Strophe, $iq, u } = converse.env;

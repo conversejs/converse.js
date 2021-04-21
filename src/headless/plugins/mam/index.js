@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import mam_api from './api.js';
-import '../disco';
+import '../disco/index.js';
 import {
     onMAMError,
     onMAMPreferences,

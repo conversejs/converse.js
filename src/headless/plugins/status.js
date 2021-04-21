@@ -3,7 +3,8 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { isNaN, isObject } from "lodash-es";
+import isNaN from "lodash-es/isNaN";
+import isObject from "lodash-es/isObject";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/core";
 

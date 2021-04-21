@@ -41,6 +41,7 @@ module.exports = function(config) {
       { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/utils.js", type: 'module' },
       { pattern: "spec/xmppstatus.js", type: 'module' },
+      { pattern: "src/headless/plugins/chat/tests/api.js", type: 'module' },
       { pattern: "src/headless/plugins/disco/tests/disco.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/affiliations.js", type: 'module' },
       { pattern: "src/headless/plugins/ping/tests/ping.js", type: 'module' },

@@ -48,14 +48,16 @@ export function onConnected () {
 }
 
 export function onEverySecond () {
+    if (!api.connection.connected()) {
+        return;
+    }
     if (api.settings.get('ping_interval') > 0) {
         const now = new Date();
         if (!lastStanzaDate) {
             lastStanzaDate = now;
         }
         if ((now - lastStanzaDate)/1000 > api.settings.get('ping_interval')) {
-            return api.ping();
+            api.ping();
         }
-        return true;
     }
 }

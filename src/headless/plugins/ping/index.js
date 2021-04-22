@@ -24,7 +24,7 @@ converse.plugins.add('converse-ping', {
 
         Object.assign(api, ping_api);
 
-        setTimeout(onEverySecond, 1000);
+        setInterval(onEverySecond, 1000);
 
         api.listen.on('connected', onConnected);
         api.listen.on('reconnected', onConnected);

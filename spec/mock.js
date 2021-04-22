@@ -660,7 +660,7 @@ window.addEventListener('converse-loaded', () => {
             }
             const vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
             return {
-                'vcard': vcard,
+                'stanza': vcard,
                 'fullname': vcard.querySelector('FN')?.textContent,
                 'image': vcard.querySelector('PHOTO BINVAL')?.textContent,
                 'image_type': vcard.querySelector('PHOTO TYPE')?.textContent,

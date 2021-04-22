@@ -106,7 +106,7 @@
     "lerna": "^3.22.1",
     "lit-element": "^2.4.0",
     "lit-html": "^1.2.1",
-    "mini-css-extract-plugin": "^0.9.0",
+    "mini-css-extract-plugin": "^1.5.0",
     "minimist": "^1.2.3",
     "node-sass": "^4.14.1",
     "npm": "^6.14.9",

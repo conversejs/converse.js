@@ -47,6 +47,7 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/ping/tests/ping.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/me-messages.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/message-images.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/messages.js", type: 'module' },

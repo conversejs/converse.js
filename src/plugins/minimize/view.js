@@ -34,7 +34,7 @@ class MinimizedChats extends ElementView {
     async initToggle () {
         const id = `converse.minchatstoggle-${_converse.bare_jid}`;
         this.minchats = new MinimizedChatsToggle({id});
-        this.minchats.browserStorage = _converse.createStore(id);
+        this.minchats.browserStorage = _converse.createStore(id, 'session');
         await new Promise(resolve => this.minchats.fetch({'success': resolve, 'error': resolve}));
     }
 

@@ -48,7 +48,7 @@ export function onConnected () {
 }
 
 export function onEverySecond () {
-    if (!api.connection.connected() || _converse.isTestEnv()) {
+    if (_converse.isTestEnv() || !api.connection.connected()) {
         return;
     }
     const ping_interval = api.settings.get('ping_interval');

@@ -271,7 +271,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const controlbox = _converse.chatboxviews.get('controlbox');
         const lview = controlbox.querySelector('converse-rooms-list');
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
-        let room_els = lview.querySelectorAll(".open-room");
+        const room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
         const rooms_list = document.querySelector('converse-rooms-list');
         const close_el = rooms_list.querySelector(".close-room");
@@ -279,9 +279,7 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(window.confirm).toHaveBeenCalledWith(
             'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
 
-        await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
-        room_els = rooms_list.querySelectorAll(".open-room");
-        expect(room_els.length).toBe(0);
+        await u.waitUntil(() => rooms_list.querySelectorAll(".open-room").length === 0);
         expect(_converse.chatboxes.length).toBe(1);
         done();
     }));

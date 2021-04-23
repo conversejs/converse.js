@@ -89,7 +89,6 @@ export class RoomsList extends ElementView {
             'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
         }
         await api.rooms.open(jid, data, true);
-        api.chatviews.get(jid).maybeFocus();
     }
 
     async closeRoom (ev) { // eslint-disable-line class-methods-use-this

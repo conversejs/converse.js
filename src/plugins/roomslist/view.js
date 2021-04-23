@@ -92,13 +92,13 @@ export class RoomsList extends ElementView {
         api.chatviews.get(jid).maybeFocus();
     }
 
-    closeRoom (ev) { // eslint-disable-line class-methods-use-this
+    async closeRoom (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         const name = ev.target.getAttribute('data-room-name');
-        const jid = ev.target.getAttribute('data-room-jid');
         if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
-            // TODO: replace with API call
-            _converse.chatboxviews.get(jid).close();
+            const jid = ev.target.getAttribute('data-room-jid');
+            const room = await api.rooms.get(jid);
+            room.close();
         }
     }
 

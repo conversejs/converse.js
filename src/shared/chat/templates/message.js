@@ -23,7 +23,8 @@ export default (el, o) => {
                 ${ !o.is_me_message ? html`
                     <span class="chat-msg__heading">
                         <span class="chat-msg__author"><a class="show-msg-author-modal" @click=${el.showUserModal}>${o.username}</a></span>
-                        ${ el.renderAvatarByline() }
+                        ${ o.hats.map(h => html`<span class="badge badge-secondary">${h.title}</span>`) }
+                        <time timestamp="${el.model.get('edited') || el.model.get('time')}" class="chat-msg__time">${o.pretty_time}</time>
                         ${ o.is_encrypted ? html`<span class="fa fa-lock"></span>` : '' }
                     </span>` : '' }
                 <div class="chat-msg__body chat-msg__body--${o.message_type} ${o.received ? 'chat-msg__body--received' : '' } ${o.is_delayed ? 'chat-msg__body--delayed' : '' }">

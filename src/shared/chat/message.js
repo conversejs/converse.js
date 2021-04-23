@@ -29,8 +29,6 @@ export default class Message extends CustomElement {
     }
 
     render () {
-        const format = api.settings.get('time_format');
-        this.pretty_time = dayjs(this.model.get('edited') || this.model.get('time')).format(format);
         if (this.show_spinner) {
             return tpl_spinner();
         } else if (this.model.get('file') && !this.model.get('oob_url')) {
@@ -193,7 +191,9 @@ export default class Message extends CustomElement {
     }
 
     getDerivedMessageProps () {
+        const format = api.settings.get('time_format');
         return {
+            'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
             'has_mentions': this.hasMentions(),
             'hats': _converse.getHats(this.model),
             'is_first_unread': this.chatbox.get('first_unread_id') === this.model.get('id'),
@@ -263,13 +263,6 @@ export default class Message extends CustomElement {
             </span>
             ${ this.model.get('oob_url') ? html`<div class="chat-msg__media">${u.getOOBURLMarkup(_converse, this.model.get('oob_url'))}</div>` : '' }
             <div class="chat-msg__error">${ this.model.get('error_text') || this.model.get('error') }</div>
-        `;
-    }
-
-    renderAvatarByline () {
-        return html`
-            ${ _converse.getHats(this.model).map(h => html`<span class="badge badge-secondary">${h.title}</span>`) }
-            <time timestamp="${this.model.get('edited') || this.model.get('time')}" class="chat-msg__time">${this.pretty_time}</time>
         `;
     }
 

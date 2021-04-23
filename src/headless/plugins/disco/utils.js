@@ -4,7 +4,7 @@ import { Collection } from "@converse/skeletor/src/collection";
 const { Strophe, $iq } = converse.env;
 
 
-function onDiscoInfoRequest (identities, features, stanza) {
+function onDiscoInfoRequest (stanza) {
     const node = stanza.getElementsByTagName('query')[0].getAttribute('node');
     const attrs = {xmlns: Strophe.NS.DISCO_INFO};
     if (node) { attrs.node = node; }

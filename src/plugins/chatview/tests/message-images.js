@@ -131,10 +131,10 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         await mock.sendMessage(view, message);
-        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
+        await u.waitUntil(() => view.querySelectorAll('converse-chat-message-body .chat-image').length === 1);
         api.settings.set('show_images_inline', false);
-        view.querySelector('converse-chat-message-body').requestUpdate();
-        await u.waitUntil(() => view.querySelector('.chat-content .chat-image') === null);
+        view.querySelector('converse-chat-message').requestUpdate();
+        await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image') === null);
         expect(true).toBe(true);
         done();
     }));

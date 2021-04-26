@@ -254,9 +254,7 @@ export default class Message extends CustomElement {
                     class="chat-msg__text ${this.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                     .model="${this.model}"
                     ?is_me_message="${this.model.isMeCommand()}"
-                    ?is_only_emojis="${this.model.get('is_only_emojis')}"
-                    ?is_spoiler="${this.model.get('is_spoiler')}"
-                    ?is_spoiler_visible="${this.model.get('is_spoiler_visible')}"
+                    ?show_images="${api.settings.get('show_images_inline')}"
                     text="${text}"></converse-chat-message-body>
                 ${ (this.model.get('received') && !this.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
                 ${ (this.model.get('edited')) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }

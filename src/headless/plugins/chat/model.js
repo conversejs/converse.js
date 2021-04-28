@@ -6,6 +6,7 @@ import log from '@converse/headless/log';
 import pick from "lodash/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
+import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
@@ -39,7 +40,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     async initialize () {
-        this.initialized = u.getResolveablePromise();
+        this.initialized = getOpenPromise();
         ModelWithContact.prototype.initialize.apply(this, arguments);
 
         const jid = this.get('jid');
@@ -84,7 +85,7 @@ const ChatBox = ModelWithContact.extend({
 
     initMessages () {
         this.messages = this.getMessagesCollection();
-        this.messages.fetched = u.getResolveablePromise();
+        this.messages.fetched = getOpenPromise();
         this.messages.fetched.then(() => {
             /**
              * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
@@ -244,7 +245,7 @@ const ChatBox = ModelWithContact.extend({
         } finally {
             delete this.msg_chain;
             delete this.messages.fetched_flag;
-            this.messages.fetched = u.getResolveablePromise();
+            this.messages.fetched = getOpenPromise();
         }
     },
 

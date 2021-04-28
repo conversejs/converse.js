@@ -11,6 +11,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
+import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
 import { isArchived } from '@converse/headless/shared/parsers';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
@@ -84,7 +85,7 @@ const ChatRoomMixin = {
     },
 
     async initialize () {
-        this.initialized = u.getResolveablePromise();
+        this.initialized = getOpenPromise();
         this.debouncedRejoin = debounce(this.rejoin, 250);
         this.set('box_id', `box-${this.get('jid')}`);
         this.initNotifications();
@@ -674,7 +675,7 @@ const ChatRoomMixin = {
             id = this.getUniqueId('sendIQ');
             el.setAttribute('id', id);
         }
-        const promise = u.getResolveablePromise();
+        const promise = getOpenPromise();
         const timeoutHandler = _converse.connection.addTimedHandler(_converse.STANZA_TIMEOUT, () => {
             _converse.connection.deleteHandler(handler);
             promise.reject(new _converse.TimeoutError('Timeout Error: No response from server'));

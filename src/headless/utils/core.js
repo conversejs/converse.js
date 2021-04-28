@@ -11,6 +11,7 @@ import log from "@converse/headless/log";
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe';
+import { getOpenPromise } from '@converse/openpromise';
 
 /**
  * The utils object
@@ -328,38 +329,8 @@ u.isPersistableModel = function (model) {
     return model.collection && model.collection.browserStorage;
 };
 
-/**
- * Returns a promise object on which `resolve` or `reject` can be called.
- * @private
- * @method u#getResolveablePromise
- */
-u.getResolveablePromise = function () {
-    const wrapper = {
-        isResolved: false,
-        isPending: true,
-        isRejected: false
-    };
-    const promise = new Promise((resolve, reject) => {
-        wrapper.resolve = resolve;
-        wrapper.reject = reject;
-    })
-    Object.assign(promise, wrapper);
-    promise.then(
-        function (v) {
-            promise.isResolved = true;
-            promise.isPending = false;
-            promise.isRejected = false;
-            return v;
-        },
-        function (e) {
-            promise.isResolved = false;
-            promise.isPending = false;
-            promise.isRejected = true;
-            throw (e);
-        }
-    );
-    return promise;
-};
+u.getResolveablePromise = getOpenPromise;
+u.getOpenPromise = getOpenPromise;
 
 u.interpolate = function (string, o) {
     return string.replace(/{{{([^{}]*)}}}/g,
@@ -576,7 +547,7 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
         return Promise.reject(e);
     }
 
-    const promise = u.getResolveablePromise();
+    const promise = getOpenPromise();
     const timeout_err = new Error();
 
     function checker () {

@@ -1,11 +1,11 @@
 /**
- * @module converse-smacks
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Converse.js plugin which adds support for XEP-0198: Stream Management
  */
-import { _converse, api, converse } from "../core.js";
 import log from "../log.js";
+import { _converse, api, converse } from "../core.js";
+import { getOpenPromise } from '@converse/openpromise';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -158,7 +158,7 @@ function onResumedStanza (el) {
 }
 
 async function sendResumeStanza () {
-    const promise = u.getResolveablePromise();
+    const promise = getOpenPromise();
     _converse.connection._addSysHandler(el => promise.resolve(onResumedStanza(el)), Strophe.NS.SM, 'resumed');
     _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
@@ -175,7 +175,7 @@ async function sendEnableStanza () {
         return;
     }
     if (await isStreamManagementSupported()) {
-        const promise = u.getResolveablePromise();
+        const promise = getOpenPromise();
         _converse.connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
         _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 

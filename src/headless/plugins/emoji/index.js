@@ -6,13 +6,14 @@
 import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './regexes.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
+import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit-html';
 
 const u = converse.env.utils;
 
 converse.emojis = {
     'initialized': false,
-    'initialized_promise': u.getResolveablePromise()
+    'initialized_promise': getOpenPromise()
 };
 
 

@@ -35,6 +35,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
 import { createStore, replacePromise } from '@converse/headless/shared/utils';
+import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit-element';
 import { sprintf } from 'sprintf-js';
 
@@ -355,7 +356,7 @@ export const api = _converse.api = {
              */
             await api.trigger('beforeLogout', {'synchronous': true});
 
-            const promise = u.getResolveablePromise();
+            const promise = getOpenPromise();
             const complete = () => {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach(replacePromise);
@@ -563,7 +564,7 @@ export const api = _converse.api = {
         add (promises, replace=true) {
             promises = Array.isArray(promises) ? promises : [promises];
             promises.forEach(name => {
-                const promise = u.getResolveablePromise();
+                const promise = getOpenPromise();
                 promise.replace = replace;
                 _converse.promises[name] = promise;
             });

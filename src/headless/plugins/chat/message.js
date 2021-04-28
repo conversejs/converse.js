@@ -1,6 +1,7 @@
 import ModelWithContact from './model-with-contact.js';
 import log from '../../log.js';
 import { _converse, api, converse } from '../../core.js';
+import { getOpenPromise } from '@converse/openpromise';
 
 const u = converse.env.utils;
 const { Strophe } = converse.env;
@@ -26,7 +27,7 @@ const MessageMixin = {
         if (!this.checkValidity()) {
             return;
         }
-        this.initialized = u.getResolveablePromise();
+        this.initialized = getOpenPromise();
         if (this.get('type') === 'chat') {
             ModelWithContact.prototype.initialize.apply(this, arguments);
             this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));

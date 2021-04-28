@@ -1,7 +1,7 @@
 import Storage from '@converse/skeletor/src/storage.js';
 import log from '@converse/headless/log';
-import u from '@converse/headless/utils/core';
 import { _converse, api } from '@converse/headless/core';
+import { getOpenPromise } from '@converse/openpromise';
 
 export function getDefaultStore () {
     if (_converse.config.get('trusted')) {
@@ -38,7 +38,7 @@ export function replacePromise (name) {
         throw new Error(`Tried to replace non-existing promise: ${name}`);
     }
     if (existing_promise.replace) {
-        const promise = u.getResolveablePromise();
+        const promise = getOpenPromise();
         promise.replace = existing_promise.replace;
         _converse.promises[name] = promise;
     } else {

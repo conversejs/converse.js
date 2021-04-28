@@ -1,8 +1,9 @@
-import { _converse, api, converse } from "@converse/headless/core.js";
 import isObject from "lodash-es/isObject";
 import log from "@converse/headless/log.js";
+import { _converse, api, converse } from "@converse/headless/core.js";
+import { getOpenPromise } from '@converse/openpromise';
 
-const { Strophe, $iq, utils } = converse.env;
+const { Strophe, $iq } = converse.env;
 
 
 export default {
@@ -310,7 +311,7 @@ export default {
                 entity.fields.reset();
                 entity.identities.reset();
                 if (!entity.waitUntilFeaturesDiscovered.isPending) {
-                    entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise()
+                    entity.waitUntilFeaturesDiscovered = getOpenPromise()
                 }
                 entity.queryInfo();
             } else {

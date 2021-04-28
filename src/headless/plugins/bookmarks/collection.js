@@ -3,6 +3,7 @@ import Bookmark from './model.js';
 import log from "@converse/headless/log.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
 
 const { Strophe, $iq, sizzle } = converse.env;
@@ -40,7 +41,7 @@ const Bookmarks = {
     },
 
     fetchBookmarks () {
-        const deferred = u.getResolveablePromise();
+        const deferred = getOpenPromise();
         if (window.sessionStorage.getItem(this.fetched_flag)) {
             this.fetch({
                 'success': () => deferred.resolve(),

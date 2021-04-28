@@ -1,7 +1,8 @@
-import { _converse, api, converse } from "@converse/headless/core";
 import { Model } from '@converse/skeletor/src/model.js';
+import { _converse, api, converse } from "@converse/headless/core";
+import { getOpenPromise } from '@converse/openpromise';
 
-const { Strophe, $iq, $pres, u } = converse.env;
+const { Strophe, $iq, $pres } = converse.env;
 
 /**
  * @class
@@ -17,7 +18,7 @@ const RosterContact = Model.extend({
     },
 
     async initialize (attributes) {
-        this.initialized = u.getResolveablePromise();
+        this.initialized = getOpenPromise();
         this.setPresence();
         const { jid } = attributes;
         const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();

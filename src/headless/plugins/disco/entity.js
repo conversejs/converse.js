@@ -3,8 +3,9 @@ import sizzle from "sizzle";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/core.js";
+import { getOpenPromise } from '@converse/openpromise';
 
-const { Strophe, utils } = converse.env;
+const { Strophe } = converse.env;
 
 /**
  * @class
@@ -19,7 +20,7 @@ const DiscoEntity = Model.extend({
     idAttribute: 'jid',
 
     initialize (attrs, options) {
-        this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+        this.waitUntilFeaturesDiscovered = getOpenPromise();
 
         this.dataforms = new Collection();
         let id = `converse.dataforms-${this.get('jid')}`;

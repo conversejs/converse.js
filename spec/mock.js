@@ -590,7 +590,7 @@ window.addEventListener('converse-loaded', () => {
     };
 
     function clearIndexedDB () {
-        const promise = u.getResolveablePromise();
+        const promise = u.getOpenPromise();
         const db_request = window.indexedDB.open("converse-test-persistent");
         db_request.onsuccess = function () {
             const db = db_request.result;

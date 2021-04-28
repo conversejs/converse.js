@@ -1,18 +1,9 @@
-/**
- * @copyright The Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- * @description Converse.js plugin which adds support for XEP-0198: Stream Management
- */
-import log from "../log.js";
-import { _converse, api, converse } from "../core.js";
+import log from '@converse/headless/log.js';
+import { _converse, api, converse } from '@converse/headless/core.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
-
-
-Strophe.addNamespace('SM', 'urn:xmpp:sm:3');
-
 
 function isStreamManagementSupported () {
     if (api.connection.isType('bosh') && !_converse.isTestEnv()) {
@@ -30,17 +21,17 @@ function handleAck (el) {
     const delta = handled - last_known_handled;
 
     if (delta < 0) {
-        const err_msg = `New reported stanza count lower than previous. `+
-            `New: ${handled} - Previous: ${last_known_handled}`
+        const err_msg =
+            `New reported stanza count lower than previous. ` + `New: ${handled} - Previous: ${last_known_handled}`;
         log.error(err_msg);
     }
     const unacked_stanzas = _converse.session.get('unacked_stanzas');
     if (delta > unacked_stanzas.length) {
         const err_msg =
-            `Higher reported acknowledge count than unacknowledged stanzas. `+
-            `Reported Acknowledged Count: ${delta} -`+
-            `Unacknowledged Stanza Count: ${unacked_stanzas.length} -`+
-            `New: ${handled} - Previous: ${last_known_handled}`
+            `Higher reported acknowledge count than unacknowledged stanzas. ` +
+            `Reported Acknowledged Count: ${delta} -` +
+            `Unacknowledged Stanza Count: ${unacked_stanzas.length} -` +
+            `New: ${handled} - Previous: ${last_known_handled}`;
         log.error(err_msg);
     }
     _converse.session.save({
@@ -51,7 +42,7 @@ function handleAck (el) {
     return true;
 }
 
-function sendAck() {
+function sendAck () {
     if (_converse.session.get('smacks_enabled')) {
         const h = _converse.session.get('num_stanzas_handled');
         const stanza = u.toStanza(`<a xmlns="${Strophe.NS.SM}" h="${h}"/>`);
@@ -62,15 +53,15 @@ function sendAck() {
 
 function stanzaHandler (el) {
     if (_converse.session.get('smacks_enabled')) {
-        if (u.isTagEqual(el, 'iq') || u.isTagEqual(el, 'presence') || u.isTagEqual(el, 'message'))  {
+        if (u.isTagEqual(el, 'iq') || u.isTagEqual(el, 'presence') || u.isTagEqual(el, 'message')) {
             const h = _converse.session.get('num_stanzas_handled');
-            _converse.session.save('num_stanzas_handled', h+1);
+            _converse.session.save('num_stanzas_handled', h + 1);
         }
     }
     return true;
 }
 
-function initSessionData () {
+export function initSessionData () {
     _converse.session.save({
         'smacks_enabled': _converse.session.get('smacks_enabled') || false,
         'num_stanzas_handled': _converse.session.get('num_stanzas_handled') || 0,
@@ -81,17 +72,18 @@ function initSessionData () {
 }
 
 function resetSessionData () {
-    _converse.session && _converse.session.save({
-        'smacks_enabled': false,
-        'num_stanzas_handled': 0,
-        'num_stanzas_handled_by_server': 0,
-        'num_stanzas_since_last_ack': 0,
-        'unacked_stanzas': []
-    });
+    _converse.session &&
+        _converse.session.save({
+            'smacks_enabled': false,
+            'num_stanzas_handled': 0,
+            'num_stanzas_handled_by_server': 0,
+            'num_stanzas_since_last_ack': 0,
+            'unacked_stanzas': []
+        });
 }
 
 function saveSessionData (el) {
-    const data = {'smacks_enabled': true};
+    const data = { 'smacks_enabled': true };
     if (['1', 'true'].includes(el.getAttribute('resume'))) {
         data['smacks_stream_id'] = el.getAttribute('id');
     }
@@ -107,8 +99,9 @@ function onFailedStanza (el) {
         //
         // After resource binding, sendEnableStanza will be called
         // based on the afterResourceBinding event.
-        log.warn('Could not resume previous SMACKS session, session id not found. '+
-                    'A new session will be established.');
+        log.warn(
+            'Could not resume previous SMACKS session, session id not found. ' + 'A new session will be established.'
+        );
     } else {
         log.error('Failed to enable stream management');
         log.error(el.outerHTML);
@@ -118,7 +111,7 @@ function onFailedStanza (el) {
      * Triggered when the XEP-0198 stream could not be resumed.
      * @event _converse#streamResumptionFailed
      */
-     api.trigger('streamResumptionFailed');
+    api.trigger('streamResumptionFailed');
     return true;
 }
 
@@ -170,7 +163,7 @@ async function sendResumeStanza () {
     await promise;
 }
 
-async function sendEnableStanza () {
+export async function sendEnableStanza () {
     if (!api.settings.get('enable_smacks') || _converse.session.get('smacks_enabled')) {
         return;
     }
@@ -179,7 +172,7 @@ async function sendEnableStanza () {
         _converse.connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
         _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
-        const resume = (api.connection.isType('websocket') || _converse.isTestEnv());
+        const resume = api.connection.isType('websocket') || _converse.isTestEnv();
         const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);
         api.send(stanza);
         _converse.connection.flush();
@@ -189,7 +182,7 @@ async function sendEnableStanza () {
 
 const smacks_handlers = [];
 
-async function enableStreamManagement () {
+export async function enableStreamManagement () {
     if (!api.settings.get('enable_smacks')) {
         return;
     }
@@ -210,7 +203,7 @@ async function enableStreamManagement () {
     }
 }
 
-function onStanzaSent (stanza) {
+export function onStanzaSent (stanza) {
     if (!_converse.session) {
         log.warn('No _converse.session!');
         return;
@@ -218,10 +211,7 @@ function onStanzaSent (stanza) {
     if (!_converse.session.get('smacks_enabled')) {
         return;
     }
-    if (u.isTagEqual(stanza, 'iq') ||
-            u.isTagEqual(stanza, 'presence') ||
-            u.isTagEqual(stanza, 'message')) {
-
+    if (u.isTagEqual(stanza, 'iq') || u.isTagEqual(stanza, 'presence') || u.isTagEqual(stanza, 'message')) {
         const stanza_string = Strophe.serialize(stanza);
         _converse.session.save(
             'unacked_stanzas',
@@ -234,26 +224,7 @@ function onStanzaSent (stanza) {
                 // Request confirmation of sent stanzas
                 api.send(u.toStanza(`<r xmlns="${Strophe.NS.SM}"/>`));
             }
-            _converse.session.save({'num_stanzas_since_last_ack': num});
+            _converse.session.save({ 'num_stanzas_since_last_ack': num });
         }
     }
 }
-
-
-converse.plugins.add('converse-smacks', {
-
-    initialize () {
-        // Configuration values for this plugin
-        // ====================================
-        // Refer to docs/source/configuration.rst for explanations of these
-        // configuration settings.
-        api.settings.extend({
-            'enable_smacks': true,
-            'smacks_max_unacked_stanzas': 5,
-        });
-        api.listen.on('afterResourceBinding', sendEnableStanza);
-        api.listen.on('beforeResourceBinding', enableStreamManagement);
-        api.listen.on('send', onStanzaSent);
-        api.listen.on('userSessionInitialized', initSessionData);
-    }
-});

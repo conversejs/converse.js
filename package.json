@@ -85,7 +85,7 @@
     "dayjs": "1.8.30",
     "eslint": "^7.3.0",
     "eslint-plugin-lodash": "^7.1.0",
-    "exports-loader": "^0.7.0",
+    "exports-loader": "^1.1.1",
     "fast-text-encoding": "^1.0.3",
     "favico.js-slevomat": "^0.3.11",
     "file-loader": "^6.0.0",

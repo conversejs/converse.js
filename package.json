@@ -118,7 +118,7 @@
     "run-headless-chromium": "^0.1.1",
     "sass-loader": "^8.0.2",
     "sinon": "^9.2.4",
-    "style-loader": "^0.23.1",
+    "style-loader": "^2.0.0",
     "urijs": "^1.19.6",
     "webpack": "^4.43.0",
     "webpack-cli": "^4.5.0",

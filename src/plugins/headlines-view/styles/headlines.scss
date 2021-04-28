@@ -1,4 +1,4 @@
-#conversejs {
+.conversejs {
     .chat-head-headline {
         background-color: var(--headline-head-color);
     }
@@ -31,7 +31,7 @@
     }
 }
 
-#conversejs {
+.conversejs {
     converse-chats {
         &.converse-fullscreen {
             .chatbox.headlines {

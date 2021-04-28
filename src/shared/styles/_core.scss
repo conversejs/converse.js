@@ -1,4 +1,4 @@
-#conversejs {
+.conversejs {
     bottom: 0;
     height: 100%;
     position: fixed;
@@ -447,7 +447,7 @@
         font-size: 3.75em;
       }
     }
-    #conversejs:not(.converse-embedded)  {
+    .conversejs:not(.converse-embedded)  {
         .chatbox  {
             .chat-body {
                 border-radius: var(--chatbox-border-radius);
@@ -461,33 +461,33 @@
 
 
 @media screen and (min-width: 576px) {
-    #conversejs .offset-sm-2 {
+    .conversejs .offset-sm-2 {
         margin-left: 16.666667%;
     }
 }
 @media screen and (min-width: 768px) {
-    #conversejs .offset-md-2 {
+    .conversejs .offset-md-2 {
         margin-left: 16.666667%;
     }
-    #conversejs .offset-md-3 {
+    .conversejs .offset-md-3 {
         margin-left: 25%;
     }
 }
 @media screen and (min-width: 992px) {
-    #conversejs .offset-lg-2 {
+    .conversejs .offset-lg-2 {
         margin-left: 16.666667%;
     }
-    #conversejs .offset-lg-3 {
+    .conversejs .offset-lg-3 {
         margin-left: 25%;
     }
 }
 @media screen and (min-width: 1200px) {
-    #conversejs .offset-xl-2 {
+    .conversejs .offset-xl-2 {
         margin-left: 16.666667%;
     }
 }
 @media screen and (max-height: 450px) {
-  #conversejs {
+  .conversejs {
     left: 0;
   }
 }

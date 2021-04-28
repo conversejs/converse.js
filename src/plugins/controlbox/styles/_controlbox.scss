@@ -4,7 +4,7 @@
 @import "shared/styles/_variables.scss";
 @import "shared/styles/_mixins.scss";
 
-#conversejs {
+.conversejs {
     .oauth-providers {
         text-align: center;
         .oauth-provider {
@@ -387,7 +387,7 @@
     }
 }
 
-#conversejs {
+.conversejs {
     converse-chats {
         &.converse-overlayed {
 
@@ -612,7 +612,7 @@
 
 @include media-breakpoint-down(sm) {
 
-    #conversejs {
+    .conversejs {
         left: 0;
         right: 0;
         padding-left: env(safe-area-inset-left);

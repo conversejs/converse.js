@@ -2,7 +2,7 @@
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/mixins";
 
-#conversejs {
+.conversejs {
     @import "bootstrap/scss/media";
 
     .chatbox {
@@ -191,7 +191,7 @@
     }
 }
 
-#conversejs {
+.conversejs {
     converse-chats {
         &.converse-overlayed  {
             converse-emoji-dropdown {
@@ -267,7 +267,7 @@
 }
 
 @include media-breakpoint-up(m) {
-    #conversejs {
+    .conversejs {
         .chatbox {
             converse-emoji-picker {
                 max-width: 40em;

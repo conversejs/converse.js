@@ -3,7 +3,7 @@
 @import "bootstrap/scss/mixins";
 @import "shared/styles/_variables.scss";
 
-#conversejs {
+.conversejs {
     @import "bootstrap/scss/media";
 
     converse-controlbox-navback {
@@ -400,7 +400,7 @@
 
 /* ******************* Overlay and embedded styles *************************** */
 
-#conversejs {
+.conversejs {
     converse-chats.converse-embedded,
     converse-chats.converse-overlayed {
         .controlbox-head {
@@ -472,7 +472,7 @@
 }
 
 @include media-breakpoint-down(sm) {
-    #conversejs.converse-overlayed {
+    .conversejs.converse-overlayed {
         > .row {
             flex-direction: column;
             &.no-gutters {
@@ -483,7 +483,7 @@
 }
 
 
-#conversejs {
+.conversejs {
     converse-chats.converse-embedded,
     converse-chats.converse-fullscreen  {
         .flyout {
@@ -568,7 +568,7 @@
 
 /* ******************* Fullpage styles *************************** */
 
-#conversejs {
+.conversejs {
     converse-chats.converse-fullscreen  {
         .chatbox-btn {
             font-size: var(--fullpage-chatbox-button-size);
@@ -608,7 +608,7 @@
 
 
 @include media-breakpoint-down(sm) {
-    #conversejs {
+    .conversejs {
         converse-chats:not(.converse-embedded)  {
             > .row {
                 flex-direction: row-reverse;

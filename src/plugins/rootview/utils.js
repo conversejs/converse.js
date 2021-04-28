@@ -7,9 +7,9 @@ export function ensureElement () {
         return;
     }
     const root = api.settings.get('root');
-    if (!root.querySelector('converse-root#conversejs')) {
+    if (!root.querySelector('converse-root.conversejs')) {
         const el = document.createElement('converse-root');
-        el.setAttribute('id', 'conversejs');
+        el.setAttribute('class', 'conversejs');
         u.addClass(`theme-${api.settings.get('theme')}`, el);
         const body = root.querySelector('body');
         if (body) {

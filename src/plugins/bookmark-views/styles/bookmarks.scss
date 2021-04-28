@@ -1,4 +1,4 @@
-#conversejs {
+.conversejs {
     #controlbox {
         .bookmarks-toggle, .bookmarks-toggle .fa {
             color: var(--groupchats-header-color) !important;
@@ -9,7 +9,7 @@
     }
 }
 
-#conversejs.fullscreen {
+.conversejs.fullscreen {
     #controlbox {
         #chatrooms {
             .bookmarks-list {

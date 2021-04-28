@@ -92,7 +92,7 @@
     "haunted": "^4.7.0",
     "html-webpack-plugin": "^4.3.0",
     "http-server": "^0.12.3",
-    "imports-loader": "^0.8.0",
+    "imports-loader": "^1.2.0",
     "install": "^0.13.0",
     "jasmine": "^3.5.0",
     "jed": "1.1.1",

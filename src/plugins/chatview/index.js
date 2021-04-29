@@ -12,7 +12,7 @@ import ChatBoxView from './view.js';
 import chatview_api from './api.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
-import './styles/_chatbox.scss';
+import './styles/index.scss';
 
 const { Strophe } = converse.env;
 

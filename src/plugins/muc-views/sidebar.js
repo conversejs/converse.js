@@ -3,6 +3,8 @@ import tpl_muc_sidebar from "./templates/muc-sidebar.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from "@converse/headless/core";
 
+import './styles/muc-occupants.scss';
+
 const { u } = converse.env;
 
 export default class MUCSidebar extends CustomElement {

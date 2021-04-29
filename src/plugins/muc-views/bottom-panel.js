@@ -7,6 +7,8 @@ import { _converse, api, converse } from "@converse/headless/core";
 import { getAutoCompleteListItem, parseMessageForMUCCommands } from './utils.js';
 import { render } from 'lit';
 
+import './styles/muc-bottom-panel.scss';
+
 
 export default class MUCBottomPanel extends BottomPanel {
 

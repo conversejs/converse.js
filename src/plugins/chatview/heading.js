@@ -7,6 +7,8 @@ import { _converse, api } from "@converse/headless/core";
 import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
 import { render } from 'lit';
 
+import './styles//chat-head.scss';
+
 
 export default class ChatHeading extends ElementView {
 

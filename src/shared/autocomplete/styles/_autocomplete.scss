@@ -39,28 +39,30 @@
                 transform: rotate(45deg);
                 z-index: -1;
             }
-            position: absolute;
-            left: 0;
-            right: 0;
-            z-index: 2;
-            min-width: 100%;
-            box-sizing: border-box;
-            list-style: none;
-            padding: 0;
             border-radius: .3em;
-            margin: .2em 0 0;
-            background: hsla(0,0%,100%,.9);
-            background: linear-gradient(to bottom right, white, hsla(0,0%,100%,.9));
             border: 1px solid rgba(0,0,0,.3);
             box-shadow: .05em .2em .6em rgba(0,0,0,.1);
+            box-sizing: border-box;
+            left: 0;
+            list-style: none;
+            margin: .2em 0 0;
+            min-width: 100%;
+            padding: 0;
+            position: absolute;
+            right: 0;
             text-shadow: none;
+            z-index: 2;
 
             > li {
-                text-overflow: ellipsis;
-                overflow-x: hidden;
-                position: relative;
+                background: hsla(0,0%,100%,.9);
+                background: linear-gradient(to bottom right, white, hsla(0,0%,100%,.9));
+                color: var(--text-color);
                 cursor: pointer;
+                display: flex;
+                overflow-x: hidden;
                 padding: 1em;
+                position: relative;
+                text-overflow: ellipsis;
             }
         }
         .suggestion-box__results--below {

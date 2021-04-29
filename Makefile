@@ -119,7 +119,6 @@ package-lock.json: package.json
 
 node_modules: $(LERNA) package.json package-lock.json src/headless/package.json src/headless/package-lock.json
 	npm run lerna
-	npm rebuild node-sass
 
 .PHONY: clean
 clean:

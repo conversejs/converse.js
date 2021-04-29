@@ -1,5 +1,4 @@
 /**
- * @module converse-muc-views
  * @copyright 2020, the Converse.js contributors
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
@@ -12,7 +11,7 @@ import muc_api from './api.js';
 import { api, converse } from '@converse/headless/core';
 import { fetchAndSetMUCDomain } from './utils.js';
 
-import './styles/muc.scss';
+import './styles/index.scss';
 
 converse.MUC.VIEWS = {
     CONFIG: 'config-form',

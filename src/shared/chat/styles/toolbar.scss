@@ -26,11 +26,15 @@
 
         .toolbar-buttons {
             width: 100%;
-            display: inline-block;
-
             .message-limit {
                 padding: 0.5em;
                 font-weight: bold;
+            }
+            * {
+                float: left;
+            }
+            .right {
+                float: right;
             }
         }
 

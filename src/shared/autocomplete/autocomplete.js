@@ -11,6 +11,7 @@ import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.
 import Suggestion from './suggestion.js';
 import { converse } from "@converse/headless/core";
 
+
 const u = converse.env.utils;
 
 

@@ -1,0 +1,23 @@
+#muc-details-modal {
+    .features-list {
+        margin-left: 1em;
+    }
+
+    .chatroom-features {
+        width: 100%;
+        .features-list {
+            padding-top: 0;
+            .feature {
+                width: 100%;
+                margin-right: 0.5em;
+                padding-right: 0;
+                font-size: 1em;
+                cursor: help;
+                .fa {
+                    margin-right: 0.5em;
+                    color: var(--text-color);
+                }
+            }
+        }
+    }
+}

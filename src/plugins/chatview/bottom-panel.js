@@ -6,6 +6,8 @@ import { _converse, api, converse } from "@converse/headless/core";
 import { html, render } from 'lit';
 import { clearMessages, parseMessageForCommands } from './utils.js';
 
+import './styles/chat-bottom-panel.scss';
+
 const { u } = converse.env;
 
 export default class ChatBottomPanel extends ElementView {

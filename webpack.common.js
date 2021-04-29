@@ -74,7 +74,10 @@ module.exports = {
             ]
         }, {
             test: /\.js$/,
-            include: /src/,
+            include: [
+                /src/,
+                /node_modules\/mergebounce/,
+            ],
             use: {
                 loader: 'babel-loader',
                 options: {

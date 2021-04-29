@@ -14,20 +14,10 @@
             width: var(--mobile-chat-width);
         }
 
-        .empty-history-feedback {
-            position: relative;
-            span {
-                width: 100%;
-                text-align: center;
-                position: absolute;
-                margin-top: 50%;
-            }
-        }
-
         .box-flyout {
-            overflow-y: hidden;
             background-color: var(--chatroom-head-bg-color);
-            width: 100%;
+            overflow-y: hidden;
+            width: var(--chatroom-width);
 
             @media screen and (max-height: $mobile-landscape-height) {
                 height: var(--mobile-chat-height);
@@ -39,6 +29,17 @@
                 width: var(--mobile-chat-width);
                 height: var(--fullpage-chat-height);
             }
+
+            .empty-history-feedback {
+                position: relative;
+                span {
+                    width: 100%;
+                    text-align: center;
+                    position: absolute;
+                    margin-top: 50%;
+                }
+            }
+
             .chatroom-body {
                 flex-direction: row;
                 flex-flow: nowrap;

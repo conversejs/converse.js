@@ -35,7 +35,8 @@
     "url": "https://github.com/conversejs/converse.js/issues"
   },
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
-  "devDependencies": {
+  "devDependencies": {},
+  "dependencies": {
     "@converse/skeletor": "conversejs/skeletor#fe855404babc08cbb1018231eb49a7b7e497539c",
     "filesize": "^6.1.0",
     "localforage": "^1.9.0",

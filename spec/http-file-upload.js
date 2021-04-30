@@ -432,7 +432,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                     );
 
-                    let stanza = _.find(IQ_stanzas, function (iq) {
+                    let stanza = IQ_stanzas.find(function (iq) {
                         return iq.querySelector(
                             'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                     });
@@ -454,8 +454,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                     let entities = await _converse.api.disco.entities.get();
 
                     expect(entities.length).toBe(2);
-                    expect(_.includes(entities.pluck('jid'), 'montague.lit')).toBe(true);
-                    expect(_.includes(entities.pluck('jid'), 'romeo@montague.lit')).toBe(true);
+                    expect(entities.pluck('jid').includes('montague.lit')).toBe(true);
+                    expect(entities.pluck('jid').includes('romeo@montague.lit')).toBe(true);
 
                     expect(entities.get(_converse.domain).features.length).toBe(2);
                     expect(entities.get(_converse.domain).identities.length).toBe(1);
@@ -468,7 +468,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         }).length > 0;
                     }, 300);
 
-                    stanza = _.find(IQ_stanzas, function (iq) {
+                    stanza = IQ_stanzas.find(function (iq) {
                         return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                     });
                     var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
@@ -496,7 +496,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         }).length > 0;
                     }, 300);
 
-                    stanza = _.find(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'));
+                    stanza = IQ_stanzas.find(iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'));
                     const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                     expect(Strophe.serialize(stanza)).toBe(
                         `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">`+

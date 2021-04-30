@@ -1,4 +1,4 @@
-#conversejs {
+.converse-root {
     [hidden] { display: none; }
 
     .visually-hidden {
@@ -128,13 +128,13 @@
     }
 }
 
-#conversejs.converse-fullscreen {
+.converse-root.converse-fullscreen {
     .suggestion-box__results--above {
         bottom: 4.5em;
     }
 }
 
-#conversejs.converse-overlayed {
+.converse-root.converse-overlayed {
     .suggestion-box__results--above {
         bottom: 3.5em;
     }

@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 
 const getImgHref = (image, image_type) => {
     return image.startsWith('data:') ? image : `data:${image_type};base64,${image}`;

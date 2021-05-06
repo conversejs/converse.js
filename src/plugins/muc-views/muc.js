@@ -1,11 +1,11 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import ModeratorToolsModal from 'modals/moderator-tools.js';
+import ModeratorToolsModal from './modals/moderator-tools.js';
 import log from '@converse/headless/log';
 import tpl_muc from './templates/muc.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { html, render } from "lit-html";
+import { html, render } from "lit";
 
 /**
  * Mixin which turns a ChatBoxView into a ChatRoomView
@@ -19,8 +19,8 @@ export default class MUCView extends BaseChatView {
 
     async initialize () {
         const jid = this.getAttribute('jid');
+        this.model = await api.rooms.get(jid);
         _converse.chatboxviews.add(jid, this);
-        this.model = _converse.chatboxes.get(jid);
         this.initDebounced();
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);

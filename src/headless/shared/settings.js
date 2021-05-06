@@ -5,7 +5,7 @@ import log from '@converse/headless/log';
 import pick from 'lodash/pick';
 import u from '@converse/headless/utils/core';
 import { Model } from '@converse/skeletor/src/model.js';
-import { createStore } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 let init_settings = {}; // Container for settings passed in via converse.initialize
 let app_settings = {};
@@ -15,6 +15,7 @@ let user_settings; // User settings, populated via api.users.settings
 // ----------------------------
 export const DEFAULT_SETTINGS = {
     allow_non_roster_messaging: false,
+    allow_url_history_change: true,
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
     auto_login: false, // Currently only used in connection with anonymous login
@@ -108,7 +109,7 @@ function initUserSettings () {
     if (!user_settings?.fetched) {
         const id = `converse.user-settings.${_converse.bare_jid}`;
         user_settings = new Model({id});
-        user_settings.browserStorage = createStore(id);
+        initStorage(user_settings, id);
         user_settings.fetched = user_settings.fetch({'promise': true});
     }
     return user_settings.fetched;

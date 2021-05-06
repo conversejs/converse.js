@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require("./webpack.common.js");
 const path = require('path');
 const webpack = require('webpack');
-const { merge}  = require("webpack-merge");
+const { merge }  = require("webpack-merge");
 
 const plugins = [
     new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),

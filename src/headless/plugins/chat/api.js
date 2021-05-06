@@ -120,6 +120,8 @@ export default {
          *
          */
         async get (jids, attrs={}, create=false) {
+            await api.waitUntil('chatBoxesFetched');
+
             async function _get (jid) {
                 let model = await api.chatboxes.get(jid);
                 if (!model && create) {

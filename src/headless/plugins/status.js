@@ -3,8 +3,10 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { isNaN, isObject } from "lodash-es";
+import isNaN from "lodash-es/isNaN";
+import isObject from "lodash-es/isObject";
 import { Model } from '@converse/skeletor/src/model.js';
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { _converse, api, converse } from "@converse/headless/core";
 
 const { Strophe, $build, $pres } = converse.env;
@@ -213,8 +215,8 @@ converse.plugins.add('converse-status', {
                 onStatusInitialized(reconnecting);
             } else {
                 const id = `converse.xmppstatus-${_converse.bare_jid}`;
-                _converse.xmppstatus = new _converse.XMPPStatus({'id': id});
-                _converse.xmppstatus.browserStorage = _converse.createStore(id, "session");
+                _converse.xmppstatus = new _converse.XMPPStatus({ id });
+                initStorage(_converse.xmppstatus, id, 'session');
                 _converse.xmppstatus.fetch({
                     'success': () => onStatusInitialized(reconnecting),
                     'error': () => onStatusInitialized(reconnecting),

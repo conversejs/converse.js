@@ -1,14 +1,20 @@
+import debounce from 'lodash-es/debounce';
+import invoke from 'lodash-es/invoke';
+import isElement from 'lodash-es/isElement';
 import log from '../../log';
-import muc_utils from './utils.js';
 import p from '../../utils/parse-helpers';
+import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import u from '../../utils/form';
+import zipObject from 'lodash-es/zipObject';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
-import { debounce, intersection, invoke, isElement, pick, zipObject } from 'lodash-es';
+import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
+import { getOpenPromise } from '@converse/openpromise';
+import { initStorage } from '@converse/headless/shared/utils.js';
 import { isArchived } from '@converse/headless/shared/parsers';
-import { parseMemberListIQ, parseMUCMessage, parseMUCPresence } from './parsers.js';
+import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
 const OWNER_COMMANDS = ['owner'];
@@ -79,7 +85,7 @@ const ChatRoomMixin = {
     },
 
     async initialize () {
-        this.initialized = u.getResolveablePromise();
+        this.initialized = getOpenPromise();
         this.debouncedRejoin = debounce(this.rejoin, 250);
         this.set('box_id', `box-${this.get('jid')}`);
         this.initNotifications();
@@ -342,7 +348,7 @@ const ChatRoomMixin = {
     restoreSession () {
         const id = `muc.session-${_converse.bare_jid}-${this.get('jid')}`;
         this.session = new MUCSession({ id });
-        this.session.browserStorage = _converse.createStore(id, 'session');
+        initStorage(this.session, id, 'session');
         return new Promise(r => this.session.fetch({ 'success': r, 'error': r }));
     },
 
@@ -358,10 +364,12 @@ const ChatRoomMixin = {
             )
         );
         this.features.browserStorage = _converse.createStore(id, 'session');
+        this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
         id = `converse.muc-config-{_converse.bare_jid}-${this.get('jid')}`;
         this.config = new Model();
         this.config.browserStorage = _converse.createStore(id, 'session');
+        this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     },
 
     initOccupants () {
@@ -369,6 +377,7 @@ const ChatRoomMixin = {
         const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
         this.occupants.browserStorage = _converse.createStore(id, 'session');
         this.occupants.chatroom = this;
+        this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.browserStorage.flush());
     },
 
     fetchOccupants () {
@@ -394,7 +403,6 @@ const ChatRoomMixin = {
                 from,
                 type,
                 affiliation,
-                'nick': Strophe.getNodeFromJid(jid),
                 'states': [],
                 'show': type == 'unavailable' ? 'offline' : 'online',
                 'role': item.getAttribute('role'),
@@ -667,7 +675,7 @@ const ChatRoomMixin = {
             id = this.getUniqueId('sendIQ');
             el.setAttribute('id', id);
         }
-        const promise = u.getResolveablePromise();
+        const promise = getOpenPromise();
         const timeoutHandler = _converse.connection.addTimedHandler(_converse.STANZA_TIMEOUT, () => {
             _converse.connection.deleteHandler(handler);
             promise.reject(new _converse.TimeoutError('Timeout Error: No response from server'));
@@ -1137,29 +1145,6 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Send IQ stanzas to the server to set an affiliation for
-     * the provided JIDs.
-     * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-     *
-     * Prosody doesn't accept multiple JIDs' affiliations
-     * being set in one IQ stanza, so as a workaround we send
-     * a separate stanza for each JID.
-     * Related ticket: https://issues.prosody.im/345
-     *
-     * @private
-     * @method _converse.ChatRoom#setAffiliation
-     * @param { string } affiliation - The affiliation
-     * @param { object } members - A map of jids, affiliations and
-     *      optionally reasons. Only those entries with the
-     *      same affiliation as being currently set will be considered.
-     * @returns { Promise } A promise which resolves and fails depending on the XMPP server response.
-     */
-    setAffiliation (affiliation, members) {
-        members = members.filter(m => m.affiliation === undefined || m.affiliation === affiliation);
-        return Promise.all(members.map(m => this.sendAffiliationIQ(affiliation, m)));
-    },
-
-    /**
      * Given a <field> element, return a copy with a <value> child if
      * we can find a value for it in this rooms config.
      * @private
@@ -1389,46 +1374,6 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Send an IQ stanza specifying an affiliation change.
-     * @private
-     * @method _converse.ChatRoom#
-     * @param { String } affiliation: affiliation
-     *     (could also be stored on the member object).
-     * @param { Object } member: Map containing the member's jid and
-     *     optionally a reason and affiliation.
-     */
-    sendAffiliationIQ (affiliation, member) {
-        const iq = $iq({ to: this.get('jid'), type: 'set' })
-            .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
-            .c('item', {
-                'affiliation': member.affiliation || affiliation,
-                'nick': member.nick,
-                'jid': member.jid
-            });
-        if (member.reason !== undefined) {
-            iq.c('reason', member.reason);
-        }
-        return api.sendIQ(iq);
-    },
-
-    /**
-     * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
-     *
-     * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-     * @private
-     * @method _converse.ChatRoom#setAffiliations
-     * @param { Object[] } members
-     * @param { string } members[].jid - The JID of the user whose affiliation will change
-     * @param { Array } members[].affiliation - The new affiliation for this user
-     * @param { string } [members[].reason] - An optional reason for the affiliation change
-     * @returns { Promise }
-     */
-    setAffiliations (members) {
-        const affiliations = [...new Set(members.map(m => m.affiliation))];
-        return Promise.all(affiliations.map(a => this.setAffiliation(a, members)));
-    },
-
-    /**
      * Send an IQ stanza to modify an occupant's role
      * @private
      * @method _converse.ChatRoom#setRole
@@ -1522,40 +1467,6 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
-     * Returns an array of {@link MemberListItem} objects, representing occupants
-     * that have the given affiliation.
-     * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-     * @private
-     * @method _converse.ChatRoom#getAffiliationList
-     * @param { ("admin"|"owner"|"member") } affiliation
-     * @returns { Promise<MemberListItem[]> }
-     */
-    async getAffiliationList (affiliation) {
-        const iq = $iq({ to: this.get('jid'), type: 'get' })
-            .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
-            .c('item', { 'affiliation': affiliation });
-        const result = await api.sendIQ(iq, null, false);
-        if (result === null) {
-            const err_msg = `Error: timeout while fetching ${affiliation} list for MUC ${this.get('jid')}`;
-            const err = new Error(err_msg);
-            log.warn(err_msg);
-            log.warn(result);
-            return err;
-        }
-        if (u.isErrorStanza(result)) {
-            const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
-            const err = new Error(err_msg);
-            log.warn(err_msg);
-            log.warn(result);
-            return err;
-        }
-        return parseMemberListIQ(result)
-            .filter(p => p)
-            .sort((a, b) => (a.nick < b.nick ? -1 : a.nick > b.nick ? 1 : 0));
-    },
-
-    /**
      * Fetch the lists of users with the given affiliations.
      * Then compute the delta between those users and
      * the passed in members, and if it exists, send the delta
@@ -1569,10 +1480,11 @@ const ChatRoomMixin = {
      *  to update the list.
      */
     async updateMemberLists (members) {
+        const muc_jid = this.get('jid');
         const all_affiliations = ['member', 'admin', 'owner'];
-        const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
+        const aff_lists = await Promise.all(all_affiliations.map(a => getAffiliationList(a, muc_jid)));
         const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
-        await this.setAffiliations(muc_utils.computeAffiliationsDelta(true, false, members, old_members));
+        await setAffiliations(muc_jid, computeAffiliationsDelta(true, false, members, old_members));
         await this.occupants.fetchMembers();
     },
 
@@ -2194,7 +2106,7 @@ const ChatRoomMixin = {
         const text = pres.querySelector('error text')?.textContent;
         if (text) {
             if (this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-                this.setDisconnectionMessage(text);
+                this.setDisconnectionState(text);
             } else {
                 const attrs = {
                     'type': 'error',
@@ -2216,9 +2128,11 @@ const ChatRoomMixin = {
         if (!x) {
             return;
         }
-        const codes = sizzle('status', x).map(s => s.getAttribute('code'));
-        const disconnection_codes = intersection(codes, Object.keys(_converse.muc.disconnect_messages));
-        const disconnected = is_self && disconnection_codes.length > 0;
+        const disconnection_codes = Object.keys(_converse.muc.disconnect_messages);
+        const codes = sizzle('status', x)
+            .map(s => s.getAttribute('code'))
+            .filter(c => disconnection_codes.includes(c));
+        const disconnected = is_self && codes.length > 0;
         if (!disconnected) {
             return;
         }
@@ -2229,8 +2143,9 @@ const ChatRoomMixin = {
         const item = x.querySelector('item');
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
         const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
-        const message = _converse.muc.disconnect_messages[disconnection_codes[0]];
-        this.setDisconnectionMessage(message, reason, actor);
+        const message = _converse.muc.disconnect_messages[codes[0]];
+        const status = codes.includes('301') ? converse.ROOMSTATUS.BANNED : converse.ROOMSTATUS.DISCONNECTED;
+        this.setDisconnectionState(message, reason, actor, status);
     },
 
     getActionInfoMessage (code, nick, actor) {
@@ -2401,13 +2316,22 @@ const ChatRoomMixin = {
         codes.forEach(code => this.createInfoMessage(code, stanza, is_self));
     },
 
-    setDisconnectionMessage (message, reason, actor) {
+    /**
+     * Set parameters regarding disconnection from this room. This helps to
+     * communicate to the user why they were disconnected.
+     * @param { String } message - The disconnection message, as received from (or
+     *  implied by) the server.
+     * @param { String } reason - The reason provided for the disconnection
+     * @param { String } actor - The person (if any) responsible for this disconnection
+     * @param { Integer } status - The status code (see `converse.ROOMSTATUS`)
+     */
+    setDisconnectionState (message, reason, actor, status=converse.ROOMSTATUS.DISCONNECTED) {
         this.save({
             'disconnection_message': message,
             'disconnection_reason': reason,
             'disconnection_actor': actor
         });
-        this.session.save({ 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+        this.session.save({ 'connection_status': status });
     },
 
     onNicknameClash (presence) {
@@ -2453,18 +2377,22 @@ const ChatRoomMixin = {
             }
             if (error.querySelector('registration-required')) {
                 const message = __('You are not on the member list of this groupchat.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('forbidden')) {
-                const message = __('You have been banned from this groupchat.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(
+                    _converse.muc.disconnect_messages[301],
+                    reason,
+                    null,
+                    converse.ROOMSTATUS.BANNED
+                );
             }
         } else if (error_type === 'cancel') {
             if (error.querySelector('not-allowed')) {
                 const message = __('You are not allowed to create new groupchats.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('not-acceptable')) {
                 const message = __("Your nickname doesn't conform to this groupchat's policies.");
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
                 const moved_jid = sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error)
                     .pop()
@@ -2476,14 +2404,14 @@ const ChatRoomMixin = {
                 this.onNicknameClash(stanza);
             } else if (error.querySelector('item-not-found')) {
                 const message = __('This groupchat does not (yet) exist.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('service-unavailable')) {
                 const message = __('This groupchat has reached its maximum number of participants.');
-                this.setDisconnectionMessage(message, reason);
+                this.setDisconnectionState(message, reason);
             } else if (error.querySelector('remote-server-not-found')) {
                 const message = __('Remote server not found');
                 const feedback = reason ? __('The explanation given is: "%1$s".', reason) : undefined;
-                this.setDisconnectionMessage(message, feedback);
+                this.setDisconnectionState(message, feedback);
             }
         }
     },
@@ -2548,18 +2476,14 @@ const ChatRoomMixin = {
      */
     async onOwnPresence (stanza) {
         await this.occupants.fetched;
-        if (stanza.getAttribute('type') !== 'unavailable') {
-            const old_status = this.session.get('connection_status');
-            if (old_status !== converse.ROOMSTATUS.ENTERED) {
-                // Set connection_status before creating the occupant, but
-                // only trigger afterwards, so that plugins can access the
-                // occupant in their event handlers.
-                this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, { 'silent': true });
-                this.updateOccupantsOnPresence(stanza);
-                this.session.trigger('change:connection_status', this.session, old_status);
-            } else {
-                this.updateOccupantsOnPresence(stanza);
-            }
+        const old_status = this.session.get('connection_status');
+        if (stanza.getAttribute('type') !== 'unavailable' && old_status !== converse.ROOMSTATUS.ENTERED) {
+            // Set connection_status before creating the occupant, but
+            // only trigger afterwards, so that plugins can access the
+            // occupant in their event handlers.
+            this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, { 'silent': true });
+            this.updateOccupantsOnPresence(stanza);
+            this.session.trigger('change:connection_status', this.session, old_status);
         } else {
             this.updateOccupantsOnPresence(stanza);
         }

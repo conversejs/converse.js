@@ -118,10 +118,12 @@ export default {
          * Fetches the object representing a MUC chatroom (aka groupchat)
          *
          * @method api.rooms.get
-         * @param {string} [jid] The room JID (if not specified, all rooms will be returned).
-         * @param {object} [attrs] A map containing any extra room attributes For example, if you want
-         *     to specify a nickname and password, use `{'nick': 'bloodninja', 'password': 'secret'}`.
-         * @param {boolean} create A boolean indicating whether the room should be created
+         * @param { String } [jid] The room JID (if not specified, all rooms will be returned).
+         * @param { Object } [attrs] A map containing any extra room attributes
+         *  to be set if `create` is set to `true`
+         * @param { String } [attrs.nick] Specify the nickname
+         * @param { String } [attrs.password ] Specify a password if needed to enter a new room
+         * @param { Boolean } create A boolean indicating whether the room should be created
          *     if not found (default: `false`)
          * @returns { Promise<_converse.ChatRoom> }
          * @example
@@ -129,12 +131,14 @@ export default {
          *     const create_if_not_found = true;
          *     api.rooms.get(
          *         'group@muc.example.com',
-         *         {'nick': 'dread-pirate-roberts'},
+         *         {'nick': 'dread-pirate-roberts', 'password': 'secret'},
          *         create_if_not_found
          *     )
          * });
          */
         async get (jids, attrs = {}, create = false) {
+            await api.waitUntil('chatBoxesFetched');
+
             async function _get (jid) {
                 jid = u.getJIDFromURI(jid);
                 let model = await api.chatboxes.get(jid);

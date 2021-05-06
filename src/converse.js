@@ -21,11 +21,11 @@ import "./plugins/controlbox/index.js";     // The control box
 import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen/index.js";
 import "./plugins/headlines-view/index.js";
-import "./plugins/mam-views.js";
+import "./plugins/mam-views/index.js";
 import "./plugins/minimize/index.js";             // Allows chat boxes to be minimized
 import "./plugins/muc-views/index.js";      // Views related to MUC
 import "./plugins/notifications/index.js";
-import "./plugins/omemo.js";
+import "./plugins/omemo/index.js";
 import "./plugins/profile/index.js";
 import "./plugins/push.js";                 // XEP-0357 Push Notifications
 import "./plugins/register/index.js";       // XEP-0077 In-band registration

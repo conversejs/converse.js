@@ -2,7 +2,7 @@ import tpl_background_logo from '../../templates/background_logo.js';
 import tpl_chats from './templates/chats.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { api, _converse } from '@converse/headless/core';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 
 class ConverseChats extends ElementView {

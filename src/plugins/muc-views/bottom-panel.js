@@ -5,7 +5,9 @@ import tpl_muc_bottom_panel from './templates/muc-bottom-panel.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getAutoCompleteListItem, parseMessageForMUCCommands } from './utils.js';
-import { render } from 'lit-html';
+import { render } from 'lit';
+
+import './styles/muc-bottom-panel.scss';
 
 
 export default class MUCBottomPanel extends BottomPanel {

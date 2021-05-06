@@ -4,7 +4,7 @@ import { ElementView } from "@converse/skeletor/src/element";
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 const u = converse.env.utils;
 const { Strophe } = converse.env;

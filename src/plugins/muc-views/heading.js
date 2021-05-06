@@ -8,6 +8,8 @@ import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
 
+import './styles/muc-head.scss';
+
 
 export default class MUCHeading extends ChatHeading {
 

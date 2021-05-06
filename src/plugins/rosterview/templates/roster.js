@@ -2,8 +2,8 @@ import tpl_group from "./group.js";
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
-import { html } from "lit-html";
-import { repeat } from 'lit-html/directives/repeat.js';
+import { html } from "lit";
+import { repeat } from 'lit/directives/repeat.js';
 import { shouldShowContact, shouldShowGroup } from '../utils.js';
 
 

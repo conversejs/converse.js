@@ -1,9 +1,10 @@
+import debounce from "lodash-es/debounce";
 import tpl_roster_filter from "./templates/roster_filter.js";
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
-import { debounce } from "lodash-es";
-import { render } from 'lit-html';
+import { initStorage } from '@converse/headless/shared/utils.js';
+import { render } from 'lit';
 
 export const RosterFilter = Model.extend({
     initialize () {
@@ -21,7 +22,7 @@ export class RosterFilterView extends ElementView {
     initialize () {
         const model = new _converse.RosterFilter();
         model.id = `_converse.rosterfilter-${_converse.bare_jid}`;
-        model.browserStorage = _converse.createStore(model.id);
+        initStorage(model, model.id);
         this.model = model;
         _converse.roster_filter = model;
 

@@ -1,5 +1,6 @@
 import { _converse, api } from "@converse/headless/core";
 import { Model } from '@converse/skeletor/src/model.js';
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 
 export async function initRoster () {
@@ -8,12 +9,12 @@ export async function initRoster () {
     await api.waitUntil('VCardsInitialized');
     _converse.roster = new _converse.RosterContacts();
     let id = `converse.contacts-${_converse.bare_jid}`;
-    _converse.roster.browserStorage = _converse.createStore(id);
+    initStorage(_converse.roster, id);
 
     _converse.roster.data = new Model();
     id = `converse-roster-model-${_converse.bare_jid}`;
     _converse.roster.data.id = id;
-    _converse.roster.data.browserStorage = _converse.createStore(id);
+    initStorage(_converse.roster.data, id);
     _converse.roster.data.fetch();
     /**
      * Triggered once the `_converse.RosterContacts`

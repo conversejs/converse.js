@@ -64,7 +64,7 @@
 @import "@fortawesome/fontawesome-free/scss/icons";
 @import "@fortawesome/fontawesome-free/scss/screen-reader";
 
-#conversejs, .converse-website {
+.conversejs, .converse-website {
   /* Apparent font-awesome bug? The circle has some kind of bottom margin */
 
   converse-icon:before {

@@ -2,7 +2,7 @@ import AddMUCModal from 'plugins/muc-views/modals/add-muc.js';
 import MUCListModal from 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
-import { html } from "lit-html";
+import { html } from "lit";
 
 
 const bookmark = (o) => {

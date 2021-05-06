@@ -1,6 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, converse, api } from "@converse/headless/core";
-import { html } from "lit-element";
+import { html } from "lit";
 import { tpl_all_emojis, tpl_search_results } from "./templates/emoji-picker.js";
 
 const { sizzle } = converse.env;

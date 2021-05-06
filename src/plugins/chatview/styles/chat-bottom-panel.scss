@@ -1,0 +1,71 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "shared/styles/_variables.scss";
+
+.conversejs {
+    .chatbox {
+        .bottom-panel {
+
+            .chat-content-sendbutton {
+                height: calc(100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin)));
+            }
+
+            .sendXMPPMessage {
+                -moz-background-clip: padding;
+                -webkit-background-clip: padding-box;
+                border-bottom-radius: var(--chatbox-border-radius);
+                background-clip: padding-box;
+                background-color: white;
+                border: 0;
+                margin: 0;
+                padding: 0;
+                @media screen and (max-height: $mobile-landscape-height) {
+                    width: 100%;
+                }
+                @media screen and (max-width: $mobile-portrait-length) {
+                    width: 100%;
+                }
+
+                .suggestion-box__results {
+                    &:after {
+                        display: none;
+                    }
+                }
+
+                .spoiler-hint {
+                    width: 100%;
+                }
+
+                .chat-textarea, input {
+                    &:active, &:focus{
+                        outline-color: var(--chat-head-color);
+                    }
+                    &.correcting {
+                        background-color: var(--chat-correcting-color);
+                    }
+                }
+
+                .chat-textarea {
+                    color: var(--chat-textarea-color);
+                    background-color: var(--chat-textarea-background-color);
+                    border-top-left-radius: 0;
+                    border-top-right-radius: 0;
+                    border-bottom-radius: var(--chatbox-border-radius);
+                    padding-left: 0.5em;
+                    padding-right: 4.5em;
+                    padding-top: 0.5em;
+                    padding-bottom:0.5em;
+                    width: 100%;
+                    border: none;
+                    min-height: var(--chat-textarea-height);
+                    margin-bottom: -4px; // Not clear why this is necessar :(
+                    resize: none;
+                    &.spoiler {
+                        height: 42px;
+                    }
+                }
+            }
+        }
+    }
+}

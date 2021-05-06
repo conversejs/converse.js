@@ -2,7 +2,7 @@ import AutoComplete from './autocomplete.js';
 import { CustomElement } from 'shared/components/element.js';
 import { FILTER_CONTAINS, FILTER_STARTSWITH } from './utils.js';
 import { api } from '@converse/headless/core';
-import { html } from 'lit-element';
+import { html } from 'lit';
 
 export default class AutoCompleteComponent extends CustomElement {
     static get properties () {

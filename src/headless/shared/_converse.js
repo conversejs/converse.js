@@ -1,10 +1,11 @@
 import i18n from '@converse/headless/shared/i18n';
 import log from '@converse/headless/log';
-import u from '@converse/headless/utils/core';
 import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { Router } from '@converse/skeletor/src/router.js';
 import { TimeoutError } from '@converse/headless/shared/errors';
+import { createStore, getDefaultStore } from '@converse/headless/shared/utils.js';
 import { getInitSettings } from '@converse/headless/shared/settings';
+import { getOpenPromise } from '@converse/openpromise';
 
 
 /**
@@ -18,7 +19,7 @@ const _converse = {
     CONNECTION_STATUS,
     templates: {},
     promises: {
-        'initialized': u.getResolveablePromise()
+        'initialized': getOpenPromise()
     },
 
     STATUS_WEIGHTS: {
@@ -79,6 +80,9 @@ const _converse = {
     isTestEnv: () => {
         return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
     },
+
+    getDefaultStore,
+    createStore,
 
     /**
      * Translate the given string based on the current locale.

@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 
 const tpl_headline_box = (o) => html`
     <div class="list-item controlbox-padded d-flex flex-row"

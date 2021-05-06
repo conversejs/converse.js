@@ -5,6 +5,7 @@ import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from "@converse/skeletor/src/model";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -16,7 +17,7 @@ const RosterContacts = Collection.extend({
     initialize () {
         const id = `roster.state-${_converse.bare_jid}-${this.get('jid')}`;
         this.state = new Model({ id, 'collapsed_groups': [] });
-        this.state.browserStorage = _converse.createStore(id);
+        initStorage(this.state, id);
         this.state.fetch();
     },
 

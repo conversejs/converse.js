@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { _converse, api } from "@converse/headless/core";
 
 export default o => html`

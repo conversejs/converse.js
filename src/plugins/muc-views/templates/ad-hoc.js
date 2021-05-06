@@ -1,7 +1,7 @@
 import tpl_command from './ad-hoc-command.js';
 import { __ } from 'i18n';
 import { getAutoCompleteList } from '../utils.js';
-import { html } from "lit-html";
+import { html } from "lit";
 
 
 export default (o) => {

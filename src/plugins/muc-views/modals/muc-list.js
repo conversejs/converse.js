@@ -1,4 +1,5 @@
 import BootstrapModal from "modals/base.js";
+import head from "lodash-es/head";
 import log from "@converse/headless/log";
 import tpl_list_chatrooms_modal from "../templates/muc-list.js";
 import tpl_muc_description from "../templates/muc-description.js";
@@ -6,7 +7,6 @@ import tpl_spinner from "templates/spinner.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getAttributes } from '@converse/headless/shared/parsers';
-import { head } from "lodash-es";
 
 const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;

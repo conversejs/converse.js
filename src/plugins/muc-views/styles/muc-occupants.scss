@@ -1,0 +1,135 @@
+.conversejs {
+    converse-muc.chatroom {
+        .box-flyout {
+            .occupants {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                overflow-x: hidden;
+                overflow-y: hidden;
+                vertical-align: top;
+                background-color: var(--occupants-background-color);
+                border-left: var(--occupants-border-left);
+                padding: 0.5em;
+                max-width: 75%;
+                min-width: 20%;
+                flex: 0 0 25%;
+
+                .occupants-header {
+                    display: flex;
+                    flex-direction: column;
+                    .hide-occupants {
+                        align-self: flex-end;
+                        cursor: pointer;
+                        font-size: var(--font-size-small);
+                    }
+                }
+
+                .occupants-header--title {
+                    margin-top: 0.5em;
+                    margin-bottom: 0.5em;
+                    display: flex;
+                    flex-direction: row;
+                }
+
+                .fa-user-plus {
+                    margin-right: 0.25em;
+                }
+
+                .occupants-heading {
+                    font-family: var(--heading-font);
+                    color: var(--groupchats-header-color-dark);
+                    padding-left: 0;
+                    margin-right: 1em;
+                }
+                .suggestion-box{
+                    ul {
+                        padding: 0;
+                        li {
+                            padding: 0.5em;
+                        }
+                    }
+                }
+                ul {
+                    padding: 0;
+                    margin-bottom: 0.5em;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    list-style: none;
+
+                    &.occupant-list {
+                        overflow-y: auto;
+                        flex-basis: 0;
+                        flex-grow: 1;
+                    }
+                    li {
+                        cursor: default;
+                        display: block;
+                        font-size: var(--font-size-small);
+                        overflow: hidden;
+                        padding: 0.25em 0.25em 0.25em 0;
+                        text-overflow: ellipsis;
+                        .fa {
+                            margin-right: 0.5em;
+                        }
+                        &.feature {
+                            font-size: var(--font-size-tiny);
+                        }
+                        &.occupant {
+                            cursor: pointer;
+
+                            .occupant-nick-badge {
+                                display: flex;
+                                justify-content: space-between;
+                                flex-wrap: wrap;
+
+                                .occupant-badges {
+                                    display: flex;
+                                    justify-content: flex-end;
+                                    flex-wrap: wrap;
+                                    flex-direction: row;
+
+                                    span {
+                                        margin-right: 0.25rem;
+                                    }
+                                }
+                            }
+
+                            div.row.no-gutters {
+                                flex-wrap: nowrap;
+                                min-height: 1.5em;
+                            }
+                            .badge {
+                                margin-bottom: 0.125rem;
+                            }
+
+                            .occupant-status {
+                                display: inline-block;
+                                margin: 0 0.5em 0.125em 0;
+                                width: 0.5em;
+                                height: 0.5em;
+
+                                &.occupant-online,
+                                &.occupant-chat {
+                                    background-color: #1A9707;
+                                }
+                                &.occupant-dnd {
+                                    background-color: red;
+                                }
+                                &.occupant-away {
+                                    background-color: darkorange;
+                                }
+                                &.occupant-xa {
+                                    background-color: orange;
+                                }
+                                &.occupant-offline {
+                                    background-color: darkgrey;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

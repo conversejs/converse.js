@@ -1,6 +1,6 @@
 import { CustomElement } from './element.js';
 import { __ } from 'i18n';
-import { html } from 'lit-element';
+import { html } from 'lit';
 import { renderAvatar } from "shared/directives/avatar.js";
 import { api } from "@converse/headless/core";
 

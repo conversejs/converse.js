@@ -1,13 +1,11 @@
-import { api, converse } from "../../core.js";
 import { Model } from '@converse/skeletor/src/model.js';
-
-const u = converse.env.utils;
-
+import { api } from "../../core.js";
+import { getOpenPromise } from '@converse/openpromise';
 
 const ModelWithContact = Model.extend({
 
     initialize () {
-        this.rosterContactAdded = u.getResolveablePromise();
+        this.rosterContactAdded = getOpenPromise();
     },
 
     async setRosterContact (jid) {

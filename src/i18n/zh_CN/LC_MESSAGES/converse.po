@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 12:35+0100\n"
-"PO-Revision-Date: 2021-01-20 09:32+0000\n"
-"Last-Translator: Lilian Wang <li330wang@gmail.com>\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
+"PO-Revision-Date: 2021-04-09 13:31+0200\n"
+"Last-Translator: Hangyu Feng <hangyu.feng@mail.utoronto.ca>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #. Strophe
 #: dist/converse-no-dependencies.js:42989
@@ -777,21 +777,23 @@ msgstr "编辑"
 msgid "Retract"
 msgstr "收回"
 
-#: dist/converse-no-dependencies.js:76316
+#: dist/converse-no-dependencies.js:76292
+#, fuzzy
 msgid "Show URL previews"
-msgstr ""
+msgstr "显示链接预览"
 
-#: dist/converse-no-dependencies.js:76316
+#: dist/converse-no-dependencies.js:76292
+#, fuzzy
 msgid "Hide URL previews"
-msgstr ""
+msgstr "隐藏链接预览"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Show URL preview"
-msgstr ""
+msgstr "显示链接预览"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Hide URL preview"
-msgstr ""
+msgstr "隐藏链接预览"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:76429
@@ -1174,7 +1176,7 @@ msgstr "抱歉，运行指令时出错。详细信息请查看开发者主控台
 
 #: dist/converse-no-dependencies.js:94078
 msgid "Loading configuration form"
-msgstr ""
+msgstr "正在加载配置表单"
 
 #: dist/converse-no-dependencies.js:94373
 msgid "Sorry, an error occurred while trying to submit the config form."

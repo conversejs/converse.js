@@ -4,7 +4,8 @@ import { ElementView } from '@converse/skeletor/src/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { render } from 'lit-html';
+import { initStorage } from '@converse/headless/shared/utils.js';
+import { render } from 'lit';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -31,10 +32,8 @@ export class RoomsList extends ElementView {
 
     initialize () {
         const id = `converse.roomspanel${_converse.bare_jid}`;
-        this.model = new (RoomsListModel.extend({
-            id,
-            'browserStorage': _converse.createStore(id)
-        }))();
+        this.model = new RoomsListModel({ id });
+        initStorage(this.model, id);
         this.model.fetch();
 
         this.listenTo(_converse.chatboxes, 'add', this.renderIfChatRoom)
@@ -89,16 +88,15 @@ export class RoomsList extends ElementView {
             'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
         }
         await api.rooms.open(jid, data, true);
-        api.chatviews.get(jid).maybeFocus();
     }
 
-    closeRoom (ev) { // eslint-disable-line class-methods-use-this
+    async closeRoom (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         const name = ev.target.getAttribute('data-room-name');
-        const jid = ev.target.getAttribute('data-room-jid');
         if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
-            // TODO: replace with API call
-            _converse.chatboxviews.get(jid).close();
+            const jid = ev.target.getAttribute('data-room-jid');
+            const room = await api.rooms.get(jid);
+            room.close();
         }
     }
 

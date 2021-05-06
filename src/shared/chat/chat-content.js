@@ -2,7 +2,7 @@ import "./message-history";
 import debounce from 'lodash/debounce';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from "@converse/headless/core";
-import { html } from 'lit-element';
+import { html } from 'lit';
 
 export default class ChatContent extends CustomElement {
 

@@ -3,7 +3,7 @@ import tpl_profile from './templates/profile.js';
 import { ElementViewWithAvatar } from 'shared/avatar.js';
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless/core';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 
 function getPrettyStatus (stat) {
@@ -28,9 +28,8 @@ class ProfileView extends ElementViewWithAvatar {
     async initialize () {
         this.model = _converse.xmppstatus;
         this.listenTo(this.model, "change", this.render);
-        this.listenTo(this.model.vcard, "change", this.render);
-
         await api.waitUntil('VCardsInitialized');
+        this.listenTo(this.model.vcard, "change", this.render);
         this.render();
     }
 

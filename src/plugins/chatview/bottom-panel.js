@@ -3,8 +3,10 @@ import tpl_toolbar from './templates/toolbar.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { html, render } from 'lit-html';
+import { html, render } from 'lit';
 import { clearMessages, parseMessageForCommands } from './utils.js';
+
+import './styles/chat-bottom-panel.scss';
 
 const { u } = converse.env;
 
@@ -185,15 +187,6 @@ export default class ChatBottomPanel extends ElementView {
             u.removeClass('correcting', textarea);
             textarea.style.height = 'auto';
             this.updateCharCounter(textarea.value);
-        }
-        if (message) {
-            /**
-             * Triggered whenever a message is sent by the user
-             * @event _converse#messageSend
-             * @type { _converse.Message }
-             * @example _converse.api.listen.on('messageSend', message => { ... });
-             */
-            api.trigger('messageSend', message);
         }
         if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround. The .chat-content area

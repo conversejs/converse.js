@@ -8,6 +8,7 @@ import log from "@converse/headless/log";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../core.js";
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
@@ -213,7 +214,8 @@ converse.plugins.add('converse-vcard', {
 
         _converse.initVCardCollection = async function () {
             _converse.vcards = new _converse.VCards();
-            _converse.vcards.browserStorage = _converse.createStore(`${_converse.bare_jid}-converse.vcards`);
+            const id = `${_converse.bare_jid}-converse.vcards`;
+            initStorage(_converse.vcards, id);
             await new Promise(resolve => {
                 _converse.vcards.fetch({
                     'success': resolve,

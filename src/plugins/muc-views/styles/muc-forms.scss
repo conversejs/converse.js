@@ -1,0 +1,39 @@
+converse-muc-config-form {
+    width: 100%;
+    overflow: auto;
+}
+
+.conversejs {
+    .chatroom {
+        .box-flyout {
+            .muc-form-container {
+                background-color: white;
+                border: 0;
+                color: var(--text-color);
+                font-size: var(--font-size);
+                height: 100%;
+                width: 100%;
+                overflow-y: auto;
+
+                .validation-message {
+                    font-size: 90%;
+                    color: var(--error-color);
+                }
+                input[type=button],
+                input[type=submit] {
+                    margin: 0 0.5em;
+                }
+                .button-primary {
+                    background-color: var(--chatroom-head-button-color);
+                }
+            }
+
+            .chatroom-form {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 2em;
+            }
+        }
+    }
+}

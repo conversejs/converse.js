@@ -1,7 +1,7 @@
 import { _converse } from '@converse/headless/core';
-import { html } from "lit-html";
+import { html } from "lit";
 import { renderAvatar } from 'shared/directives/avatar.js';
-import { until } from 'lit-html/directives/until.js';
+import { until } from 'lit/directives/until.js';
 
 
 export default (o) => {

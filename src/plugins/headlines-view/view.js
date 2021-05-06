@@ -1,7 +1,7 @@
 import BaseChatView from 'shared/chat/baseview.js';
 import tpl_headlines from './templates/headlines.js';
 import { _converse, api } from '@converse/headless/core';
-import { render } from 'lit-html';
+import { render } from 'lit';
 
 
 class HeadlinesView extends BaseChatView {

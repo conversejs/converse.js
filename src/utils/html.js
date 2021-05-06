@@ -4,6 +4,7 @@
  * @description This is the DOM/HTML utilities module.
  */
 import URI from "urijs";
+import isFunction from "lodash-es/isFunction";
 import log from '@converse/headless/log';
 import tpl_audio from  "../templates/audio.js";
 import tpl_file from "../templates/file.js";
@@ -19,8 +20,7 @@ import tpl_image from "../templates/image.js";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 import { api, converse } from  "@converse/headless/core";
-import { html, render } from "lit-html";
-import { isFunction } from "lodash-es";
+import { html, render } from "lit";
 
 const { sizzle } = converse.env;
 
@@ -526,7 +526,7 @@ u.fadeIn = function (el, callback) {
 
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
- * [TemplateResult](https://lit-html.polymer-project.org/api/classes/_lit_html_.templateresult.html).
+ * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
  * @method u#xForm2TemplateResult
  * @param { XMLElement } field - the field to convert
  * @param { XMLElement } stanza - the containing stanza

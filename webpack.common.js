@@ -18,7 +18,7 @@ module.exports = {
         "window": "window"
     }],
     watchOptions: {
-        ignored: [/dist/, /spec/, /.*\~/]
+        ignored: /dist/,
     },
     module: {
         rules: [
@@ -74,7 +74,12 @@ module.exports = {
             ]
         }, {
             test: /\.js$/,
-            include: /src/,
+            include: [
+                /src/,
+                /node_modules\/mergebounce/,
+                /node_modules\/lit-html/,
+                /node_modules\/strophe/,
+            ],
             use: {
                 loader: 'babel-loader',
                 options: {

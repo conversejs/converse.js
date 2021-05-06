@@ -16,7 +16,7 @@ OXIPNG			?= oxipng
 PAPER		 	=
 RJS				?= ./node_modules/.bin/r.js
 NPX				?= ./node_modules/.bin/npx
-SASS			?= ./node_modules/.bin/node-sass
+SASS			?= ./node_modules/.bin/sass
 SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS		=
@@ -119,7 +119,6 @@ package-lock.json: package.json
 
 node_modules: $(LERNA) package.json package-lock.json src/headless/package.json src/headless/package-lock.json
 	npm run lerna
-	npm rebuild node-sass
 
 .PHONY: clean
 clean:
@@ -143,8 +142,8 @@ dist/converse.js:: node_modules
 dist/converse.css:: node_modules
 	npm run dev
 
-dist/website.css:: node_modules
-	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@
+dist/website.css:: node_modules src
+	$(SASS) --load-path=$(BOOTSTRAP) src/shared/styles/website.scss $@
 
 dist/website.min.css:: node_modules dist/website.css
 	$(CLEANCSS) dist/website.css > $@

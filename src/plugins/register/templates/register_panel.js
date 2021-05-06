@@ -2,7 +2,7 @@ import tpl_registration_form from './registration_form.js';
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { api } from '@converse/headless/core';
-import { html } from 'lit-html';
+import { html } from 'lit';
 
 const tpl_form_request = () => {
     const default_domain = api.settings.get('registration_domain');

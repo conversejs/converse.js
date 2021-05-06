@@ -2,9 +2,9 @@ import debounce from 'lodash/debounce';
 import isElement from 'lodash/isElement';
 import log from "../log.js";
 import sizzle from 'sizzle';
-import u from '@converse/headless/utils/core';
 import { Strophe } from 'strophe.js/src/core';
 import { _converse, api, clearSession, tearDown } from "../core.js";
+import { getOpenPromise } from '@converse/openpromise';
 
 
 const BOSH_WAIT = 59;
@@ -331,7 +331,7 @@ export class Connection extends Strophe.Connection {
 
     restoreWorkerSession () {
         this.attach(this.onConnectStatusChanged);
-        this.worker_attach_promise = u.getResolveablePromise();
+        this.worker_attach_promise = getOpenPromise();
         return this.worker_attach_promise;
     }
 }

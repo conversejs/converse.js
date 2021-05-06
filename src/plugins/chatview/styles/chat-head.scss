@@ -1,0 +1,97 @@
+.conversejs {
+    .chatbox {
+        .chat-head {
+            display: flex;
+            flex-direction: row;
+            color: #ffffff;
+            font-size: 100%;
+            margin: 0;
+            padding: 0;
+            position: relative;
+
+            &.chat-head-chatbox {
+                background-color: var(--chat-head-color);
+            }
+
+            .avatar {
+                margin-right: 0.5em;
+            }
+
+            .show-msg-author-modal {
+                color: #ffffff !important;
+            }
+
+            .chat-head__desc {
+                color: var(--chat-head-color-lighten-50-percent);
+                font-size: var(--font-size-small);
+                margin: 0;
+                overflow: hidden;
+                padding: 0.5rem 1rem 0.5rem 1rem;
+                text-overflow: ellipsis;
+                width: 100%;
+                max-height: 5em;
+            }
+
+            .chatbox-title {
+                padding: 0.75rem 1rem 0 1rem;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .chatbox-title--no-desc {
+                padding: 0.75rem 1rem;
+            }
+
+            .chatbox-title--row {
+                display: flex;
+                flex-direction: row;
+                overflow: hidden;
+            }
+
+            .chatbox-title__text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .chatbox-title__buttons {
+                display: flex;
+                flex-direction: row-reverse;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+
+            a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+                &.chatbox-btn {
+                    &.fa,
+                    &.fas,
+                    &.far {
+                        color: white;
+                        &.button-on:before {
+                            padding: 0.2em;
+                            background-color: var(--chat-head-text-color);
+                            color: var(--chat-head-color);
+                        }
+                    }
+                }
+            }
+
+            .chatbox-btn {
+                color: white;
+                &.fa, &.far, &.fas  {
+                    color: white;
+                }
+                &:active {
+                    position: relative;
+                    top: 1px;
+                }
+                &.button-on:before {
+                    border-radius: 5%;
+                    background-color: var(--chat-head-text-color);
+                    color: var(--chat-head-color);
+                }
+            }
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import { __ } from '../../i18n';
-import { html } from "lit-html";
+import { html } from "lit";
 
 
 export const modal_close_button = html`<button type="button" class="btn btn-secondary" data-dismiss="modal">${__('Close')}</button>`;

@@ -4,7 +4,7 @@
  * @description Utility functions to help with parsing XEP-393 message styling hints
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
-import { html } from 'lit-element';
+import { html } from 'lit';
 import { renderStylingDirectiveBody } from 'shared/directives/styling.js';
 
 
@@ -124,7 +124,7 @@ function getDirectiveLength (d, text, i) {
         return 0;
     } else {
         const substring = text.slice(i+1);
-        let j;
+        let j = 0;
         let idx = substring.indexOf(d);
         while (idx !== -1) {
             if (isDirectiveEnd(d, i+1+idx, text)) return idx+1+2*d.length;

@@ -167,7 +167,7 @@ Accessing 3rd party libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Immediately inside the module shown above you can access 3rd party libraries (such
-dayjs and lodash) via the ``converse.env`` map.
+dayjs) via the ``converse.env`` map.
 
 The code for it could look something like this:
 
@@ -175,7 +175,7 @@ The code for it could look something like this:
 
     // Commonly used utilities and variables can be found under the "env"
     // namespace of the "converse" global.
-    const { Promise, Strophe, dayjs, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+    const { Promise, Strophe, dayjs, sizzle, $build, $iq, $msg, $pres } = converse.env;
 
 These dependencies are closured so that they don't pollute the global
 namespace, that's why you need to access them in such a way inside the module.
@@ -263,7 +263,8 @@ For example:
 Overriding a template
 ~~~~~~~~~~~~~~~~~~~~~
 
-Converse uses various templates, loaded with lodash, to generate its HTML.
+Converse uses `lit-html <https://lit-html.polymer-project.org/guide>`_
+templates.
 
 It's not possible to override a template with the plugin's ``overrides``
 feature, instead you should configure a new path to your own template via your
@@ -278,26 +279,6 @@ For example, in your webpack config file, you could add the following to the
 
 .. code-block:: javascript
 
-    module: {
-        {
-            test: /templates\/.*\.(html|svg)$/,
-            use: [{
-                loader: 'lodash-template-webpack-loader',
-                options: {
-                    escape: /\{\{\{([\s\S]+?)\}\}\}/g,
-                    evaluate: /\{\[([\s\S]+?)\]\}/g,
-                    interpolate: /\{\{([\s\S]+?)\}\}/g,
-                    // By default, template places the values from your data in the
-                    // local scope via the with statement. However, you can specify
-                    // a single variable name with the variable setting. This can
-                    // significantly improve the speed at which a template is able
-                    // to render.
-                    variable: 'o',
-                    prependFilenameComment: __dirname
-                }
-            }]
-        }
-    },
     resolve: {
         extensions: ['.js'],
         modules: [
@@ -305,17 +286,13 @@ For example, in your webpack config file, you could add the following to the
             path.join(__dirname, 'node_modules/converse.js/src')
         ],
         alias: {
-            'templates/profile_view.html$': path.resolve(__dirname, 'templates/profile_view.html')
+            'plugins/profile/templates/profile.js$': path.resolve(__dirname, 'templates/custom-profile.js')
         }
     }
 
-
-You'll need to install ``lodash-template-webpack-loader``.
-
-Currently Converse uses a fork of `lodash-template-webpack-loader <https://github.com/jcbrand/lodash-template-webpack-loader>`_.
-
-To install it, you can add ``"lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader"``
-to your package.json's ``devDependencies``.
+This will override the template that gets imported at the path ``plugins/profile/templates/profile.js``
+with your own template at the path ``templates/custom-profile.js`` (relative to
+your webpack config file).
 
 
 .. _`dependencies`:

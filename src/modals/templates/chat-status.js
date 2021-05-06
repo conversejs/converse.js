@@ -1,4 +1,4 @@
-import { html } from "lit-html";
+import { html } from "lit";
 import { modal_header_close_button } from "./buttons.js"
 
 

@@ -2,8 +2,8 @@ import 'shared/components/dropdown.js';
 import 'shared/components/rich-text.js';
 import { __ } from 'i18n';
 import { _converse } from "@converse/headless/core";
-import { html } from "lit-html";
-import { until } from 'lit-html/directives/until.js';
+import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 
 const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b, ''));
 

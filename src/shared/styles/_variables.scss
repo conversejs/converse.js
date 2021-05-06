@@ -1,7 +1,7 @@
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
 
-#conversejs, #conversejs-bg, body.converse-fullscreen {
+.conversejs, .conversejs-bg, body.converse-fullscreen {
     --subdued-color: #A8ABA1;
 
     --green: #3AA569;
@@ -193,7 +193,7 @@ $mobile_portrait_length: 480px !default;
     --list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
 }
 
-#conversejs.theme-concord {
+.conversejs.theme-concord {
     --avatar-border-radius: 10%;
     --avatar-border: 0px;
     --avatar-background-color: none;

@@ -1,8 +1,6 @@
 import BootstrapModal from './base.js';
 import tpl_prompt from "./templates/prompt.js";
-import { converse } from "@converse/headless/core";
-
-const u = converse.env.utils;
+import { getOpenPromise } from '@converse/openpromise';
 
 
 const Confirm = BootstrapModal.extend({
@@ -12,7 +10,7 @@ const Confirm = BootstrapModal.extend({
     },
 
     initialize () {
-        this.confirmation = u.getResolveablePromise();
+        this.confirmation = getOpenPromise();
         BootstrapModal.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change', this.render)
         this.el.addEventListener('closed.bs.modal', () => this.confirmation.reject(), false);

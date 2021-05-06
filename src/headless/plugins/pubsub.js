@@ -3,7 +3,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "./disco";
+import "./disco/index.js";
 import { _converse, api, converse } from "../core.js";
 import log from "../log.js";
 

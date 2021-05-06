@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 12:35+0100\n"
-"PO-Revision-Date: 2020-12-19 10:29+0000\n"
+"POT-Creation-Date: 2021-03-17 10:11+0100\n"
+"PO-Revision-Date: 2021-04-09 13:31+0200\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #. Strophe
 #: dist/converse-no-dependencies.js:42989
@@ -724,9 +724,8 @@ msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr "Ten unha mensaxe sen enviar que perderá se segue adiante. Está seguro?"
 
-#: dist/converse-no-dependencies.js:76031
-#: dist/converse-no-dependencies.js:76122
-#, fuzzy
+#: dist/converse-no-dependencies.js:76007
+#: dist/converse-no-dependencies.js:76098
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
@@ -735,12 +734,11 @@ msgstr ""
 "soporte para retirar mensaxes polo que esta mensaxe podería non ser "
 "eliminada deles."
 
-#: dist/converse-no-dependencies.js:76032
-#: dist/converse-no-dependencies.js:76129
-#: dist/converse-no-dependencies.js:76166
-#, fuzzy
+#: dist/converse-no-dependencies.js:76008
+#: dist/converse-no-dependencies.js:76105
+#: dist/converse-no-dependencies.js:76142
 msgid "Are you sure you want to retract this message?"
-msgstr "Seguro que queres eliminar esta mensaxe?"
+msgstr "Tes a certeza de que queres eliminar esta mensaxe?"
 
 #: dist/converse-no-dependencies.js:76039
 #: dist/converse-no-dependencies.js:76136
@@ -758,33 +756,29 @@ msgstr "Caducou a solicitude de borrado da mensaxe"
 msgid "Sorry, you're not allowed to retract this message."
 msgstr "Desculpa, pero non tes permiso para borrar esta mensaxe."
 
-#: dist/converse-no-dependencies.js:76190
-#, fuzzy
+#: dist/converse-no-dependencies.js:76166
 msgid "You are about to retract this message."
 msgstr "Vas a eliminar esta mensaxe."
 
-#: dist/converse-no-dependencies.js:76190
-#, fuzzy
+#: dist/converse-no-dependencies.js:76166
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
-"De xeito opcional poderías deixar un aviso, explicando a razón de tela "
+"De xeito optativo poderías deixar un aviso, explicando a razón de tela "
 "eliminado."
 
-#: dist/converse-no-dependencies.js:76197
-#, fuzzy
+#: dist/converse-no-dependencies.js:76173
 msgid "Message Retraction"
-msgstr "Versións da mensaxe"
+msgstr "Retirar mensaxe"
 
 #: dist/converse-no-dependencies.js:76197
 msgid "Optional reason"
 msgstr "Razón (optativo)"
 
-#: dist/converse-no-dependencies.js:76208
-#, fuzzy
+#: dist/converse-no-dependencies.js:76184
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Desculpa, pero non tes permiso para borrar esta mensaxe."
+msgstr "Desculpa, pero non tes permiso para eliminar esta mensaxe."
 
 #: dist/converse-no-dependencies.js:76270
 msgid "Cancel Editing"
@@ -800,19 +794,19 @@ msgstr "Retractar"
 
 #: dist/converse-no-dependencies.js:76316
 msgid "Show URL previews"
-msgstr ""
+msgstr "Mostrar vista previa de URLs"
 
 #: dist/converse-no-dependencies.js:76316
 msgid "Hide URL previews"
-msgstr ""
+msgstr "Agochar vista previa de URLs"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Show URL preview"
-msgstr ""
+msgstr "Mostar vista previa do URL"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Hide URL preview"
-msgstr ""
+msgstr "Agochar vista previa do URL"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:76429
@@ -1201,7 +1195,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94078
 msgid "Loading configuration form"
-msgstr ""
+msgstr "Cargando formulario de configuración"
 
 #: dist/converse-no-dependencies.js:94373
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1453,21 +1447,21 @@ msgstr "Establecer o asunto da conversa (alias para /subject)"
 msgid "Allow muted user to post messages"
 msgstr "Permitir as usuarias acaladas publicar mensaxes"
 
-#: dist/converse-no-dependencies.js:96345
-#, fuzzy
+#: dist/converse-no-dependencies.js:96184
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
-msgstr "Moveuse a conversa. Pulse abaixo para entrar."
+msgstr ""
+"Moveuse a conversa a un novo enderezo. Preme a ligazón inferior para entrar."
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:96353
 msgid "This groupchat no longer exists"
 msgstr "Esta conversa en grupo xa non existe"
 
-#: dist/converse-no-dependencies.js:96355
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:96194
+#, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "A razón dada é: \"%1$s\"."
+msgstr "A razón do cambio é: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:96851
 #, javascript-format

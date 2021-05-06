@@ -1,8 +1,8 @@
 import xss from "xss/dist/xss";
 import { __ } from 'i18n';
-import { html } from "lit-html";
+import { html } from "lit";
 import { modal_header_close_button } from "modals/templates/buttons.js"
-import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 
 const nickname_input = (o) => {

@@ -2,7 +2,6 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import './polyfill';
 import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
@@ -20,6 +19,7 @@ import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
+import { initStorage } from '@converse/headless/shared/utils.js';
 import {
     clearUserSettings,
     extendAppSettings,
@@ -34,7 +34,8 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
 import { createStore, replacePromise } from '@converse/headless/shared/utils';
-import { html } from 'lit-element';
+import { getOpenPromise } from '@converse/openpromise';
+import { html } from 'lit';
 import { sprintf } from 'sprintf-js';
 
 export { _converse };
@@ -347,8 +348,14 @@ export const api = _converse.api = {
          * @method _converse.api.user.logout
          * @example _converse.api.user.logout();
          */
-        logout () {
-            const promise = u.getResolveablePromise();
+        async logout () {
+            /**
+             * Triggered before the user is logged out
+             * @event _converse#beforeLogout
+             */
+            await api.trigger('beforeLogout', {'synchronous': true});
+
+            const promise = getOpenPromise();
             const complete = () => {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach(replacePromise);
@@ -394,7 +401,7 @@ export const api = _converse.api = {
              * Get the value of a particular user setting.
              * @method _converse.api.user.settings.get
              * @param {String} key - The setting name
-             * @param {*} fallback - An optional fallback value if the user setting is undefined
+             * @param {*} [fallback] - An optional fallback value if the user setting is undefined
              * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
              * @example _converse.api.user.settings.get("foo");
              */
@@ -556,7 +563,7 @@ export const api = _converse.api = {
         add (promises, replace=true) {
             promises = Array.isArray(promises) ? promises : [promises];
             promises.forEach(name => {
-                const promise = u.getResolveablePromise();
+                const promise = getOpenPromise();
                 promise.replace = replace;
                 _converse.promises[name] = promise;
             });
@@ -773,19 +780,6 @@ function initPersistentStorage () {
     _converse.storage['persistent'] = Storage.localForage.createInstance(config);
 }
 
-
-_converse.getDefaultStore = function () {
-    if (_converse.config.get('trusted')) {
-        const is_non_persistent = api.settings.get('persistent_store') === 'sessionStorage';
-        return is_non_persistent ? 'session': 'persistent';
-    } else {
-        return 'session';
-    }
-}
-
-_converse.createStore = createStore;
-
-
 function initPlugins () {
     // If initialize gets called a second time (e.g. during tests), then we
     // need to re-apply all plugins (for a new converse instance), and we
@@ -993,8 +987,8 @@ async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (_converse.session?.get('id') !== id) {
-        _converse.session = new Model({id});
-        _converse.session.browserStorage = createStore(id, is_shared_session ? "persistent" : "session");
+        _converse.session = new Model({ id });
+        initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
 
         if (!is_shared_session && _converse.session.get('active')) {
@@ -1425,13 +1419,3 @@ Object.assign(converse, {
         u,
     }
 });
-
-/**
- * Once Converse.js has loaded, it'll dispatch a custom event with the name `converse-loaded`.
- * You can listen for this event in order to be informed as soon as converse.js has been
- * loaded and parsed, which would mean it's safe to call `converse.initialize`.
- * @event converse-loaded
- * @example window.addEventListener('converse-loaded', () => converse.initialize());
- */
-const ev = new CustomEvent('converse-loaded', {'detail': { converse }});
-window.dispatchEvent(ev);

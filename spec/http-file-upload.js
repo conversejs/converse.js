@@ -305,11 +305,11 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</message>`);
                     const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
-                    expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(img_link_el.outerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
 
-                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `Download image file "conversejs-filled.svg"</a>`);
                     XMLHttpRequest.prototype.send = send_backup;
@@ -409,11 +409,11 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</message>`);
                     const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
-                    expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(img_link_el.outerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
 
-                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `Download image file "conversejs-filled.svg"</a>`);
 
@@ -422,18 +422,17 @@ describe("XEP-0363: HTTP File Upload", function () {
                 }));
 
                 it("shows an error message if the file is too large",
-                        mock.initConverse([], {}, async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
                     const IQ_stanzas = _converse.connection.IQ_stanzas;
                     const IQ_ids =  _converse.connection.IQ_ids;
 
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
-                    await u.waitUntil(() => _.filter(
-                        IQ_stanzas,
+                    await u.waitUntil(() => IQ_stanzas.filter(
                         iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                     );
 
-                    let stanza = _.find(IQ_stanzas, function (iq) {
+                    let stanza = IQ_stanzas.find(function (iq) {
                         return iq.querySelector(
                             'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                     });
@@ -455,8 +454,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                     let entities = await _converse.api.disco.entities.get();
 
                     expect(entities.length).toBe(2);
-                    expect(_.includes(entities.pluck('jid'), 'montague.lit')).toBe(true);
-                    expect(_.includes(entities.pluck('jid'), 'romeo@montague.lit')).toBe(true);
+                    expect(entities.pluck('jid').includes('montague.lit')).toBe(true);
+                    expect(entities.pluck('jid').includes('romeo@montague.lit')).toBe(true);
 
                     expect(entities.get(_converse.domain).features.length).toBe(2);
                     expect(entities.get(_converse.domain).identities.length).toBe(1);
@@ -469,7 +468,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         }).length > 0;
                     }, 300);
 
-                    stanza = _.find(IQ_stanzas, function (iq) {
+                    stanza = IQ_stanzas.find(function (iq) {
                         return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                     });
                     var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
@@ -497,7 +496,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         }).length > 0;
                     }, 300);
 
-                    stanza = _.find(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'));
+                    stanza = IQ_stanzas.find(iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'));
                     const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                     expect(Strophe.serialize(stanza)).toBe(
                         `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">`+

@@ -1,7 +1,8 @@
 import isNaN from "lodash/isNaN";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, converse } from "@converse/headless/core";
+import { converse } from "@converse/headless/core";
+import { initStorage } from '@converse/headless/shared/utils.js';
 
 const { Strophe, dayjs, sizzle } = converse.env;
 
@@ -17,7 +18,8 @@ export const Presence = Model.extend({
     initialize () {
         this.resources = new Resources();
         const id = `converse.identities-${this.get('jid')}`;
-        this.resources.browserStorage = _converse.createStore(id, "session");
+        initStorage(this.resources, id, 'session');
+
         this.listenTo(this.resources, 'update', this.onResourcesChanged);
         this.listenTo(this.resources, 'change', this.onResourcesChanged);
     },

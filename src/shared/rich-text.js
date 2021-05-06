@@ -3,7 +3,7 @@ import log from '@converse/headless/log';
 import { _converse, api, converse } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import { convertASCII2Emoji, getCodePointReferences, getEmojiMarkup, getShortnameReferences } from '@converse/headless/plugins/emoji/index.js';
-import { html } from 'lit-html';
+import { html } from 'lit';
 
 const u = converse.env.utils;
 
@@ -22,7 +22,7 @@ const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
  * A String subclass that is used to render rich text (i.e. text that contains
  * hyperlinks, images, mentions, styling etc.).
  *
- * The "rich" parts of the text is represented by lit-html TemplateResult
+ * The "rich" parts of the text is represented by lit TemplateResult
  * objects which are added via the {@link RichText.addTemplateResult}
  * method and saved as metadata.
  *
@@ -275,7 +275,7 @@ export class RichText extends String {
     }
 
     /**
-     * The "rich" markup parts of a chat message are represented by lit-html
+     * The "rich" markup parts of a chat message are represented by lit
      * TemplateResult objects.
      *
      * This method can be used to add new template results to this message's
@@ -286,7 +286,7 @@ export class RichText extends String {
      * which is being replaced with markup.
      * @param { Number } end - The ending index of the plain message text
      * which is being replaced with markup.
-     * @param { Object } template - The lit-html TemplateResult instance
+     * @param { Object } template - The lit TemplateResult instance
      */
     addTemplateResult (begin, end, template) {
         this.references.push({begin, end, template});

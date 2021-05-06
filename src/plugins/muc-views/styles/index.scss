@@ -13,8 +13,8 @@ converse-muc-destroyed {
     height: 100%;
 }
 
-.converse-root.converse-embedded,
-.converse-root {
+.conversejs.converse-embedded,
+.conversejs {
     .badge--muc {
         background-color: var(--groupchats-header-color);
     }
@@ -30,7 +30,7 @@ converse-muc-destroyed {
 
 /* ******************* Overlay  styles *************************** */
 
-.converse-root {
+.conversejs {
     converse-chats {
         &.converse-overlayed {
             .chatbox {
@@ -162,7 +162,7 @@ converse-muc-destroyed {
 
 
 @include media-breakpoint-down(sm) {
-    .converse-root {
+    .conversejs {
         converse-chats.converse-mobile,
         converse-chats.converse-overlayed,
         converse-chats.converse-fullscreen {

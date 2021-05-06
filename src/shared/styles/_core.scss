@@ -1,4 +1,4 @@
-.converse-root {
+.conversejs {
     bottom: 0;
     height: 100%;
     position: fixed;
@@ -447,7 +447,7 @@
         font-size: 3.75em;
       }
     }
-    .converse-root:not(.converse-embedded)  {
+    .conversejs:not(.converse-embedded)  {
         .chatbox  {
             .chat-body {
                 border-radius: var(--chatbox-border-radius);
@@ -461,33 +461,33 @@
 
 
 @media screen and (min-width: 576px) {
-    .converse-root .offset-sm-2 {
+    .conversejs .offset-sm-2 {
         margin-left: 16.666667%;
     }
 }
 @media screen and (min-width: 768px) {
-    .converse-root .offset-md-2 {
+    .conversejs .offset-md-2 {
         margin-left: 16.666667%;
     }
-    .converse-root .offset-md-3 {
+    .conversejs .offset-md-3 {
         margin-left: 25%;
     }
 }
 @media screen and (min-width: 992px) {
-    .converse-root .offset-lg-2 {
+    .conversejs .offset-lg-2 {
         margin-left: 16.666667%;
     }
-    .converse-root .offset-lg-3 {
+    .conversejs .offset-lg-3 {
         margin-left: 25%;
     }
 }
 @media screen and (min-width: 1200px) {
-    .converse-root .offset-xl-2 {
+    .conversejs .offset-xl-2 {
         margin-left: 16.666667%;
     }
 }
 @media screen and (max-height: 450px) {
-  .converse-root {
+  .conversejs {
     left: 0;
   }
 }

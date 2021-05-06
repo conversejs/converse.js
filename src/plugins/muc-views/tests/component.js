@@ -19,7 +19,7 @@ describe("The <converse-muc> component", function () {
         await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
 
         const span_el = document.createElement('span');
-        span_el.classList.add('converse-root');
+        span_el.classList.add('conversejs');
         span_el.classList.add('converse-embedded');
 
         const muc_el = document.createElement('converse-muc');

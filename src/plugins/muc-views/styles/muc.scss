@@ -4,7 +4,7 @@
 @import "plugins/chatview/styles/chatbox.scss";
 @import "./muc-forms.scss";
 
-.converse-root {
+.conversejs {
     .chatroom {
         width: var(--chatroom-width);
         @media screen and (max-height: $mobile-landscape-height){

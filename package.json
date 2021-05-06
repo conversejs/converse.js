@@ -83,7 +83,7 @@
     "exports-loader": "^0.7.0",
     "fast-text-encoding": "^1.0.3",
     "file-loader": "^6.0.0",
-    "html-webpack-plugin": "^4.3.0",
+    "html-webpack-plugin": "^5.3.1",
     "http-server": "^0.12.3",
     "imports-loader": "^0.8.0",
     "install": "^0.13.0",
@@ -110,8 +110,8 @@
     "sinon": "^9.2.4",
     "style-loader": "^0.23.1",
     "webpack": "^5.36.1",
-    "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^3.11.2",
+    "webpack-cli": "^4.6.0",
+    "webpack-dev-server": "^4.0.0-beta.2",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {

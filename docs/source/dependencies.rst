@@ -2,9 +2,9 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
 
-============
-Dependencies
-============
+=============================
+Starting up a dev environment
+=============================
 
 Installing the 3rd party dependencies
 =====================================
@@ -64,30 +64,12 @@ the list under the ``devDependencies`` in `package.json <https://github.com/jcbr
     where you can log in and be taken directly to the chatroom.
 
 
-Brief description of Converse's dependencies
-===============================================
-
-Converse relies on the following dependencies:
-
-* `DayJS <https://github.com/iamkun/dayjs>`_ provides a better API for handling dates and times.
-* `Strophe.js <http://strophe.im/>`_ maintains the XMPP session, is used to
-  build XMPP stanzas, to send them, and to register handlers for received stanzas.
-* `lodash <https://lodash.com/>`_ provides very useful utility functions.
-* `Skeletor <https://github.com/skeletorjs/skeletor/>`_, a `Backbone <http://backbonejs.org/>`_ fork
-  which is used to model the data as Models and Collections and to create Views that render the UI.
-* `pluggable.js <https://github.com/jcbrand/pluggable.js>`_ provides the plugin
-  architecture for Converse. It registers and initializes plugins and
-  allows existing attributes, functions and objects on Converse to be
-  overridden inside plugins.
-
 .. _`dependency-libsignal`:
 
 Libsignal
 ---------
 
-If you want OMEMO encryption, you need to load `libsignal
-<https://github.com/signalapp/libsignal-protocol-javascript>`_ separately in
-your page.
+If you want OMEMO encryption, you need to load `libsignal <https://github.com/signalapp/libsignal-protocol-javascript>`_ separately in your page.
 
 For example::
 

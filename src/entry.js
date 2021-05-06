@@ -64,4 +64,15 @@ const converse = {
 }
 
 window.converse = converse;
+
+/**
+ * Once Converse.js has loaded, it'll dispatch a custom event with the name `converse-loaded`.
+ * You can listen for this event in order to be informed as soon as converse.js has been
+ * loaded and parsed, which would mean it's safe to call `converse.initialize`.
+ * @event converse-loaded
+ * @example window.addEventListener('converse-loaded', () => converse.initialize());
+ */
+const ev = new CustomEvent('converse-loaded', {'detail': { converse }});
+window.dispatchEvent(ev);
+
 export default converse;

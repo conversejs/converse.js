@@ -108,8 +108,6 @@ converse.plugins.add('converse-bookmarks', {
             }
         });
 
-        api.listen.on('reconnected', initBookmarks);
-
         api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
             const { connection } = _converse;

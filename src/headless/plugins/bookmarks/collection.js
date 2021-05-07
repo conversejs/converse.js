@@ -7,7 +7,6 @@ import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
 
 const { Strophe, $iq, sizzle } = converse.env;
-const u = converse.env.utils;
 
 
 const Bookmarks = {

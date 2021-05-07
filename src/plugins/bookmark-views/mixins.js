@@ -1,7 +1,4 @@
-import invokeMap from 'lodash-es/invokeMap';
-import { Model } from '@converse/skeletor/src/model.js';
-import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, converse } from '@converse/headless/core';
 
 const { u } = converse.env;
 
@@ -43,29 +40,3 @@ export const bookmarkableChatRoomView = {
         }
     }
 };
-
-
-export const eventMethods = {
-
-    removeBookmarkViaEvent (ev) {
-        /* Remove a bookmark as determined by the passed in
-         * event.
-         */
-        ev.preventDefault();
-        const name = ev.target.getAttribute('data-bookmark-name');
-        const jid = ev.target.getAttribute('data-room-jid');
-        if (confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name))) {
-            invokeMap(_converse.bookmarks.where({ 'jid': jid }), Model.prototype.destroy);
-        }
-    },
-
-    async addBookmarkViaEvent (ev) {
-        /* Add a bookmark as determined by the passed in
-         * event.
-         */
-        ev.preventDefault();
-        const jid = ev.target.getAttribute('data-room-jid');
-        const room = await api.rooms.open(jid, { 'bring_to_foreground': true });
-        room.session.save('view', converse.MUC.VIEWS.BOOKMARK);
-    }
-}

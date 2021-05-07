@@ -10,6 +10,23 @@ export async function checkBookmarksSupport () {
     }
 }
 
+export async function initBookmarks () {
+    if (!api.settings.get('allow_bookmarks')) {
+        return;
+    }
+    if (await checkBookmarksSupport()) {
+        _converse.bookmarks = new _converse.Bookmarks();
+        await _converse.bookmarks.fetchBookmarks();
+        /**
+         * Triggered once the _converse.Bookmarks collection
+         * has been created and cached bookmarks have been fetched.
+         * @event _converse#bookmarksInitialized
+         * @example _converse.api.listen.on('bookmarksInitialized', () => { ... });
+         */
+        api.trigger('bookmarksInitialized');
+    }
+}
+
 /**
   * Check if the user has a bookmark with a saved nickanme
   * for this groupchat and return it.

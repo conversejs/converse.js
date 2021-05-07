@@ -3,41 +3,38 @@ import log from "@converse/headless/log";
 import tpl_moderator_tools_modal from "../templates/moderator-tools.js";
 import { AFFILIATIONS, ROLES } from "@converse/headless/plugins/muc/index.js";
 import { __ } from 'i18n';
-import { api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core";
 import { getAffiliationList, setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js'
 
 const { Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
-let _converse;
 
 
-export default BootstrapModal.extend({
+const ModeratorToolsModal = BootstrapModal.extend({
     id: "converse-modtools-modal",
     persistent: true,
 
     initialize (attrs) {
-        _converse  = attrs._converse;
-        this.chatroomview = attrs.chatroomview;
+        this.muc = attrs.muc;
         BootstrapModal.prototype.initialize.apply(this, arguments);
 
         this.affiliations_filter = '';
         this.roles_filter = '';
 
         this.listenTo(this.model, 'change:role', () => {
-            this.users_with_role = this.chatroomview.model.getOccupantsWithRole(this.model.get('role'));
+            this.users_with_role = this.muc.getOccupantsWithRole(this.model.get('role'));
             this.render();
         });
         this.listenTo(this.model, 'change:affiliation', async () => {
             this.loading_users_with_affiliation = true;
             this.users_with_affiliation = null;
             this.render();
-            const chatroom = this.chatroomview.model;
             const affiliation = this.model.get('affiliation');
             if (this.shouldFetchAffiliationsList()) {
-                const muc_jid = chatroom.get('jid');
+                const muc_jid = this.muc.get('jid');
                 this.users_with_affiliation = await getAffiliationList(affiliation, muc_jid);
             } else {
-                this.users_with_affiliation = chatroom.getOccupantsWithAffiliation(affiliation);
+                this.users_with_affiliation = this.muc.getOccupantsWithAffiliation(affiliation);
             }
             this.loading_users_with_affiliation = false;
             this.render();
@@ -45,7 +42,7 @@ export default BootstrapModal.extend({
     },
 
     toHTML () {
-        const occupant = this.chatroomview.model.occupants.findWhere({'jid': _converse.bare_jid});
+        const occupant = this.muc.occupants.findWhere({'jid': _converse.bare_jid});
         return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
             'affiliations_filter': this.affiliations_filter,
             'assignAffiliation': ev => this.assignAffiliation(ev),
@@ -100,7 +97,7 @@ export default BootstrapModal.extend({
         if (affiliation === 'none') {
             return false;
         }
-        const chatroom = this.chatroomview.model;
+        const chatroom = this.muc;
         const auto_fetched_affs = chatroom.occupants.getAutoFetchedAffiliationLists();
         if (auto_fetched_affs.includes(affiliation)) {
             return false;
@@ -159,7 +156,7 @@ export default BootstrapModal.extend({
             'reason': data.get('reason')
         }
         const current_affiliation = this.model.get('affiliation');
-        const muc_jid = this.chatroomview.model.get('jid');
+        const muc_jid = this.muc.get('jid');
         try {
             await setAffiliation(affiliation, muc_jid, [attrs]);
         } catch (e) {
@@ -174,7 +171,7 @@ export default BootstrapModal.extend({
             return;
         }
         this.alert(__('Affiliation changed'), 'primary');
-        await this.chatroomview.model.occupants.fetchMembers()
+        await this.muc.occupants.fetchMembers()
         this.model.set({'affiliation': null}, {'silent': true});
         this.model.set({'affiliation': current_affiliation});
     },
@@ -183,11 +180,11 @@ export default BootstrapModal.extend({
         ev.stopPropagation();
         ev.preventDefault();
         const data = new FormData(ev.target);
-        const occupant = this.chatroomview.model.getOccupant(data.get('jid') || data.get('nick'));
+        const occupant = this.muc.getOccupant(data.get('jid') || data.get('nick'));
         const role = data.get('role');
         const reason = data.get('reason');
         const current_role = this.model.get('role');
-        this.chatroomview.model.setRole(occupant, role, reason,
+        this.muc.setRole(occupant, role, reason,
             () => {
                 this.alert(__('Role changed'), 'primary');
                 this.model.set({'role': null}, {'silent': true});
@@ -206,3 +203,5 @@ export default BootstrapModal.extend({
         );
     }
 });
+
+export default ModeratorToolsModal;

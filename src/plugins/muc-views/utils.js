@@ -1,5 +1,7 @@
+import ModeratorToolsModal from './modals/moderator-tools.js';
 import log from "@converse/headless/log";
 import tpl_spinner from 'templates/spinner.js';
+import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit";
@@ -68,6 +70,14 @@ export function fetchAndSetMUCDomain (controlboxview) {
     }
 }
 
+export function getNicknameRequiredTemplate (model) {
+    const jid = model.get('jid');
+    if (api.settings.get('muc_show_logs_before_join')) {
+        return html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>`;
+    } else {
+        return html`<converse-muc-nickname-form jid="${jid}"></converse-muc-nickname-form>`;
+    }
+}
 
 export function getChatRoomBodyTemplate (o) {
     const view = o.model.session.get('view');
@@ -84,14 +94,13 @@ export function getChatRoomBodyTemplate (o) {
             ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
             ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>` : '' }
             ${ conn_status == RS.CONNECTING ? tpl_spinner() : '' }
-            ${ conn_status == RS.NICKNAME_REQUIRED ? o.getNicknameRequiredTemplate() : '' }
+            ${ conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(o.model) : '' }
             ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
             ${ conn_status == RS.BANNED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
             ${ conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : '' }
         `;
     }
 }
-
 
 export function getAutoCompleteListItem (text, input) {
     input = input.trim();
@@ -232,6 +241,21 @@ function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
 }
 
 
+function showModeratorToolsModal (muc, affiliation) {
+    if (!muc.verifyRoles(['moderator'])) {
+        return;
+    }
+    let modal = api.modal.get(ModeratorToolsModal.id);
+    if (modal) {
+        modal.model.set({ affiliation });
+    } else {
+        const model = new Model({ affiliation });
+        modal = api.modal.create(ModeratorToolsModal, { model, muc });
+    }
+    modal.show();
+}
+
+
 export function parseMessageForMUCCommands (muc, text) {
     if (
         api.settings.get('muc_disable_slash_commands') &&
@@ -259,8 +283,7 @@ export function parseMessageForMUCCommands (muc, text) {
             break;
         }
         case 'modtools': {
-            const chatview = _converse.chatboxviews.get(muc.get('jid'));
-            chatview.showModeratorToolsModal(args);
+            showModeratorToolsModal(muc, args);
             break;
         }
         case 'deop': {

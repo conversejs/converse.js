@@ -1,14 +1,7 @@
-/**
- * @module converse-caps
- * @copyright 2020, the Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- */
 import SHA1 from 'strophe.js/src/sha1';
-import { converse } from "@converse/headless/core";
+import { converse } from '@converse/headless/core';
 
 const { Strophe, $build } = converse.env;
-
-Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
 
 function propertySort (array, property) {
     return array.sort((a, b) => { return a[property] > b[property] ? -1 : 1 });
@@ -30,7 +23,7 @@ function generateVerificationString (_converse) {
     return SHA1.b64_sha1(S);
 }
 
-function createCapsNode (_converse) {
+export function createCapsNode (_converse) {
     return $build("c", {
         'xmlns': Strophe.NS.CAPS,
         'hash': "sha-1",
@@ -38,19 +31,3 @@ function createCapsNode (_converse) {
         'ver': generateVerificationString(_converse)
     }).nodeTree;
 }
-
-converse.plugins.add('converse-caps', {
-
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        XMPPStatus: {
-            constructPresence () {
-                const presence = this.__super__.constructPresence.apply(this, arguments);
-                presence.root().cnode(createCapsNode(this.__super__._converse)).up();
-                return presence;
-            }
-        }
-    }
-});

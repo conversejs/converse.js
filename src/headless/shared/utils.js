@@ -16,7 +16,7 @@ export function createStore (id, store) {
     const name = store || getDefaultStore();
     const s = _converse.storage[name];
     if (typeof s === 'undefined') {
-        throw new TypeError(`createStore: Could not find store for %{id}`);
+        throw new TypeError(`createStore: Could not find store for ${id}`);
     }
     return new Storage(id, s, api.settings.get('persistent_store') === 'IndexedDB');
 }

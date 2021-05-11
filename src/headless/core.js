@@ -202,7 +202,7 @@ export const api = _converse.api = {
                 await _converse.setUserJID(api.settings.get("jid"));
             }
 
-            if (_converse.connection.reconnecting) {
+            if (_converse.connection?.reconnecting) {
                 _converse.connection.debouncedReconnect();
             } else {
                 return _converse.connection.reconnect();
@@ -987,6 +987,8 @@ async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (_converse.session?.get('id') !== id) {
+        initPersistentStorage();
+
         _converse.session = new Model({ id });
         initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
@@ -998,7 +1000,6 @@ async function initSession (jid) {
             _converse.session.save({id});
         }
         saveJIDtoSession(jid);
-        initPersistentStorage();
         /**
          * Triggered once the user's session has been initialized. The session is a
          * cache which stores information about the user's current session.

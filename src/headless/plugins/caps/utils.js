@@ -1,5 +1,5 @@
 import SHA1 from 'strophe.js/src/sha1';
-import { converse } from '@converse/headless/core';
+import { _converse, converse } from '@converse/headless/core';
 
 const { Strophe, $build } = converse.env;
 
@@ -7,7 +7,7 @@ function propertySort (array, property) {
     return array.sort((a, b) => { return a[property] > b[property] ? -1 : 1 });
 }
 
-function generateVerificationString (_converse) {
+function generateVerificationString () {
     const identities = _converse.api.disco.own.identities.get();
     const features = _converse.api.disco.own.features.get();
 
@@ -23,11 +23,11 @@ function generateVerificationString (_converse) {
     return SHA1.b64_sha1(S);
 }
 
-export function createCapsNode (_converse) {
+export function createCapsNode () {
     return $build("c", {
         'xmlns': Strophe.NS.CAPS,
         'hash': "sha-1",
         'node': "https://conversejs.org",
-        'ver': generateVerificationString(_converse)
+        'ver': generateVerificationString()
     }).nodeTree;
 }

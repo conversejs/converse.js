@@ -241,7 +241,7 @@ function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
 }
 
 
-function showModeratorToolsModal (muc, affiliation) {
+export function showModeratorToolsModal (muc, affiliation) {
     if (!muc.verifyRoles(['moderator'])) {
         return;
     }

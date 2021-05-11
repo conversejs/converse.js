@@ -48,6 +48,8 @@ describe("XEP-0198 Stream Management", function () {
             `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
                 `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`]);
 
+        await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'presence')).length);
+
         const disco_iq = IQ_stanzas.pop();
         expect(expected_IQs(disco_iq).includes(Strophe.serialize(disco_iq))).toBe(true);
         iq = IQ_stanzas.pop();

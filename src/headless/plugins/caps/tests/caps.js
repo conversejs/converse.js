@@ -21,7 +21,7 @@ describe("A sent presence stanza", function () {
         _converse.api.disco.own.features.add("http://jabber.org/protocol/disco#items");
         _converse.api.disco.own.features.add("http://jabber.org/protocol/muc");
 
-        const presence = _converse.xmppstatus.constructPresence();
+        const presence = await _converse.xmppstatus.constructPresence();
         expect(presence.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<priority>0</priority>`+
@@ -30,9 +30,9 @@ describe("A sent presence stanza", function () {
         done();
     }));
 
-    it("has a given priority", mock.initConverse(['statusInitialized'], {}, (done, _converse) => {
+    it("has a given priority", mock.initConverse(['statusInitialized'], {}, async (done, _converse) => {
         const { api } = _converse;
-        let pres = _converse.xmppstatus.constructPresence('online', null, 'Hello world');
+        let pres = await _converse.xmppstatus.constructPresence('online', null, 'Hello world');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<status>Hello world</status>`+
@@ -40,8 +40,9 @@ describe("A sent presence stanza", function () {
                 `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
+
         api.settings.set('priority', 2);
-        pres = _converse.xmppstatus.constructPresence('away', null, 'Going jogging');
+        pres = await _converse.xmppstatus.constructPresence('away', null, 'Going jogging');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<show>away</show>`+
@@ -52,7 +53,7 @@ describe("A sent presence stanza", function () {
         );
 
         api.settings.set('priority', undefined);
-        pres = _converse.xmppstatus.constructPresence('dnd', null, 'Doing taxes');
+        pres = await _converse.xmppstatus.constructPresence('dnd', null, 'Doing taxes');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+
                 `<show>dnd</show>`+

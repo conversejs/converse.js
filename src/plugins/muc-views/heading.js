@@ -6,10 +6,10 @@ import tpl_muc_head from './templates/muc-head.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { showModeratorToolsModal } from './utils.js';
 import {
     getHeadingDropdownItem,
     getHeadingStandaloneButton,
-    showModeratorToolsModal
 } from 'plugins/chatview/utils.js';
 
 import './styles/muc-head.scss';

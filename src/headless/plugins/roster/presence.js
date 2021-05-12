@@ -1,4 +1,4 @@
-import isNaN from "lodash/isNaN";
+import isNaN from "lodash-es/isNaN";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { converse } from "@converse/headless/core";

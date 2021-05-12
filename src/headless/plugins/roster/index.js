@@ -5,7 +5,7 @@
 import "@converse/headless/plugins/status";
 import RosterContact from './contact.js';
 import RosterContacts from './contacts.js';
-import invoke from 'lodash/invoke';
+import invoke from 'lodash-es/invoke';
 import log from "@converse/headless/log";
 import roster_api from './api.js';
 import { Presence, Presences } from './presence.js';

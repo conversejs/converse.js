@@ -1,6 +1,6 @@
 import "./emoji-picker-content.js";
 import DOMNavigator from "shared/dom-navigator";
-import debounce from 'lodash/debounce';
+import debounce from 'lodash-es/debounce';
 import { BaseDropdown } from "shared/components/dropdown.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';

@@ -1,6 +1,6 @@
 import RosterContact from './contact.js';
 import log from "@converse/headless/log";
-import sum from 'lodash/sum';
+import sum from 'lodash-es/sum';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from "@converse/skeletor/src/model";
 import { __ } from 'i18n';

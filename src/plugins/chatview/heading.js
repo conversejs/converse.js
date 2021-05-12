@@ -1,5 +1,5 @@
 import UserDetailsModal from 'modals/user-details.js';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash-es/debounce';
 import tpl_chatbox_head from './templates/chat-head.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';

@@ -1,9 +1,9 @@
 import ModelWithContact from './model-with-contact.js';
 import filesize from "filesize";
-import isMatch from "lodash/isMatch";
-import isObject from "lodash/isObject";
+import isMatch from "lodash-es/isMatch";
+import isObject from "lodash-es/isObject";
 import log from '@converse/headless/log';
-import pick from "lodash/pick";
+import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';

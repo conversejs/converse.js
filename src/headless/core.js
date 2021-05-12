@@ -13,7 +13,7 @@ import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '@converse/headless/log';
-import pluggable from 'pluggable.js/src/pluggable';
+import pluggable from 'pluggable.js/src/pluggable.js';
 import sizzle from 'sizzle';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import u from '@converse/headless/utils/core';
@@ -800,7 +800,7 @@ function initPlugins () {
     }
 
     _converse.pluggable.initializePlugins(
-        { '_converse': _converse },
+        { _converse },
         whitelist,
         _converse.api.settings.get("blacklisted_plugins")
     );

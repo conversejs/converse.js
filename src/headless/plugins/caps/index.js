@@ -15,6 +15,6 @@ converse.plugins.add('converse-caps', {
     dependencies: ['converse-status'],
 
     initialize () {
-        api.listen.on('constructedPresence', p => p.root().cnode(createCapsNode()).up() && p);
+        api.listen.on('constructedPresence', p => (p.root().cnode(createCapsNode()).up() && p));
     }
 });

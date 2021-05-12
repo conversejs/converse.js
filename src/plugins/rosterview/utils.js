@@ -16,8 +16,7 @@ export function toggleGroup (ev, name) {
     }
 }
 
-
-export function isContactFiltered (contact) {
+export function isContactFiltered (contact, groupname) {
     const filter = _converse.roster_filter;
     const type = filter.get('filter_type');
     const q = (type === 'state') ?
@@ -28,7 +27,7 @@ export function isContactFiltered (contact) {
 
     if (type === 'state') {
         const sticky_groups = [_converse.HEADER_REQUESTING_CONTACTS, _converse.HEADER_UNREAD];
-        if (sticky_groups.includes(this.model.get('name'))) {
+        if (sticky_groups.includes(groupname)) {
             // When filtering by chat state, we still want to
             // show sticky groups, even though they don't
             // match the state in question.
@@ -45,18 +44,18 @@ export function isContactFiltered (contact) {
     }
 }
 
-export function shouldShowContact (contact) {
+export function shouldShowContact (contact, groupname) {
     const chat_status = contact.presence.get('show');
     if (api.settings.get('hide_offline_users') && chat_status === 'offline') {
         // If pending or requesting, show
         if ((contact.get('ask') === 'subscribe') ||
                 (contact.get('subscription') === 'from') ||
                 (contact.get('requesting') === true)) {
-            return !isContactFiltered(contact);
+            return !isContactFiltered(contact, groupname);
         }
         return false;
     }
-    return !isContactFiltered(contact);
+    return !isContactFiltered(contact, groupname);
 }
 
 export function shouldShowGroup (group) {

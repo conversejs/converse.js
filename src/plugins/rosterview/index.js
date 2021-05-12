@@ -1,5 +1,4 @@
 /**
- * @module converse-rosterview
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */

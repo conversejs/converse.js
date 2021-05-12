@@ -56,7 +56,7 @@ export default () => {
         <converse-roster-filter></converse-roster-filter>
         <div class="list-container roster-contacts">
             ${ repeat(groupnames, n => n, name => {
-                const contacts = contacts_map[name].filter(c => shouldShowContact(c));
+                const contacts = contacts_map[name].filter(c => shouldShowContact(c, name));
                 contacts.sort(contactsComparator);
                 if (contacts.length) {
                     return tpl_group({

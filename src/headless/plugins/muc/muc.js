@@ -2326,12 +2326,12 @@ const ChatRoomMixin = {
      * @param { Integer } status - The status code (see `converse.ROOMSTATUS`)
      */
     setDisconnectionState (message, reason, actor, status=converse.ROOMSTATUS.DISCONNECTED) {
-        this.save({
+        this.session.save({
+            'connection_status': status,
+            'disconnection_actor': actor,
             'disconnection_message': message,
             'disconnection_reason': reason,
-            'disconnection_actor': actor
         });
-        this.session.save({ 'connection_status': status });
     },
 
     onNicknameClash (presence) {

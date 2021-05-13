@@ -107,10 +107,12 @@ export default class MUCView extends BaseChatView {
     updateAfterTransition () {
         const conn_status = this.model.session.get('connection_status');
         if (conn_status === converse.ROOMSTATUS.CONNECTING) {
-            this.model.save({
+            this.model.session.save({
                 'disconnection_actor': undefined,
                 'disconnection_message': undefined,
                 'disconnection_reason': undefined,
+            });
+            this.model.save({
                 'moved_jid': undefined,
                 'password_validation_message': undefined,
                 'reason': undefined,

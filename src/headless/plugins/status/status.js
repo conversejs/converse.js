@@ -64,7 +64,7 @@ const XMPPStatus = Model.extend({
             idle_since.setSeconds(idle_since.getSeconds() - _converse.idle_seconds);
             presence.c('idle', {xmlns: Strophe.NS.IDLE, since: idle_since.toISOString()});
         }
-        presence = await _converse.api.hook('constructedPresence', presence);
+        presence = await api.hook('constructedPresence', null, presence);
         return presence;
     }
 });

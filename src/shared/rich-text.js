@@ -170,10 +170,19 @@ export class RichText extends String {
      * them.
      */
     addStyling () {
-        let i = 0;
         const references = [];
-        if (containsDirectives(this)) {
+        if (containsDirectives(this, this.mentions)) {
+            const mention_ranges = this.mentions.map(
+                m => Array.from({'length': Number(m.end)}, (v, i) => Number(m.begin) + i)
+            );
+            let i = 0;
             while (i < this.length) {
+                if (mention_ranges.filter(r => r.includes(i)).length) { // eslint-disable-line no-loop-func
+                    // Don't treat potential directives if they fall within a
+                    // declared XEP-0372 reference
+                    i++;
+                    continue;
+                }
                 const { d, length } = getDirectiveAndLength(this, i);
                 if (d && length) {
                     const is_quote = isQuoteDirective(d);

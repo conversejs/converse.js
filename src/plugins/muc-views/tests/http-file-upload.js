@@ -123,10 +123,10 @@ describe("XEP-0363: HTTP File Upload", function () {
                     _converse.connection._dataRecv(mock.createRequest(stanza));
 
                     await u.waitUntil(() => sent_stanza, 1000);
-                    expect(sent_stanza.toLocaleString()).toBe(
+                    expect(Strophe.serialize(sent_stanza)).toBe(
                         `<message `+
                             `from="romeo@montague.lit/orchard" `+
-                            `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                            `id="${sent_stanza.getAttribute("id")}" `+
                             `to="lounge@montague.lit" `+
                             `type="groupchat" `+
                             `xmlns="jabber:client">`+
@@ -135,7 +135,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                                 `<x xmlns="jabber:x:oob">`+
                                     `<url>${message}</url>`+
                                 `</x>`+
-                                `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                                `<origin-id id="${sent_stanza.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
                     const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders

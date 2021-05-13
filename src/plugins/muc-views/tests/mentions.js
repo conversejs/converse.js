@@ -463,8 +463,8 @@ describe("A sent groupchat message", function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const msg = _converse.connection.send.calls.all()[0].args[0];
-            expect(msg.toLocaleString())
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
+            expect(Strophe.serialize(msg))
+                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
                         `xmlns="jabber:client">`+
                             `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
@@ -472,7 +472,7 @@ describe("A sent groupchat message", function () {
                             `<reference begin="6" end="10" type="mention" uri="xmpp:${muc_jid}/z3r0" xmlns="urn:xmpp:reference:0"/>`+
                             `<reference begin="11" end="17" type="mention" uri="xmpp:${muc_jid}/gibson" xmlns="urn:xmpp:reference:0"/>`+
                             `<reference begin="18" end="26" type="mention" uri="xmpp:${muc_jid}/mr.robot" xmlns="urn:xmpp:reference:0"/>`+
-                            `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                            `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
             done();
         }));

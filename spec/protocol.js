@@ -42,7 +42,7 @@ describe("The Protocol", function () {
                 mock.initConverse([], { roster_groups: false }, async function (done, _converse) {
 
             const { u, $iq, $pres, sizzle, Strophe } = converse.env;
-            let contact, sent_stanza, IQ_id, stanza;
+            let contact, stanza;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
             await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'), 300);
@@ -56,12 +56,6 @@ describe("The Protocol", function () {
             spyOn(_converse.roster, "addContactToRoster").and.callThrough();
             spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
             spyOn(_converse.api.vcard, "get").and.callThrough();
-
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
 
             cbview.querySelector('.add-contact').click()
             const modal = _converse.api.modal.get('add-contact-modal');
@@ -103,13 +97,18 @@ describe("The Protocol", function () {
              */
             await mock.waitForRoster(_converse, 'all', 0);
             expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
-            expect(Strophe.serialize(sent_stanza)).toBe(
-                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const roster_fetch_stanza = IQ_stanzas.filter(s => sizzle('query[xmlns="jabber:iq:roster"]', s)).pop();
+
+            expect(Strophe.serialize(roster_fetch_stanza)).toBe(
+                `<iq id="${roster_fetch_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
                         `<item jid="contact@example.org"/>`+
                     `</query>`+
                 `</iq>`
             );
+
             /* As a result, the user's server (1) MUST initiate a roster push
              * for the new roster item to all available resources associated
              * with _converse user that have requested the roster, setting the
@@ -130,24 +129,25 @@ describe("The Protocol", function () {
              */
             const create = _converse.roster.create;
             const sent_stanzas = [];
+            let sent_stanza;
             spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                 sent_stanza = stanza;
-                sent_stanzas.push(stanza.toLocaleString());
+                sent_stanzas.push(stanza);
             });
             spyOn(_converse.roster, 'create').and.callFake(function () {
                 contact = create.apply(_converse.roster, arguments);
                 spyOn(contact, 'subscribe').and.callThrough();
                 return contact;
             });
+
             stanza = $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
                 .c('item', {
                     'jid': 'contact@example.org',
                     'subscription': 'none',
                     'name': 'contact@example.org'});
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            /* <iq type='result' id='set1'/>
-             */
-            stanza = $iq({'type': 'result', 'id':IQ_id});
+
+            stanza = $iq({'type': 'result', 'id': roster_fetch_stanza.getAttribute('id')});
             _converse.connection._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(() => _converse.roster.create.calls.count());
@@ -163,9 +163,9 @@ describe("The Protocol", function () {
              *
              *  <presence to='contact@example.org' type='subscribe'/>
              */
-            const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => s.match('presence')).pop());
+            const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence')).pop());
             expect(contact.subscribe).toHaveBeenCalled();
-            expect(sent_presence).toBe(
+            expect(Strophe.serialize(sent_presence)).toBe(
                 `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client">`+
                     `<nick xmlns="http://jabber.org/protocol/nick">Romeo Montague</nick>`+
                 `</presence>`
@@ -237,7 +237,7 @@ describe("The Protocol", function () {
              * stanza of type "subscribe".
              */
             expect(contact.ackSubscribe).toHaveBeenCalled();
-            expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+            expect(Strophe.serialize(sent_stanza)).toBe( // Strophe adds the xmlns attr (although not in spec)
                 `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client"/>`
             );
 
@@ -257,7 +257,7 @@ describe("The Protocol", function () {
              *    </query>
              *  </iq>
              */
-            IQ_id = _converse.connection.getUniqueId('roster');
+            const IQ_id = _converse.connection.getUniqueId('roster');
             stanza = $iq({'type': 'set', 'id': IQ_id})
                 .c('query', {'xmlns': 'jabber:iq:roster'})
                 .c('item', {
@@ -323,7 +323,7 @@ describe("The Protocol", function () {
              *  <presence to='contact@example.org' type='subscribed'/>
              */
             expect(contact.authorize).toHaveBeenCalled();
-            expect(sent_stanza.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<presence to="contact@example.org" type="subscribed" xmlns="jabber:client"/>`
             );
 
@@ -424,7 +424,7 @@ describe("The Protocol", function () {
              * sending a presence stanza of type "unsubscribe
              */
             expect(contact.ackUnsubscribe).toHaveBeenCalled();
-            expect(sent_stanza.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<presence to="contact@example.org" type="unsubscribe" xmlns="jabber:client"/>`
             );
 

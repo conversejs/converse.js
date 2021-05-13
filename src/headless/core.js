@@ -679,7 +679,10 @@ export const api = _converse.api = {
         }
         if (typeof stanza === 'string') {
             stanza = u.toStanza(stanza);
+        } else if (stanza?.nodeTree) {
+            stanza = stanza.nodeTree;
         }
+
         if (stanza.tagName === 'iq') {
             return api.sendIQ(stanza);
         } else {

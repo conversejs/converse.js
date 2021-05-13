@@ -132,7 +132,7 @@ describe("A spoiler message", function () {
          *    <spoiler xmlns="urn:xmpp:spoiler:0"/>
          * </message>"
          */
-        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+        const stanza = _converse.connection.send.calls.argsFor(0)[0];
         const spoiler_el = await u.waitUntil(() => stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]'));
         expect(spoiler_el.textContent).toBe('');
 
@@ -201,7 +201,7 @@ describe("A spoiler message", function () {
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
-        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+        const stanza = _converse.connection.send.calls.argsFor(0)[0];
         expect(Strophe.serialize(stanza)).toBe(
             `<message from="romeo@montague.lit/orchard" ` +
                     `id="${stanza.getAttribute('id')}" `+

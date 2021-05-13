@@ -210,14 +210,14 @@ describe("A Groupchat Message", function () {
             .filter(m => m.textContent.replace(/<!-.*?->/g, '') === new_text).length);
 
         const msg = _converse.connection.send.calls.all()[0].args[0];
-        expect(msg.toLocaleString())
-        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
+        expect(Strophe.serialize(msg))
+        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                 `to="lounge@montague.lit" type="groupchat" `+
                 `xmlns="jabber:client">`+
                     `<body>But soft, what light through yonder window breaks?</body>`+
                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                     `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                    `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
             `</message>`);
 
         expect(view.model.messages.models.length).toBe(1);

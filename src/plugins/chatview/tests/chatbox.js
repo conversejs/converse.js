@@ -375,7 +375,7 @@ describe("Chatboxes", function () {
                     const model = _converse.chatboxes.get(contact_jid);
                     expect(model.get('chat_state')).toBe('active');
                     expect(_converse.connection.send).toHaveBeenCalled();
-                    const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                    const stanza = _converse.connection.send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes.length).toBe(3);
                     expect(stanza.childNodes[0].tagName).toBe('active');
@@ -396,21 +396,19 @@ describe("Chatboxes", function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const model = _converse.chatboxes.get(contact_jid);
                     _converse.minimize.minimize(model);
+                    const sent_stanzas = _converse.connection.sent_stanzas;
+                    sent_stanzas.splice(0, sent_stanzas.length);
                     expect(model.get('chat_state')).toBe('inactive');
-                    spyOn(_converse.connection, 'send');
                     _converse.minimize.maximize(model);
                     await u.waitUntil(() => model.get('chat_state') === 'active', 1000);
-                    expect(_converse.connection.send).toHaveBeenCalled();
-                    const calls = _.filter(_converse.connection.send.calls.all(), function (call) {
-                        return call.args[0] instanceof Strophe.Builder;
-                    });
-                    expect(calls.length).toBe(1);
-                    const stanza = calls[0].args[0].tree();
-                    expect(stanza.getAttribute('to')).toBe(contact_jid);
-                    expect(stanza.childNodes.length).toBe(3);
-                    expect(stanza.childNodes[0].tagName).toBe('active');
-                    expect(stanza.childNodes[1].tagName).toBe('no-store');
-                    expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
+                    const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`active`, s).length).pop());
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+
+                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                            `<no-store xmlns="urn:xmpp:hints"/>`+
+                            `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                        `</message>`
+                    );
                     done();
                 }));
             });
@@ -440,7 +438,7 @@ describe("Chatboxes", function () {
                     expect(view.model.get('chat_state')).toBe('composing');
                     expect(_converse.connection.send).toHaveBeenCalled();
 
-                    const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                    const stanza = _converse.connection.send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes.length).toBe(3);
                     expect(stanza.childNodes[0].tagName).toBe('composing');
@@ -579,7 +577,6 @@ describe("Chatboxes", function () {
                     _converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
-                    spyOn(_converse.connection, 'send');
                     spyOn(view.model, 'setChatState').and.callThrough();
                     expect(view.model.get('chat_state')).toBe('active');
                     const bottom_panel = view.querySelector('converse-chat-bottom-panel');
@@ -588,21 +585,29 @@ describe("Chatboxes", function () {
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
-                    expect(_converse.connection.send).toHaveBeenCalled();
-                    let stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
-                    expect(stanza.childNodes[0].tagName).toBe('composing');
+
+                    const xmlns = 'https://jabber.org/protocol/chatstates';
+                    const sent_stanzas = _converse.connection.sent_stanzas;
+                    let stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`composing`, s).length).pop(), 1000);
+
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+
+                            `<composing xmlns="http://jabber.org/protocol/chatstates"/>`+
+                            `<no-store xmlns="urn:xmpp:hints"/>`+
+                            `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                        `</message>`
+                    );
+
                     await u.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
-                    expect(_converse.connection.send).toHaveBeenCalled();
-                    var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
-                        return call.args[0] instanceof Strophe.Builder;
-                    });
-                    expect(calls.length).toBe(2);
-                    stanza = calls[1].args[0].tree();
-                    expect(stanza.getAttribute('to')).toBe(contact_jid);
-                    expect(stanza.childNodes.length).toBe(3);
-                    expect(stanza.childNodes[0].tagName).toBe('paused');
-                    expect(stanza.childNodes[1].tagName).toBe('no-store');
-                    expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
+
+                    stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${xmlns}"]`, s)).pop());
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<message id="${stanza.getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+
+                            `<paused xmlns="http://jabber.org/protocol/chatstates"/>`+
+                            `<no-store xmlns="urn:xmpp:hints"/>`+
+                            `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                        `</message>`
+                    );
 
                     // Test #359. A paused notification should not be sent
                     // out if the user simply types longer than the
@@ -696,53 +701,55 @@ describe("Chatboxes", function () {
                     await mock.openControlBox(_converse);
                     const rosterview = document.querySelector('converse-roster');
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 1000);
+
+                    sent_stanzas.splice(0, sent_stanzas.length);
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
+
                     await u.waitUntil(() => view.model.get('chat_state') === 'active');
-                    let messages = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('message')));
-                    expect(messages.length).toBe(1);
                     expect(view.model.get('chat_state')).toBe('active');
-                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-                    bottom_panel.onKeyDown({
-                        target: view.querySelector('textarea.chat-textarea'),
-                        keyCode: 1
-                    });
-                    await u.waitUntil(() => view.model.get('chat_state') === 'composing', 600);
-                    messages = sent_stanzas.filter(s => s.matches('message'));
-                    expect(messages.length).toBe(2);
 
-                    await u.waitUntil(() => view.model.get('chat_state') === 'paused', 600);
-                    messages = sent_stanzas.filter(s => s.matches('message'));
-                    expect(messages.length).toBe(3);
-
-                    await u.waitUntil(() => view.model.get('chat_state') === 'inactive', 600);
-                    messages = sent_stanzas.filter(s => s.matches('message'));
-                    expect(messages.length).toBe(4);
-
+                    const messages = sent_stanzas.filter(s => s.matches('message'));
                     expect(Strophe.serialize(messages[0])).toBe(
                         `<message id="${messages[0].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
                             `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                             `<no-store xmlns="urn:xmpp:hints"/>`+
                             `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
                         `</message>`);
-                    expect(Strophe.serialize(messages[1])).toBe(
-                        `<message id="${messages[1].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
+
+
+                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+                    bottom_panel.onKeyDown({
+                        target: view.querySelector('textarea.chat-textarea'),
+                        keyCode: 1
+                    });
+                    await u.waitUntil(() => view.model.get('chat_state') === 'composing', 600);
+                    let stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('message composing')).pop());
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
                             `<composing xmlns="http://jabber.org/protocol/chatstates"/>`+
                             `<no-store xmlns="urn:xmpp:hints"/>`+
                             `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
                         `</message>`);
-                    expect(Strophe.serialize(messages[2])).toBe(
-                        `<message id="${messages[2].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
+
+                    await u.waitUntil(() => view.model.get('chat_state') === 'paused', 600);
+                    stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('message paused')).pop());
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
                             `<paused xmlns="http://jabber.org/protocol/chatstates"/>`+
                             `<no-store xmlns="urn:xmpp:hints"/>`+
                             `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
                         `</message>`);
-                    expect(Strophe.serialize(messages[3])).toBe(
-                        `<message id="${messages[3].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
+
+                    await u.waitUntil(() => view.model.get('chat_state') === 'inactive', 600);
+                    stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('message inactive')).pop());
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<message id="${stanza.getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
                             `<inactive xmlns="http://jabber.org/protocol/chatstates"/>`+
                             `<no-store xmlns="urn:xmpp:hints"/>`+
                             `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
                         `</message>`);
+
                     done();
                 }));
 
@@ -759,7 +766,7 @@ describe("Chatboxes", function () {
                     _converse.minimize.minimize(view.model);
                     expect(view.model.get('chat_state')).toBe('inactive');
                     expect(_converse.connection.send).toHaveBeenCalled();
-                    var stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                    var stanza = _converse.connection.send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes[0].tagName).toBe('inactive');
                     done();
@@ -779,7 +786,7 @@ describe("Chatboxes", function () {
                     view.close();
                     expect(view.model.get('chat_state')).toBe('inactive');
                     expect(_converse.connection.send).toHaveBeenCalled();
-                    const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                    const stanza = _converse.connection.send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes.length).toBe(3);
                     expect(stanza.childNodes[0].tagName).toBe('inactive');

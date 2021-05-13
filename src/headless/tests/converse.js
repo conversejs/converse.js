@@ -1,5 +1,7 @@
 /* global mock, converse */
 
+const { Strophe } = converse.env;
+
 describe("Converse", function() {
 
     describe("Authentication", function () {
@@ -41,10 +43,10 @@ describe("Converse", function() {
                 i++;
             }
             expect(_converse.sendCSI).toHaveBeenCalledWith('inactive');
-            expect(sent_stanza.toLocaleString()).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
+            expect(Strophe.serialize(sent_stanza)).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
             _converse.onUserActivity();
             expect(_converse.sendCSI).toHaveBeenCalledWith('active');
-            expect(sent_stanza.toLocaleString()).toBe('<active xmlns="urn:xmpp:csi:0"/>');
+            expect(Strophe.serialize(sent_stanza)).toBe('<active xmlns="urn:xmpp:csi:0"/>');
             done();
         }));
     });

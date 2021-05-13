@@ -85,7 +85,7 @@
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^5.3.1",
     "http-server": "^0.12.3",
-    "imports-loader": "^0.8.0",
+    "imports-loader": "^2.0.0",
     "install": "^0.13.0",
     "jasmine": "^3.5.0",
     "jsdoc": "^3.6.6",

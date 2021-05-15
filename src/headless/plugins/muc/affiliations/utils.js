@@ -67,7 +67,7 @@ export function setAffiliations (muc_jid, users) {
  * a separate stanza for each JID.
  * Related ticket: https://issues.prosody.im/345
  *
- * @param { String } affiliation - The affiliation
+ * @param { ('outcast'|'member'|'admin'|'owner') } affiliation - The affiliation to be set
  * @param { String|Array<String> } jids - The JID(s) of the MUCs in which the
  *  affiliations need to be set.
  * @param { object } members - A map of jids, affiliations and

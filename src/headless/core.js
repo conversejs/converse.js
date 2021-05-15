@@ -6,14 +6,14 @@ import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash-es/debounce';
 import i18n from '@converse/headless/shared/i18n';
-import invoke from 'lodash/invoke';
-import isFunction from 'lodash/isFunction';
-import isObject from 'lodash/isObject';
+import invoke from 'lodash-es/invoke';
+import isFunction from 'lodash-es/isFunction';
+import isObject from 'lodash-es/isObject';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '@converse/headless/log';
-import pluggable from 'pluggable.js/src/pluggable';
+import pluggable from 'pluggable.js/src/pluggable.js';
 import sizzle from 'sizzle';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import u from '@converse/headless/utils/core';
@@ -202,7 +202,7 @@ export const api = _converse.api = {
                 await _converse.setUserJID(api.settings.get("jid"));
             }
 
-            if (_converse.connection.reconnecting) {
+            if (_converse.connection?.reconnecting) {
                 _converse.connection.debouncedReconnect();
             } else {
                 return _converse.connection.reconnect();
@@ -679,7 +679,10 @@ export const api = _converse.api = {
         }
         if (typeof stanza === 'string') {
             stanza = u.toStanza(stanza);
+        } else if (stanza?.nodeTree) {
+            stanza = stanza.nodeTree;
         }
+
         if (stanza.tagName === 'iq') {
             return api.sendIQ(stanza);
         } else {
@@ -800,7 +803,7 @@ function initPlugins () {
     }
 
     _converse.pluggable.initializePlugins(
-        { '_converse': _converse },
+        { _converse },
         whitelist,
         _converse.api.settings.get("blacklisted_plugins")
     );
@@ -987,6 +990,8 @@ async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (_converse.session?.get('id') !== id) {
+        initPersistentStorage();
+
         _converse.session = new Model({ id });
         initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
@@ -998,7 +1003,6 @@ async function initSession (jid) {
             _converse.session.save({id});
         }
         saveJIDtoSession(jid);
-        initPersistentStorage();
         /**
          * Triggered once the user's session has been initialized. The session is a
          * cache which stores information about the user's current session.

@@ -1,18 +1,8 @@
 /* global mock, converse */
 
-const u = converse.env.utils;
+const { Strophe } = converse.env;
 
 describe("Converse", function() {
-
-    it("Can be inserted into a custom element after having been initialized",
-            mock.initConverse([], {'root': new DocumentFragment()}, async (done, _converse) => {
-
-        expect(document.body.querySelector('#conversejs')).toBe(null);
-        expect(_converse.root.firstElementChild.nodeName.toLowerCase()).toBe('converse-root');
-        document.body.appendChild(document.createElement('converse-root'));
-        await u.waitUntil(() => document.body.querySelector('#conversejs') !== null);
-        done();
-    }));
 
     describe("Authentication", function () {
 
@@ -53,10 +43,10 @@ describe("Converse", function() {
                 i++;
             }
             expect(_converse.sendCSI).toHaveBeenCalledWith('inactive');
-            expect(sent_stanza.toLocaleString()).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
+            expect(Strophe.serialize(sent_stanza)).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
             _converse.onUserActivity();
             expect(_converse.sendCSI).toHaveBeenCalledWith('active');
-            expect(sent_stanza.toLocaleString()).toBe('<active xmlns="urn:xmpp:csi:0"/>');
+            expect(Strophe.serialize(sent_stanza)).toBe('<active xmlns="urn:xmpp:csi:0"/>');
             done();
         }));
     });

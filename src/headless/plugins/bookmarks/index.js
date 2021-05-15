@@ -11,29 +11,12 @@ import log from "@converse/headless/log.js";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/core";
-import { checkBookmarksSupport, getNicknameFromBookmark } from './utils.js';
+import { initBookmarks, getNicknameFromBookmark } from './utils.js';
 
 const { Strophe, sizzle } = converse.env;
 
 Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
 
-
-async function initBookmarks () {
-    if (!api.settings.get('allow_bookmarks')) {
-        return;
-    }
-    if (await checkBookmarksSupport()) {
-        _converse.bookmarks = new _converse.Bookmarks();
-        await _converse.bookmarks.fetchBookmarks();
-        /**
-         * Triggered once the _converse.Bookmarks collection
-         * has been created and cached bookmarks have been fetched.
-         * @event _converse#bookmarksInitialized
-         * @example _converse.api.listen.on('bookmarksInitialized', () => { ... });
-         */
-        api.trigger('bookmarksInitialized');
-    }
-}
 
 function handleBookmarksPush (message) {
     if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"] items[node="${Strophe.NS.BOOKMARKS}"]`, message).length) {
@@ -124,8 +107,6 @@ converse.plugins.add('converse-bookmarks', {
                 delete _converse.bookmarks;
             }
         });
-
-        api.listen.on('reconnected', initBookmarks);
 
         api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients

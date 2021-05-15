@@ -133,26 +133,11 @@ export default class ChatView extends BaseChatView {
         }
     }
 
-    async close (ev) {
-        ev?.preventDefault?.();
+    close (ev) {
         if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
-        if (api.connection.connected()) {
-            // Immediately sending the chat state, because the
-            // model is going to be destroyed afterwards.
-            this.model.setChatState(_converse.INACTIVE);
-            this.model.sendChatState();
-        }
-        await this.model.close(ev);
-        /**
-         * Triggered once a chatbox has been closed.
-         * @event _converse#chatBoxClosed
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-         * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
-         */
-        api.trigger('chatBoxClosed', this);
-        return this;
+        return super.close(ev);
     }
 
     afterShown () {

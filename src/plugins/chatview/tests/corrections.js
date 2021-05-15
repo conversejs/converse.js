@@ -1,7 +1,6 @@
 /*global mock, converse */
 
-const { Promise, $msg, sizzle } = converse.env;
-const u = converse.env.utils;
+const { Promise, $msg, Strophe, sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {
 
@@ -56,15 +55,15 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text);
 
         const msg = _converse.connection.send.calls.all()[0].args[0];
-        expect(msg.toLocaleString())
-        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
+        expect(Strophe.serialize(msg))
+        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                 `to="mercutio@montague.lit" type="chat" `+
                 `xmlns="jabber:client">`+
                     `<body>But soft, what light through yonder window breaks?</body>`+
                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                     `<request xmlns="urn:xmpp:receipts"/>`+
                     `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                    `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
             `</message>`);
         expect(view.model.messages.models.length).toBe(1);
         const corrected_message = view.model.messages.at(0);
@@ -213,15 +212,15 @@ describe("A Chat Message", function () {
         expect(_converse.connection.send).toHaveBeenCalled();
 
         const msg = _converse.connection.send.calls.all()[0].args[0];
-        expect(msg.toLocaleString())
-        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
+        expect(Strophe.serialize(msg))
+        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                 `to="mercutio@montague.lit" type="chat" `+
                 `xmlns="jabber:client">`+
                     `<body>But soft, what light through yonder window breaks?</body>`+
                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                     `<request xmlns="urn:xmpp:receipts"/>`+
                     `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                    `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
             `</message>`);
         expect(view.model.messages.models.length).toBe(1);
         const corrected_message = view.model.messages.at(0);

@@ -1,18 +1,11 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import ModeratorToolsModal from './modals/moderator-tools.js';
 import log from '@converse/headless/log';
 import tpl_muc from './templates/muc.js';
-import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { html, render } from "lit";
+import { render } from "lit";
 
-/**
- * Mixin which turns a ChatBoxView into a ChatRoomView
- * @mixin
- * @namespace _converse.ChatRoomView
- * @memberOf _converse
- */
+
 export default class MUCView extends BaseChatView {
     length = 300
     is_chatroom = true
@@ -22,6 +15,8 @@ export default class MUCView extends BaseChatView {
         this.model = await api.rooms.get(jid);
         _converse.chatboxviews.add(jid, this);
         this.initDebounced();
+
+        this.setAttribute('id', this.model.get('box_id'));
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
@@ -50,29 +45,8 @@ export default class MUCView extends BaseChatView {
     }
 
     render () {
-        this.setAttribute('id', this.model.get('box_id'));
-        render(
-            tpl_muc({
-                'getNicknameRequiredTemplate': () => this.getNicknameRequiredTemplate(),
-                'model': this.model,
-            }),
-            this
-        );
+        render(tpl_muc({ 'model': this.model }), this);
         !this.model.get('hidden') && this.show();
-    }
-
-    showModeratorToolsModal (affiliation) {
-        if (!this.model.verifyRoles(['moderator'])) {
-            return;
-        }
-        let modal = api.modal.get(ModeratorToolsModal.id);
-        if (modal) {
-            modal.model.set('affiliation', affiliation);
-        } else {
-            const model = new Model({ 'affiliation': affiliation });
-            modal = api.modal.create(ModeratorToolsModal, { model, _converse, 'chatroomview': this });
-        }
-        modal.show();
     }
 
     /**
@@ -88,15 +62,15 @@ export default class MUCView extends BaseChatView {
     }
 
     /**
-     * Closes this chat box, which implies leaving the groupchat as well.
+     * Closes this chat, which implies leaving the MUC as well.
      * @private
      * @method _converse.ChatRoomView#close
      */
-    close () {
+    close (ev) {
         if (_converse.router.history.getFragment() === 'converse/room?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
-        return _converse.ChatBoxView.prototype.close.apply(this, arguments);
+        return super.close(ev);
     }
 
     async destroy () {
@@ -130,22 +104,15 @@ export default class MUCView extends BaseChatView {
         }
     }
 
-    getNicknameRequiredTemplate () {
-        const jid = this.model.get('jid');
-        if (api.settings.get('muc_show_logs_before_join')) {
-            return html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>`;
-        } else {
-            return html`<converse-muc-nickname-form jid="${jid}"></converse-muc-nickname-form>`;
-        }
-    }
-
     updateAfterTransition () {
         const conn_status = this.model.session.get('connection_status');
         if (conn_status === converse.ROOMSTATUS.CONNECTING) {
-            this.model.save({
+            this.model.session.save({
                 'disconnection_actor': undefined,
                 'disconnection_message': undefined,
                 'disconnection_reason': undefined,
+            });
+            this.model.save({
                 'moved_jid': undefined,
                 'password_validation_message': undefined,
                 'reason': undefined,

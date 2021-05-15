@@ -12,14 +12,13 @@ export default {
         /**
          * Set the given affliation for the given JIDs in the specified MUCs
          *
-         * @param { ('outcast'|'member'|'admin'|'owner') } affiliation - The affiliation to be set
          * @param { String|Array<String> } muc_jids - The JIDs of the MUCs in
          *  which the affiliation should be set.
          * @param { Object[] } users - An array of objects representing users
          *  for whom the affiliation is to be set.
-         * @param { string } users[].jid - The JID of the user whose affiliation will change
-         * @param { Array } users[].affiliation - The new affiliation for this user
-         * @param { string } [users[].reason] - An optional reason for the affiliation change
+         * @param { String } users[].jid - The JID of the user whose affiliation will change
+         * @param { ('outcast'|'member'|'admin'|'owner') } users[].affiliation - The new affiliation for this user
+         * @param { String } [users[].reason] - An optional reason for the affiliation change
          */
         set (muc_jids, users) {
             users = !Array.isArray(users) ? [users] : users;

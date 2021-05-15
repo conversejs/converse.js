@@ -1816,9 +1816,9 @@ describe("Groupchats", function () {
             modal.el.querySelector('button[type="submit"]').click();
 
             expect(view.model.directInvite).toHaveBeenCalled();
-            expect(sent_stanza.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<message from="romeo@montague.lit/orchard" `+
-                        `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                        `id="${sent_stanza.getAttribute("id")}" `+
                         `to="balthasar@montague.lit" `+
                         `xmlns="jabber:client">`+
                     `<x jid="lounge@montague.lit" reason="Please join!" xmlns="jabber:x:conference"/>`+
@@ -4177,8 +4177,8 @@ describe("Groupchats", function () {
 
             let sent_stanza, sent_id;
             spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                if (stanza.nodeTree && stanza.nodeTree.nodeName === 'message') {
-                    sent_id = stanza.nodeTree.getAttribute('id');
+                if (stanza.nodeName === 'message') {
+                    sent_id = stanza.getAttribute('id');
                     sent_stanza = stanza;
                 }
             });
@@ -4267,7 +4267,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
 
             // Finally check that the user gets invited.
-            expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+            expect(Strophe.serialize(sent_stanza)).toBe( // Strophe adds the xmlns attr (although not in spec)
                 `<message from="romeo@montague.lit/orchard" id="${sent_id}" to="${invitee_jid}" xmlns="jabber:client">`+
                     `<x jid="coven@chat.shakespeare.lit" reason="Please join this groupchat" xmlns="jabber:x:conference"/>`+
                 `</message>`

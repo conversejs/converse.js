@@ -1,4 +1,4 @@
-import debounce from 'lodash/debounce';
+import debounce from 'lodash-es/debounce';
 import log from '@converse/headless/log';
 import tpl_spinner from 'templates/spinner.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
@@ -48,6 +48,24 @@ export default class BaseChatView extends ElementView {
             return;
         }
         this.afterShown();
+    }
+
+    async close (ev) {
+        ev?.preventDefault?.();
+        if (api.connection.connected()) {
+            // Immediately sending the chat state, because the
+            // model is going to be destroyed afterwards.
+            this.model.setChatState(_converse.INACTIVE);
+            this.model.sendChatState();
+        }
+        await this.model.close(ev);
+        /**
+         * Triggered once a chatbox has been closed.
+         * @event _converse#chatBoxClosed
+         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+         * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
+         */
+        api.trigger('chatBoxClosed', this);
     }
 
     emitBlurred (ev) {

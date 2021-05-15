@@ -1,8 +1,8 @@
 import _converse from '@converse/headless/shared/_converse';
-import assignIn from 'lodash/assignIn';
-import isObject from 'lodash/isObject';
+import assignIn from 'lodash-es/assignIn';
+import isObject from 'lodash-es/isObject';
 import log from '@converse/headless/log';
-import pick from 'lodash/pick';
+import pick from 'lodash-es/pick';
 import u from '@converse/headless/utils/core';
 import { Model } from '@converse/skeletor/src/model.js';
 import { initStorage } from '@converse/headless/shared/utils.js';

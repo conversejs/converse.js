@@ -1,5 +1,5 @@
-import debounce from 'lodash/debounce';
-import isElement from 'lodash/isElement';
+import debounce from 'lodash-es/debounce';
+import isElement from 'lodash-es/isElement';
 import log from "../log.js";
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/core';

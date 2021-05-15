@@ -7,7 +7,7 @@
  *   Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
  */
 import { _converse, converse } from "../core.js";
-import pick from 'lodash/pick';
+import pick from 'lodash-es/pick';
 
 const { Strophe, $build } = converse.env;
 

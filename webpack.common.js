@@ -79,6 +79,8 @@ module.exports = {
                 /node_modules\/mergebounce/,
                 /node_modules\/lit-html/,
                 /node_modules\/strophe/,
+                /node_modules\/pluggable/,
+                /node_modules\/@converse/,
             ],
             use: {
                 loader: 'babel-loader',

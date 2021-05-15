@@ -18,16 +18,16 @@ class MUCDisconnected extends CustomElement {
     }
 
     render () {
-        const message = this.model.get('disconnection_message');
+        const message = this.model.session.get('disconnection_message');
         if (!message) {
             return;
         }
         const messages = [message];
-        const actor = this.model.get('disconnection_actor');
+        const actor = this.model.session.get('disconnection_actor');
         if (actor) {
             messages.push(__('This action was done by %1$s.', actor));
         }
-        const reason = this.model.get('disconnection_reason');
+        const reason = this.model.session.get('disconnection_reason');
         if (reason) {
             messages.push(__('The reason given is: "%1$s".', reason));
         }

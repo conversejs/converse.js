@@ -1,4 +1,4 @@
-import debounce from 'lodash/debounce';
+import debounce from 'lodash-es/debounce';
 import tpl_roster from "./templates/roster.js";
 import { ElementView } from "@converse/skeletor/src/element";
 import { Model } from '@converse/skeletor/src/model.js';

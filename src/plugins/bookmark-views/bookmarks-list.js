@@ -1,10 +1,10 @@
+import log from '@converse/headless/log';
 import tpl_bookmarks_list from './templates/list.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import { initStorage } from '@converse/headless/shared/utils.js';
 import { render } from 'lit';
 
-const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 export default class BookmarksView extends ElementView {
@@ -18,38 +18,24 @@ export default class BookmarksView extends ElementView {
         this.listenTo(_converse.chatboxes, 'add', this.render);
         this.listenTo(_converse.chatboxes, 'remove', this.render);
 
-        const id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
+        const id = `converse.bookmarks-list-model-${_converse.bare_jid}`;
         this.model = new _converse.BookmarksList({ id });
         initStorage(this.model, id);
-        this.model.fetch({ 'success': () => this.render(), 'error': () => this.render() });
+
+        this.model.fetch({
+            'success': () => this.render(),
+            'error': (model, err) => {
+                log.error(err);
+                this.render();
+            }
+        });
     }
 
     render () {
-        const is_hidden = b => !!(api.settings.get('hide_open_bookmarks') && _converse.chatboxes.get(b.get('jid')));
         render(tpl_bookmarks_list({
-            '_converse': _converse,
-            'bookmarks': _converse.bookmarks,
-            'hidden': _converse.bookmarks.getUnopenedBookmarks().length && true,
-            'is_hidden': is_hidden,
-            'openRoom': ev => this.openRoom(ev),
-            'removeBookmark': ev => this.removeBookmark(ev),
             'toggleBookmarksList': ev => this.toggleBookmarksList(ev),
             'toggle_state': this.model.get('toggle-state')
         }), this);
-    }
-
-    openRoom (ev) { // eslint-disable-line class-methods-use-this
-        ev.preventDefault();
-        const name = ev.target.textContent;
-        const jid = ev.target.getAttribute('data-room-jid');
-        const data = {
-            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
-        };
-        api.rooms.open(jid, data, true);
-    }
-
-    removeBookmark (ev) { // eslint-disable-line class-methods-use-this
-        _converse.removeBookmarkViaEvent(ev);
     }
 
     toggleBookmarksList (ev) {

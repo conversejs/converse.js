@@ -12,14 +12,14 @@ const ChatBoxes = Collection.extend({
     onChatBoxesFetched (collection) {
         collection.filter(c => !c.isValid()).forEach(c => c.destroy());
         /**
-            * Triggered once all chat boxes have been recreated from the browser cache
-            * @event _converse#chatBoxesFetched
-            * @type { object }
-            * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
-            * @property { XMLElement } stanza
-            * @example _converse.api.listen.on('chatBoxesFetched', obj => { ... });
-            * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
-            */
+         * Triggered once all chat boxes have been recreated from the browser cache
+         * @event _converse#chatBoxesFetched
+         * @type { object }
+         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
+         * @property { XMLElement } stanza
+         * @example _converse.api.listen.on('chatBoxesFetched', obj => { ... });
+         * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
+         */
         api.trigger('chatBoxesFetched');
     },
 

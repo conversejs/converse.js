@@ -159,8 +159,8 @@ describe("The OMEMO module", function() {
         spyOn(_converse.connection, 'send').and.callFake(stanza => { sent_stanza = stanza });
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => sent_stanza);
-        expect(sent_stanza.toLocaleString()).toBe(
-            `<message from="romeo@montague.lit/orchard" id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+        expect(Strophe.serialize(sent_stanza)).toBe(
+            `<message from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute("id")}" `+
                         `to="mercutio@montague.lit" `+
                         `type="chat" xmlns="jabber:client">`+
                 `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
@@ -169,9 +169,9 @@ describe("The OMEMO module", function() {
                     `<header sid="123456789">`+
                         `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
                         `<key rid="555">YzFwaDNSNzNYNw==</key>`+
-                        `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
+                        `<iv>${sent_stanza.querySelector("iv").textContent}</iv>`+
                     `</header>`+
-                    `<payload>${sent_stanza.nodeTree.querySelector("payload").textContent}</payload>`+
+                    `<payload>${sent_stanza.querySelector("payload").textContent}</payload>`+
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
             `</message>`);
@@ -348,7 +348,7 @@ describe("The OMEMO module", function() {
 
         expect(Strophe.serialize(sent_stanza)).toBe(
             `<message from="romeo@montague.lit/orchard" `+
-                     `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                     `id="${sent_stanza.getAttribute("id")}" `+
                      `to="lounge@montague.lit" `+
                      `type="groupchat" `+
                      `xmlns="jabber:client">`+
@@ -357,9 +357,9 @@ describe("The OMEMO module", function() {
                     `<header sid="123456789">`+
                         `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
                         `<key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>`+
-                        `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
+                        `<iv>${sent_stanza.querySelector("iv").textContent}</iv>`+
                     `</header>`+
-                    `<payload>${sent_stanza.nodeTree.querySelector("payload").textContent}</payload>`+
+                    `<payload>${sent_stanza.querySelector("payload").textContent}</payload>`+
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
             `</message>`);

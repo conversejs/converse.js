@@ -2270,7 +2270,7 @@ const ChatRoomMixin = {
             data.message = _converse.muc.info_messages[code];
         } else if (!is_self && ACTION_INFO_CODES.includes(code)) {
             const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-            const item = stanza.querySelector(`x[xmlns="${Strophe.NS.MUC_USER}"] item`);
+            const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
             data.actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
             data.reason = item ? item.querySelector('reason')?.textContent : undefined;
             data.message = this.getActionInfoMessage(code, nick, data.actor);
@@ -2280,7 +2280,7 @@ const ChatRoomMixin = {
             if (is_self && code === '210') {
                 nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
             } else if (is_self && code === '303') {
-                nick = stanza.querySelector(`x[xmlns="${Strophe.NS.MUC_USER}"] item`).getAttribute('nick');
+                nick = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop().getAttribute('nick');
             }
             this.save('nick', nick);
             data.message = __(_converse.muc.new_nickname_messages[code], nick);

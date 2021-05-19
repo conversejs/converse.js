@@ -11,7 +11,7 @@ const escapeRegexChars = (string, char) => string.replace(RegExp('\\' + char, 'i
 helpers.escapeCharacters = characters => string =>
     characters.split('').reduce(escapeRegexChars, string);
 
-helpers.escapeRegexString = helpers.escapeCharacters('[\\^$.?*+(){}');
+helpers.escapeRegexString = helpers.escapeCharacters('[\\^$.?*+(){}|');
 
 // `for` is ~25% faster than using `Array.find()`
 helpers.findFirstMatchInArray = array => text => {

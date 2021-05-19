@@ -892,9 +892,10 @@ const ChatRoomMixin = {
     },
 
     getAllKnownNicknamesRegex () {
-        const longNickString = this.getAllKnownNicknames().join('|');
-        const escapedLongNickString = p.escapeRegexString(longNickString);
-        return RegExp(`(?:\\p{P}|\\p{Z}|^)@(${escapedLongNickString})(?![\\w@-])`, 'uig');
+        const longNickString = this.getAllKnownNicknames()
+            .map(n => p.escapeRegexString(n))
+            .join('|');
+        return RegExp(`(?:\\p{P}|\\p{Z}|^)@(${longNickString})(?![\\w@-])`, 'uig');
     },
 
     getOccupantByJID (jid) {

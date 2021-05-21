@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/strophe';
 import { _converse, api } from '@converse/headless/core';
-import { decodeHTMLEntities } from 'shared/utils';
+import { decodeHTMLEntities } from '@converse/headless/shared/utils';
 import { rejectMessage } from '@converse/headless/shared/actions';
 
 const { NS } = Strophe;

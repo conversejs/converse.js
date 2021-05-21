@@ -2,6 +2,7 @@ import Storage from '@converse/skeletor/src/storage.js';
 import log from '@converse/headless/log';
 import { _converse, api } from '@converse/headless/core';
 import { getOpenPromise } from '@converse/openpromise';
+import xss from 'xss/dist/xss';
 
 export function getDefaultStore () {
     if (_converse.config.get('trusted')) {
@@ -44,4 +45,15 @@ export function replacePromise (name) {
     } else {
         log.debug(`Not replacing promise "${name}"`);
     }
+}
+
+const element = document.createElement('div');
+
+export function decodeHTMLEntities (str) {
+    if (str && typeof str === 'string') {
+        element.innerHTML = xss.filterXSS(str);
+        str = element.textContent;
+        element.textContent = '';
+    }
+    return str;
 }

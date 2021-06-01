@@ -11,13 +11,13 @@ describe("XSS", function () {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             /* <presence xmlns="jabber:client" to="jc@chat.example.org/converse.js-17184538"
-                *      from="oo@conference.chat.example.org/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;">
-                *   <x xmlns="http://jabber.org/protocol/muc#user">
-                *    <item jid="jc@chat.example.org/converse.js-17184538" affiliation="owner" role="moderator"/>
-                *    <status code="110"/>
-                *   </x>
-                * </presence>"
-                */
+             *      from="oo@conference.chat.example.org/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;">
+             *   <x xmlns="http://jabber.org/protocol/muc#user">
+             *    <item jid="jc@chat.example.org/converse.js-17184538" affiliation="owner" role="moderator"/>
+             *    <status code="110"/>
+             *   </x>
+             * </presence>"
+             */
             const presence = $pres({
                     to:'romeo@montague.lit/pda',
                     from:"lounge@montague.lit/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;"

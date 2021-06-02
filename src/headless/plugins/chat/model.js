@@ -56,6 +56,7 @@ const ChatBox = ModelWithContact.extend({
         this.set({'box_id': `box-${jid}`});
         this.initNotifications();
         this.initMessages();
+        this.initUI();
 
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
             this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -104,6 +105,10 @@ const ChatBox = ModelWithContact.extend({
                 api.send(this.createMessageStanza(message));
             }
         });
+    },
+
+    initUI () {
+        this.ui = new Model();
     },
 
     initNotifications () {

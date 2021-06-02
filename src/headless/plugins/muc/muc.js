@@ -90,6 +90,7 @@ const ChatRoomMixin = {
         this.set('box_id', `box-${this.get('jid')}`);
         this.initNotifications();
         this.initMessages();
+        this.initUI();
         this.initOccupants();
         this.initDiscoModels(); // sendChatState depends on this.features
         this.registerHandlers();

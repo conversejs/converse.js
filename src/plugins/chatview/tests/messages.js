@@ -188,7 +188,6 @@ describe("A Chat Message", function () {
         await _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 7);
 
-        view.clearSpinner(); //cleanup
         expect(view.querySelectorAll('.date-separator').length).toEqual(4);
 
         let day = sizzle('.date-separator:first', view).pop();
@@ -704,7 +703,7 @@ describe("A Chat Message", function () {
         jasmine.clock().tick(1*ONE_MINUTE_LATER);
         await mock.sendMessage(view, "Another message within 10 minutes, but from a different person");
 
-        expect(view.querySelectorAll('.message').length).toBe(6);
+        await u.waitUntil(() => view.querySelectorAll('.message').length === 6);
         expect(view.querySelectorAll('.chat-msg').length).toBe(5);
 
         const nth_child = (n) => `converse-chat-message:nth-child(${n}) .chat-msg`;

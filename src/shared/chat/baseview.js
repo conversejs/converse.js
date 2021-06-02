@@ -1,6 +1,5 @@
 import debounce from 'lodash-es/debounce';
 import log from '@converse/headless/log';
-import tpl_spinner from 'templates/spinner.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
@@ -90,23 +89,6 @@ export default class BaseChatView extends ElementView {
         } else {
             this.scrollDown();
         }
-    }
-
-    addSpinner (append = false) {
-        const content = this.querySelector('.chat-content');
-        if (this.querySelector('.spinner') === null) {
-            const el = u.getElementFromTemplateResult(tpl_spinner());
-            if (append) {
-                content.insertAdjacentElement('beforeend', el);
-                this.scrollDown();
-            } else {
-                content.insertAdjacentElement('afterbegin', el);
-            }
-        }
-    }
-
-    clearSpinner () {
-        this.querySelectorAll('.chat-content .spinner').forEach(u.removeElement);
     }
 
     onStatusMessageChanged (item) {

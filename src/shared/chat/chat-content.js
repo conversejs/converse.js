@@ -21,10 +21,10 @@ export default class ChatContent extends CustomElement {
         this.listenTo(this.model.messages, 'remove', this.requestUpdate);
         this.listenTo(this.model.messages, 'reset', this.requestUpdate);
         this.listenTo(this.model.notifications, 'change', this.requestUpdate);
+        this.listenTo(this.model.ui, 'change', this.requestUpdate);
         if (this.model.occupants) {
             this.listenTo(this.model.occupants, 'change', this.requestUpdate);
         }
-
         // We jot down whether we were scrolled down before rendering, because when an
         // image loads, it triggers 'scroll' and the chat will be marked as scrolled,
         // which is technically true, but not what we want because the user
@@ -37,6 +37,7 @@ export default class ChatContent extends CustomElement {
 
     render () {
         return html`
+            ${ this.model.ui.get('chat-content-spinner-top') ? html`<span class="spinner fa fa-spinner centered"></span>` : '' }
             <converse-message-history
                 .model=${this.model}
                 .messages=${[...this.model.messages.models]}>

@@ -8,13 +8,13 @@ export async function fetchMessagesOnScrollUp (view) {
         if (oldest_message) {
             const by_jid = is_groupchat ? view.model.get('jid') : _converse.bare_jid;
             const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
-            view.addSpinner();
+            view.model.ui.set('chat-content-spinner-top', true);
             if (stanza_id) {
                 await fetchArchivedMessages(view.model, { 'before': stanza_id });
             } else {
                 await fetchArchivedMessages(view.model, { 'end': oldest_message.get('time') });
             }
-            view.clearSpinner();
+            view.model.ui.set('chat-content-spinner-top', false);
             if (api.settings.get('allow_url_history_change')) {
                 _converse.router.history.navigate(`#${oldest_message.get('msgid')}`);
             }

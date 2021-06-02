@@ -37,8 +37,8 @@ Removed events:
 * `rosterGroupsFetched`
 * `messageSend` (use `sendMessage` instead)
 
-The `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
-payload and not the `view` since it might not be exist at that time.
+The `chatBoxClosed`, `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
+payload and not the `view`.
 
 ## 7.0.5 (Unreleased)
 

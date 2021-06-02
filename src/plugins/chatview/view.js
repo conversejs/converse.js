@@ -133,11 +133,17 @@ export default class ChatView extends BaseChatView {
         }
     }
 
+    /**
+     * Closes this chat
+     * @private
+     * @method _converse.ChatBoxView#close
+     */
     close (ev) {
+        ev?.preventDefault?.();
         if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
-        return super.close(ev);
+        return this.model.close(ev);
     }
 
     afterShown () {

@@ -50,24 +50,6 @@ export default class BaseChatView extends ElementView {
         this.afterShown();
     }
 
-    async close (ev) {
-        ev?.preventDefault?.();
-        if (api.connection.connected()) {
-            // Immediately sending the chat state, because the
-            // model is going to be destroyed afterwards.
-            this.model.setChatState(_converse.INACTIVE);
-            this.model.sendChatState();
-        }
-        await this.model.close(ev);
-        /**
-         * Triggered once a chatbox has been closed.
-         * @event _converse#chatBoxClosed
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-         * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
-         */
-        api.trigger('chatBoxClosed', this);
-    }
-
     emitBlurred (ev) {
         if (this.contains(document.activeElement) || this.contains(ev.relatedTarget)) {
             // Something else in this chatbox is still focused

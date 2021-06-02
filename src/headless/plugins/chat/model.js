@@ -250,6 +250,12 @@ const ChatBox = ModelWithContact.extend({
     },
 
     async close () {
+        if (api.connection.connected()) {
+            // Immediately sending the chat state, because the
+            // model is going to be destroyed afterwards.
+            this.setChatState(_converse.INACTIVE);
+            this.sendChatState();
+        }
         try {
             await new Promise((success, reject) => {
                 return this.destroy({success, 'error': (m, e) => reject(e)})
@@ -261,6 +267,13 @@ const ChatBox = ModelWithContact.extend({
                 await this.clearMessages();
             }
         }
+        /**
+         * Triggered once a chatbox has been closed.
+         * @event _converse#chatBoxClosed
+         * @type {_converse.ChatBox | _converse.ChatRoom}
+         * @example _converse.api.listen.on('chatBoxClosed', chat => { ... });
+         */
+        api.trigger('chatBoxClosed', this);
     },
 
     announceReconnection () {
@@ -268,7 +281,7 @@ const ChatBox = ModelWithContact.extend({
          * Triggered whenever a `_converse.ChatBox` instance has reconnected after an outage
          * @event _converse#onChatReconnected
          * @type {_converse.ChatBox | _converse.ChatRoom}
-         * @example _converse.api.listen.on('onChatReconnected', chatbox => { ... });
+         * @example _converse.api.listen.on('onChatReconnected', chat => { ... });
          */
         api.trigger('chatReconnected', this);
     },

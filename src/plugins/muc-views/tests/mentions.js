@@ -82,6 +82,55 @@ describe("An incoming groupchat message", function () {
         done();
     }));
 
+    it("properly renders mentions that contain the pipe character",
+            mock.initConverse([], {}, async function (done, _converse) {
+
+        const muc_jid = 'lounge@montague.lit';
+        const nick = 'romeo';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const view = _converse.api.chatviews.get(muc_jid);
+        _converse.connection._dataRecv(mock.createRequest(
+            $pres({
+                'to': 'romeo@montague.lit/resource',
+                'from': `lounge@montague.lit/ThUnD3r|Gr33n`
+            })
+            .c('x', {xmlns: Strophe.NS.MUC_USER})
+            .c('item', {
+                'affiliation': 'none',
+                'jid': `${nick}@montague.lit/resource`,
+                'role': 'participant'
+            }))
+        );
+        const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+        textarea.value = 'hello @ThUnD3r|Gr33n'
+        const enter_event = {
+            'target': textarea,
+            'preventDefault': function preventDefault () {},
+            'stopPropagation': function stopPropagation () {},
+            'keyCode': 13 // Enter
+        }
+        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
+        bottom_panel.onKeyDown(enter_event);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+        const sent_stanzas = _converse.connection.sent_stanzas;
+        const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
+        expect(Strophe.serialize(msg))
+            .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
+                    `to="lounge@montague.lit" type="groupchat" `+
+                    `xmlns="jabber:client">`+
+                        `<body>hello ThUnD3r|Gr33n</body>`+
+                        `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<reference begin="6" end="19" type="mention" uri="xmpp:lounge@montague.lit/ThUnD3r%7CGr33n" xmlns="urn:xmpp:reference:0"/>`+
+                        `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                    `</message>`);
+
+        const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe('hello <span class="mention">ThUnD3r|Gr33n</span>');
+        done();
+    }));
+
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
             mock.initConverse([], {}, async function (done, _converse) {
 

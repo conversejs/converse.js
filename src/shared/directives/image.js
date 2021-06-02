@@ -6,16 +6,14 @@ import { html } from 'lit';
 
 class ImageDirective extends AsyncDirective {
     render (src, href, onLoad, onClick) {
-        return html`
-            <a href="${href}" class="chat-image__link" target="_blank" rel="noopener"
+        return html`<a href="${href}" class="chat-image__link" target="_blank" rel="noopener"
                 ><img
                     class="chat-image img-thumbnail"
                     src="${src}"
                     @click=${onClick}
                     @error=${() => this.onError(src, href, onLoad, onClick)}
                     @load=${onLoad}
-            /></a>
-        `;
+            /></a>`;
     }
 
     onError (src, href, onLoad, onClick) {

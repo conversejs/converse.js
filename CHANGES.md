@@ -24,6 +24,7 @@
 - Use the MUC stanza id when sending XEP-0333 markers
 - Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
 - Add a Description Of A Project (DOAP) file
+- Add ability to deregister nickname when closing a MUC by setting `auto_register_muc_nickname` to `'unregister'`.
 
 ### Breaking Changes
 

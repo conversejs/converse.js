@@ -322,7 +322,8 @@ mock.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[
     const affs = _converse.muc_fetch_members;
     const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
     await mock.returnMemberLists(_converse, muc_jid, members, all_affiliations);
-    return model.messages.fetched;
+    await model.messages.fetched;
+    return model;
 };
 
 mock.createContact = async function (_converse, name, ask, requesting, subscription) {

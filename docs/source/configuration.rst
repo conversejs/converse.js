@@ -435,11 +435,16 @@ auto_register_muc_nickname
 --------------------------
 
 * Default: ``false``
+* Allowed values: ``false``, ``true``, ``'unregister'``
 
-Determines whether Converse should automatically register a user's nickname
-when they enter a groupchat.
+If truthy, Converse will automatically register a user's nickname upon entering
+a groupchat.
 
 See here fore more details: https://xmpp.org/extensions/xep-0045.html#register
+
+If set to ``'unregister'``, then the user's nickname will be registered
+(because it's a truthy value) and also be unregistered when the user
+permanently leaves the MUC by closing it.
 
 auto_subscribe
 --------------

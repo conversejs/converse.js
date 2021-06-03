@@ -48,7 +48,7 @@ export default class ChatContent extends CustomElement {
 
     render () {
         return html`
-            ${ this.model.ui.get('chat-content-spinner-top') ? html`<span class="spinner fa fa-spinner centered"></span>` : '' }
+            ${ this.model.ui?.get('chat-content-spinner-top') ? html`<span class="spinner fa fa-spinner centered"></span>` : '' }
             <converse-message-history
                 .model=${this.model}
                 .observer=${this.observer}
@@ -105,7 +105,7 @@ export default class ChatContent extends CustomElement {
     }
 
     setAnchoredMessage (entries) {
-        if (this.model.ui.get('chat-content-spinner-top')) {
+        if (!this.model?.ui || this.model.ui.get('chat-content-spinner-top')) {
             return;
         }
         entries = entries.filter(e => e.isIntersecting);

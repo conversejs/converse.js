@@ -169,15 +169,15 @@ describe("A Groupchat Message", function () {
         const view = _converse.api.chatviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
         expect(textarea.value).toBe('');
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
         expect(textarea.value).toBe('');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        bottom_panel.onKeyDown({
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -188,7 +188,7 @@ describe("A Groupchat Message", function () {
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
         expect(textarea.value).toBe('');
-        bottom_panel.onKeyDown({
+        message_form.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -200,7 +200,7 @@ describe("A Groupchat Message", function () {
         spyOn(_converse.connection, 'send');
         const new_text = 'But soft, what light through yonder window breaks?'
         textarea.value = new_text;
-        bottom_panel.onKeyDown({
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -245,7 +245,7 @@ describe("A Groupchat Message", function () {
 
         // Test that pressing the down arrow cancels message correction
         expect(textarea.value).toBe('');
-        bottom_panel.onKeyDown({
+        message_form.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
@@ -254,7 +254,7 @@ describe("A Groupchat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
-        bottom_panel.onKeyDown({
+        message_form.onKeyDown({
             target: textarea,
             keyCode: 40 // Down arrow
         });

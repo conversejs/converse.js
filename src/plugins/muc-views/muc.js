@@ -53,7 +53,6 @@ export default class MUCView extends BaseChatView {
      */
     afterShown () {
         if (!this.model.get('hidden') && !this.model.get('minimized')) {
-            this.model.clearUnreadMsgCounter();
             this.scrollDown();
         }
     }

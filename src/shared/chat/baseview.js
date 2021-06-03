@@ -89,6 +89,14 @@ export default class BaseChatView extends ElementView {
         }
     }
 
+    getMessageForm () {
+        if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
+            return this.querySelector('converse-muc-message-form');
+        } else {
+            return this.querySelector('converse-message-form');
+        }
+    }
+
     /**
      * Scrolls the chat down.
      *
@@ -107,7 +115,7 @@ export default class BaseChatView extends ElementView {
 
     onWindowStateChanged (data) {
         if (data.state === 'visible') {
-            if (!this.model.isHidden() && this.model.get('num_unread', 0)) {
+            if (!this.model.isHidden()) {
                 this.model.clearUnreadMsgCounter();
             }
         } else if (data.state === 'hidden') {

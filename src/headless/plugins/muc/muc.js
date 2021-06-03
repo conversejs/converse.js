@@ -97,6 +97,7 @@ const ChatRoomMixin = {
 
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
+        this.on('change:scrolled', () => !this.get('scrolled') && this.clearUnreadMsgCounter());
         this.on('destroy', this.removeHandlers, this);
 
         await this.restoreSession();
@@ -2562,7 +2563,9 @@ const ChatRoomMixin = {
         }
     },
 
-    /* Given a newly received message, update the unread counter if necessary.
+    /**
+     * Given a newly received {@link _converse.Message} instance,
+     * update the unread counter if necessary.
      * @private
      * @method _converse.ChatRoom#handleUnreadMessage
      * @param { XMLElement } - The <messsage> stanza
@@ -2572,7 +2575,13 @@ const ChatRoomMixin = {
             return;
         }
         if (u.isNewMessage(message)) {
-            if (this.isHidden()) {
+            if (message.get('sender') === 'me') {
+                // We remove the "scrolled" flag so that the chat area
+                // gets scrolled down. We always want to scroll down
+                // when the user writes a message as opposed to when a
+                // message is received.
+                this.model.set('scrolled', false);
+            } else if (this.isHidden() || this.get('scrolled')) {
                 const settings = {
                     'num_unread_general': this.get('num_unread_general') + 1
                 };

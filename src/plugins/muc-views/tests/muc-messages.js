@@ -25,8 +25,8 @@ describe("A Groupchat Message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown(enter_event);
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter_event);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             const msg = view.model.messages.at(0);
@@ -514,8 +514,8 @@ describe("A Groupchat Message", function () {
         const view = _converse.api.chatviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -589,8 +589,8 @@ describe("A Groupchat Message", function () {
         const view = _converse.api.chatviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter

@@ -64,6 +64,7 @@ const ChatBox = ModelWithContact.extend({
             this.presence.on('change:show', item => this.onPresenceChanged(item));
         }
         this.on('change:chat_state', this.sendChatState, this);
+        this.on('change:scrolled', () => !this.get('scrolled') && this.clearUnreadMsgCounter());
 
         await this.fetchMessages();
         /**
@@ -198,7 +199,7 @@ const ChatBox = ModelWithContact.extend({
      * Queue an incoming `chat` message stanza for processing.
      * @async
      * @private
-     * @method _converse.ChatRoom#queueMessage
+     * @method _converse.ChatBox#queueMessage
      * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
      */
     queueMessage (attrs) {
@@ -211,7 +212,7 @@ const ChatBox = ModelWithContact.extend({
     /**
      * @async
      * @private
-     * @method _converse.ChatRoom#onMessage
+     * @method _converse.ChatBox#onMessage
      * @param { MessageAttributes } attrs_promse - A promise which resolves to the message attributes.
      */
     async onMessage (attrs) {
@@ -681,7 +682,6 @@ const ChatBox = ModelWithContact.extend({
         return _converse.connection.send(msg);
     },
 
-
     /**
      * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
@@ -866,7 +866,7 @@ const ChatBox = ModelWithContact.extend({
      * before the collection has been fetched.
      * @async
      * @private
-     * @method _converse.ChatRoom#queueMessageCreation
+     * @method _converse.ChatBox#queueMessageCreation
      * @param { Object } attrs
      */
     async createMessage (attrs, options) {
@@ -1029,6 +1029,7 @@ const ChatBox = ModelWithContact.extend({
      * Given a newly received {@link _converse.Message} instance,
      * update the unread counter if necessary.
      * @private
+     * @method _converse.ChatBox#handleUnreadMessage
      * @param {_converse.Message} message
      */
     handleUnreadMessage (message) {
@@ -1064,7 +1065,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     isScrolledUp () {
-        return this.get('scrolled', true);
+        return this.get('scrolled');
     }
 });
 

@@ -15,8 +15,8 @@ describe("Chatrooms", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/register';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13

@@ -141,7 +141,6 @@ export default class ChatView extends BaseChatView {
     }
 
     afterShown () {
-        this.model.clearUnreadMsgCounter();
         this.model.setChatState(_converse.ACTIVE);
         this.scrollDown();
         this.maybeFocus();

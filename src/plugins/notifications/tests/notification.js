@@ -79,7 +79,6 @@ describe("Notifications", function () {
                 }));
 
                 it("is shown for headline messages", mock.initConverse([], {}, async (done, _converse) => {
-
                     const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                     spyOn(window, 'Notification').and.returnValue(stub);
 

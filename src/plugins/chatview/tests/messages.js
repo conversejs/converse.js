@@ -1213,14 +1213,13 @@ describe("A Chat Message", function () {
             }
             await Promise.all(promises);
 
-            const indicator_el = view.querySelector('.new-msgs-indicator');
-            expect(u.isVisible(indicator_el)).toBeTruthy();
+            const indicator_el = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
 
             expect(view.model.get('scrolled')).toBe(true);
             expect(view.querySelector('.chat-content').scrollTop).toBe(0);
             indicator_el.click();
-            expect(u.isVisible(indicator_el)).toBeFalsy();
-            expect(view.model.get('scrolled')).toBe(false);
+            await u.waitUntil(() => !view.querySelector('.new-msgs-indicator'));
+            await u.waitUntil(() => !view.model.get('scrolled'));
             done();
         }));
 

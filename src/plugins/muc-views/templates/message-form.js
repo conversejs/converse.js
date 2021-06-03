@@ -1,6 +1,7 @@
 import { __ } from 'i18n';
 import { api } from "@converse/headless/core";
 import { html } from "lit";
+import { resetElementHeight } from 'plugins/chatview/utils.js';
 
 
 export default (o) => {
@@ -15,16 +16,14 @@ export default (o) => {
             <input type="submit" class="btn btn-primary" name="join" value="Join"/>
         </form>
         <form class="sendXMPPMessage">
-            <span class="chat-toolbar no-text-select"></span>
             <input type="text" placeholder="${label_spoiler_hint || ''}" value="${o.hint_value || ''}" class="${o.composing_spoiler ? '' : 'hidden'} spoiler-hint"/>
-
             <div class="suggestion-box">
                 <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
                 <textarea
                     autofocus
                     type="text"
                     @drop=${o.onDrop}
-                    @input=${o.inputChanged}
+                    @input=${resetElementHeight}
                     @keydown=${o.onKeyDown}
                     @keyup=${o.onKeyUp}
                     @paste=${o.onPaste}

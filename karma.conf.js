@@ -25,7 +25,6 @@ module.exports = function(config) {
       { pattern: "node_modules/sinon/pkg/sinon.js", type: 'module' },
       { pattern: "spec/mock.js", type: 'module' },
 
-      { pattern: "spec/emojis.js", type: 'module' },
       { pattern: "spec/protocol.js", type: 'module' },
       { pattern: "spec/push.js", type: 'module' },
       { pattern: "spec/user-details-modal.js", type: 'module' },
@@ -43,6 +42,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/emojis.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/http-file-upload.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/markers.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/me-messages.js", type: 'module' },

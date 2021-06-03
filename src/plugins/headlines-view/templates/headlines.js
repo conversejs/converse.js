@@ -9,8 +9,7 @@ export default (o) => html`
             <div class="chat-content ${ o.show_send_button ? 'chat-content-sendbutton' : '' }" aria-live="polite">
                 <converse-chat-content
                     class="chat-content__messages"
-                    jid="${o.jid}"
-                    @scroll=${o.markScrolled}></converse-chat-content>
+                    jid="${o.jid}"></converse-chat-content>
 
                 <div class="chat-content__help"></div>
             </div>

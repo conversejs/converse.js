@@ -14,10 +14,11 @@ export async function fetchMessagesOnScrollUp (view) {
             } else {
                 await fetchArchivedMessages(view.model, { 'end': oldest_message.get('time') });
             }
-            view.model.ui.set('chat-content-spinner-top', false);
             if (api.settings.get('allow_url_history_change')) {
                 _converse.router.history.navigate(`#${oldest_message.get('msgid')}`);
             }
+
+            setTimeout(() => view.model.ui.set('chat-content-spinner-top', false), 250);
         }
     }
 }

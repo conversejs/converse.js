@@ -1,15 +1,11 @@
-import debounce from 'lodash-es/debounce';
 import log from '@converse/headless/log';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { onScrolledDown } from './utils.js';
 
 const u = converse.env.utils;
 
 export default class BaseChatView extends ElementView {
-
-    initDebounced () {
-        this.markScrolled = debounce(this._markScrolled, 100);
-    }
 
     disconnectedCallback () {
         super.disconnectedCallback();
@@ -94,38 +90,6 @@ export default class BaseChatView extends ElementView {
     }
 
     /**
-     * Called when the chat content is scrolled up or down.
-     * We want to record when the user has scrolled away from
-     * the bottom, so that we don't automatically scroll away
-     * from what the user is reading when new messages are received.
-     *
-     * Don't call this method directly, instead, call `markScrolled`,
-     * which debounces this method by 100ms.
-     * @private
-     */
-    _markScrolled (ev) {
-        let scrolled = true;
-        let scrollTop = null;
-        const is_at_bottom = ev.target.scrollTop + ev.target.clientHeight >= ev.target.scrollHeight - 62; // sigh...
-        if (is_at_bottom) {
-            scrolled = false;
-            this.onScrolledDown();
-        } else if (ev.target.scrollTop === 0) {
-            scrollTop = ev.target.scrollTop;
-            /**
-             * Triggered once the chat's message area has been scrolled to the top
-             * @event _converse#chatBoxScrolledUp
-             * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
-             * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
-             */
-            api.trigger('chatBoxScrolledUp', this);
-        } else {
-            scrollTop = ev.target.scrollTop;
-        }
-        u.safeSave(this.model, { scrolled, scrollTop });
-    }
-
-    /**
      * Scrolls the chat down.
      *
      * This method will always scroll the chat down, regardless of
@@ -136,23 +100,9 @@ export default class BaseChatView extends ElementView {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         if (this.model.get('scrolled')) {
-            u.safeSave(this.model, {
-                'scrolled': false,
-                'scrollTop': null
-            });
+            u.safeSave(this.model, { 'scrolled': false });
         }
-        this.onScrolledDown();
-    }
-
-    onScrolledDown () {
-        if (!this.model.isHidden()) {
-            this.model.clearUnreadMsgCounter();
-            if (api.settings.get('allow_url_history_change')) {
-                // Clear location hash if set to one of the messages in our history
-                const hash = window.location.hash;
-                hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
-            }
-        }
+        onScrolledDown(this.model);
     }
 
     onWindowStateChanged (data) {

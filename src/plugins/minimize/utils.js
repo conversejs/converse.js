@@ -151,9 +151,6 @@ export function minimize (ev, model) {
     } else {
         model = ev;
     }
-    // save the scroll position to restore it on maximize
-    const view = _converse.chatboxviews.get(model.get('jid'));
-    view.querySelector('.chat-content__messages')?.saveScrollPosition();
     model.setChatState(_converse.INACTIVE);
     u.safeSave(model, {
         'hidden': true,

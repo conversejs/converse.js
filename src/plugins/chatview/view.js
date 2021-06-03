@@ -22,10 +22,7 @@ export default class ChatView extends BaseChatView {
     async initialize () {
         const jid = this.getAttribute('jid');
         _converse.chatboxviews.add(jid, this);
-
         this.model = _converse.chatboxes.get(jid);
-        this.initDebounced();
-
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
@@ -46,9 +43,7 @@ export default class ChatView extends BaseChatView {
     }
 
     render () {
-        const result = tpl_chat(Object.assign(
-            this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) })
-        );
+        const result = tpl_chat(this.model.toJSON());
         render(result, this);
         this.help_container = this.querySelector('.chat-content__help');
         return this;

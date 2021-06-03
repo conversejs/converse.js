@@ -1,10 +1,11 @@
 import './message-history';
 import debounce from 'lodash/debounce';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless/core';
 import { html } from 'lit';
+import { onScrolledDown } from './utils.js';
+import { safeSave } from '@converse/headless/utils/core.js';
 
-const { u } = converse;
 
 export default class ChatContent extends CustomElement {
 
@@ -17,6 +18,7 @@ export default class ChatContent extends CustomElement {
     connectedCallback () {
         super.connectedCallback();
         this.debouncedMaintainScroll = debounce(this.maintainScrollPosition, 100);
+        this.markScrolled = debounce(this._markScrolled, 100);
 
         this.model = _converse.chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:hidden_occupants', this.requestUpdate);
@@ -40,6 +42,8 @@ export default class ChatContent extends CustomElement {
         this.addEventListener('imageLoaded', () => {
             this.debouncedMaintainScroll(this.was_scrolled_up);
         });
+        this.addEventListener('scroll', () => this.markScrolled());
+        this.initIntersectionObserver();
     }
 
     render () {
@@ -47,6 +51,7 @@ export default class ChatContent extends CustomElement {
             ${ this.model.ui.get('chat-content-spinner-top') ? html`<span class="spinner fa fa-spinner centered"></span>` : '' }
             <converse-message-history
                 .model=${this.model}
+                .observer=${this.observer}
                 .messages=${[...this.model.messages.models]}>
             </converse-message-history>
             <div class="chat-content__notifications">${this.model.getNotificationsText()}</div>
@@ -58,19 +63,62 @@ export default class ChatContent extends CustomElement {
         this.debouncedMaintainScroll();
     }
 
-    saveScrollPosition () {
-        const scrollTop = this.scrollTop;
-        if (scrollTop) {
-            u.safeSave(this.model, { 'scrolled': true, scrollTop });
+    initIntersectionObserver () {
+      if (this.observer) {
+          this.observer.disconnect();
+      } else {
+          const options = {
+              root: this,
+              threshold: [0.1]
+          }
+          const handler = ev => this.setAnchoredMessage(ev);
+          this.observer = new IntersectionObserver(handler, options);
+      }
+    }
+
+    /**
+     * Called when the chat content is scrolled up or down.
+     * We want to record when the user has scrolled away from
+     * the bottom, so that we don't automatically scroll away
+     * from what the user is reading when new messages are received.
+     *
+     * Don't call this method directly, instead, call `markScrolled`,
+     * which debounces this method by 100ms.
+     * @private
+     */
+    _markScrolled () {
+        let scrolled = true;
+        const is_at_bottom = this.scrollTop + this.clientHeight >= this.scrollHeight;
+        if (is_at_bottom) {
+            scrolled = false;
+            onScrolledDown(this.model);
+        } else if (this.scrollTop === 0) {
+            /**
+             * Triggered once the chat's message area has been scrolled to the top
+             * @event _converse#chatBoxScrolledUp
+             * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
+             * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
+             */
+            api.trigger('chatBoxScrolledUp', this);
+        }
+        safeSave(this.model, { scrolled });
+    }
+
+    setAnchoredMessage (entries) {
+        if (this.model.ui.get('chat-content-spinner-top')) {
+            return;
+        }
+        entries = entries.filter(e => e.isIntersecting);
+        const current = entries.reduce((p, c) => c.boundingClientRect.y >= (p?.boundingClientRect.y || 0) ? c : p, null);
+        if (current) {
+            this.anchored_message = current.target;
         }
     }
 
     maintainScrollPosition () {
         if (this.was_scrolled_up) {
-            const pos = this.model.get('scrollTop');
-            if (pos) {
-                this.scrollTop = pos;
-            }
+            console.warn('scrolling into view');
+            this.anchored_message?.scrollIntoView(true);
         } else {
             this.scrollDown();
         }

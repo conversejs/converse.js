@@ -362,13 +362,16 @@ u.onMultipleEvents = function (events=[], callback) {
     events.forEach(e => e.object.on(e.event, handler));
 };
 
-u.safeSave = function (model, attributes, options) {
+
+export function safeSave (model, attributes, options) {
     if (u.isPersistableModel(model)) {
         model.save(attributes, options);
     } else {
         model.set(attributes, options);
     }
-};
+}
+
+u.safeSave = safeSave;
 
 u.siblingIndex = function (el) {
     /* eslint-disable no-cond-assign */

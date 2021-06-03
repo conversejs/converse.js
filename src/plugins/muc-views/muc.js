@@ -14,8 +14,6 @@ export default class MUCView extends BaseChatView {
         const jid = this.getAttribute('jid');
         this.model = await api.rooms.get(jid);
         _converse.chatboxviews.add(jid, this);
-        this.initDebounced();
-
         this.setAttribute('id', this.model.get('box_id'));
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);

@@ -2,7 +2,7 @@ import tpl_chatbox_message_form from './templates/chatbox_message_form.js';
 import tpl_toolbar from './templates/toolbar.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from '@converse/headless/core';
 import { html, render } from 'lit';
 import { clearMessages, parseMessageForCommands } from './utils.js';
 
@@ -11,20 +11,24 @@ import './styles/chat-bottom-panel.scss';
 const { u } = converse.env;
 
 export default class ChatBottomPanel extends ElementView {
-
     events = {
         'click .send-button': 'onFormSubmitted',
-        'click .toggle-clear': 'clearMessages',
-    }
+        'click .toggle-clear': 'clearMessages'
+    };
 
     async connectedCallback () {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
-        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
+        this.listenTo(this.model, 'change', o => this.onModelChanged(o.changed));
         await this.model.initialized;
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.render();
-        api.listen.on('chatBoxScrolledDown', () => this.hideNewMessagesIndicator());
+    }
+
+    onModelChanged (changed) {
+        if ('composing_spoiler' in changed || 'num_unread' in changed || 'scrolled' in changed) {
+            this.renderMessageForm();
+        }
     }
 
     render () {
@@ -36,7 +40,8 @@ export default class ChatBottomPanel extends ElementView {
         if (!api.settings.get('show_toolbar')) {
             return this;
         }
-        const options = Object.assign({
+        const options = Object.assign(
+            {
                 'model': this.model,
                 'chatview': _converse.chatboxviews.get(this.getAttribute('jid'))
             },
@@ -62,17 +67,12 @@ export default class ChatBottomPanel extends ElementView {
                     'onDrop': ev => this.onDrop(ev),
                     'hint_value': this.querySelector('.spoiler-hint')?.value,
                     'inputChanged': ev => this.inputChanged(ev),
-                    'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
-                    'label_spoiler_hint': __('Optional hint'),
                     'message_value': this.querySelector('.chat-textarea')?.value,
                     'onChange': ev => this.updateCharCounter(ev.target.value),
                     'onKeyDown': ev => this.onKeyDown(ev),
                     'onKeyUp': ev => this.onKeyUp(ev),
                     'onPaste': ev => this.onPaste(ev),
-                    'show_send_button': api.settings.get('show_send_button'),
-                    'show_toolbar': api.settings.get('show_toolbar'),
-                    'unread_msgs': __('You have unread messages'),
-                    'viewUnreadMessages': ev => this.viewUnreadMessages(ev),
+                    'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
                 })
             ),
             form_container
@@ -85,11 +85,6 @@ export default class ChatBottomPanel extends ElementView {
     viewUnreadMessages (ev) {
         ev?.preventDefault?.();
         this.model.save({ 'scrolled': false, 'scrollTop': null });
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.scrollDown();
-    }
-
-    hideNewMessagesIndicator () {
-        this.querySelector('.new-msgs-indicator')?.classList.add('hidden');
     }
 
     onMessageCorrecting (message) {
@@ -244,7 +239,7 @@ export default class ChatBottomPanel extends ElementView {
         }
         const ev = document.createEvent('HTMLEvents');
         ev.initEvent('change', false, true);
-        textarea.dispatchEvent(ev)
+        textarea.dispatchEvent(ev);
         u.placeCaretAtEnd(textarea);
     }
 

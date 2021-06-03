@@ -78,7 +78,6 @@ export default class MUCBottomPanel extends BottomPanel {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         this.model.save({ 'hidden_occupants': true });
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.scrollDown();
     }
 
     onKeyDown (ev) {

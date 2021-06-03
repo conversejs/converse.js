@@ -29,7 +29,6 @@ export default class MUCView extends BaseChatView {
         await this.render();
 
         // Need to be registered after render has been called.
-        this.listenTo(this.model.messages, 'add', this.onMessageAdded);
         this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
 
         this.updateAfterTransition();

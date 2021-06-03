@@ -32,7 +32,6 @@ export default class ChatView extends BaseChatView {
         this.render();
 
         // Need to be registered after render has been called.
-        this.listenTo(this.model.messages, 'add', this.onMessageAdded);
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
 
         await this.model.messages.fetched;

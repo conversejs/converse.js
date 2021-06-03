@@ -1036,7 +1036,13 @@ const ChatBox = ModelWithContact.extend({
             return
         }
         if (u.isNewMessage(message)) {
-            if (this.isHidden()) {
+            if (message.get('sender') === 'me') {
+                // We remove the "scrolled" flag so that the chat area
+                // gets scrolled down. We always want to scroll down
+                // when the user writes a message as opposed to when a
+                // message is received.
+                this.model.set('scrolled', false);
+            } else if (this.isHidden() || this.get('scrolled')) {
                 const settings = {
                     'num_unread': this.get('num_unread') + 1
                 };

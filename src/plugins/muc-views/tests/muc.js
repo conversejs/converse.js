@@ -1934,7 +1934,6 @@ describe("Groupchats", function () {
             const message = 'This message is received while the chat area is scrolled up';
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view, 'scrollDown').and.callThrough();
             // Create enough messages so that there's a scrollbar.
             const promises = [];
             for (let i=0; i<20; i++) {

@@ -28,7 +28,7 @@ class RichTextRenderer {
 class RichTextDirective extends Directive {
     render (text, offset, mentions, options, callback) { // eslint-disable-line class-methods-use-this
         const renderer = new RichTextRenderer(text, offset, mentions, options);
-        const result =renderer.render();
+        const result = renderer.render();
         callback?.();
         return result;
     }

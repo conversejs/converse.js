@@ -1,7 +1,7 @@
-import "./message-history";
-import debounce from 'lodash-es/debounce';
+import './message-history';
+import debounce from 'lodash/debounce';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 
 export default class ChatContent extends CustomElement {
@@ -14,14 +14,19 @@ export default class ChatContent extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.debouncedScrolldown = debounce(this.scrollDown, 100);
+        this.debouncedMaintainScroll = debounce(this.maintainScrollPosition, 100);
+
         this.model = _converse.chatboxes.get(this.jid);
+        this.listenTo(this.model, 'change:hidden_occupants', this.requestUpdate);
+        this.listenTo(this.model, 'change:scrolled', this.requestUpdate);
         this.listenTo(this.model.messages, 'add', this.requestUpdate);
         this.listenTo(this.model.messages, 'change', this.requestUpdate);
         this.listenTo(this.model.messages, 'remove', this.requestUpdate);
+        this.listenTo(this.model.messages, 'rendered', this.requestUpdate);
         this.listenTo(this.model.messages, 'reset', this.requestUpdate);
         this.listenTo(this.model.notifications, 'change', this.requestUpdate);
         this.listenTo(this.model.ui, 'change', this.requestUpdate);
+
         if (this.model.occupants) {
             this.listenTo(this.model.occupants, 'change', this.requestUpdate);
         }
@@ -31,7 +36,7 @@ export default class ChatContent extends CustomElement {
         // didn't initiate the scrolling.
         this.was_scrolled_up = this.model.get('scrolled');
         this.addEventListener('imageLoaded', () => {
-            !this.was_scrolled_up && this.scrollDown();
+            this.debouncedMaintainScroll(this.was_scrolled_up);
         });
     }
 
@@ -47,7 +52,19 @@ export default class ChatContent extends CustomElement {
     }
 
     updated () {
-        !this.model.get('scrolled') && this.debouncedScrolldown();
+        this.was_scrolled_up = this.model.get('scrolled');
+        this.debouncedMaintainScroll();
+    }
+
+    maintainScrollPosition () {
+        if (this.was_scrolled_up) {
+            const pos = this.model.get('scrollTop');
+            if (pos) {
+                this.scrollTop = pos;
+            }
+        } else {
+            this.scrollDown();
+        }
     }
 
     scrollDown () {
@@ -57,6 +74,14 @@ export default class ChatContent extends CustomElement {
         } else {
             this.scrollTop = this.scrollHeight;
         }
+        /**
+         * Triggered once the converse-chat-content element has been scrolled down to the bottom.
+         * @event _converse#chatBoxScrolledDown
+         * @type {object}
+         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
+         * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
+         */
+        api.trigger('chatBoxScrolledDown', { 'chatbox': this.model });
     }
 }
 

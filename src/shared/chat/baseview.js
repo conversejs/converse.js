@@ -9,20 +9,12 @@ export default class BaseChatView extends ElementView {
 
     initDebounced () {
         this.markScrolled = debounce(this._markScrolled, 100);
-        this.debouncedScrollDown = debounce(this.scrollDown, 100);
     }
 
     disconnectedCallback () {
         super.disconnectedCallback();
         const jid = this.getAttribute('jid');
         _converse.chatboxviews.remove(jid, this);
-    }
-
-    hideNewMessagesIndicator () {
-        const new_msgs_indicator = this.querySelector('.new-msgs-indicator');
-        if (new_msgs_indicator !== null) {
-            new_msgs_indicator.classList.add('hidden');
-        }
     }
 
     maybeFocus () {
@@ -77,20 +69,6 @@ export default class BaseChatView extends ElementView {
         api.trigger('chatBoxFocused', this, ev);
     }
 
-    /**
-     * Scroll to the previously saved scrollTop position, or scroll
-     * down if it wasn't set.
-     */
-    maintainScrollTop () {
-        const pos = this.model.get('scrollTop');
-        if (pos) {
-            const msgs_container = this.querySelector('.chat-content__messages');
-            msgs_container.scrollTop = pos;
-        } else {
-            this.scrollDown();
-        }
-    }
-
     onStatusMessageChanged (item) {
         this.renderHeading();
         /**
@@ -105,24 +83,6 @@ export default class BaseChatView extends ElementView {
             'contact': item.attributes,
             'message': item.get('status')
         });
-    }
-
-    showNewMessagesIndicator () {
-        u.showElement(this.querySelector('.new-msgs-indicator'));
-    }
-
-    onMessageAdded (message) {
-        if (u.isNewMessage(message)) {
-            if (message.get('sender') === 'me') {
-                // We remove the "scrolled" flag so that the chat area
-                // gets scrolled down. We always want to scroll down
-                // when the user writes a message as opposed to when a
-                // message is received.
-                this.model.set('scrolled', false);
-            } else if (this.model.get('scrolled', true)) {
-                this.showNewMessagesIndicator();
-            }
-        }
     }
 
     getBottomPanel () {
@@ -183,12 +143,10 @@ export default class BaseChatView extends ElementView {
                 'scrollTop': null
             });
         }
-        this.querySelector('.chat-content__messages')?.scrollDown();
         this.onScrolledDown();
     }
 
     onScrolledDown () {
-        this.hideNewMessagesIndicator();
         if (!this.model.isHidden()) {
             this.model.clearUnreadMsgCounter();
             if (api.settings.get('allow_url_history_change')) {
@@ -197,14 +155,6 @@ export default class BaseChatView extends ElementView {
                 hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
             }
         }
-        /**
-         * Triggered once the chat's message area has been scrolled down to the bottom.
-         * @event _converse#chatBoxScrolledDown
-         * @type {object}
-         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
-         * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
-         */
-        api.trigger('chatBoxScrolledDown', { 'chatbox': this.model }); // TODO: clean up
     }
 
     onWindowStateChanged (data) {

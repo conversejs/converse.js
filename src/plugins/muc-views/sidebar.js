@@ -39,8 +39,6 @@ export default class MUCSidebar extends CustomElement {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         u.safeSave(this.model, { 'hidden_occupants': true });
-        // FIXME: do this declaratively
-        _converse.chatboxviews.get(this.jid)?.scrollDown();
     }
 
     onOccupantClicked (ev) {

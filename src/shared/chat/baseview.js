@@ -106,14 +106,12 @@ export default class BaseChatView extends ElementView {
     _markScrolled (ev) {
         let scrolled = true;
         let scrollTop = null;
-        const msgs_container = this.querySelector('.chat-content__messages');
-        const is_at_bottom =
-            msgs_container.scrollTop + msgs_container.clientHeight >= msgs_container.scrollHeight - 62; // sigh...
-
+        const is_at_bottom = ev.target.scrollTop + ev.target.clientHeight >= ev.target.scrollHeight - 62; // sigh...
         if (is_at_bottom) {
             scrolled = false;
             this.onScrolledDown();
-        } else if (msgs_container.scrollTop === 0) {
+        } else if (ev.target.scrollTop === 0) {
+            scrollTop = ev.target.scrollTop;
             /**
              * Triggered once the chat's message area has been scrolled to the top
              * @event _converse#chatBoxScrolledUp

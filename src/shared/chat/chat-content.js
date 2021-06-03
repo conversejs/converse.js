@@ -1,8 +1,10 @@
 import './message-history';
 import debounce from 'lodash/debounce';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core';
 import { html } from 'lit';
+
+const { u } = converse;
 
 export default class ChatContent extends CustomElement {
 
@@ -54,6 +56,13 @@ export default class ChatContent extends CustomElement {
     updated () {
         this.was_scrolled_up = this.model.get('scrolled');
         this.debouncedMaintainScroll();
+    }
+
+    saveScrollPosition () {
+        const scrollTop = this.scrollTop;
+        if (scrollTop) {
+            u.safeSave(this.model, { 'scrolled': true, scrollTop });
+        }
     }
 
     maintainScrollPosition () {

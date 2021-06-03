@@ -50,7 +50,7 @@ describe("Emojis", function () {
             }
             const bottom_panel = view.querySelector('converse-muc-bottom-panel');
             bottom_panel.onKeyDown(tab_event);
-            await u.waitUntil(() => view.querySelector('converse-emoji-picker .emoji-search').value === ':gri');
+            await u.waitUntil(() => view.querySelector('converse-emoji-picker .emoji-search')?.value === ':gri');
             await u.waitUntil(() =>  sizzle('.emojis-lists__container--search .insert-emoji', view).length === 3, 1000);
             let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', view);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');

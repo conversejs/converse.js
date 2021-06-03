@@ -253,7 +253,8 @@ export default class ChatBottomPanel extends ElementView {
         this.insertIntoTextArea('', true, false);
     }
 
-    autocompleteInPicker (input, value) {
+    async autocompleteInPicker (input, value) {
+        await api.emojis.initialize();
         const emoji_dropdown = this.querySelector('converse-emoji-dropdown');
         const emoji_picker = this.querySelector('converse-emoji-picker');
         if (emoji_picker && emoji_dropdown) {

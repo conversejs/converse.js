@@ -14,8 +14,12 @@ import { _converse, api } from '@converse/headless/core';
 export default class ChatView extends BaseChatView {
     length = 200
 
-    async connectedCallback () {
+    connectedCallback () {
         super.connectedCallback();
+        this.initialize();
+    }
+
+    async initialize() {
         _converse.chatboxviews.add(this.jid, this);
         this.model = _converse.chatboxes.get(this.jid);
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);

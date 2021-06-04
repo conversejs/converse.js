@@ -17,6 +17,15 @@ export default class BaseChatView extends CustomElement {
         _converse.chatboxviews.remove(this.jid, this);
     }
 
+    updated () {
+        if (this.model && this.jid !== this.model.get('jid')) {
+            this.stopListening();
+            delete this.model;
+            this.requestUpdate();
+            this.initialize();
+        }
+    }
+
     maybeFocus () {
         api.settings.get('auto_focus') && this.focus();
     }
@@ -28,6 +37,7 @@ export default class BaseChatView extends CustomElement {
         }
         return this;
     }
+
     emitBlurred (ev) {
         if (this.contains(document.activeElement) || this.contains(ev.relatedTarget)) {
             // Something else in this chatbox is still focused

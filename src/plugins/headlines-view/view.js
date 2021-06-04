@@ -5,8 +5,12 @@ import { _converse, api } from '@converse/headless/core';
 
 class HeadlinesView extends BaseChatView {
 
-    async connectedCallback () {
+    connectedCallback () {
         super.connectedCallback();
+        this.initialize();
+    }
+
+    async initialize() {
         _converse.chatboxviews.add(this.jid, this);
 
         this.model = _converse.chatboxes.get(this.jid);
@@ -32,12 +36,7 @@ class HeadlinesView extends BaseChatView {
     }
 
     render () {
-        return tpl_headlines(
-            Object.assign(this.model.toJSON(), {
-                show_send_button: false,
-                show_toolbar: false,
-            })
-        );
+        return tpl_headlines(this.model);
     }
 
     async close (ev) {

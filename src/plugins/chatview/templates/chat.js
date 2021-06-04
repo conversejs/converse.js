@@ -1,4 +1,5 @@
 import { html } from "lit";
+import { _converse } from '@converse/headless/core';
 
 export default (o) => html`
     <div class="flyout box-flyout">
@@ -10,7 +11,14 @@ export default (o) => html`
                     class="chat-content__messages"
                     jid="${o.jid}"></converse-chat-content>
 
-                <div class="chat-content__help"></div>
+                ${o.show_help_messages ? html`<div class="chat-content__help">
+                        <converse-chat-help
+                            .model=${o.model}
+                            .messages=${o.help_messages}
+                            ?hidden=${!o.show_help_messages}
+                            type="info"
+                            chat_type="${_converse.CHATROOMS_TYPE}"
+                        ></converse-chat-help></div>` : '' }
             </div>
             <converse-chat-bottom-panel jid="${o.jid}" class="bottom-panel"> </converse-chat-bottom-panel>
         </div>

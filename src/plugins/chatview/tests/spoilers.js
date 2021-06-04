@@ -112,8 +112,8 @@ describe("A spoiler message", function () {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This is the spoiler';
-        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13
@@ -193,8 +193,8 @@ describe("A spoiler message", function () {
         const hint_input = view.querySelector('.spoiler-hint');
         hint_input.value = 'This is the hint';
 
-        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13

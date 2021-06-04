@@ -22,17 +22,13 @@ export default class ChatView extends BaseChatView {
     async initialize () {
         const jid = this.getAttribute('jid');
         _converse.chatboxviews.add(jid, this);
-
         this.model = _converse.chatboxes.get(jid);
-        this.initDebounced();
-
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
         this.render();
 
         // Need to be registered after render has been called.
-        this.listenTo(this.model.messages, 'add', this.onMessageAdded);
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
 
         await this.model.messages.fetched;
@@ -47,9 +43,7 @@ export default class ChatView extends BaseChatView {
     }
 
     render () {
-        const result = tpl_chat(Object.assign(
-            this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) })
-        );
+        const result = tpl_chat(this.model.toJSON());
         render(result, this);
         this.help_container = this.querySelector('.chat-content__help');
         return this;
@@ -133,15 +127,20 @@ export default class ChatView extends BaseChatView {
         }
     }
 
+    /**
+     * Closes this chat
+     * @private
+     * @method _converse.ChatBoxView#close
+     */
     close (ev) {
+        ev?.preventDefault?.();
         if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
-        return super.close(ev);
+        return this.model.close(ev);
     }
 
     afterShown () {
-        this.model.clearUnreadMsgCounter();
         this.model.setChatState(_converse.ACTIVE);
         this.scrollDown();
         this.maybeFocus();

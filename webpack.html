@@ -30,7 +30,7 @@
             modtools_disable_assign: ['owner', 'moderator', 'participant', 'visitor'],
             modtools_disable_query: ['moderator', 'participant', 'visitor'],
             enable_smacks: true,
-            connection_options: { 'worker': '/dist/shared-connection-worker.js' },
+            // connection_options: { 'worker': '/dist/shared-connection-worker.js' },
             persistent_store: 'IndexedDB',
             message_archiving: 'always',
             muc_domain: 'conference.chat.example.org',
@@ -40,6 +40,7 @@
             // bosh_service_url: 'http://chat.example.org:5280/http-bind',
             muc_show_logs_before_join: true,
             whitelisted_plugins: ['converse-debug', 'converse-batched-probe'],
+            blacklisted_plugins: [],
         });
     });
 </script>

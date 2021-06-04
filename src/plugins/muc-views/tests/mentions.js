@@ -109,8 +109,8 @@ describe("An incoming groupchat message", function () {
             'stopPropagation': function stopPropagation () {},
             'keyCode': 13 // Enter
         }
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown(enter_event);
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown(enter_event);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -363,8 +363,8 @@ describe("A sent groupchat message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown(enter_event);
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             const sent_stanzas = _converse.connection.sent_stanzas;
             const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
@@ -423,8 +423,8 @@ describe("A sent groupchat message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown(enter_event);
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
@@ -457,7 +457,7 @@ describe("A sent groupchat message", function () {
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
 
             textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
-            bottom_panel.onKeyDown(enter_event);
+            message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
                 'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
@@ -507,8 +507,8 @@ describe("A sent groupchat message", function () {
                 'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             }
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown(enter_event);
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const msg = _converse.connection.send.calls.all()[0].args[0];
@@ -542,8 +542,8 @@ describe("A sent groupchat message", function () {
             'stopPropagation': function stopPropagation () {},
             'keyCode': 13 // Enter
         }
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown(enter_event);
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown(enter_event);
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
             `Welcome <span class="mention">gibson</span> <span title=":poop:">💩</span> `+

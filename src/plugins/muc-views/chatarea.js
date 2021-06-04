@@ -3,6 +3,8 @@ import tpl_muc_chatarea from './templates/muc-chatarea.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
+import { onScrolledDown } from 'shared/chat/utils.js';
+import { safeSave } from '@converse/headless/utils/core.js';
 
 
 const { u } = converse.env;
@@ -93,17 +95,13 @@ export default class MUCChatArea extends CustomElement {
      * which debounces this method by 100ms.
      * @private
      */
-    _markScrolled (ev) {
+    _markScrolled () {
         let scrolled = true;
-        let scrollTop = null;
-        const msgs_container = this.querySelector('.chat-content__messages');
-        const is_at_bottom =
-            msgs_container.scrollTop + msgs_container.clientHeight >= msgs_container.scrollHeight - 62; // sigh...
-
+        const is_at_bottom = this.scrollTop + this.clientHeight >= this.scrollHeight;
         if (is_at_bottom) {
             scrolled = false;
-            this.onScrolledDown();
-        } else if (msgs_container.scrollTop === 0) {
+            onScrolledDown(this.model);
+        } else if (this.scrollTop === 0) {
             /**
              * Triggered once the chat's message area has been scrolled to the top
              * @event _converse#chatBoxScrolledUp
@@ -111,29 +109,8 @@ export default class MUCChatArea extends CustomElement {
              * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
              */
             api.trigger('chatBoxScrolledUp', this);
-        } else {
-            scrollTop = ev.target.scrollTop;
         }
-        u.safeSave(this.model, { scrolled, scrollTop });
-    }
-
-    onScrolledDown () {
-        if (!this.model.isHidden()) {
-            this.model.clearUnreadMsgCounter();
-            if (api.settings.get('allow_url_history_change')) {
-                // Clear location hash if set to one of the messages in our history
-                const hash = window.location.hash;
-                hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
-            }
-        }
-        /**
-         * Triggered once the chat's message area has been scrolled down to the bottom.
-         * @event _converse#chatBoxScrolledDown
-         * @type {object}
-         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
-         * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
-         */
-        api.trigger('chatBoxScrolledDown', { 'chatbox': this.model });
+        safeSave(this.model, { scrolled });
     }
 
     onMousedown (ev) {

@@ -50,8 +50,9 @@ export default class MessageHistory extends CustomElement {
 
     static get properties () {
         return {
-            model: { type: Object},
-            messages: { type: Array}
+            model: { type: Object },
+            observer: { type: Object },
+            messages: { type: Array }
         }
     }
 
@@ -67,6 +68,7 @@ export default class MessageHistory extends CustomElement {
         const day = getDayIndicator(model);
         const templates = day ? [day] : [];
         const message = html`<converse-chat-message
+            .observer=${this.observer}
             jid="${this.model.get('jid')}"
             mid="${model.get('id')}"></converse-chat-message>`
 

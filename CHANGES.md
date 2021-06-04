@@ -8,6 +8,7 @@
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls
 - #2409: Integrate App Badging API for unread messages
 - #2464: New configuration setting [allow-url-history-change](https://conversejs.org/docs/html/configuration.html#allow-url-history-change)
+- #2497: Bugfix /nick command is not working
 - Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
 - Bugfix: Use real JID in XEP-0372 references only when the MUC is non-anonymous
 - Bugfix: Connection protocol not updated based on XEP-0156 connection methods
@@ -24,7 +25,7 @@
 - Use the MUC stanza id when sending XEP-0333 markers
 - Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
 - Add a Description Of A Project (DOAP) file
-- #2497: Bugfix /nick command is not working
+- Add ability to deregister nickname when closing a MUC by setting `auto_register_muc_nickname` to `'unregister'`.
 
 ### Breaking Changes
 
@@ -38,8 +39,8 @@ Removed events:
 * `rosterGroupsFetched`
 * `messageSend` (use `sendMessage` instead)
 
-The `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
-payload and not the `view` since it might not be exist at that time.
+The `chatBoxClosed`, `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
+payload and not the `view`.
 
 ## 7.0.5 (Unreleased)
 

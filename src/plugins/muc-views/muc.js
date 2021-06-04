@@ -14,8 +14,6 @@ export default class MUCView extends BaseChatView {
         const jid = this.getAttribute('jid');
         this.model = await api.rooms.get(jid);
         _converse.chatboxviews.add(jid, this);
-        this.initDebounced();
-
         this.setAttribute('id', this.model.get('box_id'));
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
@@ -29,7 +27,6 @@ export default class MUCView extends BaseChatView {
         await this.render();
 
         // Need to be registered after render has been called.
-        this.listenTo(this.model.messages, 'add', this.onMessageAdded);
         this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
 
         this.updateAfterTransition();
@@ -56,7 +53,6 @@ export default class MUCView extends BaseChatView {
      */
     afterShown () {
         if (!this.model.get('hidden') && !this.model.get('minimized')) {
-            this.model.clearUnreadMsgCounter();
             this.scrollDown();
         }
     }
@@ -67,10 +63,11 @@ export default class MUCView extends BaseChatView {
      * @method _converse.ChatRoomView#close
      */
     close (ev) {
+        ev?.preventDefault?.();
         if (_converse.router.history.getFragment() === 'converse/room?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
-        return super.close(ev);
+        return this.model.close(ev);
     }
 
     async destroy () {

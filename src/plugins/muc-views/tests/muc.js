@@ -281,8 +281,7 @@ describe("Groupchats", function () {
             _converse.connection._dataRecv(mock.createRequest(message));
 
             await u.waitUntil(() => view.model.messages.length);
-            const chat_new_msgs_indicator = view.querySelector('.new-msgs-indicator');
-            await u.waitUntil(() => u.isVisible(chat_new_msgs_indicator));
+            const chat_new_msgs_indicator = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
             chat_new_msgs_indicator.click();
             expect(view.model.get('scrolled')).toBeFalsy();
             await u.waitUntil(() => !u.isVisible(chat_new_msgs_indicator));
@@ -1895,8 +1894,8 @@ describe("Groupchats", function () {
             const text = 'This is a sent message';
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = text;
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -1934,7 +1933,6 @@ describe("Groupchats", function () {
             const message = 'This message is received while the chat area is scrolled up';
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view, 'scrollDown').and.callThrough();
             // Create enough messages so that there's a scrollbar.
             const promises = [];
             for (let i=0; i<20; i++) {
@@ -2754,8 +2752,8 @@ describe("Groupchats", function () {
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
             textarea.value = '/help';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown(enter);
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter);
 
             await u.waitUntil(() => sizzle('converse-chat-help .chat-info', view).length);
             let chat_help_el = view.querySelector('converse-chat-help');
@@ -2789,7 +2787,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector('converse-chat-help') === null);
 
             textarea.value = '/help';
-            bottom_panel.onKeyDown(enter);
+            message_form.onKeyDown(enter);
             chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
             info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(18);
@@ -2804,7 +2802,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector('converse-chat-help') === null);
 
             textarea.value = '/help';
-            bottom_panel.onKeyDown(enter);
+            message_form.onKeyDown(enter);
             chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
             info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(9);
@@ -2819,7 +2817,7 @@ describe("Groupchats", function () {
             // Role changes causes rerender, so we need to get the new textarea
 
             textarea.value = '/help';
-            bottom_panel.onKeyDown(enter);
+            message_form.onKeyDown(enter);
             await u.waitUntil(() => view.model.get('show_help_messages'));
             chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
             info_messages = sizzle('.chat-info', chat_help_el);
@@ -2834,7 +2832,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector('converse-chat-help') === null);
 
             textarea.value = '/help';
-            bottom_panel.onKeyDown(enter);
+            message_form.onKeyDown(enter);
             chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
             info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(7);
@@ -2852,10 +2850,10 @@ describe("Groupchats", function () {
             const enter = { 'target': textarea, 'preventDefault': function () {}, 'keyCode': 13 };
             spyOn(window, 'confirm').and.callFake(() => true);
             textarea.value = '/clear';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown(enter);
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown(enter);
             textarea.value = '/help';
-            bottom_panel.onKeyDown(enter);
+            message_form.onKeyDown(enter);
 
             await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view).length);
             const info_messages = sizzle('.chat-info:not(.chat-event)', view);
@@ -2911,8 +2909,8 @@ describe("Groupchats", function () {
             // First check that an error message appears when a
             // non-existent nick is used.
             textarea.value = '/member chris Welcome to the club!';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -2924,7 +2922,7 @@ describe("Groupchats", function () {
 
             // Now test with an existing nick
             textarea.value = '/member marc Welcome to the club!';
-            bottom_panel.onKeyDown({
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3031,8 +3029,8 @@ describe("Groupchats", function () {
             // Check the alias /topic
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/topic This is the groupchat subject';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3042,7 +3040,7 @@ describe("Groupchats", function () {
 
             // Check /subject
             textarea.value = '/subject This is a new subject';
-            bottom_panel.onKeyDown({
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3056,7 +3054,7 @@ describe("Groupchats", function () {
 
             // Check case insensitivity
             textarea.value = '/Subject This is yet another subject';
-            bottom_panel.onKeyDown({
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3069,7 +3067,7 @@ describe("Groupchats", function () {
 
             // Check unsetting the topic
             textarea.value = '/topic';
-            bottom_panel.onKeyDown({
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3086,9 +3084,9 @@ describe("Groupchats", function () {
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/clear';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
             spyOn(window, 'confirm').and.callFake(() => false);
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3124,8 +3122,8 @@ describe("Groupchats", function () {
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/owner';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3143,7 +3141,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/owner nobody You\'re responsible';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
             await u.waitUntil(() => view.querySelectorAll('.chat-error').length === 2);
             expect(Array.from(view.querySelectorAll('.chat-error')).pop().textContent.trim()).toBe(
                 "Error: couldn't find a groupchat participant based on your arguments");
@@ -3155,7 +3153,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/owner annoyingGuy You\'re responsible';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             // Check that the member list now gets updated
@@ -3214,8 +3212,8 @@ describe("Groupchats", function () {
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/ban';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3233,7 +3231,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/ban annoyingGuy You\'re annoying';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             // Check that the member list now gets updated
@@ -3278,7 +3276,7 @@ describe("Groupchats", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
 
             textarea.value = '/ban joe22';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
             await u.waitUntil(() => view.querySelector('converse-chat-message:last-child')?.textContent?.trim() ===
                 "Error: couldn't find a groupchat participant based on your arguments");
             done();
@@ -3314,8 +3312,8 @@ describe("Groupchats", function () {
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/kick';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3329,7 +3327,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/kick @annoying guy You\'re annoying';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
@@ -3416,8 +3414,8 @@ describe("Groupchats", function () {
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/op';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3433,7 +3431,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/op trustworthyguy You\'re trustworthy';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
@@ -3477,7 +3475,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/deop trustworthyguy Perhaps not';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setRole).toHaveBeenCalled();
@@ -3556,8 +3554,8 @@ describe("Groupchats", function () {
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/mute';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -3572,7 +3570,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/mute annoyingGuy You\'re annoying';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
@@ -3613,7 +3611,7 @@ describe("Groupchats", function () {
             // again via triggering Event doesn't work for some weird
             // reason.
             textarea.value = '/voice annoyingGuy Now you can talk again';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
 
             expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setRole).toHaveBeenCalled();
@@ -3661,8 +3659,8 @@ describe("Groupchats", function () {
             spyOn(_converse.api, 'confirm').and.callThrough();
             let textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
-            let bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            let message_form = view.querySelector('converse-muc-message-form');
+            message_form.onFormSubmitted(new Event('submit'));
             let modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
             await u.waitUntil(() => u.isVisible(modal));
 
@@ -3712,8 +3710,8 @@ describe("Groupchats", function () {
             view = _converse.api.chatviews.get(new_muc_jid);
             textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
-            bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form = view.querySelector('converse-muc-message-form');
+            message_form.onFormSubmitted(new Event('submit'));
             modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
             await u.waitUntil(() => u.isVisible(modal));
 
@@ -4989,8 +4987,8 @@ describe("Groupchats", function () {
             const view = _converse.api.chatviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             textarea.value = 'Hello world';
-            const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            const message_form = view.querySelector('converse-muc-message-form');
+            message_form.onFormSubmitted(new Event('submit'));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             let stanza = u.toStanza(`
@@ -5007,7 +5005,7 @@ describe("Groupchats", function () {
                 "Your message was not delivered because you weren't allowed to send it.");
 
             textarea.value = 'Hello again';
-            bottom_panel.onFormSubmitted(new Event('submit'));
+            message_form.onFormSubmitted(new Event('submit'));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
             stanza = u.toStanza(`

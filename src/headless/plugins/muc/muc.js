@@ -90,12 +90,14 @@ const ChatRoomMixin = {
         this.set('box_id', `box-${this.get('jid')}`);
         this.initNotifications();
         this.initMessages();
+        this.initUI();
         this.initOccupants();
         this.initDiscoModels(); // sendChatState depends on this.features
         this.registerHandlers();
 
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
+        this.on('change:scrolled', () => !this.get('scrolled') && this.clearUnreadMsgCounter());
         this.on('destroy', this.removeHandlers, this);
 
         await this.restoreSession();
@@ -845,6 +847,12 @@ const ChatRoomMixin = {
 
     async close (ev) {
         await this.leave();
+        if (
+            api.settings.get('auto_register_muc_nickname') === 'unregister' &&
+            (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
+        ) {
+            this.unregisterNickname();
+        }
         this.occupants.clearStore();
 
         if (ev?.name !== 'closeAllChatBoxes' && api.settings.get('muc_clear_messages_on_leave')) {
@@ -1533,7 +1541,7 @@ const ChatRoomMixin = {
 
     async registerNickname () {
         // See https://xmpp.org/extensions/xep-0045.html#register
-        const __ = _converse.__;
+        const { __ } = _converse;
         const nick = this.get('nick');
         const jid = this.get('jid');
         let iq, err_msg;
@@ -1541,7 +1549,6 @@ const ChatRoomMixin = {
             iq = await api.sendIQ(
                 $iq({
                     'to': jid,
-                    'from': _converse.connection.jid,
                     'type': 'get'
                 }).c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
             );
@@ -1562,19 +1569,13 @@ const ChatRoomMixin = {
             await api.sendIQ(
                 $iq({
                     'to': jid,
-                    'from': _converse.connection.jid,
                     'type': 'set'
-                })
-                    .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
+                }).c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
                     .c('x', { 'xmlns': Strophe.NS.XFORM, 'type': 'submit' })
-                    .c('field', { 'var': 'FORM_TYPE' })
-                    .c('value')
-                    .t('http://jabber.org/protocol/muc#register')
-                    .up()
-                    .up()
-                    .c('field', { 'var': 'muc#register_roomnick' })
-                    .c('value')
-                    .t(nick)
+                        .c('field', { 'var': 'FORM_TYPE' })
+                            .c('value').t('http://jabber.org/protocol/muc#register').up().up()
+                        .c('field', { 'var': 'muc#register_roomnick' })
+                            .c('value').t(nick)
             );
         } catch (e) {
             if (sizzle(`service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
@@ -1585,6 +1586,28 @@ const ChatRoomMixin = {
             log.error(err_msg);
             log.error(e);
             return err_msg;
+        }
+    },
+
+    async unregisterNickname () {
+        const jid = this.get('jid');
+        let iq;
+        try {
+            iq = await api.sendIQ(
+                $iq({
+                    'to': jid,
+                    'type': 'set'
+                }).c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
+            );
+        } catch (e) {
+            log.error(e);
+            return e;
+        }
+        if (sizzle(`query[xmlns="${Strophe.NS.MUC_REGISTER}"] registered`, iq).pop()) {
+            const iq = $iq({ 'to': jid, 'type': 'set' })
+                .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
+                .c('remove');
+            return api.sendIQ(iq).catch(e => log.error(e));
         }
     },
 
@@ -2540,7 +2563,9 @@ const ChatRoomMixin = {
         }
     },
 
-    /* Given a newly received message, update the unread counter if necessary.
+    /**
+     * Given a newly received {@link _converse.Message} instance,
+     * update the unread counter if necessary.
      * @private
      * @method _converse.ChatRoom#handleUnreadMessage
      * @param { XMLElement } - The <messsage> stanza
@@ -2550,7 +2575,13 @@ const ChatRoomMixin = {
             return;
         }
         if (u.isNewMessage(message)) {
-            if (this.isHidden()) {
+            if (message.get('sender') === 'me') {
+                // We remove the "scrolled" flag so that the chat area
+                // gets scrolled down. We always want to scroll down
+                // when the user writes a message as opposed to when a
+                // message is received.
+                this.model.set('scrolled', false);
+            } else if (this.isHidden() || this.get('scrolled')) {
                 const settings = {
                     'num_unread_general': this.get('num_unread_general') + 1
                 };

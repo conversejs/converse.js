@@ -153,7 +153,7 @@ export default class EmojiPicker extends CustomElement {
     insertIntoTextArea (value) {
         const autocompleting = this.model.get('autocompleting');
         const ac_position = this.model.get('ac_position');
-        this.chatview.getBottomPanel().insertIntoTextArea(value, autocompleting, false, ac_position);
+        this.chatview.getMessageForm().insertIntoTextArea(value, autocompleting, false, ac_position);
         this.model.set({'autocompleting': null, 'query': '', 'ac_position': null});
     }
 

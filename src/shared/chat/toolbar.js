@@ -1,7 +1,8 @@
-import "./emoji-picker.js";
+import './emoji-picker.js';
+import 'shared/chat/message-limit.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from '@converse/headless/core';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 
@@ -14,7 +15,6 @@ export class ChatToolbar extends CustomElement {
 
     static get properties () {
         return {
-            chatview: { type: Object }, // Used by getToolbarButtons hooks
             composing_spoiler: { type: Boolean },
             hidden_occupants: { type: Boolean },
             is_groupchat: { type: Boolean },
@@ -25,23 +25,38 @@ export class ChatToolbar extends CustomElement {
             show_occupants_toggle: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
-            show_toolbar: { type: Boolean }
         }
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdate);
     }
 
     render () {
         const i18n_send_message = __('Send the message');
         return html`
-            ${ this.show_toolbar ? html`<span class="toolbar-buttons">${until(this.getButtons(), '')}</span>` : '' }
+            <span class="toolbar-buttons">${until(this.getButtons(), '')}</span>
             ${ this.show_send_button ? html`<button type="submit" class="btn send-button fa fa-paper-plane" title="${ i18n_send_message }"></button>` : '' }
         `;
+    }
+
+    firstUpdated () {
+        /**
+         * Triggered once the _converse.ChatBoxView's toolbar has been rendered
+         * @event _converse#renderToolbar
+         * @type { _converse.ChatBoxView }
+         * @example _converse.api.listen.on('renderToolbar', this => { ... });
+         */
+        api.trigger('renderToolbar', this);
     }
 
     getButtons () {
         const buttons = [];
 
         if (this.show_emoji_button) {
-            buttons.push(html`<converse-emoji-dropdown .chatview=${this.chatview}></converse-dropdown>`);
+            const chatview = _converse.chatboxviews.get(this.model.get('jid'));
+            buttons.push(html`<converse-emoji-dropdown .chatview=${chatview}></converse-dropdown>`);
         }
 
         if (this.show_call_button) {
@@ -52,10 +67,13 @@ export class ChatToolbar extends CustomElement {
                 </button>`
             );
         }
-        const i18n_chars_remaining = __('Message characters remaining');
+
         const message_limit = api.settings.get('message_limit');
         if (message_limit) {
-            buttons.push(html`<span class="right message-limit" title="${i18n_chars_remaining}">${this.message_limit}</span>`);
+            buttons.push(html`
+                <converse-message-limit-indicator .model=${this.model} class="right">
+                </converse-message-limit-indicator>`
+            );
         }
 
         if (this.show_spoiler_button) {
@@ -109,7 +127,7 @@ export class ChatToolbar extends CustomElement {
 
     getSpoilerButton () {
         const model = this.model;
-        if (!this.is_groupchat && model.presence.resources.length === 0) {
+        if (!this.is_groupchat && !model.presence?.resources.length) {
             return;
         }
 

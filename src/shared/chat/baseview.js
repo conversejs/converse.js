@@ -1,16 +1,20 @@
-import log from '@converse/headless/log';
-import { ElementView } from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import { onScrolledDown } from './utils.js';
 
 const u = converse.env.utils;
 
-export default class BaseChatView extends ElementView {
+export default class BaseChatView extends CustomElement {
+
+    static get properties () {
+        return {
+            jid: { type: String }
+        }
+    }
 
     disconnectedCallback () {
         super.disconnectedCallback();
-        const jid = this.getAttribute('jid');
-        _converse.chatboxviews.remove(jid, this);
+        _converse.chatboxviews.remove(this.jid, this);
     }
 
     maybeFocus () {
@@ -24,19 +28,6 @@ export default class BaseChatView extends ElementView {
         }
         return this;
     }
-
-    show () {
-        if (this.model.get('hidden')) {
-            log.debug(`Not showing chat ${this.model.get('jid')} because it's set as hidden`);
-            return;
-        }
-        if (u.isVisible(this)) {
-            this.maybeFocus();
-            return;
-        }
-        this.afterShown();
-    }
-
     emitBlurred (ev) {
         if (this.contains(document.activeElement) || this.contains(ev.relatedTarget)) {
             // Something else in this chatbox is still focused

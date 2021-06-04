@@ -3,31 +3,25 @@ import log from '@converse/headless/log';
 import tpl_muc from './templates/muc.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { render } from "lit";
 
 
 export default class MUCView extends BaseChatView {
     length = 300
     is_chatroom = true
 
-    async initialize () {
-        const jid = this.getAttribute('jid');
-        this.model = await api.rooms.get(jid);
-        _converse.chatboxviews.add(jid, this);
+    async connectedCallback () {
+        super.connectedCallback();
+        this.model = await api.rooms.get(this.jid);
+        _converse.chatboxviews.add(this.jid, this);
         this.setAttribute('id', this.model.get('box_id'));
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
-        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
+        this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdateMessageForm);
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'change:minimized', () => this.afterShown());
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.session, 'change:connection_status', this.updateAfterTransition);
-        this.listenTo(this.model.session, 'change:view', this.render);
-
-        await this.render();
-
-        // Need to be registered after render has been called.
-        this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
+        this.listenTo(this.model.session, 'change:view', this.requestUpdate);
 
         this.updateAfterTransition();
         this.model.maybeShow();
@@ -42,8 +36,7 @@ export default class MUCView extends BaseChatView {
     }
 
     render () {
-        render(tpl_muc({ 'model': this.model }), this);
-        !this.model.get('hidden') && this.show();
+        return this.model ? tpl_muc({ 'model': this.model }) : '';
     }
 
     /**
@@ -115,7 +108,7 @@ export default class MUCView extends BaseChatView {
                 'reason': undefined,
             });
         }
-        this.render();
+        this.requestUpdate();
     }
 }
 

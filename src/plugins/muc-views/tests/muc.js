@@ -1271,6 +1271,10 @@ describe("Groupchats", function () {
 
             view.querySelector('.configure-chatroom-button').click();
 
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sel = 'iq query[xmlns="http://jabber.org/protocol/muc#owner"]';
+            const iq = await u.waitUntil(() => sent_IQs.filter(iq => sizzle(sel, iq).length).pop());
+
             /* Check that an IQ is sent out, asking for the
              * configuration form.
              * See: // https://xmpp.org/extensions/xep-0045.html#example-163
@@ -1282,8 +1286,8 @@ describe("Groupchats", function () {
              *  <query xmlns='http://jabber.org/protocol/muc#owner'/>
              *  </iq>
              */
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="`+IQ_id+`" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq)).toBe(
+                `<iq id="${iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#owner"/>`+
                 `</iq>`);
 
@@ -1291,7 +1295,7 @@ describe("Groupchats", function () {
              * See: // https://xmpp.org/extensions/xep-0045.html#example-165
              */
             const config_stanza = $iq({from: 'coven@chat.shakespeare.lit',
-                'id': IQ_id,
+                'id': iq.getAttribute('id'),
                 'to': 'romeo@montague.lit/desktop',
                 'type': 'result'})
             .c('query', { 'xmlns': 'http://jabber.org/protocol/muc#owner'})

@@ -25,7 +25,6 @@ module.exports = function(config) {
       { pattern: "node_modules/sinon/pkg/sinon.js", type: 'module' },
       { pattern: "spec/mock.js", type: 'module' },
 
-      { pattern: "spec/protocol.js", type: 'module' },
       { pattern: "spec/push.js", type: 'module' },
       { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "src/headless/plugins/caps/tests/caps.js", type: 'module' },
@@ -81,6 +80,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/register/tests/register.js", type: 'module' },
       { pattern: "src/plugins/rootview/tests/root.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
+      { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },
       { pattern: "src/shared/chat/tests/styling.js", type: 'module' },
     ],

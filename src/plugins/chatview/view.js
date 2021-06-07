@@ -75,7 +75,6 @@ export default class ChatView extends BaseChatView {
 
     afterShown () {
         this.model.setChatState(_converse.ACTIVE);
-        this.scrollDown();
         this.maybeFocus();
     }
 }

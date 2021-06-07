@@ -6,6 +6,8 @@ import { html } from 'lit';
 import { onScrolledDown } from './utils.js';
 import { safeSave } from '@converse/headless/utils/core.js';
 
+import './styles/chat-content.scss';
+
 
 export default class ChatContent extends CustomElement {
 
@@ -17,12 +19,11 @@ export default class ChatContent extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.debouncedMaintainScroll = debounce(this.maintainScrollPosition, 100);
         this.markScrolled = debounce(this._markScrolled, 50);
 
         this.model = _converse.chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:hidden_occupants', this.requestUpdate);
-        this.listenTo(this.model, 'change:scrolled', this.requestUpdate);
+        this.listenTo(this.model, 'change:scrolled', this.scrollDown);
         this.listenTo(this.model.messages, 'add', this.requestUpdate);
         this.listenTo(this.model.messages, 'change', this.requestUpdate);
         this.listenTo(this.model.messages, 'remove', this.requestUpdate);
@@ -34,53 +35,20 @@ export default class ChatContent extends CustomElement {
         if (this.model.occupants) {
             this.listenTo(this.model.occupants, 'change', this.requestUpdate);
         }
-        // We jot down whether we were scrolled down before rendering, because when an
-        // image loads, it triggers 'scroll' and the chat will be marked as scrolled,
-        // which is technically true, but not what we want because the user
-        // didn't initiate the scrolling.
-        this.was_scrolled_up = this.model.get('scrolled');
-        this.addEventListener('imageLoaded', () => {
-            this.debouncedMaintainScroll();
-        });
         this.addEventListener('scroll', () => this.markScrolled());
-        this.initIntersectionObserver();
     }
 
     render () {
+        // This element has "flex-direction: reverse", so elements here are
+        // shown in reverse order.
         return html`
-            ${ this.model.ui?.get('chat-content-spinner-top') ? html`<span class="spinner fa fa-spinner centered"></span>` : '' }
+            <div class="chat-content__notifications">${this.model.getNotificationsText()}</div>
             <converse-message-history
                 .model=${this.model}
-                .observer=${this.observer}
                 .messages=${[...this.model.messages.models]}>
             </converse-message-history>
-            <div class="chat-content__notifications">${this.model.getNotificationsText()}</div>
+            ${ this.model.ui?.get('chat-content-spinner-top') ? html`<span class="spinner fa fa-spinner centered"></span>` : '' }
         `;
-    }
-
-    updated () {
-        const scrolled = this.model.get('scrolled');
-        if (this.was_scrolled_up === scrolled) {
-            this.debouncedMaintainScroll();
-        } else {
-            this.was_scrolled_up = scrolled;
-            if (!this.scrolled) {
-                this.scrollDown();
-            }
-        }
-    }
-
-    initIntersectionObserver () {
-      if (this.observer) {
-          this.observer.disconnect();
-      } else {
-          const options = {
-              root: this,
-              threshold: [0.1]
-          }
-          const handler = ev => this.setAnchoredMessage(ev);
-          this.observer = new IntersectionObserver(handler, options);
-      }
     }
 
     /**
@@ -95,11 +63,14 @@ export default class ChatContent extends CustomElement {
      */
     _markScrolled () {
         let scrolled = true;
-        const is_at_bottom = this.scrollTop + this.clientHeight >= this.scrollHeight;
+        const is_at_bottom = this.scrollTop === 0;
+        const is_at_top =
+            Math.ceil(this.clientHeight-this.scrollTop) >= (this.scrollHeight-Math.ceil(this.scrollHeight/20));
+
         if (is_at_bottom) {
             scrolled = false;
             onScrolledDown(this.model);
-        } else if (this.scrollTop === 0) {
+        } else if (is_at_top) {
             /**
              * Triggered once the chat's message area has been scrolled to the top
              * @event _converse#chatBoxScrolledUp
@@ -113,31 +84,15 @@ export default class ChatContent extends CustomElement {
         }
     }
 
-    setAnchoredMessage (entries) {
-        if (!this.model?.ui || this.model.ui.get('chat-content-spinner-top')) {
+    scrollDown () {
+        if (this.model.get('scrolled')) {
             return;
         }
-        entries = entries.filter(e => e.isIntersecting);
-        const current = entries.reduce((p, c) => c.boundingClientRect.y >= (p?.boundingClientRect.y || 0) ? c : p, null);
-        if (current) {
-            this.anchored_message = current.target;
-        }
-    }
-
-    maintainScrollPosition () {
-        if (this.was_scrolled_up) {
-            this.anchored_message?.scrollIntoView(true);
-        } else {
-            this.scrollDown();
-        }
-    }
-
-    scrollDown () {
         if (this.scrollTo) {
             const behavior = this.scrollTop ? 'smooth' : 'auto';
-            this.scrollTo({ 'top': this.scrollHeight, behavior });
+            this.scrollTo({ 'top': 0, behavior });
         } else {
-            this.scrollTop = this.scrollHeight;
+            this.scrollTop = 0;
         }
         /**
          * Triggered once the converse-chat-content element has been scrolled down to the bottom.

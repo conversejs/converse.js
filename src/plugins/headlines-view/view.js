@@ -25,7 +25,6 @@ class HeadlinesView extends BaseChatView {
 
         await this.model.messages.fetched;
         this.model.maybeShow();
-        this.scrollDown();
         /**
          * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
          * @event _converse#headlinesBoxViewInitialized

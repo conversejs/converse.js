@@ -21,15 +21,12 @@ export default class MUCView extends BaseChatView {
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdateMessageForm);
-        this.listenTo(this.model, 'change:hidden', () => this.afterShown());
-        this.listenTo(this.model, 'change:minimized', () => this.afterShown());
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.session, 'change:connection_status', this.updateAfterTransition);
         this.listenTo(this.model.session, 'change:view', this.requestUpdate);
 
         this.updateAfterTransition();
         this.model.maybeShow();
-        this.scrollDown();
         /**
          * Triggered once a { @link _converse.ChatRoomView } has been opened
          * @event _converse#chatRoomViewInitialized
@@ -41,17 +38,6 @@ export default class MUCView extends BaseChatView {
 
     render () {
         return tpl_muc({ 'model': this.model });
-    }
-
-    /**
-     * Callback method that gets called after the chat has become visible.
-     * @private
-     * @method _converse.ChatRoomView#afterShown
-     */
-    afterShown () {
-        if (!this.model.get('hidden') && !this.model.get('minimized')) {
-            this.scrollDown();
-        }
     }
 
     /**

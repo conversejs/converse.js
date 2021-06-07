@@ -24,8 +24,7 @@ export default class Message extends CustomElement {
     static get properties () {
         return {
             jid: { type: String },
-            mid: { type: String },
-            observer: { type: Object }
+            mid: { type: String }
         }
     }
 
@@ -58,10 +57,6 @@ export default class Message extends CustomElement {
                 });
             }
         }
-    }
-
-    firstUpdated () {
-        this.observer.observe(this);
     }
 
     getProps () {

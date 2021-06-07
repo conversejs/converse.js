@@ -754,6 +754,10 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#retractOtherMessage
      * @param { _converse.Message } message - The message which we're retracting.
      * @param { string } [reason] - The reason for retracting the message.
+     * @example
+     *  const room = await api.rooms.get(jid);
+     *  const message = room.messages.findWhere({'body': 'Get rich quick!'});
+     *  room.retractOtherMessage(message, 'spam');
      */
     async retractOtherMessage (message, reason) {
         const editable = message.get('editable');

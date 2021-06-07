@@ -18,7 +18,7 @@ export default class ChatContent extends CustomElement {
     connectedCallback () {
         super.connectedCallback();
         this.debouncedMaintainScroll = debounce(this.maintainScrollPosition, 100);
-        this.markScrolled = debounce(this._markScrolled, 100);
+        this.markScrolled = debounce(this._markScrolled, 50);
 
         this.model = _converse.chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:hidden_occupants', this.requestUpdate);
@@ -40,7 +40,7 @@ export default class ChatContent extends CustomElement {
         // didn't initiate the scrolling.
         this.was_scrolled_up = this.model.get('scrolled');
         this.addEventListener('imageLoaded', () => {
-            this.debouncedMaintainScroll(this.was_scrolled_up);
+            this.debouncedMaintainScroll();
         });
         this.addEventListener('scroll', () => this.markScrolled());
         this.initIntersectionObserver();
@@ -59,8 +59,15 @@ export default class ChatContent extends CustomElement {
     }
 
     updated () {
-        this.was_scrolled_up = this.model.get('scrolled');
-        this.debouncedMaintainScroll();
+        const scrolled = this.model.get('scrolled');
+        if (this.was_scrolled_up === scrolled) {
+            this.debouncedMaintainScroll();
+        } else {
+            this.was_scrolled_up = scrolled;
+            if (!this.scrolled) {
+                this.scrollDown();
+            }
+        }
     }
 
     initIntersectionObserver () {
@@ -101,7 +108,9 @@ export default class ChatContent extends CustomElement {
              */
             api.trigger('chatBoxScrolledUp', this);
         }
-        safeSave(this.model, { scrolled });
+        if (this.model.get('scolled') !== scrolled) {
+            safeSave(this.model, { scrolled });
+        }
     }
 
     setAnchoredMessage (entries) {
@@ -117,7 +126,6 @@ export default class ChatContent extends CustomElement {
 
     maintainScrollPosition () {
         if (this.was_scrolled_up) {
-            console.warn('scrolling into view');
             this.anchored_message?.scrollIntoView(true);
         } else {
             this.scrollDown();

@@ -8,7 +8,7 @@ export default (o) => {
     return html`
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">
-                ${ (!_converse.api.settings.get("singleton")) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
+                ${ (!_converse.api.settings.get("singleton")) ?  html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>` : '' }
                 <div class="chatbox-title__text" title="${o.jid}">${ o.display_name }</div>
             </div>
             <div class="chatbox-title__buttons row no-gutters">

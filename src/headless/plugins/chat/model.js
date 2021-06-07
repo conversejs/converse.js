@@ -56,6 +56,7 @@ const ChatBox = ModelWithContact.extend({
         this.set({'box_id': `box-${jid}`});
         this.initNotifications();
         this.initMessages();
+        this.initUI();
 
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
             this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -63,6 +64,7 @@ const ChatBox = ModelWithContact.extend({
             this.presence.on('change:show', item => this.onPresenceChanged(item));
         }
         this.on('change:chat_state', this.sendChatState, this);
+        this.on('change:scrolled', () => !this.get('scrolled') && this.clearUnreadMsgCounter());
 
         await this.fetchMessages();
         /**
@@ -104,6 +106,10 @@ const ChatBox = ModelWithContact.extend({
                 api.send(this.createMessageStanza(message));
             }
         });
+    },
+
+    initUI () {
+        this.ui = new Model();
     },
 
     initNotifications () {
@@ -193,7 +199,7 @@ const ChatBox = ModelWithContact.extend({
      * Queue an incoming `chat` message stanza for processing.
      * @async
      * @private
-     * @method _converse.ChatRoom#queueMessage
+     * @method _converse.ChatBox#queueMessage
      * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
      */
     queueMessage (attrs) {
@@ -206,7 +212,7 @@ const ChatBox = ModelWithContact.extend({
     /**
      * @async
      * @private
-     * @method _converse.ChatRoom#onMessage
+     * @method _converse.ChatBox#onMessage
      * @param { MessageAttributes } attrs_promse - A promise which resolves to the message attributes.
      */
     async onMessage (attrs) {
@@ -250,6 +256,12 @@ const ChatBox = ModelWithContact.extend({
     },
 
     async close () {
+        if (api.connection.connected()) {
+            // Immediately sending the chat state, because the
+            // model is going to be destroyed afterwards.
+            this.setChatState(_converse.INACTIVE);
+            this.sendChatState();
+        }
         try {
             await new Promise((success, reject) => {
                 return this.destroy({success, 'error': (m, e) => reject(e)})
@@ -261,6 +273,13 @@ const ChatBox = ModelWithContact.extend({
                 await this.clearMessages();
             }
         }
+        /**
+         * Triggered once a chatbox has been closed.
+         * @event _converse#chatBoxClosed
+         * @type {_converse.ChatBox | _converse.ChatRoom}
+         * @example _converse.api.listen.on('chatBoxClosed', chat => { ... });
+         */
+        api.trigger('chatBoxClosed', this);
     },
 
     announceReconnection () {
@@ -268,7 +287,7 @@ const ChatBox = ModelWithContact.extend({
          * Triggered whenever a `_converse.ChatBox` instance has reconnected after an outage
          * @event _converse#onChatReconnected
          * @type {_converse.ChatBox | _converse.ChatRoom}
-         * @example _converse.api.listen.on('onChatReconnected', chatbox => { ... });
+         * @example _converse.api.listen.on('onChatReconnected', chat => { ... });
          */
         api.trigger('chatReconnected', this);
     },
@@ -663,7 +682,6 @@ const ChatBox = ModelWithContact.extend({
         return _converse.connection.send(msg);
     },
 
-
     /**
      * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
@@ -848,7 +866,7 @@ const ChatBox = ModelWithContact.extend({
      * before the collection has been fetched.
      * @async
      * @private
-     * @method _converse.ChatRoom#queueMessageCreation
+     * @method _converse.ChatBox#queueMessageCreation
      * @param { Object } attrs
      */
     async createMessage (attrs, options) {
@@ -1011,6 +1029,7 @@ const ChatBox = ModelWithContact.extend({
      * Given a newly received {@link _converse.Message} instance,
      * update the unread counter if necessary.
      * @private
+     * @method _converse.ChatBox#handleUnreadMessage
      * @param {_converse.Message} message
      */
     handleUnreadMessage (message) {
@@ -1018,7 +1037,13 @@ const ChatBox = ModelWithContact.extend({
             return
         }
         if (u.isNewMessage(message)) {
-            if (this.isHidden()) {
+            if (message.get('sender') === 'me') {
+                // We remove the "scrolled" flag so that the chat area
+                // gets scrolled down. We always want to scroll down
+                // when the user writes a message as opposed to when a
+                // message is received.
+                this.model.set('scrolled', false);
+            } else if (this.isHidden() || this.get('scrolled')) {
                 const settings = {
                     'num_unread': this.get('num_unread') + 1
                 };
@@ -1040,7 +1065,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     isScrolledUp () {
-        return this.get('scrolled', true);
+        return this.get('scrolled');
     }
 });
 

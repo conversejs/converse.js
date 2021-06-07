@@ -50,8 +50,8 @@ export default class MessageHistory extends CustomElement {
 
     static get properties () {
         return {
-            model: { type: Object},
-            messages: { type: Array}
+            model: { type: Object },
+            messages: { type: Array }
         }
     }
 

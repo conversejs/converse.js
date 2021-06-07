@@ -45,15 +45,16 @@ export default class Message extends CustomElement {
         this.chatbox = _converse.chatboxes.get(this.jid);
         this.model = this.chatbox.messages.get(this.mid);
 
-        this.listenTo(this.model, 'change', () => this.requestUpdate());
-        this.model.vcard && this.listenTo(this.model.vcard, 'change', () => this.requestUpdate());
+        this.listenTo(this.chatbox, 'change:first_unread_id', this.requestUpdate);
+        this.listenTo(this.model, 'change', this.requestUpdate);
+        this.model.vcard && this.listenTo(this.model.vcard, 'change', this.requestUpdate);
 
         if (this.model.get('type') === 'groupchat') {
             if (this.model.occupant) {
-                this.listenTo(this.model.occupant, 'change', () => this.requestUpdate());
+                this.listenTo(this.model.occupant, 'change', this.requestUpdate);
             } else {
                 this.listenTo(this.model, 'occupantAdded', () => {
-                    this.listenTo(this.model.occupant, 'change', () => this.requestUpdate())
+                    this.listenTo(this.model.occupant, 'change', this.requestUpdate)
                 });
             }
         }

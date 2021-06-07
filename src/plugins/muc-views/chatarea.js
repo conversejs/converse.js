@@ -1,4 +1,3 @@
-import debounce from 'lodash-es/debounce';
 import tpl_muc_chatarea from './templates/muc-chatarea.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
@@ -21,7 +20,6 @@ export default class MUCChatArea extends CustomElement {
     connectedCallback () {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.jid);
-        this.markScrolled = debounce(this._markScrolled, 100);
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
         this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
@@ -35,7 +33,6 @@ export default class MUCChatArea extends CustomElement {
         return tpl_muc_chatarea({
             'help_messages': this.getHelpMessages(),
             'jid': this.jid,
-            'markScrolled': ev => this.markScrolled(ev),
             'model': this.model,
             'occupants': this.model.occupants,
             'occupants_width': this.model.get('occupants_width'),
@@ -81,59 +78,6 @@ export default class MUCChatArea extends CustomElement {
         ]
             .filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9)))
             .filter(line => this.model.getAllowedCommands().some(c => line.startsWith(c + '<', 9)));
-    }
-
-    /**
-     * Called when the chat content is scrolled up or down.
-     * We want to record when the user has scrolled away from
-     * the bottom, so that we don't automatically scroll away
-     * from what the user is reading when new messages are received.
-     *
-     * Don't call this method directly, instead, call `markScrolled`,
-     * which debounces this method by 100ms.
-     * @private
-     */
-    _markScrolled (ev) {
-        let scrolled = true;
-        let scrollTop = null;
-        const msgs_container = this.querySelector('.chat-content__messages');
-        const is_at_bottom =
-            msgs_container.scrollTop + msgs_container.clientHeight >= msgs_container.scrollHeight - 62; // sigh...
-
-        if (is_at_bottom) {
-            scrolled = false;
-            this.onScrolledDown();
-        } else if (msgs_container.scrollTop === 0) {
-            /**
-             * Triggered once the chat's message area has been scrolled to the top
-             * @event _converse#chatBoxScrolledUp
-             * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
-             * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
-             */
-            api.trigger('chatBoxScrolledUp', this);
-        } else {
-            scrollTop = ev.target.scrollTop;
-        }
-        u.safeSave(this.model, { scrolled, scrollTop });
-    }
-
-    onScrolledDown () {
-        if (!this.model.isHidden()) {
-            this.model.clearUnreadMsgCounter();
-            if (api.settings.get('allow_url_history_change')) {
-                // Clear location hash if set to one of the messages in our history
-                const hash = window.location.hash;
-                hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
-            }
-        }
-        /**
-         * Triggered once the chat's message area has been scrolled down to the bottom.
-         * @event _converse#chatBoxScrolledDown
-         * @type {object}
-         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
-         * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
-         */
-        api.trigger('chatBoxScrolledDown', { 'chatbox': this.model });
     }
 
     onMousedown (ev) {

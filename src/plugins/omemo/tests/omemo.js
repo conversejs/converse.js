@@ -112,8 +112,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be encrypted';
-        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -294,8 +294,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be encrypted';
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -459,8 +459,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This is an encrypted message from this device';
-        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -515,8 +515,8 @@ describe("The OMEMO module", function() {
 
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'This message will be encrypted';
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
@@ -1232,8 +1232,8 @@ describe("The OMEMO module", function() {
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be sent encrypted';
-        const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-        bottom_panel.onKeyDown({
+        const message_form = view.querySelector('converse-message-form');
+        message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13

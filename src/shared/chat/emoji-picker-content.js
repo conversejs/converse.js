@@ -54,16 +54,16 @@ export default class EmojiPickerContent extends CustomElement {
       sizzle('.emoji-picker', this).forEach(a => this.observer.observe(a));
   }
 
-  setCategoryOnVisibilityChange (ev) {
+  setCategoryOnVisibilityChange (entries) {
       const selected = this.parentElement.navigator.selected;
-      const intersection_with_selected = ev.filter(i => i.target.contains(selected)).pop();
+      const intersection_with_selected = entries.filter(i => i.target.contains(selected)).pop();
       let current;
       // Choose the intersection that contains the currently selected
       // element, or otherwise the one with the largest ratio.
       if (intersection_with_selected) {
           current = intersection_with_selected;
       } else {
-          current = ev.reduce((p, c) => c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p, null);
+          current = entries.reduce((p, c) => c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p, null);
       }
       if (current && current.isIntersecting) {
           const category = current.target.getAttribute('data-category');

@@ -59,8 +59,8 @@ describe("Chatboxes", function () {
 
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = '/clear';
-            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-            bottom_panel.onKeyDown({
+            const message_form = view.querySelector('converse-message-form');
+            message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
@@ -264,14 +264,14 @@ describe("Chatboxes", function () {
                 const toolbar = view.querySelector('.chat-toolbar');
                 const counter = toolbar.querySelector('.message-limit');
                 expect(counter.textContent).toBe('200');
-                view.getBottomPanel().insertIntoTextArea('hello world');
-                expect(counter.textContent).toBe('188');
+                view.getMessageForm().insertIntoTextArea('hello world');
+                await u.waitUntil(() => counter.textContent === '188');
 
                 toolbar.querySelector('.toggle-emojis').click();
                 const picker = await u.waitUntil(() => view.querySelector('.emoji-picker__lists'));
                 const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                 item.click()
-                expect(counter.textContent).toBe('179');
+                await u.waitUntil(() => counter.textContent === '179');
 
                 const textarea = view.querySelector('.chat-textarea');
                 const ev = {
@@ -279,15 +279,15 @@ describe("Chatboxes", function () {
                     preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 };
-                const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-                bottom_panel.onKeyDown(ev);
+                const message_form = view.querySelector('converse-message-form');
+                message_form.onKeyDown(ev);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-                bottom_panel.onKeyUp(ev);
+                message_form.onKeyUp(ev);
                 expect(counter.textContent).toBe('200');
 
                 textarea.value = 'hello world';
-                bottom_panel.onKeyUp(ev);
-                expect(counter.textContent).toBe('189');
+                message_form.onKeyUp(ev);
+                await u.waitUntil(() => counter.textContent === '189');
                 done();
             }));
 
@@ -430,8 +430,8 @@ describe("Chatboxes", function () {
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
 
-                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-                    bottom_panel.onKeyDown({
+                    const message_form = view.querySelector('converse-message-form');
+                    message_form.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -446,7 +446,7 @@ describe("Chatboxes", function () {
                     expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
                     // The notification is not sent again
-                    bottom_panel.onKeyDown({
+                    message_form.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -470,8 +470,8 @@ describe("Chatboxes", function () {
                     expect(view.model.get('chat_state')).toBe('active');
                     spyOn(_converse.connection, 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
-                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-                    bottom_panel.onKeyDown({
+                    const message_form = view.querySelector('converse-message-form');
+                    message_form.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -579,8 +579,8 @@ describe("Chatboxes", function () {
                     const view = _converse.chatboxviews.get(contact_jid);
                     spyOn(view.model, 'setChatState').and.callThrough();
                     expect(view.model.get('chat_state')).toBe('active');
-                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-                    bottom_panel.onKeyDown({
+                    const message_form = view.querySelector('converse-message-form');
+                    message_form.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -612,14 +612,14 @@ describe("Chatboxes", function () {
                     // Test #359. A paused notification should not be sent
                     // out if the user simply types longer than the
                     // timeout.
-                    bottom_panel.onKeyDown({
+                    message_form.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
                     expect(view.model.setChatState).toHaveBeenCalled();
                     expect(view.model.get('chat_state')).toBe('composing');
 
-                    bottom_panel.onKeyDown({
+                    message_form.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -718,8 +718,8 @@ describe("Chatboxes", function () {
                         `</message>`);
 
 
-                    const bottom_panel = view.querySelector('converse-chat-bottom-panel');
-                    bottom_panel.onKeyDown({
+                    const message_form = view.querySelector('converse-message-form');
+                    message_form.onKeyDown({
                         target: view.querySelector('textarea.chat-textarea'),
                         keyCode: 1
                     });
@@ -937,10 +937,10 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.querySelector('.chat-msg'));
 
             message = '/clear';
-            const bottom_panel = view.querySelector('converse-chat-bottom-panel');
+            const message_form = view.querySelector('converse-message-form');
             spyOn(window, 'confirm').and.callFake(() => true);
             view.querySelector('.chat-textarea').value = message;
-            bottom_panel.onKeyDown({
+            message_form.onKeyDown({
                 target: view.querySelector('textarea.chat-textarea'),
                 preventDefault: function preventDefault () {},
                 keyCode: 13
@@ -1191,7 +1191,7 @@ describe("Chatboxes", function () {
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => view.model.messages.length);
             expect(select_msgs_indicator().textContent).toBe('1');
-            const chat_new_msgs_indicator = view.querySelector('.new-msgs-indicator');
+            const chat_new_msgs_indicator = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
             chat_new_msgs_indicator.click();
             await u.waitUntil(() => select_msgs_indicator() === undefined);
             done();

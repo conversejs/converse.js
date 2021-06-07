@@ -159,27 +159,3 @@ converse-muc-destroyed {
         }
     }
 }
-
-
-@include media-breakpoint-down(sm) {
-    .conversejs {
-        converse-chats.converse-mobile,
-        converse-chats.converse-overlayed,
-        converse-chats.converse-fullscreen {
-            .chatbox {
-                .box-flyout {
-                    .chat-head-chatroom {
-                        .chatbox-navback {
-                            margin-right: 0 !important;
-                            .fa-arrow-left {
-                                &:before {
-                                    color: var(--chatroom-head-color);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}

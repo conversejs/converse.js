@@ -3,38 +3,30 @@ import log from '@converse/headless/log';
 import tpl_muc from './templates/muc.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { render } from "lit";
 
 
 export default class MUCView extends BaseChatView {
     length = 300
     is_chatroom = true
 
-    async initialize () {
-        const jid = this.getAttribute('jid');
-        this.model = await api.rooms.get(jid);
-        _converse.chatboxviews.add(jid, this);
-        this.initDebounced();
+    connectedCallback () {
+        super.connectedCallback();
+        this.initialize();
+    }
 
+    async initialize () {
+        this.model = await api.rooms.get(this.jid);
+        _converse.chatboxviews.add(this.jid, this);
         this.setAttribute('id', this.model.get('box_id'));
 
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
-        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
-        this.listenTo(this.model, 'change:hidden', () => this.afterShown());
-        this.listenTo(this.model, 'change:minimized', () => this.afterShown());
+        this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdateMessageForm);
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.session, 'change:connection_status', this.updateAfterTransition);
-        this.listenTo(this.model.session, 'change:view', this.render);
-
-        await this.render();
-
-        // Need to be registered after render has been called.
-        this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-        this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
+        this.listenTo(this.model.session, 'change:view', this.requestUpdate);
 
         this.updateAfterTransition();
         this.model.maybeShow();
-        this.scrollDown();
         /**
          * Triggered once a { @link _converse.ChatRoomView } has been opened
          * @event _converse#chatRoomViewInitialized
@@ -45,20 +37,7 @@ export default class MUCView extends BaseChatView {
     }
 
     render () {
-        render(tpl_muc({ 'model': this.model }), this);
-        !this.model.get('hidden') && this.show();
-    }
-
-    /**
-     * Callback method that gets called after the chat has become visible.
-     * @private
-     * @method _converse.ChatRoomView#afterShown
-     */
-    afterShown () {
-        if (!this.model.get('hidden') && !this.model.get('minimized')) {
-            this.model.clearUnreadMsgCounter();
-            this.scrollDown();
-        }
+        return tpl_muc({ 'model': this.model });
     }
 
     /**
@@ -67,10 +46,11 @@ export default class MUCView extends BaseChatView {
      * @method _converse.ChatRoomView#close
      */
     close (ev) {
+        ev?.preventDefault?.();
         if (_converse.router.history.getFragment() === 'converse/room?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
-        return super.close(ev);
+        return this.model.close(ev);
     }
 
     async destroy () {
@@ -118,7 +98,7 @@ export default class MUCView extends BaseChatView {
                 'reason': undefined,
             });
         }
-        this.render();
+        this.requestUpdate();
     }
 }
 

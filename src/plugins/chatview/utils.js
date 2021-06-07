@@ -48,3 +48,15 @@ export function parseMessageForCommands (chat, text) {
         }
     }
 }
+
+export function resetElementHeight (ev) {
+    if (ev.target.value) {
+        const height = ev.target.scrollHeight + 'px';
+        if (ev.target.style.height != height) {
+            ev.target.style.height = 'auto';
+            ev.target.style.height = height;
+        }
+    } else {
+        ev.target.style = '';
+    }
+}

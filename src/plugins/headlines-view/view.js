@@ -1,34 +1,30 @@
 import BaseChatView from 'shared/chat/baseview.js';
 import tpl_headlines from './templates/headlines.js';
 import { _converse, api } from '@converse/headless/core';
-import { render } from 'lit';
 
 
 class HeadlinesView extends BaseChatView {
 
-    async initialize () {
-        const jid = this.getAttribute('jid');
-        _converse.chatboxviews.add(jid, this);
+    connectedCallback () {
+        super.connectedCallback();
+        this.initialize();
+    }
 
-        this.model = _converse.chatboxes.get(jid);
-        this.initDebounced();
+    async initialize() {
+        _converse.chatboxviews.add(this.jid, this);
 
+        this.model = _converse.chatboxes.get(this.jid);
         this.model.disable_mam = true; // Don't do MAM queries for this box
+        this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'show', this.show);
-        this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
-
-        this.render();
-
-        // Need to be registered after render has been called.
-        this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-        this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
-        this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
+        this.listenTo(this.model.messages, 'add', this.requestUpdate);
+        this.listenTo(this.model.messages, 'remove', this.requestUpdate);
+        this.listenTo(this.model.messages, 'reset', this.requestUpdate);
 
         await this.model.messages.fetched;
         this.model.maybeShow();
-        this.scrollDown();
         /**
          * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
          * @event _converse#headlinesBoxViewInitialized
@@ -39,15 +35,7 @@ class HeadlinesView extends BaseChatView {
     }
 
     render () {
-        this.setAttribute('id', this.model.get('box_id'));
-        const result = tpl_headlines(
-            Object.assign(this.model.toJSON(), {
-                show_send_button: false,
-                show_toolbar: false,
-            })
-        );
-        render(result, this);
-        return this;
+        return tpl_headlines(this.model);
     }
 
     async close (ev) {
@@ -59,7 +47,6 @@ class HeadlinesView extends BaseChatView {
         api.trigger('chatBoxClosed', this);
         return this;
     }
-
 
     getNotifications () { // eslint-disable-line class-methods-use-this
         // Override method in ChatBox. We don't show notifications for

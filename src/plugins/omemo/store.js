@@ -237,7 +237,7 @@ const OMEMOStore = Model.extend({
         _converse.omemo_store.storeSignedPreKey(signed_prekey);
         bundle['signed_prekey'] = {
             'id': signed_prekey.keyId,
-            'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
+            'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
             'signature': u.arrayBufferToBase64(signed_prekey.signature)
         };
         const keys = await Promise.all(

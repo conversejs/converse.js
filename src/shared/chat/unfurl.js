@@ -1,5 +1,5 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from "@converse/headless/core";
+import { api } from "@converse/headless/core";
 import tpl_unfurl from './templates/unfurl.js';
 
 import './styles/unfurl.scss';
@@ -29,7 +29,7 @@ export default class MessageUnfurl extends CustomElement {
     }
 
     onImageLoad () {
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.scrollDown();
+        this.dispatchEvent(new CustomEvent('imageLoaded', { detail: this, 'bubbles': true }));
     }
 }
 

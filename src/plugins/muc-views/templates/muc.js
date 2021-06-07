@@ -13,8 +13,10 @@ export default (o) => {
     return html`
         <div class="flyout box-flyout">
             <converse-dragresize></converse-dragresize>
-            <converse-muc-heading jid="${o.model.get('jid')}" class="chat-head chat-head-chatroom row no-gutters"></converse-muc-heading>
-            <div class="chat-body chatroom-body row no-gutters">${getChatRoomBodyTemplate(o)}</div>
-        </div>
-    `;
+            ${ o.model ? html`
+                <converse-muc-heading jid="${o.model.get('jid')}" class="chat-head chat-head-chatroom row no-gutters">
+                </converse-muc-heading>
+                <div class="chat-body chatroom-body row no-gutters">${getChatRoomBodyTemplate(o)}</div>
+            ` : '' }
+        </div>`;
 }

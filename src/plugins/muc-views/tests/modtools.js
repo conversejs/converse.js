@@ -11,8 +11,8 @@ async function openModtools (_converse, view) {
     const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
     textarea.value = '/modtools';
     const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-    const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-    bottom_panel.onKeyDown(enter);
+    const message_form = view.querySelector('converse-muc-message-form');
+    message_form.onKeyDown(enter);
     const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
     await u.waitUntil(() => u.isVisible(modal.el), 1000);
     return modal;
@@ -256,8 +256,8 @@ describe("The groupchat moderator tool", function () {
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = '/modtools';
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown(enter);
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown(enter);
 
         const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -455,8 +455,8 @@ describe("The groupchat moderator tool", function () {
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = '/modtools';
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        const bottom_panel = view.querySelector('converse-muc-bottom-panel');
-        bottom_panel.onKeyDown(enter);
+        const message_form = view.querySelector('converse-muc-message-form');
+        message_form.onKeyDown(enter);
 
         const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
         const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});

@@ -52,7 +52,7 @@ function slideOutWrapup (el) {
     el.style.height = "";
 }
 
-function getURI (url) {
+export function getURI (url) {
     try {
         return (url instanceof URI) ? url : (new URI(url));
     } catch (error) {

@@ -47,6 +47,44 @@ describe("A Groupchat Message", function () {
         done();
     }));
 
+    it("will render an unfurl with limited OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        /* Some sites don't include ogp data such as title, description and
+         * url. This test is to check that we fall back gracefully */
+        const nick = 'romeo';
+        const muc_jid = 'lounge@montague.lit';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const view = _converse.api.chatviews.get(muc_jid);
+
+        const message_stanza = u.toStanza(`
+            <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
+                <body>https://mempool.space</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
+                <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
+                <markable xmlns="urn:xmpp:chat-markers:0"/>
+            </message>`);
+        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(el.textContent).toBe('https://mempool.space');
+
+        const metadata_stanza = u.toStanza(`
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
+                <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://conversejs.org/dist/images/custom_emojis/converse.png" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:type" content="image/png" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:width" content="1000" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="500" />
+                </apply-to>
+            </message>`);
+        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+
+        const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
+        expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe('https://conversejs.org/dist/images/custom_emojis/converse.png');
+        expect(unfurl.querySelector('.card-body')).toBe(null);
+        expect(unfurl.querySelector('a')).toBe(null);
+        done();
+    }));
+
     it("will render multiple unfurls based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';

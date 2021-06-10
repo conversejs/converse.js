@@ -142,7 +142,7 @@ dist/converse.js:: node_modules
 dist/converse.css:: node_modules
 	npm run dev
 
-dist/website.css:: node_modules src
+dist/website.css:: node_modules src/shared/styles/website.scss
 	$(SASS) --load-path=$(BOOTSTRAP) src/shared/styles/website.scss $@
 
 dist/website.min.css:: node_modules dist/website.css

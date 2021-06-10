@@ -822,6 +822,7 @@ converse.plugins.add('converse-muc', {
                 try {
                     await this.sendTimedMessage(stanza);
                 } catch (e) {
+                    log.error(e);
                     message.save({
                         editable,
                         'error_type': 'timeout',
@@ -829,7 +830,6 @@ converse.plugins.add('converse-muc', {
                         'retracted': undefined,
                         'retracted_id': undefined
                     });
-                    throw e;
                 }
             },
 

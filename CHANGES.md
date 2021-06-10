@@ -1,6 +1,8 @@
 # Changelog
 
 ## 7.0.6 (unreleases)
+
+- #2500: SECURITY FIX: wrong assignment in OMEMO code
 - #2496: /nick command is not working
 
 ## 7.0.5 (2021-03-16)

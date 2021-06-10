@@ -1052,7 +1052,7 @@ converse.plugins.add('converse-omemo', {
                 _converse.omemo_store.storeSignedPreKey(signed_prekey);
                 bundle['signed_prekey'] = {
                     'id': signed_prekey.keyId,
-                    'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
+                    'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
                     'signature': u.arrayBufferToBase64(signed_prekey.signature)
                 }
                 const keys = await Promise.all(range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id)));

@@ -14,7 +14,7 @@ function isValidImage (image) {
 
 const tpl_url_wrapper = (o, wrapped_template) =>
     (o.url && isValidURL(o.url)) ?
-        html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>` : tpl_image(o);
+        html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>` : wrapped_template(o);
 
 const tpl_image = (o) => html`<img class="card-img-top" src="${o.image}" @load=${o.onload}/>`;
 

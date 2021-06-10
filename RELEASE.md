@@ -2,7 +2,7 @@
 
 1. Check that weblate translations are all merged in
 2. Run `make check` to check that all tests pass.
-3. Run `make release VERSION=7.0.4`
+3. Run `make release VERSION=7.0.6`
 4. Do a `git diff` to check if things look sane.
 5. Do a quick manual test with the `dist` files (via `index.html`)
 6. `git commit -am "Release 7.0.4"`

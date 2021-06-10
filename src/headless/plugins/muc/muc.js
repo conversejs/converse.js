@@ -1543,8 +1543,16 @@ const ChatRoomMixin = {
         return identity_el ? identity_el.getAttribute('name') : null;
     },
 
+    /**
+     * Send an IQ stanza to the MUC to register this user's nickname.
+     * This sets the user's affiliation to 'member' (if they weren't affiliated
+     * before) and reserves the nickname for this user, thereby preventing other
+     * users from using it in this MUC.
+     * See https://xmpp.org/extensions/xep-0045.html#register
+     * @private
+     * @method _converse.ChatRoom#registerNickname
+     */
     async registerNickname () {
-        // See https://xmpp.org/extensions/xep-0045.html#register
         const { __ } = _converse;
         const nick = this.get('nick');
         const jid = this.get('jid');
@@ -1593,26 +1601,19 @@ const ChatRoomMixin = {
         }
     },
 
-    async unregisterNickname () {
-        const jid = this.get('jid');
-        let iq;
-        try {
-            iq = await api.sendIQ(
-                $iq({
-                    'to': jid,
-                    'type': 'set'
-                }).c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
-            );
-        } catch (e) {
-            log.error(e);
-            return e;
-        }
-        if (sizzle(`query[xmlns="${Strophe.NS.MUC_REGISTER}"] registered`, iq).pop()) {
-            const iq = $iq({ 'to': jid, 'type': 'set' })
-                .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
-                .c('remove');
-            return api.sendIQ(iq).catch(e => log.error(e));
-        }
+    /**
+     * Send an IQ stanza to the MUC to unregister this user's nickname.
+     * If the user had a 'member' affiliation, it'll be removed and their
+     * nickname will no longer be reserved and can instead be used (and
+     * registered) by other users.
+     * @private
+     * @method _converse.ChatRoom#unregisterNickname
+     */
+    unregisterNickname () {
+        const iq = $iq({ 'to': this.get('jid'), 'type': 'set' })
+            .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
+            .c('remove');
+        return api.sendIQ(iq).catch(e => log.error(e));
     },
 
     /**

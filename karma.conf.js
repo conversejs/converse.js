@@ -38,6 +38,7 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/status/tests/status.js", type: 'module' },
       { pattern: "src/headless/tests/converse.js", type: 'module' },
       { pattern: "src/headless/tests/eventemitter.js", type: 'module' },
+      { pattern: "src/headless/tests/persistence.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/emojis.js", type: 'module' },

@@ -42,6 +42,10 @@ Removed events:
 The `chatBoxClosed`, `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
 payload and not the `view`.
 
+The `api.chatviews` and `api.roomviews` API groupings and methods have been
+removed. The original "views" don't really exist anymore, the UI is now composed web
+components which should update reactively based on changes made on the models.
+
 ## 7.0.6 (unreleased)
 
 - #2500: Wrong assignment in OMEMO code

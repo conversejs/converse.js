@@ -2637,7 +2637,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             let presence = $pres({
                     'from': 'lounge@montague.lit/annoyingGuy',
                     'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
@@ -2707,7 +2707,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
 
             let message = $msg({
                 from: 'lounge@montague.lit',
@@ -3297,7 +3297,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             spyOn(view.model, 'setRole').and.callThrough();
             spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
@@ -3381,7 +3381,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             let sent_IQ, IQ_id;
             const sendIQ = _converse.connection.sendIQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -3521,7 +3521,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             var sent_IQ, IQ_id;
             var sendIQ = _converse.connection.sendIQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -3659,7 +3659,7 @@ describe("Groupchats", function () {
             const muc_jid = 'lounge@montague.lit';
             const new_muc_jid = 'foyer@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            let view = _converse.api.chatviews.get(muc_jid);
+            let view = _converse.chatboxviews.get(muc_jid);
             spyOn(_converse.api, 'confirm').and.callThrough();
             let textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
@@ -3711,7 +3711,7 @@ describe("Groupchats", function () {
             _converse.connection.IQ_stanzas = [];
             sent_IQs = _converse.connection.IQ_stanzas;
             await mock.openAndEnterChatRoom(_converse, new_muc_jid, 'romeo');
-            view = _converse.api.chatviews.get(new_muc_jid);
+            view = _converse.chatboxviews.get(new_muc_jid);
             textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
             message_form = view.querySelector('converse-muc-message-form');
@@ -4671,7 +4671,7 @@ describe("Groupchats", function () {
             const muc_jid = 'kitchen@conference.shakespeare.lit';
             const message = 'fires: Your attention is required';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'fires');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => roomspanel.querySelectorAll('.available-room').length);
             expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
             expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
@@ -4729,7 +4729,7 @@ describe("Groupchats", function () {
             ]
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             view.model.setChatState(_converse.ACTIVE);
 
             expect(view.model.sendChatState).toHaveBeenCalled();
@@ -4770,7 +4770,7 @@ describe("Groupchats", function () {
                     {'affiliation': 'admin', 'nick': 'groundcontrol', 'jid': 'groundcontrol@example.org'}
                 ];
                 await mock.openAndEnterChatRoom(_converse, muc_jid, 'some1', [], members);
-                const view = _converse.api.chatviews.get(muc_jid);
+                const view = _converse.chatboxviews.get(muc_jid);
 
                 let csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                 expect(csntext.trim()).toEqual("some1 has entered the groupchat");
@@ -4988,7 +4988,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'trollbox@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             textarea.value = 'Hello world';
             const message_form = view.querySelector('converse-muc-message-form');
@@ -5043,7 +5043,7 @@ describe("Groupchats", function () {
             ]
             const muc_jid = 'trollbox@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('.chat-textarea'));
 
             let stanza = u.toStanza(`

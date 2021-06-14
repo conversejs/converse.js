@@ -11,7 +11,7 @@ describe("A Chat Message", function () {
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid)
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         const textarea = view.querySelector('textarea.chat-textarea');
         expect(textarea.value).toBe('');
         const message_form = view.querySelector('converse-message-form');
@@ -172,7 +172,7 @@ describe("A Chat Message", function () {
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         const textarea = view.querySelector('textarea.chat-textarea');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?';

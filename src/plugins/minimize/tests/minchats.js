@@ -22,7 +22,7 @@ describe("A chat message", function () {
         const rosterview = document.querySelector('converse-roster');
         await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
         await mock.openChatBoxFor(_converse, contact_jid);
-        const chatview = _converse.api.chatviews.get(contact_jid);
+        const chatview = _converse.chatboxviews.get(contact_jid);
         expect(u.isVisible(chatview)).toBeTruthy();
         expect(chatview.model.get('minimized')).toBeFalsy();
         chatview.querySelector('.toggle-chatbox-button').click();

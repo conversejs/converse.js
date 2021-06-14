@@ -22,20 +22,32 @@ describe("Groupchats", function () {
             expect(u.isVisible(_converse.chatboxviews.get('leisure@montague.lit'))).toBeTruthy();
             expect(u.isVisible(_converse.chatboxviews.get('news@montague.lit'))).toBeTruthy();
 
-            await _converse.api.roomviews.close('lounge@montague.lit');
-            expect(_converse.chatboxviews.get('lounge@montague.lit')).toBeUndefined();
+            _converse.chatboxviews.get('lounge@montague.lit').close();
+            await u.waitUntil(() => !_converse.chatboxviews.get('lounge@montague.lit'));
             expect(u.isVisible(_converse.chatboxviews.get('leisure@montague.lit'))).toBeTruthy();
             expect(u.isVisible(_converse.chatboxviews.get('news@montague.lit'))).toBeTruthy();
 
-            await _converse.api.roomviews.close(['leisure@montague.lit', 'news@montague.lit']);
+            _converse.chatboxviews.get('leisure@montague.lit').close();
+            await u.waitUntil(() => !_converse.chatboxviews.get('leisure@montague.lit'));
+
+            _converse.chatboxviews.get('news@montague.lit').close();
+            await u.waitUntil(() => !_converse.chatboxviews.get('news@montague.lit'));
+
             expect(_converse.chatboxviews.get('lounge@montague.lit')).toBeUndefined();
             expect(_converse.chatboxviews.get('leisure@montague.lit')).toBeUndefined();
             expect(_converse.chatboxviews.get('news@montague.lit')).toBeUndefined();
+
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             await mock.openAndEnterChatRoom(_converse, 'leisure@montague.lit', 'romeo');
             expect(u.isVisible(_converse.chatboxviews.get('lounge@montague.lit'))).toBeTruthy();
             expect(u.isVisible(_converse.chatboxviews.get('leisure@montague.lit'))).toBeTruthy();
-            await _converse.api.roomviews.close();
+
+            _converse.chatboxviews.get('leisure@montague.lit').close();
+            await u.waitUntil(() => !_converse.chatboxviews.get('leisure@montague.lit'));
+
+            _converse.chatboxviews.get('lounge@montague.lit').close();
+            await u.waitUntil(() => !_converse.chatboxviews.get('lounge@montague.lit'));
+
             expect(_converse.chatboxviews.get('lounge@montague.lit')).toBeUndefined();
             expect(_converse.chatboxviews.get('leisure@montague.lit')).toBeUndefined();
             done();

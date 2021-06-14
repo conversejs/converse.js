@@ -10,7 +10,7 @@ describe("A Chat Message", function () {
         let message = base_url+"/logo/conversejs-filled.svg";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
@@ -62,7 +62,7 @@ describe("A Chat Message", function () {
         let message = 'https://imgur.com/oxymPax.png';
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
@@ -85,7 +85,7 @@ describe("A Chat Message", function () {
         const message = base_url+"/logo/non-existing.svg";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
@@ -108,7 +108,7 @@ describe("A Chat Message", function () {
         const message = "https://pbs.twimg.com/media/string?format=jpg&name=small";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe("A Chat Message", function () {
         const message = 'https://imgur.com/oxymPax.png';
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('converse-chat-message-body .chat-image').length === 1);
         api.settings.set('show_images_inline', false);

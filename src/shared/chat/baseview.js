@@ -20,6 +20,7 @@ export default class BaseChatView extends CustomElement {
     updated () {
         if (this.model && this.jid !== this.model.get('jid')) {
             this.stopListening();
+            _converse.chatboxviews.remove(this.model.get('jid'), this);
             delete this.model;
             this.requestUpdate();
             this.initialize();

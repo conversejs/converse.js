@@ -7,7 +7,6 @@ import '../chatboxviews/index.js';
 import '../modal.js';
 import './adhoc-commands.js';
 import MUCView from './muc.js';
-import muc_api from './api.js';
 import { api, converse } from '@converse/headless/core';
 import { fetchAndSetMUCDomain } from './utils.js';
 
@@ -60,8 +59,6 @@ converse.plugins.add('converse-muc-views', {
         });
 
         _converse.ChatRoomView = MUCView;
-
-        Object.assign(_converse.api, muc_api);
 
         api.listen.on('clearsession', () => {
             const view = _converse.chatboxviews.get('controlbox');

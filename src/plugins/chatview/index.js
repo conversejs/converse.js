@@ -1,5 +1,4 @@
 /**
- * @module converse-chatview
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
@@ -8,8 +7,7 @@ import '../modal.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';
-import ChatBoxView from './view.js';
-import chatview_api from './api.js';
+import ChatView from './chat.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 import './styles/index.scss';
@@ -56,9 +54,7 @@ converse.plugins.add('converse-chatview', {
             }
         });
 
-        Object.assign(api, chatview_api);
-
-        _converse.ChatBoxView = ChatBoxView;
+        _converse.ChatBoxView = ChatView;
 
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
     }

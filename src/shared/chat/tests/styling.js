@@ -24,7 +24,7 @@ describe("An incoming chat Message", function () {
               .c('unstyled', {'xmlns': 'urn:xmpp:styling:0'}).tree();
         await _converse.handleMessageStanza(msg);
 
-        const view = _converse.api.chatviews.get(sender_jid);
+        const view = _converse.chatboxviews.get(sender_jid);
         await u.waitUntil(() => view.model.messages.length);
         expect(view.model.messages.models[0].get('is_unstyled')).toBe(true);
 
@@ -55,7 +55,7 @@ describe("An incoming chat Message", function () {
             }).c('body').t(msg_text).tree();
         await _converse.handleMessageStanza(msg);
 
-        const view = _converse.api.chatviews.get(sender_jid);
+        const view = _converse.chatboxviews.get(sender_jid);
         await u.waitUntil(() => view.model.messages.length);
         expect(view.model.messages.models[0].get('is_unstyled')).toBe(false);
 
@@ -74,7 +74,7 @@ describe("An incoming chat Message", function () {
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
 
         msg_text = "This *message _contains_* styling hints! \`Here's *some* code\`";
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
@@ -199,7 +199,7 @@ describe("An incoming chat Message", function () {
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
 
         msg_text = `Here's a code block: \n\`\`\`\nInside the code-block, <code>hello</code> we don't enable *styling hints* like ~these~\n\`\`\``;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
@@ -247,7 +247,7 @@ describe("An incoming chat Message", function () {
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
 
         msg_text = `> This is quoted text\n>This is also quoted\nThis is not quoted`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
@@ -394,7 +394,7 @@ describe("An incoming chat Message", function () {
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         const msg_text = '```\ncode```';
         const msg = $msg({
                     from: contact_jid,

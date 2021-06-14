@@ -9,7 +9,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         const stanza = $pres({
                 to: 'romeo@montague.lit/_converse.js-29092160',
                 from: 'coven@chat.shakespeare.lit/newguy'
@@ -74,7 +74,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         const stanza = $pres({
                 to: 'romeo@montague.lit/_converse.js-29092160',
                 from: 'coven@chat.shakespeare.lit/newguy'
@@ -166,7 +166,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
         expect(textarea.value).toBe('');
         const message_form = view.querySelector('converse-muc-message-form');

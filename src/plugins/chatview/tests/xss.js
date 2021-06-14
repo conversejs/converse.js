@@ -13,7 +13,7 @@ describe("XSS", function () {
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.api.chatviews.get(contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
 
             let message = "<img src=x onerror=alert('XSS');>";
             await mock.sendMessage(view, message);
@@ -69,7 +69,7 @@ describe("XSS", function () {
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.api.chatviews.get(contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
 
             let message = "<svgonload=alert(1)>";
             await mock.sendMessage(view, message);
@@ -125,7 +125,7 @@ describe("XSS", function () {
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.api.chatviews.get(contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
 
             let message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
             await mock.sendMessage(view, message);
@@ -181,7 +181,7 @@ describe("XSS", function () {
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.api.chatviews.get(contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
 
             const bad_urls =[
                 'http://^$^(*^#$%^_1*(',

@@ -65,10 +65,6 @@ converse.plugins.add('converse-chatboxviews', {
                 const el = _converse.chatboxviews?.el;
                 if (el && !container.contains(el)) {
                     container.insertAdjacentElement('afterBegin', el);
-                    api.chatviews
-                        .get()
-                        .filter(v => v.model.get('id') !== 'controlbox')
-                        .forEach(v => v.maintainScrollTop());
                 } else if (!el) {
                     throw new Error('Cannot insert non-existing #conversejs element into the DOM');
                 }

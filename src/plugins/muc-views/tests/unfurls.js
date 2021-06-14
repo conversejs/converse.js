@@ -8,7 +8,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
@@ -53,7 +53,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
@@ -89,7 +89,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
@@ -144,7 +144,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
@@ -185,7 +185,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
@@ -224,7 +224,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
@@ -268,7 +268,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
@@ -307,7 +307,7 @@ describe("A Groupchat Message", function () {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         const message_stanza = u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">

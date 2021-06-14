@@ -287,7 +287,7 @@ export default {
          * }
          */
         async supports (feature, jid) {
-            const features = await api.disco.features.get(feature, jid);
+            const features = await api.disco.features.get(feature, jid) || [];
             return features.length > 0;
         },
 

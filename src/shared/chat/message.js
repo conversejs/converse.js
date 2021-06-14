@@ -12,6 +12,7 @@ import tpl_spinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
+import { getHats } from './utils.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
 
@@ -196,7 +197,7 @@ export default class Message extends CustomElement {
         return {
             'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
             'has_mentions': this.hasMentions(),
-            'hats': _converse.getHats(this.model),
+            'hats': getHats(this.model),
             'is_first_unread': this.chatbox.get('first_unread_id') === this.model.get('id'),
             'is_me_message': this.model.isMeCommand(),
             'is_retracted': this.isRetracted(),

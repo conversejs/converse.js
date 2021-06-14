@@ -14,7 +14,7 @@ class MessageActions extends CustomElement {
         return {
             correcting: { type: Boolean },
             editable: { type: Boolean },
-            hide_url_previews: { type: Boolean },
+            show_url_previews: { type: Boolean },
             is_retracted: { type: Boolean },
             message_type: { type: String },
             model: { type: Object },
@@ -160,9 +160,9 @@ class MessageActions extends CustomElement {
 
     onHidePreviewsButtonClicked (ev) {
         ev?.preventDefault?.();
-        if (this.hide_url_previews) {
+        if (!this.show_url_previews) {
             this.model.save({
-                'hide_url_previews': false,
+                'show_url_previews': true,
                 'url_preview_transition': 'fade-in'
             });
         } else {
@@ -201,17 +201,17 @@ class MessageActions extends CustomElement {
                 ogp_metadata.length) {
 
             let title;
-            const hidden_preview = this.hide_url_previews;
+            const visible_preview = this.show_url_previews;
             if (ogp_metadata.length > 1) {
-                title = hidden_preview ? __('Show URL previews') : __('Hide URL previews');
+                title = visible_preview ? __('Hide URL previews') : __('Show URL previews');
             } else {
-                title = hidden_preview ? __('Show URL preview') : __('Hide URL preview');
+                title = visible_preview ? __('Hide URL preview') : __('Show URL preview');
             }
             buttons.push({
                 'i18n_text': title,
                 'handler': ev => this.onHidePreviewsButtonClicked(ev),
                 'button_class': 'chat-msg__action-hide-previews',
-                'icon_class': this.hide_url_previews ? 'fas fa-eye' : 'fas fa-eye-slash',
+                'icon_class': this.show_url_previews ? 'fas fa-eye-slash' : 'fas fa-eye',
                 'name': 'hide'
             });
         }

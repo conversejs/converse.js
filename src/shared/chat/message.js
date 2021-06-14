@@ -122,7 +122,7 @@ export default class Message extends CustomElement {
     onUnfurlAnimationEnd () {
         if (this.model.get('url_preview_transition') === 'fade-out') {
             this.model.save({
-                'hide_url_previews': !this.model.get('hide_url_previews'),
+                'show_url_previews': !this.model.get('show_url_previews'),
                 'url_preview_transition': 'fade-in'
             });
         }

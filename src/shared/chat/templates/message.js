@@ -39,12 +39,12 @@ export default (el, o) => {
                         ?correcting="${o.correcting}"
                         ?editable="${o.editable}"
                         ?is_retracted="${o.is_retracted}"
-                        ?hide_url_previews="${el.model.get('hide_url_previews')}"
+                        ?show_url_previews="${el.model.get('show_url_previews')}"
                         unfurls="${el.model.get('ogp_metadata')?.length}"
                         message_type="${o.message_type}"></converse-message-actions>
                 </div>
 
-                ${ !el.model.get('hide_url_previews') ? el.model.get('ogp_metadata')?.map(m =>
+                ${ el.model.get('show_url_previews') ? el.model.get('ogp_metadata')?.map(m =>
                     html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"

@@ -5,7 +5,6 @@ import 'shared/registry';
 import MessageVersionsModal from 'modals/message-versions.js';
 import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
-import dayjs from 'dayjs';
 import filesize from 'filesize';
 import tpl_message from './templates/message.js';
 import tpl_spinner from 'templates/spinner.js';
@@ -16,7 +15,7 @@ import { getHats } from './utils.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
 
-const { Strophe } = converse.env;
+const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -137,23 +136,6 @@ export default class Message extends CustomElement {
         this.parentElement.removeChild(this);
     }
 
-    isFollowup () {
-        const messages = this.model.collection.models;
-        const idx = messages.indexOf(this.model);
-        const prev_model = idx ? messages[idx-1] : null;
-        if (prev_model === null) {
-            return false;
-        }
-        const date = dayjs(this.model.get('time'));
-        return this.model.get('from') === prev_model.get('from') &&
-            !this.model.isMeCommand() &&
-            !prev_model.isMeCommand() &&
-            this.model.get('type') !== 'info' &&
-            prev_model.get('type') !== 'info' &&
-            date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
-            !!this.model.get('is_encrypted') === !!prev_model.get('is_encrypted');
-    }
-
     isRetracted () {
         return this.model.get('retracted') || this.model.get('moderated') === 'retracted';
     }
@@ -173,7 +155,7 @@ export default class Message extends CustomElement {
 
     getExtraMessageClasses () {
         const extra_classes = [
-            this.isFollowup() ? 'chat-msg--followup' : null,
+            this.model.isFollowup() ? 'chat-msg--followup' : null,
             this.model.get('is_delayed') ? 'delayed' : null,
             this.model.isMeCommand() ? 'chat-msg--action' : null,
             this.isRetracted() ? 'chat-msg--retracted' : null,

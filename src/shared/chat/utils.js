@@ -1,6 +1,7 @@
-import { _converse, api } from '@converse/headless/core';
-import dayjs from 'dayjs';
 import tpl_new_day from "./templates/new-day.js";
+import { _converse, api, converse } from '@converse/headless/core';
+
+const { dayjs } = converse.env;
 
 export function onScrolledDown (model) {
     if (!model.isHidden()) {

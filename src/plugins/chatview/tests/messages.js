@@ -741,7 +741,6 @@ describe("A Chat Message", function () {
         expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(2)))).toBe(false);
         expect(view.querySelector(`${nth_child(2)} .chat-msg__text`).textContent).toBe("A message");
 
-
         expect(u.hasClass('chat-msg--followup', view.querySelector(nth_child(3)))).toBe(true);
         expect(view.querySelector(`${nth_child(3)} .chat-msg__text`).textContent).toBe(
             "Another message 3 minutes later");
@@ -1187,7 +1186,6 @@ describe("A Chat Message", function () {
                 done();
             }));
         });
-
 
         it("will cause the chat area to be scrolled down only if it was at the bottom originally",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {

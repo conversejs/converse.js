@@ -3,8 +3,9 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import mam_api from './api.js';
 import '../disco/index.js';
+import MAMPlaceholderMessage from './placeholder.js';
+import mam_api from './api.js';
 import {
     onMAMError,
     onMAMPreferences,
@@ -31,7 +32,7 @@ converse.plugins.add('converse-mam', {
 
         Object.assign(api, mam_api);
         // This is mainly done to aid with tests
-        Object.assign(_converse, { onMAMError, onMAMPreferences, handleMAMResult });
+        Object.assign(_converse, { onMAMError, onMAMPreferences, handleMAMResult, MAMPlaceholderMessage });
 
         /************************ Event Handlers ************************/
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(NS.MAM));

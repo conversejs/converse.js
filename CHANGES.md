@@ -26,6 +26,7 @@
 - Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
 - Add a Description Of A Project (DOAP) file
 - Add ability to deregister nickname when closing a MUC by setting `auto_register_muc_nickname` to `'unregister'`.
+- Show a gap placeholder when there are gaps in the chat history. The user can click these to fill the gaps.
 
 ### Breaking Changes
 

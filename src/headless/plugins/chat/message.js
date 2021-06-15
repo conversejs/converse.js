@@ -1,4 +1,5 @@
 import ModelWithContact from './model-with-contact.js';
+import dayjs from 'dayjs';
 import log from '../../log.js';
 import { _converse, api, converse } from '../../core.js';
 import { getOpenPromise } from '@converse/openpromise';
@@ -102,8 +103,50 @@ const MessageMixin = {
         }
     },
 
+    /**
+     * Returns a boolean indicating whether this message is ephemeral,
+     * meaning it will get automatically removed after ten seconds.
+     * @returns { boolean }
+     */
     isEphemeral () {
         return this.get('is_ephemeral');
+    },
+
+    /**
+     * Returns a boolean indicating whether this message is a XEP-0245 /me command.
+     * @returns { boolean }
+     */
+    isMeCommand () {
+        const text = this.getMessageText();
+        if (!text) {
+            return false;
+        }
+        return text.startsWith('/me ');
+    },
+
+    /**
+     * Returns a boolean indicating whether this message is considered a followup
+     * message from the previous one. Followup messages are shown grouped together
+     * under one author heading.
+     * A message is considered a followup of it's predecessor when it's a chat
+     * message from the same author, within 10 minutes.
+     * @returns { boolean }
+     */
+    isFollowup () {
+        const messages = this.collection.models;
+        const idx = messages.indexOf(this);
+        const prev_model = idx ? messages[idx-1] : null;
+        if (prev_model === null) {
+            return false;
+        }
+        const date = dayjs(this.get('time'));
+        return this.get('from') === prev_model.get('from') &&
+            !this.isMeCommand() &&
+            !prev_model.isMeCommand() &&
+            this.get('type') !== 'info' &&
+            prev_model.get('type') !== 'info' &&
+            date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
+            !!this.get('is_encrypted') === !!prev_model.get('is_encrypted');
     },
 
     getDisplayName () {
@@ -124,14 +167,6 @@ const MessageMixin = {
             return this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
         }
         return this.get('message');
-    },
-
-    isMeCommand () {
-        const text = this.getMessageText();
-        if (!text) {
-            return false;
-        }
-        return text.startsWith('/me ');
     },
 
     /**

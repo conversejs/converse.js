@@ -1,5 +1,16 @@
-import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
+import MAMPlaceholderMessage from '@converse/headless/plugins/mam/placeholder.js';
 import { _converse, api } from '@converse/headless/core';
+import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
+import { html } from 'lit-html';
+
+
+export function getPlaceholderTemplate (message, tpl) {
+    if (message instanceof MAMPlaceholderMessage) {
+        return html`<converse-mam-placeholder .model=${message}></converse-mam-placeholder>`;
+    } else {
+        return tpl;
+    }
+}
 
 export async function fetchMessagesOnScrollUp (view) {
     if (view.model.messages.length) {
@@ -17,7 +28,6 @@ export async function fetchMessagesOnScrollUp (view) {
             if (api.settings.get('allow_url_history_change')) {
                 _converse.router.history.navigate(`#${oldest_message.get('msgid')}`);
             }
-
             setTimeout(() => view.model.ui.set('chat-content-spinner-top', false), 250);
         }
     }

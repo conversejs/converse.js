@@ -4,6 +4,7 @@ import { api } from "@converse/headless/core";
 import { getDayIndicator } from './utils.js';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
+import { until } from 'lit/directives/until.js';
 
 
 export default class MessageHistory extends CustomElement {
@@ -17,20 +18,28 @@ export default class MessageHistory extends CustomElement {
 
     render () {
         const msgs = this.messages;
-        return msgs.length ? html`${repeat(msgs, m => m.get('id'), m => this.renderMessage(m)) }` : '';
+        if (msgs.length) {
+            return repeat(msgs, m => m.get('id'), m => html`${this.renderMessage(m)}`)
+        } else {
+            return '';
+        }
     }
 
     renderMessage (model) {
         if (model.get('dangling_retraction') || model.get('is_only_key')) {
             return '';
         }
-        const day = getDayIndicator(model);
-        const templates = day ? [day] : [];
-        const message = html`<converse-chat-message
-            jid="${this.model.get('jid')}"
-            mid="${model.get('id')}"></converse-chat-message>`
-
-        return [...templates, message];
+        const template_hook = model.get('template_hook')
+        if (typeof template_hook === 'string') {
+            const template_promise = api.hook(template_hook, model, '');
+            return until(template_promise, '');
+        } else {
+            const template = html`<converse-chat-message
+                jid="${this.model.get('jid')}"
+                mid="${model.get('id')}"></converse-chat-message>`
+            const day = getDayIndicator(model);
+            return day ? [day, template] : template;
+        }
     }
 }
 

@@ -3,8 +3,9 @@
  * @copyright 2021, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './placeholder.js';
 import { api, converse } from '@converse/headless/core';
-import { fetchMessagesOnScrollUp } from './utils.js';
+import { fetchMessagesOnScrollUp, getPlaceholderTemplate } from './utils.js';
 
 
 converse.plugins.add('converse-mam-views', {
@@ -12,5 +13,6 @@ converse.plugins.add('converse-mam-views', {
 
     initialize () {
         api.listen.on('chatBoxScrolledUp', fetchMessagesOnScrollUp);
+        api.listen.on('getMessageTemplate', getPlaceholderTemplate);
     }
 });

@@ -366,6 +366,9 @@
         }
     }
 
+    .spinner__container {
+      width: 100%;
+    }
     .spinner {
         animation: spin 2s infinite, linear;
         width: 1em;
@@ -386,9 +389,8 @@
         margin: auto;
     }
     .hor_centered {
-        width: 100%;
         text-align: center;
-        display: block;
+        display: block !important;
         margin: 0 auto;
         clear: both;
     }

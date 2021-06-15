@@ -25,6 +25,11 @@ const COMMAND_TO_ROLE = {
     'voice': 'participant'
 };
 
+export function clearHistory (jid) {
+    if (_converse.router.history.getFragment() === `converse/room?jid=${jid}`) {
+        _converse.router.navigate('');
+    }
+}
 
 function setMUCDomain (domain, controlboxview) {
     controlboxview.querySelector('converse-rooms-list')

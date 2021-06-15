@@ -205,10 +205,10 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
             await mock.openChatBoxFor(_converse, contact_jid);
             const chatview = _converse.chatboxviews.get(contact_jid);
-            spyOn(chatview, 'close').and.callThrough();
+            spyOn(chatview.model, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
             chatview.querySelector('.close-chatbox-button').click();
-            expect(chatview.close).toHaveBeenCalled();
+            expect(chatview.model.close).toHaveBeenCalled();
             await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
             done();

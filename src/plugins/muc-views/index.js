@@ -8,7 +8,7 @@ import '../modal.js';
 import './adhoc-commands.js';
 import MUCView from './muc.js';
 import { api, converse } from '@converse/headless/core';
-import { fetchAndSetMUCDomain } from './utils.js';
+import { clearHistory, fetchAndSetMUCDomain } from './utils.js';
 
 import './styles/index.scss';
 
@@ -75,6 +75,12 @@ converse.plugins.add('converse-muc-views', {
             }
             fetchAndSetMUCDomain(view);
             view.model.on('change:connected', () => fetchAndSetMUCDomain(view));
+        });
+
+        api.listen.on('chatBoxClosed', (model) => {
+            if (model.get('type') === _converse.CHATROOMS_TYPE) {
+                clearHistory(model.get('jid'));
+            }
         });
     }
 });

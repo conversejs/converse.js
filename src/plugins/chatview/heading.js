@@ -37,8 +37,9 @@ export default class ChatHeading extends ElementView {
         api.modal.show(UserDetailsModal, { model: this.model }, ev);
     }
 
-    close () {
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.close();
+    close (ev) {
+        ev.preventDefault();
+        this.model.close();
     }
 
     /**
@@ -119,8 +120,6 @@ export default class ChatHeading extends ElementView {
             })
         );
     }
-
-
 }
 
 api.elements.define('converse-chat-heading', ChatHeading);

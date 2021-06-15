@@ -27,6 +27,11 @@ export default class BaseChatView extends CustomElement {
         }
     }
 
+    close (ev) {
+        ev?.preventDefault?.();
+        return this.model.close(ev);
+    }
+
     maybeFocus () {
         api.settings.get('auto_focus') && this.focus();
     }

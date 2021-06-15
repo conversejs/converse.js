@@ -9,6 +9,7 @@ import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';
 import ChatView from './chat.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { clearHistory } from './utils.js';
 
 import './styles/index.scss';
 
@@ -57,5 +58,6 @@ converse.plugins.add('converse-chatview', {
         _converse.ChatBoxView = ChatView;
 
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
+        api.listen.on('chatBoxClosed', (model) => clearHistory(model.get('jid')));
     }
 });

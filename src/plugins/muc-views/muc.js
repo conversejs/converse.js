@@ -40,19 +40,6 @@ export default class MUCView extends BaseChatView {
         return tpl_muc({ 'model': this.model });
     }
 
-    /**
-     * Closes this chat, which implies leaving the MUC as well.
-     * @private
-     * @method _converse.ChatRoomView#close
-     */
-    close (ev) {
-        ev?.preventDefault?.();
-        if (_converse.router.history.getFragment() === 'converse/room?jid=' + this.model.get('jid')) {
-            _converse.router.navigate('');
-        }
-        return this.model.close(ev);
-    }
-
     async destroy () {
         const messages = [__('Are you sure you want to destroy this groupchat?')];
         let fields = [

@@ -60,19 +60,6 @@ export default class ChatView extends BaseChatView {
         _converse.chatboxviews.get('controlbox')?.show();
     }
 
-    /**
-     * Closes this chat
-     * @private
-     * @method _converse.ChatBoxView#close
-     */
-    close (ev) {
-        ev?.preventDefault?.();
-        if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
-            _converse.router.navigate('');
-        }
-        return this.model.close(ev);
-    }
-
     afterShown () {
         this.model.setChatState(_converse.ACTIVE);
         this.maybeFocus();

@@ -1,36 +1,38 @@
 import UserDetailsModal from 'modals/user-details.js';
-import debounce from 'lodash-es/debounce';
 import tpl_chatbox_head from './templates/chat-head.js';
-import { ElementView } from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
-import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
-import { render } from 'lit';
 
 import './styles//chat-head.scss';
 
 
-export default class ChatHeading extends ElementView {
-
-    async render () {
-        const tpl = await this.generateHeadingTemplate();
-        render(tpl, this);
-    }
+export default class ChatHeading extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
+        this.initialize();
+    }
+
+    initialize () {
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
-        this.debouncedRender = debounce(this.render, 100);
-        this.listenTo(this.model, 'change:status', this.debouncedRender);
-        this.listenTo(this.model, 'vcard:change', this.debouncedRender);
+        this.listenTo(this.model, 'change:status', this.requestUpdate);
+        this.listenTo(this.model, 'vcard:change', this.requestUpdate);
         if (this.model.contact) {
-            this.listenTo(this.model.contact, 'destroy', this.debouncedRender);
+            this.listenTo(this.model.contact, 'destroy', this.requestUpdate);
         }
         this.model.rosterContactAdded?.then(() => {
-            this.listenTo(this.model.contact, 'change:nickname', this.debouncedRender);
-            this.debouncedRender();
+            this.listenTo(this.model.contact, 'change:nickname', this.requestUpdate);
+            this.requestUpdate();
         });
-        this.render();
+    }
+
+    render () {
+        return tpl_chatbox_head(Object.assign(this.model.toJSON(), {
+            'heading_buttons_promise': this.getHeadingButtons(),
+            'model': this.model,
+            'showUserDetailsModal': ev => this.showUserDetailsModal(ev),
+        }));
     }
 
     showUserDetailsModal (ev) {
@@ -93,33 +95,6 @@ export default class ChatHeading extends ElementView {
         } else {
             return buttons; // Happens during tests
         }
-    }
-
-    async generateHeadingTemplate () {
-        const vcard = this.model?.vcard;
-        const vcard_json = vcard ? vcard.toJSON() : {};
-        const i18n_profile = __("The User's Profile Image");
-        const avatar_data = Object.assign(
-            {
-                'alt_text': i18n_profile,
-                'extra_classes': '',
-                'height': 40,
-                'width': 40
-            },
-            vcard_json
-        );
-        const heading_btns = await this.getHeadingButtons();
-        const standalone_btns = heading_btns.filter(b => b.standalone);
-        const dropdown_btns = heading_btns.filter(b => !b.standalone);
-        return tpl_chatbox_head(
-            Object.assign(this.model.toJSON(), {
-                avatar_data,
-                'display_name': this.model.getDisplayName(),
-                'dropdown_btns': dropdown_btns.map(b => getHeadingDropdownItem(b)),
-                'showUserDetailsModal': ev => this.showUserDetailsModal(ev),
-                'standalone_btns': standalone_btns.map(b => getHeadingStandaloneButton(b))
-            })
-        );
     }
 }
 

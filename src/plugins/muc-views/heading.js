@@ -1,4 +1,4 @@
-import ChatHeading from 'plugins/chatview/heading.js';
+import { ElementView } from '@converse/skeletor/src/element.js';
 import MUCInviteModal from 'modals/muc-invite.js';
 import RoomDetailsModal from 'modals/muc-details.js';
 import debounce from 'lodash-es/debounce';
@@ -11,11 +11,12 @@ import {
     getHeadingDropdownItem,
     getHeadingStandaloneButton,
 } from 'plugins/chatview/utils.js';
+import { render } from 'lit';
 
 import './styles/muc-head.scss';
 
 
-export default class MUCHeading extends ChatHeading {
+export default class MUCHeading extends ElementView {
 
     async connectedCallback () {
         super.connectedCallback();
@@ -32,6 +33,11 @@ export default class MUCHeading extends ChatHeading {
         this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
         this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
         this.render();
+    }
+
+    async render () {
+        const tpl = await this.generateHeadingTemplate();
+        render(tpl, this);
     }
 
     onOccupantAdded (occupant) {
@@ -63,6 +69,11 @@ export default class MUCHeading extends ChatHeading {
 
     getAndRenderConfigurationForm () {
         this.model.session.set('view', converse.MUC.VIEWS.CONFIG);
+    }
+
+    close (ev) {
+        ev.preventDefault();
+        this.model.close();
     }
 
     destroy (ev) {

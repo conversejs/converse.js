@@ -6,7 +6,7 @@ import tpl_muc_head from './templates/muc-head.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { showModeratorToolsModal } from './utils.js';
+import { destroyMUC, showModeratorToolsModal } from './utils.js';
 import {
     getHeadingDropdownItem,
     getHeadingStandaloneButton,
@@ -65,8 +65,9 @@ export default class MUCHeading extends ChatHeading {
         this.model.session.set('view', converse.MUC.VIEWS.CONFIG);
     }
 
-    destroy () {
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.destroy();
+    destroy (ev) {
+        ev.preventDefault();
+        destroyMUC(this.model);
     }
 
     /**
@@ -187,7 +188,6 @@ export default class MUCHeading extends ChatHeading {
             })
         );
     }
-
 }
 
 api.elements.define('converse-muc-heading', MUCHeading);

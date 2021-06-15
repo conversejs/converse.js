@@ -1,7 +1,5 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import log from '@converse/headless/log';
 import tpl_muc from './templates/muc.js';
-import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 
 
@@ -38,37 +36,6 @@ export default class MUCView extends BaseChatView {
 
     render () {
         return tpl_muc({ 'model': this.model });
-    }
-
-    async destroy () {
-        const messages = [__('Are you sure you want to destroy this groupchat?')];
-        let fields = [
-            {
-                'name': 'challenge',
-                'label': __('Please enter the XMPP address of this groupchat to confirm'),
-                'challenge': this.model.get('jid'),
-                'placeholder': __('name@example.org'),
-                'required': true
-            },
-            {
-                'name': 'reason',
-                'label': __('Optional reason for destroying this groupchat'),
-                'placeholder': __('Reason')
-            },
-            {
-                'name': 'newjid',
-                'label': __('Optional XMPP address for a new groupchat that replaces this one'),
-                'placeholder': __('replacement@example.org')
-            }
-        ];
-        try {
-            fields = await api.confirm(__('Confirm'), messages, fields);
-            const reason = fields.filter(f => f.name === 'reason').pop()?.value;
-            const newjid = fields.filter(f => f.name === 'newjid').pop()?.value;
-            return this.model.sendDestroyIQ(reason, newjid).then(() => this.close());
-        } catch (e) {
-            log.error(e);
-        }
     }
 
     onConnectionStatusChanged () {

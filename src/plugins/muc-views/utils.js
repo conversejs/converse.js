@@ -31,6 +31,38 @@ export function clearHistory (jid) {
     }
 }
 
+export async function destroyMUC (model) {
+    const messages = [__('Are you sure you want to destroy this groupchat?')];
+    let fields = [
+        {
+            'name': 'challenge',
+            'label': __('Please enter the XMPP address of this groupchat to confirm'),
+            'challenge': model.get('jid'),
+            'placeholder': __('name@example.org'),
+            'required': true
+        },
+        {
+            'name': 'reason',
+            'label': __('Optional reason for destroying this groupchat'),
+            'placeholder': __('Reason')
+        },
+        {
+            'name': 'newjid',
+            'label': __('Optional XMPP address for a new groupchat that replaces this one'),
+            'placeholder': __('replacement@example.org')
+        }
+    ];
+    try {
+        fields = await api.confirm(__('Confirm'), messages, fields);
+        const reason = fields.filter(f => f.name === 'reason').pop()?.value;
+        const newjid = fields.filter(f => f.name === 'newjid').pop()?.value;
+        return model.sendDestroyIQ(reason, newjid).then(() => model.close());
+    } catch (e) {
+        log.error(e);
+    }
+}
+
+
 function setMUCDomain (domain, controlboxview) {
     controlboxview.querySelector('converse-rooms-list')
         .model.save('muc_domain', Strophe.getDomainFromJid(domain));
@@ -305,8 +337,7 @@ export function parseMessageForMUCCommands (muc, text) {
             if (!muc.verifyAffiliations(['owner'])) {
                 break;
             }
-            const chatview = _converse.chatboxviews.get(muc.get('jid'));
-            chatview.destroy().catch(e => muc.onCommandError(e));
+            destroyMUC(muc).catch(e => muc.onCommandError(e));
             break;
         }
         case 'help': {

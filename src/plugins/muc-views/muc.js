@@ -22,10 +22,10 @@ export default class MUCView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdateMessageForm);
         this.listenTo(this.model, 'show', this.show);
-        this.listenTo(this.model.session, 'change:connection_status', this.updateAfterTransition);
+        this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
         this.listenTo(this.model.session, 'change:view', this.requestUpdate);
 
-        this.updateAfterTransition();
+        this.onConnectionStatusChanged();
         this.model.maybeShow();
         /**
          * Triggered once a { @link _converse.ChatRoomView } has been opened
@@ -71,7 +71,7 @@ export default class MUCView extends BaseChatView {
         }
     }
 
-    updateAfterTransition () {
+    onConnectionStatusChanged () {
         const conn_status = this.model.session.get('connection_status');
         if (conn_status === converse.ROOMSTATUS.CONNECTING) {
             this.model.session.save({

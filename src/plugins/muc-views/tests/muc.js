@@ -1,4 +1,4 @@
-/*global mock, converse, _ */
+/*global mock, converse */
 
 const $pres = converse.env.$pres;
 const $iq = converse.env.$iq;
@@ -2602,14 +2602,10 @@ describe("Groupchats", function () {
             // have the same attributes values as the original ones.
             const attrs = ['id', 'box_id', 'visible'];
             let new_attrs, old_attrs;
-            for (var i=0; i<attrs.length; i++) {
-                new_attrs = _.map(_.map(newchatboxes.models, 'attributes'), attrs[i]);
-                old_attrs = _.map(_.map(_converse.chatboxes.models, 'attributes'), attrs[i]);
-                // FIXME: should have have to sort here? Order must
-                // probably be the same...
-                // This should be fixed once the controlbox always opens
-                // only on the right.
-                expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
+            for (let i=0; i<attrs.length; i++) {
+                new_attrs = newchatboxes.models.map(m => m.attributes[attrs[i]]);
+                old_attrs = _converse.chatboxes.models.map(m => m.attributes[attrs[i]]);
+                expect(new_attrs.sort()).toEqual(old_attrs.sort());
             }
             done();
         }));
@@ -2619,13 +2615,13 @@ describe("Groupchats", function () {
 
             await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view, 'close').and.callThrough();
+            spyOn(view.model, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
             spyOn(view.model, 'leave');
             spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             const button = await u.waitUntil(() => view.querySelector('.close-chatbox-button'));
             button.click();
-            await u.waitUntil(() => view.close.calls.count());
+            await u.waitUntil(() => view.model.close.calls.count());
             expect(view.model.leave).toHaveBeenCalled();
             await u.waitUntil(() => _converse.api.trigger.calls.count());
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
@@ -4460,7 +4456,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@muc.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge@muc.example.org')).toBe(true);
 
             // However, you can still open MUCs with different domains
             roomspanel.querySelector('.show-add-muc-modal').click();
@@ -4472,7 +4468,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@conference.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge@conference.example.org')).toBe(true);
             done();
         }));
 
@@ -4498,7 +4494,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@muc.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge@muc.example.org')).toBe(true);
 
             // However, you can still open MUCs with different domains
             roomspanel.querySelector('.show-add-muc-modal').click();
@@ -4510,7 +4506,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge\\40conference@muc.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge\\40conference@muc.example.org')).toBe(true);
             done();
         }));
     });

@@ -72,22 +72,6 @@ export default class BaseChatView extends CustomElement {
         api.trigger('chatBoxFocused', this, ev);
     }
 
-    onStatusMessageChanged (item) {
-        this.renderHeading();
-        /**
-         * When a contact's custom status message has changed.
-         * @event _converse#contactStatusMessageChanged
-         * @type {object}
-         * @property { object } contact - The chat buddy
-         * @property { string } message - The message text
-         * @example _converse.api.listen.on('contactStatusMessageChanged', obj => { ... });
-         */
-        api.trigger('contactStatusMessageChanged', {
-            'contact': item.attributes,
-            'message': item.get('status')
-        });
-    }
-
     getBottomPanel () {
         if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
             return this.querySelector('converse-muc-bottom-panel');

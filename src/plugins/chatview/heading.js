@@ -21,6 +21,7 @@ export default class ChatHeading extends ElementView {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         this.debouncedRender = debounce(this.render, 100);
+        this.listenTo(this.model, 'change:status', this.debouncedRender);
         this.listenTo(this.model, 'vcard:change', this.debouncedRender);
         if (this.model.contact) {
             this.listenTo(this.model.contact, 'destroy', this.debouncedRender);

@@ -34,10 +34,11 @@ When leaving a MUC, the message history is deleted. This means that decrypted
 OMEMO messages are gone and cannot be recovered on that device. See [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave).
 
 Removed events:
-* `chatBoxInsertedIntoDOM`
 * `bookmarkViewsInitialized`
-* `rosterGroupsFetched`
+* `chatBoxInsertedIntoDOM`
+* `contactStatusMessageChanged`
 * `messageSend` (use `sendMessage` instead)
+* `rosterGroupsFetched`
 
 The `chatBoxClosed`, `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
 payload and not the `view`.

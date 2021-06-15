@@ -25,7 +25,6 @@ export default class ChatView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:show_help_messages', this.requestUpdate);
-        this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
 
         await this.model.messages.fetched;
         !this.model.get('hidden') && this.afterShown()

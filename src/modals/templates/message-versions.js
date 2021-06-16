@@ -1,7 +1,9 @@
-import dayjs from 'dayjs';
-import { __ } from '../../i18n';
+import { __ } from 'i18n';
 import { html } from "lit";
 import { modal_close_button, modal_header_close_button } from "./buttons.js"
+import { converse } from '@converse/headless/core';
+
+const { dayjs } = converse.env;
 
 
 export default (o) => html`

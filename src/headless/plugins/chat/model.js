@@ -1042,7 +1042,7 @@ const ChatBox = ModelWithContact.extend({
                 // gets scrolled down. We always want to scroll down
                 // when the user writes a message as opposed to when a
                 // message is received.
-                this.model.set('scrolled', false);
+                this.set('scrolled', false);
             } else if (this.isHidden() || this.get('scrolled')) {
                 const settings = {
                     'num_unread': this.get('num_unread') + 1

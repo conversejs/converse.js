@@ -97,7 +97,7 @@ const ChatRoomMixin = {
 
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
-        this.on('change:scrolled', () => !this.get('scrolled') && this.clearUnreadMsgCounter());
+        this.on('change:scrolled', this.onScrolledChanged, this);
         this.on('destroy', this.removeHandlers, this);
 
         await this.restoreSession();

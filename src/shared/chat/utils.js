@@ -19,7 +19,10 @@ export function onScrolledDown (model) {
  * @param { _converse.Message }
  */
 export function getDayIndicator (message) {
-    const messages = message.collection.models;
+    const messages = message.collection?.models;
+    if (!messages) {
+        return;
+    }
     const idx = messages.indexOf(message);
     const prev_message =  messages[idx-1];
     if (!prev_message || dayjs(message.get('time')).isAfter(dayjs(prev_message.get('time')), 'day')) {

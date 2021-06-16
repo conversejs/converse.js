@@ -302,6 +302,7 @@ available) and the amount returned will be no more than the page size.
 You will be able to query for even older messages by scrolling upwards in the chatbox or room
 (the so-called infinite scrolling pattern).
 
+
 autocomplete_add_contact
 ------------------------
 
@@ -1728,6 +1729,34 @@ Items in sync storage are synced by the browser and are available across all ins
 BrowserExtLocal represents the local storage area.
 Items in local storage are local to the machine the extension was installed on
 
+prune_messages_above
+--------------------
+
+* Default: ``undefined``
+* Valid options: Any integer value above 0.
+
+If this option is set to a positive integer, the chat history will be kept to
+that number. As new messages come in, older messages will be deleted to
+maintain the history size.
+
+.. note::
+  When deleting locally stored decrypted OMEMO messages, you will **not** be
+  able to decrypt them again after fetching them from the server archive.
+
+pruning_behavior
+----------------
+
+* Default: ``unscrolled``
+* Valid options: ``unscrolled``, ``scrolled``
+
+By default the chat history will only be pruned when the chat window isn't
+scrolled up (``'unscrolled'``).
+
+If set to ``'scrolled'``, then pruning will also happen when the chat is
+scrolled up. Be aware that this will interfere with MAM-based infinite
+scrolling, and this setting only makes sense when infinite scrolling with MAM
+is disabled.
+
 
 push_app_servers
 ----------------
@@ -1988,6 +2017,7 @@ smacks_max_unacked_stanzas
 This setting relates to `XEP-0198 <https://xmpp.org/extensions/xep-0198.html>`_
 and determines the number of stanzas to be sent before Converse will ask the
 server for acknowledgement of those stanzas.
+
 
 sounds_path
 -----------

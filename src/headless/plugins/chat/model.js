@@ -8,6 +8,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
+import { debouncedPruneHistory, pruneHistory } from '@converse/headless/shared/chat/utils.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -64,7 +65,7 @@ const ChatBox = ModelWithContact.extend({
             this.presence.on('change:show', item => this.onPresenceChanged(item));
         }
         this.on('change:chat_state', this.sendChatState, this);
-        this.on('change:scrolled', () => !this.get('scrolled') && this.clearUnreadMsgCounter());
+        this.on('change:scrolled', this.onScrolledChanged, this);
 
         await this.fetchMessages();
         /**
@@ -89,6 +90,7 @@ const ChatBox = ModelWithContact.extend({
         this.messages = this.getMessagesCollection();
         this.messages.fetched = getOpenPromise();
         this.messages.fetched.then(() => {
+            this.pruneHistoryWhenScrolledDown();
             /**
              * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
              * `sessionStorage` but **NOT** from the server.
@@ -101,11 +103,8 @@ const ChatBox = ModelWithContact.extend({
         this.messages.chatbox = this;
         initStorage(this.messages, this.getMessagesCacheKey());
 
-        this.listenTo(this.messages, 'change:upload', message => {
-            if (message.get('upload') === _converse.SUCCESS) {
-                api.send(this.createMessageStanza(message));
-            }
-        });
+        this.listenTo(this.messages, 'change:upload', this.onMessageUploadChanged, this);
+        this.listenTo(this.messages, 'add', this.onMessageAdded, this);
     },
 
     initUI () {
@@ -242,6 +241,21 @@ const ChatBox = ModelWithContact.extend({
         }
     },
 
+    onMessageUploadChanged (message) {
+        if (message.get('upload') === _converse.SUCCESS) {
+            api.send(this.createMessageStanza(message));
+        }
+    },
+
+    onMessageAdded (message) {
+        if (api.settings.get('prune_messages_above') &&
+            (api.settings.get('pruning_behavior') === 'scrolled' || !this.get('scrolled')) &&
+            !u.isEmptyMessage(message)
+        ) {
+            debouncedPruneHistory(this);
+        }
+    },
+
     async clearMessages () {
         try {
             await this.messages.clearStore();
@@ -314,6 +328,22 @@ const ChatBox = ModelWithContact.extend({
             text = __('%1$s is online', fullname);
         }
         text && this.createMessage({ 'message': text, 'type': 'info' });
+    },
+
+    onScrolledChanged () {
+        if (!this.get('scrolled')) {
+            this.clearUnreadMsgCounter();
+            this.pruneHistoryWhenScrolledDown();
+        }
+    },
+
+    pruneHistoryWhenScrolledDown () {
+        if (!this.ui.get('scrolled') &&
+            api.settings.get('prune_messages_above') &&
+            api.settings.get('pruning_behavior') === 'unscrolled'
+        ) {
+            pruneHistory(this);
+        }
     },
 
     validate (attrs) {

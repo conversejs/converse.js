@@ -190,7 +190,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         const minimized_chats = document.querySelector("converse-minimized-chats")
         const selectUnreadMsgCount = () => minimized_chats.querySelector('#toggle-minimized-chats .unread-message-count');
         const chatbox = _converse.chatboxes.get(sender_jid);
-        chatbox.save('scrolled', true);
+        chatbox.ui.set('scrolled', true);
         _converse.handleMessageStanza(msgFactory());
         await u.waitUntil(() => chatbox.messages.length);
         const view = _converse.chatboxviews.get(sender_jid);

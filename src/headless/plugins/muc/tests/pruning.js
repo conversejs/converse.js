@@ -12,7 +12,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        expect(model.get('scrolled')).toBeFalsy();
+        expect(model.ui.get('scrolled')).toBeFalsy();
 
         model.sendMessage('1st message');
         model.sendMessage('2nd message');
@@ -25,7 +25,7 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => model.messages.length === 4);
         await u.waitUntil(() => model.messages.length === 3, 550);
 
-        model.set('scrolled', true);
+        model.ui.set('scrolled', true);
         model.sendMessage('5th message');
         model.sendMessage('6th message');
         await u.waitUntil(() => model.messages.length === 5);
@@ -33,7 +33,7 @@ describe("A Groupchat Message", function () {
         // Wait long enough to be sure the debounced pruneHistory method didn't fire.
         await new Promise(resolve => setTimeout(resolve, 550));
         expect(model.messages.length).toBe(5);
-        model.set('scrolled', false);
+        model.ui.set('scrolled', false);
         await u.waitUntil(() => model.messages.length === 3, 550);
 
         // Test incoming messages

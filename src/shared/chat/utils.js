@@ -1,9 +1,10 @@
+import debounce from 'lodash/debounce';
 import tpl_new_day from "./templates/new-day.js";
 import { _converse, api, converse } from '@converse/headless/core';
 
 const { dayjs } = converse.env;
 
-export function onScrolledDown (model) {
+function onScrolledDown (model) {
     if (!model.isHidden()) {
         if (api.settings.get('allow_url_history_change')) {
             // Clear location hash if set to one of the messages in our history
@@ -12,6 +13,45 @@ export function onScrolledDown (model) {
         }
     }
 }
+
+/**
+ * Called when the chat content is scrolled up or down.
+ * We want to record when the user has scrolled away from
+ * the bottom, so that we don't automatically scroll away
+ * from what the user is reading when new messages are received.
+ *
+ * Don't call this method directly, instead, call `markScrolled`,
+ * which debounces this method.
+ */
+function _markScrolled (ev) {
+    const el = ev.target;
+    if (el.nodeName.toLowerCase() !== 'converse-chat-content') {
+        return;
+    }
+    let scrolled = true;
+    const is_at_bottom = Math.floor(el.scrollTop) === 0;
+    const is_at_top =
+        Math.ceil(el.clientHeight-el.scrollTop) >= (el.scrollHeight-Math.ceil(el.scrollHeight/20));
+
+    if (is_at_bottom) {
+        scrolled = false;
+        onScrolledDown(el.model);
+    } else if (is_at_top) {
+        /**
+         * Triggered once the chat's message area has been scrolled to the top
+         * @event _converse#chatBoxScrolledUp
+         * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
+         * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
+         */
+        api.trigger('chatBoxScrolledUp', el);
+    }
+    if (el.model.get('scolled') !== scrolled) {
+        el.model.ui.set({ scrolled });
+    }
+}
+
+export const markScrolled = debounce((ev) => _markScrolled(ev), 50);
+
 
 /**
  * Given a message object, returns a TemplateResult indicating a new day if

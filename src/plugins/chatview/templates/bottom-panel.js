@@ -12,7 +12,7 @@ export default (o) => {
     const show_spoiler_button = api.settings.get('visible_toolbar_buttons').spoiler;
     const show_toolbar = api.settings.get('show_toolbar');
     return html`
-        ${ o.model.get('scrolled') && o.model.get('num_unread') ?
+        ${ o.model.ui.get('scrolled') && o.model.get('num_unread') ?
                 html`<div class="new-msgs-indicator" @click=${ev => o.viewUnreadMessages(ev)}>▼ ${ unread_msgs } ▼</div>` : '' }
         ${api.settings.get('show_toolbar') ? html`
             <converse-chat-toolbar

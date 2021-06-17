@@ -277,13 +277,13 @@ describe("Groupchats", function () {
                     <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:47Z" from="juliet@shakespeare.lit"/>
                 </message>`);
 
-            view.model.save('scrolled', true); // hack
+            view.model.ui.set('scrolled', true); // hack
             _converse.connection._dataRecv(mock.createRequest(message));
 
             await u.waitUntil(() => view.model.messages.length);
             const chat_new_msgs_indicator = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
             chat_new_msgs_indicator.click();
-            expect(view.model.get('scrolled')).toBeFalsy();
+            expect(view.model.ui.get('scrolled')).toBeFalsy();
             await u.waitUntil(() => !u.isVisible(chat_new_msgs_indicator));
             done();
         }));

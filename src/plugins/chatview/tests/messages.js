@@ -1197,7 +1197,7 @@ describe("A Chat Message", function () {
             // Create enough messages so that there's a scrollbar.
             const promises = [];
             view.querySelector('.chat-content').scrollTop = 0;
-            view.model.set('scrolled', true);
+            view.model.ui.set('scrolled', true);
 
             for (let i=0; i<20; i++) {
                 _converse.handleMessageStanza($msg({
@@ -1213,7 +1213,7 @@ describe("A Chat Message", function () {
 
             const indicator_el = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
 
-            expect(view.model.get('scrolled')).toBe(true);
+            expect(view.model.ui.get('scrolled')).toBe(true);
             expect(view.querySelector('.chat-content').scrollTop).toBe(0);
             indicator_el.click();
             await u.waitUntil(() => !view.querySelector('.new-msgs-indicator'));

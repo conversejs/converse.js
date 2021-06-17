@@ -33,8 +33,8 @@ const ChatBox = ModelWithContact.extend({
             'message_type': 'chat',
             'nickname': undefined,
             'num_unread': 0,
-            'time_sent': (new Date(0)).toISOString(),
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
+            'time_sent': (new Date(0)).toISOString(),
             'type': _converse.PRIVATE_CHAT_TYPE,
             'url': ''
         }
@@ -65,7 +65,7 @@ const ChatBox = ModelWithContact.extend({
             this.presence.on('change:show', item => this.onPresenceChanged(item));
         }
         this.on('change:chat_state', this.sendChatState, this);
-        this.on('change:scrolled', this.onScrolledChanged, this);
+        this.ui.on('change:scrolled', this.onScrolledChanged, this);
 
         await this.fetchMessages();
         /**
@@ -249,7 +249,7 @@ const ChatBox = ModelWithContact.extend({
 
     onMessageAdded (message) {
         if (api.settings.get('prune_messages_above') &&
-            (api.settings.get('pruning_behavior') === 'scrolled' || !this.get('scrolled')) &&
+            (api.settings.get('pruning_behavior') === 'scrolled' || !this.ui.get('scrolled')) &&
             !u.isEmptyMessage(message)
         ) {
             debouncedPruneHistory(this);
@@ -331,7 +331,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     onScrolledChanged () {
-        if (!this.get('scrolled')) {
+        if (!this.ui.get('scrolled')) {
             this.clearUnreadMsgCounter();
             this.pruneHistoryWhenScrolledDown();
         }
@@ -1072,8 +1072,8 @@ const ChatBox = ModelWithContact.extend({
                 // gets scrolled down. We always want to scroll down
                 // when the user writes a message as opposed to when a
                 // message is received.
-                this.set('scrolled', false);
-            } else if (this.isHidden() || this.get('scrolled')) {
+                this.ui.set('scrolled', false);
+            } else if (this.isHidden() || this.ui.get('scrolled')) {
                 const settings = {
                     'num_unread': this.get('num_unread') + 1
                 };
@@ -1095,7 +1095,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     isScrolledUp () {
-        return this.get('scrolled');
+        return this.ui.get('scrolled');
     }
 });
 

@@ -964,7 +964,7 @@ describe("Chatboxes", function () {
             const view = await mock.openChatBoxFor(_converse, sender_jid)
             const sent_stanzas = [];
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-            view.model.save('scrolled', true);
+            view.model.ui.set('scrolled', true);
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.get('num_unread')).toBe(1);
@@ -1026,7 +1026,7 @@ describe("Chatboxes", function () {
             const sent_stanzas = [];
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
             const chatbox = _converse.chatboxes.get(sender_jid);
-            chatbox.save('scrolled', true);
+            chatbox.ui.set('scrolled', true);
             _converse.windowState = 'hidden';
             const msg = msgFactory();
             _converse.handleMessageStanza(msg);
@@ -1075,7 +1075,7 @@ describe("Chatboxes", function () {
             const sent_stanzas = [];
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
             const chatbox = _converse.chatboxes.get(sender_jid);
-            chatbox.save('scrolled', true);
+            chatbox.ui.set('scrolled', true);
             _converse.windowState = 'hidden';
             const msg = msgFactory();
             _converse.handleMessageStanza(msg);
@@ -1105,7 +1105,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
-            chatbox.save('scrolled', true);
+            chatbox.ui.set('scrolled', true);
             msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
@@ -1186,7 +1186,7 @@ describe("Chatboxes", function () {
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
             const selector = `a.open-chat:contains("${chatbox.get('nickname')}") .msgs-indicator`;
             const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
-            chatbox.save('scrolled', true);
+            chatbox.ui.set('scrolled', true);
             _converse.handleMessageStanza(msgFactory());
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => view.model.messages.length);
@@ -1211,7 +1211,7 @@ describe("Chatboxes", function () {
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, msg);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
             const select_msgs_indicator = () => sizzle(selector, rosterview).pop();
-            chatbox.save('scrolled', true);
+            chatbox.ui.set('scrolled', true);
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => view.model.messages.length);
             expect(select_msgs_indicator().textContent).toBe('1');

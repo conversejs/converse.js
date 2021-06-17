@@ -98,8 +98,8 @@ export default class BaseChatView extends CustomElement {
     scrollDown (ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
-        if (this.model.get('scrolled')) {
-            u.safeSave(this.model, { 'scrolled': false });
+        if (this.model.ui.get('scrolled')) {
+            this.model.ui.set({ 'scrolled': false });
         }
         onScrolledDown(this.model);
     }

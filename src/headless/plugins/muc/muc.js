@@ -97,8 +97,8 @@ const ChatRoomMixin = {
 
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
-        this.on('change:scrolled', this.onScrolledChanged, this);
         this.on('destroy', this.removeHandlers, this);
+        this.ui.on('change:scrolled', this.onScrolledChanged, this);
 
         await this.restoreSession();
         this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
@@ -2585,8 +2585,8 @@ const ChatRoomMixin = {
                 // gets scrolled down. We always want to scroll down
                 // when the user writes a message as opposed to when a
                 // message is received.
-                this.model.set('scrolled', false);
-            } else if (this.isHidden() || this.get('scrolled')) {
+                this.ui.set('scrolled', false);
+            } else if (this.isHidden() || this.ui.get('scrolled')) {
                 const settings = {
                     'num_unread_general': this.get('num_unread_general') + 1
                 };

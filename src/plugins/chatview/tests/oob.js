@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Promise, u } = converse.env;
+const { Strophe, Promise, u } = converse.env;
 
 describe("A Chat Message", function () {
     describe("which contains an OOB URL", function () {
@@ -66,12 +66,13 @@ describe("A Chat Message", function () {
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
 
+            const url = 'https://montague.lit/video.mp4';
             let stanza = u.toStanza(`
                 <message from="${contact_jid}"
                          type="chat"
                          to="romeo@montague.lit/orchard">
                     <body>Have you seen this funny video?</body>
-                    <x xmlns="jabber:x:oob"><url>https://montague.lit/video.mp4</url></x>
+                    <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg video').length, 2000)
@@ -80,8 +81,8 @@ describe("A Chat Message", function () {
             expect(msg.textContent).toEqual('Have you seen this funny video?');
             let media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
-                `<video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video>`);
-
+                `<video controls="" preload="metadata" src="${Strophe.xmlescape(url)}"></video>`+
+                `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(url)}">${Strophe.xmlescape(url)}</a>`);
 
             // If the <url> and <body> contents is the same, don't duplicate.
             stanza = u.toStanza(`
@@ -97,7 +98,8 @@ describe("A Chat Message", function () {
             expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you seen this funny video?');
             media = view.querySelector('.chat-msg:last-child .chat-msg__media');
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
-                `<video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video>`);
+                `<video controls="" preload="metadata" src="${Strophe.xmlescape(url)}"></video>`+
+                `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(url)}">${Strophe.xmlescape(url)}</a>`);
             done();
         }));
 

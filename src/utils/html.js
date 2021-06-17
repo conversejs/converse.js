@@ -178,7 +178,7 @@ u.getOOBURLMarkup = function (_converse, url) {
         return url;
     }
     if (u.isVideoURL(uri)) {
-        return tpl_video({ url });
+        return tpl_video(url);
     } else if (u.isAudioURL(uri)) {
         return renderAudioURL(url);
     } else if (u.isImageURL(uri)) {

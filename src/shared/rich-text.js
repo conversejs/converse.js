@@ -14,7 +14,6 @@ import {
 import {
     filterQueryParamsFromURL,
     getHyperlinkTemplate,
-    getURI,
     isAudioDomainAllowed,
     isAudioURL,
     isImageDomainAllowed,
@@ -118,7 +117,7 @@ export class RichText extends String {
                     'onLoad': this.onImgClick
                 });
             } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
-                template = tpl_video({ 'url': filtered_url });
+                template = tpl_video(filtered_url);
             } else if (this.embed_audio && isAudioURL(url_text) && isAudioDomainAllowed(url_text)) {
                 template = tpl_audio(filtered_url);
             } else {

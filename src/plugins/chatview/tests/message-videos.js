@@ -17,15 +17,16 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content video').length, 1000)
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
-            `<video controls="" preload="metadata" style="max-height: 50vh" src="${message}"></video>`);
+            `<video controls="" preload="metadata" src="${message}"></video>`+
+            `<a target="_blank" rel="noopener" href="${message}">${message}</a>`);
 
         message += "?param1=val1&param2=val2";
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content video').length === 2, 1000);
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
-            `<video controls="" preload="metadata" style="max-height: 50vh" src="${Strophe.xmlescape(message)}"></video>`);
-
+            `<video controls="" preload="metadata" src="${Strophe.xmlescape(message)}"></video>`+
+            `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(message)}">${Strophe.xmlescape(message)}</a>`);
         done();
     }));
 
@@ -66,7 +67,8 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content video').length, 1000)
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
-            `<video controls="" preload="metadata" style="max-height: 50vh" src="${message}"></video>`);
+            `<video controls="" preload="metadata" src="${message}"></video>`+
+            `<a target="_blank" rel="noopener" href="${message}">${message}</a>`);
         done();
     }));
 });

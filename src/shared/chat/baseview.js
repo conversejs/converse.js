@@ -1,8 +1,7 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless/core';
 import { onScrolledDown } from './utils.js';
 
-const u = converse.env.utils;
 
 export default class BaseChatView extends CustomElement {
 

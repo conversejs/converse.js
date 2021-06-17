@@ -4,7 +4,7 @@ import { _converse, api, converse } from '@converse/headless/core';
 
 const { dayjs } = converse.env;
 
-function onScrolledDown (model) {
+export function onScrolledDown (model) {
     if (!model.isHidden()) {
         if (api.settings.get('allow_url_history_change')) {
             // Clear location hash if set to one of the messages in our history

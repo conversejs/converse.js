@@ -240,6 +240,7 @@ export default class Message extends CustomElement {
                     ?is_me_message="${this.model.isMeCommand()}"
                     ?show_images="${api.settings.get('show_images_inline')}"
                     ?embed_videos="${api.settings.get('embed_videos')}"
+                    ?embed_audio="${api.settings.get('embed_audio')}"
                     text="${text}"></converse-chat-message-body>
                 ${ (this.model.get('received') && !this.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
                 ${ (this.model.get('edited')) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }

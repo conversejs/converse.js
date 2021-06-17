@@ -94,6 +94,20 @@ export function isImageURL (url) {
     return regex?.test(url) || isURLWithImageExtension(url);
 }
 
+export function isAudioDomainAllowed (url) {
+    const embed_audio = api.settings.get('embed_audio');
+    if (!Array.isArray(embed_audio)) {
+        return embed_audio;
+    }
+    try {
+        const audio_domain = getURI(url).domain();
+        return embed_audio.includes(audio_domain);
+    } catch (error) {
+        log.debug(error);
+        return false;
+    }
+}
+
 export function isVideoDomainAllowed (url) {
     const embed_videos = api.settings.get('embed_videos');
     if (!Array.isArray(embed_videos)) {
@@ -122,7 +136,7 @@ export function isImageDomainAllowed (url) {
     }
 }
 
-function getFileName (uri) {
+export function getFileName (uri) {
     try {
         return decodeURI(uri.filename());
     } catch (error) {
@@ -131,12 +145,8 @@ function getFileName (uri) {
     }
 }
 
-function renderAudioURL (_converse, uri) {
-    const { __ } = _converse;
-    return tpl_audio({
-        'url': uri.toString(),
-        'label_download': __('Download audio file "%1$s"', getFileName(uri))
-    });
+function renderAudioURL (url) {
+    return tpl_audio(url);
 }
 
 function renderImageURL (_converse, uri) {
@@ -170,7 +180,7 @@ u.getOOBURLMarkup = function (_converse, url) {
     if (u.isVideoURL(uri)) {
         return tpl_video({ url });
     } else if (u.isAudioURL(uri)) {
-        return renderAudioURL(_converse, uri);
+        return renderAudioURL(url);
     } else if (u.isImageURL(uri)) {
         return renderImageURL(_converse, uri);
     } else {

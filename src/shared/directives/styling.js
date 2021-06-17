@@ -14,7 +14,7 @@ class StylingDirective extends Directive {
             txt,
             offset,
             mentions,
-            Object.assign(options, { 'show_images': false, 'embed_videos': false })
+            Object.assign(options, { 'show_images': false, 'embed_videos': false, 'embed_audio': false })
         );
         return html`${until(transform(t), html`${t}`)}`;
     }

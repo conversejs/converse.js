@@ -1,7 +1,8 @@
 import URI from 'urijs';
 import log from '@converse/headless/log';
+import tpl_audio from 'templates/audio.js';
 import tpl_image from 'templates/image.js';
-import tpl_video from '../templates/video.js';
+import tpl_video from 'templates/video.js';
 import { _converse, api } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import {
@@ -13,8 +14,11 @@ import {
 import {
     filterQueryParamsFromURL,
     getHyperlinkTemplate,
-    isImageURL,
+    getURI,
+    isAudioDomainAllowed,
+    isAudioURL,
     isImageDomainAllowed,
+    isImageURL,
     isVideoDomainAllowed,
     isVideoURL
 } from 'utils/html';
@@ -66,6 +70,8 @@ export class RichText extends String {
      */
     constructor (text, offset = 0, mentions = [], options = {}) {
         super(text);
+        this.embed_audio = options?.embed_audio;
+        this.embed_videos = options?.embed_videos;
         this.mentions = mentions;
         this.nick = options?.nick;
         this.offset = offset;
@@ -76,7 +82,6 @@ export class RichText extends String {
         this.references = [];
         this.render_styling = options?.render_styling;
         this.show_images = options?.show_images;
-        this.embed_videos = options?.embed_videos;
     }
 
     /**
@@ -114,6 +119,8 @@ export class RichText extends String {
                 });
             } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
                 template = tpl_video({ 'url': filtered_url });
+            } else if (this.embed_audio && isAudioURL(url_text) && isAudioDomainAllowed(url_text)) {
+                template = tpl_audio(filtered_url);
             } else {
                 template = getHyperlinkTemplate(filtered_url);
             }

@@ -793,6 +793,17 @@ domain_placeholder
 The placeholder text shown in the domain input on the registration form.
 
 
+embed_audio
+-----------
+
+* Default:  ``true``
+
+If set to ``false``, audio files won't be embedded in chats, instead only their links will be shown.
+
+It also accepts an array strings of whitelisted domain names to only render videos that belong to those domains.
+E.g. ``['conversejs.org']``
+
+
 embed_videos
 ------------
 

@@ -4,6 +4,8 @@ import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
 
+import './styles/message-body.scss';
+
 
 export default class MessageBody extends CustomElement {
 
@@ -13,6 +15,7 @@ export default class MessageBody extends CustomElement {
             is_me_message: { type: Boolean },
             show_images: { type: Boolean },
             embed_videos: { type: Boolean },
+            embed_audio: { type: Boolean },
             text: { type: String },
         }
     }
@@ -31,12 +34,13 @@ export default class MessageBody extends CustomElement {
         const offset = 0;
         const mentions = this.model.get('references');
         const options = {
+            'embed_audio': this.embed_audio,
+            'embed_videos': this.embed_videos,
             'nick': this.model.collection.chatbox.get('nick'),
             'onImgClick': this.onImgClick,
             'onImgLoad': () => this.onImgLoad(),
             'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
             'show_images': this.show_images,
-            'embed_videos': this.embed_videos,
             'show_me_message': true
         }
         return renderRichText(this.text, offset, mentions, options, callback);

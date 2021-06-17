@@ -37,6 +37,7 @@ converse.plugins.add('converse-chatview', {
             'auto_focus': true,
             'debounced_content_rendering': true,
             'embed_videos': true,
+            'embed_audio': true,
             'filter_url_query_params': null,
             'image_urls_regex': null,
             'message_limit': 0,

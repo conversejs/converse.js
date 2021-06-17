@@ -8,11 +8,14 @@ async function transform (t) {
     return t.payload;
 }
 
-
 class StylingDirective extends Directive {
-
     render (txt, offset, mentions, options) { // eslint-disable-line class-methods-use-this
-        const t = new RichText(txt, offset, mentions, Object.assign(options, { 'show_images': false }));
+        const t = new RichText(
+            txt,
+            offset,
+            mentions,
+            Object.assign(options, { 'show_images': false, 'embed_videos': false })
+        );
         return html`${until(transform(t), html`${t}`)}`;
     }
 }

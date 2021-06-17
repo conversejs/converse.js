@@ -3,24 +3,24 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
  */
-import URI from "urijs";
-import isFunction from "lodash-es/isFunction";
+import URI from 'urijs';
+import isFunction from 'lodash-es/isFunction';
 import log from '@converse/headless/log';
-import tpl_audio from  "../templates/audio.js";
-import tpl_file from "../templates/file.js";
-import tpl_form_captcha from "../templates/form_captcha.js";
-import tpl_form_checkbox from "../templates/form_checkbox.js";
-import tpl_form_help from "../templates/form_help.js";
-import tpl_form_input from "../templates/form_input.js";
-import tpl_form_select from "../templates/form_select.js";
-import tpl_form_textarea from "../templates/form_textarea.js";
-import tpl_form_url from "../templates/form_url.js";
-import tpl_form_username from "../templates/form_username.js";
-import tpl_image from "../templates/image.js";
-import tpl_video from "../templates/video.js";
-import u from "../headless/utils/core";
-import { api, converse } from  "@converse/headless/core";
-import { html, render } from "lit";
+import tpl_audio from 'templates/audio.js';
+import tpl_video from 'templates/video.js';
+import tpl_file from 'templates/file.js';
+import tpl_form_captcha from '../templates/form_captcha.js';
+import tpl_form_checkbox from '../templates/form_checkbox.js';
+import tpl_form_help from '../templates/form_help.js';
+import tpl_form_input from '../templates/form_input.js';
+import tpl_form_select from '../templates/form_select.js';
+import tpl_form_textarea from '../templates/form_textarea.js';
+import tpl_form_url from '../templates/form_url.js';
+import tpl_form_username from '../templates/form_username.js';
+import tpl_hyperlink from 'templates/hyperlink.js';
+import u from '../headless/utils/core';
+import { api, converse } from '@converse/headless/core';
+import { render } from 'lit';
 
 const { sizzle } = converse.env;
 
@@ -48,25 +48,24 @@ function slideOutWrapup (el) {
     /* Wrapup function for slideOut. */
     el.removeAttribute('data-slider-marker');
     el.classList.remove('collapsed');
-    el.style.overflow = "";
-    el.style.height = "";
+    el.style.overflow = '';
+    el.style.height = '';
 }
 
 export function getURI (url) {
     try {
-        return (url instanceof URI) ? url : (new URI(url));
+        return url instanceof URI ? url : new URI(url);
     } catch (error) {
         log.debug(error);
         return null;
     }
 }
 
-u.getURI = getURI;
-
-
 function checkTLS (uri) {
-    return window.location.protocol === 'http:' ||
-           window.location.protocol === 'https:' && uri.protocol().toLowerCase() === "https";
+    return (
+        window.location.protocol === 'http:' ||
+        (window.location.protocol === 'https:' && uri.protocol().toLowerCase() === 'https')
+    );
 }
 
 function checkFileTypes (types, url) {
@@ -78,16 +77,38 @@ function checkFileTypes (types, url) {
     return !!types.filter(ext => filename.endsWith(ext)).length;
 }
 
-u.isAudioURL = url => checkFileTypes(['.ogg', '.mp3', '.m4a'], url);
-u.isVideoURL = url => checkFileTypes(['.mp4', '.webm'], url);
-
-u.isURLWithImageExtension = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
-
-u.isImageURL = url => {
-    const regex = api.settings.get('image_urls_regex');
-    return regex?.test(url) || u.isURLWithImageExtension(url);
+export function isURLWithImageExtension (url) {
+    return checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
 }
-u.isImageDomainAllowed = url => {
+
+export function isAudioURL (url) {
+    return checkFileTypes(['.ogg', '.mp3', '.m4a'], url);
+}
+
+export function isVideoURL (url) {
+    return checkFileTypes(['.mp4', '.webm'], url);
+}
+
+export function isImageURL (url) {
+    const regex = api.settings.get('image_urls_regex');
+    return regex?.test(url) || isURLWithImageExtension(url);
+}
+
+export function isVideoDomainAllowed (url) {
+    const embed_videos = api.settings.get('embed_videos');
+    if (!Array.isArray(embed_videos)) {
+        return embed_videos;
+    }
+    try {
+        const video_domain = getURI(url).domain();
+        return embed_videos.includes(video_domain);
+    } catch (error) {
+        log.debug(error);
+        return false;
+    }
+}
+
+export function isImageDomainAllowed (url) {
     const show_images_inline = api.settings.get('show_images_inline');
     if (!Array.isArray(show_images_inline)) {
         return show_images_inline;
@@ -115,7 +136,7 @@ function renderAudioURL (_converse, uri) {
     return tpl_audio({
         'url': uri.toString(),
         'label_download': __('Download audio file "%1$s"', getFileName(uri))
-    })
+    });
 }
 
 function renderImageURL (_converse, uri) {
@@ -123,7 +144,7 @@ function renderImageURL (_converse, uri) {
     return tpl_file({
         'url': uri.toString(),
         'label_download': __('Download image file "%1$s"', getFileName(uri))
-    })
+    });
 }
 
 function renderFileURL (_converse, uri) {
@@ -131,7 +152,7 @@ function renderFileURL (_converse, uri) {
     return tpl_file({
         'url': uri.toString(),
         'label_download': __('Download file "%1$s"', getFileName(uri))
-    })
+    });
 }
 
 /**
@@ -147,7 +168,7 @@ u.getOOBURLMarkup = function (_converse, url) {
         return url;
     }
     if (u.isVideoURL(uri)) {
-        return tpl_video({url})
+        return tpl_video({ url });
     } else if (u.isAudioURL(uri)) {
         return renderAudioURL(_converse, uri);
     } else if (u.isImageURL(uri)) {
@@ -155,8 +176,7 @@ u.getOOBURLMarkup = function (_converse, url) {
     } else {
         return renderFileURL(_converse, uri);
     }
-}
-
+};
 
 /**
  * Return the height of the passed in DOM element,
@@ -167,48 +187,47 @@ u.getOOBURLMarkup = function (_converse, url) {
  */
 u.calculateElementHeight = function (el) {
     return Array.from(el.children).reduce((result, child) => result + child.offsetHeight, 0);
-}
+};
 
-u.getNextElement = function (el, selector='*') {
+u.getNextElement = function (el, selector = '*') {
     let next_el = el.nextElementSibling;
     while (next_el !== null && !sizzle.matchesSelector(next_el, selector)) {
         next_el = next_el.nextElementSibling;
     }
     return next_el;
-}
-
-u.getPreviousElement = function (el, selector='*') {
-    let prev_el = el.previousElementSibling;
-    while (prev_el !== null && !sizzle.matchesSelector(prev_el, selector)) {
-        prev_el = prev_el.previousElementSibling
-    }
-    return prev_el;
-}
-
-u.getFirstChildElement = function (el, selector='*') {
-    let first_el = el.firstElementChild;
-    while (first_el !== null && !sizzle.matchesSelector(first_el, selector)) {
-        first_el = first_el.nextElementSibling
-    }
-    return first_el;
-}
-
-u.getLastChildElement = function (el, selector='*') {
-    let last_el = el.lastElementChild;
-    while (last_el !== null && !sizzle.matchesSelector(last_el, selector)) {
-        last_el = last_el.previousElementSibling
-    }
-    return last_el;
-}
-
-u.hasClass = function (className, el) {
-    return (el instanceof Element) && el.classList.contains(className);
 };
 
+u.getPreviousElement = function (el, selector = '*') {
+    let prev_el = el.previousElementSibling;
+    while (prev_el !== null && !sizzle.matchesSelector(prev_el, selector)) {
+        prev_el = prev_el.previousElementSibling;
+    }
+    return prev_el;
+};
+
+u.getFirstChildElement = function (el, selector = '*') {
+    let first_el = el.firstElementChild;
+    while (first_el !== null && !sizzle.matchesSelector(first_el, selector)) {
+        first_el = first_el.nextElementSibling;
+    }
+    return first_el;
+};
+
+u.getLastChildElement = function (el, selector = '*') {
+    let last_el = el.lastElementChild;
+    while (last_el !== null && !sizzle.matchesSelector(last_el, selector)) {
+        last_el = last_el.previousElementSibling;
+    }
+    return last_el;
+};
+
+u.hasClass = function (className, el) {
+    return el instanceof Element && el.classList.contains(className);
+};
 
 u.toggleClass = function (className, el) {
     u.hasClass(className, el) ? u.removeClass(className, el) : u.addClass(className, el);
-}
+};
 
 /**
  * Add a class to an element.
@@ -217,9 +236,9 @@ u.toggleClass = function (className, el) {
  * @param {Element} el
  */
 u.addClass = function (className, el) {
-    (el instanceof Element) && el.classList.add(className);
+    el instanceof Element && el.classList.add(className);
     return el;
-}
+};
 
 /**
  * Remove a class from an element.
@@ -228,30 +247,30 @@ u.addClass = function (className, el) {
  * @param {Element} el
  */
 u.removeClass = function (className, el) {
-    (el instanceof Element) && el.classList.remove(className);
+    el instanceof Element && el.classList.remove(className);
     return el;
-}
+};
 
 u.removeElement = function (el) {
-    (el instanceof Element) && el.parentNode && el.parentNode.removeChild(el);
+    el instanceof Element && el.parentNode && el.parentNode.removeChild(el);
     return el;
-}
+};
 
 u.getElementFromTemplateResult = function (tr) {
     const div = document.createElement('div');
     render(tr, div);
     return div.firstElementChild;
-}
+};
 
 u.showElement = el => {
     u.removeClass('collapsed', el);
     u.removeClass('hidden', el);
-}
+};
 
 u.hideElement = function (el) {
-    (el instanceof Element) && el.classList.add('hidden');
+    el instanceof Element && el.classList.add('hidden');
     return el;
-}
+};
 
 u.ancestor = function (el, selector) {
     let parent = el;
@@ -259,7 +278,7 @@ u.ancestor = function (el, selector) {
         parent = parent.parentElement;
     }
     return parent;
-}
+};
 
 /**
  * Return the element's siblings until one matches the selector.
@@ -276,7 +295,7 @@ u.nextUntil = function (el, selector) {
         sibling_el = sibling_el.nextElementSibling;
     }
     return matches;
-}
+};
 
 /**
  * Helper method that replace HTML-escaped symbols with equivalent characters
@@ -293,37 +312,10 @@ u.unescapeHTML = function (string) {
 
 u.escapeHTML = function (string) {
     return string
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-};
-
-u.convertToImageTag = function (url, onLoad, onClick) {
-    return tpl_image({url, onClick, onLoad});
-};
-
-
-function onClickXMPPURI (ev) {
-    ev.preventDefault();
-    api.rooms.open(ev.target.href);
-}
-
-u.convertURIoHyperlink = function (uri, urlAsTyped) {
-    let normalized_url = uri.normalize()._string;
-    const pretty_url = uri._parts.urn ? normalized_url : uri.readable();
-    const visible_url = urlAsTyped || pretty_url;
-    if (!uri._parts.protocol && !normalized_url.startsWith('http://') && !normalized_url.startsWith('https://')) {
-        normalized_url = 'http://' + normalized_url;
-    }
-    if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-        return html`
-            <a target="_blank"
-               rel="noopener"
-               @click=${onClickXMPPURI}
-               href="${normalized_url}">${visible_url}</a>`;
-    }
-    return html`<a target="_blank" rel="noopener" href="${normalized_url}">${visible_url}</a>`;
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 };
 
 function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
@@ -340,23 +332,23 @@ function isUrlValid (urlString) {
     }
 }
 
-u.convertUrlToHyperlink = function (url) {
+export function getHyperlinkTemplate (url) {
     const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
     const uri = getURI(url);
     if (uri !== null && isUrlValid(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
-        return this.convertURIoHyperlink(uri, url);
+        return tpl_hyperlink(uri, url);
     }
     return url;
-};
+}
 
-u.filterQueryParamsFromURL = function (url) {
-    const paramsArray = api.settings.get("filter_url_query_params");
+export function filterQueryParamsFromURL (url) {
+    const paramsArray = api.settings.get('filter_url_query_params');
     if (!paramsArray) return url;
     const parsed_uri = getURI(url);
     return parsed_uri.removeQuery(paramsArray).toString();
-};
+}
 
-u.slideInAllElements = function (elements, duration=300) {
+u.slideInAllElements = function (elements, duration = 300) {
     return Promise.all(Array.from(elements).map(e => u.slideIn(e, duration)));
 };
 
@@ -368,7 +360,6 @@ u.slideToggleElement = function (el, duration) {
     }
 };
 
-
 /**
  * Shows/expands an element by sliding it out of itself
  * @private
@@ -376,10 +367,10 @@ u.slideToggleElement = function (el, duration) {
  * @param { HTMLElement } el - The HTML string
  * @param { Number } duration - The duration amount in milliseconds
  */
-u.slideOut = function (el, duration=200) {
+u.slideOut = function (el, duration = 200) {
     return new Promise((resolve, reject) => {
         if (!el) {
-            const err = "An element needs to be passed in to slideOut"
+            const err = 'An element needs to be passed in to slideOut';
             log.warn(err);
             reject(new Error(err));
             return;
@@ -390,7 +381,8 @@ u.slideOut = function (el, duration=200) {
             window.cancelAnimationFrame(marker);
         }
         const end_height = u.calculateElementHeight(el);
-        if (window.converse_disable_effects) { // Effects are disabled (for tests)
+        if (window.converse_disable_effects) {
+            // Effects are disabled (for tests)
             el.style.height = end_height + 'px';
             slideOutWrapup(el);
             resolve();
@@ -401,25 +393,22 @@ u.slideOut = function (el, duration=200) {
             return;
         }
 
-        const steps = duration/17; // We assume 17ms per animation which is ~60FPS
+        const steps = duration / 17; // We assume 17ms per animation which is ~60FPS
         let height = 0;
 
         function draw () {
-            height += end_height/steps;
+            height += end_height / steps;
             if (height < end_height) {
                 el.style.height = height + 'px';
-                el.setAttribute(
-                    'data-slider-marker',
-                    window.requestAnimationFrame(draw)
-                );
+                el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
             } else {
                 // We recalculate the height to work around an apparent
                 // browser bug where browsers don't know the correct
                 // offsetHeight beforehand.
                 el.removeAttribute('data-slider-marker');
                 el.style.height = u.calculateElementHeight(el) + 'px';
-                el.style.overflow = "";
-                el.style.height = "";
+                el.style.overflow = '';
+                el.style.height = '';
                 resolve();
             }
         }
@@ -427,25 +416,23 @@ u.slideOut = function (el, duration=200) {
         el.style.overflow = 'hidden';
         el.classList.remove('hidden');
         el.classList.remove('collapsed');
-        el.setAttribute(
-            'data-slider-marker',
-            window.requestAnimationFrame(draw)
-        );
+        el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
     });
 };
 
-u.slideIn = function (el, duration=200) {
+u.slideIn = function (el, duration = 200) {
     /* Hides/collapses an element by sliding it into itself. */
     return new Promise((resolve, reject) => {
         if (!el) {
-            const err = "An element needs to be passed in to slideIn";
+            const err = 'An element needs to be passed in to slideIn';
             log.warn(err);
             return reject(new Error(err));
         } else if (u.hasClass('collapsed', el)) {
             return resolve(el);
-        } else if (window.converse_disable_effects) { // Effects are disabled (for tests)
+        } else if (window.converse_disable_effects) {
+            // Effects are disabled (for tests)
             el.classList.add('collapsed');
-            el.style.height = "";
+            el.style.height = '';
             return resolve(el);
         }
         const marker = el.getAttribute('data-slider-marker');
@@ -454,30 +441,24 @@ u.slideIn = function (el, duration=200) {
             window.cancelAnimationFrame(marker);
         }
         const original_height = el.offsetHeight,
-             steps = duration/17; // We assume 17ms per animation which is ~60FPS
+            steps = duration / 17; // We assume 17ms per animation which is ~60FPS
         let height = original_height;
 
         el.style.overflow = 'hidden';
 
         function draw () {
-            height -= original_height/steps;
+            height -= original_height / steps;
             if (height > 0) {
                 el.style.height = height + 'px';
-                el.setAttribute(
-                    'data-slider-marker',
-                    window.requestAnimationFrame(draw)
-                );
+                el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
             } else {
                 el.removeAttribute('data-slider-marker');
                 el.classList.add('collapsed');
-                el.style.height = "";
+                el.style.height = '';
                 resolve(el);
             }
         }
-        el.setAttribute(
-            'data-slider-marker',
-            window.requestAnimationFrame(draw)
-        );
+        el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
     });
 };
 
@@ -490,7 +471,7 @@ function afterAnimationEnds (el, callback) {
 
 u.isInDOM = function (el) {
     return document.querySelector('body').contains(el);
-}
+};
 
 u.isVisible = function (el) {
     if (el === null) {
@@ -503,10 +484,9 @@ u.isVisible = function (el) {
     return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
 };
 
-
 u.fadeIn = function (el, callback) {
     if (!el) {
-        log.warn("An element needs to be passed in to fadeIn");
+        log.warn('An element needs to be passed in to fadeIn');
     }
     if (window.converse_disable_effects) {
         el.classList.remove('hidden');
@@ -515,14 +495,13 @@ u.fadeIn = function (el, callback) {
     if (u.hasClass('hidden', el)) {
         el.classList.add('visible');
         el.classList.remove('hidden');
-        el.addEventListener("webkitAnimationEnd", () => afterAnimationEnds(el, callback));
-        el.addEventListener("animationend", () => afterAnimationEnds(el, callback));
-        el.addEventListener("oanimationend", () => afterAnimationEnds(el, callback));
+        el.addEventListener('webkitAnimationEnd', () => afterAnimationEnds(el, callback));
+        el.addEventListener('animationend', () => afterAnimationEnds(el, callback));
+        el.addEventListener('oanimationend', () => afterAnimationEnds(el, callback));
     } else {
         afterAnimationEnds(el, callback);
     }
 };
-
 
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
@@ -534,8 +513,7 @@ u.fadeIn = function (el, callback) {
  * @returns { TemplateResult }
  */
 u.xForm2TemplateResult = function (field, stanza, options) {
-    if (field.getAttribute('type') === 'list-single' ||
-        field.getAttribute('type') === 'list-multi') {
+    if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
         const values = u.queryChildren(field, 'value').map(el => el?.textContent);
         const options = u.queryChildren(field, 'option').map(option => {
             const value = option.querySelector('value')?.textContent;
@@ -550,13 +528,13 @@ u.xForm2TemplateResult = function (field, stanza, options) {
             options,
             'id': u.getUniqueId(),
             'label': field.getAttribute('label'),
-            'multiple': (field.getAttribute('type') === 'list-multi'),
+            'multiple': field.getAttribute('type') === 'list-multi',
             'name': field.getAttribute('var'),
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'fixed') {
         const text = field.querySelector('value')?.textContent;
-        return tpl_form_help({text});
+        return tpl_form_help({ text });
     } else if (field.getAttribute('type') === 'jid-multi') {
         return tpl_form_textarea({
             'name': field.getAttribute('var'),
@@ -570,7 +548,7 @@ u.xForm2TemplateResult = function (field, stanza, options) {
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
-            'checked': (value === "1" || value === "true") && 'checked="1"' || '',
+            'checked': ((value === '1' || value === 'true') && 'checked="1"') || '',
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'url') {
@@ -580,16 +558,17 @@ u.xForm2TemplateResult = function (field, stanza, options) {
         });
     } else if (field.getAttribute('var') === 'username') {
         return tpl_form_username({
-            'domain': ' @'+options.domain,
+            'domain': ' @' + options.domain,
             'name': field.getAttribute('var'),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')
         });
-    } else if (field.getAttribute('var') === 'ocr') { // Captcha
+    } else if (field.getAttribute('var') === 'ocr') {
+        // Captcha
         const uri = field.querySelector('uri');
-        const el = sizzle('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]', stanza)[0];
+        const el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
         return tpl_form_captcha({
             'label': field.getAttribute('label'),
             'name': field.getAttribute('var'),
@@ -611,6 +590,16 @@ u.xForm2TemplateResult = function (field, stanza, options) {
             'value': field.querySelector('value')?.textContent
         });
     }
-}
+};
+
+Object.assign(u, {
+    filterQueryParamsFromURL,
+    getURI,
+    isAudioURL,
+    isImageURL,
+    isImageDomainAllowed,
+    isURLWithImageExtension,
+    isVideoURL
+});
 
 export default u;

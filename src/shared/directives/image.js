@@ -1,7 +1,7 @@
 import URI from 'urijs';
 import { AsyncDirective } from 'lit/async-directive.js';
-import { converse } from '@converse/headless/core';
 import { directive } from 'lit/directive.js';
+import { getHyperlinkTemplate, isURLWithImageExtension } from 'utils/html.js';
 import { html } from 'lit';
 
 class ImageDirective extends AsyncDirective {
@@ -17,9 +17,8 @@ class ImageDirective extends AsyncDirective {
     }
 
     onError (src, href, onLoad, onClick) {
-        const u = converse.env.utils;
-        if (u.isURLWithImageExtension(src)) {
-            this.setValue(u.convertUrlToHyperlink(href));
+        if (isURLWithImageExtension(src)) {
+            this.setValue(getHyperlinkTemplate(href));
         } else {
             // Before giving up and falling back to just rendering a hyperlink,
             // we attach `.png` and try one more time.

@@ -793,6 +793,17 @@ domain_placeholder
 The placeholder text shown in the domain input on the registration form.
 
 
+embed_videos
+------------
+
+* Default:  ``true``
+
+If set to ``false``, videos won't be rendered in chats, instead only their links will be shown.
+
+It also accepts an array strings of whitelisted domain names to only render videos that belong to those domains.
+E.g. ``['imgur.com', 'imgbb.com']``
+
+
 emoji_categories
 ----------------
 
@@ -1953,8 +1964,8 @@ show_images_inline
 If set to ``false``, images won't be rendered in chats, instead only their links will be shown.
 
 It also accepts an array strings of whitelisted domain names to only render images that belong to those domains.
-
 E.g. ``['imgur.com', 'imgbb.com']``
+
 
 show_retraction_warning
 -----------------------

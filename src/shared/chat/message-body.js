@@ -12,6 +12,7 @@ export default class MessageBody extends CustomElement {
             model: { type: Object },
             is_me_message: { type: Boolean },
             show_images: { type: Boolean },
+            embed_videos: { type: Boolean },
             text: { type: String },
         }
     }
@@ -35,6 +36,7 @@ export default class MessageBody extends CustomElement {
             'onImgLoad': () => this.onImgLoad(),
             'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
             'show_images': this.show_images,
+            'embed_videos': this.embed_videos,
             'show_me_message': true
         }
         return renderRichText(this.text, offset, mentions, options, callback);

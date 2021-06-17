@@ -90,14 +90,14 @@ u.isImageURL = url => {
 u.isImageDomainAllowed = url => {
     const show_images_inline = api.settings.get('show_images_inline');
     if (!Array.isArray(show_images_inline)) {
-        return true;
+        return show_images_inline;
     }
     try {
         const image_domain = getURI(url).domain();
         return show_images_inline.includes(image_domain);
     } catch (error) {
         log.debug(error);
-        return true;
+        return false;
     }
 }
 

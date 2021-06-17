@@ -52,6 +52,22 @@ describe("A Chat Message", function () {
         done();
     }));
 
+    it("will not render images if show_images_inline is false",
+            mock.initConverse(['chatBoxesFetched'], {'show_images_inline': false}, async function (done, _converse) {
+        await mock.waitForRoster(_converse, 'current');
+        const base_url = 'https://conversejs.org';
+        const message = base_url+"/logo/conversejs-filled.svg";
+
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        await mock.sendMessage(view, message);
+        const sel = '.chat-content .chat-msg:last .chat-msg__text';
+        await u.waitUntil(() => sizzle(sel).pop().innerHTML.replace(/<!-.*?->/g, '').trim() === message);
+        expect(true).toBe(true);
+        done();
+    }));
+
     it("will render images from approved URLs only",
         mock.initConverse(
             ['chatBoxesFetched'], {'show_images_inline': ['conversejs.org']},

@@ -11,6 +11,15 @@ export function pruneHistory (model) {
             if (non_empty_messages.length > max_history) {
                 while (non_empty_messages.length > max_history) {
                     non_empty_messages.shift().destroy();
+                    /**
+                     * Triggered once the message history has been pruned, i.e.
+                     * once older messages have been removed to keep the
+                     * number of messages below the value set in `prune_messages_above`.
+                     * @event _converse#historyPruned
+                     * @type { _converse.ChatBox | _converse.ChatRoom }
+                     * @example _converse.api.listen.on('historyPruned', this => { ... });
+                     */
+                    api.trigger('historyPruned', model);
                 }
             }
         }

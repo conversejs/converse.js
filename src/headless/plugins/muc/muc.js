@@ -137,7 +137,8 @@ const ChatRoomMixin = {
             await this.fetchMessages().catch(e => log.error(e));
             return true;
         } else {
-            this.clearCache();
+            this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+            this.clearOccupantsCache();
             return false;
         }
     },
@@ -193,13 +194,13 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#rejoin
      */
     rejoin () {
+        this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
         this.registerHandlers();
-        this.clearCache();
+        this.clearOccupantsCache();
         return this.join();
     },
 
-    clearCache () {
-        this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+    clearOccupantsCache () {
         if (this.occupants.length) {
             // Remove non-members when reconnecting
             this.occupants.filter(o => !o.isMember()).forEach(o => o.destroy());

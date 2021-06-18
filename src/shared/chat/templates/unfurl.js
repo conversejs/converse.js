@@ -19,13 +19,19 @@ const tpl_url_wrapper = (o, wrapped_template) =>
 const tpl_image = (o) => html`<img class="card-img-top" src="${o.image}" @load=${o.onload}/>`;
 
 export default (o) => {
-    return html`<div class="card card--unfurl">
-        ${ isValidImage(o.image) ? tpl_url_wrapper(o, tpl_image) : '' }
-        ${ (o.title || o.description || o.url) ? html`
-            <div class="card-body">
-            ${ o.title ? tpl_url_wrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}
-            ${ o.description ? html`<p class="card-text"><converse-rich-text text=${o.description}></converse-rich-text></p>` : '' }
-            ${ o.url ? html`<p class="card-text"><a href="${o.url}" target="_blank" rel="noopener">${u.getURI(o.url).domain()}</a></p>` : '' }
-            </div>` : '' }
-    </div>`;
+    const valid_image = isValidImage(o.image);
+    const has_body_info = o.title || o.description || o.url;
+    if (valid_image || has_body_info) {
+        return html`<div class="card card--unfurl">
+            ${ valid_image ? tpl_url_wrapper(o, tpl_image) : '' }
+            ${ has_body_info ? html`
+                <div class="card-body">
+                ${ o.title ? tpl_url_wrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}
+                ${ o.description ? html`<p class="card-text"><converse-rich-text text=${o.description}></converse-rich-text></p>` : '' }
+                ${ o.url ? html`<p class="card-text"><a href="${o.url}" target="_blank" rel="noopener">${u.getURI(o.url).domain()}</a></p>` : '' }
+                </div>` : '' }
+        </div>`;
+    } else {
+        return '';
+    }
 }

@@ -109,7 +109,7 @@ a {
 .navbar {
     font-family: 'Muli', sans-serif;
     margin-bottom: 0;
-	background: transparent;
+    background-color: rgba(0, 0, 0, 0.5);
     font-size: 95%;
     font-weight: normal;
 
@@ -165,7 +165,7 @@ a {
     .navbar {
         border-bottom: none;
         letter-spacing: 1px;
-        background: transparent;
+        background-color: rgba(0, 0, 0, 0.5);
         -webkit-transition: background 0.5s ease-in-out, padding 0.5s ease-in-out;
         -moz-transition: background 0.5s ease-in-out, padding 0.5s ease-in-out;
         transition: background 0.5s ease-in-out, padding 0.5s ease-in-out;

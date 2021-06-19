@@ -1,6 +1,6 @@
 import tpl_trimmed_chat from "../templates/trimmed_chat.js";
 import { CustomElement } from 'shared/components/element.js';
-import { api, _converse } from "@converse/headless/core";
+import { api } from "@converse/headless/core";
 import { maximize } from  '../utils.js';
 
 
@@ -28,15 +28,7 @@ export default class MinimizedChat extends CustomElement {
 
     close (ev) {
         ev?.preventDefault();
-        const view = _converse.chatboxviews.get(this.model.get('id'));
-        if (view) {
-            // This will call model.destroy(), removing it from the
-            // collection and will also emit 'chatBoxClosed'
-            view.close();
-        } else {
-            this.model.destroy();
-            api.trigger('chatBoxClosed', this);
-        }
+        this.model.close();
     }
 
     restore (ev) {

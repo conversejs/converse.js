@@ -19,7 +19,11 @@ export default class MUCChatArea extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.model = _converse.chatboxes.get(this.jid);
+        this.initialize();
+    }
+
+    async initialize () {
+        this.model = await api.rooms.get(this.jid);
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
         this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
@@ -27,19 +31,18 @@ export default class MUCChatArea extends CustomElement {
         // Bind so that we can pass it to addEventListener and removeEventListener
         this.onMouseMove = this._onMouseMove.bind(this);
         this.onMouseUp = this._onMouseUp.bind(this);
+
+        this.requestUpdate(); // Make sure we render again after the model has been attached
     }
 
     render () {
         return tpl_muc_chatarea({
-            'help_messages': this.getHelpMessages(),
+            'getHelpMessages': () => this.getHelpMessages(),
             'jid': this.jid,
             'model': this.model,
-            'occupants': this.model.occupants,
-            'occupants_width': this.model.get('occupants_width'),
             'onMousedown': ev => this.onMousedown(ev),
-            'show_help_messages': this.model.get('show_help_messages'),
             'show_send_button': _converse.show_send_button,
-            'show_sidebar': this.shouldShowSidebar(),
+            'shouldShowSidebar': () => this.shouldShowSidebar(),
             'type': this.type,
         });
     }

@@ -1,7 +1,5 @@
-import { html } from "lit";
+import { html } from 'lit';
 
-
-export default (o) => html`
-    <audio controls src="${o.url}"></audio>
-    <a target="_blank" rel="noopener" href="${o.url}">${o.label_download}</a>
-`;
+export default (url) => {
+    return html`<audio controls src="${url}"></audio><a target="_blank" rel="noopener" href="${url}">${url}</a>`;
+}

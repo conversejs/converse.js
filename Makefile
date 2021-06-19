@@ -142,7 +142,7 @@ dist/converse.js:: node_modules
 dist/converse.css:: node_modules
 	npm run dev
 
-dist/website.css:: node_modules src
+dist/website.css:: node_modules src/shared/styles/website.scss
 	$(SASS) --load-path=$(BOOTSTRAP) src/shared/styles/website.scss $@
 
 dist/website.min.css:: node_modules dist/website.css
@@ -234,4 +234,4 @@ doc: node_modules docsdev apidoc
 
 PHONY: apidoc
 apidoc:
-	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/templates/**/*.js src/*.js src/**/*.js src/headless/**/*.js src/shared/**/*.js
+	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/templates/*.js src/*.js src/**/*.js src/headless/**/*.js src/shared/**/*.js

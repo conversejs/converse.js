@@ -44,7 +44,7 @@ describe("Emojis", function () {
                 }).c('body').t('😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
-            const view = _converse.api.chatviews.get(sender_jid);
+            const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.querySelector('.chat-msg__text')));
 
@@ -132,7 +132,7 @@ describe("Emojis", function () {
                 }).c('body').t('😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
-            const view = _converse.api.chatviews.get(contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '') ===
                 '<img class="emoji" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">');
@@ -186,7 +186,7 @@ describe("Emojis", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
-            const view = _converse.api.chatviews.get(contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
 
             const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
             toolbar.querySelector('.toggle-emojis').click();

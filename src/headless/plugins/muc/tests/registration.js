@@ -79,20 +79,6 @@ describe("Chatrooms", function () {
 
             _converse.connection.IQ_stanzas = [];
             room.close();
-            stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
-                iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
-            ).pop());
-            _converse.connection.IQ_stanzas = [];
-
-            result = $iq({
-                'from': room.get('jid'),
-                'id': stanza.getAttribute('id'),
-                'to': _converse.bare_jid,
-                'type': 'result',
-            }).c('query', {'xmlns': 'jabber:iq:register'})
-                .c('registered').up()
-                .c('username').t('romeo');
-            _converse.connection._dataRecv(mock.createRequest(result));
 
             stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length

@@ -97,8 +97,8 @@ const ChatRoomMixin = {
 
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
-        this.on('change:scrolled', () => !this.get('scrolled') && this.clearUnreadMsgCounter());
         this.on('destroy', this.removeHandlers, this);
+        this.ui.on('change:scrolled', this.onScrolledChanged, this);
 
         await this.restoreSession();
         this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
@@ -137,7 +137,8 @@ const ChatRoomMixin = {
             await this.fetchMessages().catch(e => log.error(e));
             return true;
         } else {
-            this.clearCache();
+            this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+            this.clearOccupantsCache();
             return false;
         }
     },
@@ -193,13 +194,13 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#rejoin
      */
     rejoin () {
+        this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
         this.registerHandlers();
-        this.clearCache();
+        this.clearOccupantsCache();
         return this.join();
     },
 
-    clearCache () {
-        this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+    clearOccupantsCache () {
         if (this.occupants.length) {
             // Remove non-members when reconnecting
             this.occupants.filter(o => !o.isMember()).forEach(o => o.destroy());
@@ -1543,8 +1544,16 @@ const ChatRoomMixin = {
         return identity_el ? identity_el.getAttribute('name') : null;
     },
 
+    /**
+     * Send an IQ stanza to the MUC to register this user's nickname.
+     * This sets the user's affiliation to 'member' (if they weren't affiliated
+     * before) and reserves the nickname for this user, thereby preventing other
+     * users from using it in this MUC.
+     * See https://xmpp.org/extensions/xep-0045.html#register
+     * @private
+     * @method _converse.ChatRoom#registerNickname
+     */
     async registerNickname () {
-        // See https://xmpp.org/extensions/xep-0045.html#register
         const { __ } = _converse;
         const nick = this.get('nick');
         const jid = this.get('jid');
@@ -1593,26 +1602,19 @@ const ChatRoomMixin = {
         }
     },
 
-    async unregisterNickname () {
-        const jid = this.get('jid');
-        let iq;
-        try {
-            iq = await api.sendIQ(
-                $iq({
-                    'to': jid,
-                    'type': 'set'
-                }).c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
-            );
-        } catch (e) {
-            log.error(e);
-            return e;
-        }
-        if (sizzle(`query[xmlns="${Strophe.NS.MUC_REGISTER}"] registered`, iq).pop()) {
-            const iq = $iq({ 'to': jid, 'type': 'set' })
-                .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
-                .c('remove');
-            return api.sendIQ(iq).catch(e => log.error(e));
-        }
+    /**
+     * Send an IQ stanza to the MUC to unregister this user's nickname.
+     * If the user had a 'member' affiliation, it'll be removed and their
+     * nickname will no longer be reserved and can instead be used (and
+     * registered) by other users.
+     * @private
+     * @method _converse.ChatRoom#unregisterNickname
+     */
+    unregisterNickname () {
+        const iq = $iq({ 'to': this.get('jid'), 'type': 'set' })
+            .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
+            .c('remove');
+        return api.sendIQ(iq).catch(e => log.error(e));
     },
 
     /**
@@ -2584,8 +2586,8 @@ const ChatRoomMixin = {
                 // gets scrolled down. We always want to scroll down
                 // when the user writes a message as opposed to when a
                 // message is received.
-                this.model.set('scrolled', false);
-            } else if (this.isHidden() || this.get('scrolled')) {
+                this.ui.set('scrolled', false);
+            } else if (this.isHidden() || this.ui.get('scrolled')) {
                 const settings = {
                     'num_unread_general': this.get('num_unread_general') + 1
                 };

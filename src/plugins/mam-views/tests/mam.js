@@ -18,7 +18,6 @@ describe("Message Archive Management", function () {
 
     describe("The XEP-0313 Archive", function () {
 
-
         it("is queried when the user scrolls up",
                 mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
 
@@ -920,6 +919,7 @@ describe("Message Archive Management", function () {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
             const promise = _converse.api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'});
+
             await u.waitUntil(() => sent_stanza);
             const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
 

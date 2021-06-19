@@ -1,5 +1,4 @@
 /**
- * @module icons.js
  * @copyright Alfredo Medrano Sánchez and the Converse.js contributors
  * @description
  *  Component inspired by the one from fa-icons

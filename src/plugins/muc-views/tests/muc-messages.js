@@ -16,7 +16,7 @@ describe("A Groupchat Message", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello world'
             const enter_event = {
@@ -61,7 +61,7 @@ describe("A Groupchat Message", function () {
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
             await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             let presence = u.toStanza(`
                 <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
                     <x xmlns="http://jabber.org/protocol/muc#user">
@@ -97,7 +97,7 @@ describe("A Groupchat Message", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const presence = u.toStanza(`
                 <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
                     <x xmlns="http://jabber.org/protocol/muc#user">
@@ -145,7 +145,7 @@ describe("A Groupchat Message", function () {
                 </forwarded>
             </message>
         `);
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         spyOn(view.model, 'onMessage').and.callThrough();
         spyOn(converse.env.log, 'error');
         _converse.connection._dataRecv(mock.createRequest(received_stanza));
@@ -163,7 +163,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         if (!view.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
         const message = 'romeo: Your attention is required';
         const nick = mock.chatroom_names[0],
@@ -186,7 +186,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         if (!view.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
         const id = u.getUniqueId();
         let msg = $msg({
@@ -215,7 +215,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         spyOn(view.model, 'getDuplicateMessage').and.callThrough();
         let stanza = u.toStanza(`
             <message xmlns="jabber:client"
@@ -262,7 +262,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         spyOn(view.model, 'getStanzaIdQueryAttrs').and.callThrough();
         let stanza = u.toStanza(`
             <message xmlns="jabber:client"
@@ -348,7 +348,7 @@ describe("A Groupchat Message", function () {
                     'to': muc_jid,
                     'type': 'groupchat'
             }).c('body').t('I am groot').tree();
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         spyOn(converse.env.log, 'error');
         await _converse.handleMAMResult(view.model, { 'messages': [msg] });
         await u.waitUntil(() => converse.env.log.error.calls.count());
@@ -365,7 +365,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         let msg = $msg({
             from: 'lounge@montague.lit/romeo',
             id: u.getUniqueId(),
@@ -492,7 +492,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         const msg = $msg({
                 from: 'lounge@montague.lit/romeo',
                 id: u.getUniqueId(),
@@ -511,7 +511,7 @@ describe("A Groupchat Message", function () {
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
         const message_form = view.querySelector('converse-muc-message-form');
@@ -552,7 +552,7 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
 
         view.model.sendMessage('hello world');
         await u.waitUntil(() => view.model.messages.length === 1);
@@ -586,7 +586,7 @@ describe("A Groupchat Message", function () {
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
         const message_form = view.querySelector('converse-muc-message-form');

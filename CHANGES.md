@@ -16,16 +16,20 @@
 - New hook: [getMessageActionButtons](https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons)
 - New hook: [shouldNotifyOfGroupMessage](https://conversejs.org/docs/html/api/-_converse.html#event:shouldNotifyOfGroupMessage)
 - New hook: [presenceConstructed](https://conversejs.org/docs/html/api/-_converse.html#event:presenceConstructed)
+- New event: [historyPruned](https://conversejs.org/docs/html/api/-_converse.html#event:historyPruned)
 - File structure reordering: All plugins are now in `./plugins` folders.
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 - New configuration setting: [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
 - New configuration setting: [send_chat_markers](https://conversejs.org/docs/html/configuration.html#send-chat-markers)
 - New configuration setting: [muc_show_ogp_unfurls](https://conversejs.org/docs/html/configuration.html#muc-show-ogp-unfurls)
+- New configuration setting: [prune-messages-above](https://conversejs.org/docs/html/configuration.html#prune-messages-above)
+- New configuration setting: [pruning_behavior](https://conversejs.org/docs/html/configuration.html#pruning-behavior)
 - #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
 - Use the MUC stanza id when sending XEP-0333 markers
 - Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
 - Add a Description Of A Project (DOAP) file
 - Add ability to deregister nickname when closing a MUC by setting `auto_register_muc_nickname` to `'unregister'`.
+- Show a gap placeholder when there are gaps in the chat history. The user can click these to fill the gaps.
 
 ### Breaking Changes
 
@@ -34,13 +38,18 @@ When leaving a MUC, the message history is deleted. This means that decrypted
 OMEMO messages are gone and cannot be recovered on that device. See [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave).
 
 Removed events:
-* `chatBoxInsertedIntoDOM`
 * `bookmarkViewsInitialized`
-* `rosterGroupsFetched`
+* `chatBoxInsertedIntoDOM`
+* `contactStatusMessageChanged`
 * `messageSend` (use `sendMessage` instead)
+* `rosterGroupsFetched`
 
 The `chatBoxClosed`, `chatBoxMaximized` and `chatBoxMinimized` events now have the `model` as
 payload and not the `view`.
+
+The `api.chatviews` and `api.roomviews` API groupings and methods have been
+removed. The original "views" don't really exist anymore, the UI is now composed web
+components which should update reactively based on changes made on the models.
 
 ## 7.0.6 (unreleased)
 

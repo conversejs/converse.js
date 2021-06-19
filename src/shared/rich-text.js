@@ -1,21 +1,36 @@
 import URI from 'urijs';
 import log from '@converse/headless/log';
-import { _converse, api, converse } from '@converse/headless/core';
+import tpl_audio from 'templates/audio.js';
+import tpl_image from 'templates/image.js';
+import tpl_video from 'templates/video.js';
+import { _converse, api } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
-import { convertASCII2Emoji, getCodePointReferences, getEmojiMarkup, getShortnameReferences } from '@converse/headless/plugins/emoji/index.js';
+import {
+    convertASCII2Emoji,
+    getCodePointReferences,
+    getEmojiMarkup,
+    getShortnameReferences
+} from '@converse/headless/plugins/emoji/index.js';
+import {
+    filterQueryParamsFromURL,
+    getHyperlinkTemplate,
+    isAudioDomainAllowed,
+    isAudioURL,
+    isImageDomainAllowed,
+    isImageURL,
+    isVideoDomainAllowed,
+    isVideoURL
+} from 'utils/html';
 import { html } from 'lit';
 
-const u = converse.env.utils;
-
-const isString = (s) => typeof s === 'string';
+const isString = s => typeof s === 'string';
 
 // We don't render more than two line-breaks, replace extra line-breaks with
 // the zero-width whitespace character
-const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${"\u200B".repeat(m.length-2)}\n`);
+const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${'\u200B'.repeat(m.length - 2)}\n`);
 
-const tpl_mention_with_nick = (o) => html`<span class="mention mention--self badge badge-info">${o.mention}</span>`;
-const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
-
+const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info">${o.mention}</span>`;
+const tpl_mention = o => html`<span class="mention">${o.mention}</span>`;
 
 /**
  * @class RichText
@@ -35,7 +50,6 @@ const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
  * rich features.
  */
 export class RichText extends String {
-
     /**
      * Create a new {@link RichText} instance.
      * @param { String } text - The text to be annotated
@@ -48,12 +62,15 @@ export class RichText extends String {
      * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
      * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
      * @param { Boolean } options.show_images - Whether image URLs should be rendered as <img> tags.
+     * @param { Boolean } options.embed_videos - Whether video URLs should be rendered as <video> tags.
      * @param { Boolean } options.show_me_message - Whether /me messages should be rendered differently
      * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked
      * @param { Function } options.onImgLoad - Callback for when an inline rendered image has been loaded
      */
-    constructor (text, offset=0, mentions=[], options={}) {
+    constructor (text, offset = 0, mentions = [], options = {}) {
         super(text);
+        this.embed_audio = options?.embed_audio;
+        this.embed_videos = options?.embed_videos;
         this.mentions = mentions;
         this.nick = options?.nick;
         this.offset = offset;
@@ -76,24 +93,37 @@ export class RichText extends String {
         const objs = [];
         try {
             const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
-            URI.withinString(text, (url, start, end) => {
-                objs.push({url, start, end})
-                return url;
-            } , parse_options);
+            URI.withinString(
+                text,
+                (url, start, end) => {
+                    objs.push({ url, start, end });
+                    return url;
+                },
+                parse_options
+            );
         } catch (error) {
             log.debug(error);
             return;
         }
         objs.forEach(url_obj => {
             const url_text = text.slice(url_obj.start, url_obj.end);
-            const filtered_url = u.filterQueryParamsFromURL(url_text);
-            this.addTemplateResult(
-                url_obj.start+offset,
-                url_obj.end+offset,
-                this.show_images && u.isImageURL(url_text) && u.isImageDomainAllowed(url_text) ?
-                    u.convertToImageTag(filtered_url, this.onImgLoad, this.onImgClick) :
-                    u.convertUrlToHyperlink(filtered_url),
-            );
+            const filtered_url = filterQueryParamsFromURL(url_text);
+
+            let template;
+            if (this.show_images && isImageURL(url_text) && isImageDomainAllowed(url_text)) {
+                template = tpl_image({
+                    'url': filtered_url,
+                    'onClick': this.onImgLoad,
+                    'onLoad': this.onImgClick
+                });
+            } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
+                template = tpl_video(filtered_url);
+            } else if (this.embed_audio && isAudioURL(url_text) && isAudioDomainAllowed(url_text)) {
+                template = tpl_audio(filtered_url);
+            } else {
+                template = getHyperlinkTemplate(filtered_url);
+            }
+            this.addTemplateResult(url_obj.start + offset, url_obj.end + offset, template);
         });
     }
 
@@ -108,9 +138,9 @@ export class RichText extends String {
         const matches = text.matchAll(regex);
         for (const m of matches) {
             this.addTemplateResult(
-                m.index+offset,
-                m.index+m[0].length+offset,
-                u.convertUrlToHyperlink(m[0].replace(regex, _converse.geouri_replacement))
+                m.index + offset,
+                m.index + m[0].length + offset,
+                getHyperlinkTemplate(m[0].replace(regex, _converse.geouri_replacement))
             );
         }
     }
@@ -124,11 +154,7 @@ export class RichText extends String {
     addEmojis (text, offset) {
         const references = [...getShortnameReferences(text.toString()), ...getCodePointReferences(text.toString())];
         references.forEach(e => {
-            this.addTemplateResult(
-                e.begin+offset,
-                e.end+offset,
-                getEmojiMarkup(e, {'add_title_wrapper': true})
-            );
+            this.addTemplateResult(e.begin + offset, e.end + offset, getEmojiMarkup(e, { 'add_title_wrapper': true }));
         });
     }
 
@@ -141,26 +167,18 @@ export class RichText extends String {
      *  offset from the start of the original message stanza's body text).
      */
     addMentions (text, local_offset) {
-        const full_offset = local_offset+this.offset;
+        const full_offset = local_offset + this.offset;
         this.mentions?.forEach(ref => {
-            const begin = Number(ref.begin)-full_offset;
-            if (begin < 0 || begin >= full_offset+text.length) {
+            const begin = Number(ref.begin) - full_offset;
+            if (begin < 0 || begin >= full_offset + text.length) {
                 return;
             }
-            const end = Number(ref.end)-full_offset;
+            const end = Number(ref.end) - full_offset;
             const mention = text.slice(begin, end);
             if (mention === this.nick) {
-                this.addTemplateResult(
-                    begin+local_offset,
-                    end+local_offset,
-                    tpl_mention_with_nick({mention})
-                );
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({ mention }));
             } else {
-                this.addTemplateResult(
-                    begin+local_offset,
-                    end+local_offset,
-                    tpl_mention({mention})
-                );
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({ mention }));
             }
         });
     }
@@ -172,8 +190,8 @@ export class RichText extends String {
     addStyling () {
         const references = [];
         if (containsDirectives(this, this.mentions)) {
-            const mention_ranges = this.mentions.map(
-                m => Array.from({'length': Number(m.end)}, (v, i) => Number(m.begin) + i)
+            const mention_ranges = this.mentions.map(m =>
+                Array.from({ 'length': Number(m.end) }, (v, i) => Number(m.begin) + i)
             );
             let i = 0;
             while (i < this.length) {
@@ -186,9 +204,9 @@ export class RichText extends String {
                 const { d, length } = getDirectiveAndLength(this, i);
                 if (d && length) {
                     const is_quote = isQuoteDirective(d);
-                    const end = i+length;
-                    const slice_end = is_quote ? end : end-d.length;
-                    let slice_begin = d === '```' ? i+d.length+1 : i+d.length;
+                    const end = i + length;
+                    const slice_end = is_quote ? end : end - d.length;
+                    let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
                     if (is_quote && this[slice_begin] === ' ') {
                         // Trim leading space inside codeblock
                         slice_begin += 1;
@@ -198,7 +216,7 @@ export class RichText extends String {
                     references.push({
                         'begin': i,
                         'template': getDirectiveTemplate(d, text, offset, this.mentions, this.options),
-                        end,
+                        end
                     });
                     i = end;
                 }
@@ -217,7 +235,6 @@ export class RichText extends String {
         }
     }
 
-
     /**
      * Look for plaintext (i.e. non-templated) sections of this RichText
      * instance and add references via the passed in function.
@@ -228,7 +245,7 @@ export class RichText extends String {
         let idx = 0; // The text index of the element in the payload
         for (const text of payload) {
             if (!text) {
-                continue
+                continue;
             } else if (isString(text)) {
                 func.call(this, text, idx);
                 idx += text.length;
@@ -238,7 +255,6 @@ export class RichText extends String {
         }
     }
 
-
     /**
      * Parse the text and add template references for rendering the "rich" parts.
      *
@@ -247,7 +263,7 @@ export class RichText extends String {
      * @param { Function } onImgLoad
      * @param { Function } onImgClick
      **/
-    async addTemplates() {
+    async addTemplates () {
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
          * before the default transformations have been applied.
@@ -257,7 +273,7 @@ export class RichText extends String {
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
          */
-        await api.trigger('beforeMessageBodyTransformed', this, {'Synchronous': true});
+        await api.trigger('beforeMessageBodyTransformed', this, { 'Synchronous': true });
 
         this.render_styling && this.addStyling();
         this.addAnnotations(this.addMentions);
@@ -276,11 +292,11 @@ export class RichText extends String {
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
          */
-        await api.trigger('afterMessageBodyTransformed', this, {'Synchronous': true});
+        await api.trigger('afterMessageBodyTransformed', this, { 'Synchronous': true });
 
         this.payload = this.marshall();
         this.options.show_me_message && this.trimMeMessage();
-        this.payload = this.payload.map(item => isString(item) ? item : item.template);
+        this.payload = this.payload.map(item => (isString(item) ? item : item.template));
     }
 
     /**
@@ -298,7 +314,7 @@ export class RichText extends String {
      * @param { Object } template - The lit TemplateResult instance
      */
     addTemplateResult (begin, end, template) {
-        this.references.push({begin, end, template});
+        this.references.push({ begin, end, template });
     }
 
     isMeCommand () {
@@ -320,13 +336,11 @@ export class RichText extends String {
             .sort((a, b) => b.begin - a.begin)
             .forEach(ref => {
                 const text = list.shift();
-                list = [
-                    text.slice(0, ref.begin),
-                    ref,
-                    text.slice(ref.end),
-                    ...list
-                ];
+                list = [text.slice(0, ref.begin), ref, text.slice(ref.end), ...list];
             });
-        return list.reduce((acc, i) => isString(i) ? [...acc, convertASCII2Emoji(collapseLineBreaks(i))] : [...acc, i], []);
+        return list.reduce(
+            (acc, i) => (isString(i) ? [...acc, convertASCII2Emoji(collapseLineBreaks(i))] : [...acc, i]),
+            []
+        );
     }
 }

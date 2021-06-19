@@ -5,17 +5,17 @@ import 'shared/registry';
 import MessageVersionsModal from 'modals/message-versions.js';
 import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
-import dayjs from 'dayjs';
 import filesize from 'filesize';
 import tpl_message from './templates/message.js';
 import tpl_spinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
+import { getHats } from './utils.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
 
-const { Strophe } = converse.env;
+const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -136,23 +136,6 @@ export default class Message extends CustomElement {
         this.parentElement.removeChild(this);
     }
 
-    isFollowup () {
-        const messages = this.model.collection.models;
-        const idx = messages.indexOf(this.model);
-        const prev_model = idx ? messages[idx-1] : null;
-        if (prev_model === null) {
-            return false;
-        }
-        const date = dayjs(this.model.get('time'));
-        return this.model.get('from') === prev_model.get('from') &&
-            !this.model.isMeCommand() &&
-            !prev_model.isMeCommand() &&
-            this.model.get('type') !== 'info' &&
-            prev_model.get('type') !== 'info' &&
-            date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
-            !!this.model.get('is_encrypted') === !!prev_model.get('is_encrypted');
-    }
-
     isRetracted () {
         return this.model.get('retracted') || this.model.get('moderated') === 'retracted';
     }
@@ -172,7 +155,7 @@ export default class Message extends CustomElement {
 
     getExtraMessageClasses () {
         const extra_classes = [
-            this.isFollowup() ? 'chat-msg--followup' : null,
+            this.model.isFollowup() ? 'chat-msg--followup' : null,
             this.model.get('is_delayed') ? 'delayed' : null,
             this.model.isMeCommand() ? 'chat-msg--action' : null,
             this.isRetracted() ? 'chat-msg--retracted' : null,
@@ -196,7 +179,7 @@ export default class Message extends CustomElement {
         return {
             'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
             'has_mentions': this.hasMentions(),
-            'hats': _converse.getHats(this.model),
+            'hats': getHats(this.model),
             'is_first_unread': this.chatbox.get('first_unread_id') === this.model.get('id'),
             'is_me_message': this.model.isMeCommand(),
             'is_retracted': this.isRetracted(),
@@ -256,6 +239,8 @@ export default class Message extends CustomElement {
                     .model="${this.model}"
                     ?is_me_message="${this.model.isMeCommand()}"
                     ?show_images="${api.settings.get('show_images_inline')}"
+                    ?embed_videos="${api.settings.get('embed_videos')}"
+                    ?embed_audio="${api.settings.get('embed_audio')}"
                     text="${text}"></converse-chat-message-body>
                 ${ (this.model.get('received') && !this.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
                 ${ (this.model.get('edited')) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }

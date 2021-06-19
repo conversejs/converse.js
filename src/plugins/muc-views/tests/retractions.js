@@ -49,7 +49,7 @@ describe("Message Retractions", function () {
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                 </message>
             `);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             await view.model.handleMessageStanza(received_stanza);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
@@ -93,7 +93,7 @@ describe("Message Retractions", function () {
                     </apply-to>
                 </message>
             `);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             spyOn(converse.env.log, 'warn');
             spyOn(view.model, 'handleRetraction').and.callThrough();
             _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
@@ -149,7 +149,7 @@ describe("Message Retractions", function () {
                     </apply-to>
                 </message>
             `);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             spyOn(converse.env.log, 'warn');
             spyOn(view.model, 'handleModeration').and.callThrough();
             _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
@@ -371,7 +371,7 @@ describe("Message Retractions", function () {
                     <origin-id xmlns='urn:xmpp:sid:0' id='origin-id-1' by='${muc_jid}'/>
                 </message>
             `);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             await view.model.handleMessageStanza(received_stanza);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
@@ -406,7 +406,7 @@ describe("Message Retractions", function () {
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 
@@ -488,7 +488,7 @@ describe("Message Retractions", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 
@@ -513,7 +513,7 @@ describe("Message Retractions", function () {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 
@@ -580,7 +580,7 @@ describe("Message Retractions", function () {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
@@ -636,7 +636,7 @@ describe("Message Retractions", function () {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
@@ -685,7 +685,7 @@ describe("Message Retractions", function () {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
@@ -716,7 +716,7 @@ describe("Message Retractions", function () {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 
@@ -766,7 +766,7 @@ describe("Message Retractions", function () {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 

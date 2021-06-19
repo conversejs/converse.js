@@ -1,4 +1,4 @@
-/*global mock, converse, _ */
+/*global mock, converse */
 
 const $pres = converse.env.$pres;
 const $iq = converse.env.$iq;
@@ -277,13 +277,13 @@ describe("Groupchats", function () {
                     <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:47Z" from="juliet@shakespeare.lit"/>
                 </message>`);
 
-            view.model.save('scrolled', true); // hack
+            view.model.ui.set('scrolled', true); // hack
             _converse.connection._dataRecv(mock.createRequest(message));
 
             await u.waitUntil(() => view.model.messages.length);
             const chat_new_msgs_indicator = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
             chat_new_msgs_indicator.click();
-            expect(view.model.get('scrolled')).toBeFalsy();
+            expect(view.model.ui.get('scrolled')).toBeFalsy();
             await u.waitUntil(() => !u.isVisible(chat_new_msgs_indicator));
             done();
         }));
@@ -2602,14 +2602,10 @@ describe("Groupchats", function () {
             // have the same attributes values as the original ones.
             const attrs = ['id', 'box_id', 'visible'];
             let new_attrs, old_attrs;
-            for (var i=0; i<attrs.length; i++) {
-                new_attrs = _.map(_.map(newchatboxes.models, 'attributes'), attrs[i]);
-                old_attrs = _.map(_.map(_converse.chatboxes.models, 'attributes'), attrs[i]);
-                // FIXME: should have have to sort here? Order must
-                // probably be the same...
-                // This should be fixed once the controlbox always opens
-                // only on the right.
-                expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
+            for (let i=0; i<attrs.length; i++) {
+                new_attrs = newchatboxes.models.map(m => m.attributes[attrs[i]]);
+                old_attrs = _converse.chatboxes.models.map(m => m.attributes[attrs[i]]);
+                expect(new_attrs.sort()).toEqual(old_attrs.sort());
             }
             done();
         }));
@@ -2619,13 +2615,13 @@ describe("Groupchats", function () {
 
             await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view, 'close').and.callThrough();
+            spyOn(view.model, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
             spyOn(view.model, 'leave');
             spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             const button = await u.waitUntil(() => view.querySelector('.close-chatbox-button'));
             button.click();
-            await u.waitUntil(() => view.close.calls.count());
+            await u.waitUntil(() => view.model.close.calls.count());
             expect(view.model.leave).toHaveBeenCalled();
             await u.waitUntil(() => _converse.api.trigger.calls.count());
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
@@ -2637,7 +2633,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             let presence = $pres({
                     'from': 'lounge@montague.lit/annoyingGuy',
                     'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
@@ -2707,7 +2703,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
 
             let message = $msg({
                 from: 'lounge@montague.lit',
@@ -3297,7 +3293,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             spyOn(view.model, 'setRole').and.callThrough();
             spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
@@ -3381,7 +3377,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             let sent_IQ, IQ_id;
             const sendIQ = _converse.connection.sendIQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -3521,7 +3517,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             var sent_IQ, IQ_id;
             var sendIQ = _converse.connection.sendIQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -3659,7 +3655,7 @@ describe("Groupchats", function () {
             const muc_jid = 'lounge@montague.lit';
             const new_muc_jid = 'foyer@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            let view = _converse.api.chatviews.get(muc_jid);
+            let view = _converse.chatboxviews.get(muc_jid);
             spyOn(_converse.api, 'confirm').and.callThrough();
             let textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
@@ -3711,7 +3707,7 @@ describe("Groupchats", function () {
             _converse.connection.IQ_stanzas = [];
             sent_IQs = _converse.connection.IQ_stanzas;
             await mock.openAndEnterChatRoom(_converse, new_muc_jid, 'romeo');
-            view = _converse.api.chatviews.get(new_muc_jid);
+            view = _converse.chatboxviews.get(new_muc_jid);
             textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/destroy';
             message_form = view.querySelector('converse-muc-message-form');
@@ -4460,7 +4456,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@muc.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge@muc.example.org')).toBe(true);
 
             // However, you can still open MUCs with different domains
             roomspanel.querySelector('.show-add-muc-modal').click();
@@ -4472,7 +4468,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@conference.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge@conference.example.org')).toBe(true);
             done();
         }));
 
@@ -4498,7 +4494,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@muc.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge@muc.example.org')).toBe(true);
 
             // However, you can still open MUCs with different domains
             roomspanel.querySelector('.show-add-muc-modal').click();
@@ -4510,7 +4506,7 @@ describe("Groupchats", function () {
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
-            expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge\\40conference@muc.example.org')).toBe(true);
+            expect(_converse.chatboxes.models.map(m => m.get('id')).includes('lounge\\40conference@muc.example.org')).toBe(true);
             done();
         }));
     });
@@ -4671,7 +4667,7 @@ describe("Groupchats", function () {
             const muc_jid = 'kitchen@conference.shakespeare.lit';
             const message = 'fires: Your attention is required';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'fires');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => roomspanel.querySelectorAll('.available-room').length);
             expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
             expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
@@ -4729,7 +4725,7 @@ describe("Groupchats", function () {
             ]
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             view.model.setChatState(_converse.ACTIVE);
 
             expect(view.model.sendChatState).toHaveBeenCalled();
@@ -4770,7 +4766,7 @@ describe("Groupchats", function () {
                     {'affiliation': 'admin', 'nick': 'groundcontrol', 'jid': 'groundcontrol@example.org'}
                 ];
                 await mock.openAndEnterChatRoom(_converse, muc_jid, 'some1', [], members);
-                const view = _converse.api.chatviews.get(muc_jid);
+                const view = _converse.chatboxviews.get(muc_jid);
 
                 let csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                 expect(csntext.trim()).toEqual("some1 has entered the groupchat");
@@ -4988,7 +4984,7 @@ describe("Groupchats", function () {
 
             const muc_jid = 'trollbox@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll');
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
             textarea.value = 'Hello world';
             const message_form = view.querySelector('converse-muc-message-form');
@@ -5043,7 +5039,7 @@ describe("Groupchats", function () {
             ]
             const muc_jid = 'trollbox@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'troll', features);
-            const view = _converse.api.chatviews.get(muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('.chat-textarea'));
 
             let stanza = u.toStanza(`

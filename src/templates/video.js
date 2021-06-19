@@ -1,3 +1,3 @@
 import { html } from "lit";
 
-export default (o) => html`<video controls preload="metadata" src="${o.url}" style="max-height: 50vh"></video>`;
+export default (url) => html`<video controls preload="metadata" src="${url}"></video><a target="_blank" rel="noopener" href="${url}">${url}</a>`;

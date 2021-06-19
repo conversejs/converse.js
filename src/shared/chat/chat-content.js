@@ -1,10 +1,8 @@
 import './message-history';
-import debounce from 'lodash/debounce';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless/core';
 import { html } from 'lit';
-import { onScrolledDown } from './utils.js';
-import { safeSave } from '@converse/headless/utils/core.js';
+import { markScrolled } from './utils.js';
 
 import './styles/chat-content.scss';
 
@@ -19,11 +17,17 @@ export default class ChatContent extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.markScrolled = debounce(this._markScrolled, 50);
+        this.initialize();
+    }
 
+    disconnectedCallback () {
+        super.disconnectedCallback();
+        this.removeEventListener('scroll', markScrolled);
+    }
+
+    initialize () {
         this.model = _converse.chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:hidden_occupants', this.requestUpdate);
-        this.listenTo(this.model, 'change:scrolled', this.scrollDown);
         this.listenTo(this.model.messages, 'add', this.requestUpdate);
         this.listenTo(this.model.messages, 'change', this.requestUpdate);
         this.listenTo(this.model.messages, 'remove', this.requestUpdate);
@@ -31,11 +35,12 @@ export default class ChatContent extends CustomElement {
         this.listenTo(this.model.messages, 'reset', this.requestUpdate);
         this.listenTo(this.model.notifications, 'change', this.requestUpdate);
         this.listenTo(this.model.ui, 'change', this.requestUpdate);
+        this.listenTo(this.model.ui, 'change:scrolled', this.scrollDown);
 
         if (this.model.occupants) {
             this.listenTo(this.model.occupants, 'change', this.requestUpdate);
         }
-        this.addEventListener('scroll', () => this.markScrolled());
+        this.addEventListener('scroll', markScrolled);
     }
 
     render () {
@@ -51,41 +56,8 @@ export default class ChatContent extends CustomElement {
         `;
     }
 
-    /**
-     * Called when the chat content is scrolled up or down.
-     * We want to record when the user has scrolled away from
-     * the bottom, so that we don't automatically scroll away
-     * from what the user is reading when new messages are received.
-     *
-     * Don't call this method directly, instead, call `markScrolled`,
-     * which debounces this method by 100ms.
-     * @private
-     */
-    _markScrolled () {
-        let scrolled = true;
-        const is_at_bottom = this.scrollTop === 0;
-        const is_at_top =
-            Math.ceil(this.clientHeight-this.scrollTop) >= (this.scrollHeight-Math.ceil(this.scrollHeight/20));
-
-        if (is_at_bottom) {
-            scrolled = false;
-            onScrolledDown(this.model);
-        } else if (is_at_top) {
-            /**
-             * Triggered once the chat's message area has been scrolled to the top
-             * @event _converse#chatBoxScrolledUp
-             * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
-             * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
-             */
-            api.trigger('chatBoxScrolledUp', this);
-        }
-        if (this.model.get('scolled') !== scrolled) {
-            safeSave(this.model, { scrolled });
-        }
-    }
-
     scrollDown () {
-        if (this.model.get('scrolled')) {
+        if (this.model.ui.get('scrolled')) {
             return;
         }
         if (this.scrollTo) {

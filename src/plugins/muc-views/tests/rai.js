@@ -19,7 +19,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         expect(view.model.get('hidden')).toBe(false);
 
         const sent_IQs = _converse.connection.IQ_stanzas;
@@ -189,7 +189,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.api.chatviews.get(muc_jid);
+        const view = _converse.chatboxviews.get(muc_jid);
         expect(view.model.get('hidden')).toBe(false);
         const sent_stanzas = [];
         spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));

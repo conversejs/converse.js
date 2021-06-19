@@ -25,7 +25,6 @@ export default class ChatView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:show_help_messages', this.requestUpdate);
-        this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
 
         await this.model.messages.fetched;
         !this.model.get('hidden') && this.afterShown()
@@ -58,19 +57,6 @@ export default class ChatView extends BaseChatView {
     showControlBox () { // eslint-disable-line class-methods-use-this
         // Used in mobile view, to navigate back to the controlbox
         _converse.chatboxviews.get('controlbox')?.show();
-    }
-
-    /**
-     * Closes this chat
-     * @private
-     * @method _converse.ChatBoxView#close
-     */
-    close (ev) {
-        ev?.preventDefault?.();
-        if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
-            _converse.router.navigate('');
-        }
-        return this.model.close(ev);
     }
 
     afterShown () {

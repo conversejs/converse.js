@@ -9,13 +9,14 @@ export default class MUCMessageForm extends MessageForm {
     toHTML () {
         return tpl_muc_message_form(
             Object.assign(this.model.toJSON(), {
-                'onDrop': ev => this.onDrop(ev),
                 'hint_value': this.querySelector('.spoiler-hint')?.value,
                 'message_value': this.querySelector('.chat-textarea')?.value,
                 'onChange': ev => this.model.set({'draft': ev.target.value}),
+                'onDrop': ev => this.onDrop(ev),
                 'onKeyDown': ev => this.onKeyDown(ev),
                 'onKeyUp': ev => this.onKeyUp(ev),
                 'onPaste': ev => this.onPaste(ev),
+                'scrolled': this.model.ui.get('scrolled'),
                 'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
             }));
     }

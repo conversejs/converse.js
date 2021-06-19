@@ -1,8 +1,7 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless/core';
 import { onScrolledDown } from './utils.js';
 
-const u = converse.env.utils;
 
 export default class BaseChatView extends CustomElement {
 
@@ -20,10 +19,16 @@ export default class BaseChatView extends CustomElement {
     updated () {
         if (this.model && this.jid !== this.model.get('jid')) {
             this.stopListening();
+            _converse.chatboxviews.remove(this.model.get('jid'), this);
             delete this.model;
             this.requestUpdate();
             this.initialize();
         }
+    }
+
+    close (ev) {
+        ev?.preventDefault?.();
+        return this.model.close(ev);
     }
 
     maybeFocus () {
@@ -66,22 +71,6 @@ export default class BaseChatView extends CustomElement {
         api.trigger('chatBoxFocused', this, ev);
     }
 
-    onStatusMessageChanged (item) {
-        this.renderHeading();
-        /**
-         * When a contact's custom status message has changed.
-         * @event _converse#contactStatusMessageChanged
-         * @type {object}
-         * @property { object } contact - The chat buddy
-         * @property { string } message - The message text
-         * @example _converse.api.listen.on('contactStatusMessageChanged', obj => { ... });
-         */
-        api.trigger('contactStatusMessageChanged', {
-            'contact': item.attributes,
-            'message': item.get('status')
-        });
-    }
-
     getBottomPanel () {
         if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
             return this.querySelector('converse-muc-bottom-panel');
@@ -108,8 +97,8 @@ export default class BaseChatView extends CustomElement {
     scrollDown (ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
-        if (this.model.get('scrolled')) {
-            u.safeSave(this.model, { 'scrolled': false });
+        if (this.model.ui.get('scrolled')) {
+            this.model.ui.set({ 'scrolled': false });
         }
         onScrolledDown(this.model);
     }

@@ -103,7 +103,7 @@ describe("A spoiler message", function () {
         _converse.connection._dataRecv(mock.createRequest(presence));
         await mock.openChatBoxFor(_converse, contact_jid);
         await mock.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(_converse.connection, 'send');
 
         await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
@@ -180,7 +180,7 @@ describe("A spoiler message", function () {
         _converse.connection._dataRecv(mock.createRequest(presence));
         await mock.openChatBoxFor(_converse, contact_jid);
         await mock.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
 
         await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
         let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');

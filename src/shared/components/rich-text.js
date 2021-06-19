@@ -6,6 +6,8 @@ export default class RichText extends CustomElement {
 
     static get properties () {
         return {
+            embed_audio: { type: Boolean },
+            embed_videos: { type: Boolean },
             mentions: { type: Array },
             nick: { type: String },
             offset: { type: Number },
@@ -20,8 +22,10 @@ export default class RichText extends CustomElement {
 
     constructor () {
         super();
-        this.offset = 0;
+        this.embed_audio = false;
+        this.embed_videos = false;
         this.mentions = [];
+        this.offset = 0;
         this.render_styling = false;
         this.show_images = false;
         this.show_me_message = false;
@@ -29,6 +33,8 @@ export default class RichText extends CustomElement {
 
     render () {
         const options = {
+            embed_audio: this.embed_audio,
+            embed_videos: this.embed_videos,
             nick: this.nick,
             onImgClick: this.onImgClick,
             onImgLoad: this.onImgLoad,

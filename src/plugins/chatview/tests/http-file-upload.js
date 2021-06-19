@@ -386,7 +386,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
-                    var file = {
+                    const file = {
                         'type': 'image/jpeg',
                         'size': '5242881',
                         'lastModifiedDate': "",

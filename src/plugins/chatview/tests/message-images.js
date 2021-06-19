@@ -10,7 +10,7 @@ describe("A Chat Message", function () {
         let message = base_url+"/logo/conversejs-filled.svg";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
@@ -52,6 +52,22 @@ describe("A Chat Message", function () {
         done();
     }));
 
+    it("will not render images if show_images_inline is false",
+            mock.initConverse(['chatBoxesFetched'], {'show_images_inline': false}, async function (done, _converse) {
+        await mock.waitForRoster(_converse, 'current');
+        const base_url = 'https://conversejs.org';
+        const message = base_url+"/logo/conversejs-filled.svg";
+
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        await mock.sendMessage(view, message);
+        const sel = '.chat-content .chat-msg:last .chat-msg__text';
+        await u.waitUntil(() => sizzle(sel).pop().innerHTML.replace(/<!-.*?->/g, '').trim() === message);
+        expect(true).toBe(true);
+        done();
+    }));
+
     it("will render images from approved URLs only",
         mock.initConverse(
             ['chatBoxesFetched'], {'show_images_inline': ['conversejs.org']},
@@ -62,7 +78,7 @@ describe("A Chat Message", function () {
         let message = 'https://imgur.com/oxymPax.png';
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
@@ -85,7 +101,7 @@ describe("A Chat Message", function () {
         const message = base_url+"/logo/non-existing.svg";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
@@ -108,7 +124,7 @@ describe("A Chat Message", function () {
         const message = "https://pbs.twimg.com/media/string?format=jpg&name=small";
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
@@ -129,7 +145,7 @@ describe("A Chat Message", function () {
         const message = 'https://imgur.com/oxymPax.png';
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.api.chatviews.get(contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('converse-chat-message-body .chat-image').length === 1);
         api.settings.set('show_images_inline', false);

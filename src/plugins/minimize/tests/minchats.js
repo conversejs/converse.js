@@ -22,7 +22,7 @@ describe("A chat message", function () {
         const rosterview = document.querySelector('converse-roster');
         await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
         await mock.openChatBoxFor(_converse, contact_jid);
-        const chatview = _converse.api.chatviews.get(contact_jid);
+        const chatview = _converse.chatboxviews.get(contact_jid);
         expect(u.isVisible(chatview)).toBeTruthy();
         expect(chatview.model.get('minimized')).toBeFalsy();
         chatview.querySelector('.toggle-chatbox-button').click();
@@ -190,7 +190,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         const minimized_chats = document.querySelector("converse-minimized-chats")
         const selectUnreadMsgCount = () => minimized_chats.querySelector('#toggle-minimized-chats .unread-message-count');
         const chatbox = _converse.chatboxes.get(sender_jid);
-        chatbox.save('scrolled', true);
+        chatbox.ui.set('scrolled', true);
         _converse.handleMessageStanza(msgFactory());
         await u.waitUntil(() => chatbox.messages.length);
         const view = _converse.chatboxviews.get(sender_jid);

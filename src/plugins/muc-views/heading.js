@@ -1,4 +1,4 @@
-import ChatHeading from 'plugins/chatview/heading.js';
+import { ElementView } from '@converse/skeletor/src/element.js';
 import MUCInviteModal from 'modals/muc-invite.js';
 import RoomDetailsModal from 'modals/muc-details.js';
 import debounce from 'lodash-es/debounce';
@@ -6,16 +6,17 @@ import tpl_muc_head from './templates/muc-head.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { showModeratorToolsModal } from './utils.js';
+import { destroyMUC, showModeratorToolsModal } from './utils.js';
 import {
     getHeadingDropdownItem,
     getHeadingStandaloneButton,
 } from 'plugins/chatview/utils.js';
+import { render } from 'lit';
 
 import './styles/muc-head.scss';
 
 
-export default class MUCHeading extends ChatHeading {
+export default class MUCHeading extends ElementView {
 
     async connectedCallback () {
         super.connectedCallback();
@@ -32,6 +33,11 @@ export default class MUCHeading extends ChatHeading {
         this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
         this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
         this.render();
+    }
+
+    async render () {
+        const tpl = await this.generateHeadingTemplate();
+        render(tpl, this);
     }
 
     onOccupantAdded (occupant) {
@@ -65,8 +71,14 @@ export default class MUCHeading extends ChatHeading {
         this.model.session.set('view', converse.MUC.VIEWS.CONFIG);
     }
 
-    destroy () {
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.destroy();
+    close (ev) {
+        ev.preventDefault();
+        this.model.close();
+    }
+
+    destroy (ev) {
+        ev.preventDefault();
+        destroyMUC(this.model);
     }
 
     /**
@@ -187,7 +199,6 @@ export default class MUCHeading extends ChatHeading {
             })
         );
     }
-
 }
 
 api.elements.define('converse-muc-heading', MUCHeading);

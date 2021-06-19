@@ -1,17 +1,23 @@
-import ChatHeading from 'plugins/chatview/heading.js';
 import tpl_chat_head from './templates/chat-head.js';
+import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
+import { render } from 'lit';
 
 
-export default class HeadlinesHeading extends ChatHeading {
+export default class HeadlinesHeading extends ElementView {
 
     async connectedCallback () {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
         this.render();
+    }
+
+    async render () {
+        const tpl = await this.generateHeadingTemplate();
+        render(tpl, this);
     }
 
     async generateHeadingTemplate () {
@@ -49,6 +55,10 @@ export default class HeadlinesHeading extends ChatHeading {
         return _converse.api.hook('getHeadingButtons', this, buttons);
     }
 
+    close (ev) {
+        ev.preventDefault();
+        this.model.close();
+    }
 }
 
 api.elements.define('converse-headlines-heading', HeadlinesHeading);

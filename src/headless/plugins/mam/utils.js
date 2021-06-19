@@ -1,8 +1,9 @@
+import MAMPlaceholderMessage from './placeholder.js';
 import log from '@converse/headless/log';
 import sizzle from 'sizzle';
+import { _converse, api, converse } from '@converse/headless/core';
 import { parseMUCMessage } from '@converse/headless/plugins/muc/parsers';
 import { parseMessage } from '@converse/headless/plugins/chat/parsers';
-import { _converse, api, converse } from '@converse/headless/core';
 
 const { Strophe, $iq } = converse.env;
 const { NS } = Strophe;
@@ -97,8 +98,8 @@ export async function handleMAMResult (model, result, query, options, should_pag
 }
 
 /**
- * Fetch XEP-0313 archived messages based on the passed in criteria.
- * @param { Object } options
+ * @typedef { Object } MAMOptions
+ * A map of MAM related options that may be passed to fetchArchivedMessages
  * @param { integer } [options.max] - The maximum number of items to return.
  *  Defaults to "archived_messages_page_size"
  * @param { string } [options.after] - The XEP-0359 stanza ID of a message
@@ -112,10 +113,17 @@ export async function handleMAMResult (model, result, query, options, should_pag
  * @param { string } [options.with] - The JID of the entity with
  *  which messages were exchanged.
  * @param { boolean } [options.groupchat] - True if archive in groupchat.
- * @param { ('forwards'|'backwards'|null)} [should_page=null] - Determines whether this function should
- *  recursively page through the entire result set if a limited number of results were returned.
  */
-export async function fetchArchivedMessages (model, options = {}, should_page=null) {
+
+/**
+ * Fetch XEP-0313 archived messages based on the passed in criteria.
+ * @param { _converse.ChatBox | _converse.ChatRoom } model
+ * @param { MAMOptions } [options]
+ * @param { ('forwards'|'backwards'|null)} [should_page=null] - Determines whether
+ *  this function should recursively page through the entire result set if a limited
+ *  number of results were returned.
+ */
+export async function fetchArchivedMessages (model, options = {}, should_page = null) {
     if (model.disable_mam) {
         return;
     }
@@ -146,16 +154,49 @@ export async function fetchArchivedMessages (model, options = {}, should_page=nu
             }
             return fetchArchivedMessages(model, options, should_page);
         } else {
-            // TODO: Add a special kind of message which will
-            // render as a link to fetch further messages, either
-            // to fetch older messages or to fill in a gap.
+            createPlaceholder(model, options, result);
         }
     }
 }
 
 /**
+ * Create a placeholder message which is used to indicate gaps in the history.
+ * @param { _converse.ChatBox | _converse.ChatRoom } model
+ * @param { MAMOptions } options
+ * @param { object } result - The RSM result object
+ */
+async function createPlaceholder (model, options, result) {
+    if (options.before == '' && (model.messages.length === 0 || !options.start)) {
+        // Fetching the latest MAM messages with an empty local cache
+        return;
+    }
+    if (options.before && !options.start) {
+        // Infinite scrolling upward
+        return;
+    }
+    if (options.before == null) { // eslint-disable-line no-eq-null
+        // Adding placeholders when paging forwards is not supported yet,
+        // since currently with standard Converse, we only page forwards
+        // when fetching the entire history (i.e. no gaps should arise).
+        return;
+    }
+    const msgs = await Promise.all(result.messages);
+    const { rsm } = result;
+    const key = `stanza_id ${model.get('jid')}`;
+    const adjacent_message = msgs.find(m => m[key] === rsm.result.first);
+    const msg_data = {
+        'template_hook': 'getMessageTemplate',
+        'time': new Date(new Date(adjacent_message['time']) - 1).toISOString(),
+        'before': rsm.result.first,
+        'start': options.start
+    }
+    model.messages.add(new MAMPlaceholderMessage(msg_data));
+}
+
+/**
  * Fetches messages that might have been archived *after*
  * the last archived message in our local cache.
+ * @param { _converse.ChatBox | _converse.ChatRoom }
  */
 export function fetchNewestMessages (model) {
     if (model.disable_mam) {

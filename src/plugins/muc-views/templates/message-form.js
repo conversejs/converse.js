@@ -5,13 +5,10 @@ import { resetElementHeight } from 'plugins/chatview/utils.js';
 
 
 export default (o) => {
-    const unread_msgs = __('You have unread messages');
     const label_message = o.composing_spoiler ? __('Hidden message') : __('Message');
     const label_spoiler_hint = __('Optional hint');
     const show_send_button = api.settings.get('show_send_button');
-
     return html`
-        ${ (o.scrolled && o.num_unread) ? html`<div class="new-msgs-indicator" @click=${ev => o.viewUnreadMessages(ev)}>▼ ${ unread_msgs } ▼</div>` : '' }
         <form class="setNicknameButtonForm hidden">
             <input type="submit" class="btn btn-primary" name="join" value="Join"/>
         </form>

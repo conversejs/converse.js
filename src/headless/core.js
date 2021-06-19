@@ -751,7 +751,7 @@ async function initSessionStorage () {
     };
 }
 
-function initPersistentStorage () {
+function initPersistentStorage (store_name) {
     if (api.settings.get('persistent_store') === 'sessionStorage') {
         return;
     } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtLocal') {
@@ -771,7 +771,7 @@ function initPersistentStorage () {
 
     const config = {
         'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
-        'storeName': _converse.bare_jid
+        'storeName': store_name
     }
     if (_converse.api.settings.get("persistent_store") === 'localStorage') {
         config['description'] = 'localStorage instance';
@@ -990,7 +990,7 @@ async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (_converse.session?.get('id') !== id) {
-        initPersistentStorage();
+        initPersistentStorage(bare_jid);
 
         _converse.session = new Model({ id });
         initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");

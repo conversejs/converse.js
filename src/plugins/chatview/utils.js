@@ -3,6 +3,12 @@ import { _converse } from "@converse/headless/core";
 import { html } from 'lit';
 
 
+export function clearHistory (jid) {
+    if (_converse.router.history.getFragment() === `converse/chat?jid=${jid}`) {
+        _converse.router.navigate('');
+    }
+}
+
 export async function getHeadingDropdownItem (promise_or_data) {
     const data = await promise_or_data;
     return html`

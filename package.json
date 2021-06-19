@@ -118,7 +118,6 @@
     "@fortawesome/fontawesome-free": "5.14.0",
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^2.0.27",
-    "dayjs": "1.10.4",
     "favico.js-slevomat": "^0.3.11",
     "jed": "1.1.1",
     "lit": "^2.0.0-rc.1",

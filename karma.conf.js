@@ -39,7 +39,6 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/status/tests/status.js", type: 'module' },
       { pattern: "src/headless/tests/converse.js", type: 'module' },
       { pattern: "src/headless/tests/eventemitter.js", type: 'module' },
-      { pattern: "src/headless/tests/persistence.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },
@@ -90,6 +89,9 @@ module.exports = function(config) {
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },
+
+      // For some reason this test causes issues when its run earlier
+      { pattern: "src/headless/tests/persistence.js", type: 'module' },
     ],
 
     proxies: {

@@ -14,9 +14,8 @@ describe("A chat room", function () {
             [{'category': 'pubsub', 'type': 'pep'}],
             ['http://jabber.org/protocol/pubsub#publish-options']
         );
-        const { u, $iq } = converse.env;
-        spyOn(_converse.connection, 'getUniqueId').and.callThrough();
 
+        const { u, $iq } = converse.env;
         const nick = 'JC';
         const muc_jid = 'theplay@conference.shakespeare.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -32,6 +31,7 @@ describe("A chat room", function () {
         cancel_button.click();
 
         await u.waitUntil(() => view.model.session.get('view') === null);
+
         expect(u.hasClass('on-button', toggle), false);
         expect(toggle.title).toBe('Bookmark this groupchat');
 
@@ -128,7 +128,7 @@ describe("A chat room", function () {
 
 
     it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(
-            [], {}, async function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (done, _converse) {
 
         const { u } = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);

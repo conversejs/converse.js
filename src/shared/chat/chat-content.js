@@ -1,6 +1,6 @@
 import './message-history';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from '@converse/headless/core';
+import { api } from '@converse/headless/core';
 import { html } from 'lit';
 import { markScrolled } from './utils.js';
 
@@ -25,8 +25,8 @@ export default class ChatContent extends CustomElement {
         this.removeEventListener('scroll', markScrolled);
     }
 
-    initialize () {
-        this.model = _converse.chatboxes.get(this.jid);
+    async initialize () {
+        await this.setModels();
         this.listenTo(this.model, 'change:hidden_occupants', this.requestUpdate);
         this.listenTo(this.model.messages, 'add', this.requestUpdate);
         this.listenTo(this.model.messages, 'change', this.requestUpdate);
@@ -43,7 +43,16 @@ export default class ChatContent extends CustomElement {
         this.addEventListener('scroll', markScrolled);
     }
 
+    async setModels () {
+        this.model = await api.chatboxes.get(this.jid);
+        await this.model.initialized;
+        this.requestUpdate();
+    }
+
     render () {
+        if (!this.model) {
+            return '';
+        }
         // This element has "flex-direction: reverse", so elements here are
         // shown in reverse order.
         return html`

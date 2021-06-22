@@ -12,7 +12,7 @@ describe("Emojis", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-            await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
+            await u.waitUntil(() => view.querySelector('converse-emoji-picker'));
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = ':gri';
 
@@ -80,7 +80,7 @@ describe("Emojis", function () {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-            await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
+            await u.waitUntil(() => view.querySelector('converse-emoji-picker'));
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = ':';
             // Press tab
@@ -130,7 +130,7 @@ describe("Emojis", function () {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-            await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
+            await u.waitUntil(() => view.querySelector('converse-emoji-picker'));
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = ':gri';
 

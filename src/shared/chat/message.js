@@ -28,23 +28,13 @@ export default class Message extends CustomElement {
         }
     }
 
-    render () {
-        if (this.show_spinner) {
-            return tpl_spinner();
-        } else if (this.model.get('file') && !this.model.get('oob_url')) {
-            return this.renderFileProgress();
-        } else if (['error', 'info'].includes(this.model.get('type'))) {
-            return this.renderInfoMessage();
-        } else {
-            return this.renderChatMessage();
-        }
-    }
-
     connectedCallback () {
         super.connectedCallback();
-        this.chatbox = _converse.chatboxes.get(this.jid);
-        this.model = this.chatbox.messages.get(this.mid);
+        this.initialize();
+    }
 
+    async initialize () {
+        await this.setModels();
         this.listenTo(this.chatbox, 'change:first_unread_id', this.requestUpdate);
         this.listenTo(this.model, 'change', this.requestUpdate);
         this.model.vcard && this.listenTo(this.model.vcard, 'change', this.requestUpdate);
@@ -57,6 +47,27 @@ export default class Message extends CustomElement {
                     this.listenTo(this.model.occupant, 'change', this.requestUpdate)
                 });
             }
+        }
+    }
+
+    async setModels () {
+        this.chatbox = await api.chatboxes.get(this.jid);
+        await this.chatbox.initialized;
+        this.model = this.chatbox.messages.get(this.mid);
+        this.requestUpdate();
+    }
+
+    render () {
+        if (!this.model) {
+            return '';
+        } else if (this.show_spinner) {
+            return tpl_spinner();
+        } else if (this.model.get('file') && !this.model.get('oob_url')) {
+            return this.renderFileProgress();
+        } else if (['error', 'info'].includes(this.model.get('type'))) {
+            return this.renderInfoMessage();
+        } else {
+            return this.renderChatMessage();
         }
     }
 

@@ -15,17 +15,26 @@ export default class ChatBottomPanel extends ElementView {
         'click .toggle-clear': 'clearMessages'
     };
 
+    constructor () {
+        super();
+        this.debouncedRender = debounce(this.render, 100);
+    }
+
     async connectedCallback () {
         super.connectedCallback();
-        this.debouncedRender = debounce(this.render, 100);
-        this.model = _converse.chatboxes.get(this.getAttribute('jid'));
+        await this.initialize();
+        this.render(); // don't call in initialize, since the MUCBottomPanel subclasses it
+                       // and we want to render after it has finished as wel.
+    }
+
+    async initialize () {
+        this.model = await api.chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
         this.listenTo(this.model, 'change:num_unread', this.debouncedRender)
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
 
         this.addEventListener('focusin', ev => this.emitFocused(ev));
         this.addEventListener('focusout', ev => this.emitBlurred(ev));
-        this.render();
     }
 
     render () {

@@ -54,6 +54,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/chatview/tests/oob.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/receipts.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/spoilers.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/styling.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/xss.js", type: 'module' },
       { pattern: "src/plugins/controlbox/tests/controlbox.js", type: 'module' },
       { pattern: "src/plugins/controlbox/tests/login.js", type: 'module' },
@@ -89,7 +90,6 @@ module.exports = function(config) {
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },
-      { pattern: "src/shared/chat/tests/styling.js", type: 'module' },
     ],
 
     proxies: {

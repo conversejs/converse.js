@@ -2,7 +2,6 @@ import 'shared/autocomplete/index.js';
 import BottomPanel from 'plugins/chatview/bottom-panel.js';
 import debounce from 'lodash-es/debounce';
 import tpl_muc_bottom_panel from './templates/muc-bottom-panel.js';
-import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { render } from 'lit';
 
@@ -35,6 +34,7 @@ export default class MUCBottomPanel extends BottomPanel {
         render(tpl_muc_bottom_panel({
             can_edit, entered,
             'model': this.model,
+            'is_groupchat': true,
             'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
         }), this);
     }
@@ -45,14 +45,6 @@ export default class MUCBottomPanel extends BottomPanel {
 
     sendButtonClicked (ev) {
         this.querySelector('converse-message-form')?.onFormSubmitted(ev);
-    }
-
-    getToolbarOptions () {
-        return Object.assign(super.getToolbarOptions(), {
-            'is_groupchat': true,
-            'label_hide_occupants': __('Hide the list of participants'),
-            'show_occupants_toggle': api.settings.get('visible_toolbar_buttons').toggle_occupants
-        });
     }
 
     hideOccupants (ev) {

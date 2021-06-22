@@ -52,10 +52,6 @@ export default class ChatBottomPanel extends ElementView {
         _converse.chatboxviews.get(this.getAttribute('jid'))?.emitBlurred(ev);
     }
 
-    getToolbarOptions () { // eslint-disable-line class-methods-use-this
-        return {};
-    }
-
     onDrop (evt) {
         if (evt.dataTransfer.files.length == 0) {
             // There are no files to be dropped, so this isn’t a file

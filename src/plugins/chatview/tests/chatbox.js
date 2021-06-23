@@ -1,4 +1,4 @@
-/*global mock, converse, _ */
+/*global mock, converse */
 
 const $msg = converse.env.$msg;
 const Strophe = converse.env.Strophe;
@@ -188,9 +188,9 @@ describe("Chatboxes", function () {
             const attrs = ['id', 'box_id', 'visible'];
             let new_attrs, old_attrs;
             for (let i=0; i<attrs.length; i++) {
-                new_attrs = _.map(_.map(newchatboxes.models, 'attributes'), attrs[i]);
-                old_attrs = _.map(_.map(_converse.chatboxes.models, 'attributes'), attrs[i]);
-                expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
+                new_attrs = newchatboxes.models.map(m => m.attributes[i]);
+                old_attrs = _converse.chatboxes.models.map(m => m.attributes[i]);
+                expect(new_attrs).toEqual(old_attrs);
             }
             done();
         }));
@@ -952,146 +952,6 @@ describe("Chatboxes", function () {
         }));
     });
 
-    describe("A ChatBox's Unread Message Count", function () {
-
-        it("is incremented when the message is received and ChatBoxView is scrolled up",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current', 1);
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                  msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
-
-            const view = await mock.openChatBoxFor(_converse, sender_jid)
-            const sent_stanzas = [];
-            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-            view.model.ui.set('scrolled', true);
-            await _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => view.model.messages.length);
-            expect(view.model.get('num_unread')).toBe(1);
-            const msgid = view.model.messages.last().get('id');
-            expect(view.model.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => sent_stanzas.length);
-            expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-            done();
-        }));
-
-        it("is not incremented when the message is received and ChatBoxView is scrolled down",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current', 1);
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
-            await mock.openChatBoxFor(_converse, sender_jid);
-            const sent_stanzas = [];
-            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-            const chatbox = _converse.chatboxes.get(sender_jid);
-            await _converse.handleMessageStanza(msg);
-            expect(chatbox.get('num_unread')).toBe(0);
-            await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
-            expect(sent_stanzas[1].querySelector('displayed')).toBeDefined();
-            done();
-        }));
-
-        it("is incremented when message is received, chatbox is scrolled down and the window is not focused",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current');
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msgFactory = function () {
-                return mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
-            };
-            await mock.openChatBoxFor(_converse, sender_jid);
-            const sent_stanzas = [];
-            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-            const chatbox = _converse.chatboxes.get(sender_jid);
-            _converse.windowState = 'hidden';
-            const msg = msgFactory();
-            _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => chatbox.messages.length);
-            expect(chatbox.get('num_unread')).toBe(1);
-            const msgid = chatbox.messages.last().get('id');
-            expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length);
-            expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-            done();
-        }));
-
-        it("is incremented when message is received, chatbox is scrolled up and the window is not focused",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current', 1);
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
-            await mock.openChatBoxFor(_converse, sender_jid);
-            const sent_stanzas = [];
-            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-            const chatbox = _converse.chatboxes.get(sender_jid);
-            chatbox.ui.set('scrolled', true);
-            _converse.windowState = 'hidden';
-            const msg = msgFactory();
-            _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => chatbox.messages.length);
-            expect(chatbox.get('num_unread')).toBe(1);
-            const msgid = chatbox.messages.last().get('id');
-            expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 1);
-            expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-            done();
-        }));
-
-        it("is cleared when ChatBoxView was scrolled down and the window become focused",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current', 1);
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
-            await mock.openChatBoxFor(_converse, sender_jid);
-            const sent_stanzas = [];
-            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-            const chatbox = _converse.chatboxes.get(sender_jid);
-            _converse.windowState = 'hidden';
-            const msg = msgFactory();
-            _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => chatbox.messages.length);
-            expect(chatbox.get('num_unread')).toBe(1);
-            const msgid = chatbox.messages.last().get('id');
-            expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 1);
-            expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-            _converse.saveWindowState({'type': 'focus'});
-            await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
-            expect(sent_stanzas[1].querySelector('displayed')).toBeDefined();
-            expect(chatbox.get('num_unread')).toBe(0);
-            done();
-        }));
-
-        it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current', 1);
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
-            await mock.openChatBoxFor(_converse, sender_jid);
-            const sent_stanzas = [];
-            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-            const chatbox = _converse.chatboxes.get(sender_jid);
-            chatbox.ui.set('scrolled', true);
-            _converse.windowState = 'hidden';
-            const msg = msgFactory();
-            _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => chatbox.messages.length);
-            expect(chatbox.get('num_unread')).toBe(1);
-            const msgid = chatbox.messages.last().get('id');
-            expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 1);
-            expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-            _converse.saveWindowState({'type': 'focus'});
-            await u.waitUntil(() => chatbox.get('num_unread') === 1);
-            expect(chatbox.get('first_unread_id')).toBe(msgid);
-            expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-            done();
-        }));
-    });
 
     describe("A RosterView's Unread Message Count", function () {
 

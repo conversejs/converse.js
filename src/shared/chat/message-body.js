@@ -37,7 +37,7 @@ export default class MessageBody extends CustomElement {
             'embed_audio': this.embed_audio,
             'embed_videos': this.embed_videos,
             'nick': this.model.collection.chatbox.get('nick'),
-            'onImgClick': this.onImgClick,
+            'onImgClick': (ev) => this.onImgClick(ev),
             'onImgLoad': () => this.onImgLoad(),
             'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
             'show_images': this.show_images,

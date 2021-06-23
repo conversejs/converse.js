@@ -113,8 +113,8 @@ export class RichText extends String {
             if (this.show_images && isImageURL(url_text) && isImageDomainAllowed(url_text)) {
                 template = tpl_image({
                     'url': filtered_url,
-                    'onClick': this.onImgLoad,
-                    'onLoad': this.onImgClick
+                    'onClick': this.onImgClick,
+                    'onLoad': this.onImgLoad
                 });
             } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
                 template = tpl_video(filtered_url);

@@ -1,6 +1,8 @@
 import { converse } from "@converse/headless/core";
 import { getURI } from 'utils/html.js';
 import { html } from 'lit';
+import { isImageDomainAllowed, } from 'utils/html';
+
 const u = converse.env.utils;
 
 function isValidURL (url) {
@@ -9,7 +11,7 @@ function isValidURL (url) {
 }
 
 function isValidImage (image) {
-    return image && u.isImageDomainAllowed(image) && isValidURL(image);
+    return image && isImageDomainAllowed(image) && isValidURL(image);
 }
 
 const tpl_url_wrapper = (o, wrapped_template) =>

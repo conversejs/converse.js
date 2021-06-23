@@ -90,7 +90,7 @@ describe("A ChatBox's Unread Message Count", function () {
         done();
     }));
 
-    it("is cleared when ChatBoxView was scrolled down and the window become focused",
+    it("is cleared when the chat was scrolled down and the window become focused",
             mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -113,6 +113,24 @@ describe("A ChatBox's Unread Message Count", function () {
         await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
         expect(sent_stanzas[1].querySelector('displayed')).toBeDefined();
         expect(chatbox.get('num_unread')).toBe(0);
+        done();
+    }));
+
+    it("is cleared when the chat was hidden in fullscreen mode and then becomes visible",
+            mock.initConverse(['chatBoxesFetched'], {'view_mode': 'fullscreen'},
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, sender_jid);
+        const chatbox = _converse.chatboxes.get(sender_jid);
+        chatbox.save({'hidden': true});
+        _converse.handleMessageStanza(mock.createChatMessage(_converse, sender_jid, 'This message will be unread'));
+        await u.waitUntil(() => chatbox.messages.length);
+        expect(chatbox.get('num_unread')).toBe(1);
+        chatbox.save({'hidden': false});
+        await u.waitUntil(() => chatbox.get('num_unread') === 0);
+        chatbox.close();
         done();
     }));
 

@@ -55,10 +55,8 @@ async function populateRoster (ignore_cache=false) {
 
 
 function updateUnreadCounter (chatbox) {
-    const contact = _converse.roster && _converse.roster.findWhere({'jid': chatbox.get('jid')});
-    if (contact !== undefined) {
-        contact.save({'num_unread': chatbox.get('num_unread')});
-    }
+    const contact = _converse.roster?.findWhere({'jid': chatbox.get('jid')});
+    contact?.save({'num_unread': chatbox.get('num_unread')});
 }
 
 function registerPresenceHandler () {

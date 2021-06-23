@@ -1,6 +1,7 @@
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getOpenPromise } from '@converse/openpromise';
+import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, $pres } = converse.env;
 
@@ -147,7 +148,7 @@ const RosterContact = Model.extend({
      * @param { String } message - Optional message to send to the person being unauthorized
      */
     unauthorize (message) {
-        _converse.rejectPresenceSubscription(this.get('jid'), message);
+        rejectPresenceSubscription(this.get('jid'), message);
         return this;
     },
 

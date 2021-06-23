@@ -18,9 +18,14 @@ describe("A chat room", function () {
         const { u, $iq } = converse.env;
         const nick = 'JC';
         const muc_jid = 'theplay@conference.shakespeare.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
-
+        await mock.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
+        await mock.getRoomFeatures(_converse, muc_jid, []);
+        await mock.waitForReservedNick(_converse, muc_jid, nick);
+        await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
+        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await mock.returnMemberLists(_converse, muc_jid, [], ['member', 'admin', 'owner']);
+
         await u.waitUntil(() => view.querySelector('.toggle-bookmark') !== null);
         const toggle = view.querySelector('.toggle-bookmark');
         expect(toggle.title).toBe('Bookmark this groupchat');

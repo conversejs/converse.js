@@ -5,6 +5,14 @@ import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/shared/utils.js';
+import {
+    appendArrayBuffer,
+    arrayBufferToBase64,
+    arrayBufferToHex,
+    arrayBufferToString,
+    base64ToArrayBuffer,
+    stringToArrayBuffer
+} from '@converse/headless/utils/arraybuffer.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -33,7 +41,7 @@ export const omemo = {
                 'iv': iv,
                 'tagLength': TAG_LENGTH
             },
-            encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
+            encrypted = await crypto.subtle.encrypt(algo, key, stringToArrayBuffer(plaintext)),
             length = encrypted.byteLength - ((128 + 7) >> 3),
             ciphertext = encrypted.slice(0, length),
             tag = encrypted.slice(length),
@@ -42,21 +50,21 @@ export const omemo = {
         return {
             'key': exported_key,
             'tag': tag,
-            'key_and_tag': u.appendArrayBuffer(exported_key, tag),
-            'payload': u.arrayBufferToBase64(ciphertext),
-            'iv': u.arrayBufferToBase64(iv)
+            'key_and_tag': appendArrayBuffer(exported_key, tag),
+            'payload': arrayBufferToBase64(ciphertext),
+            'iv': arrayBufferToBase64(iv)
         };
     },
 
     async decryptMessage (obj) {
         const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']);
-        const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
+        const cipher = appendArrayBuffer(base64ToArrayBuffer(obj.payload), obj.tag);
         const algo = {
             'name': 'AES-GCM',
-            'iv': u.base64ToArrayBuffer(obj.iv),
+            'iv': base64ToArrayBuffer(obj.iv),
             'tagLength': TAG_LENGTH
         };
-        return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
+        return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
     }
 }
 
@@ -143,7 +151,7 @@ function getDecryptionErrorAttributes (e) {
 
 async function decryptPrekeyWhisperMessage (attrs) {
     const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
-    const key = u.base64ToArrayBuffer(attrs.encrypted.key);
+    const key = base64ToArrayBuffer(attrs.encrypted.key);
     let key_and_tag;
     try {
         key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary');
@@ -200,7 +208,7 @@ async function decryptWhisperMessage (attrs) {
         });
     }
     const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
-    const key = u.base64ToArrayBuffer(attrs.encrypted.key);
+    const key = base64ToArrayBuffer(attrs.encrypted.key);
     try {
         const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary');
         const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
@@ -262,7 +270,7 @@ export async function generateFingerprint (device) {
         return;
     }
     const bundle = await device.getBundle();
-    bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
+    bundle['fingerprint'] = arrayBufferToHex(base64ToArrayBuffer(bundle['identity_key']));
     device.save('bundle', bundle);
     device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
 }
@@ -303,15 +311,15 @@ async function buildSession (device) {
 
     return sessionBuilder.processPreKey({
         'registrationId': parseInt(device.get('id'), 10),
-        'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+        'identityKey': base64ToArrayBuffer(bundle.identity_key),
         'signedPreKey': {
             'keyId': bundle.signed_prekey.id, // <Number>
-            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+            'publicKey': base64ToArrayBuffer(bundle.signed_prekey.public_key),
+            'signature': base64ToArrayBuffer(bundle.signed_prekey.signature)
         },
         'preKey': {
             'keyId': prekey.id, // <Number>
-            'publicKey': u.base64ToArrayBuffer(prekey.key)
+            'publicKey': base64ToArrayBuffer(prekey.key)
         }
     });
 }

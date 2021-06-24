@@ -439,42 +439,6 @@ u.formatFingerprint = function (fp) {
     return fp;
 };
 
-u.appendArrayBuffer = function (buffer1, buffer2) {
-    const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
-    tmp.set(new Uint8Array(buffer1), 0);
-    tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
-    return tmp.buffer;
-};
-
-u.arrayBufferToHex = function (ab) {
-    // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex#40031979
-    return Array.prototype.map.call(new Uint8Array(ab), x => ('00' + x.toString(16)).slice(-2)).join('');
-};
-
-u.arrayBufferToString = function (ab) {
-    return new TextDecoder("utf-8").decode(ab);
-};
-
-u.stringToArrayBuffer = function (string) {
-    const bytes = new TextEncoder("utf-8").encode(string);
-    return bytes.buffer;
-};
-
-u.arrayBufferToBase64 = function (ab) {
-    return btoa((new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-};
-
-u.base64ToArrayBuffer = function (b64) {
-    const binary_string =  window.atob(b64),
-          len = binary_string.length,
-          bytes = new Uint8Array(len);
-
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binary_string.charCodeAt(i)
-    }
-    return bytes.buffer
-};
-
 u.getRandomInt = function (max) {
     return Math.floor(Math.random() * Math.floor(max));
 };

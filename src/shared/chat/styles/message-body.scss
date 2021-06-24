@@ -36,3 +36,16 @@ converse-chat-message-body {
         }
     }
 }
+
+.converse-overlayed {
+    converse-chat-message-body {
+        audio {
+            display: block;
+            max-width: 100%;
+        }
+        video {
+            display: block;
+            max-width: 100%;
+        }
+    }
+}

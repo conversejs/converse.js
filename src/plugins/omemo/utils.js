@@ -1,16 +1,25 @@
 /* global libsignal */
+import URI from 'urijs';
 import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
+import tpl_audio from 'templates/audio.js';
+import tpl_file from 'templates/file.js';
+import tpl_image from 'templates/image.js';
+import tpl_video from 'templates/video.js';
 import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/shared/utils.js';
+import { isAudioURL, isImageURL, isVideoURL, getURI } from 'utils/html.js';
+import { until } from 'lit/directives/until.js';
+import { MIMETYPES_MAP } from 'utils/file.js';
 import {
     appendArrayBuffer,
     arrayBufferToBase64,
     arrayBufferToHex,
     arrayBufferToString,
     base64ToArrayBuffer,
+    hexToArrayBuffer,
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
 
@@ -66,6 +75,110 @@ export const omemo = {
         };
         return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
     }
+}
+
+async function decryptFile (iv, key, cipher) {
+    const key_obj = await crypto.subtle.importKey('raw', hexToArrayBuffer(key), 'AES-GCM', false, ['decrypt']);
+    const algo = {
+        'name': 'AES-GCM',
+        'iv': hexToArrayBuffer(iv),
+    };
+    return crypto.subtle.decrypt(algo, key_obj, cipher);
+}
+
+async function downloadFile(url) {
+    let response;
+    try {
+        response = await fetch(url)
+    } catch(e) {
+        log.error(`Failed to download encrypted media: ${url}`);
+        log.error(e);
+        return null;
+    }
+
+    if (response.status >= 200 && response.status < 400) {
+        return response.arrayBuffer();
+    }
+}
+
+async function getAndDecryptFile (uri) {
+    const hash = uri.hash().slice(1);
+    const protocol = window.location.hostname === 'localhost' ? 'http' : 'https';
+    const http_url = uri.toString().replace(/^aesgcm/, protocol);
+    const cipher = await downloadFile(http_url);
+    const iv = hash.slice(0, 24);
+    const key = hash.slice(24);
+    let content;
+    try {
+        content = await decryptFile(iv, key, cipher);
+    } catch (e) {
+        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(e);
+        return null;
+    }
+    const [filename, extension] = uri.filename()?.split('.');
+    const mimetype = MIMETYPES_MAP[extension];
+    try {
+        const file = new File([content], filename, { 'type': mimetype });
+        return URL.createObjectURL(file);
+    } catch (e) {
+        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(e);
+        return null;
+    }
+}
+
+function getTemplateForObjectURL (uri, obj_url, richtext) {
+    const file_url = uri.toString();
+    if (obj_url === null) {
+        return file_url;
+    }
+    if (isImageURL(file_url)) {
+        return tpl_image({
+            'url': obj_url,
+            'onClick': richtext.onImgClick,
+            'onLoad': richtext.onImgLoad
+        });
+    } else if (isAudioURL(file_url)) {
+        return tpl_audio(obj_url);
+    } else if (isVideoURL(file_url)) {
+        return tpl_video(obj_url);
+    } else {
+        return tpl_file(obj_url, uri.filename());
+    }
+
+}
+
+function addEncryptedFiles(text, offset, richtext) {
+    const objs = [];
+    try {
+        const parse_options = { 'start': /\b(aesgcm:\/\/)/gi };
+        URI.withinString(
+            text,
+            (url, start, end) => {
+                objs.push({ url, start, end });
+                return url;
+            },
+            parse_options
+        );
+    } catch (error) {
+        log.debug(error);
+        return;
+    }
+    objs.forEach(o => {
+        const uri = getURI(text.slice(o.start, o.end));
+        const promise = getAndDecryptFile(uri)
+            .then(obj_url => getTemplateForObjectURL(uri, obj_url, richtext));
+        const template = html`${until(promise, '')}`;
+        richtext.addTemplateResult(o.start + offset, o.end + offset, template);
+    });
+}
+
+export function handleEncryptedFiles (richtext) {
+    if (!_converse.config.get('trusted')) {
+        return;
+    }
+    richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
 }
 
 export function parseEncryptedMessage (stanza, attrs) {

@@ -39,5 +39,10 @@ export function base64ToArrayBuffer (b64) {
     return bytes.buffer
 }
 
+export function hexToArrayBuffer (hex) {
+    const typedArray = new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)))
+    return typedArray.buffer
+}
+
 
 Object.assign(u, { arrayBufferToHex, arrayBufferToString, stringToArrayBuffer, arrayBufferToBase64, base64ToArrayBuffer });

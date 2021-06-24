@@ -162,7 +162,7 @@ describe("A Chat Message", function () {
             const media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                 `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `Download image file "conversejs-filled.svg"</a>`);
+                `Download file "conversejs-filled.svg"</a>`);
             done();
         }));
     });

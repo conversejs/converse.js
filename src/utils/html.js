@@ -7,7 +7,6 @@ import URI from 'urijs';
 import isFunction from 'lodash-es/isFunction';
 import log from '@converse/headless/log';
 import tpl_audio from 'templates/audio.js';
-import tpl_video from 'templates/video.js';
 import tpl_file from 'templates/file.js';
 import tpl_form_captcha from '../templates/form_captcha.js';
 import tpl_form_checkbox from '../templates/form_checkbox.js';
@@ -18,6 +17,7 @@ import tpl_form_textarea from '../templates/form_textarea.js';
 import tpl_form_url from '../templates/form_url.js';
 import tpl_form_username from '../templates/form_username.js';
 import tpl_hyperlink from 'templates/hyperlink.js';
+import tpl_video from 'templates/video.js';
 import u from '../headless/utils/core';
 import { api, converse } from '@converse/headless/core';
 import { render } from 'lit';
@@ -89,6 +89,10 @@ export function isVideoURL (url) {
     return checkFileTypes(['.mp4', '.webm'], url);
 }
 
+export function isEncryptedFileURL (url) {
+    return url.startsWith('aesgcm://');
+}
+
 export function isImageURL (url) {
     const regex = api.settings.get('image_urls_regex');
     return regex?.test(url) || isURLWithImageExtension(url);
@@ -141,33 +145,13 @@ export function isImageDomainAllowed (url) {
     }
 }
 
-export function getFileName (uri) {
+function getFileName (uri) {
     try {
         return decodeURI(uri.filename());
     } catch (error) {
         log.debug(error);
         return uri.filename();
     }
-}
-
-function renderAudioURL (url) {
-    return tpl_audio(url);
-}
-
-function renderImageURL (_converse, uri) {
-    const { __ } = _converse;
-    return tpl_file({
-        'url': uri.toString(),
-        'label_download': __('Download image file "%1$s"', getFileName(uri))
-    });
-}
-
-function renderFileURL (_converse, uri) {
-    const { __ } = _converse;
-    return tpl_file({
-        'url': uri.toString(),
-        'label_download': __('Download file "%1$s"', getFileName(uri))
-    });
 }
 
 /**
@@ -185,11 +169,11 @@ u.getOOBURLMarkup = function (_converse, url) {
     if (u.isVideoURL(uri)) {
         return tpl_video(url);
     } else if (u.isAudioURL(uri)) {
-        return renderAudioURL(url);
+        return tpl_audio(url);
     } else if (u.isImageURL(uri)) {
-        return renderImageURL(_converse, uri);
+        return tpl_file(uri.toString(), getFileName(uri));
     } else {
-        return renderFileURL(_converse, uri);
+        return tpl_file(uri.toString(), getFileName(uri));
     }
 };
 

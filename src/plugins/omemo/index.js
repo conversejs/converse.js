@@ -20,6 +20,7 @@ import { OMEMOEnabledChatBox } from './mixins/chatbox.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import {
     getOMEMOToolbarButton,
+    handleEncryptedFiles,
     initOMEMO,
     omemo,
     onChatBoxesInitialized,
@@ -82,6 +83,8 @@ converse.plugins.add('converse-omemo', {
 
         api.listen.on('statusInitialized', initOMEMO);
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
+
+        api.listen.on('afterMessageBodyTransformed', handleEncryptedFiles);
 
         api.listen.on('userDetailsModalInitialized', contact => {
             const jid = contact.get('jid');

@@ -94,14 +94,21 @@ export function isImageURL (url) {
     return regex?.test(url) || isURLWithImageExtension(url);
 }
 
+function isDomainAllowed (whitelist, url) {
+    const uri = getURI(url);
+    const subdomain = uri.subdomain();
+    const domain = uri.domain();
+    const fulldomain = `${subdomain ? `${subdomain}.` : ''}${domain}`;
+    return whitelist.includes(domain) || whitelist.includes(fulldomain);
+}
+
 export function isAudioDomainAllowed (url) {
     const embed_audio = api.settings.get('embed_audio');
     if (!Array.isArray(embed_audio)) {
         return embed_audio;
     }
     try {
-        const audio_domain = getURI(url).domain();
-        return embed_audio.includes(audio_domain);
+        return isDomainAllowed(embed_audio, url);
     } catch (error) {
         log.debug(error);
         return false;
@@ -114,8 +121,7 @@ export function isVideoDomainAllowed (url) {
         return embed_videos;
     }
     try {
-        const video_domain = getURI(url).domain();
-        return embed_videos.includes(video_domain);
+        return isDomainAllowed(embed_videos, url);
     } catch (error) {
         log.debug(error);
         return false;
@@ -128,8 +134,7 @@ export function isImageDomainAllowed (url) {
         return show_images_inline;
     }
     try {
-        const image_domain = getURI(url).domain();
-        return show_images_inline.includes(image_domain);
+        return isDomainAllowed(show_images_inline, url);
     } catch (error) {
         log.debug(error);
         return false;

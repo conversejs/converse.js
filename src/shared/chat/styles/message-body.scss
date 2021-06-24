@@ -1,9 +1,37 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "shared/styles/_mixins.scss";
+
 converse-chat-message-body {
     audio {
-        width: 100%;
+        display: block;
+        @include media-breakpoint-down(sm) {
+            max-width: 95%;
+        }
+        @include media-breakpoint-up(md) {
+            max-width: 75%;
+        }
+        @include media-breakpoint-up(lg) {
+            max-width: 66%;
+        }
+        @include media-breakpoint-up(xl) {
+            max-width: 50%;
+        }
     }
 
     video {
-        max-height: 25vh;
+        display: block;
+        @include media-breakpoint-down(sm) {
+            max-width: 95%;
+        }
+        @include media-breakpoint-up(md) {
+            max-width: 75%;
+        }
+        @include media-breakpoint-up(lg) {
+            max-width: 66%;
+        }
+        @include media-breakpoint-up(xl) {
+            max-width: 50%;
+        }
     }
 }

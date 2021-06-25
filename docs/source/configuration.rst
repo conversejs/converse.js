@@ -800,7 +800,7 @@ embed_audio
 
 If set to ``false``, audio files won't be embedded in chats, instead only their links will be shown.
 
-It also accepts an array strings of whitelisted domain names to only render videos that belong to those domains.
+It also accepts an array strings of whitelisted domain names to only render audio files that belong to those domains.
 E.g. ``['conversejs.org']``
 
 
@@ -1513,7 +1513,7 @@ muc_show_ogp_unfurls
 Supports showing extra metadata (picture and description) for URLs contained in
 groupchat messages.
 
-The metadat must come from the MUC itself, metadata sent from participants
+The metadata must come from the MUC itself, metadata sent from participants
 themselves will not be shown.
 
 For Prosody XMPP server, `mod_ogp <https://modules.prosody.im/mod_ogp.html>`_ can be used.

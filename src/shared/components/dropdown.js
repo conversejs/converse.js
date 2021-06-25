@@ -9,13 +9,28 @@ const u = converse.env.utils;
 
 export class BaseDropdown extends CustomElement {
 
+    connectedCallback() {
+        super.connectedCallback();
+        this.registerEvents();
+    }
+
+    registerEvents() {
+        this.clickOutside = this._clickOutside.bind(this);
+        document.addEventListener('click', this.clickOutside);
+    }
+
     firstUpdated () {
         this.menu = this.querySelector('.dropdown-menu');
         this.dropdown = this.firstElementChild;
         this.button = this.dropdown.querySelector('button');
         this.dropdown.addEventListener('click', ev => this.toggleMenu(ev));
         this.dropdown.addEventListener('keyup', ev => this.handleKeyUp(ev));
-        document.addEventListener('click', ev => !this.contains(ev.composedPath()[0]) && this.hideMenu(ev));
+    }
+
+    _clickOutside(ev) {
+        if (!this.contains(ev.composedPath()[0])) {
+            this.hideMenu(ev);
+        }
     }
 
     hideMenu () {
@@ -44,6 +59,11 @@ export class BaseDropdown extends CustomElement {
         } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && this.navigator && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }
+    }
+
+    disconnectedCallback () {
+        document.removeEventListener('click', this.clickOutside);
+        super.disconnectedCallback();
     }
 }
 
@@ -75,7 +95,6 @@ export default class DropdownList extends BaseDropdown {
         super.hideMenu();
         this.navigator.disable();
     }
-
 
     firstUpdated () {
         super.firstUpdated();

@@ -172,11 +172,12 @@ describe("Service Discovery", function () {
                 function (done, _converse) {
 
             const { Strophe } = converse.env;
-            sinon.spy(_converse.api, "trigger");
+            spyOn(_converse.api, "trigger").and.callThrough();
             _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
-            expect(_converse.api.trigger.called).toBe(true);
-            expect(_converse.api.trigger.args[0][0]).toBe('serviceDiscovered');
-            expect(_converse.api.trigger.args[0][1].get('var')).toBe(Strophe.NS.MAM);
+            expect(_converse.api.trigger).toHaveBeenCalled();
+            const last_call = _converse.api.trigger.calls.all().pop();
+            expect(last_call.args[0]).toBe('serviceDiscovered');
+            expect(last_call.args[1].get('var')).toBe(Strophe.NS.MAM);
             done();
         }));
     });

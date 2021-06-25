@@ -250,7 +250,7 @@ describe("A Chat Message", function () {
         // Ideally we wouldn't have to filter out headline
         // messages, but Prosody gives them the wrong 'type' :(
         spyOn(converse.env.log, 'info');
-        sinon.spy(_converse.api.chatboxes, 'get');
+        spyOn(_converse.api.chatboxes, 'get');
         const msg = $msg({
                 from: 'montague.lit',
                 to: _converse.bare_jid,
@@ -261,9 +261,7 @@ describe("A Chat Message", function () {
         expect(converse.env.log.info).toHaveBeenCalledWith(
             "handleMessageStanza: Ignoring incoming server message from JID: montague.lit"
         );
-        expect(_converse.api.chatboxes.get.called).toBeFalsy();
-        // Remove sinon spies
-        _converse.api.chatboxes.get.restore();
+        expect(_converse.api.chatboxes.get).not.toHaveBeenCalled();
         done();
     }));
 

@@ -20,6 +20,8 @@ export class BaseDropdown extends CustomElement {
     }
 
     firstUpdated () {
+        super.firstUpdated();
+        this.initArrowNavigation();
         this.menu = this.querySelector('.dropdown-menu');
         this.dropdown = this.firstElementChild;
         this.button = this.dropdown.querySelector('button');
@@ -94,11 +96,6 @@ export default class DropdownList extends BaseDropdown {
     hideMenu () {
         super.hideMenu();
         this.navigator.disable();
-    }
-
-    firstUpdated () {
-        super.firstUpdated();
-        this.initArrowNavigation();
     }
 
     initArrowNavigation () {

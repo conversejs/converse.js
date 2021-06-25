@@ -119,7 +119,7 @@
     "bootstrap.native": "^2.0.27",
     "favico.js-slevomat": "^0.3.11",
     "jed": "1.1.1",
-    "lit": "^2.0.0-rc.1",
+    "lit": "^2.0.0-rc.2",
     "urijs": "^1.19.6",
     "xss": "^1.0.8"
   }

@@ -13,7 +13,7 @@ module.exports = merge(common, {
         minimizer: []
     },
     plugins: [
-        new MiniCssExtractPlugin({filename: ''})
+        new MiniCssExtractPlugin({filename: 'tmp.css'})
     ],
     module: {
         rules: [

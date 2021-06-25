@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-17 10:11+0100\n"
-"PO-Revision-Date: 2021-04-09 13:32+0200\n"
+"PO-Revision-Date: 2021-06-25 10:18+0200\n"
 "Last-Translator: Kim Alvefur <zash@zash.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/conversejs/"
 "translations/sv/>\n"
@@ -82,21 +82,6 @@ msgstr "Du har inte behörighet att skicka ett meddelande."
 #: dist/converse-no-dependencies.js:58138
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr "Ledsen, ett fel uppstod när meddelandet skulle skickas."
-
-#: dist/converse-no-dependencies.js:51955
-#, javascript-format
-msgid "%1$s has gone offline"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:51959
-#, javascript-format
-msgid "%1$s is busy"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:51961
-#, javascript-format
-msgid "%1$s is online"
-msgstr ""
 
 #: dist/converse-no-dependencies.js:52840
 #: dist/converse-no-dependencies.js:52863

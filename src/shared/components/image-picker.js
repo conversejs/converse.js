@@ -1,10 +1,10 @@
 import { CustomElement } from './element.js';
 import { __ } from 'i18n';
+import { api } from "@converse/headless/core";
 import { html } from 'lit';
 import { renderAvatar } from "shared/directives/avatar.js";
-import { api } from "@converse/headless/core";
 
-const i18n_alt_avatar = __('Your avatar image');
+const i18n_profile_picture = __('Your profile picture');
 
 
 export default class ImagePicker extends CustomElement {
@@ -24,7 +24,7 @@ export default class ImagePicker extends CustomElement {
             'width': this.width,
         };
         return html`
-            <a class="change-avatar" @click=${this.openFileSelection} title="${i18n_alt_avatar}">
+            <a class="change-avatar" @click=${this.openFileSelection} title="${i18n_profile_picture}">
                 ${ renderAvatar(avatar_data) }
             </a>
             <input @change=${this.updateFilePreview} class="hidden" name="image" type="file"/>

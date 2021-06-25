@@ -3,7 +3,7 @@ import { __ } from 'i18n';
 
 export default  (o) => {
     const i18n_desc = __('Description:');
-    const i18n_jid = __('Groupchat Address (JID):');
+    const i18n_jid = __('Groupchat XMPP Address:');
     const i18n_occ = __('Participants:');
     const i18n_features = __('Features:');
     const i18n_requires_auth = __('Requires authentication');

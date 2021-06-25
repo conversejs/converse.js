@@ -73,6 +73,7 @@ GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --key
 src/i18n/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 	rm dist/converse-no-dependencies.js
+	rm dist/tmp.css
 
 .PHONY: pot
 pot: src/i18n/converse.pot

@@ -63,7 +63,7 @@
     "browser": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.3",
+    "@babel/cli": "^7.14.5",
     "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.13.8",
@@ -95,13 +95,13 @@
     "karma-jasmine": "^3.1.1",
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-webpack": "^5.0.0",
-    "lerna": "^3.22.1",
-    "mini-css-extract-plugin": "^1.5.1",
+    "lerna": "^4.0.0",
+    "mini-css-extract-plugin": "^1.6.0",
     "minimist": "^1.2.3",
     "npm": "^7.19.0",
     "po-loader": "^0.5.0",
     "po2json": "^1.0.0-beta",
-    "postcss-clean": "^1.1.0",
+    "postcss-clean": "^1.2.2",
     "postcss-loader": "^3.0.0",
     "prettierx": "^0.12.1",
     "run-headless-chromium": "^0.1.1",
@@ -111,7 +111,7 @@
     "webpack": "^5.36.1",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^4.0.0-beta.2",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.8.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.14.0",

@@ -38,7 +38,6 @@ export default class EmojiPicker extends CustomElement {
         super();
         this._search_results = [];
         this.debouncedFilter = debounce(input => this.model.set({'query': input.value}), 250);
-        this.registerEvents();
     }
 
     get search_results () {
@@ -124,7 +123,7 @@ export default class EmojiPicker extends CustomElement {
     disconnectedCallback() {
         const body = document.querySelector('body');
         body.removeEventListener('keydown', this.onGlobalKeyDown);
-        super.disconnectedCallback()
+        super.disconnectedCallback();
     }
 
     _onGlobalKeyDown (ev) {

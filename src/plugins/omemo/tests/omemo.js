@@ -1,4 +1,4 @@
-/*global mock, converse, _ */
+/*global mock, converse */
 
 const { $iq, $pres, $msg, omemo, Strophe } = converse.env;
 const u = converse.env.utils;
@@ -13,8 +13,7 @@ async function deviceListFetched (_converse, jid) {
 }
 
 function ownDeviceHasBeenPublished (_converse) {
-    return _.filter(
-        Array.from(_converse.connection.IQ_stanzas),
+    return Array.from(_converse.connection.IQ_stanzas).filter(
         iq => iq.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
     ).pop();
 }
@@ -25,8 +24,7 @@ function bundleHasBeenPublished (_converse) {
 }
 
 function bundleFetched (_converse, jid, device_id) {
-    return _.filter(
-        Array.from(_converse.connection.IQ_stanzas),
+    return Array.from(_converse.connection.IQ_stanzas).filter(
         iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
     ).pop();
 }
@@ -764,7 +762,7 @@ describe("The OMEMO module", function() {
         expect(_converse.devicelists.length).toBe(2);
         let devices = _converse.devicelists.get(contact_jid).devices;
         expect(devices.length).toBe(2);
-        expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('1234,4223');
+        expect(devices.models.map(d => d.attributes.id).sort().join()).toBe('1234,4223');
 
         stanza = $msg({
             'from': contact_jid,
@@ -781,7 +779,7 @@ describe("The OMEMO module", function() {
 
         expect(_converse.devicelists.length).toBe(2);
         expect(devices.length).toBe(3);
-        expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('1234,4223,4224');
+        expect(devices.models.map(d => d.attributes.id).sort().join()).toBe('1234,4223,4224');
         expect(devices.get('1234').get('active')).toBe(false);
         expect(devices.get('4223').get('active')).toBe(true);
         expect(devices.get('4224').get('active')).toBe(true);
@@ -804,7 +802,7 @@ describe("The OMEMO module", function() {
         expect(_converse.devicelists.length).toBe(2);
         devices = _converse.devicelists.get(_converse.bare_jid).devices;
         expect(devices.length).toBe(3);
-        expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,555,777');
+        expect(devices.models.map(d => d.attributes.id).sort().join()).toBe('123456789,555,777');
         expect(devices.get('123456789').get('active')).toBe(true);
         expect(devices.get('555').get('active')).toBe(true);
         expect(devices.get('777').get('active')).toBe(true);
@@ -855,7 +853,7 @@ describe("The OMEMO module", function() {
         // The device id for this device (123456789) was also generated and added to the list,
         // which is why we have 2 devices now.
         expect(devices.length).toBe(4);
-        expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,444,555,777');
+        expect(devices.models.map(d => d.attributes.id).sort().join()).toBe('123456789,444,555,777');
         expect(devices.get('123456789').get('active')).toBe(true);
         expect(devices.get('444').get('active')).toBe(true);
         expect(devices.get('555').get('active')).toBe(false);

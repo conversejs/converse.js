@@ -1,4 +1,4 @@
-/*global mock, converse, _ */
+/*global mock, converse */
 
 const $iq = converse.env.$iq;
 const Strophe = converse.env.Strophe;
@@ -33,7 +33,7 @@ describe("XEP-0357 Push Notifications", function () {
                 [{'category': 'account', 'type':'registered'}],
                 ['urn:xmpp:push:0'], [], 'info');
         const stanza = await u.waitUntil(() =>
-            _.filter(IQ_stanzas, iq => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
+            IQ_stanzas.filter(iq => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
         );
         expect(Strophe.serialize(stanza)).toEqual(
             `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
@@ -79,16 +79,14 @@ describe("XEP-0357 Push Notifications", function () {
 
         await u.waitUntil(() => _converse.session.get('push_enabled'));
         expect(_converse.session.get('push_enabled').length).toBe(1);
-        expect(_.includes(_converse.session.get('push_enabled'), 'romeo@montague.lit')).toBe(true);
+        expect(_converse.session.get('push_enabled').includes('romeo@montague.lit')).toBe(true);
 
         mock.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'oldhag');
         await mock.waitUntilDiscoConfirmed(
             _converse, 'chat.shakespeare.lit',
             [{'category': 'account', 'type':'registered'}],
             ['urn:xmpp:push:0'], [], 'info');
-        iq = await u.waitUntil(() => _.filter(
-            IQ_stanzas,
-            iq => sizzle(`iq[type="set"][to="chat.shakespeare.lit"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(`iq[type="set"][to="chat.shakespeare.lit"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length
         ).pop());
 
         expect(Strophe.serialize(iq)).toEqual(
@@ -101,7 +99,7 @@ describe("XEP-0357 Push Notifications", function () {
             'type': 'result',
             'id': iq.getAttribute('id')
         })));
-        await u.waitUntil(() => _.includes(_converse.session.get('push_enabled'), 'chat.shakespeare.lit'));
+        await u.waitUntil(() => _converse.session.get('push_enabled').includes('chat.shakespeare.lit'));
     }));
 
     it("can be disabled",

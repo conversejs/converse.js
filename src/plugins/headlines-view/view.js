@@ -43,7 +43,6 @@ class HeadlinesView extends BaseChatView {
             _converse.router.navigate('');
         }
         await this.model.close(ev);
-        api.trigger('chatBoxClosed', this);
         return this;
     }
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-17 12:35+0100\n"
-"PO-Revision-Date: 2020-12-23 21:29+0000\n"
+"PO-Revision-Date: 2021-06-29 14:33+0000\n"
 "Last-Translator: Quentin PAGÈS <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.7.1-dev\n"
 
 #. Strophe
 #: dist/converse-no-dependencies.js:42989
@@ -79,9 +79,8 @@ msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "Quicòm s’es pas passat coma caliá pendent l’ensag d’actualizacion"
 
 #: dist/converse-no-dependencies.js:51682
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "Sètz pas autorizat a enviar de messatges a aquesta sala"
+msgstr "Sètz pas autorizat a enviar de messatges a aquesta sala."
 
 #: dist/converse-no-dependencies.js:51684
 #: dist/converse-no-dependencies.js:58138

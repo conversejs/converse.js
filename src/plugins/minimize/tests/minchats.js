@@ -299,11 +299,13 @@ describe("The Minimized Chats Widget", function () {
         const unread_el = minimized_chats.querySelector('.unread-message-count');
         expect(u.isVisible(unread_el)).toBe(false);
 
+        const promises = [];
         let i, contact_jid;
         for (i=0; i<3; i++) {
             contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            mock.openChatBoxFor(_converse, contact_jid);
+            promises.push(mock.openChatBoxFor(_converse, contact_jid));
         }
+        await Promise.all(promises);
         await u.waitUntil(() => _converse.chatboxes.length == 4);
 
         const chatview = _converse.chatboxviews.get(contact_jid);

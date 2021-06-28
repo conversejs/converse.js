@@ -273,11 +273,14 @@ describe("Notifications", function () {
                   .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
             await _converse.handleMessageStanza(msg);
 
+            const promise = u.getOpenPromise();
             setTimeout(() => {
                 const view = _converse.chatboxviews.get(sender_jid);
                 expect(view.model.get('num_unread')).toBe(0);
                 expect(favico.badge.calls.count()).toBe(0);
+                promise.resolve();
             }, 500);
+            return promise;
         }));
 
         it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",

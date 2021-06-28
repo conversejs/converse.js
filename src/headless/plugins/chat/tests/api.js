@@ -28,7 +28,7 @@ describe("The \"chats\" API", function() {
         expect(chat.get('box_id')).toBe(`box-${jid}`);
 
         // Test for multiple JIDs
-        mock.openChatBoxFor(_converse, jid2);
+        await mock.openChatBoxFor(_converse, jid2);
         await u.waitUntil(() => _converse.chatboxes.length == 3);
         const list = await _converse.api.chats.get([jid, jid2]);
         expect(Array.isArray(list)).toBeTruthy();

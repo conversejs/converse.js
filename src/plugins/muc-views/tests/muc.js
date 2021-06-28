@@ -1922,6 +1922,8 @@ describe("Groupchats", function () {
                 );
             }
             await Promise.all(promises);
+            const promise = u.getOpenPromise();
+
             // Give enough time for `markScrolled` to have been called
             setTimeout(async () => {
                 const content = view.querySelector('.chat-content');
@@ -1938,7 +1940,10 @@ describe("Groupchats", function () {
                 const msg_txt = sizzle('.chat-msg:last .chat-msg__text', content).pop().textContent;
                 expect(msg_txt).toEqual(message);
                 expect(content.scrollTop).toBe(0);
+                promise.resolve();
             }, 500);
+
+            return promise;
         }));
 
         it("reconnects when no-acceptable error is returned when sending a message",

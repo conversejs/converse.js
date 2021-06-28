@@ -6,6 +6,7 @@ import MessageVersionsModal from 'modals/message-versions.js';
 import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
 import filesize from 'filesize';
+import log from '@converse/headless/log';
 import tpl_message from './templates/message.js';
 import tpl_spinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -35,6 +36,12 @@ export default class Message extends CustomElement {
 
     async initialize () {
         await this.setModels();
+        if (!this.model) {
+            // Happen during tests due to a race condition
+            log.error('Could not find module for converse-chat-message');
+            return;
+        }
+
         this.listenTo(this.chatbox, 'change:first_unread_id', this.requestUpdate);
         this.listenTo(this.model, 'change', this.requestUpdate);
         this.model.vcard && this.listenTo(this.model.vcard, 'change', this.requestUpdate);
@@ -53,8 +60,9 @@ export default class Message extends CustomElement {
     async setModels () {
         this.chatbox = await api.chatboxes.get(this.jid);
         await this.chatbox.initialized;
+        await this.chatbox.messages.fetched;
         this.model = this.chatbox.messages.get(this.mid);
-        this.requestUpdate();
+        this.model && this.requestUpdate();
     }
 
     render () {

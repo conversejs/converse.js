@@ -438,10 +438,14 @@ const ChatRoomMixin = {
             };
             if (attrs.msgid === message.get('retraction_id')) {
                 // The error message refers to a retraction
+                new_attrs.retracted = undefined;
                 new_attrs.retraction_id = undefined;
+                new_attrs.retracted_id = undefined;
+
                 if (!attrs.error) {
                     if (attrs.error_condition === 'forbidden') {
                         new_attrs.error = __("You're not allowed to retract your message.");
+
                     } else if (attrs.error_condition === 'not-acceptable') {
                         new_attrs.error = __(
                             "Your retraction was not delivered because you're not present in the groupchat."
@@ -737,7 +741,8 @@ const ChatRoomMixin = {
                 'error_type': 'timeout',
                 'error': __('A timeout happened while while trying to retract your message.'),
                 'retracted': undefined,
-                'retracted_id': undefined
+                'retracted_id': undefined,
+                'retraction_id': undefined
             });
         }
     },

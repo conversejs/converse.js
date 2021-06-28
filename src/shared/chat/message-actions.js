@@ -194,6 +194,11 @@ class MessageActions extends CustomElement {
             });
         }
 
+        if (!this.model.collection) {
+            // While we were awaiting, this model got removed from the
+            // collection (happens during tests)
+            return [];
+        }
         const ogp_metadata = this.model.get('ogp_metadata') || [];
         const chatbox = this.model.collection.chatbox;
         if (chatbox.get('type') === _converse.CHATROOMS_TYPE &&

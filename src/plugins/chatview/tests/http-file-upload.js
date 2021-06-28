@@ -452,6 +452,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     </slot>
                     </iq>`);
 
+                const promise = u.getOpenPromise();
                 spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async () => {
                     const message = view.model.messages.at(0);
                     const el = await u.waitUntil(() => view.querySelector('.chat-content progress'));
@@ -461,8 +462,10 @@ describe("XEP-0363: HTTP File Upload", function () {
                     message.set('progress', 1);
                     await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '1');
                     expect(view.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
+                    promise.resolve();
                 });
                 _converse.connection._dataRecv(mock.createRequest(stanza));
+                return promise;
             }));
         });
     });

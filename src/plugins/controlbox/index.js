@@ -1,5 +1,4 @@
 /**
- * @module converse-controlbox
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
@@ -7,45 +6,16 @@ import "shared/components/brand-heading";
 import "../chatview/index.js";
 import './loginpanel.js';
 import './navback.js';
-import ControlBoxMixin from './model.js';
+import ControlBox from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';
 import controlbox_api from './api.js';
 import log from '@converse/headless/log';
 import { _converse, api, converse } from '@converse/headless/core';
-import { addControlBox } from './utils.js';
+import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
 
 import './styles/_controlbox.scss';
 
-const u = converse.env.utils;
-
-
-function disconnect () {
-    /* Upon disconnection, set connected to `false`, so that if
-     * we reconnect, "onConnected" will be called,
-     * to fetch the roster again and to send out a presence stanza.
-     */
-    const view = _converse.chatboxviews.get('controlbox');
-    view.model.set({ 'connected': false });
-    return view;
-}
-
-function clearSession () {
-    const chatboxviews = _converse?.chatboxviews;
-    const view = chatboxviews && chatboxviews.get('controlbox');
-    if (view) {
-        u.safeSave(view.model, { 'connected': false });
-        if (view?.controlbox_pane) {
-            view.controlbox_pane.remove();
-            delete view.controlbox_pane;
-        }
-    }
-}
-
-function onChatBoxesFetched () {
-    const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();
-    controlbox.save({ 'connected': true });
-}
 
 converse.plugins.add('converse-controlbox', {
     /* Plugin dependencies are other plugins which might be
@@ -73,9 +43,8 @@ converse.plugins.add('converse-controlbox', {
 
         ChatBoxes: {
             model (attrs, options) {
-                const { _converse } = this.__super__;
                 if (attrs && attrs.id == 'controlbox') {
-                    return new _converse.ControlBox(attrs, options);
+                    return new ControlBox(attrs, options);
                 } else {
                     return this.__super__.model.apply(this, arguments);
                 }
@@ -97,7 +66,7 @@ converse.plugins.add('converse-controlbox', {
         Object.assign(api, controlbox_api);
 
         _converse.ControlBoxView = ControlBoxView;
-        _converse.ControlBox = _converse.ChatBox.extend(ControlBoxMixin);
+        _converse.ControlBox = ControlBox;
         _converse.ControlBoxToggle = ControlBoxToggle;
 
         /******************** Event Handlers ********************/

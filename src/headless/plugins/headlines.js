@@ -66,6 +66,7 @@ converse.plugins.add('converse-headlines', {
 
             async initialize () {
                 this.set({'box_id': `box-${this.get('jid')}`});
+                this.initUI();
                 this.initMessages();
                 await this.fetchMessages();
                 /**

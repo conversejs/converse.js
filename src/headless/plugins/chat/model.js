@@ -56,8 +56,8 @@ const ChatBox = ModelWithContact.extend({
         }
         this.set({'box_id': `box-${jid}`});
         this.initNotifications();
-        this.initMessages();
         this.initUI();
+        this.initMessages();
 
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
             this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -338,9 +338,10 @@ const ChatBox = ModelWithContact.extend({
     },
 
     pruneHistoryWhenScrolledDown () {
-        if (!this.ui.get('scrolled') &&
+        if (
             api.settings.get('prune_messages_above') &&
-            api.settings.get('pruning_behavior') === 'unscrolled'
+            api.settings.get('pruning_behavior') === 'unscrolled' &&
+            !this.ui.get('scrolled')
         ) {
             pruneHistory(this);
         }

@@ -678,26 +678,28 @@ const ChatRoomMixin = {
             id = this.getUniqueId('sendIQ');
             el.setAttribute('id', id);
         }
-        const promise = getOpenPromise();
+        let handler;
         const timeoutHandler = _converse.connection.addTimedHandler(_converse.STANZA_TIMEOUT, () => {
             _converse.connection.deleteHandler(handler);
             promise.reject(new _converse.TimeoutError('Timeout Error: No response from server'));
             return false;
         });
-        const handler = _converse.connection.addHandler(
-            stanza => {
-                timeoutHandler && _converse.connection.deleteTimedHandler(timeoutHandler);
-                if (stanza.getAttribute('type') === 'groupchat') {
-                    promise.resolve(stanza);
-                } else {
-                    promise.reject(stanza);
-                }
-            },
-            null,
-            'message',
-            ['error', 'groupchat'],
-            id
-        );
+        const promise = new Promise((resolve, reject) => {
+            handler = _converse.connection.addHandler(
+                stanza => {
+                    timeoutHandler && _converse.connection.deleteTimedHandler(timeoutHandler);
+                    if (stanza.getAttribute('type') === 'groupchat') {
+                        resolve(stanza);
+                    } else {
+                        reject(stanza);
+                    }
+                },
+                null,
+                'message',
+                ['error', 'groupchat'],
+                id
+            );
+        });
         api.send(el);
         return promise;
     },
@@ -738,6 +740,7 @@ const ChatRoomMixin = {
         try {
             await this.sendTimedMessage(stanza);
         } catch (e) {
+            log.error(e);
             message.save({
                 editable,
                 'error_type': 'timeout',
@@ -745,7 +748,6 @@ const ChatRoomMixin = {
                 'retracted': undefined,
                 'retracted_id': undefined
             });
-            throw e;
         }
     },
 

@@ -627,6 +627,7 @@ describe("Message Retractions", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
             const occupant = view.model.getOwnOccupant();
+
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.includes("romeo is no longer a moderator"));
@@ -654,6 +655,7 @@ describe("Message Retractions", function () {
                 </message>`);
 
             _converse.connection._dataRecv(mock.createRequest(error));
+
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 1, 1000);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 0, 1000);
             expect(view.model.messages.length).toBe(1);

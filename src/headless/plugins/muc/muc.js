@@ -665,8 +665,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#sendTimedMessage
      * @param { _converse.Message|XMLElement } message
      * @returns { Promise<XMLElement>|Promise<_converse.TimeoutError> } Returns a promise
-     *  which resolves with the reflected message stanza or rejects
-     *  with an error stanza or with a {@link _converse.TimeoutError}.
+     *  which resolves with the reflected message stanza or with an error stanza or {@link _converse.TimeoutError}.
      */
     sendTimedMessage (el) {
         if (typeof el.tree === 'function') {
@@ -678,28 +677,18 @@ const ChatRoomMixin = {
             id = this.getUniqueId('sendIQ');
             el.setAttribute('id', id);
         }
-        let handler;
+        const promise = getOpenPromise();
         const timeoutHandler = _converse.connection.addTimedHandler(_converse.STANZA_TIMEOUT, () => {
             _converse.connection.deleteHandler(handler);
-            promise.reject(new _converse.TimeoutError('Timeout Error: No response from server'));
+            const err = new _converse.TimeoutError('Timeout Error: No response from server');
+            promise.resolve(err);
             return false;
         });
-        const promise = new Promise((resolve, reject) => {
-            handler = _converse.connection.addHandler(
-                stanza => {
-                    timeoutHandler && _converse.connection.deleteTimedHandler(timeoutHandler);
-                    if (stanza.getAttribute('type') === 'groupchat') {
-                        resolve(stanza);
-                    } else {
-                        reject(stanza);
-                    }
-                },
-                null,
-                'message',
-                ['error', 'groupchat'],
-                id
-            );
-        });
+        const handler = _converse.connection.addHandler(
+            stanza => {
+                timeoutHandler && _converse.connection.deleteTimedHandler(timeoutHandler);
+                promise.resolve(stanza);
+            }, null, 'message', ['error', 'groupchat'], id);
         api.send(el);
         return promise;
     },
@@ -737,10 +726,12 @@ const ChatRoomMixin = {
             'retraction_id': stanza.nodeTree.getAttribute('id'),
             'editable': false
         });
-        try {
-            await this.sendTimedMessage(stanza);
-        } catch (e) {
-            log.error(e);
+        const result = await this.sendTimedMessage(stanza);
+
+        if (u.isErrorStanza(result)) {
+            log.error(result);
+        } else if (result instanceof _converse.TimeoutError) {
+            log.error(result);
             message.save({
                 editable,
                 'error_type': 'timeout',

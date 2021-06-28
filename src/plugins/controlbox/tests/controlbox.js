@@ -9,19 +9,18 @@ const sizzle = converse.env.sizzle;
 describe("The Controlbox", function () {
 
     it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
-            mock.initConverse([], {}, function (done, _converse) {
+            mock.initConverse([], {}, function (_converse) {
 
         spyOn(_converse.api, "trigger").and.callThrough();
         document.querySelector('.toggle-controlbox').click();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
         const el = document.querySelector("#controlbox");
         expect(u.isVisible(el)).toBe(true);
-        done();
     }));
 
 
     it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.openControlBox(_converse);
         const view = _converse.chatboxviews.get('controlbox');
@@ -32,14 +31,13 @@ describe("The Controlbox", function () {
         view.querySelector('.close-chatbox-button').click();
         expect(view.close).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxClosed', jasmine.any(Object));
-        done();
     }));
 
 
     describe("The \"Contacts\" section", function () {
 
         it("can be used to add contact and it checks for case-sensivity",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             spyOn(_converse.api, "trigger").and.callThrough();
             await mock.waitForRoster(_converse, 'all', 0);
@@ -61,11 +59,10 @@ describe("The Controlbox", function () {
             await u.waitUntil(() => Array.from(rosterview.querySelectorAll('.roster-group li')).filter(u.isVisible).length, 700);
             // Checking that only one entry is created because both JID is same (Case sensitive check)
             expect(Array.from(rosterview.querySelectorAll('li')).filter(u.isVisible).length).toBe(1);
-            done();
         }));
 
         it("shows the number of unread mentions received",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'all');
             await mock.openControlBox(_converse);
@@ -108,23 +105,21 @@ describe("The Controlbox", function () {
             chatview.model.set({'minimized': false});
             expect(el.querySelector('.restore-chat .message-count')).toBe(null);
             await u.waitUntil(() => rosterview.querySelector('.msgs-indicator') === null);
-            done();
         }));
     });
 
     describe("The Status Widget", function () {
 
         it("shows the user's chat status, which is online by default",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
             mock.openControlBox(_converse);
             const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));
             expect(u.hasClass('online', view.querySelector('.xmpp-status span:first-child'))).toBe(true);
             expect(view.querySelector('.xmpp-status span.online').textContent.trim()).toBe('I am online');
-            done();
         }));
 
         it("can be used to set the current user's chat status",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             var cbview = _converse.chatboxviews.get('controlbox');
@@ -146,11 +141,10 @@ describe("The Controlbox", function () {
             expect(u.hasClass('online', first_child)).toBe(false);
             expect(u.hasClass('dnd', first_child)).toBe(true);
             expect(view.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe('I am busy');
-            done();
         }));
 
         it("can be used to set a custom status message",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
@@ -174,7 +168,6 @@ describe("The Controlbox", function () {
             const first_child = view.querySelector('.xmpp-status span:first-child');
             expect(u.hasClass('online', first_child)).toBe(true);
             expect(view.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);
-            done();
         }));
     });
 });
@@ -182,7 +175,7 @@ describe("The Controlbox", function () {
 describe("The 'Add Contact' widget", function () {
 
     it("opens up an add modal when you click on it",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'all');
         await mock.openControlBox(_converse);
@@ -210,11 +203,10 @@ describe("The 'Add Contact' widget", function () {
             `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                 `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit" name="Someone"/></query>`+
             `</iq>`);
-        done();
     }));
 
     it("can be configured to not provide search suggestions",
-            mock.initConverse([], {'autocomplete_add_contact': false}, async function (done, _converse) {
+            mock.initConverse([], {'autocomplete_add_contact': false}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'all', 0);
         await mock.openControlBox(_converse);
@@ -239,13 +231,12 @@ describe("The 'Add Contact' widget", function () {
                 `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit"/></query>`+
             `</iq>`
         );
-        done();
     }));
 
 
     it("integrates with xhr_user_search_url to search for contacts",
             mock.initConverse([], { 'xhr_user_search_url': 'http://example.org/?' },
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'all', 0);
 
@@ -296,14 +287,13 @@ describe("The 'Add Contact' widget", function () {
             `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
         `</iq>`);
         window.XMLHttpRequest = XMLHttpRequestBackup;
-        done();
     }));
 
     it("can be configured to not provide search suggestions for XHR search results",
         mock.initConverse([],
             { 'autocomplete_add_contact': false,
               'xhr_user_search_url': 'http://example.org/?' },
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'all');
         await mock.openControlBox(_converse);
@@ -371,6 +361,5 @@ describe("The 'Add Contact' widget", function () {
             `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
         `</iq>`);
         window.XMLHttpRequest = XMLHttpRequestBackup;
-        done();
     }));
 });

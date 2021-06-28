@@ -4,7 +4,7 @@ describe("The \"chats\" API", function() {
 
     it("has a method 'get' which returns the promise that resolves to a chat model", mock.initConverse(
             ['rosterInitialized', 'chatBoxesInitialized'], {},
-            async (done, _converse) => {
+            async (_converse) => {
 
         const u = converse.env.utils;
 
@@ -34,11 +34,10 @@ describe("The \"chats\" API", function() {
         expect(Array.isArray(list)).toBeTruthy();
         expect(list[0].get('box_id')).toBe(`box-${jid}`);
         expect(list[1].get('box_id')).toBe(`box-${jid2}`);
-        done();
     }));
 
     it("has a method 'open' which opens and returns a promise that resolves to a chat model", mock.initConverse(
-            ['chatBoxesInitialized'], {}, async (done, _converse) => {
+            ['chatBoxesInitialized'], {}, async (_converse) => {
 
         await mock.openControlBox(_converse);
         await mock.waitForRoster(_converse, 'current', 2);
@@ -62,6 +61,5 @@ describe("The \"chats\" API", function() {
         expect(Array.isArray(list)).toBeTruthy();
         expect(list[0].get('box_id')).toBe(`box-${jid}`);
         expect(list[1].get('box_id')).toBe(`box-${jid2}`);
-        done();
     }));
 });

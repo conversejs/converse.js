@@ -8,7 +8,7 @@ describe("A spoiler message", function () {
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     it("can be received with a hint",
-        mock.initConverse(['chatBoxesFetched'], {}, async (done, _converse) => {
+        mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -42,11 +42,10 @@ describe("A spoiler message", function () {
         await u.waitUntil(() => message_content.textContent === spoiler);
         const spoiler_hint_el = view.querySelector('.spoiler-hint');
         expect(spoiler_hint_el.textContent).toBe(spoiler_hint);
-        done();
     }));
 
     it("can be received without a hint",
-            mock.initConverse(['chatBoxesFetched'], {}, async (done, _converse) => {
+            mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -79,11 +78,10 @@ describe("A spoiler message", function () {
         await u.waitUntil(() => message_content.textContent === spoiler);
         const spoiler_hint_el = view.querySelector('.spoiler-hint');
         expect(spoiler_hint_el.textContent).toBe('');
-        done();
     }));
 
     it("can be sent without a hint",
-            mock.initConverse(['chatBoxesFetched'], {}, async (done, _converse) => {
+            mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
         await mock.waitForRoster(_converse, 'current', 1);
         mock.openControlBox(_converse);
@@ -156,11 +154,10 @@ describe("A spoiler message", function () {
         expect(spoiler_toggle.textContent.trim()).toBe('Show less');
         spoiler_toggle.click();
         await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('hidden'));
-        done();
     }));
 
     it("can be sent with a hint",
-            mock.initConverse(['chatBoxesFetched'], {}, async (done, _converse) => {
+            mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
         await mock.waitForRoster(_converse, 'current', 1);
         mock.openControlBox(_converse);
@@ -237,6 +234,5 @@ describe("A spoiler message", function () {
         expect(spoiler_toggle.textContent.trim()).toBe('Show less');
         spoiler_toggle.click();
         await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('hidden'));
-        done();
     }));
 });

@@ -18,7 +18,7 @@ describe("XEP-0357 Push Notifications", function () {
                     'jid': 'push-5@client.example',
                     'node': 'yxs32uqsflafdk3iuqo'
                 }]
-            }, async function (done, _converse) {
+            }, async function (_converse) {
 
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
@@ -46,7 +46,6 @@ describe("XEP-0357 Push Notifications", function () {
             'id': stanza.getAttribute('id')
         })));
         await u.waitUntil(() => _converse.session.get('push_enabled'));
-        done();
     }));
 
     it("can be enabled for a MUC domain",
@@ -57,7 +56,7 @@ describe("XEP-0357 Push Notifications", function () {
                     'jid': 'push-5@client.example',
                     'node': 'yxs32uqsflafdk3iuqo'
                 }]
-            }, async function (done, _converse) {
+            }, async function (_converse) {
 
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         await mock.waitUntilDiscoConfirmed(
@@ -103,7 +102,6 @@ describe("XEP-0357 Push Notifications", function () {
             'id': iq.getAttribute('id')
         })));
         await u.waitUntil(() => _.includes(_converse.session.get('push_enabled'), 'chat.shakespeare.lit'));
-        done();
     }));
 
     it("can be disabled",
@@ -114,7 +112,7 @@ describe("XEP-0357 Push Notifications", function () {
                     'node': 'yxs32uqsflafdk3iuqo',
                     'disable': true
                 }]
-            }, async function (done, _converse) {
+            }, async function (_converse) {
 
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
@@ -136,7 +134,6 @@ describe("XEP-0357 Push Notifications", function () {
             'id': stanza.getAttribute('id')
         })));
         await u.waitUntil(() => _converse.session.get('push_enabled'))
-        done();
     }));
 
 
@@ -147,7 +144,7 @@ describe("XEP-0357 Push Notifications", function () {
                     'node': 'yxs32uqsflafdk3iuqo',
                     'secret': 'eruio234vzxc2kla-91'
                 }]
-            }, async function (done, _converse) {
+            }, async function (_converse) {
 
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
@@ -179,6 +176,5 @@ describe("XEP-0357 Push Notifications", function () {
             'id': stanza.getAttribute('id')
         })));
         await u.waitUntil(() => _converse.session.get('push_enabled'))
-        done();
     }));
 });

@@ -8,11 +8,8 @@ const sizzle = converse.env.sizzle;
 describe("A chat message", function () {
 
     it("received for a minimized chat box will increment a counter on its header",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {'view_mode': 'overlayed'}, async function (_converse) {
 
-        if (_converse.view_mode === 'fullscreen') {
-            return done();
-        }
         await mock.waitForRoster(_converse, 'current');
         const contact_name = mock.cur_names[0];
         const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -65,7 +62,6 @@ describe("A chat message", function () {
         expect(count.textContent).toBe('2');
         document.querySelector("converse-minimized-chat a.restore-chat").click();
         expect(_converse.chatboxes.filter('minimized').length).toBe(0);
-        done();
     }));
 
 });
@@ -73,7 +69,7 @@ describe("A chat message", function () {
 describe("A Groupchat", function () {
 
     it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -89,7 +85,6 @@ describe("A Groupchat", function () {
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
         expect(view.model.get('minimized')).toBeFalsy();
         expect(_converse.api.trigger.calls.count(), 3);
-        done();
     }));
 });
 
@@ -97,7 +92,7 @@ describe("A Groupchat", function () {
 describe("A Chatbox", function () {
 
     it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
@@ -121,11 +116,10 @@ describe("A Chatbox", function () {
         minimized_chats.querySelector("a.restore-chat").click();
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
         expect(chatview.model.get('minimized')).toBeFalsy();
-        done();
     }));
 
 
-    it("can be opened in minimized mode initially", mock.initConverse([], {}, async function (done, _converse) {
+    it("can be opened in minimized mode initially", mock.initConverse([], {}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const minimized_chats = document.querySelector("converse-minimized-chats")
@@ -136,11 +130,10 @@ describe("A Chatbox", function () {
         expect(u.isVisible(minimized_chats.firstElementChild)).toBe(true);
         expect(minimized_chats.firstElementChild.querySelectorAll('converse-minimized-chat').length).toBe(1);
         expect(_converse.chatboxes.filter('minimized').length).toBe(1);
-        done();
     }));
 
 
-    it("can be trimmed to conserve space", mock.initConverse([], {}, async function (done, _converse) {
+    it("can be trimmed to conserve space", mock.initConverse([], {}, async function (_converse) {
         spyOn(_converse.minimize, 'trimChats');
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
@@ -173,7 +166,6 @@ describe("A Chatbox", function () {
         const minimized_chats = document.querySelector("converse-minimized-chats")
         minimized_chats.querySelector("a.restore-chat").click();
         expect(_converse.minimize.trimChats.calls.count()).toBe(17);
-        done();
     }));
 });
 
@@ -181,7 +173,7 @@ describe("A Chatbox", function () {
 describe("A Minimized ChatBoxView's Unread Message Count", function () {
 
     it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -199,11 +191,10 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         const unread_count = selectUnreadMsgCount();
         expect(u.isVisible(unread_count)).toBeTruthy();
         expect(unread_count.innerHTML.replace(/<!-.*?->/g, '')).toBe('1');
-        done();
     }));
 
     it("is incremented when message is received and windows is not focused",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -217,11 +208,10 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         const unread_count = selectUnreadMsgCount();
         expect(u.isVisible(unread_count)).toBeTruthy();
         expect(unread_count.innerHTML.replace(/<!-.*?->/g, '')).toBe('1');
-        done();
     }));
 
     it("will render Openstreetmap-URL from geo-URI",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const message = "geo:37.786971,-122.399677";
@@ -236,7 +226,6 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         await u.waitUntil(() => msg.innerHTML.replace(/\<!-.*?-\>/g, '') ===
             '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
             'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
-        done();
     }));
 });
 
@@ -244,7 +233,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
 describe("The Minimized Chats Widget", function () {
 
     it("shows chats that have been minimized",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
@@ -271,11 +260,10 @@ describe("The Minimized Chats Widget", function () {
         expect(u.isVisible(minimized_chats)).toBe(true);
         expect(_converse.chatboxes.filter('minimized').length).toBe(2);
         expect(_converse.chatboxes.filter('minimized').map(c => c.get('jid')).includes(contact_jid)).toBeTruthy();
-        done();
     }));
 
     it("can be toggled to hide or show minimized chats",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
@@ -297,11 +285,10 @@ describe("The Minimized Chats Widget", function () {
         minimized_chats.querySelector('#toggle-minimized-chats').click();
         await u.waitUntil(() => u.isVisible(minimized_chats.querySelector('.minimized-chats-flyout')));
         expect(minimized_chats.minchats.get('collapsed')).toBeTruthy();
-        done();
     }));
 
     it("shows the number messages received to minimized chats",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 4);
         await mock.openControlBox(_converse);
@@ -372,11 +359,10 @@ describe("The Minimized Chats Widget", function () {
             id: u.getUniqueId()
         }).c('inactive', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
         expect(minimized_chats.querySelector('.unread-message-count').textContent).toBe((i).toString());
-        done();
     }));
 
     it("shows the number messages received to minimized groupchats",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'kitchen@conference.shakespeare.lit';
         await mock.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'fires');
@@ -395,6 +381,5 @@ describe("The Minimized Chats Widget", function () {
         const minimized_chats = document.querySelector("converse-minimized-chats")
         expect(u.isVisible(minimized_chats.querySelector('.unread-message-count'))).toBeTruthy();
         expect(minimized_chats.querySelector('.unread-message-count').textContent).toBe('1');
-        done();
     }));
 });

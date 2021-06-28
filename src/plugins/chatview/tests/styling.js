@@ -6,7 +6,7 @@ describe("An incoming chat Message", function () {
 
     it("can have styling disabled via an \"unstyled\" element",
         mock.initConverse(['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const include_nick = false;
         await mock.waitForRoster(_converse, 'current', 2, include_nick);
@@ -31,14 +31,13 @@ describe("An incoming chat Message", function () {
         setTimeout(() => {
             const msg_el = view.querySelector('converse-chat-message-body');
             expect(msg_el.innerText).toBe(msg_text);
-            done();
         }, 500);
     }));
 
 
     it("can have styling disabled via the allow_message_styling setting",
         mock.initConverse(['chatBoxesFetched'], {'allow_message_styling': false},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const include_nick = false;
         await mock.waitForRoster(_converse, 'current', 2, include_nick);
@@ -62,13 +61,12 @@ describe("An incoming chat Message", function () {
         setTimeout(() => {
             const msg_el = view.querySelector('converse-chat-message-body');
             expect(msg_el.innerText).toBe(msg_text);
-            done();
         }, 500);
     }));
 
     it("can be styled with span XEP-0393 message styling hints",
         mock.initConverse(['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         let msg_text, msg, msg_el;
         await mock.waitForRoster(_converse, 'current', 1);
@@ -187,12 +185,11 @@ describe("An incoming chat Message", function () {
             '<i><a target="_blank" rel="noopener" href="https://converse_js.org/">https://converse_js.org</a></i>'+
             '<span class="styling-directive">_</span> <span class="styling-directive">_</span><i>please</i><span class="styling-directive">_</span>');
 
-        done();
     }));
 
     it("can be styled with block XEP-0393 message styling hints",
         mock.initConverse(['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         let msg_text, msg, msg_el;
         await mock.waitForRoster(_converse, 'current', 1);
@@ -233,12 +230,11 @@ describe("An incoming chat Message", function () {
             '```ignored\n (println "Hello, world!")\n ```\n\n'+
             ' This should not show up as monospace, '+
             '<span class="styling-directive">*</span><b>preformatted</b><span class="styling-directive">*</span> text ^');
-        done();
     }));
 
     it("can be styled with quote XEP-0393 message styling hints",
         mock.initConverse(['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         let msg_text, msg, msg_el;
         await mock.waitForRoster(_converse, 'current', 1);
@@ -371,12 +367,11 @@ describe("An incoming chat Message", function () {
             `<blockquote>What do you think of it <span class="mention">romeo</span>?</blockquote>\n Did you see this <span class="mention">romeo</span>?`);
 
         expect(true).toBe(true);
-        done();
     }));
 
     it("won't style invalid block quotes",
             mock.initConverse(['chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -409,6 +404,5 @@ describe("An incoming chat Message", function () {
         const msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') === '```\ncode```');
         expect(true).toBe(true);
-        done();
     }));
 });

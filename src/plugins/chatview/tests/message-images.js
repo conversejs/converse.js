@@ -4,7 +4,7 @@ const { sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {
 
-    it("will render images from their URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+    it("will render images from their URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         const base_url = 'https://conversejs.org';
         let message = base_url+"/logo/conversejs-filled.svg";
@@ -49,11 +49,10 @@ describe("A Chat Message", function () {
 
         // Check that the Imgur URL gets a .png attached to make it render
         await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'), 1000);
-        done();
     }));
 
     it("will not render images if show_images_inline is false",
-            mock.initConverse(['chatBoxesFetched'], {'show_images_inline': false}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {'show_images_inline': false}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         const base_url = 'https://conversejs.org';
         const message = base_url+"/logo/conversejs-filled.svg";
@@ -65,13 +64,12 @@ describe("A Chat Message", function () {
         const sel = '.chat-content .chat-msg:last .chat-msg__text';
         await u.waitUntil(() => sizzle(sel).pop().innerHTML.replace(/<!-.*?->/g, '').trim() === message);
         expect(true).toBe(true);
-        done();
     }));
 
     it("will render images from approved URLs only",
         mock.initConverse(
             ['chatBoxesFetched'], {'show_images_inline': ['conversejs.org']},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const base_url = 'https://conversejs.org';
@@ -88,13 +86,12 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);
         await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 1, 1000)
         expect(view.querySelectorAll('.chat-content .chat-image').length).toBe(1);
-        done();
     }));
 
     it("will fall back to rendering images as URLs",
         mock.initConverse(
             ['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const base_url = 'https://conversejs.org';
@@ -109,7 +106,6 @@ describe("A Chat Message", function () {
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '').trim() ==
             `<a target="_blank" rel="noopener" href="https://conversejs.org/logo/non-existing.svg">https://conversejs.org/logo/non-existing.svg</a>`, 1000);
-        done();
     }));
 
     it("will fall back to rendering URLs that match image_urls_regex as URLs",
@@ -118,7 +114,7 @@ describe("A Chat Message", function () {
                 'show_images_inline': ['twimg.com'],
                 'image_urls_regex': /^https?:\/\/(www.)?(pbs\.twimg\.com\/)/i
             },
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const message = "https://pbs.twimg.com/media/string?format=jpg&name=small";
@@ -132,13 +128,12 @@ describe("A Chat Message", function () {
         const msg = view.querySelector('.chat-content .chat-msg .chat-msg__text');
         await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '').trim() ==
             `<a target="_blank" rel="noopener" href="https://pbs.twimg.com/media/string?format=jpg&amp;name=small">https://pbs.twimg.com/media/string?format=jpg&amp;name=small</a>`, 1000);
-        done();
     }));
 
     it("will respect a changed setting when re-rendered",
         mock.initConverse(
             ['chatBoxesFetched'], {'show_images_inline': true},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
@@ -152,6 +147,5 @@ describe("A Chat Message", function () {
         view.querySelector('converse-chat-message').requestUpdate();
         await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image') === null);
         expect(true).toBe(true);
-        done();
     }));
 });

@@ -8,7 +8,7 @@ describe("XEP-0363: HTTP File Upload", function () {
     describe("When not supported", function () {
         describe("A file upload toolbar button", function () {
 
-            it("does not appear in MUC chats", mock.initConverse([], {}, async (done, _converse) => {
+            it("does not appear in MUC chats", mock.initConverse([], {}, async (_converse) => {
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
@@ -19,7 +19,6 @@ describe("XEP-0363: HTTP File Upload", function () {
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload') === null);
                 expect(1).toBe(1);
-                done();
             }));
 
         });
@@ -29,7 +28,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
         describe("A file upload toolbar button", function () {
 
-            it("appears in MUC chats", mock.initConverse(['chatBoxesFetched'], {}, async (done, _converse) => {
+            it("appears in MUC chats", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
                 await mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
                     [{'category': 'server', 'type':'IM'}],
@@ -41,12 +40,11 @@ describe("XEP-0363: HTTP File Upload", function () {
                 await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').querySelector('.fileupload'));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 expect(view.querySelector('.chat-toolbar .fileupload')).not.toBe(null);
-                done();
             }));
 
             describe("when clicked and a file chosen", function () {
 
-                it("is uploaded and sent out from a groupchat", mock.initConverse(['chatBoxesFetched'], {} ,async (done, _converse) => {
+                it("is uploaded and sent out from a groupchat", mock.initConverse(['chatBoxesFetched'], {} ,async (_converse) => {
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
@@ -148,7 +146,6 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `Download file "conversejs-filled.svg"</a>`);
 
                     XMLHttpRequest.prototype.send = send_backup;
-                    done();
                 }));
 
 

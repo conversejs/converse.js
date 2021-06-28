@@ -8,7 +8,7 @@ describe("Chatrooms", function () {
 
         it("allows you to register your nickname in a room",
                 mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo')
@@ -54,7 +54,6 @@ describe("Chatrooms", function () {
                         `</x>`+
                     `</query>`+
                 `</iq>`);
-            done();
         }));
     });
 });

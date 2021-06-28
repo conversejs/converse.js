@@ -5,7 +5,7 @@ const u = converse.env.utils;
 describe("The User Details Modal", function () {
 
     it("can be used to remove a contact",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         _converse.api.trigger('rosterContactsFetched');
@@ -30,11 +30,10 @@ describe("The User Details Modal", function () {
         show_modal_button.click();
         remove_contact_button = modal.el.querySelector('button.remove-contact');
         expect(remove_contact_button === null).toBeTruthy();
-        done();
     }));
 
     it("shows an alert when an error happened while removing the contact",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         _converse.api.trigger('rosterContactsFetched');
@@ -71,6 +70,5 @@ describe("The User Details Modal", function () {
 
         remove_contact_button = modal.el.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
-        done();
     }));
 });

@@ -39,7 +39,7 @@ describe("The Protocol", function () {
          * stanza of type "result".
          */
         it("Subscribe to contact, contact accepts and subscribes back",
-                mock.initConverse([], { roster_groups: false }, async function (done, _converse) {
+                mock.initConverse([], { roster_groups: false }, async function (_converse) {
 
             const { u, $iq, $pres, sizzle, Strophe } = converse.env;
             let contact, stanza;
@@ -354,12 +354,11 @@ describe("The Protocol", function () {
             // The class on the contact will now have switched.
             await u.waitUntil(() => !u.hasClass('to', contacts[0]));
             expect(u.hasClass('both', contacts[0])).toBe(true);
-            done();
 
         }));
 
         it("Alternate Flow: Contact Declines Subscription Request",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const { $iq, $pres } = converse.env;
             /* The process by which a user subscribes to a contact, including
@@ -438,11 +437,10 @@ describe("The Protocol", function () {
                     `</query>`+
                 `</iq>`
             );
-            done();
         }));
 
         it("Unsubscribe to a contact when subscription is mutual",
-                mock.initConverse([], { roster_groups: false }, async function (done, _converse) {
+                mock.initConverse([], { roster_groups: false }, async function (_converse) {
 
             const { u, $iq, sizzle, Strophe } = converse.env;
             const jid = 'abram@montague.lit';
@@ -494,11 +492,10 @@ describe("The Protocol", function () {
             _converse.connection._dataRecv(mock.createRequest(stanza));
             // Our contact has now been removed
             await u.waitUntil(() => typeof _converse.roster.get(jid) === "undefined");
-            done();
         }));
 
         it("Receiving a subscription request", mock.initConverse(
-                [], {}, async function (done, _converse) {
+                [], {}, async function (_converse) {
 
             const { u, $pres, sizzle, Strophe } = converse.env;
             spyOn(_converse.api, "trigger").and.callThrough();
@@ -530,7 +527,6 @@ describe("The Protocol", function () {
             expect(u.isVisible(header)).toBe(true);
             const contacts = header.nextElementSibling.querySelectorAll('li');
             expect(contacts.length).toBe(1);
-            done();
         }));
     });
 });

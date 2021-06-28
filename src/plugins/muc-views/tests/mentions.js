@@ -7,7 +7,7 @@ const u = converse.env.utils;
 describe("An incoming groupchat message", function () {
 
     it("is specially marked when you are mentioned in it",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -24,12 +24,11 @@ describe("An incoming groupchat message", function () {
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(u.hasClass('mentioned', view.querySelector('.chat-msg'))).toBeTruthy();
-        done();
     }));
 
 
     it("highlights all users mentioned via XEP-0372 references",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -79,11 +78,10 @@ describe("An incoming groupchat message", function () {
             'hello <span class="mention">z3r0</span> '+
             '<span class="mention mention--self badge badge-info">tom</span> '+
             '<span class="mention">mr.robot</span>, how are you?');
-        done();
     }));
 
     it("properly renders mentions that contain the pipe character",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
@@ -128,11 +126,10 @@ describe("An incoming groupchat message", function () {
 
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe('hello <span class="mention">ThUnD3r|Gr33n</span>');
-        done();
     }));
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -166,7 +163,6 @@ describe("An incoming groupchat message", function () {
             '<blockquote>hello <span class="mention">z3r0</span> <span class="mention mention--self badge badge-info">tom</span> <span class="mention">mr.robot</span>, how are you?</blockquote>');
         const message = view.querySelector('.chat-msg__text');
         expect(message.classList.length).toEqual(1);
-        done();
     }));
 });
 
@@ -176,7 +172,7 @@ describe("A sent groupchat message", function () {
     describe("in which someone is mentioned", function () {
 
         it("gets parsed for mentions which get turned into references",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
 
@@ -302,11 +298,10 @@ describe("A sent groupchat message", function () {
             expect(references.length).toBe(1);
             expect(references)
                 .toEqual([{"begin":0,"end":5,"value":"gh0st","type":"mention","uri":"xmpp:lounge@montague.lit/gh0st"}]);
-            done();
         }));
 
         it("gets parsed for mentions as indicated with an @ preceded by a space or at the start of the text",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -334,11 +329,10 @@ describe("A sent groupchat message", function () {
             [text, references] = view.model.parseTextForReferences('nice website https://darnuria.eu/@darnuria');
             expect(references.length).toBe(0);
             expect(text).toBe('nice website https://darnuria.eu/@darnuria');
-            done();
         }));
 
         it("properly encodes the URIs in sent out references",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -377,11 +371,10 @@ describe("A sent groupchat message", function () {
                             `<reference begin="6" end="16" type="mention" uri="xmpp:lounge@montague.lit/Link%20Mauve" xmlns="urn:xmpp:reference:0"/>`+
                             `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
-            done();
         }));
 
         it("can get corrected and given new references",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
 
@@ -474,11 +467,10 @@ describe("A sent groupchat message", function () {
                             `<replace id="${msg.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
                             `<origin-id id="${correction.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
-            done();
         }));
 
         it("includes a XEP-0372 references to that person",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -523,12 +515,11 @@ describe("A sent groupchat message", function () {
                             `<reference begin="18" end="26" type="mention" uri="xmpp:${muc_jid}/mr.robot" xmlns="urn:xmpp:reference:0"/>`+
                             `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
-            done();
         }));
     });
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const members = [{'jid': 'gibson@gibson.net', 'nick': 'gibson', 'affiliation': 'member'}];
         const muc_jid = 'lounge@montague.lit';
@@ -549,6 +540,5 @@ describe("A sent groupchat message", function () {
             `Welcome <span class="mention">gibson</span> <span title=":poop:">💩</span> `+
             `We have a guide on how to do that here: `+
             `<a target="_blank" rel="noopener" href="https://conversejs.org/docs/html/index.html">https://conversejs.org/docs/html/index.html</a>`);
-        done();
     }));
 });

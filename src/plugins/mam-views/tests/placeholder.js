@@ -14,7 +14,7 @@ describe("Message Archive Management", function () {
                     'persistent_store': 'localStorage',
                     'mam_request_all_pages': false
                 },
-                async function (done, _converse) {
+                async function (_converse) {
 
             const sent_IQs = _converse.connection.IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
@@ -152,12 +152,11 @@ describe("Message Archive Management", function () {
             _converse.connection._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 4);
             await u.waitUntil(() => view.querySelector('converse-mam-placeholder') === null);
-            done();
         }));
 
         it("is not created when there isn't a gap because the cached history is empty",
                 mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const sent_IQs = _converse.connection.IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
@@ -213,7 +212,6 @@ describe("Message Archive Management", function () {
             _converse.connection._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 2);
             expect(true).toBe(true);
-            done();
         }));
     });
 });

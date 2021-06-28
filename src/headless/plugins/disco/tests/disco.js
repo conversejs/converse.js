@@ -7,7 +7,7 @@ describe("Service Discovery", function () {
         it("stores the features it receives",
             mock.initConverse(
                 ['discoInitialized'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const { u, $iq } = converse.env;
             const IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -161,7 +161,6 @@ describe("Service Discovery", function () {
             expect(entities.get(_converse.domain).items.pluck('jid').includes('words.shakespeare.lit')).toBeTruthy();
             expect(entities.get(_converse.domain).identities.where({'category': 'conference'}).length).toBe(1);
             expect(entities.get(_converse.domain).identities.where({'category': 'directory'}).length).toBe(1);
-            done();
         }));
     });
 
@@ -169,7 +168,7 @@ describe("Service Discovery", function () {
        it("emits the serviceDiscovered event",
             mock.initConverse(
                 ['discoInitialized'], {},
-                function (done, _converse) {
+                function (_converse) {
 
             const { Strophe } = converse.env;
             spyOn(_converse.api, "trigger").and.callThrough();
@@ -178,7 +177,6 @@ describe("Service Discovery", function () {
             const last_call = _converse.api.trigger.calls.all().pop();
             expect(last_call.args[0]).toBe('serviceDiscovered');
             expect(last_call.args[1].get('var')).toBe(Strophe.NS.MAM);
-            done();
         }));
     });
 });

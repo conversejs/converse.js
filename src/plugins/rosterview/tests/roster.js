@@ -26,7 +26,7 @@ const checkHeaderToggling = async function (group) {
 
 describe("The Contacts Roster", function () {
 
-    it("verifies the origin of roster pushes", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+    it("verifies the origin of roster pushes", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         // See: https://gultsch.de/gajim_roster_push_and_message_interception.html
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -59,10 +59,9 @@ describe("The Contacts Roster", function () {
         );
         expect(_converse.roster.models.length).toBe(1);
         expect(_converse.roster.at(0).get('jid')).toBe(contact_jid);
-        done();
     }));
 
-    it("is populated once we have registered a presence handler", mock.initConverse([], {}, async function (done, _converse) {
+    it("is populated once we have registered a presence handler", mock.initConverse([], {}, async function (_converse) {
         const IQs = _converse.connection.IQ_stanzas;
         const stanza = await u.waitUntil(
             () => _.filter(IQs, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
@@ -81,10 +80,9 @@ describe("The Contacts Roster", function () {
           .c('item', {'jid': 'romeo@example.com'})
         _converse.connection._dataRecv(mock.createRequest(result));
         await u.waitUntil(() => _converse.promises['rosterContactsFetched'].isResolved === true);
-        done();
     }));
 
-    it("supports roster versioning", mock.initConverse([], {}, async function (done, _converse) {
+    it("supports roster versioning", mock.initConverse([], {}, async function (_converse) {
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         let stanza = await u.waitUntil(
             () => _.filter(IQ_stanzas, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
@@ -132,10 +130,9 @@ describe("The Contacts Roster", function () {
         expect(_converse.roster.data.get('version')).toBe('ver34');
         expect(_converse.roster.models.length).toBe(1);
         expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
-        done();
     }));
 
-    it("will also show contacts added afterwards", mock.initConverse([], {}, async function (done, _converse) {
+    it("will also show contacts added afterwards", mock.initConverse([], {}, async function (_converse) {
         await mock.openControlBox(_converse);
         await mock.waitForRoster(_converse, 'current');
 
@@ -175,13 +172,12 @@ describe("The Contacts Roster", function () {
         expect(visible_groups[3].textContent.trim()).toBe('newgroup');
         expect(visible_groups[4].textContent.trim()).toBe('ænemies');
         expect(roster.querySelectorAll('.roster-group').length).toBe(5);
-        done();
     }));
 
     describe("The live filter", function () {
 
         it("will only appear when roster contacts flow over the visible area",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             expect(document.querySelector('converse-roster')).toBe(null);
             await mock.waitForRoster(_converse, 'current');
@@ -197,13 +193,12 @@ describe("The Contacts Roster", function () {
             const filter = rosterview.querySelector('.roster-filter');
             const el = rosterview.querySelector('.roster-contacts');
             await u.waitUntil(() => hasScrollBar(el) ? u.isVisible(filter) : !u.isVisible(filter), 900);
-            done();
         }));
 
         it("can be used to filter the contacts shown",
             mock.initConverse(
                 [], {'roster_groups': true},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
@@ -250,10 +245,9 @@ describe("The Contacts Roster", function () {
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 600);
             expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
-            done();
         }));
 
-        it("can be used to filter the groups shown", mock.initConverse([], {'roster_groups': true}, async function (done, _converse) {
+        it("can be used to filter the groups shown", mock.initConverse([], {'roster_groups': true}, async function (_converse) {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
             const rosterview = document.querySelector('converse-roster');
@@ -287,11 +281,10 @@ describe("The Contacts Roster", function () {
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (roster.querySelectorAll('div.roster-group.collapsed').length === 0), 700);
             expect(sizzle('div.roster-group', roster).length).toBe(0);
-            done();
         }));
 
         it("has a button with which its contents can be cleared",
-                mock.initConverse([], {'roster_groups': true}, async function (done, _converse) {
+                mock.initConverse([], {'roster_groups': true}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
@@ -307,7 +300,6 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => !isHidden(rosterview.querySelector('.roster-filter-form .clear-input')), 900);
             rosterview.querySelector('.clear-input').click();
             expect(document.querySelector('.roster-filter').value).toBe("");
-            done();
         }));
 
         // Disabling for now, because since recently this test consistently
@@ -315,7 +307,7 @@ describe("The Contacts Roster", function () {
         xit("can be used to filter contacts by their chat state",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             mock.waitForRoster(_converse, 'all');
             let jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -342,7 +334,6 @@ describe("The Contacts Roster", function () {
             u.triggerEvent(filter, 'change');
             await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Friar Laurence', 900);
             expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
-            done();
         }));
     });
 
@@ -351,7 +342,7 @@ describe("The Contacts Roster", function () {
         it("is created to show contacts with unread messages",
             mock.initConverse(
                 [], {'roster_groups': true},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -406,14 +397,13 @@ describe("The Contacts Roster", function () {
                 "Ungrouped",
                 "Pending contacts"
             ]);
-            done();
         }));
 
 
         it("can be used to organize existing contacts",
             mock.initConverse(
                 [], {'roster_groups': true},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -438,11 +428,10 @@ describe("The Contacts Roster", function () {
                 const names = contacts.map(o => o.textContent.trim());
                 expect(names).toEqual(_.clone(names).sort());
             });
-            done();
         }));
 
         it("gets created when a contact's \"groups\" attribute changes",
-            mock.initConverse([], {'roster_groups': true}, async function (done, _converse) {
+            mock.initConverse([], {'roster_groups': true}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -480,11 +469,10 @@ describe("The Contacts Roster", function () {
                 }
             }, 1000);
             expect(group_titles).toEqual(['secondgroup']);
-            done();
         }));
 
         it("can share contacts with other roster groups",
-                mock.initConverse( [], {'roster_groups': true}, async function (done, _converse) {
+                mock.initConverse( [], {'roster_groups': true}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             const groups = ['Colleagues', 'friends'];
@@ -507,11 +495,10 @@ describe("The Contacts Roster", function () {
                 expect(names).toEqual(_.clone(names).sort());
                 expect(names.length).toEqual(mock.cur_names.length);
             });
-            done();
         }));
 
         it("remembers whether it is closed or opened",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
@@ -544,14 +531,13 @@ describe("The Contacts Roster", function () {
             expect(state.get('collapsed_groups')).toEqual(['Colleagues']);
             toggle.click();
             expect(state.get('collapsed_groups')).toEqual([]);
-            done();
         }));
     });
 
     describe("Pending Contacts", function () {
 
         it("can be collapsed under their own header",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -559,13 +545,12 @@ describe("The Contacts Roster", function () {
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
             await checkHeaderToggling.apply(_converse, [rosterview.querySelector('[data-group="Pending contacts"]')]);
-            done();
         }));
 
         it("can be added to the roster",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'all', 0);
             await mock.openControlBox(_converse);
@@ -578,13 +563,12 @@ describe("The Contacts Roster", function () {
             });
             expect(u.isVisible(rosterview)).toBe(true);
             await u.waitUntil(() => sizzle('li', rosterview).filter(u.isVisible).length === 1);
-            done();
         }));
 
         it("are shown in the roster when hide_offline_users",
             mock.initConverse(
                 [], {'hide_offline_users': true},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'pending');
@@ -594,11 +578,10 @@ describe("The Contacts Roster", function () {
             expect(u.isVisible(rosterview)).toBe(true);
             expect(sizzle('li', rosterview).filter(u.isVisible).length).toBe(3);
             expect(sizzle('ul.roster-group-contacts', rosterview).filter(u.isVisible).length).toBe(1);
-            done();
         }));
 
         it("can be removed by the user",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -626,13 +609,12 @@ describe("The Contacts Roster", function () {
                         `<item jid="lord.capulet@montague.lit" subscription="remove"/>`+
                     `</query>`+
                 `</iq>`);
-            done();
         }));
 
         it("do not have a header if there aren't any",
             mock.initConverse(
                 ['VCardsInitialized'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -665,11 +647,10 @@ describe("The Contacts Roster", function () {
             const stanza = u.toStanza(`<iq id="${iq.getAttribute('id')}" to="romeo@montague.lit/orchard" type="result"/>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
-            done();
         }));
 
         it("is shown when a new private message is received",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -683,13 +664,12 @@ describe("The Contacts Roster", function () {
             }
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
             expect(rosterview.querySelectorAll('ul').length).toBe(5);
-            done();
         }));
 
         it("can be added to the roster and they will be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
@@ -710,7 +690,6 @@ describe("The Contacts Roster", function () {
             const spans = el.querySelectorAll('.pending-xmpp-contact span');
             const t = Array.from(spans).reduce((result, value) => result + value.textContent?.trim(), '');
             expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
-            done();
         }));
     });
 
@@ -724,19 +703,18 @@ describe("The Contacts Roster", function () {
         it("can be collapsed under their own header",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('li', rosterview).filter(u.isVisible).length, 500);
             await checkHeaderToggling.apply(_converse, [rosterview.querySelector('.roster-group')]);
-            done();
         }));
 
         it("will be hidden when appearing under a collapsed group",
             mock.initConverse(
                 [], {'roster_groups': false},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -753,13 +731,12 @@ describe("The Contacts Roster", function () {
             });
             const el = rosterview.querySelector(`ul[data-group="My contacts"]`);
             expect(u.hasClass('collapsed', el)).toBe(true);
-            done();
         }));
 
         it("can be added to the roster and they will be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
@@ -778,13 +755,12 @@ describe("The Contacts Roster", function () {
             const els = sizzle('.current-xmpp-contact.offline a.open-chat', rosterview)
             const t = els.reduce((result, value) => (result + value.textContent.trim()), '');
             expect(t).toEqual(mock.cur_names.slice(0,mock.cur_names.length).sort().join(''));
-            done();
         }));
 
         it("can be removed by the user",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -808,13 +784,12 @@ describe("The Contacts Roster", function () {
                 `</iq>`);
             expect(contact.removeFromRoster).toHaveBeenCalled();
             await u.waitUntil(() => sizzle(".open-chat:contains('"+name+"')", rosterview).length === 0);
-            done();
         }));
 
         it("do not have a header if there aren't any",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -838,13 +813,12 @@ describe("The Contacts Roster", function () {
             expect(_converse.connection.sendIQ).toHaveBeenCalled();
             expect(contact.removeFromRoster).toHaveBeenCalled();
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length === 0);
-            done();
         }));
 
         it("can change their status to online and be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -865,13 +839,12 @@ describe("The Contacts Roster", function () {
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
-            done();
         }));
 
         it("can change their status to busy and be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -892,13 +865,12 @@ describe("The Contacts Roster", function () {
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
-            done();
         }));
 
         it("can change their status to away and be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -919,13 +891,12 @@ describe("The Contacts Roster", function () {
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
-            done();
         }));
 
         it("can change their status to xa and be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -946,13 +917,12 @@ describe("The Contacts Roster", function () {
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
-            done();
         }));
 
         it("can change their status to unavailable and be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -973,13 +943,12 @@ describe("The Contacts Roster", function () {
                     expect(t).toEqual(mock.groups_map[groupname].slice(0, els.length).sort().join(''));
                 }
             }
-            done();
         }));
 
         it("are ordered according to status: online, busy, away, xa, unavailable, offline",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await _addContacts(_converse);
             const rosterview = document.querySelector('converse-roster');
@@ -1060,7 +1029,6 @@ describe("The Contacts Roster", function () {
                     expect(subscription_classes.join(" ")).toBe("both both");
                 }
             }
-            done();
         }));
     });
 
@@ -1069,7 +1037,7 @@ describe("The Contacts Roster", function () {
         it("can be added to the roster and they will be sorted alphabetically",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, "current", 0);
             await mock.openControlBox(_converse);
@@ -1096,10 +1064,9 @@ describe("The Contacts Roster", function () {
             names = [];
             Array.from(children).forEach(addName);
             expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
-            done();
         }));
 
-        it("do not have a header if there aren't any", mock.initConverse([], {}, async function (done, _converse) {
+        it("do not have a header if there aren't any", mock.initConverse([], {}, async function (_converse) {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, "current", 0);
             const name = mock.req_names[0];
@@ -1118,10 +1085,9 @@ describe("The Contacts Roster", function () {
             sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li .decline-xmpp-request'))[0].click();
             expect(window.confirm).toHaveBeenCalled();
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Contact requests"]`) === null);
-            done();
         }));
 
-        it("can be collapsed under their own header", mock.initConverse([], {}, async function (done, _converse) {
+        it("can be collapsed under their own header", mock.initConverse([], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             mock.createContacts(_converse, 'requesting');
             await mock.openControlBox(_converse);
@@ -1129,13 +1095,12 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).length, 700);
             const el = await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Contact requests"]`));
             await checkHeaderToggling.apply(_converse, [el.parentElement]);
-            done();
         }));
 
         it("can have their requests accepted by the user",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
@@ -1155,13 +1120,12 @@ describe("The Contacts Roster", function () {
             expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
             await u.waitUntil(() => contact.authorize.calls.count());
             expect(contact.authorize).toHaveBeenCalled();
-            done();
         }));
 
         it("can have their requests denied by the user",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting');
@@ -1179,11 +1143,10 @@ describe("The Contacts Roster", function () {
             expect(contact.unauthorize).toHaveBeenCalled();
             // There should now be one less contact
             expect(_converse.roster.length).toEqual(mock.req_names.length-1);
-            done();
         }));
 
         it("are persisted even if other contacts' change their presence ", mock.initConverse(
-            [], {}, async function (done, _converse) {
+            [], {}, async function (_converse) {
 
             const sent_IQs = _converse.connection.IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
@@ -1227,7 +1190,6 @@ describe("The Contacts Roster", function () {
             expect(_converse.roster.data.get('version')).toBe('ver34');
             expect(_converse.roster.models.length).toBe(4);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();
-            done();
         }));
     });
 
@@ -1236,7 +1198,7 @@ describe("The Contacts Roster", function () {
         it("are saved to, and can be retrieved from browserStorage",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting');
@@ -1260,13 +1222,12 @@ describe("The Contacts Roster", function () {
                 // comparison
                 expect(new_attrs.sort()).toEqual(old_attrs.sort());
             }
-            done();
         }));
 
         it("will show fullname and jid properties on tooltip",
             mock.initConverse(
                 [], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 'all');
             await mock.createContacts(_converse, 'requesting');
@@ -1288,7 +1249,6 @@ describe("The Contacts Roster", function () {
                 expect(child.textContent.trim()).toBe(name);
                 expect(child.firstElementChild.getAttribute('title')).toContain(jid);
             }));
-            done();
         }));
     });
 });

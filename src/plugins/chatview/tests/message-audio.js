@@ -6,7 +6,7 @@ describe("A Chat Message", function () {
 
     it("will render audio files from their URLs",
             mock.initConverse(['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         const base_url = 'https://conversejs.org';
         const message = base_url+"/logo/audio.mp3";
@@ -20,6 +20,5 @@ describe("A Chat Message", function () {
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
             `<audio controls="" src="${message}"></audio>`+
             `<a target="_blank" rel="noopener" href="${message}">${message}</a>`);
-        done();
     }));
 });

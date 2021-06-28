@@ -12,7 +12,7 @@ describe("MUC Mention Notfications", function () {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const { api } = _converse;
 
@@ -81,6 +81,5 @@ describe("MUC Mention Notfications", function () {
         _converse.connection._dataRecv(mock.createRequest(message));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
         expect(room_el.querySelector('.msgs-indicator')?.textContent.trim()).toBe('2');
-        done();
     }));
 });

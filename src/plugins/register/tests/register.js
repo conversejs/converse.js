@@ -17,12 +17,11 @@ describe("The Registration Panel", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               allow_registration: false },
-            async function (done, _converse) {
+            async function (_converse) {
 
         await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         const cbview = _converse.api.controlbox.get();
         expect(cbview.querySelectorAll('a.register-account').length).toBe(0);
-        done();
     }));
 
     it("can be opened by clicking on the registration tab",
@@ -30,7 +29,7 @@ describe("The Registration Panel", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               allow_registration: true },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
         if (!u.isVisible(document.querySelector("#controlbox"))) {
@@ -47,7 +46,6 @@ describe("The Registration Panel", function () {
         register_link.click();
 
         expect(cbview.querySelector('converse-register-panel')).toBeDefined();
-        done();
     }));
 
     it("allows the user to choose an XMPP provider's domain",
@@ -56,7 +54,7 @@ describe("The Registration Panel", function () {
             { auto_login: false,
               discover_connection_methods: false,
               allow_registration: true },
-            async function (done, _converse) {
+            async function (_converse) {
 
 
         const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
@@ -88,7 +86,6 @@ describe("The Registration Panel", function () {
         expect(registerview.onProviderChosen).toHaveBeenCalled();
         expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
         delete _converse.connection;
-        done();
     }));
 
     it("will render a registration form as received from the XMPP provider",
@@ -97,7 +94,7 @@ describe("The Registration Panel", function () {
             { auto_login: false,
               discover_connection_methods: false,
               allow_registration: true },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
         toggle.click();
@@ -146,7 +143,6 @@ describe("The Registration Panel", function () {
         expect(registerview.querySelectorAll('input').length).toBe(5);
         expect(registerview.querySelectorAll('input[type=submit]').length).toBe(1);
         expect(registerview.querySelectorAll('input[type=button]').length).toBe(1);
-        done();
     }));
 
     it("will set form_type to legacy and submit it as legacy",
@@ -155,7 +151,7 @@ describe("The Registration Panel", function () {
             { auto_login: false,
               discover_connection_methods: false,
               allow_registration: true },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
@@ -209,7 +205,6 @@ describe("The Registration Panel", function () {
         expect(stanza.querySelector('query').firstElementChild.tagName).toBe('username');
 
         delete _converse.connection;
-        done();
     }));
 
     it("will set form_type to xform and submit it as xform",
@@ -218,7 +213,7 @@ describe("The Registration Panel", function () {
             { auto_login: false,
               discover_connection_methods: false,
               allow_registration: true },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
@@ -289,7 +284,6 @@ describe("The Registration Panel", function () {
         );
 
         delete _converse.connection;
-        done();
     }));
 
     it("renders the account registration form",
@@ -298,7 +292,7 @@ describe("The Registration Panel", function () {
             { auto_login: false,
               discover_connection_methods: false,
               allow_registration: true },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
@@ -358,7 +352,6 @@ describe("The Registration Panel", function () {
         // passed or failed
         u.addClass('hidden', _converse.chatboxviews.get('controlbox').el);
         delete _converse.connection;
-        done();
     }));
 
     it("renders errors",
@@ -368,7 +361,7 @@ describe("The Registration Panel", function () {
               view_mode: 'fullscreen',
               discover_connection_methods: false,
               allow_registration: true },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
@@ -439,6 +432,5 @@ describe("The Registration Panel", function () {
         _converse.connection._dataRecv(mock.createRequest(response_IQ));
         expect(view.querySelector('.error')?.textContent.trim()).toBe('Too many CAPTCHA requests');
         delete _converse.connection;
-        done();
     }));
 });

@@ -6,7 +6,7 @@ describe("Converse", function() {
 
     describe("Authentication", function () {
 
-        it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(async (done, _converse) => {
+        it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(async (_converse) => {
             const url = _converse.bosh_service_url;
             const connection = _converse.connection;
             _converse.api.settings.set('bosh_service_url', undefined);
@@ -17,7 +17,6 @@ describe("Converse", function() {
                 _converse.api.settings.set('bosh_service_url', url);
                 _converse.connection = connection;
                 expect(e.message).toBe("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-                done();
             }
         }));
     });
@@ -25,7 +24,7 @@ describe("Converse", function() {
     describe("A chat state indication", function () {
 
         it("are sent out when the client becomes or stops being idle",
-            mock.initConverse(['discoInitialized'], {}, (done, _converse) => {
+            mock.initConverse(['discoInitialized'], {}, (_converse) => {
 
             spyOn(_converse, 'sendCSI').and.callThrough();
             let sent_stanza;
@@ -47,14 +46,13 @@ describe("Converse", function() {
             _converse.onUserActivity();
             expect(_converse.sendCSI).toHaveBeenCalledWith('active');
             expect(Strophe.serialize(sent_stanza)).toBe('<active xmlns="urn:xmpp:csi:0"/>');
-            done();
         }));
     });
 
     describe("Automatic status change", function () {
 
         it("happens when the client is idle for long enough",
-                mock.initConverse(['initialized'], {}, async (done, _converse) => {
+                mock.initConverse(['initialized'], {}, async (_converse) => {
             let i = 0;
             // Usually initialized by registerIntervalHandler
             _converse.idle_seconds = 0;
@@ -120,7 +118,6 @@ describe("Converse", function() {
             _converse.onUserActivity();
             expect(await _converse.api.user.status.get()).toBe('dnd');
             expect(_converse.auto_changed_status).toBe(false);
-            done();
         }));
     });
 
@@ -129,15 +126,14 @@ describe("Converse", function() {
         describe("The \"status\" API", function () {
 
             it("has a method for getting the user's availability",
-                    mock.initConverse(['statusInitialized'], {}, async(done, _converse) => {
+                    mock.initConverse(['statusInitialized'], {}, async(_converse) => {
                 _converse.xmppstatus.set('status', 'online');
                 expect(await _converse.api.user.status.get()).toBe('online');
                 _converse.xmppstatus.set('status', 'dnd');
                 expect(await _converse.api.user.status.get()).toBe('dnd');
-                done();
             }));
 
-            it("has a method for setting the user's availability", mock.initConverse(async (done, _converse) => {
+            it("has a method for setting the user's availability", mock.initConverse(async (_converse) => {
                 await _converse.api.user.status.set('away');
                 expect(await _converse.xmppstatus.get('status')).toBe('away');
                 await _converse.api.user.status.set('dnd');
@@ -149,39 +145,35 @@ describe("Converse", function() {
                 const promise = _converse.api.user.status.set('invalid')
                 promise.catch(e => {
                     expect(e.message).toBe('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
-                    done();
                 });
             }));
 
-            it("allows setting the status message as well", mock.initConverse(async (done, _converse) => {
+            it("allows setting the status message as well", mock.initConverse(async (_converse) => {
                 await _converse.api.user.status.set('away', "I'm in a meeting");
                 expect(_converse.xmppstatus.get('status')).toBe('away');
                 expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
-                done();
             }));
 
             it("has a method for getting the user's status message",
-                    mock.initConverse(['statusInitialized'], {}, async (done, _converse) => {
+                    mock.initConverse(['statusInitialized'], {}, async (_converse) => {
                 await _converse.xmppstatus.set('status_message', undefined);
                 expect(await _converse.api.user.status.message.get()).toBe(undefined);
                 await _converse.xmppstatus.set('status_message', "I'm in a meeting");
                 expect(await _converse.api.user.status.message.get()).toBe("I'm in a meeting");
-                done();
             }));
 
             it("has a method for setting the user's status message",
-                    mock.initConverse(['statusInitialized'], {}, async (done, _converse) => {
+                    mock.initConverse(['statusInitialized'], {}, async (_converse) => {
                 _converse.xmppstatus.set('status_message', undefined);
                 await _converse.api.user.status.message.set("I'm in a meeting");
                 expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
-                done();
             }));
         });
     });
 
     describe("The \"tokens\" API", function () {
 
-        it("has a method for retrieving the next RID", mock.initConverse((done, _converse) => {
+        it("has a method for retrieving the next RID", mock.initConverse((_converse) => {
             mock.createContacts(_converse, 'current');
             const old_connection = _converse.connection;
             _converse.connection._proto.rid = '1234';
@@ -190,10 +182,9 @@ describe("Converse", function() {
             expect(_converse.api.tokens.get('rid')).toBe(null);
             // Restore the connection
             _converse.connection = old_connection;
-            done();
         }));
 
-        it("has a method for retrieving the SID", mock.initConverse((done, _converse) => {
+        it("has a method for retrieving the SID", mock.initConverse((_converse) => {
             mock.createContacts(_converse, 'current');
             const old_connection = _converse.connection;
             _converse.connection._proto.sid = '1234';
@@ -202,14 +193,13 @@ describe("Converse", function() {
             expect(_converse.api.tokens.get('sid')).toBe(null);
             // Restore the connection
             _converse.connection = old_connection;
-            done();
         }));
     });
 
     describe("The \"contacts\" API", function () {
 
         it("has a method 'get' which returns wrapped contacts",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             let contact = await _converse.api.contacts.get('non-existing@jabber.org');
@@ -228,11 +218,10 @@ describe("Converse", function() {
             // Check that all JIDs are returned if you call without any parameters
             list = await _converse.api.contacts.get();
             expect(list.length).toBe(mock.cur_names.length);
-            done();
         }));
 
         it("has a method 'add' with which contacts can be added",
-                mock.initConverse(['rosterInitialized'], {}, async (done, _converse) => {
+                mock.initConverse(['rosterInitialized'], {}, async (_converse) => {
 
             await mock.waitForRoster(_converse, 'current', 0);
             try {
@@ -251,13 +240,12 @@ describe("Converse", function() {
             spyOn(_converse.roster, 'addAndSubscribe');
             await _converse.api.contacts.add("newcontact@example.org");
             expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
-            done();
         }));
     });
 
     describe("The \"settings\" API", function() {
         it("has methods 'get' and 'set' to set configuration settings",
-                mock.initConverse(null, {'play_sounds': true}, (done, _converse) => {
+                mock.initConverse(null, {'play_sounds': true}, (_converse) => {
 
             expect(Object.keys(_converse.api.settings)).toEqual(["extend", "update", "get", "set"]);
             expect(_converse.api.settings.get("play_sounds")).toBe(true);
@@ -269,11 +257,10 @@ describe("Converse", function() {
             expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
             _converse.api.settings.set("non_existing", true);
             expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
-            done();
         }));
 
         it("extended via settings.extend don't override settings passed in via converse.initialize",
-                mock.initConverse([], {'emoji_categories': {"travel": ":rocket:"}}, (done, _converse) => {
+                mock.initConverse([], {'emoji_categories': {"travel": ":rocket:"}}, (_converse) => {
 
             expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
 
@@ -283,7 +270,6 @@ describe("Converse", function() {
 
             expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
             expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
-            done();
         }));
 
         it("only overrides the passed in properties",
@@ -292,7 +278,7 @@ describe("Converse", function() {
                     'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
                     'emoji_categories': { 'travel': ':rocket:' },
                 },
-                (done, _converse) => {
+                (_converse) => {
                     expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
 
                     // Test that the extend command doesn't override user-provided site
@@ -303,7 +289,6 @@ describe("Converse", function() {
 
                     expect(_converse.api.settings.get('emoji_categories').travel).toBe(':rocket:');
                     expect(_converse.api.settings.get('emoji_categories').food).toBe(undefined);
-                    done();
                 }
             )
         );
@@ -311,7 +296,7 @@ describe("Converse", function() {
     });
 
     describe("The \"plugins\" API", function() {
-        it("only has a method 'add' for registering plugins", mock.initConverse((done, _converse) => {
+        it("only has a method 'add' for registering plugins", mock.initConverse((_converse) => {
             expect(Object.keys(converse.plugins)).toEqual(["add"]);
             // Cheating a little bit. We clear the plugins to test more easily.
             const _old_plugins = _converse.pluggable.plugins;
@@ -321,17 +306,15 @@ describe("Converse", function() {
             converse.plugins.add('plugin2', {});
             expect(Object.keys(_converse.pluggable.plugins)).toEqual(['plugin1', 'plugin2']);
             _converse.pluggable.plugins = _old_plugins;
-            done();
         }));
 
         describe("The \"plugins.add\" method", function() {
             it("throws an error when multiple plugins attempt to register with the same name",
-                    mock.initConverse((done, _converse) => {  // eslint-disable-line no-unused-vars
+                    mock.initConverse((_converse) => {  // eslint-disable-line no-unused-vars
 
                 converse.plugins.add('myplugin', {});
                 const error = new TypeError('Error: plugin with name "myplugin" has already been registered!');
                 expect(() => converse.plugins.add('myplugin', {})).toThrow(error);
-                done();
             }));
         });
     });

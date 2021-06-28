@@ -8,7 +8,7 @@ describe("A Groupchat Message", function () {
         mock.initConverse(
             ['chatBoxesFetched'],
             {'prune_messages_above': 3},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -47,6 +47,5 @@ describe("A Groupchat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => model.messages.length === 4);
         await u.waitUntil(() => model.messages.length === 3, 550);
-        done();
     }));
 });

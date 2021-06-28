@@ -9,7 +9,7 @@ describe("A list of open groupchats", function () {
             ['chatBoxesFetched'],
             { allow_bookmarks: false // Makes testing easier, otherwise we
                                         // have to mock stanza traffic.
-            }, async function (done, _converse) {
+            }, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
@@ -44,14 +44,13 @@ describe("A list of open groupchats", function () {
 
         list = controlbox.querySelector('.list-container--openrooms');
         expect(Array.from(list.classList).includes('hidden')).toBeTruthy();
-        done();
     }));
 
     it("uses bookmarks to determine groupchat names",
         mock.initConverse(
             ['chatBoxesFetched'],
             {'view_mode': 'fullscreen'},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const { Strophe, $iq, $pres, sizzle } = converse.env;
         const u = converse.env.utils;
@@ -106,7 +105,6 @@ describe("A list of open groupchats", function () {
         expect(items.length).toBe(1);
         await u.waitUntil(() => list.querySelector('.list-item').textContent.trim() === 'Bookmarked Lounge');
         expect(_converse.bookmarks.fetchBookmarks).toHaveBeenCalled();
-        done();
     }));
 });
 
@@ -116,7 +114,7 @@ describe("A groupchat shown in the groupchats list", function () {
             ['chatBoxesFetched'],
             { view_mode: 'fullscreen',
             allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
-            }, async function (done, _converse) {
+            }, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const controlbox = _converse.chatboxviews.get('controlbox');
@@ -141,7 +139,6 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(room_els.length).toBe(1);
         item = room_els[0];
         expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
-        done();
     }));
 
     it("has an info icon which opens a details modal when clicked", mock.initConverse(
@@ -149,7 +146,7 @@ describe("A groupchat shown in the groupchats list", function () {
             { whitelisted_plugins: ['converse-roomslist'],
             allow_bookmarks: false // Makes testing easier, otherwise we
                                     // have to mock stanza traffic.
-            }, async function (done, _converse) {
+            }, async function (_converse) {
 
         const { Strophe, $iq, $pres } = converse.env;
         const u = converse.env.utils;
@@ -250,7 +247,6 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(els[3].textContent).toBe("Topic: Hatching dark plots")
         expect(els[4].textContent).toBe("Topic author: someone")
         expect(els[5].textContent).toBe("Online users: 2")
-        done();
     }));
 
     it("can be closed", mock.initConverse(
@@ -258,7 +254,7 @@ describe("A groupchat shown in the groupchats list", function () {
             { whitelisted_plugins: ['converse-roomslist'],
             allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const u = converse.env.utils;
         spyOn(window, 'confirm').and.callFake(() => true);
@@ -281,14 +277,13 @@ describe("A groupchat shown in the groupchats list", function () {
 
         await u.waitUntil(() => rooms_list.querySelectorAll(".open-room").length === 0);
         expect(_converse.chatboxes.length).toBe(1);
-        done();
     }));
 
     it("shows unread messages directed at the user", mock.initConverse(
             null,
             { whitelisted_plugins: ['converse-roomslist'],
             allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
-            }, async (done, _converse) => {
+            }, async (_converse) => {
 
         const { $msg } = converse.env;
         const u = converse.env.utils;
@@ -345,6 +340,5 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(indicator_el === null);
         room_el = lview.querySelector(".available-chatroom");
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
-        done();
     }));
 });

@@ -6,7 +6,7 @@ describe("An incoming groupchat Message", function () {
 
     it("can be styled with span XEP-0393 message styling hints that contain mentions",
             mock.initConverse(['chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -27,12 +27,11 @@ describe("An incoming groupchat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             'This <span class="styling-directive">*</span><b>message mentions <span class="mention mention--self badge badge-info">romeo</span></b><span class="styling-directive">*</span>');
-        done();
     }));
 
     it("will not have styling applied to mentioned nicknames themselves",
             mock.initConverse(['chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -53,6 +52,5 @@ describe("An incoming groupchat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<span class="mention">x_y_z_</span> hello');
-        done();
     }));
 });

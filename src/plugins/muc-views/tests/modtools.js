@@ -21,7 +21,7 @@ async function openModtools (_converse, view) {
 describe("The groupchat moderator tool", function () {
 
     it("allows you to set affiliations and roles",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
 
@@ -135,11 +135,10 @@ describe("The groupchat moderator tool", function () {
         user_els = roles_panel.querySelectorAll('.list-group--users > li')
         expect(user_els.length).toBe(1);
         expect(user_els[0].textContent.trim()).toBe('No users with that role found.');
-        done();
     }));
 
     it("allows you to filter affiliation search results",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         const members = [
@@ -188,11 +187,10 @@ describe("The groupchat moderator tool", function () {
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
         await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
 
-        done();
     }));
 
     it("allows you to filter role search results",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', []);
@@ -295,11 +293,10 @@ describe("The groupchat moderator tool", function () {
         filter.value = 'crone';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
         await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
-        done();
     }));
 
     it("shows an error message if a particular affiliation list may not be retrieved",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         const members = [
@@ -344,11 +341,10 @@ describe("The groupchat moderator tool", function () {
         const user_els = modal.el.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
         expect(user_els[0].textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
-        done();
     }));
 
     it("shows an error message if a particular affiliation may not be set",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         const members = [
@@ -407,12 +403,11 @@ describe("The groupchat moderator tool", function () {
             </iq>`);
         _converse.connection._dataRecv(mock.createRequest(error));
 
-        done();
     }));
 
 
     it("doesn't allow admins to make more admins",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         const members = [
@@ -442,11 +437,10 @@ describe("The groupchat moderator tool", function () {
 
         change_affiliation_dropdown = user_els[1].querySelector('.select-affiliation');
         expect(Array.from(change_affiliation_dropdown.options).map(o => o.value)).toEqual(['member', 'outcast', 'none']);
-        done();
     }));
 
     it("lets the assignable affiliations and roles be configured via modtools_disable_assign",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         const members = [{'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'}];
@@ -476,6 +470,5 @@ describe("The groupchat moderator tool", function () {
 
         _converse.api.settings.set('modtools_disable_assign', ['admin', 'moderator']);
         expect(modal.getAssignableRoles(occupant)).toEqual(['participant', 'visitor']);
-        done();
     }));
 });

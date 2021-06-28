@@ -13,7 +13,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
-            async function (done, _converse) {
+            async function (_converse) {
 
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
 
@@ -110,7 +110,6 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
         await u.waitUntil(() => view.model.get('has_activity'));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
-        done();
     }));
 
     it("will be activated for a MUC that starts out hidden",
@@ -119,7 +118,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const { api } = _converse;
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
@@ -173,7 +172,6 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
         await u.waitUntil(() => model.get('has_activity'));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
-        done();
     }));
 
 
@@ -183,7 +181,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
-            async function (done, _converse) {
+            async function (_converse) {
 
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
 
@@ -218,7 +216,6 @@ describe("XEP-0437 Room Activity Indicators", function () {
         _converse.connection._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
-        done();
     }));
 
 });

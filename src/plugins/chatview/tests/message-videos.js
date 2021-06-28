@@ -4,7 +4,7 @@ const { Strophe, sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {
 
-    it("will render videos from their URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+    it("will render videos from their URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         // let message = "https://i.imgur.com/Py9ifJE.mp4";
         const base_url = 'https://conversejs.org';
@@ -27,11 +27,10 @@ describe("A Chat Message", function () {
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<video controls="" preload="metadata" src="${Strophe.xmlescape(message)}"></video>`+
             `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(message)}">${Strophe.xmlescape(message)}</a>`);
-        done();
     }));
 
     it("will not render videos if embed_videos is false",
-            mock.initConverse(['chatBoxesFetched'], {'embed_videos': false}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {'embed_videos': false}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         // let message = "https://i.imgur.com/Py9ifJE.mp4";
         const base_url = 'https://conversejs.org';
@@ -44,13 +43,12 @@ describe("A Chat Message", function () {
         const sel = '.chat-content .chat-msg:last .chat-msg__text';
         await u.waitUntil(() => sizzle(sel).pop().innerHTML.replace(/<!-.*?->/g, '').trim() === message);
         expect(true).toBe(true);
-        done();
     }));
 
     it("will render videos from approved URLs only",
         mock.initConverse(
             ['chatBoxesFetched'], {'embed_videos': ['conversejs.org']},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         let message = "https://i.imgur.com/Py9ifJE.mp4";
@@ -69,6 +67,5 @@ describe("A Chat Message", function () {
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<video controls="" preload="metadata" src="${message}"></video>`+
             `<a target="_blank" rel="noopener" href="${message}">${message}</a>`);
-        done();
     }));
 });

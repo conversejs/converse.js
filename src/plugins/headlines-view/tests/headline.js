@@ -3,7 +3,7 @@
 describe("A headlines box", function () {
 
     it("will not open nor display non-headline messages",
-        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const { $msg } = converse.env;
@@ -27,11 +27,10 @@ describe("A headlines box", function () {
             .c('body').t('SORRY FOR THIS ADVERT');
         _converse.connection._dataRecv(mock.createRequest(stanza));
         expect(_converse.api.headlines.get().length === 0);
-        done();
     }));
 
     it("will open and display headline messages", mock.initConverse(
-            [], {}, async function (done, _converse) {
+            [], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const { u, $msg} = converse.env;
@@ -64,11 +63,10 @@ describe("A headlines box", function () {
         const view = _converse.chatboxviews.get('notify.example.com');
         expect(view.model.get('show_avatar')).toBeFalsy();
         expect(view.querySelector('img.avatar')).toBe(null);
-        done();
     }));
 
     it("will show headline messages in the controlbox", mock.initConverse(
-            [], {}, async function (done, _converse) {
+            [], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const { u, $msg} = converse.env;
@@ -101,11 +99,10 @@ describe("A headlines box", function () {
         await u.waitUntil(() => view.querySelectorAll(".open-headline").length);
         expect(view.querySelectorAll('.open-headline').length).toBe(1);
         expect(view.querySelector('.open-headline').text).toBe('notify.example.com');
-        done();
     }));
 
     it("will remove headline messages from the controlbox if closed", mock.initConverse(
-        [], {}, async function (done, _converse) {
+        [], {}, async function (_converse) {
 
         const { u, $msg} = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);
@@ -143,12 +140,11 @@ describe("A headlines box", function () {
         close_el.click();
         await u.waitUntil(() => cbview.querySelectorAll(".open-headline").length === 0);
         expect(cbview.querySelectorAll('.open-headline').length).toBe(0);
-        done();
     }));
 
     it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
         mock.initConverse(
-            ['chatBoxesFetched'], {}, async function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const { $msg } = converse.env;
@@ -163,6 +159,5 @@ describe("A headlines box", function () {
             .c('body').t('Здравствуйте друзья');
         _converse.connection._dataRecv(mock.createRequest(stanza));
         expect(_.without('controlbox', _converse.chatboxviews.keys()).length).toBe(0);
-        done();
     }));
 });

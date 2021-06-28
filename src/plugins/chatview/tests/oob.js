@@ -8,7 +8,7 @@ describe("A Chat Message", function () {
         it("will render audio from oob mp3 URLs",
             mock.initConverse(
                 ['chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -52,13 +52,12 @@ describe("A Chat Message", function () {
             expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
                 `<audio controls="" src="https://montague.lit/audio.mp3"></audio>`+
                 `<a target="_blank" rel="noopener" href="${url}">${url}</a>`);
-            done();
         }));
 
         it("will render video from oob mp4 URLs",
             mock.initConverse(
                 ['chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -100,13 +99,12 @@ describe("A Chat Message", function () {
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
                 `<video controls="" preload="metadata" src="${Strophe.xmlescape(url)}"></video>`+
                 `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(url)}">${Strophe.xmlescape(url)}</a>`);
-            done();
         }));
 
         it("will render download links for files from oob URLs",
             mock.initConverse(
                 ['chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -129,13 +127,12 @@ describe("A Chat Message", function () {
             const media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
                 `<a target="_blank" rel="noopener" href="https://montague.lit/funny.pdf">Download file "funny.pdf"</a>`);
-            done();
         }));
 
         it("will render images from oob URLs",
             mock.initConverse(
                 ['chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const base_url = 'https://conversejs.org';
             await mock.waitForRoster(_converse, 'current', 1);
@@ -163,7 +160,6 @@ describe("A Chat Message", function () {
             expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                 `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                 `Download file "conversejs-filled.svg"</a>`);
-            done();
         }));
     });
 });

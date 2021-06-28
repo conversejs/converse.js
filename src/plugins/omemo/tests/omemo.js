@@ -73,18 +73,17 @@ async function initializedOMEMO (_converse) {
 describe("The OMEMO module", function() {
 
     it("adds methods for encrypting and decrypting messages via AES GCM",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const message = 'This message will be encrypted'
         await mock.waitForRoster(_converse, 'current', 1);
         const payload = await omemo.encryptMessage(message);
         const result = await omemo.decryptMessage(payload);
         expect(result).toBe(message);
-        done();
     }));
 
     it("enables encrypted messages to be sent and received",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         let sent_stanza;
         await mock.waitForRoster(_converse, 'current', 1);
@@ -217,11 +216,10 @@ describe("The OMEMO module", function() {
         expect(view.model.messages.length).toBe(3);
         expect(view.querySelectorAll('.chat-msg__body')[2].textContent.trim())
             .toBe('Another received encrypted message without fallback');
-        done();
     }));
 
     it("enables encrypted groupchat messages to be sent and received",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         // MEMO encryption works only in members only conferences
         // that are non-anonymous.
@@ -363,11 +361,10 @@ describe("The OMEMO module", function() {
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
             `</message>`);
-        done();
     }));
 
     it("will create a new device based on a received carbon message",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
         await mock.waitForRoster(_converse, 'current', 1);
@@ -472,11 +469,10 @@ describe("The OMEMO module", function() {
                     `<items node="eu.siacs.conversations.axolotl.bundles:988349631"/>`+
                 `</pubsub>`+
             `</iq>`);
-        done();
     }));
 
     it("gracefully handles auth errors when trying to send encrypted groupchat messages",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         // MEMO encryption works only in members only conferences
         // that are non-anonymous.
@@ -600,11 +596,10 @@ describe("The OMEMO module", function() {
 
         expect(view.model.get('omemo_supported')).toBe(false);
         expect(view.querySelector('.chat-textarea').value).toBe('This message will be encrypted');
-        done();
     }));
 
     it("can receive a PreKeySignalMessage",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         _converse.NUM_PREKEYS = 5; // Restrict to 5, otherwise the resulting stanza is too large to easily test
         await mock.waitForRoster(_converse, 'current', 1);
@@ -695,11 +690,10 @@ describe("The OMEMO module", function() {
         const own_device = _converse.devicelists.get(_converse.bare_jid).devices.get(_converse.omemo_store.get('device_id'));
         expect(own_device.get('bundle').prekeys.length).toBe(5);
         expect(_converse.omemo_store.generateMissingPreKeys).toHaveBeenCalled();
-        done();
     }));
 
     it("updates device lists based on PEP messages",
-            mock.initConverse([], {'allow_non_roster_messaging': true}, async function (done, _converse) {
+            mock.initConverse([], {'allow_non_roster_messaging': true}, async function (_converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -866,12 +860,11 @@ describe("The OMEMO module", function() {
         expect(devices.get('444').get('active')).toBe(true);
         expect(devices.get('555').get('active')).toBe(false);
         expect(devices.get('777').get('active')).toBe(false);
-        done();
     }));
 
 
     it("updates device bundles based on PEP messages",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -1015,11 +1008,10 @@ describe("The OMEMO module", function() {
         expect(device.get('bundle').prekeys[0].id).toBe(3001);
         expect(device.get('bundle').prekeys[1].id).toBe(3002);
         expect(device.get('bundle').prekeys[2].id).toBe(3003);
-        done();
     }));
 
     it("publishes a bundle with which an encrypted session can be created",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -1090,12 +1082,11 @@ describe("The OMEMO module", function() {
             'type': 'result'});
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized');
-        done();
     }));
 
 
     it("adds a toolbar button for starting an encrypted chat session",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -1250,11 +1241,10 @@ describe("The OMEMO module", function() {
         icon = toolbar.querySelector('.toggle-omemo converse-icon');
         expect(u.hasClass('fa-lock', icon)).toBe(false);
         expect(u.hasClass('fa-unlock', icon)).toBe(true);
-        done();
     }));
 
     it("adds a toolbar button for starting an encrypted groupchat session",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
@@ -1421,12 +1411,11 @@ describe("The OMEMO module", function() {
         expect(u.hasClass('fa-unlock', icon)).toBe(true);
         expect(u.hasClass('fa-lock', icon)).toBe(false);
         expect(toolbar.querySelector('.toggle-omemo').title).toBe('This groupchat needs to be members-only and non-anonymous in order to support OMEMO encrypted messages');
-        done();
     }));
 
 
     it("shows OMEMO device fingerprints in the user details modal",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -1516,6 +1505,5 @@ describe("The OMEMO module", function() {
 
         trusted_radio.click();
         expect(devicelist.devices.get('555').get('trusted')).toBe(1);
-        done();
     }));
 });

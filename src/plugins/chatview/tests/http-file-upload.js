@@ -8,7 +8,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
     describe("Discovering support", function () {
 
-        it("is done automatically", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("is done automatically", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
             let selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
@@ -133,7 +133,6 @@ describe("XEP-0363: HTTP File Upload", function () {
             expect(features.length).toBe(1);
             expect(features[0].get('jid')).toBe('upload.montague.lit');
             expect(features[0].dataforms.where({'FORM_TYPE': {value: "urn:xmpp:http:upload:0", type: "hidden"}}).length).toBe(1);
-            done();
         }));
     });
 
@@ -141,7 +140,7 @@ describe("XEP-0363: HTTP File Upload", function () {
         describe("A file upload toolbar button", function () {
 
             it("does not appear in private chats",
-                    mock.initConverse([], {}, async function (done, _converse) {
+                    mock.initConverse([], {}, async function (_converse) {
 
                 await mock.waitForRoster(_converse, 'current', 3);
                 mock.openControlBox(_converse);
@@ -155,7 +154,6 @@ describe("XEP-0363: HTTP File Upload", function () {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
                 const view = _converse.chatboxviews.get(contact_jid);
                 expect(view.querySelector('.chat-toolbar .fileupload')).toBe(null);
-                done();
             }));
         });
     });
@@ -164,7 +162,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
         describe("A file upload toolbar button", function () {
 
-            it("appears in private chats", mock.initConverse(async (done, _converse) => {
+            it("appears in private chats", mock.initConverse(async (_converse) => {
                 await mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
                     [{'category': 'server', 'type':'IM'}],
@@ -178,12 +176,11 @@ describe("XEP-0363: HTTP File Upload", function () {
                 const view = _converse.chatboxviews.get(contact_jid);
                 const el = await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload'));
                 expect(el).not.toEqual(null);
-                done();
             }));
 
             describe("when clicked and a file chosen", function () {
 
-                it("is uploaded and sent out", mock.initConverse(['chatBoxesFetched'], {} ,async (done, _converse) => {
+                it("is uploaded and sent out", mock.initConverse(['chatBoxesFetched'], {} ,async (_converse) => {
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
@@ -282,11 +279,10 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `Download file "conversejs-filled.svg"</a>`);
                     XMLHttpRequest.prototype.send = send_backup;
-                    done();
                 }));
 
                 it("shows an error message if the file is too large",
-                        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                        mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
                     const IQ_stanzas = _converse.connection.IQ_stanzas;
                     const IQ_ids =  _converse.connection.IQ_ids;
@@ -398,14 +394,13 @@ describe("XEP-0363: HTTP File Upload", function () {
                     expect(messages.length).toBe(1);
                     expect(messages[0].textContent.trim()).toBe(
                         'The size of your file, my-juliet.jpg, exceeds the maximum allowed by your server, which is 5 MB.');
-                    done();
                 }));
             });
         });
 
         describe("While a file is being uploaded", function () {
 
-            it("shows a progress bar", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            it("shows a progress bar", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
                     [{'category': 'server', 'type':'IM'}],
@@ -466,7 +461,6 @@ describe("XEP-0363: HTTP File Upload", function () {
                     message.set('progress', 1);
                     await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '1');
                     expect(view.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
-                    done();
                 });
                 _converse.connection._dataRecv(mock.createRequest(stanza));
             }));

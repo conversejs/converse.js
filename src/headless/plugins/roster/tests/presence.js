@@ -5,7 +5,7 @@
 describe("A received presence stanza", function () {
 
     it("has its priority taken into account",
-        mock.initConverse([], {}, async (done, _converse) => {
+        mock.initConverse([], {}, async (_converse) => {
 
         const u = converse.env.utils;
         mock.openControlBox(_converse);
@@ -177,6 +177,5 @@ describe("A received presence stanza", function () {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('offline');
         expect(contact.presence.resources.length).toBe(0);
-        done();
     }));
 });

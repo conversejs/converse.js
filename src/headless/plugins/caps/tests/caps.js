@@ -9,7 +9,7 @@ describe("A sent presence stanza", function () {
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     it("includes a entity capabilities node",
-            mock.initConverse([], {}, async (done, _converse) => {
+            mock.initConverse([], {}, async (_converse) => {
 
         await mock.waitForRoster(_converse, 'current', 0);
         _converse.api.disco.own.identities.clear();
@@ -27,10 +27,9 @@ describe("A sent presence stanza", function () {
                 `<priority>0</priority>`+
                 `<c hash="sha-1" node="https://conversejs.org" ver="QgayPKawpkPSDYmwT/WM94uAlu0=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`)
-        done();
     }));
 
-    it("has a given priority", mock.initConverse(['statusInitialized'], {}, async (done, _converse) => {
+    it("has a given priority", mock.initConverse(['statusInitialized'], {}, async (_converse) => {
         const { api } = _converse;
         let pres = await _converse.xmppstatus.constructPresence('online', null, 'Hello world');
         expect(pres.toLocaleString()).toBe(
@@ -62,6 +61,5 @@ describe("A sent presence stanza", function () {
                 `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
-        done();
     }));
 });

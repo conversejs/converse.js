@@ -37,7 +37,7 @@ describe("Message Retractions", function () {
     describe("A groupchat message retraction", function () {
 
         it("is not applied if it's not from the right author",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -75,11 +75,10 @@ describe("Message Retractions", function () {
 
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
             expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
-            done();
         }));
 
         it("can be received before the message it pertains to",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
@@ -126,14 +125,13 @@ describe("Message Retractions", function () {
             expect(message.get('time')).toBe(date);
             expect(message.get('type')).toBe('groupchat');
             expect(await view.model.handleRetraction.calls.all().pop().returnValue).toBe(true);
-            done();
         }));
     });
 
     describe("A groupchat message moderator retraction", function () {
 
         it("can be received before the message it pertains to",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
@@ -184,7 +182,6 @@ describe("Message Retractions", function () {
             expect(message.get('time')).toBe(date);
             expect(message.get('type')).toBe('groupchat');
             expect(await view.model.handleModeration.calls.all().pop().returnValue).toBe(true);
-            done();
         }));
     });
 
@@ -192,7 +189,7 @@ describe("Message Retractions", function () {
     describe("A message retraction", function () {
 
         it("can be received before the message it pertains to",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const date = (new Date()).toISOString();
             await mock.waitForRoster(_converse, 'current', 1);
@@ -241,13 +238,12 @@ describe("Message Retractions", function () {
             expect(message.get('origin_id')).toBe('2e972ea0-0050-44b7-a830-f6638a2595b3');
             expect(message.get('time')).toBe(date);
             expect(message.get('type')).toBe('chat');
-            done();
         }));
     });
 
     describe("A Received Chat Message", function () {
 
-        it("can be followed up by a retraction", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("can be followed up by a retraction", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -307,13 +303,12 @@ describe("Message Retractions", function () {
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(msg_el.textContent.trim()).toBe('Mercutio has removed this message');
             expect(u.hasClass('chat-msg--followup', view.querySelector('.chat-msg--retracted'))).toBe(true);
-            done();
         }));
     });
 
     describe("A Sent Chat Message", function () {
 
-        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);
@@ -352,14 +347,13 @@ describe("Message Retractions", function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(el.textContent.trim()).toBe('Romeo Montague has removed this message');
-            done();
         }));
     });
 
 
     describe("A Received Groupchat Message", function () {
 
-        it("can be followed up by a retraction by the author", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("can be followed up by a retraction by the author", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
@@ -395,12 +389,11 @@ describe("Message Retractions", function () {
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
             expect(msg_el.textContent.trim()).toBe('eve has removed this message');
             expect(msg_el.querySelector('.chat-msg--retracted q')).toBe(null);
-            done();
         }));
 
 
         it("can be retracted by a moderator, with the IQ response received before the retraction message",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -480,11 +473,10 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
             expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
-            done();
         }));
 
         it("can not be retracted if the MUC doesn't support message moderation",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -503,12 +495,11 @@ describe("Message Retractions", function () {
             expect(view.querySelector('.chat-msg__content .chat-msg__action-retract')).toBe(null);
             const result = await view.model.canModerateMessages();
             expect(result).toBe(false);
-            done();
         }));
 
 
         it("can be retracted by a moderator, with the retraction message received before the IQ response",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -569,14 +560,13 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('moderated_by')).toBe(_converse.bare_jid);
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
-            done();
         }));
     });
 
 
     describe("A Sent Groupchat Message", function () {
 
-        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
@@ -627,11 +617,10 @@ describe("Message Retractions", function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent).toBe('romeo has removed this message');
-            done();
         }));
 
         it("can be retracted by its author, causing an error message in response",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -674,11 +663,10 @@ describe("Message Retractions", function () {
 
             const errmsg = view.querySelector('.chat-msg__error');
             expect(errmsg.textContent.trim()).toBe("You're not allowed to retract your message.");
-            done();
         }));
 
         it("can be retracted by its author, causing a timeout error in response",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             _converse.STANZA_TIMEOUT = 1;
 
@@ -708,11 +696,10 @@ describe("Message Retractions", function () {
             const error_messages = view.querySelectorAll('.chat-msg__error');
             expect(error_messages.length).toBe(1);
             expect(error_messages[0].textContent.trim()).toBe('A timeout happened while while trying to retract your message.');
-            done();
         }));
 
 
-        it("can be retracted by a moderator", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("can be retracted by a moderator", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
@@ -757,11 +744,10 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
             expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
-            done();
         }));
 
         it("can be retracted by the sender if they're a moderator",
-                mock.initConverse(['chatBoxesFetched'], {'allow_message_retraction': 'moderator'}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {'allow_message_retraction': 'moderator'}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -840,7 +826,6 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(undefined);
             expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
-            done();
         }));
     });
 
@@ -850,7 +835,7 @@ describe("Message Retractions", function () {
         it("may be returned as a tombstone message",
             mock.initConverse(
                 ['discoInitialized'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -932,13 +917,12 @@ describe("Message Retractions", function () {
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('Mercutio has removed this message');
             expect(u.hasClass('chat-msg--followup', el.parentElement)).toBe(false);
-            done();
         }));
 
         it("may be returned as a tombstone groupchat message",
             mock.initConverse(
                 ['discoInitialized'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -1008,13 +992,12 @@ describe("Message Retractions", function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('eve has removed this message');
-            done();
         }));
 
         it("may be returned as a tombstone moderated groupchat message",
             mock.initConverse(
                 ['discoInitialized', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
@@ -1096,7 +1079,6 @@ describe("Message Retractions", function () {
             expect(el.textContent.trim()).toBe('A moderator has removed this message');
             const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
             expect(qel.textContent.trim()).toBe('This message contains inappropriate content');
-            done();
         }));
     });
 })

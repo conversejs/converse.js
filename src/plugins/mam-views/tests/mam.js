@@ -19,7 +19,7 @@ describe("Message Archive Management", function () {
     describe("The XEP-0313 Archive", function () {
 
         it("is queried when the user scrolls up",
-                mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
+                mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -78,7 +78,6 @@ describe("Message Archive Management", function () {
                     `<set xmlns="http://jabber.org/protocol/rsm"><before>${view.model.messages.at(0).get('stanza_id romeo@montague.lit')}</before><max>2</max></set></query>`+
                 `</iq>`
             );
-            done();
         }));
 
         it("is queried when the user enters a new MUC",
@@ -86,7 +85,7 @@ describe("Message Archive Management", function () {
                 {
                     'archived_messages_page_size': 2,
                     'muc_clear_messages_on_leave': false,
-                }, async function (done, _converse) {
+                }, async function (_converse) {
 
             const sent_IQs = _converse.connection.IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
@@ -269,7 +268,6 @@ describe("Message Archive Management", function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
                 .map(e => e.textContent).join(' ') === "2nd Message 3rd Message 4th Message 5th Message 6th Message", 1000);
-            done();
         }));
 
         it("queries for messages since the most recent cached message in a newly entered MUC",
@@ -278,7 +276,7 @@ describe("Message Archive Management", function () {
                     'archived_messages_page_size': 2,
                     'muc_nickname_from_jid': false,
                     'muc_clear_messages_on_leave': false,
-                }, async function (done, _converse) {
+                }, async function (_converse) {
 
             const { api } = _converse;
             const sent_IQs = _converse.connection.IQ_stanzas;
@@ -322,7 +320,6 @@ describe("Message Archive Management", function () {
                         `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max></set>`+
                     `</query>`+
                 `</iq>`);
-            return done();
         }));
     });
 
@@ -332,7 +329,7 @@ describe("Message Archive Management", function () {
             it("is discarded if it doesn't come from the right sender",
                 mock.initConverse(
                     ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    async function (_converse) {
 
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -382,13 +379,12 @@ describe("Message Archive Management", function () {
                     .filter(el => el.textContent === "Thrice the brinded cat hath mew'd.").length, 1000);
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('message')).toBe("Thrice the brinded cat hath mew'd.");
-                done();
             }));
 
             it("is not discarded if it comes from the right sender",
                 mock.initConverse(
                     ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    async function (_converse) {
 
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -437,13 +433,12 @@ describe("Message Archive Management", function () {
                 expect(view.model.messages.length).toBe(2);
                 expect(view.model.messages.at(0).get('message')).toBe("Meet me at the dance");
                 expect(view.model.messages.at(1).get('message')).toBe("Thrice the brinded cat hath mew'd.");
-                done();
             }));
 
             it("updates the is_archived value of an already cached version",
                 mock.initConverse(
                     ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    async function (_converse) {
 
                 await mock.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'romeo');
 
@@ -485,13 +480,12 @@ describe("Message Archive Management", function () {
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('is_archived')).toBe(true);
                 expect(view.model.messages.at(0).get('stanza_id trek-radio@conference.lightwitch.org')).toBe('45fbbf2a-1059-479d-9283-c8effaf05621');
-                done();
             }));
 
             it("isn't shown as duplicate by comparing its stanza id or archive id",
                 mock.initConverse(
                     ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    async function (_converse) {
 
                 await mock.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'jcbrand');
                 const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
@@ -524,13 +518,12 @@ describe("Message Archive Management", function () {
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
                 expect(result instanceof _converse.Message).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-                done();
             }));
 
             it("isn't shown as duplicate by comparing only the archive id",
                 mock.initConverse(
                     ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    async function (_converse) {
 
                 await mock.openAndEnterChatRoom(_converse, 'discuss@conference.conversejs.org', 'romeo');
                 const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
@@ -574,7 +567,6 @@ describe("Message Archive Management", function () {
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
                 expect(result instanceof _converse.Message).toBe(true);
                 expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-                done();
             }))
         });
     });
@@ -582,7 +574,7 @@ describe("Message Archive Management", function () {
     describe("The archive.query API", function () {
 
        it("can be used to query for all archived messages",
-                mock.initConverse(['discoInitialized'], {}, async function (done, _converse) {
+                mock.initConverse(['discoInitialized'], {}, async function (_converse) {
 
             const sendIQ = _converse.connection.sendIQ;
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
@@ -596,11 +588,10 @@ describe("Message Archive Management", function () {
             const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
             expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client"><query queryid="${queryid}" xmlns="urn:xmpp:mam:2"/></iq>`);
-            done();
         }));
 
        it("can be used to query for all messages to/from a particular JID",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
@@ -625,11 +616,10 @@ describe("Message Archive Management", function () {
                         `</x>`+
                     `</query>`+
                 `</iq>`);
-            done();
         }));
 
        it("can be used to query for archived messages from a chat room",
-                mock.initConverse(['statusInitialized'], {}, async function (done, _converse) {
+                mock.initConverse(['statusInitialized'], {}, async function (_converse) {
 
             const room_jid = 'coven@chat.shakespeare.lit';
             _converse.api.archive.query({'with': room_jid, 'groupchat': true});
@@ -650,11 +640,10 @@ describe("Message Archive Management", function () {
                         `</x>`+
                     `</query>`+
                 `</iq>`);
-            done();
        }));
 
         it("checks whether returned MAM messages from a MUC room are from the right JID",
-                mock.initConverse(['statusInitialized'], {}, async function (done, _converse) {
+                mock.initConverse(['statusInitialized'], {}, async function (_converse) {
 
             const room_jid = 'coven@chat.shakespeare.lit';
             const promise = _converse.api.archive.query({'with': room_jid, 'groupchat': true, 'max':'10'});
@@ -719,11 +708,10 @@ describe("Message Archive Management", function () {
 
             const result = await promise;
             expect(result.messages.length).toBe(0);
-            done();
        }));
 
        it("can be used to query for all messages in a certain timespan",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
@@ -757,11 +745,10 @@ describe("Message Archive Management", function () {
                     `</query>`+
                 `</iq>`
             );
-            done();
        }));
 
        it("throws a TypeError if an invalid date is provided",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             try {
@@ -769,11 +756,10 @@ describe("Message Archive Management", function () {
             } catch (e) {
                 expect(() => {throw e}).toThrow(new TypeError('archive.query: invalid date provided for: start'));
             }
-            done();
        }));
 
        it("can be used to query for all messages after a certain time",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
@@ -803,11 +789,10 @@ describe("Message Archive Management", function () {
                     `</query>`+
                 `</iq>`
             );
-            done();
        }));
 
        it("can be used to query for a limited set of results",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
@@ -837,11 +822,10 @@ describe("Message Archive Management", function () {
                     `</query>`+
                 `</iq>`
             );
-            done();
        }));
 
        it("can be used to page through results",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
@@ -875,11 +859,10 @@ describe("Message Archive Management", function () {
                         `</set>`+
                     `</query>`+
                 `</iq>`);
-            done();
        }));
 
        it("accepts \"before\" with an empty string as value to reverse the order",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
@@ -905,11 +888,10 @@ describe("Message Archive Management", function () {
                         `</set>`+
                     `</query>`+
                 `</iq>`);
-            done();
        }));
 
        it("returns an object which includes the messages and a _converse.RSM object",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
@@ -988,14 +970,13 @@ describe("Message Archive Management", function () {
             expect(result.rsm.result.count).toBe(16);
             expect(result.rsm.result.first).toBe('23452-4534-1');
             expect(result.rsm.result.last).toBe('09af3-cc343-b409f');
-            done()
        }));
     });
 
     describe("The default preference", function () {
 
         it("is set once server support for MAM has been confirmed",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const { api } = _converse;
 
@@ -1065,7 +1046,6 @@ describe("Message Archive Management", function () {
             await u.waitUntil(() => feature.save.calls.count());
             expect(feature.save).toHaveBeenCalled();
             expect(feature.get('preferences')['default']).toBe('never'); // eslint-disable-line dot-notation
-            done();
         }));
     });
 });
@@ -1074,7 +1054,7 @@ describe("Chatboxes", function () {
     describe("A Chatbox", function () {
 
         it("will fetch archived messages once it's opened",
-                mock.initConverse(['discoInitialized'], {}, async function (done, _converse) {
+                mock.initConverse(['discoInitialized'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1130,11 +1110,10 @@ describe("Chatboxes", function () {
                         .c('last').t('09af3-cc343-b409f').up()
                         .c('count').t('16');
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            done();
         }));
 
         it("will show an error message if the MAM query times out",
-                mock.initConverse(['discoInitialized'], {}, async function (done, _converse) {
+                mock.initConverse(['discoInitialized'], {}, async function (_converse) {
 
             const sendIQ = _converse.connection.sendIQ;
 
@@ -1231,7 +1210,6 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.model.messages.length === 2, 500);
             err_message = view.querySelector('.message.chat-error');
             expect(err_message).toBe(null);
-            done();
         }));
     });
 });

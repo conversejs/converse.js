@@ -6,7 +6,7 @@ const { Strophe, u, sizzle, $iq } = converse.env;
 describe("A chat room", function () {
 
     it("can be bookmarked", mock.initConverse(
-            ['chatBoxesFetched'], {}, async function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
@@ -128,12 +128,11 @@ describe("A chat room", function () {
         expect(u.hasClass('on-button', view.querySelector('.toggle-bookmark')), true);
         // We ignore this IQ stanza... (unless it's an error stanza), so
         // nothing to test for here.
-        done();
     }));
 
 
     it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(
-            ['chatBoxesFetched'], {}, async function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (_converse) {
 
         const { u } = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);
@@ -172,13 +171,12 @@ describe("A chat room", function () {
             'nick': ' Othello'
         });
         expect(_converse.chatboxviews.get(jid) === undefined).toBe(true);
-        done();
     }));
 
 
     describe("when bookmarked", function () {
 
-        it("will use the nickname from the bookmark", mock.initConverse([], {}, async function (done, _converse) {
+        it("will use the nickname from the bookmark", mock.initConverse([], {}, async function (_converse) {
             const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
@@ -195,10 +193,9 @@ describe("A chat room", function () {
             const room = await room_creation_promise;
             await u.waitUntil(() => room.getAndPersistNickname.calls.count());
             expect(room.get('nick')).toBe('Othello');
-            done();
         }));
 
-        it("displays that it's bookmarked through its bookmark icon", mock.initConverse([], {}, async function (done, _converse) {
+        it("displays that it's bookmarked through its bookmark icon", mock.initConverse([], {}, async function (_converse) {
 
             const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
@@ -220,10 +217,9 @@ describe("A chat room", function () {
             await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') !== null);
             view.model.set('bookmarked', false);
             await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') === null);
-            done();
         }));
 
-        it("can be unbookmarked", mock.initConverse([], {}, async function (done, _converse) {
+        it("can be unbookmarked", mock.initConverse([], {}, async function (_converse) {
 
             const { u, Strophe } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
@@ -282,14 +278,13 @@ describe("A chat room", function () {
                     `</pubsub>`+
                 `</iq>`
             );
-            done();
         }));
     });
 
     describe("and when autojoin is set", function () {
 
         it("will be be opened and joined automatically upon login", mock.initConverse(
-                [], {}, async function (done, _converse) {
+                [], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
@@ -310,7 +305,6 @@ describe("A chat room", function () {
                 'nick': ''
             });
             expect(_converse.api.rooms.create).toHaveBeenCalled();
-            done();
         }));
     });
 });
@@ -318,7 +312,7 @@ describe("A chat room", function () {
 describe("Bookmarks", function () {
 
     it("can be pushed from the XMPP server", mock.initConverse(
-            ['connected', 'chatBoxesFetched'], {}, async function (done, _converse) {
+            ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
 
         const { $msg, u } = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);
@@ -403,13 +397,12 @@ describe("Bookmarks", function () {
         expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(['Second bookmark', 'The Play&apos;s the Thing', 'Yet another bookmark']);
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
         expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
-        done();
     }));
 
 
     it("can be retrieved from the XMPP server", mock.initConverse(
             ['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const { Strophe, sizzle, u, $iq } = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);
@@ -483,13 +476,12 @@ describe("Bookmarks", function () {
         expect(_converse.bookmarks.models.length).toBe(2);
         expect(_converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
         expect(_converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
-        done();
     }));
 
     describe("The bookmarks list", function () {
 
         it("shows a list of bookmarks", mock.initConverse(
-                [], {}, async function (done, _converse) {
+                [], {}, async function (_converse) {
 
             await mock.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
@@ -560,11 +552,10 @@ describe("Bookmarks", function () {
             expect(els[1].textContent).toBe("Bookmark with a very very long name that will be shortened");
             expect(els[2].textContent).toBe("noname@conference.shakespeare.lit");
             expect(els[3].textContent).toBe("The Play's the Thing");
-            done();
         }));
 
         it("can be used to open a MUC from a bookmark", mock.initConverse(
-                [], {'view_mode': 'fullscreen'}, async function (done, _converse) {
+                [], {'view_mode': 'fullscreen'}, async function (_converse) {
 
             const api = _converse.api;
             await mock.waitUntilDiscoConfirmed(
@@ -610,11 +601,10 @@ describe("Bookmarks", function () {
             await u.waitUntil(() => view.querySelector('.list-item.open').getAttribute('data-room-jid') === 'first@conference.shakespeare.lit');
             expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
             expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(true);
-            done();
         }));
 
         it("remembers the toggle state of the bookmarks list", mock.initConverse(
-                [], {}, async function (done, _converse) {
+                [], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
@@ -665,7 +655,6 @@ describe("Bookmarks", function () {
             expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop())).toBeFalsy();
             expect(sizzle(selector, chats_el).filter(u.isVisible).length).toBe(1);
             expect(bookmarks_el.model.get('toggle-state')).toBe(_converse.OPENED);
-            done();
         }));
     });
 });
@@ -673,7 +662,7 @@ describe("Bookmarks", function () {
 describe("When hide_open_bookmarks is true and a bookmarked room is opened", function () {
 
     it("can be closed", mock.initConverse(
-            [], { hide_open_bookmarks: true }, async function (done, _converse) {
+            [], { hide_open_bookmarks: true }, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
@@ -704,6 +693,5 @@ describe("When hide_open_bookmarks is true and a bookmarked room is opened", fun
         const view = _converse.chatboxviews.get(jid);
         view.close();
         await u.waitUntil(() => !u.hasClass('hidden', bookmarks_el.querySelector(".available-chatroom")));
-        done();
     }));
 });

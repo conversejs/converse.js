@@ -6,7 +6,7 @@ const Strophe = converse.env.Strophe;
 describe('The MUC Affiliations API', function () {
 
     it('can be used to set affiliations in MUCs without having to join them first',
-        mock.initConverse([], {}, async function (done, _converse) {
+        mock.initConverse([], {}, async function (_converse) {
             const { api } = _converse;
             const user_jid = 'annoyingguy@montague.lit';
             const muc_jid = 'lounge@montague.lit';
@@ -36,7 +36,6 @@ describe('The MUC Affiliations API', function () {
                     `</query>` +
                 `</iq>`);
 
-            done();
         })
     );
 });

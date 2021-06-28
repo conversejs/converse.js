@@ -16,7 +16,7 @@ describe("XEP-0198 Stream Management", function () {
               'show_controlbox_by_default': true,
               'smacks_max_unacked_stanzas': 2
             },
-            async function (done, _converse) {
+            async function (_converse) {
 
         await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
         const sent_stanzas = _converse.connection.sent_stanzas;
@@ -119,7 +119,6 @@ describe("XEP-0198 Stream Management", function () {
         expect(Strophe.serialize(iq)).toBe(`<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
 
         expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);
-        done();
     }));
 
 
@@ -131,7 +130,7 @@ describe("XEP-0198 Stream Management", function () {
               'show_controlbox_by_default': true,
               'smacks_max_unacked_stanzas': 2
             },
-            async function (done, _converse) {
+            async function (_converse) {
 
         await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
         const sent_stanzas = _converse.connection.sent_stanzas;
@@ -173,7 +172,6 @@ describe("XEP-0198 Stream Management", function () {
         // Check that the roster gets fetched
         await mock.waitForRoster(_converse, 'current', 1);
         await new Promise(resolve => _converse.api.listen.once('reconnected', resolve));
-        done();
     }));
 
 
@@ -187,7 +185,7 @@ describe("XEP-0198 Stream Management", function () {
               'show_controlbox_by_default': true,
               'smacks_max_unacked_stanzas': 2
             },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const key = "converse-test-session/converse.session-romeo@montague.lit-converse.session-romeo@montague.lit";
         sessionStorage.setItem(
@@ -266,6 +264,5 @@ describe("XEP-0198 Stream Management", function () {
         await u.waitUntil(() => muc.messages.length);
         expect(muc.messages.at(0).get('message')).toBe('First message')
         delete _converse.no_connection_on_bind;
-        done();
     }));
 });

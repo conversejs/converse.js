@@ -4,7 +4,7 @@ const { u, sizzle, $msg } = converse.env;
 
 describe("A Groupchat Message", function () {
 
-    it("supports the /me command", mock.initConverse([], {}, async function (done, _converse) {
+    it("supports the /me command", mock.initConverse([], {}, async function (_converse) {
         await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
         await mock.waitForRoster(_converse, 'current');
@@ -51,13 +51,12 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
         await u.waitUntil(() => sizzle('.chat-msg__text:last', view).pop().innerHTML.replace(/<!-.*?->/g, '') ===
             'mentions <span class="mention mention--self badge badge-info">romeo</span>');
-        done();
     }));
 });
 
 describe("A Message", function () {
 
-    it("supports the /me command", mock.initConverse([], {}, async function (done, _converse) {
+    it("supports the /me command", mock.initConverse([], {}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
@@ -105,6 +104,5 @@ describe("A Message", function () {
 
         expect(sizzle('.chat-msg__text:last', view).pop().textContent).toBe('wrote a 3rd person message');
         expect(u.isVisible(sizzle('.chat-msg__author:last', view).pop())).toBeTruthy();
-        done();
     }));
 });

@@ -9,7 +9,7 @@ describe("The nickname autocomplete feature", function () {
 
     it("shows all autocompletion options when the user presses @",
             mock.initConverse(['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -58,12 +58,11 @@ describe("The nickname autocomplete feature", function () {
         expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
         expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
         expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
-        done();
     }));
 
     it("shows all autocompletion options when the user presses @ right after a new line",
             mock.initConverse(['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -113,13 +112,12 @@ describe("The nickname autocomplete feature", function () {
         expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
         expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
         expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
-        done();
     }));
 
     it("shows all autocompletion options when the user presses @ right after an allowed character",
         mock.initConverse(
             ['chatBoxesFetched'], {'opening_mention_characters':['(']},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -169,11 +167,10 @@ describe("The nickname autocomplete feature", function () {
         expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
         expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
         expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
-        done();
     }));
 
     it("should order by query index position and length", mock.initConverse(
-            ['chatBoxesFetched'], {}, async function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
 
@@ -217,11 +214,10 @@ describe("The nickname autocomplete feature", function () {
             await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 2);
             expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('john');
             expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('jones');
-            done();
     }));
 
     it("autocompletes when the user presses tab",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -328,11 +324,10 @@ describe("The nickname autocomplete feature", function () {
         message_form.onKeyDown(tab_event);
         message_form.onKeyUp(tab_event);
         await u.waitUntil(() => textarea.value === 'hello @z3r0 ');
-        done();
     }));
 
     it("autocompletes when the user presses backspace",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -368,6 +363,5 @@ describe("The nickname autocomplete feature", function () {
         await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === false);
         expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(1);
         expect(view.querySelector('.suggestion-box__results li').textContent).toBe('some1');
-        done();
     }));
 });

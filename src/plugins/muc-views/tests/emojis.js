@@ -6,7 +6,7 @@ const u = converse.env.utils;
 describe("Emojis", function () {
     describe("The emoji picker", function () {
         it("is opened to autocomplete emojis in the textarea",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 0);
             const muc_jid = 'lounge@montague.lit';
@@ -70,11 +70,10 @@ describe("Emojis", function () {
             await u.waitUntil(() => input.value === ':use');
             visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
             expect(visible_emojis.length).toBe(0);
-            done();
         }));
 
         it("is focused to autocomplete emojis in the textarea",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.waitForRoster(_converse, 'current', 0);
@@ -119,12 +118,11 @@ describe("Emojis", function () {
             emoji = sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden) a', view).pop();
             emoji.click();
             await u.waitUntil(() => textarea.value === ':grinning: :grimacing: ');
-            done();
         }));
 
 
         it("properly inserts emojis into the chat textarea",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.waitForRoster(_converse, 'current', 0);
@@ -164,12 +162,11 @@ describe("Emojis", function () {
             const emoji = sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden) a', view).pop();
             emoji.click();
             expect(textarea.value).toBe(':100: ');
-            done();
         }));
 
 
         it("allows you to search for particular emojis",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.waitForRoster(_converse, 'current', 0);
@@ -222,7 +219,6 @@ describe("Emojis", function () {
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             await u.waitUntil(() => input.value === '');
             expect(view.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
-            done();
         }));
     });
 });

@@ -112,7 +112,7 @@ export function populateStreamFeatures () {
     // Strophe.js sets the <stream:features> element on the
     // Strophe.Connection instance (_converse.connection).
     //
-    // Once this is done, we populate the _converse.stream_features collection
+    // Once this is we populate the _converse.stream_features collection
     // and trigger streamFeaturesAdded.
     initStreamFeatures();
     Array.from(_converse.connection.features.childNodes).forEach(feature => {

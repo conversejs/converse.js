@@ -9,7 +9,7 @@ describe("A delivery receipt", function () {
     it("is emitted for a received message which requests it",
         mock.initConverse(
             ['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -29,13 +29,12 @@ describe("A delivery receipt", function () {
         expect(sent_messages.length).toBe(2);
         const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[1]).pop();
         expect(Strophe.serialize(receipt)).toBe(`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
-        done();
     }));
 
     it("is not emitted for a carbon message",
         mock.initConverse(
             ['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -59,13 +58,12 @@ describe("A delivery receipt", function () {
             .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
         await _converse.handleMessageStanza(msg);
         expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
-        done();
     }));
 
     it("is not emitted for an archived message",
         mock.initConverse(
             ['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -96,13 +94,12 @@ describe("A delivery receipt", function () {
         expect(message_attrs.is_archived).toBe(true);
         expect(message_attrs.is_valid_receipt_request).toBe(false);
         expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
-        done();
     }));
 
     it("can be received for a sent message",
         mock.initConverse(
             ['chatBoxesFetched'], {},
-            async function (done, _converse) {
+            async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -150,6 +147,5 @@ describe("A delivery receipt", function () {
         _converse.connection._dataRecv(mock.createRequest(msg));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 2);
         expect(_converse.handleMessageStanza.calls.count()).toBe(1);
-        done();
     }));
 });

@@ -123,3 +123,12 @@ export function populateStreamFeatures () {
     });
     notifyStreamFeaturesAdded();
 }
+
+export function clearSession () {
+    _converse.disco_entities?.forEach(e => e.features.clearStore());
+    _converse.disco_entities?.forEach(e => e.identities.clearStore());
+    _converse.disco_entities?.forEach(e => e.dataforms.clearStore());
+    _converse.disco_entities?.forEach(e => e.fields.clearStore());
+    _converse.disco_entities.clearStore();
+    delete _converse.disco_entities;
+}

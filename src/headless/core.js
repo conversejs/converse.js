@@ -928,7 +928,7 @@ _converse.shouldClearCache = () => (
 );
 
 
-export function clearSession  () {
+export function clearSession () {
     _converse.session?.destroy();
     delete _converse.session;
     _converse.shouldClearCache() && _converse.api.user.settings.clear();

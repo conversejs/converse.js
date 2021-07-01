@@ -108,7 +108,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0424](https://xmpp.org/extensions/xep-0424.html) Message Retractions
 - [XEP-0425](https://xmpp.org/extensions/xep-0425.html) Message Moderation
 - [XEP-0437](https://xmpp.org/extensions/xep-0437.html) Room Activity Indicators
-
+- [XEP-0454](https://xmpp.org/extensions/xep-0454.html) OMEMO Media sharing
 
 ## Integration into other servers and frameworks
 

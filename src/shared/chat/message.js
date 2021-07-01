@@ -13,11 +13,11 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
 import { getHats } from './utils.js';
+import { getOOBURLMarkup } from 'utils/html.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
 
 const { Strophe, dayjs } = converse.env;
-const u = converse.env.utils;
 
 
 export default class Message extends CustomElement {
@@ -70,7 +70,7 @@ export default class Message extends CustomElement {
             return '';
         } else if (this.show_spinner) {
             return tpl_spinner();
-        } else if (this.model.get('file') && !this.model.get('oob_url')) {
+        } else if (this.model.get('file') && this.model.get('upload') !== _converse.SUCCESS) {
             return this.renderFileProgress();
         } else if (['error', 'info'].includes(this.model.get('type'))) {
             return this.renderInfoMessage();
@@ -105,6 +105,10 @@ export default class Message extends CustomElement {
     }
 
     renderFileProgress () {
+        if (!this.model.file) {
+            // Can happen when file upload failed and page was reloaded
+            return '';
+        }
         const i18n_uploading = __('Uploading file:');
         const filename = this.model.file.name;
         const size = filesize(this.model.file.size);
@@ -264,7 +268,7 @@ export default class Message extends CustomElement {
                 ${ (this.model.get('received') && !this.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
                 ${ (this.model.get('edited')) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }
             </span>
-            ${ this.model.get('oob_url') ? html`<div class="chat-msg__media">${u.getOOBURLMarkup(_converse, this.model.get('oob_url'))}</div>` : '' }
+            ${ this.model.get('oob_url') ? html`<div class="chat-msg__media">${getOOBURLMarkup(this.model.get('oob_url'))}</div>` : '' }
             <div class="chat-msg__error">${ this.model.get('error_text') || this.model.get('error') }</div>
         `;
     }

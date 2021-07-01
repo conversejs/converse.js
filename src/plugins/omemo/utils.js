@@ -31,50 +31,73 @@ const KEY_ALGO = {
     'length': 128
 };
 
-export const omemo = {
-    async encryptMessage (plaintext) {
-        // The client MUST use fresh, randomly generated key/IV pairs
-        // with AES-128 in Galois/Counter Mode (GCM).
 
-        // For GCM a 12 byte IV is strongly suggested as other IV lengths
-        // will require additional calculations. In principle any IV size
-        // can be used as long as the IV doesn't ever repeat. NIST however
-        // suggests that only an IV size of 12 bytes needs to be supported
-        // by implementations.
-        //
-        // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
-        const iv = crypto.getRandomValues(new window.Uint8Array(12)),
-            key = await crypto.subtle.generateKey(KEY_ALGO, true, ['encrypt', 'decrypt']),
-            algo = {
-                'name': 'AES-GCM',
-                'iv': iv,
-                'tagLength': TAG_LENGTH
-            },
-            encrypted = await crypto.subtle.encrypt(algo, key, stringToArrayBuffer(plaintext)),
-            length = encrypted.byteLength - ((128 + 7) >> 3),
-            ciphertext = encrypted.slice(0, length),
-            tag = encrypted.slice(length),
-            exported_key = await crypto.subtle.exportKey('raw', key);
+async function encryptMessage (plaintext) {
+    // The client MUST use fresh, randomly generated key/IV pairs
+    // with AES-128 in Galois/Counter Mode (GCM).
 
-        return {
-            'key': exported_key,
-            'tag': tag,
-            'key_and_tag': appendArrayBuffer(exported_key, tag),
-            'payload': arrayBufferToBase64(ciphertext),
-            'iv': arrayBufferToBase64(iv)
-        };
-    },
-
-    async decryptMessage (obj) {
-        const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']);
-        const cipher = appendArrayBuffer(base64ToArrayBuffer(obj.payload), obj.tag);
-        const algo = {
+    // For GCM a 12 byte IV is strongly suggested as other IV lengths
+    // will require additional calculations. In principle any IV size
+    // can be used as long as the IV doesn't ever repeat. NIST however
+    // suggests that only an IV size of 12 bytes needs to be supported
+    // by implementations.
+    //
+    // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
+    const iv = crypto.getRandomValues(new window.Uint8Array(12));
+    const key = await crypto.subtle.generateKey(KEY_ALGO, true, ['encrypt', 'decrypt']);
+    const algo = {
             'name': 'AES-GCM',
-            'iv': base64ToArrayBuffer(obj.iv),
+            'iv': iv,
             'tagLength': TAG_LENGTH
         };
-        return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
-    }
+    const encrypted = await crypto.subtle.encrypt(algo, key, stringToArrayBuffer(plaintext));
+    const length = encrypted.byteLength - ((128 + 7) >> 3);
+    const ciphertext = encrypted.slice(0, length);
+    const tag = encrypted.slice(length);
+    const exported_key = await crypto.subtle.exportKey('raw', key);
+    return {
+        'key': exported_key,
+        'tag': tag,
+        'key_and_tag': appendArrayBuffer(exported_key, tag),
+        'payload': arrayBufferToBase64(ciphertext),
+        'iv': arrayBufferToBase64(iv)
+    };
+}
+
+async function decryptMessage (obj) {
+    const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']);
+    const cipher = appendArrayBuffer(base64ToArrayBuffer(obj.payload), obj.tag);
+    const algo = {
+        'name': 'AES-GCM',
+        'iv': base64ToArrayBuffer(obj.iv),
+        'tagLength': TAG_LENGTH
+    };
+    return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
+}
+
+export const omemo = {
+    decryptMessage,
+    encryptMessage
+}
+
+
+export async function encryptFile (file) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256, }, true, ['encrypt', 'decrypt']);
+    const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, }, key, await file.arrayBuffer());
+    const exported_key = await window.crypto.subtle.exportKey('raw', key);
+    const encrypted_file = new File([encrypted], file.name, { type: file.type, lastModified: file.lastModified });
+    encrypted_file.xep454_ivkey = arrayBufferToHex(iv) + arrayBufferToHex(exported_key);
+    return encrypted_file;
+}
+
+export function setEncryptedFileURL (message, attrs) {
+    const url = attrs.oob_url.replace(/^https?:/, 'aesgcm:') + '#' + message.file.xep454_ivkey;
+    return Object.assign(attrs, {
+        'oob_url': null, // Since only the body gets encrypted, we don't set the oob_url
+        'message': url,
+        'body': url
+    });
 }
 
 async function decryptFile (iv, key, cipher) {
@@ -646,14 +669,19 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
                 'order to support OMEMO encrypted messages'
         );
     }
-
+    let color;
+    if (model.get('omemo_supported')) {
+        color = model.get('omemo_active') ? `var(--info-color)` : `var(--error-color)`;
+    } else {
+        color = `var(--muc-toolbar-btn-disabled-color)`;
+    }
     buttons.push(html`
-        <button class="toggle-omemo" title="${title}" ?disabled=${!model.get('omemo_supported')} @click=${toggleOMEMO}>
+        <button class="toggle-omemo" title="${title}" data-disabled=${!model.get('omemo_supported')} @click=${toggleOMEMO}>
             <converse-icon
                 class="fa ${model.get('omemo_active') ? `fa-lock` : `fa-unlock`}"
                 path-prefix="${api.settings.get('assets_path')}"
                 size="1em"
-                color="${model.get('omemo_active') ? `var(--info-color)` : `var(--error-color)`}"
+                color="${color}"
             ></converse-icon>
         </button>
     `);

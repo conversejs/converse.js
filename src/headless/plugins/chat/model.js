@@ -1002,6 +1002,13 @@ const ChatBox = ModelWithContact.extend({
             return;
         }
         Array.from(files).forEach(async file => {
+            /**
+             * *Hook* which allows plugins to transform files before they'll be
+             * uploaded. The main use-case is to encrypt the files.
+             * @event _converse#beforeFileUpload
+             */
+            file = await api.hook('beforeFileUpload', this, file);
+
             if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
                 return this.createMessage({
                     'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',

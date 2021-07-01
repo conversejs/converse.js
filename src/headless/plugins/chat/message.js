@@ -224,15 +224,23 @@ const MessageMixin = {
 
     uploadFile () {
         const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = () => {
+        xhr.onreadystatechange = async () => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 log.info('Status: ' + xhr.status);
                 if (xhr.status === 200 || xhr.status === 201) {
-                    this.save({
+                    let attrs = {
                         'upload': _converse.SUCCESS,
                         'oob_url': this.get('get'),
-                        'message': this.get('get')
-                    });
+                        'message': this.get('get'),
+                        'body': this.get('get'),
+                    };
+                    /**
+                     * *Hook* which allows plugins to change the attributes
+                     * saved on the message once a file has been uploaded.
+                     * @event _converse#afterFileUploaded
+                     */
+                    attrs = await api.hook('afterFileUploaded', this, attrs);
+                    this.save(attrs);
                 } else {
                     xhr.onerror();
                 }

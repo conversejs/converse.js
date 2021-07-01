@@ -161,7 +161,7 @@ function getFileName (uri) {
  * @param { String } url
  * @returns { String }
  */
-u.getOOBURLMarkup = function (_converse, url) {
+export function getOOBURLMarkup (url) {
     const uri = getURI(url);
     if (uri === null) {
         return url;
@@ -175,7 +175,7 @@ u.getOOBURLMarkup = function (_converse, url) {
     } else {
         return tpl_file(uri.toString(), getFileName(uri));
     }
-};
+}
 
 /**
  * Return the height of the passed in DOM element,
@@ -598,7 +598,8 @@ Object.assign(u, {
     isImageURL,
     isImageDomainAllowed,
     isURLWithImageExtension,
-    isVideoURL
+    isVideoURL,
+    getOOBURLMarkup,
 });
 
 export default u;

@@ -1229,13 +1229,13 @@ describe("The OMEMO module", function() {
         });
 
         view.model.save({'omemo_supported': false});
-        await u.waitUntil(() => toolbar.querySelector('.toggle-omemo').disabled);
-        icon = toolbar.querySelector('.toggle-omemo converse-icon');
+        await u.waitUntil(() => toolbar.querySelector('.toggle-omemo')?.dataset.disabled === "true");
+        icon = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo converse-icon'));
         expect(u.hasClass('fa-lock', icon)).toBe(false);
         expect(u.hasClass('fa-unlock', icon)).toBe(true);
 
         view.model.save({'omemo_supported': true});
-        await u.waitUntil(() => !toolbar.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => toolbar.querySelector('.toggle-omemo')?.dataset.disabled === "false");
         icon = toolbar.querySelector('.toggle-omemo converse-icon');
         expect(u.hasClass('fa-lock', icon)).toBe(false);
         expect(u.hasClass('fa-unlock', icon)).toBe(true);
@@ -1270,7 +1270,7 @@ describe("The OMEMO module", function() {
         let toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         expect(view.model.get('omemo_active')).toBe(undefined);
         expect(view.model.get('omemo_supported')).toBe(true);
-        await u.waitUntil(() => !toggle.disabled);
+        await u.waitUntil(() => toggle.dataset.disabled === "false");
 
         let icon = toolbar.querySelector('.toggle-omemo converse-icon');
         expect(u.hasClass('fa-unlock', icon)).toBe(true);
@@ -1278,7 +1278,7 @@ describe("The OMEMO module", function() {
 
         toggle.click();
         toggle = toolbar.querySelector('.toggle-omemo');
-        expect(!!toggle.disabled).toBe(false);
+        expect(toggle.dataset.disabled).toBe("false");
         expect(view.model.get('omemo_active')).toBe(true);
         expect(view.model.get('omemo_supported')).toBe(true);
 
@@ -1330,7 +1330,7 @@ describe("The OMEMO module", function() {
         expect(view.model.get('omemo_active')).toBe(true);
         toggle = toolbar.querySelector('.toggle-omemo');
         expect(toggle === null).toBe(false);
-        expect(!!toggle.disabled).toBe(false);
+        expect(toggle.dataset.disabled).toBe("false");
         expect(view.model.get('omemo_supported')).toBe(true);
 
         await u.waitUntil(() => !u.hasClass('fa-unlock', toolbar.querySelector('.toggle-omemo converse-icon')));
@@ -1340,23 +1340,23 @@ describe("The OMEMO module", function() {
         // anonymous or semi-anonymous
         view.model.features.save({'nonanonymous': false, 'semianonymous': true});
         await u.waitUntil(() => !view.model.get('omemo_supported'));
-        await u.waitUntil(() => view.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => view.querySelector('.toggle-omemo').dataset.disabled === "true");
 
         view.model.features.save({'nonanonymous': true, 'semianonymous': false});
         await u.waitUntil(() => view.model.get('omemo_supported'));
         await u.waitUntil(() => view.querySelector('.toggle-omemo') !== null);
         expect(u.hasClass('fa-unlock', toolbar.querySelector('.toggle-omemo converse-icon'))).toBe(true);
         expect(u.hasClass('fa-lock', toolbar.querySelector('.toggle-omemo converse-icon'))).toBe(false);
-        expect(!!view.querySelector('.toggle-omemo').disabled).toBe(false);
+        expect(view.querySelector('.toggle-omemo').dataset.disabled).toBe("false");
 
         // Test that the button gets disabled when the room becomes open
         view.model.features.save({'membersonly': false, 'open': true});
         await u.waitUntil(() => !view.model.get('omemo_supported'));
-        await u.waitUntil(() => view.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => view.querySelector('.toggle-omemo').dataset.disabled === "true");
 
         view.model.features.save({'membersonly': true, 'open': false});
         await u.waitUntil(() => view.model.get('omemo_supported'));
-        await u.waitUntil(() => !view.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => view.querySelector('.toggle-omemo').dataset.disabled === "false");
 
         expect(u.hasClass('fa-unlock', view.querySelector('.toggle-omemo converse-icon'))).toBe(true);
         expect(u.hasClass('fa-lock', view.querySelector('.toggle-omemo converse-icon'))).toBe(false);
@@ -1404,7 +1404,7 @@ describe("The OMEMO module", function() {
             "Encrypted chat will no longer be possible in this grouchat."
         );
 
-        await u.waitUntil(() => toolbar.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => toolbar.querySelector('.toggle-omemo').dataset.disabled === "true");
         icon =  view.querySelector('.toggle-omemo converse-icon');
         expect(u.hasClass('fa-unlock', icon)).toBe(true);
         expect(u.hasClass('fa-lock', icon)).toBe(false);

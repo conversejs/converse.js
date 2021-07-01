@@ -19,10 +19,9 @@ export default class DropdownBase extends CustomElement {
     firstUpdated () {
         super.firstUpdated();
         this.menu = this.querySelector('.dropdown-menu');
-        this.dropdown = this.firstElementChild;
-        this.button = this.dropdown.querySelector('button');
-        this.dropdown.addEventListener('click', ev => this.toggleMenu(ev));
-        this.dropdown.addEventListener('keyup', ev => this.handleKeyUp(ev));
+        this.button = this.querySelector('button');
+        this.addEventListener('click', ev => this.toggleMenu(ev));
+        this.addEventListener('keyup', ev => this.handleKeyUp(ev));
     }
 
     _clickOutside(ev) {

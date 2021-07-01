@@ -17,13 +17,11 @@ export default class Dropdown extends DropdownBase {
     render () {
         const icon_classes = this.icon_classes || "fa fa-bars";
         return html`
-            <div class="dropleft">
-                <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="${icon_classes} only-icon"></i>
-                </button>
-                <div class="dropdown-menu">
-                    ${ this.items.map(b => until(b, '')) }
-                </div>
+            <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="${icon_classes} only-icon"></i>
+            </button>
+            <div class="dropdown-menu">
+                ${ this.items.map(b => until(b, '')) }
             </div>
         `;
     }

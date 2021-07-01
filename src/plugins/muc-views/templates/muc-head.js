@@ -20,7 +20,7 @@ export default (o) => {
             </div>
             <div class="chatbox-title__buttons row no-gutters">
                 ${ o.standalone_btns.length ? tpl_standalone_btns(o) : '' }
-                ${ o.dropdown_btns.length ? html`<converse-dropdown .items=${o.dropdown_btns}></converse-dropdown>` : '' }
+                ${ o.dropdown_btns.length ? html`<converse-dropdown class="dropleft" .items=${o.dropdown_btns}></converse-dropdown>` : '' }
             </div>
         </div>
         ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">

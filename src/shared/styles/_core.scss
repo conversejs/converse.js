@@ -10,6 +10,15 @@
     direction: ltr;
     z-index: 1031; // One more than bootstrap navbar
 
+    .dropup {
+        &.dropup--left {
+            .dropdown-menu {
+                right: 100%;
+                left: auto;
+            }
+        }
+    }
+
     textarea:disabled {
         background-color: #EEE !important;
     }

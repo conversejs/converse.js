@@ -200,6 +200,7 @@ export default class Message extends CustomElement {
     getDerivedMessageProps () {
         const format = api.settings.get('time_format');
         return {
+            'is_newest_message': this.model === this.model.collection.last(),
             'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
             'has_mentions': this.hasMentions(),
             'hats': getHats(this.model),

@@ -959,12 +959,15 @@ const ChatRoomMixin = {
         return [updated_message, updated_references];
     },
 
-    getOutgoingMessageAttributes (original_message, spoiler_hint) {
+    getOutgoingMessageAttributes (attrs) {
         const is_spoiler = this.get('composing_spoiler');
-        const [text, references] = this.parseTextForReferences(original_message);
+        let text = '', references;
+        if (attrs?.body) {
+            [text, references] = this.parseTextForReferences(attrs.body);
+        }
         const origin_id = u.getUniqueId();
         const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
-        return {
+        return Object.assign({}, attrs, {
             body,
             is_spoiler,
             origin_id,
@@ -977,9 +980,8 @@ const ChatRoomMixin = {
             'message': body,
             'nick': this.get('nick'),
             'sender': 'me',
-            'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
             'type': 'groupchat'
-        };
+        });
     },
 
     /**

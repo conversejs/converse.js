@@ -5,7 +5,7 @@ const u = converse.env.utils;
 
 
 async function sendAndThenRetractMessage (_converse, view) {
-    view.model.sendMessage('hello world');
+    view.model.sendMessage({'body': 'hello world'});
     await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
     const msg_obj = view.model.messages.last();
     const reflection_stanza = u.toStanza(`
@@ -313,7 +313,7 @@ describe("Message Retractions", function () {
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);
 
-            view.model.sendMessage('hello world');
+            view.model.sendMessage({'body': 'hello world'});
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
             const message = view.model.messages.at(0);
@@ -709,7 +709,7 @@ describe("Message Retractions", function () {
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 
-            view.model.sendMessage('Visit this site to get free bitcoin');
+            view.model.sendMessage({'body': 'Visit this site to get free bitcoin'});
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             const stanza_id = 'retraction-id-1';
             const msg_obj = view.model.messages.at(0);
@@ -758,7 +758,7 @@ describe("Message Retractions", function () {
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 
-            view.model.sendMessage('Visit this site to get free bitcoin');
+            view.model.sendMessage({'body': 'Visit this site to get free bitcoin'});
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
             const stanza_id = 'retraction-id-1';
             const msg_obj = view.model.messages.at(0);

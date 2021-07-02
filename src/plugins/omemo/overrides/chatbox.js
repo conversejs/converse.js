@@ -1,16 +1,18 @@
 import { _converse } from '@converse/headless/core';
+import { createOMEMOMessageStanza, getBundlesAndBuildSessions } from '../utils.js';
 
 const ChatBox = {
-    async sendMessage (text, spoiler_hint) {
-        if (this.get('omemo_active') && text) {
-            const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
+    async sendMessage (attrs) {
+        if (this.get('omemo_active') && attrs?.body) {
+            const plaintext = attrs?.body;
+            attrs = this.getOutgoingMessageAttributes(attrs);
             attrs['is_encrypted'] = true;
-            attrs['plaintext'] = attrs.message;
+            attrs['plaintext'] = plaintext;
             let message, stanza;
             try {
-                const devices = await _converse.getBundlesAndBuildSessions(this);
+                const devices = await getBundlesAndBuildSessions(this);
                 message = await this.createMessage(attrs);
-                stanza = await _converse.createOMEMOMessageStanza(this, message, devices);
+                stanza = await createOMEMOMessageStanza(this, message, devices);
             } catch (e) {
                 this.handleMessageSendError(e);
                 return null;

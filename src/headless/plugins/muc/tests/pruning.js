@@ -14,20 +14,20 @@ describe("A Groupchat Message", function () {
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         expect(model.ui.get('scrolled')).toBeFalsy();
 
-        model.sendMessage('1st message');
-        model.sendMessage('2nd message');
-        model.sendMessage('3rd message');
+        model.sendMessage({'body': '1st message'});
+        model.sendMessage({'body': '2nd message'});
+        model.sendMessage({'body': '3rd message'});
         await u.waitUntil(() => model.messages.length === 3);
         // Make sure pruneHistory fires
         await new Promise(resolve => setTimeout(resolve, 550));
 
-        model.sendMessage('4th message');
+        model.sendMessage({'body': '4th message'});
         await u.waitUntil(() => model.messages.length === 4);
         await u.waitUntil(() => model.messages.length === 3, 550);
 
         model.ui.set('scrolled', true);
-        model.sendMessage('5th message');
-        model.sendMessage('6th message');
+        model.sendMessage({'body': '5th message'});
+        model.sendMessage({'body': '6th message'});
         await u.waitUntil(() => model.messages.length === 5);
 
         // Wait long enough to be sure the debounced pruneHistory method didn't fire.

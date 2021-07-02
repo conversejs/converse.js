@@ -85,6 +85,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/unfurls.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/xss.js", type: 'module' },
       { pattern: "src/plugins/notifications/tests/notification.js", type: 'module' },
+      { pattern: "src/plugins/omemo/tests/media-sharing.js", type: 'module' },
       { pattern: "src/plugins/omemo/tests/omemo.js", type: 'module' },
       { pattern: "src/plugins/register/tests/register.js", type: 'module' },
       { pattern: "src/plugins/rootview/tests/root.js", type: 'module' },

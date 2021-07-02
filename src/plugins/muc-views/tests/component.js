@@ -53,7 +53,7 @@ describe("The <converse-muc> component", function () {
         await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
         await model.messages.fetched;
 
-        model.sendMessage('hello from the lounge!');
+        model.sendMessage({'body': 'hello from the lounge!'});
 
         const span_el = document.createElement('span');
         span_el.classList.add('conversejs');
@@ -83,7 +83,7 @@ describe("The <converse-muc> component", function () {
         await mock.returnMemberLists(_converse, muc2_jid, [], all_affiliations);
         await model.messages.fetched;
 
-        model2.sendMessage('hello from the bar!');
+        model2.sendMessage({'body': 'hello from the bar!'});
         muc_el.setAttribute('jid', muc2_jid);
 
         await u.waitUntil(() => muc_el.querySelector('converse-chat-message-body').textContent.trim() === 'hello from the bar!');

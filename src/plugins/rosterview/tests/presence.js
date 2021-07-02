@@ -8,7 +8,7 @@ describe("A sent presence stanza", function () {
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     it("includes the saved status message",
-        mock.initConverse([], {}, async (done, _converse) => {
+        mock.initConverse([], {}, async (_converse) => {
 
         const { u, Strophe } = converse.env;
         mock.openControlBox(_converse);
@@ -49,6 +49,5 @@ describe("A sent presence stanza", function () {
                     `<priority>0</priority>`+
                     `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`)
-        done();
     }));
 });

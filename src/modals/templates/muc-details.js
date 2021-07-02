@@ -16,7 +16,7 @@ const subject = (o) => {
 
 
 export default (o) => {
-    const i18n_address =  __('Groupchat address (JID)');
+    const i18n_address =  __('Groupchat XMPP address');
     const i18n_archiving = __('Message archiving');
     const i18n_archiving_help = __('Messages are archived on the server');
     const i18n_desc = __('Description');

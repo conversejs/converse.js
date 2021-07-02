@@ -6,7 +6,7 @@ const u = converse.env.utils;
 describe("XSS", function () {
     describe("A Chat Message", function () {
 
-        it("will escape IMG payload XSS attempts", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("will escape IMG payload XSS attempts", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             spyOn(window, 'alert').and.callThrough();
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -59,10 +59,9 @@ describe("XSS", function () {
             expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual("&gt;&lt;img src=x onerror=alert(String.fromCharCode(88,83,83));&gt;");
 
             expect(window.alert).not.toHaveBeenCalled();
-            done();
         }));
 
-        it("will escape SVG payload XSS attempts", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+        it("will escape SVG payload XSS attempts", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             spyOn(window, 'alert').and.callThrough();
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -114,11 +113,10 @@ describe("XSS", function () {
             expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('"&gt;&lt;svg/onload=alert(/XSS/)');
 
             expect(window.alert).not.toHaveBeenCalled();
-            done();
         }));
 
         it("will have properly escaped URLs",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -170,11 +168,10 @@ describe("XSS", function () {
             expect(msg.textContent).toEqual(message);
             await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '') ===
                 `<a target="_blank" rel="noopener" href="https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=%213m6%211e1%213m4%211sQ7SdHo_bPLPlLlU8GSGWaQ%212e0%217i13312%218i6656%214m5%213m4%211s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08%218m2%213d52.3773668%214d4.5489388%215m1%211e2">https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=!3m6!1e1!3m4!1sQ7SdHo_bPLPlLlU8GSGWaQ!2e0!7i13312!8i6656!4m5!3m4!1s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08!8m2!3d52.3773668!4d4.5489388!5m1!1e2</a>`);
-            done();
         }));
 
         it("will avoid malformed and unsafe urls urls from rendering as anchors",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -250,7 +247,6 @@ describe("XSS", function () {
             await mock.sendMessage(view, good_urls[5].entered);
             await checkParsedURL(good_urls[5]);
 
-            done();
         }));
     });
 });

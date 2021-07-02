@@ -22,7 +22,6 @@ export class ChatToolbar extends CustomElement {
             model: { type: Object },
             show_call_button: { type: Boolean },
             show_emoji_button: { type: Boolean },
-            show_occupants_toggle: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
         }
@@ -56,7 +55,7 @@ export class ChatToolbar extends CustomElement {
 
         if (this.show_emoji_button) {
             const chatview = _converse.chatboxviews.get(this.model.get('jid'));
-            buttons.push(html`<converse-emoji-dropdown .chatview=${chatview}></converse-dropdown>`);
+            buttons.push(html`<converse-emoji-dropdown .chatview=${chatview}></converse-emoji-dropdown>`);
         }
 
         if (this.show_call_button) {
@@ -83,7 +82,7 @@ export class ChatToolbar extends CustomElement {
         const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
         buttons.push(html`${until(http_upload_promise.then(is_supported => this.getHTTPUploadButton(is_supported)),'')}`);
 
-        if (this.show_occupants_toggle) {
+        if (this.is_groupchat && api.settings.get('visible_toolbar_buttons')?.toggle_occupants) {
             const i18n_hide_occupants = __('Hide participants');
             const i18n_show_occupants = __('Show participants');
             buttons.push(html`

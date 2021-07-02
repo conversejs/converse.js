@@ -6,7 +6,7 @@ const u = converse.env.utils;
 describe("The <converse-muc> component", function () {
 
     it("can be rendered as a standalone component",
-            mock.initConverse([], {'auto_insert': false}, async function (done, _converse) {
+            mock.initConverse([], {'auto_insert': false}, async function (_converse) {
 
         const { api } = _converse;
         const muc_jid = 'lounge@montague.lit';
@@ -33,11 +33,10 @@ describe("The <converse-muc> component", function () {
         await u.waitUntil(() => muc_el.querySelector('converse-muc-bottom-panel'));
         body.removeChild(span_el);
         expect(true).toBe(true);
-        done();
     }));
 
     it("will update correctly when the jid property changes",
-            mock.initConverse([], {'auto_insert': false}, async function (done, _converse) {
+            mock.initConverse([], {'auto_insert': false}, async function (_converse) {
 
         const { api } = _converse;
         const muc_jid = 'lounge@montague.lit';
@@ -89,6 +88,5 @@ describe("The <converse-muc> component", function () {
 
         await u.waitUntil(() => muc_el.querySelector('converse-chat-message-body').textContent.trim() === 'hello from the bar!');
         body.removeChild(span_el);
-        done();
     }));
 });

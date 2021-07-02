@@ -5,7 +5,7 @@ const { $msg, $pres, Strophe, u } = converse.env;
 describe("A Groupchat Message", function () {
 
     it("can be replaced with a correction",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -66,11 +66,10 @@ describe("A Groupchat Message", function () {
         expect(older_msgs.length).toBe(2);
         expect(older_msgs[0].textContent.includes('But soft, what light through yonder airlock breaks?')).toBe(true);
         expect(older_msgs[1].textContent.includes('But soft, what light through yonder chimney breaks?')).toBe(true);
-        done();
     }));
 
     it("keeps the same position in history after a correction",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -158,11 +157,10 @@ describe("A Groupchat Message", function () {
         expect(older_msgs.length).toBe(2);
         expect(older_msgs[0].textContent.includes('But soft, what light through yonder airlock breaks?')).toBe(true);
         expect(older_msgs[1].textContent.includes('But soft, what light through yonder chimney breaks?')).toBe(true);
-        done();
     }));
 
     it("can be sent as a correction by using the up arrow",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -262,6 +260,5 @@ describe("A Groupchat Message", function () {
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
         await u.waitUntil(() => !u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
-        done();
     }));
 });

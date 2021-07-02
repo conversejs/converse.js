@@ -6,9 +6,9 @@ import { Model } from "@converse/skeletor/src/model";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/shared/utils.js';
+import { rejectPresenceSubscription } from './utils.js';
 
-const { Strophe, $iq, sizzle } = converse.env;
-const u = converse.env.utils;
+const { Strophe, $iq, sizzle, u } = converse.env;
 
 
 const RosterContacts = Collection.extend({
@@ -299,7 +299,7 @@ const RosterContacts = Collection.extend({
         const contact = this.get(jid);
         const subscription = item.getAttribute("subscription");
         const ask = item.getAttribute("ask");
-        const groups = Array.from(item.getElementsByTagName('group')).map(e => e.textContent);
+        const groups = [...new Set(sizzle('group', item).map(e => e.textContent))];
         if (!contact) {
             if ((subscription === "none" && ask === null) || (subscription === "remove")) {
                 return; // We're lazy when adding contacts.
@@ -355,7 +355,7 @@ const RosterContacts = Collection.extend({
             contact = this.get(bare_jid);
 
         if (!api.settings.get('allow_contact_requests')) {
-            _converse.rejectPresenceSubscription(
+            rejectPresenceSubscription(
                 jid,
                 __("This client does not allow presence subscriptions")
             );

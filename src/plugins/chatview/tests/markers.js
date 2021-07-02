@@ -8,7 +8,7 @@ const u = converse.env.utils;
 describe("A XEP-0333 Chat Marker", function () {
 
     it("is sent when a markable message is received from a roster contact",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -33,11 +33,10 @@ describe("A XEP-0333 Chat Marker", function () {
                     `to="${contact_jid}" type="chat" xmlns="jabber:client">`+
             `<received id="${msgid}" xmlns="urn:xmpp:chat-markers:0"/>`+
             `</message>`);
-        done();
     }));
 
     it("is not sent when a markable message is received from someone not on the roster",
-            mock.initConverse([], {'allow_non_roster_messaging': true}, async function (done, _converse) {
+            mock.initConverse([], {'allow_non_roster_messaging': true}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const contact_jid = 'someone@montague.lit';
@@ -66,11 +65,10 @@ describe("A XEP-0333 Chat Marker", function () {
                 `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
             `</message>`
         );
-        done();
     }));
 
     it("is ignored if it's a carbon copy of one that I sent from a different client",
-        mock.initConverse([], {}, async function (done, _converse) {
+        mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
@@ -112,6 +110,5 @@ describe("A XEP-0333 Chat Marker", function () {
         await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);
-        done();
     }));
 });

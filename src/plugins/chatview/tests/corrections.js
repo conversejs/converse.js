@@ -5,7 +5,7 @@ const { Promise, $msg, Strophe, sizzle, u } = converse.env;
 describe("A Chat Message", function () {
 
     it("can be sent as a correction by using the up arrow",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);
@@ -161,12 +161,11 @@ describe("A Chat Message", function () {
         expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
         expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
         expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
-        done();
     }));
 
 
     it("can be sent as a correction by clicking the pencil icon",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);
@@ -285,14 +284,13 @@ describe("A Chat Message", function () {
             ['You have an unsent message which will be lost if you continue. Are you sure?']);
         expect(window.confirm.calls.argsFor(1)).toEqual(
             ['You have an unsent message which will be lost if you continue. Are you sure?']);
-        done();
     }));
 
 
     describe("when received from someone else", function () {
 
         it("can be replaced with a correction",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
@@ -346,7 +344,6 @@ describe("A Chat Message", function () {
             expect(older_msgs.length).toBe(2);
             expect(older_msgs[0].textContent.includes('But soft, what light through yonder airlock breaks?')).toBe(true);
             expect(view.model.messages.models.length).toBe(1);
-            done();
         }));
     });
 });

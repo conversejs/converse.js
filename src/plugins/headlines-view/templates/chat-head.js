@@ -12,7 +12,7 @@ export default (o) => {
                 <div class="chatbox-title__text" title="${o.jid}">${ o.display_name }</div>
             </div>
             <div class="chatbox-title__buttons row no-gutters">
-                ${ o.dropdown_btns.length ? html`<converse-dropdown .items=${o.dropdown_btns}></converse-dropdown>` : '' }
+                ${ o.dropdown_btns.length ? html`<converse-dropdown class="dropleft" .items=${o.dropdown_btns}></converse-dropdown>` : '' }
                 ${ o.standalone_btns.length ? tpl_standalone_btns(o) : '' }
             </div>
         </div>

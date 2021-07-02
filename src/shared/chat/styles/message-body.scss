@@ -1,9 +1,51 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "shared/styles/_mixins.scss";
+
 converse-chat-message-body {
     audio {
-        width: 100%;
+        display: block;
+        @include media-breakpoint-down(sm) {
+            max-width: 95%;
+        }
+        @include media-breakpoint-up(md) {
+            max-width: 70%;
+        }
+        @include media-breakpoint-up(lg) {
+            max-width: 50%;
+        }
+        @include media-breakpoint-up(xl) {
+            max-width: 40%;
+        }
     }
 
     video {
-        max-height: 25vh;
+        display: block;
+        max-height: 25em;
+        @include media-breakpoint-down(sm) {
+            max-width: 95%;
+        }
+        @include media-breakpoint-up(md) {
+            max-width: 70%;
+        }
+        @include media-breakpoint-up(lg) {
+            max-width: 50%;
+        }
+        @include media-breakpoint-up(xl) {
+            max-width: 40%;
+        }
+    }
+}
+
+.converse-overlayed {
+    converse-chat-message-body {
+        audio {
+            display: block;
+            max-width: 100%;
+        }
+        video {
+            display: block;
+            max-width: 100%;
+        }
     }
 }

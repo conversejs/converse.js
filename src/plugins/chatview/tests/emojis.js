@@ -11,7 +11,7 @@ describe("Emojis", function () {
         afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
         it("can be opened by clicking a button in the chat toolbar",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.waitForRoster(_converse, 'current');
@@ -25,14 +25,13 @@ describe("Emojis", function () {
             item.click()
             expect(view.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
             toolbar.querySelector('.toggle-emojis').click(); // Close the panel again
-            done();
         }));
     });
 
     describe("A Chat Message", function () {
 
         it("will display larger if it's only emojis",
-                mock.initConverse(['chatBoxesFetched'], {'use_system_emojis': true}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {'use_system_emojis': true}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -114,13 +113,12 @@ describe("Emojis", function () {
 
             message = view.querySelector('.message:last-child .chat-msg__text');
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
-            done()
         }));
 
         it("can render emojis as images",
                 mock.initConverse(
                     ['chatBoxesFetched'], {'use_system_emojis': false},
-                    async function (done, _converse) {
+                    async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -163,8 +161,7 @@ describe("Emojis", function () {
             const sent_stanzas = _converse.connection.sent_stanzas;
             const sent_stanza = sent_stanzas.filter(s => s.nodeName === 'message').pop();
             expect(sent_stanza.querySelector('body').innerHTML).toBe('💩 😇');
-            done()
-                    }));
+        }));
 
         it("can show custom emojis",
             mock.initConverse(
@@ -181,7 +178,7 @@ describe("Emojis", function () {
                     "flags": ":flag_ac:",
                     "custom": ':xmpp:'
                 } },
-                async function (done, _converse) {
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -208,7 +205,6 @@ describe("Emojis", function () {
             const body = view.querySelector('converse-chat-message-body');
             await u.waitUntil(() => body.innerHTML.replace(/<!-.*?->/g, '').trim() ===
                 'Running tests for <img class="emoji" draggable="false" title=":converse:" alt=":converse:" src="/dist/images/custom_emojis/converse.png">');
-            done();
         }));
     });
 });

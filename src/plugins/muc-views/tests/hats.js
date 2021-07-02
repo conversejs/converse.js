@@ -5,7 +5,7 @@ const u = converse.env.utils;
 describe("A XEP-0317 MUC Hat", function () {
 
     it("can be included in a presence stanza",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
@@ -70,6 +70,5 @@ describe("A XEP-0317 MUC Hat", function () {
         `)));
         await u.waitUntil(() => view.model.getOccupant("Terry").get('hats').length === 0);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg .badge').length === 0);
-        done();
     }));
 })

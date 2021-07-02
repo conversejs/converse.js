@@ -35,7 +35,7 @@ export default (o) => {
     const display_name = o.model.getDisplayName();
 
     const tpl_dropdown_btns = () => getDropdownButtons(o.heading_buttons_promise)
-        .then(btns => btns.length ? html`<converse-dropdown .items=${btns}></converse-dropdown>` : '');
+        .then(btns => btns.length ? html`<converse-dropdown class="dropleft" .items=${btns}></converse-dropdown>` : '');
 
     const tpl_standalone_btns = () => getStandaloneButtons(o.heading_buttons_promise)
         .then(btns => btns.reverse().map(b => until(b, '')));

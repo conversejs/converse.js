@@ -4,7 +4,7 @@ const { u } = converse.env;
 
 describe("A Groupchat Message", function () {
 
-    it("will render an unfurl based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+    it("will render an unfurl based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -44,10 +44,9 @@ describe("A Groupchat Message", function () {
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe('https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg');
-        done();
     }));
 
-    it("will render an unfurl with limited OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+    it("will render an unfurl with limited OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         /* Some sites don't include ogp data such as title, description and
          * url. This test is to check that we fall back gracefully */
         const nick = 'romeo';
@@ -82,10 +81,9 @@ describe("A Groupchat Message", function () {
         expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe('https://conversejs.org/dist/images/custom_emojis/converse.png');
         expect(unfurl.querySelector('.card-body')).toBe(null);
         expect(unfurl.querySelector('a')).toBe(null);
-        done();
     }));
 
-    it("will render multiple unfurls based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+    it("will render multiple unfurls based on OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -137,10 +135,9 @@ describe("A Groupchat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 2);
-        done();
     }));
 
-    it("will not render an unfurl received from a MUC participant", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+    it("will not render an unfurl received from a MUC participant", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -175,13 +172,12 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
         expect(view.model.handleMetadataFastening.calls.first().returnValue).toBe(false);
         expect(view.querySelector('converse-message-unfurl')).toBe(null);
-        done();
     }));
 
     it("will not render an unfurl based on OGP data if muc_show_ogp_unfurls is false",
             mock.initConverse(['chatBoxesFetched'],
             {'muc_show_ogp_unfurls': false},
-            async function (done, _converse) {
+            async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -216,11 +212,10 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
         expect(view.model.handleMetadataFastening.calls.first().returnValue).toBe(false);
         expect(view.querySelector('converse-message-unfurl')).toBe(null);
-        done();
     }));
 
     it("will only render a single unfurl when receiving the same OGP data multiple times",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -257,13 +252,12 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
         const unfurls = await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl'));
         expect(unfurls.length).toBe(1);
-        done();
     }));
 
     it("will not render an unfurl image if the domain is not in show_images_inline",
             mock.initConverse(['chatBoxesFetched'],
             {'show_images_inline': []},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
@@ -296,13 +290,12 @@ describe("A Groupchat Message", function () {
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         expect(unfurl.querySelector('.card-img-top')).toBe(null);
-        done();
     }));
 
     it("lets the user hide an unfurl",
             mock.initConverse(['chatBoxesFetched'],
             {'show_images_inline': []},
-            async function (done, _converse) {
+            async function (_converse) {
 
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
@@ -339,6 +332,5 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.querySelector('converse-message-unfurl') === null, 750);
         button.click();
         await u.waitUntil(() => view.querySelector('converse-message-unfurl'), 750);
-        done();
     }));
 });

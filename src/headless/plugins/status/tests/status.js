@@ -5,7 +5,7 @@ const u = converse.env.utils;
 describe("The XMPPStatus model", function () {
 
     it("won't send <show>online</show> when setting a custom status message",
-            mock.initConverse(async (done, _converse) => {
+            mock.initConverse(async (_converse) => {
 
         const sent_stanzas = _converse.connection.sent_stanzas;
         await _converse.api.user.status.set('online');
@@ -18,6 +18,5 @@ describe("The XMPPStatus model", function () {
         expect(stanza.querySelectorAll('show').length).toBe(0);
         expect(stanza.querySelectorAll('priority').length).toBe(1);
         expect(stanza.querySelector('priority').textContent).toBe('0');
-        done();
     }));
 });

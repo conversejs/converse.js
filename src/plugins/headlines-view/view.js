@@ -18,7 +18,6 @@ class HeadlinesView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'destroy', this.remove);
-        this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.messages, 'add', this.requestUpdate);
         this.listenTo(this.model.messages, 'remove', this.requestUpdate);
         this.listenTo(this.model.messages, 'reset', this.requestUpdate);
@@ -44,7 +43,6 @@ class HeadlinesView extends BaseChatView {
             _converse.router.navigate('');
         }
         await this.model.close(ev);
-        api.trigger('chatBoxClosed', this);
         return this;
     }
 
@@ -54,8 +52,8 @@ class HeadlinesView extends BaseChatView {
         return [];
     }
 
-    afterShown () { // eslint-disable-line class-methods-use-this
-        return;
+    afterShown () {
+        this.model.clearUnreadMsgCounter();
     }
 }
 

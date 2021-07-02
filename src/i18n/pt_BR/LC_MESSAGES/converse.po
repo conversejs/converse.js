@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-17 12:35+0100\n"
-"PO-Revision-Date: 2020-12-19 10:29+0000\n"
-"Last-Translator: LL Magical <lolayami2004@gmail.com>\n"
+"PO-Revision-Date: 2021-05-04 18:32+0000\n"
+"Last-Translator: bashl <esqueleto777@disroot.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -770,9 +770,8 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr "Desculpe, você não está autorizado a retrair esta mensagem."
 
 #: dist/converse-no-dependencies.js:76190
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "Você está a ponto de retirar esta mensagem."
+msgstr "Você está a prestes a retirar esta mensagem."
 
 #: dist/converse-no-dependencies.js:76190
 #, fuzzy
@@ -811,19 +810,19 @@ msgstr "Retirar"
 
 #: dist/converse-no-dependencies.js:76316
 msgid "Show URL previews"
-msgstr ""
+msgstr "Mostrar pré-visualizações da URL"
 
 #: dist/converse-no-dependencies.js:76316
 msgid "Hide URL previews"
-msgstr ""
+msgstr "Ocultar pré-visualizações da URL"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Show URL preview"
-msgstr ""
+msgstr "Mostrar pré-visualização da URL"
 
 #: dist/converse-no-dependencies.js:76318
 msgid "Hide URL preview"
-msgstr ""
+msgstr "Ocultar pré-visualização da URL"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:76429
@@ -1215,7 +1214,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94078
 msgid "Loading configuration form"
-msgstr ""
+msgstr "Carregando configuração de formulário"
 
 #: dist/converse-no-dependencies.js:94373
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1470,10 +1469,11 @@ msgid "Allow muted user to post messages"
 msgstr "Permitir que o usuário mudo publique mensagens"
 
 #: dist/converse-no-dependencies.js:96345
-#, fuzzy
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
-msgstr "Esta conversa foi movida. Clique abaixo para entrar de novo."
+msgstr ""
+"Esta conversa foi movida para um novo endereço. Clique abaixo para entrar "
+"novamente."
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:96353
@@ -1499,7 +1499,7 @@ msgstr "A razão dada é: \"%1$s\"."
 #: dist/converse-no-dependencies.js:96914
 #: dist/converse-no-dependencies.js:97683
 msgid "Invite"
-msgstr "convite"
+msgstr "Convite"
 
 #: dist/converse-no-dependencies.js:96916
 msgid "Invite someone to this groupchat"

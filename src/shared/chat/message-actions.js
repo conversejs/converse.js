@@ -15,6 +15,7 @@ class MessageActions extends CustomElement {
             correcting: { type: Boolean },
             editable: { type: Boolean },
             hide_url_previews: { type: Boolean },
+            is_newest_message: { type: Boolean },
             is_retracted: { type: Boolean },
             message_type: { type: String },
             model: { type: Object },
@@ -30,7 +31,9 @@ class MessageActions extends CustomElement {
         const buttons = await this.getActionButtons();
         const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
         if (items.length) {
-            return html`<converse-dropdown class="chat-msg__actions" .items=${ items }></converse-dropdown>`;
+            return html`<converse-dropdown
+                class="chat-msg__actions ${this.is_newest_message ? 'dropup dropup--left' : 'dropleft'}"
+                .items=${ items }></converse-dropdown>`;
         } else {
             return '';
         }
@@ -194,6 +197,11 @@ class MessageActions extends CustomElement {
             });
         }
 
+        if (!this.model.collection) {
+            // While we were awaiting, this model got removed from the
+            // collection (happens during tests)
+            return [];
+        }
         const ogp_metadata = this.model.get('ogp_metadata') || [];
         const chatbox = this.model.collection.chatbox;
         if (chatbox.get('type') === _converse.CHATROOMS_TYPE &&

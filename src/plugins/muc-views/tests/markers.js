@@ -6,7 +6,7 @@ const u = converse.env.utils;
 
 describe("A XEP-0333 Chat Marker", function () {
     it("may be returned for a MUC message",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
@@ -64,6 +64,5 @@ describe("A XEP-0333 Chat Marker", function () {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
         expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-        done();
     }));
 });

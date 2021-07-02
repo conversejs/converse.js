@@ -39,7 +39,6 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/status/tests/status.js", type: 'module' },
       { pattern: "src/headless/tests/converse.js", type: 'module' },
       { pattern: "src/headless/tests/eventemitter.js", type: 'module' },
-      { pattern: "src/headless/tests/persistence.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },
@@ -54,6 +53,8 @@ module.exports = function(config) {
       { pattern: "src/plugins/chatview/tests/oob.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/receipts.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/spoilers.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/styling.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/unreads.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/xss.js", type: 'module' },
       { pattern: "src/plugins/controlbox/tests/controlbox.js", type: 'module' },
       { pattern: "src/plugins/controlbox/tests/login.js", type: 'module' },
@@ -68,6 +69,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/hats.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/http-file-upload.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/markers.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/me-messages.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/mentions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/modtools.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc-api.js", type: 'module' },
@@ -79,6 +81,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/rai.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/retractions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/styling.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/toolbar.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/unfurls.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/xss.js", type: 'module' },
       { pattern: "src/plugins/notifications/tests/notification.js", type: 'module' },
@@ -88,7 +91,9 @@ module.exports = function(config) {
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },
-      { pattern: "src/shared/chat/tests/styling.js", type: 'module' },
+
+      // For some reason this test causes issues when its run earlier
+      { pattern: "src/headless/tests/persistence.js", type: 'module' },
     ],
 
     proxies: {

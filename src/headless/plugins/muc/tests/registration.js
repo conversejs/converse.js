@@ -8,7 +8,7 @@ describe("Chatrooms", function () {
 
         it("allows you to automatically register your nickname when joining a room",
                 mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
             const room = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -47,12 +47,11 @@ describe("Chatrooms", function () {
                         `</x>`+
                     `</query>`+
                 `</iq>`);
-            done();
         }));
 
         it("allows you to automatically deregister your nickname when closing a room",
                 mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': 'unregister'},
-                async function (done, _converse) {
+                async function (_converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
             const room = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -96,7 +95,6 @@ describe("Chatrooms", function () {
             }).c('query', {'xmlns': 'jabber:iq:register'});
             _converse.connection._dataRecv(mock.createRequest(result));
 
-            done();
         }));
     });
 });

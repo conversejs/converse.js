@@ -12,7 +12,7 @@ describe("A Groupchat Message", function () {
     describe("which is succeeded by an error message", function () {
 
         it("will have the error displayed below it",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -48,7 +48,6 @@ describe("A Groupchat Message", function () {
             expect(message.get('body')).toBe('hello world');
             expect(message.get('error_text')).toBe(err_msg_text);
             expect(message.get('editable')).toBe(false);
-            done();
         }));
     });
 
@@ -56,7 +55,7 @@ describe("A Groupchat Message", function () {
     describe("an info message", function () {
 
         it("is not rendered as a followup message",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const nick = 'romeo';
@@ -89,11 +88,10 @@ describe("A Groupchat Message", function () {
             const messages = view.querySelectorAll('.chat-info');
             expect(u.hasClass('chat-msg--followup', messages[0])).toBe(false);
             expect(u.hasClass('chat-msg--followup', messages[1])).toBe(false);
-            done();
         }));
 
         it("is not shown if its a duplicate",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -120,13 +118,12 @@ describe("A Groupchat Message", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.model.createInfoMessages.calls.count() === 2);
             expect(view.querySelectorAll('.chat-info').length).toBe(1);
-            done();
         }));
     });
 
 
     it("is rejected if it's an unencapsulated forwarded message",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -155,11 +152,10 @@ describe("A Groupchat Message", function () {
         );
         expect(view.querySelectorAll('.chat-msg').length).toBe(0);
         expect(view.model.messages.length).toBe(0);
-        done();
     }));
 
     it("can contain a chat state notification and will still be shown",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -178,11 +174,10 @@ describe("A Groupchat Message", function () {
         await view.model.handleMessageStanza(msg);
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe(message);
-        done();
     }));
 
     it("can not be expected to have a unique id attribute",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -207,11 +202,10 @@ describe("A Groupchat Message", function () {
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
         expect(view.model.messages.length).toBe(2);
-        done();
     }));
 
     it("is ignored if it has the same archive-id of an already received one",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -254,11 +248,10 @@ describe("A Groupchat Message", function () {
         expect(result instanceof _converse.Message).toBe(true);
         expect(view.model.messages.length).toBe(1);
         await u.waitUntil(() => view.model.updateMessage.calls.count());
-        done();
     }));
 
     it("is ignored if it has the same stanza-id of an already received one",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -300,11 +293,10 @@ describe("A Groupchat Message", function () {
         expect(result instanceof _converse.Message).toBe(true);
         expect(view.model.messages.length).toBe(1);
         await u.waitUntil(() => view.model.updateMessage.calls.count());
-        done();
     }));
 
     it("will be discarded if it's a malicious message meant to look like a carbon copy",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
@@ -357,11 +349,10 @@ describe("A Groupchat Message", function () {
         );
         expect(view.querySelectorAll('.chat-msg').length).toBe(0);
         expect(view.model.messages.length).toBe(0);
-        done();
     }));
 
     it("keeps track of the sender's role and affiliation",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -483,12 +474,11 @@ describe("A Groupchat Message", function () {
         expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
         // Check that the "add" event handler was removed.
         expect(view.model.occupants._events.add.length).toBe(add_events);
-        done();
     }));
 
 
     it("keeps track whether you are the sender or not",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -502,11 +492,10 @@ describe("A Groupchat Message", function () {
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.model.messages.last()?.get('received'));
         expect(view.model.messages.last().get('sender')).toBe('me');
-        done();
     }));
 
     it("will be shown as received upon MUC reflection",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
@@ -544,11 +533,10 @@ describe("A Groupchat Message", function () {
         const message = view.model.messages.at(0);
         expect(message.get('stanza_id lounge@montague.lit')).toBe('5f3dbc5e-e1d3-4077-a492-693f3769c7ad');
         expect(message.get('origin_id')).toBe(msg_obj.get('origin_id'));
-        done();
     }));
 
     it("gets updated with its stanza-id upon MUC reflection",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -577,11 +565,10 @@ describe("A Groupchat Message", function () {
         expect(view.model.messages.length).toBe(1);
         expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
         expect(view.model.messages.at(0).get('origin_id')).toBe(msg.get('origin_id'));
-        done();
     }));
 
     it("can cause a delivery receipt to be returned",
-            mock.initConverse([], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
@@ -621,6 +608,5 @@ describe("A Groupchat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-        done();
     }));
 });

@@ -3,6 +3,7 @@
 ## 8.0.0 (Unreleased)
 
 - #1083: Add support for XEP-0393 Message Styling
+- #1182: Add support for XEP-0454 OMEMO Media sharing
 - #2275: Allow punctuation to immediately precede a mention
 - #2348: `auto_join_room` not showing the room in `fullscreen` `view_mode`.
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls

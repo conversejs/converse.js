@@ -1,10 +1,9 @@
 import { _converse, api, converse } from '@converse/headless/core';
+import { Model } from '@converse/skeletor/src/model.js';
 
 const { dayjs } = converse.env;
 
 /**
- * Mixin which turns a ChatBox model into a ControlBox model.
- *
  * The ControlBox is the section of the chat that contains the open groupchats,
  * bookmarks and roster.
  *
@@ -12,7 +11,8 @@ const { dayjs } = converse.env;
  * `view_mode` it's a left-aligned sidebar.
  * @mixin
  */
-const ControlBoxMixin = {
+const ControlBox = Model.extend({
+
     defaults () {
         return {
             'bookmarked': false,
@@ -20,18 +20,10 @@ const ControlBoxMixin = {
             'chat_state': undefined,
             'closed': !api.settings.get('show_controlbox_by_default'),
             'num_unread': 0,
-            'time_opened': this.get('time_opened') || new Date().getTime(),
+            'time_opened': dayjs(0).valueOf(),
             'type': _converse.CONTROLBOX_TYPE,
             'url': ''
         };
-    },
-
-    initialize () {
-        if (this.get('id') === 'controlbox') {
-            this.set({ 'time_opened': dayjs(0).valueOf() });
-        } else {
-            _converse.ChatBox.prototype.initialize.apply(this, arguments);
-        }
     },
 
     validate (attrs) {
@@ -55,7 +47,6 @@ const ControlBoxMixin = {
     onReconnection () {
         this.save('connected', true);
     }
+});
 
-};
-
-export default ControlBoxMixin;
+export default ControlBox;

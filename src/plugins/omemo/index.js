@@ -19,12 +19,15 @@ import omemo_api from './api.js';
 import { OMEMOEnabledChatBox } from './mixins/chatbox.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import {
+    encryptFile,
     getOMEMOToolbarButton,
+    handleEncryptedFiles,
     initOMEMO,
     omemo,
     onChatBoxesInitialized,
     onChatInitialized,
     parseEncryptedMessage,
+    setEncryptedFileURL,
     registerPEPPushHandler,
 } from './utils.js';
 
@@ -71,6 +74,9 @@ converse.plugins.add('converse-omemo', {
         /******************** Event Handlers ********************/
         api.waitUntil('chatBoxesInitialized').then(onChatBoxesInitialized);
 
+        api.listen.on('afterFileUploaded', (msg, attrs) => msg.file.xep454_ivkey ? setEncryptedFileURL(msg, attrs) : attrs);
+        api.listen.on('beforeFileUpload', (chat, file) => chat.get('omemo_active') ? encryptFile(file) : file);
+
         api.listen.on('parseMessage', parseEncryptedMessage);
         api.listen.on('parseMUCMessage', parseEncryptedMessage);
 
@@ -82,6 +88,8 @@ converse.plugins.add('converse-omemo', {
 
         api.listen.on('statusInitialized', initOMEMO);
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
+
+        api.listen.on('afterMessageBodyTransformed', handleEncryptedFiles);
 
         api.listen.on('userDetailsModalInitialized', contact => {
             const jid = contact.get('jid');

@@ -438,10 +438,14 @@ const ChatRoomMixin = {
             };
             if (attrs.msgid === message.get('retraction_id')) {
                 // The error message refers to a retraction
+                new_attrs.retracted = undefined;
                 new_attrs.retraction_id = undefined;
+                new_attrs.retracted_id = undefined;
+
                 if (!attrs.error) {
                     if (attrs.error_condition === 'forbidden') {
                         new_attrs.error = __("You're not allowed to retract your message.");
+
                     } else if (attrs.error_condition === 'not-acceptable') {
                         new_attrs.error = __(
                             "Your retraction was not delivered because you're not present in the groupchat."
@@ -665,8 +669,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#sendTimedMessage
      * @param { _converse.Message|XMLElement } message
      * @returns { Promise<XMLElement>|Promise<_converse.TimeoutError> } Returns a promise
-     *  which resolves with the reflected message stanza or rejects
-     *  with an error stanza or with a {@link _converse.TimeoutError}.
+     *  which resolves with the reflected message stanza or with an error stanza or {@link _converse.TimeoutError}.
      */
     sendTimedMessage (el) {
         if (typeof el.tree === 'function') {
@@ -681,23 +684,15 @@ const ChatRoomMixin = {
         const promise = getOpenPromise();
         const timeoutHandler = _converse.connection.addTimedHandler(_converse.STANZA_TIMEOUT, () => {
             _converse.connection.deleteHandler(handler);
-            promise.reject(new _converse.TimeoutError('Timeout Error: No response from server'));
+            const err = new _converse.TimeoutError('Timeout Error: No response from server');
+            promise.resolve(err);
             return false;
         });
         const handler = _converse.connection.addHandler(
             stanza => {
                 timeoutHandler && _converse.connection.deleteTimedHandler(timeoutHandler);
-                if (stanza.getAttribute('type') === 'groupchat') {
-                    promise.resolve(stanza);
-                } else {
-                    promise.reject(stanza);
-                }
-            },
-            null,
-            'message',
-            ['error', 'groupchat'],
-            id
-        );
+                promise.resolve(stanza);
+            }, null, 'message', ['error', 'groupchat'], id);
         api.send(el);
         return promise;
     },
@@ -735,17 +730,20 @@ const ChatRoomMixin = {
             'retraction_id': stanza.nodeTree.getAttribute('id'),
             'editable': false
         });
-        try {
-            await this.sendTimedMessage(stanza);
-        } catch (e) {
+        const result = await this.sendTimedMessage(stanza);
+
+        if (u.isErrorStanza(result)) {
+            log.error(result);
+        } else if (result instanceof _converse.TimeoutError) {
+            log.error(result);
             message.save({
                 editable,
                 'error_type': 'timeout',
                 'error': __('A timeout happened while while trying to retract your message.'),
                 'retracted': undefined,
-                'retracted_id': undefined
+                'retracted_id': undefined,
+                'retraction_id': undefined
             });
-            throw e;
         }
     },
 

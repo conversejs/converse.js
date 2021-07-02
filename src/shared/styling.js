@@ -8,7 +8,8 @@ import { html } from 'lit';
 import { renderStylingDirectiveBody } from 'shared/directives/styling.js';
 
 
-const styling_directives = ['*', '_', '~', '`', '```', '>'];
+const bracketing_directives = ['*', '_', '~', '`'];
+const styling_directives = [...bracketing_directives, '```', '>'];
 const styling_map = {
     '*': {'name': 'strong', 'type': 'span'},
     '_': {'name': 'emphasis', 'type': 'span'},
@@ -51,13 +52,17 @@ function isValidDirective (d, text, i, opening) {
         if (is_quote && i > 0 && text[i-1] !== '\n') {
             // Quote directives must be on newlines
             return false;
-        } else if (!is_quote && d === text[i+1]) {
-            // Immediately followed by another directive of the same type
+        } else if (bracketing_directives.includes(d) && (text[i+1] === d)) {
+            // Don't consider empty bracketing directives as valid (e.g. **, `` etc.)
             return false;
         }
     } else {
         const regex = RegExp(dont_escape.includes(d) ? `^${d}(\\p{L}|\\p{N})` : `^\\${d}(\\p{L}|\\p{N})`, 'u');
         if (i < text.length-1 && regex.test(text.slice(i))) {
+            return false;
+        }
+        if (bracketing_directives.includes(d) && (text[i-1] === d)) {
+            // Don't consider empty directives as valid (e.g. **, `` etc.)
             return false;
         }
     }
@@ -84,20 +89,6 @@ function getDirective (text, i, opening=true) {
     return d;
 }
 
-
-/**
- * Given an opening directive "d", an index "i" and the text, check whether
- * we've found the closing directive.
- * @param { String } d -The directive
- * @param { Number } i - The directive index
- * @param { String } text -The text in which the directive appears
- */
-function isDirectiveEnd (d, i, text) {
-    const dtype = styling_map[d].type; // directive type
-    return i === text.length || getDirective(text, i, false) === d || (dtype === 'span' && text[i] === '\n');
-}
-
-
 /**
  * Given a directive "d", which occurs in "text" at index "i", check that it
  * has a valid closing directive and return the length from start to end of the
@@ -114,20 +105,25 @@ function getDirectiveLength (d, text, i) {
         i += text.slice(i).split(/\n[^>]/).shift().length;
         return i-begin;
     } else if (styling_map[d].type === 'span') {
-        const line = text.slice(i+1).split('\n').shift();
+        const line = text.slice(i).split('\n').shift();
         let j = 0;
         let idx = line.indexOf(d);
         while (idx !== -1) {
-            if (isDirectiveEnd(d, i+1+idx, text)) return idx+1+2*d.length;
+            if (getDirective(text, i+idx, false) === d) {
+                return idx+2*d.length;
+            }
             idx = line.indexOf(d, j++);
         }
         return 0;
     } else {
+        // block directives
         const substring = text.slice(i+1);
         let j = 0;
         let idx = substring.indexOf(d);
         while (idx !== -1) {
-            if (isDirectiveEnd(d, i+1+idx, text)) return idx+1+2*d.length;
+            if (getDirective(text, i+1+idx, false) === d) {
+                return idx+1+2*d.length;
+            }
             idx = substring.indexOf(d, j++);
         }
         return 0;

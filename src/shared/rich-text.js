@@ -16,11 +16,12 @@ import {
     getHyperlinkTemplate,
     isAudioDomainAllowed,
     isAudioURL,
+    isEncryptedFileURL,
     isImageDomainAllowed,
     isImageURL,
     isVideoDomainAllowed,
     isVideoURL
-} from 'utils/html';
+} from 'utils/html.js';
 import { html } from 'lit';
 
 const isString = s => typeof s === 'string';
@@ -105,16 +106,16 @@ export class RichText extends String {
             log.debug(error);
             return;
         }
-        objs.forEach(url_obj => {
+
+        objs.filter(o => !isEncryptedFileURL(text.slice(o.start, o.end))).forEach(url_obj => {
             const url_text = text.slice(url_obj.start, url_obj.end);
             const filtered_url = filterQueryParamsFromURL(url_text);
-
             let template;
             if (this.show_images && isImageURL(url_text) && isImageDomainAllowed(url_text)) {
                 template = tpl_image({
                     'url': filtered_url,
-                    'onClick': this.onImgLoad,
-                    'onLoad': this.onImgClick
+                    'onClick': this.onImgClick,
+                    'onLoad': this.onImgLoad
                 });
             } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
                 template = tpl_video(filtered_url);

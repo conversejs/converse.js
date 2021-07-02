@@ -7,7 +7,7 @@ describe("XSS", function () {
     describe("A Groupchat", function () {
 
         it("escapes occupant nicknames when rendering them, to avoid JS-injection attacks",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             /* <presence xmlns="jabber:client" to="jc@chat.example.org/converse.js-17184538"
@@ -34,11 +34,10 @@ describe("XSS", function () {
             const occupants = view.querySelectorAll('.occupant-list li .occupant-nick');
             expect(occupants.length).toBe(2);
             expect(occupants[0].textContent.trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
-            done();
         }));
 
         it("escapes the subject before rendering it, to avoid JS-injection attacks",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
             spyOn(window, 'alert');
@@ -50,7 +49,6 @@ describe("XSS", function () {
             }});
             const text = await u.waitUntil(() => view.querySelector('.chat-head__desc')?.textContent.trim());
             expect(text).toBe(subject);
-            done();
         }));
     });
 });

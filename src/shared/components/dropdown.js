@@ -1,54 +1,11 @@
 import DOMNavigator from "shared/dom-navigator.js";
-import { CustomElement } from './element.js';
 import { converse, api } from "@converse/headless/core";
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-
-const u = converse.env.utils;
-
-
-export class BaseDropdown extends CustomElement {
-
-    firstUpdated () {
-        this.menu = this.querySelector('.dropdown-menu');
-        this.dropdown = this.firstElementChild;
-        this.button = this.dropdown.querySelector('button');
-        this.dropdown.addEventListener('click', ev => this.toggleMenu(ev));
-        this.dropdown.addEventListener('keyup', ev => this.handleKeyUp(ev));
-        document.addEventListener('click', ev => !this.contains(ev.composedPath()[0]) && this.hideMenu(ev));
-    }
-
-    hideMenu () {
-        u.removeClass('show', this.menu);
-        this.button?.setAttribute('aria-expanded', false);
-        this.button?.blur();
-    }
-
-    showMenu () {
-        u.addClass('show', this.menu);
-        this.button.setAttribute('aria-expanded', true);
-    }
-
-    toggleMenu (ev) {
-        ev.preventDefault();
-        if (u.hasClass('show', this.menu)) {
-            this.hideMenu();
-        } else {
-            this.showMenu();
-        }
-    }
-
-    handleKeyUp (ev) {
-        if (ev.keyCode === converse.keycodes.ESCAPE) {
-            this.hideMenu();
-        } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && this.navigator && !this.navigator.enabled) {
-            this.enableArrowNavigation(ev);
-        }
-    }
-}
+import DropdownBase from 'shared/components/dropdownbase.js';
 
 
-export default class DropdownList extends BaseDropdown {
+export default class Dropdown extends DropdownBase {
 
     static get properties () {
         return {
@@ -60,26 +17,23 @@ export default class DropdownList extends BaseDropdown {
     render () {
         const icon_classes = this.icon_classes || "fa fa-bars";
         return html`
-            <div class="dropleft">
-                <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="${icon_classes} only-icon"></i>
-                </button>
-                <div class="dropdown-menu">
-                    ${ this.items.map(b => until(b, '')) }
-                </div>
+            <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="${icon_classes} only-icon"></i>
+            </button>
+            <div class="dropdown-menu">
+                ${ this.items.map(b => until(b, '')) }
             </div>
         `;
     }
 
-    hideMenu () {
-        super.hideMenu();
-        this.navigator.disable();
-    }
-
-
     firstUpdated () {
         super.firstUpdated();
         this.initArrowNavigation();
+    }
+
+    hideMenu () {
+        super.hideMenu();
+        this.navigator?.disable();
     }
 
     initArrowNavigation () {
@@ -109,4 +63,4 @@ export default class DropdownList extends BaseDropdown {
     }
 }
 
-api.elements.define('converse-dropdown', DropdownList);
+api.elements.define('converse-dropdown', Dropdown);

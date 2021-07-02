@@ -23,10 +23,9 @@ const tpl_can_edit = (o) => {
                 .model=${o.model}
                 ?composing_spoiler="${o.model.get('composing_spoiler')}"
                 ?hidden_occupants="${o.model.get('hidden_occupants')}"
-                ?is_groupchat="${o.model.get('is_groupchat')}"
+                ?is_groupchat="${o.is_groupchat}"
                 ?show_call_button="${show_call_button}"
                 ?show_emoji_button="${show_emoji_button}"
-                ?show_occupants_toggle="${o.model.get('show_occupants_toggle')}"
                 ?show_send_button="${show_send_button}"
                 ?show_spoiler_button="${show_spoiler_button}"
                 ?show_toolbar="${show_toolbar}"

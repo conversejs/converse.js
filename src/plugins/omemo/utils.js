@@ -1,10 +1,27 @@
 /* global libsignal */
+import URI from 'urijs';
 import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
+import tpl_audio from 'templates/audio.js';
+import tpl_file from 'templates/file.js';
+import tpl_image from 'templates/image.js';
+import tpl_video from 'templates/video.js';
 import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/shared/utils.js';
+import { isAudioURL, isImageURL, isVideoURL, getURI } from 'utils/html.js';
+import { until } from 'lit/directives/until.js';
+import { MIMETYPES_MAP } from 'utils/file.js';
+import {
+    appendArrayBuffer,
+    arrayBufferToBase64,
+    arrayBufferToHex,
+    arrayBufferToString,
+    base64ToArrayBuffer,
+    hexToArrayBuffer,
+    stringToArrayBuffer
+} from '@converse/headless/utils/arraybuffer.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -14,50 +31,177 @@ const KEY_ALGO = {
     'length': 128
 };
 
-export const omemo = {
-    async encryptMessage (plaintext) {
-        // The client MUST use fresh, randomly generated key/IV pairs
-        // with AES-128 in Galois/Counter Mode (GCM).
 
-        // For GCM a 12 byte IV is strongly suggested as other IV lengths
-        // will require additional calculations. In principle any IV size
-        // can be used as long as the IV doesn't ever repeat. NIST however
-        // suggests that only an IV size of 12 bytes needs to be supported
-        // by implementations.
-        //
-        // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
-        const iv = crypto.getRandomValues(new window.Uint8Array(12)),
-            key = await crypto.subtle.generateKey(KEY_ALGO, true, ['encrypt', 'decrypt']),
-            algo = {
-                'name': 'AES-GCM',
-                'iv': iv,
-                'tagLength': TAG_LENGTH
-            },
-            encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
-            length = encrypted.byteLength - ((128 + 7) >> 3),
-            ciphertext = encrypted.slice(0, length),
-            tag = encrypted.slice(length),
-            exported_key = await crypto.subtle.exportKey('raw', key);
+async function encryptMessage (plaintext) {
+    // The client MUST use fresh, randomly generated key/IV pairs
+    // with AES-128 in Galois/Counter Mode (GCM).
 
-        return {
-            'key': exported_key,
-            'tag': tag,
-            'key_and_tag': u.appendArrayBuffer(exported_key, tag),
-            'payload': u.arrayBufferToBase64(ciphertext),
-            'iv': u.arrayBufferToBase64(iv)
-        };
-    },
-
-    async decryptMessage (obj) {
-        const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']);
-        const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
-        const algo = {
+    // For GCM a 12 byte IV is strongly suggested as other IV lengths
+    // will require additional calculations. In principle any IV size
+    // can be used as long as the IV doesn't ever repeat. NIST however
+    // suggests that only an IV size of 12 bytes needs to be supported
+    // by implementations.
+    //
+    // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
+    const iv = crypto.getRandomValues(new window.Uint8Array(12));
+    const key = await crypto.subtle.generateKey(KEY_ALGO, true, ['encrypt', 'decrypt']);
+    const algo = {
             'name': 'AES-GCM',
-            'iv': u.base64ToArrayBuffer(obj.iv),
+            'iv': iv,
             'tagLength': TAG_LENGTH
         };
-        return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
+    const encrypted = await crypto.subtle.encrypt(algo, key, stringToArrayBuffer(plaintext));
+    const length = encrypted.byteLength - ((128 + 7) >> 3);
+    const ciphertext = encrypted.slice(0, length);
+    const tag = encrypted.slice(length);
+    const exported_key = await crypto.subtle.exportKey('raw', key);
+    return {
+        'key': exported_key,
+        'tag': tag,
+        'key_and_tag': appendArrayBuffer(exported_key, tag),
+        'payload': arrayBufferToBase64(ciphertext),
+        'iv': arrayBufferToBase64(iv)
+    };
+}
+
+async function decryptMessage (obj) {
+    const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']);
+    const cipher = appendArrayBuffer(base64ToArrayBuffer(obj.payload), obj.tag);
+    const algo = {
+        'name': 'AES-GCM',
+        'iv': base64ToArrayBuffer(obj.iv),
+        'tagLength': TAG_LENGTH
+    };
+    return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
+}
+
+export const omemo = {
+    decryptMessage,
+    encryptMessage
+}
+
+
+export async function encryptFile (file) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256, }, true, ['encrypt', 'decrypt']);
+    const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, }, key, await file.arrayBuffer());
+    const exported_key = await window.crypto.subtle.exportKey('raw', key);
+    const encrypted_file = new File([encrypted], file.name, { type: file.type, lastModified: file.lastModified });
+    encrypted_file.xep454_ivkey = arrayBufferToHex(iv) + arrayBufferToHex(exported_key);
+    return encrypted_file;
+}
+
+export function setEncryptedFileURL (message, attrs) {
+    const url = attrs.oob_url.replace(/^https?:/, 'aesgcm:') + '#' + message.file.xep454_ivkey;
+    return Object.assign(attrs, {
+        'oob_url': null, // Since only the body gets encrypted, we don't set the oob_url
+        'message': url,
+        'body': url
+    });
+}
+
+async function decryptFile (iv, key, cipher) {
+    const key_obj = await crypto.subtle.importKey('raw', hexToArrayBuffer(key), 'AES-GCM', false, ['decrypt']);
+    const algo = {
+        'name': 'AES-GCM',
+        'iv': hexToArrayBuffer(iv),
+    };
+    return crypto.subtle.decrypt(algo, key_obj, cipher);
+}
+
+async function downloadFile(url) {
+    let response;
+    try {
+        response = await fetch(url)
+    } catch(e) {
+        log.error(`Failed to download encrypted media: ${url}`);
+        log.error(e);
+        return null;
     }
+
+    if (response.status >= 200 && response.status < 400) {
+        return response.arrayBuffer();
+    }
+}
+
+async function getAndDecryptFile (uri) {
+    const hash = uri.hash().slice(1);
+    const protocol = window.location.hostname === 'localhost' ? 'http' : 'https';
+    const http_url = uri.toString().replace(/^aesgcm/, protocol);
+    const cipher = await downloadFile(http_url);
+    const iv = hash.slice(0, 24);
+    const key = hash.slice(24);
+    let content;
+    try {
+        content = await decryptFile(iv, key, cipher);
+    } catch (e) {
+        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(e);
+        return null;
+    }
+    const [filename, extension] = uri.filename()?.split('.');
+    const mimetype = MIMETYPES_MAP[extension];
+    try {
+        const file = new File([content], filename, { 'type': mimetype });
+        return URL.createObjectURL(file);
+    } catch (e) {
+        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(e);
+        return null;
+    }
+}
+
+function getTemplateForObjectURL (uri, obj_url, richtext) {
+    const file_url = uri.toString();
+    if (obj_url === null) {
+        return file_url;
+    }
+    if (isImageURL(file_url)) {
+        return tpl_image({
+            'url': obj_url,
+            'onClick': richtext.onImgClick,
+            'onLoad': richtext.onImgLoad
+        });
+    } else if (isAudioURL(file_url)) {
+        return tpl_audio(obj_url);
+    } else if (isVideoURL(file_url)) {
+        return tpl_video(obj_url);
+    } else {
+        return tpl_file(obj_url, uri.filename());
+    }
+
+}
+
+function addEncryptedFiles(text, offset, richtext) {
+    const objs = [];
+    try {
+        const parse_options = { 'start': /\b(aesgcm:\/\/)/gi };
+        URI.withinString(
+            text,
+            (url, start, end) => {
+                objs.push({ url, start, end });
+                return url;
+            },
+            parse_options
+        );
+    } catch (error) {
+        log.debug(error);
+        return;
+    }
+    objs.forEach(o => {
+        const uri = getURI(text.slice(o.start, o.end));
+        const promise = getAndDecryptFile(uri)
+            .then(obj_url => getTemplateForObjectURL(uri, obj_url, richtext));
+        const template = html`${until(promise, '')}`;
+        richtext.addTemplateResult(o.start + offset, o.end + offset, template);
+    });
+}
+
+export function handleEncryptedFiles (richtext) {
+    if (!_converse.config.get('trusted')) {
+        return;
+    }
+    richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
 }
 
 export function parseEncryptedMessage (stanza, attrs) {
@@ -143,7 +287,7 @@ function getDecryptionErrorAttributes (e) {
 
 async function decryptPrekeyWhisperMessage (attrs) {
     const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
-    const key = u.base64ToArrayBuffer(attrs.encrypted.key);
+    const key = base64ToArrayBuffer(attrs.encrypted.key);
     let key_and_tag;
     try {
         key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary');
@@ -192,7 +336,7 @@ async function decryptWhisperMessage (attrs) {
     const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
     if (!from_jid) {
         Object.assign(attrs, {
-            'error_text': __("Sorry, could not decrypt a received OMEMO because we don't have the JID for that user."),
+            'error_text': __("Sorry, could not decrypt a received OMEMO message because we don't have the XMPP address for that user."),
             'error_type': 'Decryption',
             'is_ephemeral': false,
             'is_error': true,
@@ -200,7 +344,7 @@ async function decryptWhisperMessage (attrs) {
         });
     }
     const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
-    const key = u.base64ToArrayBuffer(attrs.encrypted.key);
+    const key = base64ToArrayBuffer(attrs.encrypted.key);
     try {
         const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary');
         const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
@@ -262,7 +406,7 @@ export async function generateFingerprint (device) {
         return;
     }
     const bundle = await device.getBundle();
-    bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
+    bundle['fingerprint'] = arrayBufferToHex(base64ToArrayBuffer(bundle['identity_key']));
     device.save('bundle', bundle);
     device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
 }
@@ -303,15 +447,15 @@ async function buildSession (device) {
 
     return sessionBuilder.processPreKey({
         'registrationId': parseInt(device.get('id'), 10),
-        'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+        'identityKey': base64ToArrayBuffer(bundle.identity_key),
         'signedPreKey': {
             'keyId': bundle.signed_prekey.id, // <Number>
-            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+            'publicKey': base64ToArrayBuffer(bundle.signed_prekey.public_key),
+            'signature': base64ToArrayBuffer(bundle.signed_prekey.signature)
         },
         'preKey': {
             'keyId': prekey.id, // <Number>
-            'publicKey': u.base64ToArrayBuffer(prekey.key)
+            'publicKey': base64ToArrayBuffer(prekey.key)
         }
     });
 }
@@ -525,14 +669,19 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
                 'order to support OMEMO encrypted messages'
         );
     }
-
+    let color;
+    if (model.get('omemo_supported')) {
+        color = model.get('omemo_active') ? `var(--info-color)` : `var(--error-color)`;
+    } else {
+        color = `var(--muc-toolbar-btn-disabled-color)`;
+    }
     buttons.push(html`
-        <button class="toggle-omemo" title="${title}" ?disabled=${!model.get('omemo_supported')} @click=${toggleOMEMO}>
+        <button class="toggle-omemo" title="${title}" data-disabled=${!model.get('omemo_supported')} @click=${toggleOMEMO}>
             <converse-icon
                 class="fa ${model.get('omemo_active') ? `fa-lock` : `fa-unlock`}"
                 path-prefix="${api.settings.get('assets_path')}"
                 size="1em"
-                color="${model.get('omemo_active') ? `var(--info-color)` : `var(--error-color)`}"
+                color="${color}"
             ></converse-icon>
         </button>
     `);

@@ -6,7 +6,13 @@
 import DiscoEntities from './entities.js';
 import DiscoEntity from './entity.js';
 import { _converse, api, converse } from '@converse/headless/core.js';
-import { initializeDisco, initStreamFeatures, notifyStreamFeaturesAdded, populateStreamFeatures } from './utils.js';
+import {
+    clearSession,
+    initStreamFeatures,
+    initializeDisco,
+    notifyStreamFeaturesAdded,
+    populateStreamFeatures
+} from './utils.js';
 import disco_api from './api.js';
 
 const { Strophe } = converse.env;
@@ -46,15 +52,10 @@ converse.plugins.add('converse-disco', {
             }
         });
 
-        api.listen.on('clearSession', () => {
-            if (_converse.shouldClearCache() && _converse.disco_entities) {
-                Array.from(_converse.disco_entities.models).forEach(e => e.features.clearStore());
-                Array.from(_converse.disco_entities.models).forEach(e => e.identities.clearStore());
-                Array.from(_converse.disco_entities.models).forEach(e => e.dataforms.clearStore());
-                Array.from(_converse.disco_entities.models).forEach(e => e.fields.clearStore());
-                _converse.disco_entities.clearStore();
-                delete _converse.disco_entities;
-            }
-        });
+        // All disco entities stored in sessionStorage and are refetched
+        // upon login or reconnection and then stored with new ids, so to
+        // avoid sessionStorage filling up, we remove them.
+        api.listen.on('will-reconnect', clearSession);
+        api.listen.on('clearSession', clearSession);
     }
 });

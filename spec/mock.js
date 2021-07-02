@@ -15,7 +15,7 @@ mock.initConverse = function (promise_names=[], settings=null, func) {
         settings = null;
     }
 
-    return async done => {
+    return async () => {
         if (_converse && _converse.api.connection.connected()) {
             await _converse.api.user.logout();
         }
@@ -28,11 +28,10 @@ mock.initConverse = function (promise_names=[], settings=null, func) {
         await initConverse(settings);
         await Promise.all((promise_names || []).map(_converse.api.waitUntil));
         try {
-            await func(done, _converse);
+            await func(_converse);
         } catch(e) {
             console.error(e);
             fail(e);
-            await done();
         }
     }
 };

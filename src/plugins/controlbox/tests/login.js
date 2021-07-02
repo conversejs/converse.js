@@ -9,7 +9,7 @@ describe("The Login Form", function () {
             ['chatBoxesInitialized'],
             { auto_login: false,
               allow_registration: false },
-            async function (done, _converse) {
+            async function (_converse) {
 
         const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         mock.toggleControlBox();
@@ -34,7 +34,6 @@ describe("The Login Form", function () {
         cbview.querySelector('input[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(false);
         expect(_converse.getDefaultStore()).toBe('session');
-        done();
     }));
 
     it("checkbox can be set to false by default",
@@ -43,7 +42,7 @@ describe("The Login Form", function () {
             { auto_login: false,
               allow_user_trust_override: 'off',
               allow_registration: false },
-            async function (done, _converse) {
+            async function (_converse) {
 
         await u.waitUntil(() => _converse.chatboxviews.get('controlbox'))
         const cbview = _converse.chatboxviews.get('controlbox');
@@ -67,6 +66,5 @@ describe("The Login Form", function () {
         cbview.querySelector('input[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(true);
         expect(_converse.getDefaultStore()).toBe('persistent');
-        done();
     }));
 });

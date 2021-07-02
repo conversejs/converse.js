@@ -8,7 +8,7 @@ describe("Groupchats", function () {
     describe("The \"rooms\" API", function () {
 
         it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
 
@@ -50,11 +50,10 @@ describe("Groupchats", function () {
 
             expect(_converse.chatboxviews.get('lounge@montague.lit')).toBeUndefined();
             expect(_converse.chatboxviews.get('leisure@montague.lit')).toBeUndefined();
-            done();
         }));
 
         it("has a method 'get' which returns a wrapped groupchat (if it exists)",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             const rosterview = document.querySelector('converse-roster');
@@ -95,11 +94,10 @@ describe("Groupchats", function () {
             muc_jid = 'chillout2@montague.lit';
             room = await _converse.api.rooms.get(muc_jid);
             expect(room).toBe(null);
-            done();
         }));
 
         it("has a method 'open' which opens (optionally configures) and returns a wrapped chat box",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             // Mock 'getDiscoInfo', otherwise the room won't be
             // displayed as it waits first for the features to be returned
@@ -261,7 +259,6 @@ describe("Groupchats", function () {
             expect(sizzle('field[var="muc#roomconfig_whois"] value ', sent_stanza).pop().textContent.trim()).toBe('anyone');
             expect(sizzle('field[var="muc#roomconfig_membersonly"] value', sent_stanza).pop().textContent.trim()).toBe('1');
             expect(sizzle('field[var="muc#roomconfig_historylength"] value', sent_stanza).pop().textContent.trim()).toBe('20');
-            done();
         }));
     });
 });

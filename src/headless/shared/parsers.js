@@ -1,9 +1,19 @@
+import URI from 'urijs';
 import dayjs from 'dayjs';
+import log from '@converse/headless/log';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/strophe';
 import { _converse, api } from '@converse/headless/core';
 import { decodeHTMLEntities } from '@converse/headless/shared/utils';
 import { rejectMessage } from '@converse/headless/shared/actions';
+import {
+    isAudioDomainAllowed,
+    isAudioURL,
+    isImageDomainAllowed,
+    isImageURL,
+    isVideoDomainAllowed,
+    isVideoURL
+} from '@converse/headless/utils/url.js';
 
 const { NS } = Strophe;
 
@@ -165,6 +175,34 @@ export function getOpenGraphMetadata (stanza) {
     }
     return {};
 }
+
+
+export function getMediaURLs (text) {
+    const objs = [];
+    if (!text) {
+        return {};
+    }
+    const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
+    try {
+        URI.withinString(
+            text,
+            (url, start, end) => {
+                objs.push({ url, start, end });
+                return url;
+            },
+            parse_options
+        );
+    } catch (error) {
+        log.debug(error);
+    }
+    const media_urls = objs.filter(o => {
+        return (isImageURL(o.url) && isImageDomainAllowed(o.url)) ||
+           (isVideoURL(o.url) && isVideoDomainAllowed(o.url)) ||
+            (isAudioURL(o.url) && isAudioDomainAllowed(o.url));
+    }).map(o => ({ 'start': o.start, 'end': o.end }));
+    return media_urls.length ? { media_urls } : {};
+}
+
 
 export function getSpoilerAttributes (stanza) {
     const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, stanza).pop();

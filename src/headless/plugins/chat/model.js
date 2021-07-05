@@ -9,6 +9,7 @@ import { _converse, api, converse } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
 import { debouncedPruneHistory, pruneHistory } from '@converse/headless/shared/chat/utils.js';
+import { getMediaURLs } from '@converse/headless/shared/parsers';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -869,7 +870,7 @@ const ChatBox = ModelWithContact.extend({
             body,
             is_spoiler,
             origin_id
-        });
+        }, getMediaURLs(text));
     },
 
     /**

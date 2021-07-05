@@ -13,7 +13,7 @@ import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
-import { isArchived } from '@converse/headless/shared/parsers';
+import { isArchived, getMediaURLs } from '@converse/headless/shared/parsers';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -981,7 +981,7 @@ const ChatRoomMixin = {
             'nick': this.get('nick'),
             'sender': 'me',
             'type': 'groupchat'
-        });
+        }, getMediaURLs(text));
     },
 
     /**

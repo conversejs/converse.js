@@ -11,11 +11,12 @@ export default class MessageBody extends CustomElement {
 
     static get properties () {
         return {
-            model: { type: Object },
-            is_me_message: { type: Boolean },
-            show_images: { type: Boolean },
-            embed_videos: { type: Boolean },
             embed_audio: { type: Boolean },
+            embed_videos: { type: Boolean },
+            hide_url_previews: { type: Boolean },
+            is_me_message: { type: Boolean },
+            model: { type: Object },
+            show_images: { type: Boolean },
             text: { type: String },
         }
     }
@@ -33,14 +34,15 @@ export default class MessageBody extends CustomElement {
         const callback = () => this.model.collection?.trigger('rendered', this.model);
         const offset = 0;
         const mentions = this.model.get('references');
+
         const options = {
-            'embed_audio': this.embed_audio,
-            'embed_videos': this.embed_videos,
+            'embed_audio': !this.hide_url_previews && this.embed_audio,
+            'embed_videos': !this.hide_url_previews && this.embed_videos,
             'nick': this.model.collection.chatbox.get('nick'),
             'onImgClick': (ev) => this.onImgClick(ev),
             'onImgLoad': () => this.onImgLoad(),
             'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
-            'show_images': this.show_images,
+            'show_images': !this.hide_url_previews && this.show_images,
             'show_me_message': true
         }
         return renderRichText(this.text, offset, mentions, options, callback);

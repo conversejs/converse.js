@@ -1,15 +1,13 @@
 import log from '@converse/headless/log';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from '@converse/headless/core';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 
 const { Strophe, u } = converse.env;
 
-
 class MessageActions extends CustomElement {
-
     static get properties () {
         return {
             correcting: { type: Boolean },
@@ -18,12 +16,12 @@ class MessageActions extends CustomElement {
             is_retracted: { type: Boolean },
             message_type: { type: String },
             model: { type: Object },
-            unfurls: { type: Number }
-        }
+            unfurls: { type: Number },
+        };
     }
 
     render () {
-        return html`${ until(this.renderActions(), '') }`;
+        return html`${until(this.renderActions(), '')}`;
     }
 
     async renderActions () {
@@ -38,7 +36,8 @@ class MessageActions extends CustomElement {
         if (items.length) {
             return html`<converse-dropdown
                 class="chat-msg__actions ${should_drop_up ? 'dropup dropup--left' : 'dropleft'}"
-                .items=${ items }></converse-dropdown>`;
+                .items=${items}
+            ></converse-dropdown>`;
         } else {
             return '';
         }
@@ -47,10 +46,12 @@ class MessageActions extends CustomElement {
     static getActionsDropdownItem (o) {
         return html`
             <button class="chat-msg__action ${o.button_class}" @click=${o.handler}>
-                <converse-icon class="${o.icon_class}"
-                    path-prefix="${api.settings.get("assets_path")}"
+                <converse-icon
+                    class="${o.icon_class}"
+                    path-prefix="${api.settings.get('assets_path')}"
                     color="var(--text-color-lighten-15-percent)"
-                    size="1em"></converse-icon>
+                    size="1em"
+                ></converse-icon>
                 ${o.i18n_text}
             </button>
         `;
@@ -81,8 +82,8 @@ class MessageActions extends CustomElement {
         }
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
-            'not yet support retractions and that this message may not ' +
-            'be removed everywhere.'
+                'not yet support retractions and that this message may not ' +
+                'be removed everywhere.'
         );
         const messages = [__('Are you sure you want to retract this message?')];
         if (api.settings.get('show_retraction_warning')) {
@@ -119,8 +120,8 @@ class MessageActions extends CustomElement {
     async onMUCMessageRetractButtonClicked () {
         const retraction_warning = __(
             'Be aware that other XMPP/Jabber clients (and servers) may ' +
-            'not yet support retractions and that this message may not ' +
-            'be removed everywhere.'
+                'not yet support retractions and that this message may not ' +
+                'be removed everywhere.'
         );
 
         if (this.model.mayBeRetracted()) {
@@ -142,7 +143,7 @@ class MessageActions extends CustomElement {
             } else {
                 let messages = [
                     __('You are about to retract this message.'),
-                    __('You may optionally include a message, explaining the reason for the retraction.')
+                    __('You may optionally include a message, explaining the reason for the retraction.'),
                 ];
                 if (api.settings.get('show_retraction_warning')) {
                     messages = [messages[0], retraction_warning, messages[1]];
@@ -171,12 +172,20 @@ class MessageActions extends CustomElement {
         if (this.hide_url_previews) {
             this.model.save({
                 'hide_url_previews': false,
-                'url_preview_transition': 'fade-in'
+                'url_preview_transition': 'fade-in',
             });
         } else {
-            this.model.set('url_preview_transition', 'fade-out');
+            const ogp_metadata = this.model.get('ogp_metadata') || [];
+            const unfurls_to_show = api.settings.get('muc_show_ogp_unfurls') && ogp_metadata.length;
+            if (unfurls_to_show) {
+                this.model.set('url_preview_transition', 'fade-out');
+            } else {
+                this.model.save({
+                    'hide_url_previews': true,
+                    'url_preview_transition': 'fade-in',
+                });
+            }
         }
-
     }
 
     async getActionButtons () {
@@ -187,10 +196,10 @@ class MessageActions extends CustomElement {
                 'handler': ev => this.onMessageEditButtonClicked(ev),
                 'button_class': 'chat-msg__action-edit',
                 'icon_class': 'fa fa-pencil-alt',
-                'name': 'edit'
+                'name': 'edit',
             });
         }
-        const may_be_moderated = this.model.get('type') === 'groupchat' && await this.model.mayBeModerated();
+        const may_be_moderated = this.model.get('type') === 'groupchat' && (await this.model.mayBeModerated());
         const retractable = !this.is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
         if (retractable) {
             buttons.push({
@@ -198,7 +207,7 @@ class MessageActions extends CustomElement {
                 'handler': ev => this.onMessageRetractButtonClicked(ev),
                 'button_class': 'chat-msg__action-retract',
                 'icon_class': 'fas fa-trash-alt',
-                'name': 'retract'
+                'name': 'retract',
             });
         }
 
@@ -208,24 +217,25 @@ class MessageActions extends CustomElement {
             return [];
         }
         const ogp_metadata = this.model.get('ogp_metadata') || [];
-        const chatbox = this.model.collection.chatbox;
-        if (chatbox.get('type') === _converse.CHATROOMS_TYPE &&
-                api.settings.get('muc_show_ogp_unfurls') &&
-                ogp_metadata.length) {
+        const unfurls_to_show = api.settings.get('muc_show_ogp_unfurls') && ogp_metadata.length;
+        const media_to_show = this.model.get('media_urls')?.length;
 
+        if (unfurls_to_show || media_to_show) {
             let title;
             const hidden_preview = this.hide_url_previews;
             if (ogp_metadata.length > 1) {
                 title = hidden_preview ? __('Show URL previews') : __('Hide URL previews');
-            } else {
+            } else if (ogp_metadata.length === 1) {
                 title = hidden_preview ? __('Show URL preview') : __('Hide URL preview');
+            } else  {
+                title = hidden_preview ? __('Show media') : __('Hide media');
             }
             buttons.push({
                 'i18n_text': title,
                 'handler': ev => this.onHidePreviewsButtonClicked(ev),
                 'button_class': 'chat-msg__action-hide-previews',
                 'icon_class': this.hide_url_previews ? 'fas fa-eye' : 'fas fa-eye-slash',
-                'name': 'hide'
+                'name': 'hide',
             });
         }
 

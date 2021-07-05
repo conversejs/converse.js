@@ -15,7 +15,6 @@ class MessageActions extends CustomElement {
             correcting: { type: Boolean },
             editable: { type: Boolean },
             hide_url_previews: { type: Boolean },
-            is_newest_message: { type: Boolean },
             is_retracted: { type: Boolean },
             message_type: { type: String },
             model: { type: Object },
@@ -28,11 +27,17 @@ class MessageActions extends CustomElement {
     }
 
     async renderActions () {
+        // We want to let the message actions menu drop upwards if we're at the
+        // bottom of the message history, and down otherwise. This is to avoid
+        // the menu disappearing behind the bottom panel (toolbar, textarea etc).
+        // That's difficult to know from state, so we're making an approximation here.
+        const should_drop_up = this.model.collection.length > 2 && this.model === this.model.collection.last();
+
         const buttons = await this.getActionButtons();
         const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
         if (items.length) {
             return html`<converse-dropdown
-                class="chat-msg__actions ${this.is_newest_message ? 'dropup dropup--left' : 'dropleft'}"
+                class="chat-msg__actions ${should_drop_up ? 'dropup dropup--left' : 'dropleft'}"
                 .items=${ items }></converse-dropdown>`;
         } else {
             return '';

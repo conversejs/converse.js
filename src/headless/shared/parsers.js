@@ -48,13 +48,29 @@ export function getStanzaIDs (stanza, original_stanza) {
 }
 
 export function getEncryptionAttributes (stanza, _converse) {
+    const eme_tag = sizzle(`encryption[xmlns="${Strophe.NS.EME}"]`, stanza).pop();
+    const namespace = eme_tag?.getAttribute('namespace');
+    const attrs = {};
+
+    if (namespace) {
+        attrs.is_encrypted = true;
+        attrs.encryption_namespace = namespace;
+        if (namespace !== Strophe.NS.OMEMO) {
+            // Found an encrypted message, but it's not OMEMO
+            return attrs;
+        }
+    }
+
     const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
-    const attrs = { 'is_encrypted': !!encrypted };
+    if (!eme_tag) {
+        attrs.is_encrypted = !!encrypted;
+    }
+
     if (!encrypted || api.settings.get('clear_cache_on_logout')) {
         return attrs;
     }
     const header = encrypted.querySelector('header');
-    attrs['encrypted'] = { 'device_id': header.getAttribute('sid') };
+    attrs.encrypted = { 'device_id': header.getAttribute('sid') };
 
     const device_id = _converse.omemo_store?.get('device_id');
     const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted).pop();

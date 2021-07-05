@@ -106,6 +106,7 @@ describe("The OMEMO module", function() {
                     `<payload>${sent_stanza.querySelector("payload").textContent}</payload>`+
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
+                `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
 
         // Test reception of an encrypted message
@@ -293,6 +294,7 @@ describe("The OMEMO module", function() {
                     `<payload>${sent_stanza.querySelector("payload").textContent}</payload>`+
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
+                `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
     }));
 

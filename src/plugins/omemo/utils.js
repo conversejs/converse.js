@@ -762,7 +762,8 @@ export function createOMEMOMessageStanza (chatbox, message, devices) {
             .then(dicts => addKeysToMessageStanza(stanza, dicts, obj.iv))
             .then(stanza => {
                 stanza.c('payload').t(obj.payload).up().up();
-                stanza.c('store', { 'xmlns': Strophe.NS.HINTS });
+                stanza.c('store', { 'xmlns': Strophe.NS.HINTS }).up();
+                stanza.c('encryption', { 'xmlns': Strophe.NS.EME,  namespace: Strophe.NS.OMEMO });
                 return stanza;
             });
     });

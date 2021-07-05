@@ -1,9 +1,6 @@
-import { converse } from "@converse/headless/core";
-import { getURI } from 'utils/html.js';
 import { html } from 'lit';
-import { isImageDomainAllowed, } from 'utils/html';
+import { getURI, isImageDomainAllowed } from '@converse/headless/utils/url.js';
 
-const u = converse.env.utils;
 
 function isValidURL (url) {
     // We don't consider relative URLs as valid
@@ -30,7 +27,7 @@ export default (o) => {
                 <div class="card-body">
                 ${ o.title ? tpl_url_wrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}
                 ${ o.description ? html`<p class="card-text"><converse-rich-text text=${o.description}></converse-rich-text></p>` : '' }
-                ${ o.url ? html`<p class="card-text"><a href="${o.url}" target="_blank" rel="noopener">${u.getURI(o.url).domain()}</a></p>` : '' }
+                ${ o.url ? html`<p class="card-text"><a href="${o.url}" target="_blank" rel="noopener">${getURI(o.url).domain()}</a></p>` : '' }
                 </div>` : '' }
         </div>`;
     } else {

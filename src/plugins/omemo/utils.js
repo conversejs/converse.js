@@ -1,5 +1,4 @@
 /* global libsignal */
-import URI from 'urijs';
 import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
 import tpl_audio from 'templates/audio.js';
@@ -12,7 +11,7 @@ import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/shared/utils.js';
-import { isAudioURL, isImageURL, isVideoURL, getURI } from 'utils/html.js';
+import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
 import concat from 'lodash-es/concat';
 import { until } from 'lit/directives/until.js';
 import {
@@ -25,7 +24,7 @@ import {
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
 
-const { $msg, Strophe, sizzle, u } = converse.env;
+const { $msg, Strophe, URI, sizzle, u } = converse.env;
 
 
 async function encryptMessage (plaintext) {

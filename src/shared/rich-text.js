@@ -1,10 +1,10 @@
-import URI from 'urijs';
 import log from '@converse/headless/log';
 import tpl_audio from 'templates/audio.js';
 import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
+import { getHyperlinkTemplate } from 'utils/html.js';
 import {
     convertASCII2Emoji,
     getCodePointReferences,
@@ -13,7 +13,6 @@ import {
 } from '@converse/headless/plugins/emoji/index.js';
 import {
     filterQueryParamsFromURL,
-    getHyperlinkTemplate,
     isAudioDomainAllowed,
     isAudioURL,
     isEncryptedFileURL,
@@ -21,8 +20,11 @@ import {
     isImageURL,
     isVideoDomainAllowed,
     isVideoURL
-} from 'utils/html.js';
+} from '@converse/headless/utils/url.js';
+
 import { html } from 'lit';
+
+const { URI } = converse.env;
 
 const isString = s => typeof s === 'string';
 
@@ -92,8 +94,8 @@ export class RichText extends String {
      */
     addHyperlinks (text, offset) {
         const objs = [];
+        const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
         try {
-            const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
             URI.withinString(
                 text,
                 (url, start, end) => {

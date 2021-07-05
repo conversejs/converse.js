@@ -3,6 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import Storage from '@converse/skeletor/src/storage.js';
+import URI from 'urijs';
 import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
@@ -1416,6 +1417,7 @@ Object.assign(converse, {
         Model,
         Promise,
         Strophe,
+        URI,
         dayjs,
         html,
         log,

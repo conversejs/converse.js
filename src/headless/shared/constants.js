@@ -36,3 +36,5 @@ export const CORE_PLUGINS = [
     'converse-status',
     'converse-vcard'
 ];
+
+export const URL_PARSE_OPTIONS = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };

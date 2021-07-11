@@ -9,6 +9,7 @@ import { _converse, api, converse } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
 import { debouncedPruneHistory, pruneHistory } from '@converse/headless/shared/chat/utils.js';
+import { getMediaURLs } from '@converse/headless/shared/parsers';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -241,9 +242,16 @@ const ChatBox = ModelWithContact.extend({
         }
     },
 
-    onMessageUploadChanged (message) {
+    async onMessageUploadChanged (message) {
         if (message.get('upload') === _converse.SUCCESS) {
-            api.send(this.createMessageStanza(message));
+            const attrs = {
+                'body': message.get('message'),
+                'spoiler_hint': message.get('spoiler_hint'),
+                'oob_url': message.get('oob_url')
+
+            }
+            await this.sendMessage(attrs);
+            message.destroy();
         }
     },
 
@@ -842,11 +850,12 @@ const ChatBox = ModelWithContact.extend({
         return stanza;
     },
 
-    getOutgoingMessageAttributes (text, spoiler_hint) {
-        const is_spoiler = this.get('composing_spoiler');
+    getOutgoingMessageAttributes (attrs) {
+        const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
+        const text = attrs?.body;
         const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
-        return {
+        return Object.assign({}, attrs, {
             'from': _converse.bare_jid,
             'fullname': _converse.xmppstatus.get('fullname'),
             'id': origin_id,
@@ -856,13 +865,12 @@ const ChatBox = ModelWithContact.extend({
             'msgid': origin_id,
             'nickname': this.get('nickname'),
             'sender': 'me',
-            'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
             'time': (new Date()).toISOString(),
             'type': this.get('message_type'),
             body,
             is_spoiler,
             origin_id
-        }
+        }, getMediaURLs(text));
     },
 
     /**
@@ -911,15 +919,14 @@ const ChatBox = ModelWithContact.extend({
      * @private
      * @method _converse.ChatBox#sendMessage
      * @memberOf _converse.ChatBox
-     * @param { String } text - The chat message text
-     * @param { String } spoiler_hint - An optional hint, if the message being sent is a spoiler
+     * @param { Object } [attrs] - A map of attributes to be saved on the message
      * @returns { _converse.Message }
      * @example
-     * const chat = api.chats.get('buddy1@example.com');
-     * chat.sendMessage('hello world');
+     * const chat = api.chats.get('buddy1@example.org');
+     * chat.sendMessage({'body': 'hello world'});
      */
-    async sendMessage (text, spoiler_hint) {
-        const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
+    async sendMessage (attrs) {
+        attrs = this.getOutgoingMessageAttributes(attrs);
         let message = this.messages.findWhere('correcting')
         if (message) {
             const older_versions = message.get('older_versions') || {};

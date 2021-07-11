@@ -3,71 +3,6 @@
 const { $iq, $pres, $msg, omemo, Strophe } = converse.env;
 const u = converse.env.utils;
 
-async function deviceListFetched (_converse, jid) {
-    const selector = `iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
-    const stanza = await u.waitUntil(
-        () => Array.from(_converse.connection.IQ_stanzas).filter(iq => iq.querySelector(selector)).pop()
-    );
-    await u.waitUntil(() => _converse.devicelists.get(jid));
-    return stanza;
-}
-
-function ownDeviceHasBeenPublished (_converse) {
-    return Array.from(_converse.connection.IQ_stanzas).filter(
-        iq => iq.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
-    ).pop();
-}
-
-function bundleHasBeenPublished (_converse) {
-    const selector = 'publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]';
-    return Array.from(_converse.connection.IQ_stanzas).filter(iq => iq.querySelector(selector)).pop();
-}
-
-function bundleFetched (_converse, jid, device_id) {
-    return Array.from(_converse.connection.IQ_stanzas).filter(
-        iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
-    ).pop();
-}
-
-async function initializedOMEMO (_converse) {
-    await mock.waitUntilDiscoConfirmed(
-        _converse, _converse.bare_jid,
-        [{'category': 'pubsub', 'type': 'pep'}],
-        ['http://jabber.org/protocol/pubsub#publish-options']
-    );
-    let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
-    let stanza = $iq({
-        'from': _converse.bare_jid,
-        'id': iq_stanza.getAttribute('id'),
-        'to': _converse.bare_jid,
-        'type': 'result',
-    }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-        .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-            .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                    .c('device', {'id': '482886413b977930064a5888b92134fe'});
-    _converse.connection._dataRecv(mock.createRequest(stanza));
-    iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse))
-
-    stanza = $iq({
-        'from': _converse.bare_jid,
-        'id': iq_stanza.getAttribute('id'),
-        'to': _converse.bare_jid,
-        'type': 'result'});
-    _converse.connection._dataRecv(mock.createRequest(stanza));
-
-    iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse))
-
-    stanza = $iq({
-        'from': _converse.bare_jid,
-        'id': iq_stanza.getAttribute('id'),
-        'to': _converse.bare_jid,
-        'type': 'result'});
-    _converse.connection._dataRecv(mock.createRequest(stanza));
-    await _converse.api.waitUntil('OMEMOInitialized');
-}
-
-
 describe("The OMEMO module", function() {
 
     it("adds methods for encrypting and decrypting messages via AES GCM",
@@ -86,9 +21,9 @@ describe("The OMEMO module", function() {
         let sent_stanza;
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await u.waitUntil(() => initializedOMEMO(_converse));
+        await u.waitUntil(() => mock.initializedOMEMO(_converse));
         await mock.openChatBoxFor(_converse, contact_jid);
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         let stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.getAttribute('id'),
@@ -115,7 +50,7 @@ describe("The OMEMO module", function() {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '555'));
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
         stanza = $iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -134,7 +69,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -171,6 +106,7 @@ describe("The OMEMO module", function() {
                     `<payload>${sent_stanza.querySelector("payload").textContent}</payload>`+
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
+                `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
 
         // Test reception of an encrypted message
@@ -233,7 +169,7 @@ describe("The OMEMO module", function() {
         ];
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
         const view = _converse.chatboxviews.get('lounge@montague.lit');
-        await u.waitUntil(() => initializedOMEMO(_converse));
+        await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
         const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
         const el = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
@@ -255,7 +191,7 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
         // Wait for Converse to fetch newguy's device list
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -278,7 +214,7 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => _converse.omemo_store);
         expect(_converse.devicelists.length).toBe(2);
 
-        await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         const devicelist = _converse.devicelists.get(contact_jid);
         expect(devicelist.devices.length).toBe(1);
         expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
@@ -296,7 +232,7 @@ describe("The OMEMO module", function() {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
         console.log("Bundle fetched 4e30f35051b7b8b42abe083742187228");
         stanza = $iq({
             'from': contact_jid,
@@ -317,7 +253,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'), 1000);
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'), 1000);
         console.log("Bundle fetched 482886413b977930064a5888b92134fe");
         stanza = $iq({
             'from': _converse.bare_jid,
@@ -358,6 +294,7 @@ describe("The OMEMO module", function() {
                     `<payload>${sent_stanza.querySelector("payload").textContent}</payload>`+
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
+                `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
     }));
 
@@ -367,9 +304,9 @@ describe("The OMEMO module", function() {
         await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await u.waitUntil(() => initializedOMEMO(_converse));
+        await u.waitUntil(() => mock.initializedOMEMO(_converse));
         await mock.openChatBoxFor(_converse, contact_jid);
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         const my_devicelist = _converse.devicelists.get({'jid': _converse.bare_jid});
         expect(my_devicelist.devices.length).toBe(2);
 
@@ -429,7 +366,7 @@ describe("The OMEMO module", function() {
 
         // The message received is a prekey message, so missing prekeys are
         // generated and a new bundle published.
-        iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         const result_iq = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -460,7 +397,7 @@ describe("The OMEMO module", function() {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '988349631'));
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '988349631'));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="${_converse.bare_jid}" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -486,7 +423,7 @@ describe("The OMEMO module", function() {
         ];
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
         const view = _converse.chatboxviews.get('lounge@montague.lit');
-        await u.waitUntil(() => initializedOMEMO(_converse));
+        await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
         const contact_jid = 'newguy@montague.lit';
         let stanza = $pres({
@@ -515,7 +452,7 @@ describe("The OMEMO module", function() {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -539,11 +476,11 @@ describe("The OMEMO module", function() {
         expect(_converse.devicelists.length).toBe(2);
 
         const devicelist = _converse.devicelists.get(contact_jid);
-        await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(devicelist.devices.length).toBe(1);
         expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
 
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -561,7 +498,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1991')).up()
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'));
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'));
 
         /* <iq xmlns="jabber:client" to="jc@opkode.com/converse.js-34183907" type="error" id="945c8ab3-b561-4d8a-92da-77c226bb1689:sendIQ" from="joris@konuro.net">
          *     <pubsub xmlns="http://jabber.org/protocol/pubsub">
@@ -603,7 +540,7 @@ describe("The OMEMO module", function() {
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-        await u.waitUntil(() => initializedOMEMO(_converse));
+        await u.waitUntil(() => mock.initializedOMEMO(_converse));
         const obj = await omemo.encryptMessage('This is an encrypted message from the contact');
         // XXX: Normally the key will be encrypted via libsignal.
         // However, we're mocking libsignal in the tests, so we include
@@ -635,7 +572,7 @@ describe("The OMEMO module", function() {
         });
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        let iq_stanza = await deviceListFetched(_converse, contact_jid);
+        let iq_stanza = await mock.deviceListFetched(_converse, contact_jid);
         stanza = $iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -653,7 +590,7 @@ describe("The OMEMO module", function() {
         _converse.connection.IQ_stanzas = [];
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
-        iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse), 1000);
+        iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse), 1000);
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -703,7 +640,7 @@ describe("The OMEMO module", function() {
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
         // Wait until own devices are fetched
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, _converse.bare_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -729,14 +666,14 @@ describe("The OMEMO module", function() {
         expect(devicelist.devices.length).toBe(2);
         expect(devicelist.devices.at(0).get('id')).toBe('555');
         expect(devicelist.devices.at(1).get('id')).toBe('123456789');
-        iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
 
         stanza = $iq({
             'from': _converse.bare_jid,
@@ -822,7 +759,7 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '444'})
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
         // Check that our own device is added again, but that removed
         // devices are not added.
         expect(Strophe.serialize(iq_stanza)).toBe(
@@ -872,7 +809,7 @@ describe("The OMEMO module", function() {
 
         await mock.waitForRoster(_converse, 'current');
         const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, _converse.bare_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -897,14 +834,14 @@ describe("The OMEMO module", function() {
         expect(devicelist.devices.length).toBe(2);
         expect(devicelist.devices.at(0).get('id')).toBe('555');
         expect(devicelist.devices.at(1).get('id')).toBe('123456789');
-        iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -1021,7 +958,7 @@ describe("The OMEMO module", function() {
 
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, _converse.bare_jid));
         let stanza = $iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -1035,7 +972,7 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         expect(_converse.devicelists.length).toBe(1);
         await mock.openChatBoxFor(_converse, contact_jid);
-        iq_stanza = await ownDeviceHasBeenPublished(_converse);
+        iq_stanza = await mock.ownDeviceHasBeenPublished(_converse);
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -1043,7 +980,7 @@ describe("The OMEMO module", function() {
             'type': 'result'});
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -1095,7 +1032,7 @@ describe("The OMEMO module", function() {
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, _converse.bare_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -1121,7 +1058,7 @@ describe("The OMEMO module", function() {
         expect(devicelist.devices.at(0).get('id')).toBe('482886413b977930064a5888b92134fe');
         expect(devicelist.devices.at(1).get('id')).toBe('123456789');
         // Check that own device was published
-        iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+        iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -1153,7 +1090,7 @@ describe("The OMEMO module", function() {
             'type': 'result'});
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        const iq_el = await u.waitUntil(() => bundleHasBeenPublished(_converse));
+        const iq_el = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         expect(iq_el.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
         expect(iq_el.querySelector('prekeys').childNodes.length).toBe(100);
 
@@ -1172,7 +1109,7 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized', 1000);
         await mock.openChatBoxFor(_converse, contact_jid);
-        iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -1264,7 +1201,7 @@ describe("The OMEMO module", function() {
         ];
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
         const view = _converse.chatboxviews.get('lounge@montague.lit');
-        await u.waitUntil(() => initializedOMEMO(_converse));
+        await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
         const toolbar = await u.waitUntil(() => view.querySelector('.chat-toolbar'));
         let toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
@@ -1298,7 +1235,7 @@ describe("The OMEMO module", function() {
             }).tree();
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -1321,7 +1258,7 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => _converse.omemo_store);
         expect(_converse.devicelists.length).toBe(2);
 
-        await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         const devicelist = _converse.devicelists.get(contact_jid);
         expect(devicelist.devices.length).toBe(2);
         expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
@@ -1381,7 +1318,7 @@ describe("The OMEMO module", function() {
                 'role': 'participant'
             }).tree();
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -1432,7 +1369,7 @@ describe("The OMEMO module", function() {
         show_modal_button.click();
         const modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
-        let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="mercutio@montague.lit" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>`+
@@ -1449,7 +1386,7 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '555'});
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
-        iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '555'));
+        iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" to="mercutio@montague.lit" type="get" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+

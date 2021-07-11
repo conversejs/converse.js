@@ -3,6 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import Storage from '@converse/skeletor/src/storage.js';
+import URI from 'urijs';
 import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
@@ -48,6 +49,7 @@ Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
 Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
 Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+Strophe.addNamespace('EME', 'urn:xmpp:eme:0');
 Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
@@ -1415,6 +1417,7 @@ Object.assign(converse, {
         Model,
         Promise,
         Strophe,
+        URI,
         dayjs,
         html,
         log,

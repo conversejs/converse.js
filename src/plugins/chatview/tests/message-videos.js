@@ -2,7 +2,7 @@
 
 const { Strophe, sizzle, u } = converse.env;
 
-describe("A Chat Message", function () {
+describe("A chat message containing video URLs", function () {
 
     it("will render videos from their URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
@@ -67,5 +67,32 @@ describe("A Chat Message", function () {
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<video controls="" preload="metadata" src="${message}"></video>`+
             `<a target="_blank" rel="noopener" href="${message}">${message}</a>`);
+    }));
+
+    it("will allow the user to toggle visibility of rendered videos",
+            mock.initConverse(['chatBoxesFetched'], {'embed_videos': true}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        // let message = "https://i.imgur.com/Py9ifJE.mp4";
+        const base_url = 'https://conversejs.org';
+        const message = base_url+"/logo/conversejs-filled.mp4";
+
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        await mock.sendMessage(view, message);
+        const sel = '.chat-content .chat-msg:last .chat-msg__text';
+        await u.waitUntil(() => sizzle(sel).pop().innerHTML.replace(/<!-.*?->/g, '').trim() === message);
+
+        const actions_el = view.querySelector('converse-message-actions');
+        await u.waitUntil(() => actions_el.textContent.includes('Hide media'));
+        await u.waitUntil(() => view.querySelector('converse-chat-message-body video'));
+
+        actions_el.querySelector('.chat-msg__action-hide-previews').click();
+        await u.waitUntil(() => actions_el.textContent.includes('Show media'));
+        await u.waitUntil(() => !view.querySelector('converse-chat-message-body video'));
+
+        expect(view.querySelector('converse-chat-message-body').innerHTML.replace(/<!-.*?->/g, '').trim())
+            .toBe(`<a target="_blank" rel="noopener" href="${message}">${message}</a>`)
     }));
 });

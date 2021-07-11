@@ -148,4 +148,31 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image') === null);
         expect(true).toBe(true);
     }));
+
+    it("will allow the user to toggle visibility of rendered images",
+            mock.initConverse(['chatBoxesFetched'], {'show_images_inline': true}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        // let message = "https://i.imgur.com/Py9ifJE.mp4";
+        const base_url = 'https://conversejs.org';
+        const message = base_url+"/logo/conversejs-filled.svg";
+
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        await mock.sendMessage(view, message);
+        const sel = '.chat-content .chat-msg:last .chat-msg__text';
+        await u.waitUntil(() => sizzle(sel).pop().innerHTML.replace(/<!-.*?->/g, '').trim() === message);
+
+        const actions_el = view.querySelector('converse-message-actions');
+        await u.waitUntil(() => actions_el.textContent.includes('Hide media'));
+        await u.waitUntil(() => view.querySelector('converse-chat-message-body img'));
+
+        actions_el.querySelector('.chat-msg__action-hide-previews').click();
+        await u.waitUntil(() => actions_el.textContent.includes('Show media'));
+        await u.waitUntil(() => !view.querySelector('converse-chat-message-body img'));
+
+        expect(view.querySelector('converse-chat-message-body').innerHTML.replace(/<!-.*?->/g, '').trim())
+            .toBe(`<a target="_blank" rel="noopener" href="${message}">${message}</a>`)
+    }));
 });

@@ -11,6 +11,7 @@ import {
     getCorrectionAttributes,
     getEncryptionAttributes,
     getErrorAttributes,
+    getMediaURLs,
     getOutOfBandAttributes,
     getReceiptId,
     getReferences,
@@ -215,5 +216,10 @@ export async function parseMessage (stanza, _converse) {
      * *Hook* which allows plugins to add additional parsing
      * @event _converse#parseMessage
      */
-    return api.hook('parseMessage', stanza, attrs);
+    attrs = await api.hook('parseMessage', stanza, attrs);
+
+    // We call this after the hook, to allow plugins to decrypt encrypted
+    // messages, since we need to parse the message text to determine whether
+    // there are media urls.
+    return Object.assign(attrs, getMediaURLs(attrs.is_encrypted ? attrs.plaintext : attrs.body));
 }

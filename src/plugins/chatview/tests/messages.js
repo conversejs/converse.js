@@ -1030,7 +1030,7 @@ describe("A Chat Message", function () {
                 await _converse.api.chats.open(sender_jid)
                 let msg_text = 'This message will not be sent, due to an error';
                 const view = _converse.chatboxviews.get(sender_jid);
-                const message = await view.model.sendMessage(msg_text);
+                const message = await view.model.sendMessage({'body': msg_text});
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
                 let msg_txt = sizzle('.chat-msg:last .chat-msg__text', view).pop().textContent;
                 expect(msg_txt).toEqual(msg_text);
@@ -1039,7 +1039,7 @@ describe("A Chat Message", function () {
                 // not be received, to test that errors appear
                 // after the relevant message.
                 msg_text = 'This message will be sent, and also receive an error';
-                const second_message = await view.model.sendMessage(msg_text);
+                const second_message = await view.model.sendMessage({'body': msg_text});
                 await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', view).length === 2, 1000);
                 msg_txt = sizzle('.chat-msg:last .chat-msg__text', view).pop().textContent;
                 expect(msg_txt).toEqual(msg_text);
@@ -1098,7 +1098,7 @@ describe("A Chat Message", function () {
                 expect(view.querySelectorAll('.chat-msg__error').length).toEqual(2);
 
                 msg_text = 'This message will be sent, and also receive an error';
-                const third_message = await view.model.sendMessage(msg_text);
+                const third_message = await view.model.sendMessage({'body': msg_text});
                 await u.waitUntil(() => sizzle('converse-chat-message:last-child .chat-msg__text', view).pop()?.textContent === msg_text);
 
                 // A different error message will however render
@@ -1157,7 +1157,7 @@ describe("A Chat Message", function () {
                 _converse.connection._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get(contact_jid);
                 const msg_text = 'This message will show!';
-                await view.model.sendMessage(msg_text);
+                await view.model.sendMessage({'body': msg_text});
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 expect(view.querySelectorAll('.chat-error').length).toEqual(0);
             }));

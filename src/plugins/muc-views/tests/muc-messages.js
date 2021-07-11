@@ -411,7 +411,7 @@ describe("A Groupchat Message", function () {
             .c('status').attrs({code:'210'}).nodeTree;
         _converse.connection._dataRecv(mock.createRequest(presence));
 
-        view.model.sendMessage('hello world');
+        view.model.sendMessage({'body': 'hello world'});
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 3);
 
         const occupant = await u.waitUntil(() => view.model.messages.filter(m => m.get('type') === 'groupchat')[2].occupant);
@@ -542,7 +542,7 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
 
-        view.model.sendMessage('hello world');
+        view.model.sendMessage({'body': 'hello world'});
         await u.waitUntil(() => view.model.messages.length === 1);
         const msg = view.model.messages.at(0);
         expect(msg.get('stanza_id')).toBeUndefined();

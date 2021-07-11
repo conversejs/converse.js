@@ -200,7 +200,6 @@ export default class Message extends CustomElement {
     getDerivedMessageProps () {
         const format = api.settings.get('time_format');
         return {
-            'is_newest_message': this.model === this.model.collection.last(),
             'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
             'has_mentions': this.hasMentions(),
             'hats': getHats(this.model),
@@ -261,10 +260,11 @@ export default class Message extends CustomElement {
                 <converse-chat-message-body
                     class="chat-msg__text ${this.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                     .model="${this.model}"
-                    ?is_me_message="${this.model.isMeCommand()}"
-                    ?show_images="${api.settings.get('show_images_inline')}"
-                    ?embed_videos="${api.settings.get('embed_videos')}"
-                    ?embed_audio="${api.settings.get('embed_audio')}"
+                    ?hide_url_previews=${this.model.get('hide_url_previews')}
+                    ?is_me_message=${this.model.isMeCommand()}
+                    ?show_images=${api.settings.get('show_images_inline')}
+                    ?embed_videos=${api.settings.get('embed_videos')}
+                    ?embed_audio=${api.settings.get('embed_audio')}
                     text="${text}"></converse-chat-message-body>
                 ${ (this.model.get('received') && !this.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
                 ${ (this.model.get('edited')) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }

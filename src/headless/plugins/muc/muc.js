@@ -13,7 +13,7 @@ import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/shared/utils.js';
-import { isArchived } from '@converse/headless/shared/parsers';
+import { isArchived, getMediaURLs } from '@converse/headless/shared/parsers';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -959,12 +959,15 @@ const ChatRoomMixin = {
         return [updated_message, updated_references];
     },
 
-    getOutgoingMessageAttributes (original_message, spoiler_hint) {
+    getOutgoingMessageAttributes (attrs) {
         const is_spoiler = this.get('composing_spoiler');
-        const [text, references] = this.parseTextForReferences(original_message);
+        let text = '', references;
+        if (attrs?.body) {
+            [text, references] = this.parseTextForReferences(attrs.body);
+        }
         const origin_id = u.getUniqueId();
         const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
-        return {
+        return Object.assign({}, attrs, {
             body,
             is_spoiler,
             origin_id,
@@ -977,9 +980,8 @@ const ChatRoomMixin = {
             'message': body,
             'nick': this.get('nick'),
             'sender': 'me',
-            'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
             'type': 'groupchat'
-        };
+        }, getMediaURLs(text));
     },
 
     /**

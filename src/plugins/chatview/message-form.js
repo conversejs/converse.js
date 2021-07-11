@@ -195,7 +195,7 @@ export default class MessageForm extends ElementView {
         this.querySelector('converse-emoji-dropdown')?.hideMenu();
 
         const is_command = this.parseMessageForCommands(message_text);
-        const message = is_command ? null : await this.model.sendMessage(message_text, spoiler_hint);
+        const message = is_command ? null : await this.model.sendMessage({'body': message_text, spoiler_hint});
         if (is_command || message) {
             hint_el.value = '';
             textarea.value = '';

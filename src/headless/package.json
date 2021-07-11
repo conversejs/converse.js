@@ -37,7 +37,7 @@
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {},
   "dependencies": {
-    "@converse/skeletor": "conversejs/skeletor#f354bc530493a17d031f6f9c524cc34e073908e3",
+    "@converse/skeletor": "0.0.5",
     "dayjs": "1.10.5",
     "filesize": "^6.3.0",
     "localforage": "^1.9.0",
@@ -48,6 +48,7 @@
     "pluggable.js": "3.0.1",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "1.4.2"
+    "strophe.js": "1.4.2",
+    "urijs": "^1.19.6"
   }
 }

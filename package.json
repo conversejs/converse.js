@@ -73,7 +73,7 @@
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^4.3.0",
     "copy-webpack-plugin": "^9.0.1",
-    "css-loader": "^3.5.3",
+    "css-loader": "^5.2.7",
     "eslint": "^7.3.0",
     "exports-loader": "^0.7.0",
     "fast-text-encoding": "^1.0.3",

@@ -4,7 +4,7 @@ import log from '@converse/headless/log';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/strophe';
 import { _converse, api } from '@converse/headless/core';
-import { decodeHTMLEntities } from '@converse/headless/shared/utils';
+import { decodeHTMLEntities } from '@converse/headless/utils/core.js';
 import { rejectMessage } from '@converse/headless/shared/actions';
 import {
     isAudioDomainAllowed,

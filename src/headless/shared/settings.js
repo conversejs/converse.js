@@ -5,7 +5,7 @@ import log from '@converse/headless/log';
 import pick from 'lodash-es/pick';
 import u from '@converse/headless/utils/core';
 import { Model } from '@converse/skeletor/src/model.js';
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 
 let init_settings = {}; // Container for settings passed in via converse.initialize
 let app_settings = {};

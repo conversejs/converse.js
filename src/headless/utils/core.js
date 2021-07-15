@@ -3,14 +3,16 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
+import DOMPurify from 'dompurify';
+import _converse from '@converse/headless/shared/_converse.js';
 import compact from "lodash-es/compact";
 import isElement from "lodash-es/isElement";
 import isObject from "lodash-es/isObject";
 import last from "lodash-es/last";
-import log from "@converse/headless/log";
+import log from '@converse/headless/log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe } from 'strophe.js/src/strophe';
+import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 /**
@@ -544,5 +546,56 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
 
     return promise;
 };
+
+export function setUnloadEvent () {
+    if ('onpagehide' in window) {
+        // Pagehide gets thrown in more cases than unload. Specifically it
+        // gets thrown when the page is cached and not just
+        // closed/destroyed. It's the only viable event on mobile Safari.
+        // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
+        _converse.unloadevent = 'pagehide';
+    } else if ('onbeforeunload' in window) {
+        _converse.unloadevent = 'beforeunload';
+    } else if ('onunload' in window) {
+        _converse.unloadevent = 'unload';
+    }
+}
+
+export async function getLoginCredentialsFromBrowser () {
+    try {
+        const creds = await navigator.credentials.get({'password': true});
+        if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
+            await _converse.setUserJID(creds.id);
+            return {'jid': creds.id, 'password': creds.password};
+        }
+    } catch (e) {
+        log.error(e);
+    }
+}
+
+export function replacePromise (name) {
+    const existing_promise = _converse.promises[name];
+    if (!existing_promise) {
+        throw new Error(`Tried to replace non-existing promise: ${name}`);
+    }
+    if (existing_promise.replace) {
+        const promise = getOpenPromise();
+        promise.replace = existing_promise.replace;
+        _converse.promises[name] = promise;
+    } else {
+        log.debug(`Not replacing promise "${name}"`);
+    }
+}
+
+const element = document.createElement('div');
+
+export function decodeHTMLEntities (str) {
+    if (str && typeof str === 'string') {
+        element.innerHTML = DOMPurify.sanitize(str);
+        str = element.textContent;
+        element.textContent = '';
+    }
+    return str;
+}
 
 export default u;

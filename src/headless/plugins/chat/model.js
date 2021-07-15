@@ -7,7 +7,7 @@ import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { debouncedPruneHistory, pruneHistory } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/parsers';
 import { parseMessage } from './parsers.js';

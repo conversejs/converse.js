@@ -1,28 +1,30 @@
 /**
  * @description Converse.js (A browser based XMPP chat client)
- * @copyright 2020, The Converse developers
+ * @copyright 2021, The Converse developers
  * @license Mozilla Public License (MPLv2)
  */
-
 
 import "@converse/headless/headless";
 import "i18n";
 import "shared/registry.js";
+import { CustomElement } from 'shared/components/element';
+import { VIEW_PLUGINS } from './shared/constants.js';
+import { _converse, converse } from "@converse/headless/core";
 
 import 'shared/styles/index.scss';
 
-/* START: Removable components
- * --------------------
- * Any of the following components may be removed if they're not needed.
+/* START: Removable plugins
+ * ------------------------
+ * Any of the following plugin imports may be removed if the plugin is not needed
  */
-import "./plugins/bookmark-views/index.js";       // Views for XEP-0048 Bookmarks
+import "./plugins/bookmark-views/index.js"; // Views for XEP-0048 Bookmarks
 import "./plugins/chatview/index.js";       // Renders standalone chat boxes for single user chat
 import "./plugins/controlbox/index.js";     // The control box
 import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen/index.js";
 import "./plugins/headlines-view/index.js";
 import "./plugins/mam-views/index.js";
-import "./plugins/minimize/index.js";             // Allows chat boxes to be minimized
+import "./plugins/minimize/index.js";       // Allows chat boxes to be minimized
 import "./plugins/muc-views/index.js";      // Views related to MUC
 import "./plugins/notifications/index.js";
 import "./plugins/omemo/index.js";
@@ -35,41 +37,16 @@ import "./plugins/rosterview/index.js";
 import "./plugins/singleton.js";
 /* END: Removable components */
 
-import { _converse, converse } from "@converse/headless/core";
-import { CustomElement } from 'shared/components/element';
 
 _converse.CustomElement = CustomElement;
-
-const WHITELISTED_PLUGINS = [
-    'converse-bookmark-views',
-    'converse-chatboxviews',
-    'converse-chatview',
-    'converse-controlbox',
-    'converse-dragresize',
-    'converse-fullscreen',
-    'converse-headlines-view',
-    'converse-mam-views',
-    'converse-minimize',
-    'converse-modal',
-    'converse-muc-views',
-    'converse-notification',
-    'converse-omemo',
-    'converse-profile',
-    'converse-push',
-    'converse-register',
-    'converse-roomslist',
-    'converse-rootview',
-    'converse-rosterview',
-    'converse-singleton'
-];
 
 const initialize = converse.initialize;
 
 converse.initialize = function (settings, callback) {
     if (Array.isArray(settings.whitelisted_plugins)) {
-        settings.whitelisted_plugins = settings.whitelisted_plugins.concat(WHITELISTED_PLUGINS);
+        settings.whitelisted_plugins = settings.whitelisted_plugins.concat(VIEW_PLUGINS);
     } else {
-        settings.whitelisted_plugins = WHITELISTED_PLUGINS;
+        settings.whitelisted_plugins = VIEW_PLUGINS;
     }
     return initialize(settings, callback);
 }

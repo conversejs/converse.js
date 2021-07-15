@@ -10,7 +10,7 @@ import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
 import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
 import concat from 'lodash-es/concat';
 import { until } from 'lit/directives/until.js';

@@ -3,7 +3,7 @@ import tpl_roster_filter from "./templates/roster_filter.js";
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 
 export const RosterFilter = Model.extend({
     initialize () {

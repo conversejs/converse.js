@@ -2,7 +2,7 @@ import MinimizedChatsToggle from './toggle.js';
 import tpl_chats_panel from './templates/chats-panel.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api } from '@converse/headless/core';
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { render } from 'lit';
 
 

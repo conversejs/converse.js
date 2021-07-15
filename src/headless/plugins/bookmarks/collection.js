@@ -4,7 +4,7 @@ import log from "@converse/headless/log.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 
 const { Strophe, $iq, sizzle } = converse.env;
 

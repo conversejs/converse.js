@@ -1,5 +1,5 @@
 import 'shared/components/icons.js';
-import xss from 'xss/dist/xss';
+import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless/core';
 import { html } from 'lit';
@@ -26,7 +26,7 @@ export default class ChatHelp extends CustomElement {
                     size="1em"></converse-icon>`,
             ...this.messages.map(m => this.renderHelpMessage({
                 isodate,
-                'markup': xss.filterXSS(m, {'whiteList': {'strong': []}})
+                'markup': DOMPurify.sanitize(m, {'ALLOWED_TAGS': ['strong']})
             }))
         ];
     }

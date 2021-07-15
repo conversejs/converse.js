@@ -1,8 +1,8 @@
+import DOMPurify from 'dompurify';
 import Storage from '@converse/skeletor/src/storage.js';
 import log from '@converse/headless/log';
 import { _converse, api } from '@converse/headless/core';
 import { getOpenPromise } from '@converse/openpromise';
-import xss from 'xss/dist/xss';
 
 export function getDefaultStore () {
     if (_converse.config.get('trusted')) {
@@ -55,7 +55,7 @@ const element = document.createElement('div');
 
 export function decodeHTMLEntities (str) {
     if (str && typeof str === 'string') {
-        element.innerHTML = xss.filterXSS(str);
+        element.innerHTML = DOMPurify.sanitize(str);
         str = element.textContent;
         element.textContent = '';
     }

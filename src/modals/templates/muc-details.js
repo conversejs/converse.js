@@ -2,15 +2,13 @@ import { __ } from '../../i18n';
 import { html } from "lit";
 import { modal_close_button, modal_header_close_button } from "./buttons.js"
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import xss from "xss/dist/xss";
-
 
 const subject = (o) => {
     const i18n_topic = __('Topic');
     const i18n_topic_author = __('Topic author');
     return html`
-        <p class="room-info"><strong>${i18n_topic}</strong>: ${unsafeHTML(xss.filterXSS(o.subject.text, {'whiteList': {}}))}</p>
-            <p class="room-info"><strong>${i18n_topic_author}</strong>: ${o.subject && o.subject.author}</p>
+        <p class="room-info"><strong>${i18n_topic}</strong>: ${o.subject.text}</p>
+        <p class="room-info"><strong>${i18n_topic_author}</strong>: ${o.subject && o.subject.author}</p>
     `;
 }
 

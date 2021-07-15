@@ -2,10 +2,8 @@ import debounce from 'lodash-es/debounce';
 import tpl_roster from "./templates/roster.js";
 import { ElementView } from "@converse/skeletor/src/element";
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
 import { render } from 'lit';
-
-const u = converse.env.utils;
 
 
 /**
@@ -14,10 +12,6 @@ const u = converse.env.utils;
  * @memberOf _converse
  */
 export default class RosterView extends ElementView {
-    events = {
-        'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
-        'click a.controlbox-heading__btn.sync-contacts': 'syncContacts'
-    }
 
     async initialize () {
         await api.waitUntil('rosterInitialized')
@@ -41,7 +35,7 @@ export default class RosterView extends ElementView {
     }
 
     render () {
-        render(tpl_roster(), this);
+        render(tpl_roster(this), this);
     }
 
     renderIfRelevantChange (model) {
@@ -63,11 +57,15 @@ export default class RosterView extends ElementView {
 
     async syncContacts (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
-        u.addClass('fa-spin', ev.target);
+        this.syncing_contacts = true;
+        this.render();
+
         _converse.roster.data.save('version', null);
         await _converse.roster.fetchFromServer();
         api.user.presence.send();
-        u.removeClass('fa-spin', ev.target);
+
+        this.syncing_contacts = false;
+        this.render();
     }
 }
 

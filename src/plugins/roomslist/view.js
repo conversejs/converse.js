@@ -1,5 +1,5 @@
 import RoomDetailsModal from 'modals/muc-details.js';
-import tpl_rooms_list from "./templates/roomslist.js";
+import tpl_roomslist from "./templates/roomslist.js";
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
@@ -57,7 +57,7 @@ export class RoomsList extends ElementView {
     }
 
     render () {
-        render(tpl_rooms_list({
+        render(tpl_roomslist({
             'addBookmark': ev => this.addBookmark(ev),
             'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
             'closeRoom': ev => this.closeRoom(ev),

@@ -39,7 +39,7 @@
   "dependencies": {
     "@converse/skeletor": "0.0.5",
     "dayjs": "1.10.5",
-    "filesize": "^6.3.0",
+    "filesize": "^7.0.0",
     "localforage": "^1.9.0",
     "localforage-driver-memory": "^1.0.5",
     "localforage-setitems": "^1.4.0",

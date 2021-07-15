@@ -1,9 +1,7 @@
-import debounce from 'lodash-es/debounce';
 import tpl_roster from "./templates/roster.js";
-import { ElementView } from "@converse/skeletor/src/element";
+import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
-import { render } from 'lit';
 
 
 /**
@@ -11,21 +9,22 @@ import { render } from 'lit';
  * @namespace _converse.RosterView
  * @memberOf _converse
  */
-export default class RosterView extends ElementView {
+export default class RosterView extends CustomElement {
+
+    constructor () {
+        super();
+        this.initialize();
+    }
 
     async initialize () {
         await api.waitUntil('rosterInitialized')
-        this.debouncedRender = debounce(this.render, 100);
-        this.listenTo(_converse, 'rosterContactsFetched', this.render);
-        this.listenTo(_converse.roster, "add", this.debouncedRender);
-        this.listenTo(_converse.roster, "destroy", this.debouncedRender);
-        this.listenTo(_converse.roster, "remove", this.debouncedRender);
-        this.listenTo(_converse.roster, 'change', this.renderIfRelevantChange);
-        this.listenTo(_converse.roster.state, "change", this.render);
-        _converse.presences.on('change:show', () => this.debouncedRender());
-
-        this.render();
-        this.listenToRosterFilter();
+        this.listenTo(_converse, 'rosterContactsFetched', this.requestUpdate);
+        this.listenTo(_converse.presences, 'change:show', this.requestUpdate);
+        this.listenTo(_converse.roster, 'add', this.requestUpdate);
+        this.listenTo(_converse.roster, 'destroy', this.requestUpdate);
+        this.listenTo(_converse.roster, 'remove', this.requestUpdate);
+        this.listenTo(_converse.roster, 'change', this.requestUpdate);
+        this.listenTo(_converse.roster.state, 'change', this.requestUpdate);
         /**
          * Triggered once the _converse.RosterView instance has been created and initialized.
          * @event _converse#rosterViewInitialized
@@ -34,21 +33,17 @@ export default class RosterView extends ElementView {
         api.trigger('rosterViewInitialized');
     }
 
-    render () {
-        render(tpl_roster(this), this);
+    firstUpdated () {
+        this.listenToRosterFilter();
     }
 
-    renderIfRelevantChange (model) {
-        const attrs = ['ask', 'requesting', 'groups', 'num_unread'];
-        const changed = model.changed || {};
-        if (Object.keys(changed).filter(m => attrs.includes(m)).length) {
-            this.render();
-        }
+    render () {
+        return tpl_roster(this);
     }
 
     listenToRosterFilter () {
         this.filter_view = this.querySelector('converse-roster-filter');
-        this.filter_view.addEventListener('update', () => this.render());
+        this.filter_view.addEventListener('update', () => this.requestUpdate());
     }
 
     showAddContactModal (ev) { // eslint-disable-line class-methods-use-this
@@ -58,14 +53,14 @@ export default class RosterView extends ElementView {
     async syncContacts (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         this.syncing_contacts = true;
-        this.render();
+        this.requestUpdate();
 
         _converse.roster.data.save('version', null);
         await _converse.roster.fetchFromServer();
         api.user.presence.send();
 
         this.syncing_contacts = false;
-        this.render();
+        this.requestUpdate();
     }
 }
 

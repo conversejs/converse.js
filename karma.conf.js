@@ -25,7 +25,6 @@ module.exports = function(config) {
       { pattern: "node_modules/sinon/pkg/sinon.js", type: 'module' },
       { pattern: "spec/mock.js", type: 'module' },
 
-      { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "src/headless/plugins/caps/tests/caps.js", type: 'module' },
       { pattern: "src/headless/plugins/chat/tests/api.js", type: 'module' },
       { pattern: "src/headless/plugins/disco/tests/disco.js", type: 'module' },
@@ -38,6 +37,7 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/status/tests/status.js", type: 'module' },
       { pattern: "src/headless/tests/converse.js", type: 'module' },
       { pattern: "src/headless/tests/eventemitter.js", type: 'module' },
+      { pattern: "src/modals/tests/user-details-modal.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },

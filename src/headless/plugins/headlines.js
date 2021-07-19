@@ -83,6 +83,8 @@ converse.plugins.add('converse-headlines', {
             // Handler method for all incoming messages of type "headline".
             if (isHeadline(stanza) || isServerMessage(stanza)) {
                 const from_jid = stanza.getAttribute('from');
+
+                await api.waitUntil('rosterInitialized')
                 if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
                         !api.settings.get("allow_non_roster_messaging")) {

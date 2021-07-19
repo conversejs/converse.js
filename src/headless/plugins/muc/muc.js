@@ -1540,7 +1540,8 @@ const ChatRoomMixin = {
         if (u.isErrorObject(result)) {
             throw result;
         }
-        const identity_el = result.querySelector('query[node="x-roomuser-item"] identity');
+        // Result might be undefined due to a timeout
+        const identity_el = result?.querySelector('query[node="x-roomuser-item"] identity');
         return identity_el ? identity_el.getAttribute('name') : null;
     },
 

@@ -13,21 +13,20 @@ import invoke from 'lodash-es/invoke';
 import isFunction from 'lodash-es/isFunction';
 import isObject from 'lodash-es/isObject';
 import localDriver from 'localforage-webextensionstorage-driver/local';
-import log from '@converse/headless/log';
+import log from '@converse/headless/log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
+import settings_api from '@converse/headless/api/settings.js';
 import sizzle from 'sizzle';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import u from '@converse/headless/utils/core';
+import { CORE_PLUGINS } from '@converse/headless/shared/constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
 import { initStorage } from '@converse/headless/shared/utils.js';
 import {
     clearUserSettings,
-    extendAppSettings,
-    getAppSetting,
     getUserSettings,
     initAppSettings,
-    updateAppSettings,
     updateUserSettings
 } from '@converse/headless/shared/settings';
 import { Events } from '@converse/skeletor/src/events.js';
@@ -79,32 +78,6 @@ Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
-
-
-// Core plugins are whitelisted automatically
-// These are just the @converse/headless plugins, for the full converse,
-// the other plugins are whitelisted in src/converse.js
-const CORE_PLUGINS = [
-    'converse-adhoc',
-    'converse-bookmarks',
-    'converse-bosh',
-    'converse-caps',
-    'converse-carbons',
-    'converse-chat',
-    'converse-chatboxes',
-    'converse-disco',
-    'converse-emoji',
-    'converse-headlines',
-    'converse-mam',
-    'converse-muc',
-    'converse-ping',
-    'converse-pubsub',
-    'converse-roster',
-    'converse-smacks',
-    'converse-status',
-    'converse-vcard'
-];
-
 
 _converse.VERSION_NAME = "v7.0.3dev";
 
@@ -447,77 +420,8 @@ export const api = _converse.api = {
         }
     },
 
-    /**
-     * This grouping allows access to the
-     * [configuration settings](/docs/html/configuration.html#configuration-settings)
-     * of Converse.
-     *
-     * @namespace _converse.api.settings
-     * @memberOf _converse.api
-     */
-    settings: {
-        /**
-         * Allows new configuration settings to be specified, or new default values for
-         * existing configuration settings to be specified.
-         *
-         * Note, calling this method *after* converse.initialize has been
-         * called will *not* change the initialization settings provided via
-         * `converse.initialize`.
-         *
-         * @method _converse.api.settings.extend
-         * @param {object} settings The configuration settings
-         * @example
-         * _converse.api.settings.extend({
-         *    'enable_foo': true
-         * });
-         *
-         * // The user can then override the default value of the configuration setting when
-         * // calling `converse.initialize`.
-         * converse.initialize({
-         *     'enable_foo': false
-         * });
-         */
-        extend (settings) {
-            return extendAppSettings(settings);
-        },
+    settings: settings_api,
 
-        update (settings) {
-            log.warn("The api.settings.update method has been deprecated and will be removed. "+
-                     "Please use api.settings.extend instead.");
-            return this.extend(settings);
-        },
-
-        /**
-         * @method _converse.api.settings.get
-         * @returns {*} Value of the particular configuration setting.
-         * @example _converse.api.settings.get("play_sounds");
-         */
-        get (key) {
-            return getAppSetting(key);
-        },
-
-        /**
-         * Set one or many configuration settings.
-         *
-         * Note, this is not an alternative to calling {@link converse.initialize}, which still needs
-         * to be called. Generally, you'd use this method after Converse is already
-         * running and you want to change the configuration on-the-fly.
-         *
-         * @method _converse.api.settings.set
-         * @param {Object} [settings] An object containing configuration settings.
-         * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
-         * @param {string} [value]
-         * @example _converse.api.settings.set("play_sounds", true);
-         * @example
-         * _converse.api.settings.set({
-         *     "play_sounds": true,
-         *     "hide_offline_users": true
-         * });
-         */
-        set (key, val) {
-            updateAppSettings(key, val);
-        }
-    },
 
     /**
      * Converse and its plugins trigger various events which you can listen to via the

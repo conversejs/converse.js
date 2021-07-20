@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-17 10:11+0100\n"
-"PO-Revision-Date: 2021-04-25 05:32+0000\n"
+"PO-Revision-Date: 2021-07-21 04:33+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 
 #. Strophe
 #: dist/converse-no-dependencies.js:42989
@@ -435,7 +435,7 @@ msgstr "Foches excluído desta conversa en grupo."
 
 #: dist/converse-no-dependencies.js:61097
 msgid "You are not allowed to create new groupchats."
-msgstr "Non te permiso para crear novas conversas en grupo."
+msgstr "Non tes permiso para crear novas conversas en grupo."
 
 #: dist/converse-no-dependencies.js:61101
 msgid "Your nickname doesn't conform to this groupchat's policies."
@@ -1035,9 +1035,9 @@ msgid ""
 "OMEMO encryption is NOT available."
 msgstr ""
 "Para mellorar o rendemento, almacenamos os teus datos no navegador. Desmarca "
-"esta opción se se trata dunha computadora pública para borrar os datos cando "
-"te desconectes. É importante que te desconectes de xeito explícito, se non "
-"non se borrarán os datos. O cifrado OMEMO non está dispoñible cando estás a "
+"esta opción se estás nunha computadora pública para borrar os datos cando te "
+"desconectes. É importante que te desconectes de xeito explícito, se non non "
+"se borrarán os datos. O cifrado OMEMO non está dispoñible cando estás a "
 "utilizar un dispositivo non confiable."
 
 #: dist/converse-no-dependencies.js:87535
@@ -1054,7 +1054,7 @@ msgstr "Crear unha conta"
 
 #: dist/converse-no-dependencies.js:87549
 msgid "Don't have a chat account?"
-msgstr "Non ten conta para conversar?"
+msgstr "Non tes unha conta para conversar?"
 
 #: dist/converse-no-dependencies.js:87559
 msgid "Log in"
@@ -1080,7 +1080,7 @@ msgstr "usuaria@dominio"
 #: dist/converse-no-dependencies.js:96920
 #: dist/converse-no-dependencies.js:106474
 msgid "Please enter a valid XMPP address"
-msgstr "Por favor, introduza un enderezo XMPP válido"
+msgstr "Por favor, escribe un enderezo XMPP válido"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88215
@@ -2194,7 +2194,7 @@ msgstr "Unirse"
 
 #: dist/converse-no-dependencies.js:105232
 msgid "Enter a new Groupchat"
-msgstr "Introduza unha nova Conversa en grupo"
+msgstr "Entra nunha nova Conversa en grupo"
 
 #: dist/converse-no-dependencies.js:105267
 msgid "name@conference.example.org"

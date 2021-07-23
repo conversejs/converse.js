@@ -58,7 +58,7 @@ const device_list = (o) => {
                     ${i18n_other_devices}
                 </label>
             </li>
-            ${ o.view.other_devices.map(device => device_item(Object.assign({device}, o))) }
+            ${ o.view.other_devices?.map(device => device_item(Object.assign({device}, o))) }
         </ul>
         <div class="form-group"><button type="submit" class="save-form btn btn-primary">${i18n_remove_devices}</button></div>
     `;
@@ -81,7 +81,7 @@ const omemo_page = (o) => {
                 <div class="form-group">
                     <button type="button" class="generate-bundle btn btn-danger">${i18n_generate}</button>
                 </div>
-                ${ o.view.other_devices.length ? device_list(o) : '' }
+                ${ o.view.other_devices?.length ? device_list(o) : '' }
             </form>
         </div>`;
 }
@@ -100,16 +100,15 @@ export default (o) => {
     const i18n_omemo = __('OMEMO');
     const i18n_profile = __('Profile');
 
-    const navigation =  html`
-        <ul class="nav nav-pills justify-content-center">
+    const navigation = o.view.current_device ?
+        html`<ul class="nav nav-pills justify-content-center">
             <li role="presentation" class="nav-item">
                 <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">${i18n_profile}</a>
             </li>
             <li role="presentation" class="nav-item">
                 <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">${i18n_omemo}</a>
             </li>
-        </ul>`;
-
+        </ul>` : '';
 
     return html`
         <div class="modal-dialog" role="document">

@@ -33,7 +33,10 @@ $mobile_portrait_length: 480px !default;
     --text-color-lighten-15-percent: #8c8c8c; // lighten(#666, 15%)
     --message-text-color: #555;
     --message-receipt-color: var(--green);
+
     --save-button-color: var(--green);
+
+    --button-text-color: white;
 
     --message-avatar-width: 36px;
     --message-avatar-height: 36px;
@@ -207,7 +210,6 @@ $mobile_portrait_length: 480px !default;
 
     --chat-textarea-background-color: #F6F6F6;
     --chat-correcting-color: #FFFFC0;
-    --chat-head-text-color: #AAA;
 
     --controlbox-text-color: #DDD;
 

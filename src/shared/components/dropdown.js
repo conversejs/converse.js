@@ -1,3 +1,4 @@
+import 'shared/components/icons.js';
 import DOMNavigator from "shared/dom-navigator.js";
 import { converse, api } from "@converse/headless/core";
 import { html } from 'lit';
@@ -10,15 +11,21 @@ export default class Dropdown extends DropdownBase {
     static get properties () {
         return {
             'icon_classes': { type: String },
+            'color': { type: String },
             'items': { type: Array }
         }
     }
 
+    constructor () {
+        super();
+        this.color = 'var(--text-color)';
+        this.icon_classes = 'fa fa-bars';
+    }
+
     render () {
-        const icon_classes = this.icon_classes || "fa fa-bars";
         return html`
             <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="${icon_classes} only-icon"></i>
+                <converse-icon color="${this.color}" size="1em" class="${ this.icon_classes }">
             </button>
             <div class="dropdown-menu">
                 ${ this.items.map(b => until(b, '')) }

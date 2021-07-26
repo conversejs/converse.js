@@ -109,7 +109,7 @@ async function downloadFile(url) {
     try {
         response = await fetch(url)
     } catch(e) {
-        log.error(`Failed to download encrypted media: ${url}`);
+        log.error(`${e.name}: Failed to download encrypted media: ${url}`);
         log.error(e);
         return null;
     }
@@ -124,6 +124,10 @@ async function getAndDecryptFile (uri) {
     const protocol = window.location.hostname === 'localhost' ? 'http' : 'https';
     const http_url = uri.toString().replace(/^aesgcm/, protocol);
     const cipher = await downloadFile(http_url);
+    if (cipher === null) {
+        log.error(`Could not decrypt file ${uri.toString()} since it could not be downloaded`);
+        return null;
+    }
     const iv = hash.slice(0, 24);
     const key = hash.slice(24);
     let content;

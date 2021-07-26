@@ -4,14 +4,21 @@
 
     .btn {
         font-weight: normal;
-        color: #fff;
-        .fa, .far, .fas {
-            color: #fff;
-            margin-right: 0.5em;
-
-            &.only-icon {
-              margin-right: 0;
+        color: var(--button-text-color);
+        &.fa {
+            color: var(--button-text-color) !important;
+        }
+        i {
+            &.fa, &.far, &.fas {
+                color: var(--button-text-color);
+                margin-right: 0.5em;
+                &.only-icon {
+                margin-right: 0;
+                }
             }
+        }
+        converse-icon {
+            margin-right: 0;
         }
     }
 
@@ -39,12 +46,6 @@
         border-radius: 50%;
     }
 
-    .btn {
-      &.fa {
-        color: white !important;
-      }
-    }
-
     .btn-info, .badge-info {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
@@ -56,7 +57,7 @@
 
     .button-cancel,
     .btn-secondary, .badge-secondary {
-        color: white;
+        color: var(--button-text-color);
         background-color: var(--secondary-color);
         border-color: var(--secondary-color);
         &:hover {
@@ -66,18 +67,18 @@
     }
 
     .btn-warning {
-        color: white;
+        color: var(--button-text-color);
         background-color: var(--warning-color);
         border-color: var(--warning-color);
         &:hover {
-            color: white;
+            color: var(--button-text-color);
             background-color: var(--warning-color-dark);
             border-color: var(--warning-color-dark)
         }
     }
 
     .btn-danger {
-        color: white;
+        color: var(--button-text-color);
         background-color: var(--danger-color);
         border-color: var(--danger-color) !important;
         &:hover {

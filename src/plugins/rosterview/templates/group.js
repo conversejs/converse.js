@@ -1,3 +1,4 @@
+import 'shared/components/icons.js';
 import { __ } from 'i18n';
 import { _converse, converse } from "@converse/headless/core";
 import { html } from "lit";

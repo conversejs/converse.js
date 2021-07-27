@@ -150,7 +150,7 @@ describe("The Protocol", function () {
             stanza = $iq({'type': 'result', 'id': roster_fetch_stanza.getAttribute('id')});
             _converse.connection._dataRecv(mock.createRequest(stanza));
 
-            await u.waitUntil(() => _converse.roster.create.calls.count());
+            await u.waitUntil(() => _converse.roster.create.calls.count(), 1000);
 
             // A contact should now have been created
             expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
@@ -206,7 +206,7 @@ describe("The Protocol", function () {
             // contact in the roster.
             await u.waitUntil(() => {
                 const header = sizzle('a:contains("Pending contacts")', rosterview).pop();
-                const contacts = Array.from(header.parentElement.querySelectorAll('li')).filter(u.isVisible);
+                const contacts = Array.from(header?.parentElement.querySelectorAll('li') ?? []).filter(u.isVisible);
                 return contacts.length;
             }, 600);
 
@@ -286,7 +286,8 @@ describe("The Protocol", function () {
             expect(u.hasClass('to', contacts[0])).toBeTruthy();
             expect(u.hasClass('both', contacts[0])).toBeFalsy();
             expect(u.hasClass('current-xmpp-contact', contacts[0])).toBeTruthy();
-            expect(contacts[0].textContent.trim()).toBe('Nicky');
+
+            await u.waitUntil(() => contacts[0].textContent.trim() === 'Nicky');
 
             expect(contact.presence.get('show')).toBe('offline');
 

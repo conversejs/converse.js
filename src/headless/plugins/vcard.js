@@ -8,7 +8,7 @@ import log from "@converse/headless/log";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../core.js";
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 
 const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;

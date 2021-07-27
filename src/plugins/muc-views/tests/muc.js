@@ -486,9 +486,9 @@ describe("Groupchats", function () {
                 expect(u.isVisible(topic_el)).toBe(true);
 
                 const toggle = view.querySelector('.hide-topic');
-                expect(toggle.textContent).toBe('Hide topic');
+                expect(toggle.textContent.trim()).toBe('Hide topic');
                 toggle.click();
-                await u.waitUntil(() => view.querySelector('.hide-topic').textContent === 'Show topic');
+                await u.waitUntil(() => view.querySelector('.hide-topic').textContent.trim() === 'Show topic');
             }));
 
             it("will always be shown when it's new", mock.initConverse([], {}, async function (_converse) {
@@ -510,7 +510,7 @@ describe("Groupchats", function () {
                 expect(u.isVisible(topic_el)).toBe(true);
 
                 const toggle = view.querySelector('.hide-topic');
-                expect(toggle.textContent).toBe('Hide topic');
+                expect(toggle.textContent.trim()).toBe('Hide topic');
                 toggle.click();
                 await u.waitUntil(() => !u.isVisible(topic_el));
 

@@ -24,7 +24,7 @@ module.exports = {
         rules: [
         {
             test: path.resolve(__dirname, "node_modules/xss/dist/xss"),
-            use: "exports-loader?filterXSS,filterCSS"
+            use: "exports-loader?filterXSS"
         }, {
             test: /LC_MESSAGES\/converse.po$/,
             type: "json",

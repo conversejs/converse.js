@@ -1,3 +1,4 @@
+import 'shared/components/icons.js';
 import { __ } from 'i18n';
 import { _converse, converse } from "@converse/headless/core";
 import { html } from "lit";
@@ -51,7 +52,7 @@ export default  (o) => {
     return html`
         <div class="roster-group" data-group="${o.name}">
             <a href="#" class="list-toggle group-toggle controlbox-padded" title="${i18n_title}" @click=${ev => toggleGroup(ev, o.name)}>
-                <span class="fa ${ (collapsed.includes(o.name)) ? 'fa-caret-right' : 'fa-caret-down' }"></span> ${o.name}
+                <converse-icon color="var(--chat-head-color)" size="1em" class="fa ${ (collapsed.includes(o.name)) ? 'fa-caret-right' : 'fa-caret-down' }"></converse-icon> ${o.name}
             </a>
             <ul class="items-list roster-group-contacts ${ (collapsed.includes(o.name)) ? 'collapsed' : '' }" data-group="${o.name}">
                 ${ o.contacts.map(renderContact) }

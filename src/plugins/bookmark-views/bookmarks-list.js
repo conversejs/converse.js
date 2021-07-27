@@ -2,7 +2,7 @@ import log from '@converse/headless/log';
 import tpl_bookmarks_list from './templates/list.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { render } from 'lit';
 
 const u = converse.env.utils;

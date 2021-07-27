@@ -2,35 +2,46 @@
 
 ## 8.0.0 (Unreleased)
 
+- Requires Node 12 or above
+
+### Issues and features
+
 - #1083: Add support for XEP-0393 Message Styling
 - #1182: Add support for XEP-0454 OMEMO Media sharing
+- #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
 - #2275: Allow punctuation to immediately precede a mention
 - #2348: `auto_join_room` not showing the room in `fullscreen` `view_mode`.
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls
 - #2409: Integrate App Badging API for unread messages
 - #2464: New configuration setting [allow-url-history-change](https://conversejs.org/docs/html/configuration.html#allow-url-history-change)
 - #2497: Bugfix /nick command is not working
+- Add a Description Of A Project (DOAP) file
+- Add ability to deregister nickname when closing a MUC by setting `auto_register_muc_nickname` to `'unregister'`.
 - Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
-- Bugfix: Use real JID in XEP-0372 references only when the MUC is non-anonymous
+- Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
 - Bugfix: Connection protocol not updated based on XEP-0156 connection methods
+- Bugfix: Use real JID in XEP-0372 references only when the MUC is non-anonymous
 - Bugfix: `null` inserted by emoji picker and can't switch between skintones
+- File structure reordering: All plugins are now in `./plugins` folders.
+- Show a gap placeholder when there are gaps in the chat history. The user can click these to fill the gaps.
+- Use the MUC stanza id when sending XEP-0333 markers
+- Add support for pausing Gif images
+
+### New configuration setings
+
+- [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
+- [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
+- [send_chat_markers](https://conversejs.org/docs/html/configuration.html#send-chat-markers)
+- [muc_show_ogp_unfurls](https://conversejs.org/docs/html/configuration.html#muc-show-ogp-unfurls)
+- [prune-messages-above](https://conversejs.org/docs/html/configuration.html#prune-messages-above)
+- [pruning_behavior](https://conversejs.org/docs/html/configuration.html#pruning-behavior)
+
+### New hooks and events
+
 - New hook: [getMessageActionButtons](https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons)
 - New hook: [shouldNotifyOfGroupMessage](https://conversejs.org/docs/html/api/-_converse.html#event:shouldNotifyOfGroupMessage)
 - New hook: [presenceConstructed](https://conversejs.org/docs/html/api/-_converse.html#event:presenceConstructed)
 - New event: [historyPruned](https://conversejs.org/docs/html/api/-_converse.html#event:historyPruned)
-- File structure reordering: All plugins are now in `./plugins` folders.
-- New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
-- New configuration setting: [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
-- New configuration setting: [send_chat_markers](https://conversejs.org/docs/html/configuration.html#send-chat-markers)
-- New configuration setting: [muc_show_ogp_unfurls](https://conversejs.org/docs/html/configuration.html#muc-show-ogp-unfurls)
-- New configuration setting: [prune-messages-above](https://conversejs.org/docs/html/configuration.html#prune-messages-above)
-- New configuration setting: [pruning_behavior](https://conversejs.org/docs/html/configuration.html#pruning-behavior)
-- #1823: New config options [mam_request_all_pages](https://conversejs.org/docs/html/configuration.html#mam-request-all-pages)
-- Use the MUC stanza id when sending XEP-0333 markers
-- Add support for rendering unfurls via [mod_ogp](https://modules.prosody.im/mod_ogp.html)
-- Add a Description Of A Project (DOAP) file
-- Add ability to deregister nickname when closing a MUC by setting `auto_register_muc_nickname` to `'unregister'`.
-- Show a gap placeholder when there are gaps in the chat history. The user can click these to fill the gaps.
 
 ### Breaking Changes
 

@@ -44,10 +44,12 @@ class ConverseIcon extends CustomElement {
     }
 
     getStyles () {
+        const cssprop = this.color.match(/var\((--.*)\)/)?.[1];
+        const color = cssprop ? getComputedStyle(this).getPropertyValue(cssprop) : this.color;
         return `
             ${this.size ? `width: ${this.size};` : ''}
             ${this.size ? `height: ${this.size};` : ''}
-            ${this.color ? `fill: ${this.color};` : ''}
+            ${color ? `fill: ${color};` : ''}
             ${this.style}
         `;
     }

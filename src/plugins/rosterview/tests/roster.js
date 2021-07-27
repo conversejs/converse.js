@@ -139,7 +139,6 @@ describe("The Contacts Roster", function () {
         const rosterview = document.querySelector('converse-roster');
         const filter = rosterview.querySelector('.roster-filter');
         const roster = rosterview.querySelector('.roster-contacts');
-        rosterview.filter_view.delegateEvents();
 
         await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 800);
         filter.value = "la";
@@ -251,7 +250,6 @@ describe("The Contacts Roster", function () {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
             const rosterview = document.querySelector('converse-roster');
-            rosterview.filter_view.delegateEvents();
             const roster = rosterview.querySelector('.roster-contacts');
 
             const button = rosterview.querySelector('span[data-type="groups"]');
@@ -299,7 +297,7 @@ describe("The Contacts Roster", function () {
             const isHidden = (el) => u.hasClass('hidden', el);
             await u.waitUntil(() => !isHidden(rosterview.querySelector('.roster-filter-form .clear-input')), 900);
             rosterview.querySelector('.clear-input').click();
-            expect(document.querySelector('.roster-filter').value).toBe("");
+            await u.waitUntil(() => document.querySelector('.roster-filter').value == '');
         }));
 
         // Disabling for now, because since recently this test consistently
@@ -460,6 +458,7 @@ describe("The Contacts Roster", function () {
 
             const contact = _converse.roster.get('groupchanger@montague.lit');
             contact.set({'groups': ['secondgroup']});
+            await u.waitUntil(() => sizzle('.roster-group[data-group="secondgroup"] a.group-toggle', rosterview).length);
             group_titles = await u.waitUntil(() => {
                 const toggles = sizzle('.roster-group[data-group="secondgroup"] a.group-toggle', rosterview);
                 if (toggles.reduce((result, t) => result && u.isVisible(t), true)) {
@@ -688,8 +687,12 @@ describe("The Contacts Roster", function () {
             // Check that they are sorted alphabetically
             const el = await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`));
             const spans = el.querySelectorAll('.pending-xmpp-contact span');
-            const t = Array.from(spans).reduce((result, value) => result + value.textContent?.trim(), '');
-            expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
+
+            await u.waitUntil(
+                () => Array.from(spans).reduce((result, value) => result + value.textContent?.trim(), '') ===
+                mock.pend_names.slice(0,i+1).sort().join('')
+            );
+            expect(true).toBe(true);
         }));
     });
 
@@ -729,8 +732,8 @@ describe("The Contacts Roster", function () {
                 requesting: false,
                 subscription: 'both'
             });
-            const el = rosterview.querySelector(`ul[data-group="My contacts"]`);
-            expect(u.hasClass('collapsed', el)).toBe(true);
+            await u.waitUntil(() => u.hasClass('collapsed', rosterview.querySelector(`ul[data-group="My contacts"]`)) === true);
+            expect(true).toBe(true);
         }));
 
         it("can be added to the roster and they will be sorted alphabetically",

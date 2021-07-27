@@ -1375,8 +1375,7 @@ If set to ``true``,  then whenever Converse receives a MUC message with an autho
 any information (i.e. because that user is currently not in the MUC), then Converse will send out a ``<presence>``
 stanza of type ``probe`` in order to request the authors presence data.
 
-Prosody has some experimental support in it's contrib branch (hopefully soon to
-be merged to trunk).
+Prosody has support in `trunk` for this.
 
 The point of sending out presence probes is in order to receive
 presence-related metadata, such as `XEP-0317 Hats <https://xmpp.org/extensions/xep-0317.html>`_.

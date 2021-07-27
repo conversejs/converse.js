@@ -276,7 +276,7 @@ export default class Message extends CustomElement {
 
     showUserModal (ev) {
         if (this.model.get('sender') === 'me') {
-            _converse.xmppstatusview.showProfileModal(ev);
+            api.modal.show(_converse.ProfileModal, {model: this.model}, ev);
         } else if (this.model.get('type') === 'groupchat') {
             ev.preventDefault();
             api.modal.show(OccupantModal, { 'model': this.model.occupant }, ev);

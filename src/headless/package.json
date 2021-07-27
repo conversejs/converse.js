@@ -39,7 +39,7 @@
   "dependencies": {
     "@converse/skeletor": "0.0.5",
     "dayjs": "1.10.5",
-    "filesize": "^6.3.0",
+    "filesize": "^7.0.0",
     "localforage": "^1.9.0",
     "localforage-driver-memory": "^1.0.5",
     "localforage-setitems": "^1.4.0",
@@ -49,6 +49,6 @@
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
     "strophe.js": "1.4.2",
-    "urijs": "^1.19.6"
+    "urijs": "^1.19.7"
   }
 }

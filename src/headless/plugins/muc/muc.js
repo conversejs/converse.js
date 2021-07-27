@@ -12,7 +12,7 @@ import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { isArchived, getMediaURLs } from '@converse/headless/shared/parsers';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
@@ -1540,7 +1540,8 @@ const ChatRoomMixin = {
         if (u.isErrorObject(result)) {
             throw result;
         }
-        const identity_el = result.querySelector('query[node="x-roomuser-item"] identity');
+        // Result might be undefined due to a timeout
+        const identity_el = result?.querySelector('query[node="x-roomuser-item"] identity');
         return identity_el ? identity_el.getAttribute('name') : null;
     },
 

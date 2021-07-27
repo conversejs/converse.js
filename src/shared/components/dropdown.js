@@ -5,6 +5,8 @@ import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import DropdownBase from 'shared/components/dropdownbase.js';
 
+import './styles/dropdown.scss';
+
 
 export default class Dropdown extends DropdownBase {
 

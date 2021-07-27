@@ -13,11 +13,12 @@
                 color: var(--button-text-color);
                 margin-right: 0.5em;
                 &.only-icon {
-                margin-right: 0;
+                    margin-right: 0;
                 }
             }
         }
         converse-icon {
+            display: inline-block;
             margin-right: 0;
         }
     }

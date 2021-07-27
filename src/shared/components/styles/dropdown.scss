@@ -1,0 +1,40 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+.conversejs {
+    @import "bootstrap/scss/dropdown";
+    converse-dropdown {
+	&.dropup {
+	    &.dropup--left {
+		.dropdown-menu {
+		    right: 100%;
+		    left: auto;
+		}
+	    }
+	}
+
+	.btn--standalone {
+	    padding: 0 0.2em;
+	    margin: 0;
+	}
+	.dropdown-menu {
+	    margin-top: -0.2em !important;
+	}
+
+	.dropdown-item {
+	    padding: 0.5rem 1rem;
+	    .fa {
+		width: 1.25em;
+		margin-right: 0.75rem;
+	    }
+	    &:active, &.selected {
+		color: white !important;
+		background-color: var(--list-item-open-color);
+		.fa {
+		    color: white !important;
+		}
+	    }
+	}
+    }
+}

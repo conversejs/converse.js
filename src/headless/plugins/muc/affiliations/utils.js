@@ -2,10 +2,11 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { AFFILIATIONS } from '@converse/headless/plugins/muc/index.js';
 import difference from 'lodash-es/difference';
 import indexOf from 'lodash-es/indexOf';
 import log from "@converse/headless/log";
-import { api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse } from '@converse/headless/core.js';
 import { parseMemberListIQ } from '../parsers.js';
 
 const { Strophe, $iq, u } = converse.env;
@@ -20,19 +21,20 @@ const { Strophe, $iq, u } = converse.env;
  * @returns { Promise<MemberListItem[]> }
  */
 export async function getAffiliationList (affiliation, muc_jid) {
+    const { __ } = _converse;
     const iq = $iq({ 'to': muc_jid, 'type': 'get' })
         .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
         .c('item', { 'affiliation': affiliation });
     const result = await api.sendIQ(iq, null, false);
     if (result === null) {
-        const err_msg = `Error: timeout while fetching ${affiliation} list for MUC ${muc_jid}`;
+        const err_msg = __('Error: timeout while fetching %1s list for MUC %2s', affiliation, muc_jid);
         const err = new Error(err_msg);
         log.warn(err_msg);
         log.warn(result);
         return err;
     }
     if (u.isErrorStanza(result)) {
-        const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${muc_jid}`;
+        const err_msg = __('Error: not allowed to fetch %1s list for MUC %2s', affiliation, muc_jid);
         const err = new Error(err_msg);
         log.warn(err_msg);
         log.warn(result);
@@ -42,6 +44,28 @@ export async function getAffiliationList (affiliation, muc_jid) {
         .filter(p => p)
         .sort((a, b) => (a.nick < b.nick ? -1 : a.nick > b.nick ? 1 : 0));
 }
+
+/**
+ * Given an occupant model, see which affiliations may be assigned to that user.
+ * @param { Model } occupant
+ * @returns { ('owner', 'admin', 'member', 'outcast', 'none')[] } - An array of assignable affiliations
+ */
+export function getAssignableAffiliations (occupant) {
+    let disabled = api.settings.get('modtools_disable_assign');
+    if (!Array.isArray(disabled)) {
+        disabled = disabled ? AFFILIATIONS : [];
+    }
+    if (occupant.get('affiliation') === 'owner') {
+        return AFFILIATIONS.filter(a => !disabled.includes(a));
+    } else if (occupant.get('affiliation') === 'admin') {
+        return AFFILIATIONS.filter(a => !['owner', 'admin', ...disabled].includes(a));
+    } else {
+        return [];
+    }
+}
+
+// Necessary for tests
+_converse.getAssignableAffiliations = getAssignableAffiliations;
 
 /**
  * Send IQ stanzas to the server to modify affiliations for users in this groupchat.

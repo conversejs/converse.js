@@ -338,9 +338,12 @@ describe("The groupchat moderator tool", function () {
         _converse.connection._dataRecv(mock.createRequest(error));
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
 
+        const alert = await u.waitUntil(() => modal.el.querySelector('.alert'));
+        expect(alert.textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
+
         const user_els = modal.el.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
-        expect(user_els[0].textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
+        expect(user_els[0].textContent.trim()).toBe('No users with that affiliation found.');
     }));
 
     it("shows an error message if a particular affiliation may not be set",
@@ -452,23 +455,23 @@ describe("The groupchat moderator tool", function () {
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(enter);
 
-        const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
+        await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
         const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
 
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner']);
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['admin', 'member', 'outcast', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['admin', 'member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin']);
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['member', 'outcast', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin', 'outcast']);
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['member', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['member', 'none']);
 
-        expect(modal.getAssignableRoles(occupant)).toEqual(['moderator', 'participant', 'visitor']);
+        expect(_converse.getAssignableRoles(occupant)).toEqual(['moderator', 'participant', 'visitor']);
 
         _converse.api.settings.set('modtools_disable_assign', ['admin', 'moderator']);
-        expect(modal.getAssignableRoles(occupant)).toEqual(['participant', 'visitor']);
+        expect(_converse.getAssignableRoles(occupant)).toEqual(['participant', 'visitor']);
     }));
 });

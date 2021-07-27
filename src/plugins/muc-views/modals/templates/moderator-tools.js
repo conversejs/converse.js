@@ -12,7 +12,7 @@ export default (o) => {
                     ${modal_header_close_button}
                 </div>
                 <div class="modal-body d-flex flex-column">
-                    <converse-modtools .muc=${o.muc} .model=${o.model}></converse-modtools>
+                    <converse-modtools jid=${o.jid} affiliation=${o.affiliation}></converse-modtools>
                 </div>
             </div>
         </div>`;

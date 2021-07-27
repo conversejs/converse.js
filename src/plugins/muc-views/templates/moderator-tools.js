@@ -169,6 +169,8 @@ export default (o) => {
         ${ show_both_tabs ? tpl_navigation() : '' }
 
         <div class="tab-content">
+
+            ${ o.queryable_affiliations.length ? html`
             <div class="tab-pane tab-pane--columns ${ o.queryable_affiliations.length ? 'active' : ''}" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
                 <form class="converse-form query-affiliation" @submit=${o.queryAffiliation}>
                     <p class="helptext pb-3">${i18n_helptext_affiliation}</p>
@@ -208,8 +210,9 @@ export default (o) => {
                                 (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(new RegExp(o.affiliations_filter, 'i')) ? affiliation_list_item(Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
-            </div>
+            </div>` : '' }
 
+            ${ o.queryable_roles.length ? html`
             <div class="tab-pane tab-pane--columns ${ !show_both_tabs && o.queryable_roles.length ? 'active' : ''}" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
                 <form class="converse-form query-role" @submit=${o.queryRole}>
                     <p class="helptext pb-3">${i18n_helptext_role}</p>
@@ -242,6 +245,6 @@ export default (o) => {
                         ${ (o.users_with_role || []).map(item => (item.nick.match(o.roles_filter) ? role_list_item(Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
-            </div>
+            </div>`: '' }
         </div>`;
 }

@@ -1,11 +1,10 @@
 /**
- * @copyright Shachaf Ben-Kiki and the Converse.js contributors
+ * @copyright Shachaf Ben-Kiki, JC Brand
  * @description
  *  Started as a fork of Shachaf Ben-Kiki's jsgif library
  *  https://github.com/shachaf/jsgif
  * @license MIT License
  */
-
 import Stream from './stream.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { parseGIF } from './utils.js';
@@ -146,6 +145,7 @@ export default class ConverseGif {
             return;
         }
         if ((timestamp - previous_timestamp) < frame_delay) {
+            this.hovering ? this.drawPauseIcon() : this.putFrame(this.frame_idx);
             // We need to wait longer
             requestAnimationFrame(ts => this.onAnimationFrame(ts, previous_timestamp, frame_delay));
             return;
@@ -404,8 +404,8 @@ export default class ConverseGif {
         this.ctx.globalCompositeOperation = 'copy';
         this.ctx.drawImage(this.offscreenCanvas, 0, 0);
 
-        if (show_pause_on_hover) {
-            this.hovering && this.drawPauseIcon();
+        if (show_pause_on_hover && this.hovering) {
+            this.drawPauseIcon();
         }
     }
 

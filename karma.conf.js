@@ -22,13 +22,13 @@ module.exports = function(config) {
         served: true,
         nocache: false
       },
-      { pattern: "node_modules/sinon/pkg/sinon.js", type: 'module' },
-      { pattern: "spec/mock.js", type: 'module' },
+      { pattern: "src/shared/tests/mock.js", type: 'module' },
 
       { pattern: "src/headless/plugins/caps/tests/caps.js", type: 'module' },
       { pattern: "src/headless/plugins/chat/tests/api.js", type: 'module' },
       { pattern: "src/headless/plugins/disco/tests/disco.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/affiliations.js", type: 'module' },
+      { pattern: "src/headless/plugins/muc/tests/muc.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/pruning.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/registration.js", type: 'module' },
       { pattern: "src/headless/plugins/ping/tests/ping.js", type: 'module' },

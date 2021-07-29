@@ -257,16 +257,21 @@ const ChatRoomMixin = {
      */
     async onHiddenChange () {
         const conn_status = this.session.get('connection_status');
-        if (this.get('hidden') && conn_status === converse.ROOMSTATUS.ENTERED) {
-            if (api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
+        if (this.get('hidden')) {
+            if (conn_status === converse.ROOMSTATUS.ENTERED &&
+                    api.settings.get('muc_subscribe_to_rai') &&
+                    this.getOwnAffiliation() !== 'none') {
                 if (conn_status !== converse.ROOMSTATUS.DISCONNECTED) {
                     this.sendMarkerForLastMessage('received', true);
                     await this.leave();
                 }
                 this.enableRAI();
             }
-        } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
-            this.rejoin();
+        } else {
+            if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
+                this.rejoin();
+            }
+            this.clearUnreadMsgCounter();
         }
     },
 
@@ -2570,39 +2575,17 @@ const ChatRoomMixin = {
         }
     },
 
-    /**
-     * Given a newly received {@link _converse.Message} instance,
-     * update the unread counter if necessary.
-     * @private
-     * @method _converse.ChatRoom#handleUnreadMessage
-     * @param { XMLElement } - The <messsage> stanza
-     */
-    handleUnreadMessage (message) {
-        if (!message?.get('body')) {
-            return;
+    incrementUnreadMsgsCounter (message) {
+        const settings = {
+            'num_unread_general': this.get('num_unread_general') + 1
+        };
+        if (this.get('num_unread_general') === 0) {
+            settings['first_unread_id'] = message.get('id');
         }
-        if (u.isNewMessage(message)) {
-            if (message.get('sender') === 'me') {
-                // We remove the "scrolled" flag so that the chat area
-                // gets scrolled down. We always want to scroll down
-                // when the user writes a message as opposed to when a
-                // message is received.
-                this.ui.set('scrolled', false);
-            } else if (this.isHidden() || this.ui.get('scrolled')) {
-                const settings = {
-                    'num_unread_general': this.get('num_unread_general') + 1
-                };
-                if (this.get('num_unread_general') === 0) {
-                    settings['first_unread_id'] = message.get('id');
-                }
-                if (this.isUserMentioned(message)) {
-                    settings.num_unread = this.get('num_unread') + 1;
-                }
-                this.save(settings);
-            } else {
-                this.sendMarkerForMessage(message);
-            }
+        if (this.isUserMentioned(message)) {
+            settings.num_unread = this.get('num_unread') + 1;
         }
+        this.save(settings);
     },
 
     clearUnreadMsgCounter () {

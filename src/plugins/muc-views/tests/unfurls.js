@@ -43,7 +43,7 @@ describe("A Groupchat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
-        expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe('https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg');
+        expect(unfurl.querySelector('.card-img-top').getAttribute('text')).toBe('https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg');
     }));
 
     it("will render an unfurl with limited OGP data", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -78,7 +78,7 @@ describe("A Groupchat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
-        expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe('https://conversejs.org/dist/images/custom_emojis/converse.png');
+        expect(unfurl.querySelector('.card-img-top').getAttribute('text')).toBe('https://conversejs.org/dist/images/custom_emojis/converse.png');
         expect(unfurl.querySelector('.card-body')).toBe(null);
         expect(unfurl.querySelector('a')).toBe(null);
     }));

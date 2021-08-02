@@ -1,5 +1,5 @@
+import { getURI, isGIFURL, isImageDomainAllowed } from '@converse/headless/utils/url.js';
 import { html } from 'lit';
-import { getURI, isImageDomainAllowed } from '@converse/headless/utils/url.js';
 
 
 function isValidURL (url) {
@@ -12,10 +12,10 @@ function isValidImage (image) {
 }
 
 const tpl_url_wrapper = (o, wrapped_template) =>
-    (o.url && isValidURL(o.url)) ?
+    (o.url && isValidURL(o.url) && !isGIFURL(o.url)) ?
         html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>` : wrapped_template(o);
 
-const tpl_image = (o) => html`<img class="card-img-top" src="${o.image}" @load=${o.onload}/>`;
+const tpl_image = (o) => html`<converse-rich-text class="card-img-top" text="${o.image}" show_images hide_media_urls .onImgLoad=${o.onload}></converse-rich-text>`;
 
 export default (o) => {
     const valid_image = isValidImage(o.image);

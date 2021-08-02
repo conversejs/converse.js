@@ -3,16 +3,25 @@ import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless/core';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { html } from 'lit';
-import { isURLWithImageExtension } from '@converse/headless/utils/url.js';
 
 import './styles/gif.scss';
 
 export default class ConverseGIF extends CustomElement {
     static get properties () {
+        /**
+         * @typedef { Object } ConverseGIFComponentProperties
+         * @property { Boolean } autoplay
+         * @property { Boolean } noloop
+         * @property { String } progress_color
+         * @property { String } nick
+         * @property { ('url'|'empty'|'error') } fallback
+         * @property { String } src
+         */
         return {
             'autoplay': { type: Boolean },
             'noloop': { type: Boolean },
             'progress_color': { type: String },
+            'fallback': { type: String },
             'src': { type: String },
         };
     }
@@ -21,6 +30,7 @@ export default class ConverseGIF extends CustomElement {
         super();
         this.autoplay = false;
         this.noloop = false;
+        this.fallback = 'url';
     }
 
     initialize () {
@@ -51,10 +61,19 @@ export default class ConverseGIF extends CustomElement {
     }
 
     render () {
-        return html`<canvas class="gif-canvas"
-            @mouseover=${() => this.setHover()}
-            @mouseleave=${() => this.unsetHover()}
-            @click=${ev => this.onControlsClicked(ev)}><img class="gif" src="${this.src}"></a></canvas>`;
+        return (this.supergif?.load_error && ['url', 'empty'].includes(this.fallback)) ? this.renderErrorFallback() :
+            html`<canvas class="gif-canvas"
+                @mouseover=${() => this.setHover()}
+                @mouseleave=${() => this.unsetHover()}
+                @click=${ev => this.onControlsClicked(ev)}><img class="gif" src="${this.src}"></a></canvas>`;
+    }
+
+    renderErrorFallback () {
+        if (this.fallback === 'url') {
+            return getHyperlinkTemplate(this.src);
+        } else if (this.fallback === 'empty') {
+            return '';
+        }
     }
 
     setHover () {
@@ -77,12 +96,6 @@ export default class ConverseGIF extends CustomElement {
             // When the user manually clicks play, we turn on looping
             this.supergif.options.loop = true;
             this.supergif.play();
-        }
-    }
-
-    onError () {
-        if (isURLWithImageExtension(this.src)) {
-            this.setValue(getHyperlinkTemplate(this.src));
         }
     }
 }

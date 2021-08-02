@@ -44,6 +44,7 @@ export default class ConverseGif {
             opts
         );
 
+        this.el = el;
         this.gif_el = el.querySelector('img');
         this.canvas = el.querySelector('canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -259,6 +260,7 @@ export default class ConverseGif {
         }; // Fake header.
         this.frames = [];
         this.drawError();
+        this.el.requestUpdate();
     }
 
     handleHeader (header) {

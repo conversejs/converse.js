@@ -2,6 +2,7 @@
 
 ## 9.0.0 (Unreleased)
 
+- Compress new avatar images before uploading them
 - Add initial support for XEP-0421 occupant Ids.
 - Use more specific types for form fields based on XEP-0122
 - Fix trimming of chats in overlayed view mode

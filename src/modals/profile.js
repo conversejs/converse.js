@@ -6,6 +6,16 @@ import { __ } from '../i18n';
 import { _converse, api } from "@converse/headless/core";
 
 const { sizzle } = converse.env;
+const Compress = require('client-compress');
+
+const options = {
+  targetSize: 0.1,
+  quality: 0.75,
+  maxWidth: 256,
+  maxHeight: 256
+}
+
+const compress = new Compress(options)
 
 
 const ProfileModal = BootstrapModal.extend({
@@ -83,14 +93,19 @@ const ProfileModal = BootstrapModal.extend({
             });
             this.setVCard(data);
         } else {
-            reader.onloadend = () => {
-                Object.assign(data, {
-                    'image': btoa(reader.result),
-                    'image_type': image_file.type
-                });
-                this.setVCard(data);
-            };
-            reader.readAsBinaryString(image_file);
+            const files = [image_file];
+            compress.compress(files).then((conversions) => {
+                const { photo, info } = conversions[0];
+
+                reader.onloadend = () => {
+                    Object.assign(data, {
+                        'image': btoa(reader.result),
+                        'image_type': image_file.type
+                    });
+                    this.setVCard(data);
+                };
+                reader.readAsBinaryString(photo.data);
+            });
         }
     }
 });

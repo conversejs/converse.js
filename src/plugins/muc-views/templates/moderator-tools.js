@@ -68,6 +68,12 @@ const tpl_set_role_form = (o) => {
 }
 
 
+const role_form_toggle = (o) => html`
+    <a href="#" data-form="role-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+        <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+    </a>`;
+
+
 const role_list_item = (o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
@@ -78,7 +84,7 @@ const role_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? html`<a href="#" data-form="role-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a>` : ''}</div>
+                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? role_form_toggle(o) : ''}</div>
                 ${o.assignable_roles.length ? tpl_set_role_form(o) : ''}
             </li>
         </ul>
@@ -116,6 +122,12 @@ const tpl_set_affiliation_form = (o) => {
 }
 
 
+const affiliation_form_toggle = (o) => html`
+    <a href="#" data-form="affiliation-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+        <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+    </a>`;
+
+
 const affiliation_list_item = (o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
@@ -126,7 +138,7 @@ const affiliation_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? html`<a href="#" data-form="affiliation-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a>` : ''}</div>
+                <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? affiliation_form_toggle(o) : ''}</div>
                 ${o.assignable_affiliations.length ? tpl_set_affiliation_form(o) : ''}
             </li>
         </ul>

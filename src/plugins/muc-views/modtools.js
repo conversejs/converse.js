@@ -135,8 +135,9 @@ export default class ModeratorTools extends CustomElement {
     toggleForm (ev) { // eslint-disable-line class-methods-use-this
         ev.stopPropagation();
         ev.preventDefault();
-        const form_class = ev.target.getAttribute('data-form');
-        const form = u.ancestor(ev.target, '.list-group-item').querySelector(`.${form_class}`);
+        const toggle = u.ancestor(ev.target, '.toggle-form');
+        const form_class = toggle.getAttribute('data-form');
+        const form = u.ancestor(toggle, '.list-group-item').querySelector(`.${form_class}`);
         if (u.hasClass('hidden', form)) {
             u.removeClass('hidden', form);
         } else {

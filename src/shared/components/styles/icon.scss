@@ -1,0 +1,10 @@
+converse-icon {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    fill: var(--subdued-color);
+
+    &:hover {
+	fill: var(--text-color);
+    }
+}

@@ -1066,8 +1066,7 @@ const ChatBox = ModelWithContact.extend({
      */
     isHidden () {
         // Note: This methods gets overridden by converse-minimize
-        const hidden = _converse.isUniView() && this.get('hidden');
-        return hidden || this.isScrolledUp() || _converse.windowState === 'hidden';
+        return this.get('hidden') || this.isScrolledUp() || _converse.windowState === 'hidden';
     },
 
     /**
@@ -1088,21 +1087,25 @@ const ChatBox = ModelWithContact.extend({
                 // when the user writes a message as opposed to when a
                 // message is received.
                 this.ui.set('scrolled', false);
-            } else if (this.isHidden() || this.ui.get('scrolled')) {
-                const settings = {
-                    'num_unread': this.get('num_unread') + 1
-                };
-                if (this.get('num_unread') === 0) {
-                    settings['first_unread_id'] = message.get('id');
-                }
-                this.save(settings);
+            } else if (this.isHidden()) {
+                this.incrementUnreadMsgsCounter(message);
             } else {
                 this.sendMarkerForMessage(message);
             }
         }
     },
 
-    clearUnreadMsgCounter() {
+    incrementUnreadMsgsCounter (message) {
+        const settings = {
+            'num_unread': this.get('num_unread') + 1
+        };
+        if (this.get('num_unread') === 0) {
+            settings['first_unread_id'] = message.get('id');
+        }
+        this.save(settings);
+    },
+
+    clearUnreadMsgCounter () {
         if (this.get('num_unread') > 0) {
             this.sendMarkerForMessage(this.messages.last());
         }

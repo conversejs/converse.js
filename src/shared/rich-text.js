@@ -87,6 +87,7 @@ export class RichText extends String {
         this.references = [];
         this.render_styling = options?.render_styling;
         this.show_images = options?.show_images;
+        this.hide_media_urls = options?.hide_media_urls;
     }
 
     /**
@@ -117,17 +118,19 @@ export class RichText extends String {
             let template;
 
             if (this.show_images && isGIFURL(url_text) && isImageDomainAllowed(url_text)) {
-                template = tpl_gif(filtered_url);
+                template = tpl_gif(filtered_url, this.hide_media_urls);
             } else if (this.show_images && isImageURL(url_text) && isImageDomainAllowed(url_text)) {
                 template = tpl_image({
                     'url': filtered_url,
+                    // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
+                    'href': this.hide_media_urls ? null : filtered_url,
                     'onClick': this.onImgClick,
                     'onLoad': this.onImgLoad
                 });
             } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
-                template = tpl_video(filtered_url);
+                template = tpl_video(filtered_url, this.hide_media_urls);
             } else if (this.embed_audio && isAudioURL(url_text) && isAudioDomainAllowed(url_text)) {
-                template = tpl_audio(filtered_url);
+                template = tpl_audio(filtered_url, this.hide_media_urls);
             } else {
                 template = getHyperlinkTemplate(filtered_url);
             }

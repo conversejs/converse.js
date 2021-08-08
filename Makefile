@@ -209,7 +209,6 @@ eslint: node_modules
 	$(ESLINT) src/utils/*.js
 	$(ESLINT) src/headless/*.js
 	$(ESLINT) src/headless/utils/*.js
-	$(ESLINT) spec/ --global converse
 
 .PHONY: check
 check: eslint | dist/converse.js dist/converse.css

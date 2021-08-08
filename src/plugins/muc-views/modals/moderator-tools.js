@@ -7,7 +7,8 @@ const ModeratorToolsModal = BootstrapModal.extend({
     persistent: true,
 
     initialize (attrs) {
-        this.muc = attrs.muc;
+        this.jid = attrs.jid;
+        this.affiliation = attrs.affiliation;
         BootstrapModal.prototype.initialize.apply(this, arguments);
     },
 

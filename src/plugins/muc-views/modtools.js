@@ -5,6 +5,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import { getAssignableRoles } from '@converse/headless/plugins/muc/utils.js';
+import { getOpenPromise } from '@converse/openpromise';
 import {
     getAffiliationList,
     getAssignableAffiliations,
@@ -16,11 +17,13 @@ const { Strophe, sizzle, u } = converse.env;
 export default class ModeratorTools extends CustomElement {
     static get properties () {
         return {
+            affiliation: { type: String },
             affiliations_filter: { type: String, attribute: false },
             alert_message: { type: String, attribute: false },
             alert_type: { type: String, attribute: false },
-            model: { type: Object },
-            muc: { type: Object },
+            jid: { type: String },
+            muc: { type: Object, attribute: false },
+            role: { type: String },
             roles_filter: { type: String, attribute: false },
             users_with_affiliation: { type: Array, attribute: false },
             users_with_role: { type: Array, attribute: false },
@@ -29,7 +32,9 @@ export default class ModeratorTools extends CustomElement {
 
     constructor () {
         super();
+        this.affiliation = '';
         this.affiliations_filter = '';
+        this.role = '';
         this.roles_filter = '';
     }
 
@@ -38,15 +43,24 @@ export default class ModeratorTools extends CustomElement {
         this.initialize();
     }
 
-    initialize () {
-        this.listenTo(this.model, 'change:role', this.onSearchRoleChange, this);
-        this.listenTo(this.model, 'change:affiliation', this.onSearchAffiliationChange, this);
+    updated (changed) {
+        changed.has('role') && this.onSearchRoleChange();
+        changed.has('affiliation') && this.onSearchAffiliationChange();
+        changed.has('jid') && changed.get('jid') && this.initialize();
+    }
+
+    async initialize () {
+        this.initialized = getOpenPromise();
+        const muc = await api.rooms.get(this.jid);
+        await muc.initialized;
+        this.muc = muc;
+        this.initialized.resolve();
     }
 
     render () {
-        const occupant = this.muc.occupants.findWhere({ 'jid': _converse.bare_jid });
-        return tpl_moderator_tools(
-            Object.assign(this.model.toJSON(), {
+        if (this.muc?.occupants) {
+            const occupant = this.muc.occupants.findWhere({ 'jid': _converse.bare_jid });
+            return tpl_moderator_tools({
                 'affiliations_filter': this.affiliations_filter,
                 'alert_message': this.alert_message,
                 'alert_type': this.alert_type,
@@ -67,18 +81,22 @@ export default class ModeratorTools extends CustomElement {
                 'users_with_affiliation': this.users_with_affiliation,
                 'users_with_role': this.users_with_role,
             })
-        );
+        } else {
+            return '';
+        }
     }
 
     async onSearchAffiliationChange () {
+        if (!this.affiliation) {
+            return;
+        }
+        await this.initialized;
         this.clearAlert();
         this.loading_users_with_affiliation = true;
         this.users_with_affiliation = null;
 
-        const affiliation = this.model.get('affiliation');
         if (this.shouldFetchAffiliationsList()) {
-            const muc_jid = this.muc.get('jid');
-            const result = await getAffiliationList(affiliation, muc_jid);
+            const result = await getAffiliationList(this.affiliation, this.jid);
             if (result instanceof Error) {
                 this.alert(result.message, 'danger');
                 this.users_with_affiliation = [];
@@ -86,18 +104,22 @@ export default class ModeratorTools extends CustomElement {
                 this.users_with_affiliation = result;
             }
         } else {
-            this.users_with_affiliation = this.muc.getOccupantsWithAffiliation(affiliation);
+            this.users_with_affiliation = this.muc.getOccupantsWithAffiliation(this.affiliation);
         }
         this.loading_users_with_affiliation = false;
     }
 
-    onSearchRoleChange () {
+    async onSearchRoleChange () {
+        if (!this.role) {
+            return;
+        }
+        await this.initialized;
         this.clearAlert();
-        this.users_with_role = this.muc.getOccupantsWithRole(this.model.get('role'));
+        this.users_with_role = this.muc.getOccupantsWithRole(this.role);
     }
 
     shouldFetchAffiliationsList () {
-        const affiliation = this.model.get('affiliation');
+        const affiliation = this.affiliation;
         if (affiliation === 'none') {
             return false;
         }
@@ -113,8 +135,9 @@ export default class ModeratorTools extends CustomElement {
     toggleForm (ev) { // eslint-disable-line class-methods-use-this
         ev.stopPropagation();
         ev.preventDefault();
-        const form_class = ev.target.getAttribute('data-form');
-        const form = u.ancestor(ev.target, '.list-group-item').querySelector(`.${form_class}`);
+        const toggle = u.ancestor(ev.target, '.toggle-form');
+        const form_class = toggle.getAttribute('data-form');
+        const form = u.ancestor(toggle, '.list-group-item').querySelector(`.${form_class}`);
         if (u.hasClass('hidden', form)) {
             u.removeClass('hidden', form);
         } else {
@@ -136,8 +159,8 @@ export default class ModeratorTools extends CustomElement {
         ev.preventDefault();
         const data = new FormData(ev.target);
         const role = data.get('role');
-        this.model.set({ 'role': null }, { 'silent': true });
-        this.model.set({ 'role': role });
+        this.role = null;
+        this.role = role;
     }
 
     queryAffiliation (ev) {
@@ -145,8 +168,8 @@ export default class ModeratorTools extends CustomElement {
         ev.preventDefault();
         const data = new FormData(ev.target);
         const affiliation = data.get('affiliation');
-        this.model.set({ 'affiliation': null }, { 'silent': true });
-        this.model.set({ 'affiliation': affiliation });
+        this.affiliation = null;
+        this.affiliation = affiliation;
     }
 
     alert (message, type) {
@@ -169,7 +192,7 @@ export default class ModeratorTools extends CustomElement {
             'jid': data.get('jid'),
             'reason': data.get('reason'),
         };
-        const current_affiliation = this.model.get('affiliation');
+        const current_affiliation = this.affiliation;
         const muc_jid = this.muc.get('jid');
         try {
             await setAffiliation(affiliation, muc_jid, [attrs]);
@@ -185,8 +208,8 @@ export default class ModeratorTools extends CustomElement {
             return;
         }
         await this.muc.occupants.fetchMembers();
-        this.model.set({ 'affiliation': null }, { 'silent': true });
-        this.model.set({ 'affiliation': current_affiliation });
+        this.affiliation = null;
+        this.affiliation = current_affiliation;
         this.alert(__('Affiliation changed'), 'primary');
     }
 
@@ -198,15 +221,15 @@ export default class ModeratorTools extends CustomElement {
         const occupant = this.muc.getOccupant(data.get('jid') || data.get('nick'));
         const role = data.get('role');
         const reason = data.get('reason');
-        const current_role = this.model.get('role');
+        const current_role = this.role;
         this.muc.setRole(
             occupant,
             role,
             reason,
             () => {
                 this.alert(__('Role changed'), 'primary');
-                this.model.set({ 'role': null }, { 'silent': true });
-                this.model.set({ 'role': current_role });
+                this.role = null;
+                this.role = current_role;
             },
             e => {
                 if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {

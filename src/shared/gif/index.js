@@ -1,14 +1,15 @@
 /**
- * @copyright Shachaf Ben-Kiki and the Converse.js contributors
+ * @copyright Shachaf Ben-Kiki, JC Brand
  * @description
  *  Started as a fork of Shachaf Ben-Kiki's jsgif library
  *  https://github.com/shachaf/jsgif
  * @license MIT License
  */
-
 import Stream from './stream.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { parseGIF } from './utils.js';
+
+const DELAY_FACTOR = 10;
 
 
 export default class ConverseGif {
@@ -19,7 +20,6 @@ export default class ConverseGif {
      * @param { Object } [options]
      * @param { Number } [options.width] - The width, in pixels, of the canvas
      * @param { Number } [options.height] - The height, in pixels, of the canvas
-     * @param { Number } [options.loop_delay=0] - The amount of time to pause (in ms) after each single loop (iteration)
      * @param { Boolean } [options.loop=true] - Setting this to `true` will enable looping of the gif
      * @param { Boolean } [options.autoplay=true] - Same as the rel:autoplay attribute above, this arg overrides the img tag info.
      * @param { Number } [options.max_width] - Scale images over max_width down to max_width. Helpful with mobile.
@@ -35,7 +35,6 @@ export default class ConverseGif {
                 width: null,
                 height: null,
                 autoplay: true,
-                loop_delay: 0,
                 loop: true,
                 show_progress_bar: true,
                 progress_bg_color: 'rgba(0,0,0,0.4)',
@@ -45,6 +44,7 @@ export default class ConverseGif {
             opts
         );
 
+        this.el = el;
         this.gif_el = el.querySelector('img');
         this.canvas = el.querySelector('canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -63,7 +63,7 @@ export default class ConverseGif {
         this.playing = this.options.autoplay;
         this.transparency = null;
 
-        this.frame_idx = -1;
+        this.frame_idx = 0;
         this.iteration_count = 0;
         this.start = null;
 
@@ -85,75 +85,80 @@ export default class ConverseGif {
             this.ctx.scale(this.getCanvasScale(), this.getCanvasScale());
         }
 
+        // Show the first frame
+        this.frame_idx = 0;
+        this.putFrame(this.frame_idx);
+
         if (this.options.autoplay) {
-            this.play();
-        } else {
-            this.frame_idx = 0;
-            this.putFrame(this.frame_idx);
+            const delay = (this.frames[this.frame_idx]?.delay ?? 0) * DELAY_FACTOR;
+            setTimeout(() => this.play(), delay);
         }
     }
 
-    getCurrentFrame () {
-        return this.frame_idx;
-    }
-
-    moveTo (frame_idx) {
-        this.frame_idx = frame_idx;
-        this.putFrame(this.frame_idx);
-    }
-
     /**
-     * Gets the index of the frame "up next".
+     * Gets the index of the frame "up next"
      * @returns {number}
      */
     getNextFrameNo () {
         return (this.frame_idx + 1 + this.frames.length) % this.frames.length;
     }
 
-    stepFrame (amount) {
-        this.frame_idx += amount;
-        this.putFrame(this.frame_idx);
-    }
-
-    completeLoop () {
-        if (!this.playing) {
-            return;
-        }
-        this.options.onIterationEnd?.(this);
+    /**
+     * Called once we've looped through all frames in the GIF
+     * @returns { Boolean } - Returns `true` if the GIF is now paused (i.e. further iterations are not desired)
+     */
+    onIterationEnd () {
         this.iteration_count++;
-
-        this.moveTo(0);
-
-        if (this.options.loop !== false || this.iteration_count < 0) {
-            this.doStep();
-        } else {
+        this.options.onIterationEnd?.(this);
+        if (!this.options.loop) {
             this.pause();
+            return true;
         }
+        return false;
     }
 
-    doStep (timestamp, start, frame_delay) {
+    /**
+     * Inner callback for the `requestAnimationFrame` function.
+     *
+     * This method gets wrapped by an arrow function so that the `previous_timestamp` and
+     * `frame_delay` parameters can also be passed in. The `timestamp`
+     * parameter comes from `requestAnimationFrame`.
+     *
+     * The purpose of this method is to call `putFrame` with the right delay
+     * in order to render the GIF animation.
+     *
+     * Note, this method will cause the *next* upcoming frame to be rendered,
+     * not the current one.
+     *
+     * This means `this.frame_idx` will be incremented before calling `this.putFrame`, so
+     * `putFrame(0)` needs to be called *before* this method, otherwise the
+     * animation will incorrectly start from frame #1 (this is done in `initPlayer`).
+     *
+     * @param { DOMHighRestTimestamp } timestamp - The timestamp as returned by `requestAnimationFrame`
+     * @param { DOMHighRestTimestamp } previous_timestamp - The timestamp from the previous iteration of this method.
+     * We need this in order to calculate whether we have waited long enough to
+     * show the next frame.
+     * @param { Number } frame_delay - The delay (in 1/100th of a second)
+     * before the currently being shown frame should be replaced by a new one.
+     */
+    onAnimationFrame (timestamp, previous_timestamp, frame_delay) {
         if (!this.playing) {
             return;
         }
-        if (timestamp) {
-            // If timestamp is set, this is a callback from requestAnimationFrame
-            const elapsed = timestamp - start;
-            if (elapsed < frame_delay) {
-                requestAnimationFrame(ts => this.doStep(ts, start, frame_delay));
-                return;
-            }
+        if ((timestamp - previous_timestamp) < frame_delay) {
+            this.hovering ? this.drawPauseIcon() : this.putFrame(this.frame_idx);
+            // We need to wait longer
+            requestAnimationFrame(ts => this.onAnimationFrame(ts, previous_timestamp, frame_delay));
+            return;
         }
-        this.stepFrame(1);
-
-        const next_frame_no = this.getNextFrameNo();
-        if (next_frame_no === 0) {
-            const delay = ((this.frames[this.frame_idx]?.delay ?? 0) * 10) + (this.options.loop_delay || 0);
-            setTimeout(() => this.completeLoop(), delay);
-        } else {
-            const delay = (this.frames[this.frame_idx]?.delay ?? 0) * 10;
-            const start = (delay ? timestamp : 0) || 0;
-            requestAnimationFrame(ts => this.doStep(ts, start, delay));
+        const next_frame = this.getNextFrameNo();
+        if (next_frame === 0 && this.onIterationEnd()) {
+            return;
         }
+        this.frame_idx = next_frame;
+        this.putFrame(this.frame_idx);
+        const delay = (this.frames[this.frame_idx]?.delay || 8) * DELAY_FACTOR;
+        requestAnimationFrame(ts => this.onAnimationFrame(ts, timestamp, delay));
     }
 
     setSizes (w, h) {
@@ -255,6 +260,7 @@ export default class ConverseGif {
         }; // Fake header.
         this.frames = [];
         this.drawError();
+        this.el.requestUpdate();
     }
 
     handleHeader (header) {
@@ -400,8 +406,8 @@ export default class ConverseGif {
         this.ctx.globalCompositeOperation = 'copy';
         this.ctx.drawImage(this.offscreenCanvas, 0, 0);
 
-        if (show_pause_on_hover) {
-            this.hovering && this.drawPauseIcon();
+        if (show_pause_on_hover && this.hovering) {
+            this.drawPauseIcon();
         }
     }
 
@@ -417,7 +423,7 @@ export default class ConverseGif {
      */
     play () {
         this.playing = true;
-        requestAnimationFrame(() => this.doStep());
+        requestAnimationFrame(ts => this.onAnimationFrame(ts, 0, 0));
     }
 
     /**
@@ -433,7 +439,7 @@ export default class ConverseGif {
             return;
         }
         // Clear the potential play button by re-rendering the current frame
-        this.putFrame(this.getCurrentFrame(), false);
+        this.putFrame(this.frame_idx, false);
 
         this.ctx.globalCompositeOperation = 'source-over';
 
@@ -477,7 +483,7 @@ export default class ConverseGif {
         }
 
         // Clear the potential pause button by re-rendering the current frame
-        this.putFrame(this.getCurrentFrame(), false);
+        this.putFrame(this.frame_idx, false);
 
         this.ctx.globalCompositeOperation = 'source-over';
 

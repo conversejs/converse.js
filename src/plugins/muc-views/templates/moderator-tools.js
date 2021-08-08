@@ -68,6 +68,12 @@ const tpl_set_role_form = (o) => {
 }
 
 
+const role_form_toggle = (o) => html`
+    <a href="#" data-form="role-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+        <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+    </a>`;
+
+
 const role_list_item = (o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
@@ -78,7 +84,7 @@ const role_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? html`<a href="#" data-form="role-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a>` : ''}</div>
+                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? role_form_toggle(o) : ''}</div>
                 ${o.assignable_roles.length ? tpl_set_role_form(o) : ''}
             </li>
         </ul>
@@ -116,6 +122,12 @@ const tpl_set_affiliation_form = (o) => {
 }
 
 
+const affiliation_form_toggle = (o) => html`
+    <a href="#" data-form="affiliation-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+        <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+    </a>`;
+
+
 const affiliation_list_item = (o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
@@ -126,7 +138,7 @@ const affiliation_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? html`<a href="#" data-form="affiliation-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a>` : ''}</div>
+                <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? affiliation_form_toggle(o) : ''}</div>
                 ${o.assignable_affiliations.length ? tpl_set_affiliation_form(o) : ''}
             </li>
         </ul>
@@ -169,6 +181,8 @@ export default (o) => {
         ${ show_both_tabs ? tpl_navigation() : '' }
 
         <div class="tab-content">
+
+            ${ o.queryable_affiliations.length ? html`
             <div class="tab-pane tab-pane--columns ${ o.queryable_affiliations.length ? 'active' : ''}" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
                 <form class="converse-form query-affiliation" @submit=${o.queryAffiliation}>
                     <p class="helptext pb-3">${i18n_helptext_affiliation}</p>
@@ -208,8 +222,9 @@ export default (o) => {
                                 (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(new RegExp(o.affiliations_filter, 'i')) ? affiliation_list_item(Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
-            </div>
+            </div>` : '' }
 
+            ${ o.queryable_roles.length ? html`
             <div class="tab-pane tab-pane--columns ${ !show_both_tabs && o.queryable_roles.length ? 'active' : ''}" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
                 <form class="converse-form query-role" @submit=${o.queryRole}>
                     <p class="helptext pb-3">${i18n_helptext_role}</p>
@@ -242,6 +257,6 @@ export default (o) => {
                         ${ (o.users_with_role || []).map(item => (item.nick.match(o.roles_filter) ? role_list_item(Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
-            </div>
+            </div>`: '' }
         </div>`;
 }

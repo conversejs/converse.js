@@ -15,7 +15,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-content canvas').length);
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
-        const html = `<converse-gif autoplay="" noloop="" src="${gif_url}">`+
+        const html = `<converse-gif autoplay="" noloop="" fallback="empty" src="${gif_url}">`+
             `<canvas class="gif-canvas"><img class="gif" src="${gif_url}"></canvas></converse-gif>`+
             `<a target="_blank" rel="noopener" href="${gif_url}">${gif_url}</a>`;
         await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '').trim() === html, 1000);

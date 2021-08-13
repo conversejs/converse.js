@@ -7,6 +7,7 @@ import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
 import filesize from 'filesize';
 import log from '@converse/headless/log';
+import tpl_info_message from './templates/info-message.js';
 import tpl_message from './templates/message.js';
 import tpl_message_text from './templates/message-text.js';
 import tpl_spinner from 'templates/spinner.js';
@@ -87,21 +88,7 @@ export default class Message extends CustomElement {
     }
 
     renderInfoMessage () {
-        const isodate = dayjs(this.model.get('time')).toISOString();
-        const i18n_retry = __('Retry');
-        return html`
-            <div class="message chat-info chat-${this.model.get('type')}"
-                data-isodate="${isodate}"
-                data-type="${this.data_name}"
-                data-value="${this.data_value}">
-
-                <div class="chat-info__message">
-                    ${ this.model.getMessageText() }
-                </div>
-                ${ this.model.get('reason') ? html`<q class="reason">${this.model.get('reason')}</q>` : `` }
-                ${ this.model.get('error_text') ? html`<q class="reason">${this.model.get('error_text')}</q>` : `` }
-                ${ this.model.get('retry_event_id') ? html`<a class="retry" @click=${this.onRetryClicked}>${i18n_retry}</a>` : '' }
-            </div>`;
+        return tpl_info_message(this);
     }
 
     renderFileProgress () {

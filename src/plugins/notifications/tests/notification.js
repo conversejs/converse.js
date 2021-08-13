@@ -38,10 +38,6 @@ describe("Notifications", function () {
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
-                    if (!view.querySelectorAll('.chat-area').length) {
-                        view.renderChatArea();
-                    }
-
                     const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                     spyOn(window, 'Notification').and.returnValue(stub);
 

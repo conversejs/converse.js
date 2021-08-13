@@ -26,6 +26,32 @@ const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;
 
 /**
+ * Parses a message stanza for XEP-0317 MEP notification data
+ * @param { XMLElement } stanza - The message stanza
+ * @returns { Array } Returns an array of objects representing <activity> elements.
+ */
+export function getMEPActivities (stanza) {
+    const items_el = sizzle(`items[node="${Strophe.NS.CONFINFO}"]`, stanza).pop();
+    if (!items_el) {
+        return [];
+    }
+    const from = stanza.getAttribute('from');
+    const msgid = stanza.getAttribute('id');
+    const selector = `item `+
+        `conference-info[xmlns="${Strophe.NS.CONFINFO}"] `+
+        `activity[xmlns="${Strophe.NS.ACTIVITY}"]`;
+    return sizzle(selector, items_el).map(el => {
+        const message = el.querySelector('text')?.textContent;
+        if (message) {
+            const references = getReferences(stanza);
+            const reason = el.querySelector('reason')?.textContent;
+            return { from, msgid, message, reason,  references, 'type': 'info' };
+        }
+        return {};
+    });
+}
+
+/**
  * @private
  * @param { XMLElement } stanza - The message stanza
  * @param { XMLElement } original_stanza - The original stanza, that contains the

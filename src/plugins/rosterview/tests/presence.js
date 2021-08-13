@@ -29,7 +29,7 @@ describe("A sent presence stanza", function () {
             .toBe(`<presence xmlns="jabber:client">`+
                     `<status>My custom status</status>`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                     `</presence>`)
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
         await u.waitUntil(() => !u.isVisible(modal.el));
@@ -47,7 +47,7 @@ describe("A sent presence stanza", function () {
                     `<show>dnd</show>`+
                     `<status>My custom status</status>`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`)
     }));
 });

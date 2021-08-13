@@ -134,7 +134,7 @@ describe("The Controlbox", function () {
                 `<presence xmlns="jabber:client">`+
                     `<show>dnd</show>`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
             const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));
             const first_child = view.querySelector('.xmpp-status span:first-child');
@@ -161,7 +161,7 @@ describe("The Controlbox", function () {
                 `<presence xmlns="jabber:client">`+
                     `<status>I am happy</status>`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
 
             const view = await u.waitUntil(() => document.querySelector('converse-user-profile'));

@@ -82,13 +82,13 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(Strophe.serialize(sent_stanzas[1])).toBe(
             `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
         expect(Strophe.serialize(sent_stanzas[2])).toBe(
             `<presence to="montague.lit" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `<rai xmlns="urn:xmpp:rai:0"/>`+
             `</presence>`
         );
@@ -144,13 +144,13 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(Strophe.serialize(sent_presences[1])).toBe(
             `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
         expect(Strophe.serialize(sent_presences[2])).toBe(
             `<presence to="montague.lit" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `<rai xmlns="urn:xmpp:rai:0"/>`+
             `</presence>`
         );
@@ -197,13 +197,13 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(Strophe.serialize(sent_stanzas[0])).toBe(
             `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
         expect(Strophe.serialize(sent_stanzas[1])).toBe(
             `<presence to="montague.lit" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `<rai xmlns="urn:xmpp:rai:0"/>`+
             `</presence>`
         );

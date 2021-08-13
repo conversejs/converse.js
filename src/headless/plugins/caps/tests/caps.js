@@ -36,7 +36,7 @@ describe("A sent presence stanza", function () {
             `<presence xmlns="jabber:client">`+
                 `<status>Hello world</status>`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
 
@@ -47,7 +47,7 @@ describe("A sent presence stanza", function () {
                 `<show>away</show>`+
                 `<status>Going jogging</status>`+
                 `<priority>2</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
 
@@ -58,7 +58,7 @@ describe("A sent presence stanza", function () {
                 `<show>dnd</show>`+
                 `<status>Doing taxes</status>`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
     }));

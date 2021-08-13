@@ -2,6 +2,7 @@ import isObject from 'lodash-es/isObject';
 import log from "@converse/headless/log.js";
 import { ROLES } from '@converse/headless/plugins/muc/index.js';
 import { _converse, api, converse } from '@converse/headless/core.js';
+import { getMEPActivities } from '@converse/headless/plugins/muc/parsers.js';
 import { safeSave } from '@converse/headless/utils/core.js';
 
 const { Strophe, sizzle, u } = converse.env;
@@ -178,6 +179,54 @@ export async function autoJoinRooms () {
     api.trigger('roomsAutoJoined');
 }
 
+
+/**
+ * Given a stanza, look for XEP-0316 Room Notifications and create info
+ * messages for them.
+ * @param { XMLElement } stanza
+ */
+async function handleMEPNotification (stanza) {
+    const msgid = stanza.getAttribute('id');
+    const from = stanza.getAttribute('from');
+    const room = await api.rooms.get(from);
+    if (!room) {
+        log.warn(`Received a MEP message for a non-existent room: ${from}`);
+        return;
+    }
+    if (room.messages.findWhere({ msgid })) {
+        // We already handled this stanza before
+        return;
+    }
+    getMEPActivities(stanza, room).forEach(attrs => {
+        room.createMessage(attrs);
+        api.trigger('message', { stanza, attrs, 'chatbox': room });
+    });
+}
+
+
+function checkIfMEP (message) {
+    try {
+        if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
+            handleMEPNotification(message);
+        }
+    } catch (e) {
+        log.error(e.message);
+    }
+    return true;
+}
+
+
+export function registerPEPPushHandler () {
+    // Add a handler for devices pushed from other connected clients
+    _converse.connection.addHandler(checkIfMEP, null, 'message', 'headline');
+
+    // XXX: This is a hack. Prosody's MUC MAM doesn't allow for quering
+    // non-groupchat messages. So even though they might be archived, they
+    // don't get returned on query. To bypass this, some MEP messages are sent
+    // with type="groupchat".
+    // https://hg.prosody.im/prosody-modules/rev/da9469e68dee
+    _converse.connection.addHandler(checkIfMEP, null, 'message', 'groupchat');
+}
 
 export function onAddClientFeatures () {
     if (api.settings.get('allow_muc')) {

@@ -1946,57 +1946,6 @@ describe("Groupchats", function () {
             return promise;
         }));
 
-        it("reconnects when no-acceptable error is returned when sending a message",
-                mock.initConverse([], {}, async function (_converse) {
-
-            const muc_jid = 'coven@chat.shakespeare.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-            const view = _converse.chatboxviews.get(muc_jid);
-            expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
-            await mock.sendMessage(view, 'hello world');
-
-            const stanza = u.toStanza(`
-                <message xmlns='jabber:client'
-                         from='${muc_jid}'
-                         type='error'
-                         to='${_converse.bare_jid}'>
-                    <error type='cancel'>
-                        <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
-                    </error>
-                </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
-
-            let sent_stanzas = _converse.connection.sent_stanzas;
-            const iq = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.PING}"]`, s).length).pop());
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" type="get" xmlns="jabber:client">`+
-                    `<ping xmlns="urn:xmpp:ping"/>`+
-                `</iq>`);
-
-            const result = u.toStanza(`
-                <iq from='${muc_jid}'
-                    id='${iq.getAttribute('id')}'
-                    to='${_converse.bare_jid}'
-                    type='error'>
-                <error type='cancel'>
-                    <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
-                </error>
-                </iq>`);
-            sent_stanzas = _converse.connection.sent_stanzas;
-            const index = sent_stanzas.length -1;
-
-            _converse.connection.IQ_stanzas = [];
-            _converse.connection._dataRecv(mock.createRequest(result));
-            await mock.getRoomFeatures(_converse, muc_jid);
-
-            const pres = await u.waitUntil(
-                () => sent_stanzas.slice(index).filter(s => s.nodeName === 'presence').pop());
-            expect(Strophe.serialize(pres)).toBe(
-                `<presence from="${_converse.jid}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
-                    `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
-                `</presence>`);
-        }));
-
 
         it("informs users if the room configuration has changed",
                 mock.initConverse([], {}, async function (_converse) {
@@ -5001,7 +4950,7 @@ describe("Groupchats", function () {
             expect(Strophe.serialize(probe)).toBe(
                 `<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
 
             let presence = u.toStanza(
@@ -5033,7 +4982,7 @@ describe("Groupchats", function () {
             expect(Strophe.serialize(probe)).toBe(
                 `<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
 
             presence = u.toStanza(

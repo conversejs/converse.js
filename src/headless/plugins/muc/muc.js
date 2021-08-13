@@ -158,7 +158,6 @@ const ChatRoomMixin = {
             // so we don't send out a presence stanza again.
             return this;
         }
-
         // Set this early, so we don't rejoin in onHiddenChange
         this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
         await this.refreshDiscoInfo();
@@ -170,21 +169,7 @@ const ChatRoomMixin = {
             }
             return this;
         }
-        const stanza = $pres({
-            'from': _converse.connection.jid,
-            'to': this.getRoomJIDAndNick()
-        })
-            .c('x', { 'xmlns': Strophe.NS.MUC })
-            .c('history', {
-                'maxstanzas': this.features.get('mam_enabled') ? 0 : api.settings.get('muc_history_max_stanzas')
-            })
-            .up();
-
-        password = password || this.get('password');
-        if (password) {
-            stanza.cnode(Strophe.xmlElement('password', [], password));
-        }
-        api.send(stanza);
+        api.send(await this.constructPresence(password));
         return this;
     },
 
@@ -198,6 +183,23 @@ const ChatRoomMixin = {
         this.registerHandlers();
         this.clearOccupantsCache();
         return this.join();
+    },
+
+    async constructPresence (password) {
+        let stanza = $pres({
+            'from': _converse.connection.jid,
+            'to': this.getRoomJIDAndNick()
+        }).c('x', { 'xmlns': Strophe.NS.MUC })
+          .c('history', {
+                'maxstanzas': this.features.get('mam_enabled') ? 0 : api.settings.get('muc_history_max_stanzas')
+            }).up();
+
+        password = password || this.get('password');
+        if (password) {
+            stanza.cnode(Strophe.xmlElement('password', [], password));
+        }
+        stanza = await api.hook('constructedMUCPresence', null, stanza);
+        return stanza;
     },
 
     clearOccupantsCache () {

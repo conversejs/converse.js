@@ -26,6 +26,7 @@
 - Show a gap placeholder when there are gaps in the chat history. The user can click these to fill the gaps.
 - Use the MUC stanza id when sending XEP-0333 markers
 - Add support for pausing Gif images
+- Add limited support for XEP-0316 MUC notifications
 
 ### New configuration setings
 

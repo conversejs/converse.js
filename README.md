@@ -94,6 +94,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0297](https://xmpp.org/extensions/xep-0297.html) Stanza Forwarding (limited support)
 - [XEP-0308](https://xmpp.org/extensions/xep-0308.html) Last Message Correction
 - [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management
+- [XEP-0316](https://xmpp.org/extensions/xep-0316.html) MUC Eventing protocol (limited support)
 - [XEP-0317](https://xmpp.org/extensions/xep-0317.html) Hats (limited support)
 - [XEP-0333](https://xmpp.org/extensions/xep-0333.html) Chat Markers (limited support)
 - [XEP-0352](https://xmpp.org/extensions/xep-0352.html) Client State Indication
@@ -108,6 +109,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0424](https://xmpp.org/extensions/xep-0424.html) Message Retractions
 - [XEP-0425](https://xmpp.org/extensions/xep-0425.html) Message Moderation
 - [XEP-0437](https://xmpp.org/extensions/xep-0437.html) Room Activity Indicators
+- [XEP-0453](https://xmpp.org/extensions/xep-0453.html) DOAP Usage in XMPP
 - [XEP-0454](https://xmpp.org/extensions/xep-0454.html) OMEMO Media sharing
 
 ## Integration into other servers and frameworks

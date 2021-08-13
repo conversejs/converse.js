@@ -26,6 +26,7 @@ import {
     onStatusInitialized,
     onWindowStateChanged,
     registerDirectInvitationHandler,
+    registerPEPPushHandler,
     routeToRoom,
 } from './utils.js';
 import { computeAffiliationsDelta } from './affiliations/utils.js';
@@ -277,14 +278,19 @@ converse.plugins.add('converse-muc', {
 
 
         /************************ BEGIN Event Handlers ************************/
+
         if (api.settings.get('allow_muc_invitations')) {
             api.listen.on('connected', registerDirectInvitationHandler);
             api.listen.on('reconnected', registerDirectInvitationHandler);
         }
+
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.CONFINFO}+notify`));
         api.listen.on('addClientFeatures', onAddClientFeatures);
         api.listen.on('beforeResourceBinding', onBeforeResourceBinding);
         api.listen.on('beforeTearDown', onBeforeTearDown);
         api.listen.on('chatBoxesFetched', autoJoinRooms);
+        api.listen.on('connected', registerPEPPushHandler);
+        api.listen.on('reconnected', registerPEPPushHandler);
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
         api.listen.on('windowStateChanged', onWindowStateChanged);

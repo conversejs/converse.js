@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-17 12:35+0100\n"
-"PO-Revision-Date: 2020-05-08 03:15+0000\n"
+"PO-Revision-Date: 2021-08-22 19:34+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #. Strophe
 #: dist/converse-no-dependencies.js:42989
@@ -796,7 +796,7 @@ msgstr "تغيير الإعدادات"
 
 #: dist/converse-no-dependencies.js:76270
 msgid "Edit"
-msgstr ""
+msgstr "تعديل"
 
 #: dist/converse-no-dependencies.js:76299
 msgid "Retract"
@@ -821,7 +821,7 @@ msgstr ""
 #. harmony default export
 #: dist/converse-no-dependencies.js:76429
 msgid "Image: "
-msgstr ""
+msgstr "الصورة: "
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:77991
@@ -914,7 +914,7 @@ msgstr "هل أنت متأكد أنك تريد حذف هذا المراسل ؟"
 
 #: dist/converse-no-dependencies.js:79208
 msgid "Retry"
-msgstr ""
+msgstr "أعد المحاولة"
 
 #: dist/converse-no-dependencies.js:79215
 msgid "Uploading file:"
@@ -1146,11 +1146,11 @@ msgstr "تصغير"
 #. harmony default export
 #: dist/converse-no-dependencies.js:92962
 msgid "Hide"
-msgstr ""
+msgstr "إخفاء"
 
 #: dist/converse-no-dependencies.js:92964
 msgid "Execute"
-msgstr ""
+msgstr "نفّذ"
 
 #: dist/converse-no-dependencies.js:93293
 msgid ""
@@ -1181,11 +1181,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:93544
 msgid "Commands found"
-msgstr ""
+msgstr "الأوامر التي عثر عليها"
 
 #: dist/converse-no-dependencies.js:93546
 msgid "List available commands"
-msgstr ""
+msgstr "قائمة الأوامر المتوفرة"
 
 #: dist/converse-no-dependencies.js:93550
 #, fuzzy

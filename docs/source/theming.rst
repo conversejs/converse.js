@@ -38,7 +38,7 @@ instead.
 Modifying the HTML templates of Converse
 ========================================
 
-The HTML markup of Converse is contained in small ``.html`` files in the
+The HTML markup of Converse is contained in small ``.js`` files in the
 ``./src/templates`` directory.
 
 You can modify HTML markup that Converse generates by modifying these files.

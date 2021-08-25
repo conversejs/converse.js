@@ -11,61 +11,61 @@ Theming
 Setting up your environment
 ===========================
 
-In order to theme Converse, you first need to set up a :ref:`development` environment.
-
-You'll also want to preview the changes you make in your browser, for which a
-webserver will be useful.
-
-To both set up the development environment and also start up a web browser to 
-serve the files for you, simply run::
-
-    make serve
-
-.. note::
-    To run the "make" commands, you'll need `GNUMake <https://www.gnu.org/software/make>`_
-    installed on your computer. If you use GNU/Linux or \*BSD, it should be installed or
-    available via your package manager. For Mac, I think you need to install XCode and in
-    Windows you can use `Chocolatey <https://chocolatey.org/>`_.
-
-After running ``make serve`` you can open http://localhost:8000 in your webbrowser you'll
-see the Converse website.
-
-However, when developing or changing the theme, you'll want to load all the
-unminified JS and CSS resources as separate files. To do this, open http://localhost:8000/dev.html
-instead.
-
+In order to theme Converse, you first need to set up a :ref:`development` environment
+and then you'll also want to follow the guide to :ref:`webserver`.
 
 Modifying the HTML templates of Converse
 ========================================
 
-The HTML markup of Converse is contained in small ``.html`` files in the
-``./src/templates`` directory.
+Converse uses `lit-html <https://lit-html.polymer-project.org/guide>`_ as HTML
+templating library, and the HTML source code is contained in JavaScript ``.js``
+files in various ``./template`` directories in the source code.
+
+Some top-level templates are found in the ``./src/templates`` directory, but
+usually the templates that are relevant to a specific plugin will be find
+inside that plugin's subdirectory.
+
+For example: `src/plugins/chatview/templates <https://github.com/conversejs/converse.js/tree/master/src/plugins/chatview/templates>`_.
 
 You can modify HTML markup that Converse generates by modifying these files.
+
+Use webpack aliases to modify templates without changing the original files
+---------------------------------------------------------------------------
+
+Generally what I do when creating a modified version of Converse for a project
+or customer, is that I create a new JavaScript package with its own
+``package.json`` and I then add ``converse.js`` as a dependency (e.g. via ``npm
+install --save converse.js``) to the ``package.json``.
+
+Then I add a Webpack configuration and use `webpack aliases <https://webpack.js.org/configuration/resolve/#resolvealias>`_
+to resolve template paths to my own modified files.
+
+For example, in the webpack configuration snippet below, I add two aliases, so
+that the ``message-body.js`` and ``message.js`` templates can be replaced with
+two of my own custom templates.
+
+.. code-block:: javascript
+
+    resolve: {
+        extensions: ['.js'],
+        alias: {
+        './message-body.js': path.resolve(__dirname, 'path/to/my/custom/message-body.js'),
+        './templates/message.js': path.resolve(__dirname, 'path/to/my/custom/chat_message.js'),
+        }
+    }
 
 Modifying the CSS
 =================
 
-The CSS files are generated from `Sass <http://sass-lang.com>`_ files in the ``./sass`` directory.
+The CSS files are generated from `Sass <http://sass-lang.com>`_ files that end in ``.scss`` and
+which are distributed throughout the source code.
+
+Similarly to the template files, the CSS that is relevant to a particular plugin
+is usually inside the ``./styles`` directory inside the relevant plugin
+directory.
+
+For example: `src/plugins/controlbox/styles <https://github.com/conversejs/converse.js/tree/master/src/plugins/controlbox/styles>`_.
 
 To generate the CSS you can run::
 
     make css
-
-Testing your changes
-====================
-
-The recommended way to test your changes is to run the tests that are part of the Converse source code.
-By executing ``make test`` you'll run all tests (which live in the ``spec`` folder) which will open a browser window in which tests are processed.
-
-You can run a single test by changing ``it(`` to ``fit(`` so that only that one test runs. Then you click the "debug" button in the browser when the tests run. After the test has run, the opened chats will still be visible.
-
-
-Creating dist files
-===================
-
-Once you've themed Converse, you'll want to create new minified distribution
-files of all the JavaScript and CSS.
-
-Please refer to the :doc:`builds` section for information on how this is done.
-

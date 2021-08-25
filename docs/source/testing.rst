@@ -29,21 +29,17 @@ Automatically run tests on file changes
 ***************************************
 
 To automatically run the tests whenever you make a change to any of the
-Converse source code, you can run ``make watch`` in one terminal, and ``make
-tests`` or ``make check`` in another.
+Converse source code, you can run ``make watch`` in one terminal, and ``make tests`` in another.
 
-``make watch`` will build development bundles of Converse.js (in
-``dist/converse.js`` and ``dist/converse.css``) and automatically rebuild them
-whenever a source file is modified.
+``make watch`` will build development bundles of Converse (in ``dist/converse.js`` and ``dist/converse.css``)
+and automatically rebuild them whenever a source file is modified.
 
-Similarly, Karma will make sure that the tests are re-executed when the
-bundle files are rebuilt.
-
+Similarly, Karma will make sure that the tests are re-executed when the bundle files are rebuilt.
 
 Running individual tests
 ************************
 
-Converse has over 400 tests, and it can take a few minutes to run through all of them.
+Converse has over 400 tests, and it can take a while to run through all of them.
 
 When developing on Converse, it's often preferable to have a more rapid
 turnaround time between editing a file and checking whether the most relevant

@@ -47,8 +47,8 @@ Table of Contents
    session
    configuration
    development
-   security
    theming
+   security
    translations
    troubleshooting
    documentation

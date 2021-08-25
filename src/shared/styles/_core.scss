@@ -10,15 +10,6 @@
     direction: ltr;
     z-index: 1031; // One more than bootstrap navbar
 
-    .dropup {
-        &.dropup--left {
-            .dropdown-menu {
-                right: 100%;
-                left: auto;
-            }
-        }
-    }
-
     textarea:disabled {
         background-color: #EEE !important;
     }
@@ -119,21 +110,6 @@
             margin-left: -7em;
             word-spacing: 5px;
         }
-    }
-
-    .dropdown-item {
-      padding: 0.5rem 1rem;
-      .fa {
-        width: 1.25em;
-        margin-right: 0.75rem;
-      }
-      &:active, &.selected {
-        color: white !important;
-        background-color: var(--list-item-open-color);
-        .fa {
-          color: white !important;
-        }
-      }
     }
 
     .popover {

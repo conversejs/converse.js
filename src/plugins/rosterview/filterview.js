@@ -1,10 +1,9 @@
 import debounce from "lodash-es/debounce";
 import tpl_roster_filter from "./templates/roster_filter.js";
-import { ElementView } from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
-import { initStorage } from '@converse/headless/shared/utils.js';
-import { render } from 'lit';
+import { initStorage } from '@converse/headless/utils/storage.js';
 
 export const RosterFilter = Model.extend({
     initialize () {
@@ -16,8 +15,12 @@ export const RosterFilter = Model.extend({
     }
 });
 
-export class RosterFilterView extends ElementView {
-    tagName = 'span';
+export class RosterFilterView extends CustomElement {
+
+    constructor () {
+        super();
+        this.initialize();
+    }
 
     initialize () {
         const model = new _converse.RosterFilter();
@@ -30,24 +33,19 @@ export class RosterFilterView extends ElementView {
             this.model.save({'filter_text': this.querySelector('.roster-filter').value});
         }, 250);
 
-        this.listenTo(this.model, 'change', this.render);
-        this.listenTo(
-            this.model,
-            'change',
-            () => this.dispatchEvent(new CustomEvent('update', { 'detail': this.model.changed }))
-        );
-
-        this.listenTo(_converse.roster, "add", this.render);
-        this.listenTo(_converse.roster, "destroy", this.render);
-        this.listenTo(_converse.roster, "remove", this.render);
-        _converse.presences.on('change:show', this.render, this);
+        this.listenTo(_converse, 'rosterContactsFetched', this.requestUpdate);
+        this.listenTo(_converse.presences, 'change:show', this.requestUpdate);
+        this.listenTo(_converse.roster, "add", this.requestUpdate);
+        this.listenTo(_converse.roster, "destroy", this.requestUpdate);
+        this.listenTo(_converse.roster, "remove", this.requestUpdate);
+        this.listenTo(this.model, 'change', this.dispatchUpdateEvent);
+        this.listenTo(this.model, 'change', this.requestUpdate);
 
         this.model.fetch();
-        this.render();
     }
 
     render () {
-        render(tpl_roster_filter(
+        return tpl_roster_filter(
             Object.assign(this.model.toJSON(), {
                 visible: this.shouldBeVisible(),
                 changeChatStateFilter: ev => this.changeChatStateFilter(ev),
@@ -55,8 +53,11 @@ export class RosterFilterView extends ElementView {
                 clearFilter: ev => this.clearFilter(ev),
                 liveFilter: ev => this.liveFilter(ev),
                 submitFilter: ev => this.submitFilter(ev),
-            })), this);
-        return this;
+            }));
+    }
+
+    dispatchUpdateEvent () {
+        this.dispatchEvent(new CustomEvent('update', { 'detail': this.model.changed }));
     }
 
     changeChatStateFilter (ev) {
@@ -96,7 +97,7 @@ export class RosterFilterView extends ElementView {
     }
 
     shouldBeVisible () {
-        return _converse.roster && _converse.roster.length >= 5 || this.isActive();
+        return _converse.roster?.length >= 5 || this.isActive();
     }
 
     clearFilter (ev) {

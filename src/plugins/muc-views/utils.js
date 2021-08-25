@@ -1,7 +1,6 @@
 import ModeratorToolsModal from './modals/moderator-tools.js';
 import log from "@converse/headless/log";
 import tpl_spinner from 'templates/spinner.js';
-import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit";
@@ -284,10 +283,10 @@ export function showModeratorToolsModal (muc, affiliation) {
     }
     let modal = api.modal.get(ModeratorToolsModal.id);
     if (modal) {
-        modal.model.set({ affiliation });
+        modal.affiliation = affiliation;
+        modal.render();
     } else {
-        const model = new Model({ affiliation });
-        modal = api.modal.create(ModeratorToolsModal, { model, muc });
+        modal = api.modal.create(ModeratorToolsModal, { affiliation, 'jid': muc.get('jid') });
     }
     modal.show();
 }

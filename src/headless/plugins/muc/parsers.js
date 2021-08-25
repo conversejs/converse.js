@@ -6,6 +6,7 @@ import {
     getCorrectionAttributes,
     getEncryptionAttributes,
     getErrorAttributes,
+    getMediaURLs,
     getOpenGraphMetadata,
     getOutOfBandAttributes,
     getReceiptId,
@@ -184,8 +185,9 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
         getOpenGraphMetadata(stanza),
         getRetractionAttributes(stanza, original_stanza),
         getModerationAttributes(stanza),
-        getEncryptionAttributes(stanza, _converse)
+        getEncryptionAttributes(stanza, _converse),
     );
+
 
     await api.emojis.initialize();
     attrs = Object.assign(
@@ -213,11 +215,17 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
     }
     // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
     attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from_muc || attrs.from}`] || u.getUniqueId();
+
     /**
      * *Hook* which allows plugins to add additional parsing
      * @event _converse#parseMUCMessage
      */
-    return api.hook('parseMUCMessage', stanza, attrs);
+    attrs = await api.hook('parseMUCMessage', stanza, attrs);
+
+    // We call this after the hook, to allow plugins to decrypt encrypted
+    // messages, since we need to parse the message text to determine whether
+    // there are media urls.
+    return Object.assign(attrs, getMediaURLs(attrs.is_encrypted ? attrs.plaintext : attrs.body));
 }
 
 /**

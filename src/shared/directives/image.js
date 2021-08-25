@@ -1,24 +1,32 @@
-import URI from 'urijs';
 import { AsyncDirective } from 'lit/async-directive.js';
+import { converse } from '@converse/headless/core';
 import { directive } from 'lit/directive.js';
-import { getHyperlinkTemplate, isURLWithImageExtension } from 'utils/html.js';
+import { getHyperlinkTemplate } from 'utils/html.js';
 import { html } from 'lit';
+import { isURLWithImageExtension } from '@converse/headless/utils/url.js';
+
+const { URI } = converse.env;
+
 
 class ImageDirective extends AsyncDirective {
+
     render (src, href, onLoad, onClick) {
-        return html`<a href="${href}" class="chat-image__link" target="_blank" rel="noopener"
-                ><img
-                    class="chat-image img-thumbnail"
-                    src="${src}"
-                    @click=${onClick}
-                    @error=${() => this.onError(src, href, onLoad, onClick)}
-                    @load=${onLoad}
-            /></a>`;
+        return href ?
+            html`<a href="${href}" class="chat-image__link" target="_blank" rel="noopener">${ this.renderImage(src, href, onLoad, onClick) }</a>` :
+            this.renderImage(src, href, onLoad, onClick);
+    }
+
+    renderImage (src, href, onLoad, onClick) {
+        return html`<img class="chat-image img-thumbnail"
+                src="${src}"
+                @click=${onClick}
+                @error=${() => this.onError(src, href, onLoad, onClick)}
+                @load=${onLoad}/></a>`;
     }
 
     onError (src, href, onLoad, onClick) {
         if (isURLWithImageExtension(src)) {
-            this.setValue(getHyperlinkTemplate(href));
+            href && this.setValue(getHyperlinkTemplate(href));
         } else {
             // Before giving up and falling back to just rendering a hyperlink,
             // we attach `.png` and try one more time.

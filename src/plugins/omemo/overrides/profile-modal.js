@@ -25,15 +25,12 @@ const ProfileModal = {
     },
 
     beforeRender () {
-        const device_id = _converse.omemo_store.get('device_id');
-
+        const device_id = _converse.omemo_store?.get('device_id');
         if (device_id) {
             this.current_device = this.devicelist.devices.get(device_id);
+            this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
         }
-        this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
-        if (this.__super__.beforeRender) {
-            return this.__super__.beforeRender.apply(this, arguments);
-        }
+        return this.__super__.beforeRender?.apply(this, arguments);
     },
 
     selectAll (ev) {

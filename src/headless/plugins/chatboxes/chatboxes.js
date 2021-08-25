@@ -1,6 +1,6 @@
 import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api } from "../../core.js";
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 
 const ChatBoxes = Collection.extend({
     comparator: 'time_opened',

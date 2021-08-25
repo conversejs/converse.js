@@ -1,5 +1,4 @@
 /* global libsignal */
-import URI from 'urijs';
 import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
 import tpl_audio from 'templates/audio.js';
@@ -11,8 +10,8 @@ import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
 import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
-import { initStorage } from '@converse/headless/shared/utils.js';
-import { isAudioURL, isImageURL, isVideoURL, getURI } from 'utils/html.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
+import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
 import concat from 'lodash-es/concat';
 import { until } from 'lit/directives/until.js';
 import {
@@ -25,7 +24,7 @@ import {
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
 
-const { $msg, Strophe, sizzle, u } = converse.env;
+const { $msg, Strophe, URI, sizzle, u } = converse.env;
 
 
 async function encryptMessage (plaintext) {
@@ -110,7 +109,7 @@ async function downloadFile(url) {
     try {
         response = await fetch(url)
     } catch(e) {
-        log.error(`Failed to download encrypted media: ${url}`);
+        log.error(`${e.name}: Failed to download encrypted media: ${url}`);
         log.error(e);
         return null;
     }
@@ -125,6 +124,10 @@ async function getAndDecryptFile (uri) {
     const protocol = window.location.hostname === 'localhost' ? 'http' : 'https';
     const http_url = uri.toString().replace(/^aesgcm/, protocol);
     const cipher = await downloadFile(http_url);
+    if (cipher === null) {
+        log.error(`Could not decrypt file ${uri.toString()} since it could not be downloaded`);
+        return null;
+    }
     const iv = hash.slice(0, 24);
     const key = hash.slice(24);
     let content;
@@ -762,7 +765,8 @@ export function createOMEMOMessageStanza (chatbox, message, devices) {
             .then(dicts => addKeysToMessageStanza(stanza, dicts, obj.iv))
             .then(stanza => {
                 stanza.c('payload').t(obj.payload).up().up();
-                stanza.c('store', { 'xmlns': Strophe.NS.HINTS });
+                stanza.c('store', { 'xmlns': Strophe.NS.HINTS }).up();
+                stanza.c('encryption', { 'xmlns': Strophe.NS.EME,  namespace: Strophe.NS.OMEMO });
                 return stanza;
             });
     });

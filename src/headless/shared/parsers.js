@@ -1,9 +1,20 @@
+import URI from 'urijs';
 import dayjs from 'dayjs';
+import log from '@converse/headless/log';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/strophe';
+import { URL_PARSE_OPTIONS } from '@converse/headless/shared/constants.js';
 import { _converse, api } from '@converse/headless/core';
-import { decodeHTMLEntities } from '@converse/headless/shared/utils';
+import { decodeHTMLEntities } from '@converse/headless/utils/core.js';
 import { rejectMessage } from '@converse/headless/shared/actions';
+import {
+    isAudioDomainAllowed,
+    isAudioURL,
+    isImageDomainAllowed,
+    isImageURL,
+    isVideoDomainAllowed,
+    isVideoURL
+} from '@converse/headless/utils/url.js';
 
 const { NS } = Strophe;
 
@@ -48,13 +59,29 @@ export function getStanzaIDs (stanza, original_stanza) {
 }
 
 export function getEncryptionAttributes (stanza, _converse) {
+    const eme_tag = sizzle(`encryption[xmlns="${Strophe.NS.EME}"]`, stanza).pop();
+    const namespace = eme_tag?.getAttribute('namespace');
+    const attrs = {};
+
+    if (namespace) {
+        attrs.is_encrypted = true;
+        attrs.encryption_namespace = namespace;
+        if (namespace !== Strophe.NS.OMEMO) {
+            // Found an encrypted message, but it's not OMEMO
+            return attrs;
+        }
+    }
+
     const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
-    const attrs = { 'is_encrypted': !!encrypted };
+    if (!eme_tag) {
+        attrs.is_encrypted = !!encrypted;
+    }
+
     if (!encrypted || api.settings.get('clear_cache_on_logout')) {
         return attrs;
     }
     const header = encrypted.querySelector('header');
-    attrs['encrypted'] = { 'device_id': header.getAttribute('sid') };
+    attrs.encrypted = { 'device_id': header.getAttribute('sid') };
 
     const device_id = _converse.omemo_store?.get('device_id');
     const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted).pop();
@@ -149,6 +176,33 @@ export function getOpenGraphMetadata (stanza) {
     }
     return {};
 }
+
+
+export function getMediaURLs (text) {
+    const objs = [];
+    if (!text) {
+        return {};
+    }
+    try {
+        URI.withinString(
+            text,
+            (url, start, end) => {
+                objs.push({ url, start, end });
+                return url;
+            },
+            URL_PARSE_OPTIONS
+        );
+    } catch (error) {
+        log.debug(error);
+    }
+    const media_urls = objs.filter(o => {
+        return (isImageURL(o.url) && isImageDomainAllowed(o.url)) ||
+           (isVideoURL(o.url) && isVideoDomainAllowed(o.url)) ||
+            (isAudioURL(o.url) && isAudioDomainAllowed(o.url));
+    }).map(o => ({ 'start': o.start, 'end': o.end }));
+    return media_urls.length ? { media_urls } : {};
+}
+
 
 export function getSpoilerAttributes (stanza) {
     const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, stanza).pop();

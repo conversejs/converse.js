@@ -2,44 +2,47 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import Storage from '@converse/skeletor/src/storage.js';
+import URI from 'urijs';
 import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
-import debounce from 'lodash-es/debounce';
 import i18n from '@converse/headless/shared/i18n';
 import invoke from 'lodash-es/invoke';
 import isFunction from 'lodash-es/isFunction';
 import isObject from 'lodash-es/isObject';
-import localDriver from 'localforage-webextensionstorage-driver/local';
-import log from '@converse/headless/log';
+import log from '@converse/headless/log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
+import settings_api from '@converse/headless/api/settings.js';
 import sizzle from 'sizzle';
-import syncDriver from 'localforage-webextensionstorage-driver/sync';
-import u from '@converse/headless/utils/core';
+import u, { setUnloadEvent, replacePromise } from '@converse/headless/utils/core.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
-import { initStorage } from '@converse/headless/shared/utils.js';
 import {
     clearUserSettings,
-    extendAppSettings,
-    getAppSetting,
     getUserSettings,
     initAppSettings,
-    updateAppSettings,
     updateUserSettings
-} from '@converse/headless/shared/settings';
+} from '@converse/headless/shared/settings.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
-import { createStore, replacePromise } from '@converse/headless/shared/utils';
 import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit';
 import { sprintf } from 'sprintf-js';
 
 export { _converse };
 export { i18n };
+
+import {
+    attemptNonPreboundSession,
+    cleanup,
+    initClientConfig,
+    initPlugins,
+    initSession,
+    initSessionStorage,
+    registerGlobalEventHandlers
+} from './utils/init.js';
 
 dayjs.extend(advancedFormat);
 
@@ -48,6 +51,7 @@ Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
 Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
 Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+Strophe.addNamespace('EME', 'urn:xmpp:eme:0');
 Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
@@ -77,32 +81,6 @@ Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
-
-
-// Core plugins are whitelisted automatically
-// These are just the @converse/headless plugins, for the full converse,
-// the other plugins are whitelisted in src/converse.js
-const CORE_PLUGINS = [
-    'converse-adhoc',
-    'converse-bookmarks',
-    'converse-bosh',
-    'converse-caps',
-    'converse-carbons',
-    'converse-chat',
-    'converse-chatboxes',
-    'converse-disco',
-    'converse-emoji',
-    'converse-headlines',
-    'converse-mam',
-    'converse-muc',
-    'converse-ping',
-    'converse-pubsub',
-    'converse-roster',
-    'converse-smacks',
-    'converse-status',
-    'converse-vcard'
-];
-
 
 _converse.VERSION_NAME = "v8.0.0dev";
 
@@ -445,77 +423,8 @@ export const api = _converse.api = {
         }
     },
 
-    /**
-     * This grouping allows access to the
-     * [configuration settings](/docs/html/configuration.html#configuration-settings)
-     * of Converse.
-     *
-     * @namespace _converse.api.settings
-     * @memberOf _converse.api
-     */
-    settings: {
-        /**
-         * Allows new configuration settings to be specified, or new default values for
-         * existing configuration settings to be specified.
-         *
-         * Note, calling this method *after* converse.initialize has been
-         * called will *not* change the initialization settings provided via
-         * `converse.initialize`.
-         *
-         * @method _converse.api.settings.extend
-         * @param {object} settings The configuration settings
-         * @example
-         * _converse.api.settings.extend({
-         *    'enable_foo': true
-         * });
-         *
-         * // The user can then override the default value of the configuration setting when
-         * // calling `converse.initialize`.
-         * converse.initialize({
-         *     'enable_foo': false
-         * });
-         */
-        extend (settings) {
-            return extendAppSettings(settings);
-        },
+    settings: settings_api,
 
-        update (settings) {
-            log.warn("The api.settings.update method has been deprecated and will be removed. "+
-                     "Please use api.settings.extend instead.");
-            return this.extend(settings);
-        },
-
-        /**
-         * @method _converse.api.settings.get
-         * @returns {*} Value of the particular configuration setting.
-         * @example _converse.api.settings.get("play_sounds");
-         */
-        get (key) {
-            return getAppSetting(key);
-        },
-
-        /**
-         * Set one or many configuration settings.
-         *
-         * Note, this is not an alternative to calling {@link converse.initialize}, which still needs
-         * to be called. Generally, you'd use this method after Converse is already
-         * running and you want to change the configuration on-the-fly.
-         *
-         * @method _converse.api.settings.set
-         * @param {Object} [settings] An object containing configuration settings.
-         * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
-         * @param {string} [value]
-         * @example _converse.api.settings.set("play_sounds", true);
-         * @example
-         * _converse.api.settings.set({
-         *     "play_sounds": true,
-         *     "hide_offline_users": true
-         * });
-         */
-        set (key, val) {
-            updateAppSettings(key, val);
-        }
-    },
 
     /**
      * Converse and its plugins trigger various events which you can listen to via the
@@ -740,115 +649,6 @@ _converse.isUniView = function () {
 };
 
 
-async function initSessionStorage () {
-    await Storage.sessionStorageInitialized;
-    _converse.storage = {
-        'session': Storage.localForage.createInstance({
-            'name': _converse.isTestEnv() ? 'converse-test-session' : 'converse-session',
-            'description': 'sessionStorage instance',
-            'driver': ['sessionStorageWrapper']
-        })
-    };
-}
-
-function initPersistentStorage (store_name) {
-    if (api.settings.get('persistent_store') === 'sessionStorage') {
-        return;
-    } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtLocal') {
-        Storage.localForage.defineDriver(localDriver).then(
-            () => Storage.localForage.setDriver('webExtensionLocalStorage')
-        );
-        _converse.storage['persistent'] = Storage.localForage;
-        return;
-
-    } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtSync') {
-        Storage.localForage.defineDriver(syncDriver).then(
-            () => Storage.localForage.setDriver('webExtensionSyncStorage')
-        );
-        _converse.storage['persistent'] = Storage.localForage;
-        return;
-    }
-
-    const config = {
-        'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
-        'storeName': store_name
-    }
-    if (_converse.api.settings.get("persistent_store") === 'localStorage') {
-        config['description'] = 'localStorage instance';
-        config['driver'] = [Storage.localForage.LOCALSTORAGE];
-    } else if (_converse.api.settings.get("persistent_store") === 'IndexedDB') {
-        config['description'] = 'indexedDB instance';
-        config['driver'] = [Storage.localForage.INDEXEDDB];
-    }
-    _converse.storage['persistent'] = Storage.localForage.createInstance(config);
-}
-
-function initPlugins () {
-    // If initialize gets called a second time (e.g. during tests), then we
-    // need to re-apply all plugins (for a new converse instance), and we
-    // therefore need to clear this array that prevents plugins from being
-    // initialized twice.
-    // If initialize is called for the first time, then this array is empty
-    // in any case.
-    _converse.pluggable.initialized_plugins = [];
-    const whitelist = CORE_PLUGINS.concat(_converse.api.settings.get("whitelisted_plugins"));
-
-    if (_converse.api.settings.get("singleton")) {
-        [
-            'converse-bookmarks',
-            'converse-controlbox',
-            'converse-headline',
-            'converse-register'
-        ].forEach(name => _converse.api.settings.get("blacklisted_plugins").push(name));
-    }
-
-    _converse.pluggable.initializePlugins(
-        { _converse },
-        whitelist,
-        _converse.api.settings.get("blacklisted_plugins")
-    );
-
-    /**
-     * Triggered once all plugins have been initialized. This is a useful event if you want to
-     * register event handlers but would like your own handlers to be overridable by
-     * plugins. In that case, you need to first wait until all plugins have been
-     * initialized, so that their overrides are active. One example where this is used
-     * is in [converse-notifications.js](https://github.com/jcbrand/converse.js/blob/master/src/converse-notification.js)`.
-     *
-     * Also available as an [ES2015 Promise](http://es6-features.org/#PromiseUsage)
-     * which can be listened to with `_converse.api.waitUntil`.
-     *
-     * @event _converse#pluginsInitialized
-     * @memberOf _converse
-     * @example _converse.api.listen.on('pluginsInitialized', () => { ... });
-     */
-    _converse.api.trigger('pluginsInitialized');
-}
-
-
-async function initClientConfig () {
-    /* The client config refers to configuration of the client which is
-     * independent of any particular user.
-     * What this means is that config values need to persist across
-     * user sessions.
-     */
-    const id = 'converse.client-config';
-    _converse.config = new Model({ id, 'trusted': true });
-    _converse.config.browserStorage = createStore(id, "session");
-    await new Promise(r => _converse.config.fetch({'success': r, 'error': r}));
-    /**
-     * Triggered once the XMPP-client configuration has been initialized.
-     * The client configuration is independent of any particular and its values
-     * persist across user sessions.
-     *
-     * @event _converse#clientConfigInitialized
-     * @example
-     * _converse.api.listen.on('clientConfigInitialized', () => { ... });
-     */
-    _converse.api.trigger('clientConfigInitialized');
-}
-
-
 export async function tearDown () {
     await _converse.api.trigger('beforeTearDown', {'synchronous': true});
     window.removeEventListener('click', _converse.onUserActivity);
@@ -859,65 +659,6 @@ export async function tearDown () {
     window.clearInterval(_converse.everySecondTrigger);
     _converse.api.trigger('afterTearDown');
     return _converse;
-}
-
-
-async function attemptNonPreboundSession (credentials, automatic) {
-    const { api } = _converse;
-    if (api.settings.get("authentication") === _converse.LOGIN) {
-        // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
-        // ``authentication`` is set to ``login``, then Converse will try to log the user in,
-        // since we don't have a way to distinguish between wether we're
-        // restoring a previous session (``keepalive``) or whether we're
-        // automatically setting up a new session (``auto_login``).
-        // So we can't do the check (!automatic || _converse.api.settings.get("auto_login")) here.
-        if (credentials) {
-            connect(credentials);
-        } else if (_converse.api.settings.get("credentials_url")) {
-            // We give credentials_url preference, because
-            // _converse.connection.pass might be an expired token.
-            connect(await getLoginCredentials());
-        } else if (_converse.jid && (_converse.api.settings.get("password") || _converse.connection.pass)) {
-            connect();
-        } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
-            connect(await getLoginCredentialsFromBrowser());
-        } else {
-            !_converse.isTestEnv() && log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
-        }
-    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication")) && (!automatic || _converse.api.settings.get("auto_login"))) {
-        connect();
-    }
-}
-
-
-function connect (credentials) {
-    if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication"))) {
-        if (!_converse.jid) {
-            throw new Error("Config Error: when using anonymous login " +
-                "you need to provide the server's domain via the 'jid' option. " +
-                "Either when calling converse.initialize, or when calling " +
-                "_converse.api.user.login.");
-        }
-        if (!_converse.connection.reconnecting) {
-            _converse.connection.reset();
-        }
-        _converse.connection.connect(_converse.jid.toLowerCase());
-    } else if (_converse.api.settings.get("authentication") === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_converse.connection?.pass || _converse.api.settings.get("password"));
-        if (!password) {
-            if (_converse.api.settings.get("auto_login")) {
-                throw new Error("autoLogin: If you use auto_login and "+
-                    "authentication='login' then you also need to provide a password.");
-            }
-            _converse.connection.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
-            _converse.api.connection.disconnect();
-            return;
-        }
-        if (!_converse.connection.reconnecting) {
-            _converse.connection.reset();
-        }
-        _converse.connection.connect(_converse.jid, password);
-    }
 }
 
 
@@ -984,63 +725,6 @@ _converse.initConnection = function () {
 }
 
 
-async function initSession (jid) {
-    const is_shared_session = api.settings.get('connection_options').worker;
-
-    const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-    const id = `converse.session-${bare_jid}`;
-    if (_converse.session?.get('id') !== id) {
-        initPersistentStorage(bare_jid);
-
-        _converse.session = new Model({ id });
-        initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");
-        await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
-
-        if (!is_shared_session && _converse.session.get('active')) {
-            // If the `active` flag is set, it means this tab was cloned from
-            // another (e.g. via middle-click), and its session data was copied over.
-            _converse.session.clear();
-            _converse.session.save({id});
-        }
-        saveJIDtoSession(jid);
-        /**
-         * Triggered once the user's session has been initialized. The session is a
-         * cache which stores information about the user's current session.
-         * @event _converse#userSessionInitialized
-         * @memberOf _converse
-         */
-        _converse.api.trigger('userSessionInitialized');
-    } else {
-        saveJIDtoSession(jid);
-    }
-}
-
-
-function saveJIDtoSession (jid) {
-    jid = _converse.session.get('jid') || jid;
-    if (_converse.api.settings.get("authentication") !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
-        jid = jid.toLowerCase() + Connection.generateResource();
-    }
-    _converse.jid = jid;
-    _converse.bare_jid = Strophe.getBareJidFromJid(jid);
-    _converse.resource = Strophe.getResourceFromJid(jid);
-    _converse.domain = Strophe.getDomainFromJid(jid);
-    _converse.session.save({
-       'jid': jid,
-       'bare_jid': _converse.bare_jid,
-       'resource': _converse.resource,
-       'domain': _converse.domain,
-        // We use the `active` flag to determine whether we should use the values from sessionStorage.
-        // When "cloning" a tab (e.g. via middle-click), the `active` flag will be set and we'll create
-        // a new empty user session, otherwise it'll be false and we can re-use the user session.
-       'active': true
-    });
-    // Set JID on the connection object so that when we call `connection.bind`
-    // the new resource is found by Strophe.js and sent to the XMPP server.
-    _converse.connection.jid = jid;
-}
-
-
 /**
  * Stores the passed in JID for the current user, potentially creating a
  * resource if the JID is bare.
@@ -1055,7 +739,7 @@ function saveJIDtoSession (jid) {
  * @params { String } jid
  */
 _converse.setUserJID = async function (jid) {
-    await initSession(jid);
+    await initSession(_converse, jid);
     /**
      * Triggered whenever the user's JID has been updated
      * @event _converse#setUserJID
@@ -1079,77 +763,6 @@ function setUpXMLLogging () {
     _converse.connection.xmlInput = body => log.debug(body.outerHTML, 'color: darkgoldenrod');
     _converse.connection.xmlOutput = body => log.debug(body.outerHTML, 'color: darkcyan');
 }
-
-async function getLoginCredentials () {
-    let credentials;
-    let wait = 0;
-    while (!credentials) {
-        try {
-            credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
-        } catch (e) {
-            log.error('Could not fetch login credentials');
-            log.error(e);
-        }
-        // If unsuccessful, we wait 2 seconds between subsequent attempts to
-        // fetch the credentials.
-        wait = 2000;
-    }
-    return credentials;
-}
-
-async function getLoginCredentialsFromBrowser () {
-    try {
-        const creds = await navigator.credentials.get({'password': true});
-        if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-            await _converse.setUserJID(creds.id);
-            return {'jid': creds.id, 'password': creds.password};
-        }
-    } catch (e) {
-        log.error(e);
-    }
-}
-
-
-// Make sure everything is reset in case this is a subsequent call to
-// converse.initialize (happens during tests).
-async function cleanup () {
-    await api.trigger('cleanup', {'synchronous': true});
-    _converse.router.history.stop();
-    unregisterGlobalEventHandlers();
-    _converse.connection?.reset();
-    _converse.stopListening();
-    _converse.off();
-    if (_converse.promises['initialized'].isResolved) {
-        api.promises.add('initialized')
-    }
-}
-
-
-function fetchLoginCredentials (wait=0) {
-    return new Promise(
-        debounce((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', api.settings.get("credentials_url"), true);
-            xhr.setRequestHeader('Accept', 'application/json, text/javascript');
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    const data = JSON.parse(xhr.responseText);
-                    _converse.setUserJID(data.jid).then(() => {
-                        resolve({
-                            jid: data.jid,
-                            password: data.password
-                        });
-                    });
-                } else {
-                    reject(new Error(`${xhr.status}: ${xhr.responseText}`));
-                }
-            };
-            xhr.onerror = reject;
-            xhr.send();
-        }, wait)
-    );
-}
-
 
 _converse.saveWindowState = function (ev) {
     // XXX: eventually we should be able to just use
@@ -1182,28 +795,6 @@ _converse.saveWindowState = function (ev) {
     api.trigger('windowStateChanged', {state});
 }
 
-
-function registerGlobalEventHandlers () {
-    document.addEventListener("visibilitychange", _converse.saveWindowState);
-    _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
-    /**
-     * Called once Converse has registered its global event handlers
-     * (for events such as window resize or unload).
-     * Plugins can listen to this event as cue to register their own
-     * global event handlers.
-     * @event _converse#registeredGlobalEventHandlers
-     * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
-     */
-    api.trigger('registeredGlobalEventHandlers');
-}
-
-
-function unregisterGlobalEventHandlers () {
-    document.removeEventListener("visibilitychange", _converse.saveWindowState);
-    api.trigger('unregisteredGlobalEventHandlers');
-}
-
-
 _converse.ConnectionFeedback = Model.extend({
     defaults: {
         'connection_status': Strophe.Status.DISCONNECTED,
@@ -1214,20 +805,6 @@ _converse.ConnectionFeedback = Model.extend({
     }
 });
 
-
-function setUnloadEvent () {
-    if ('onpagehide' in window) {
-        // Pagehide gets thrown in more cases than unload. Specifically it
-        // gets thrown when the page is cached and not just
-        // closed/destroyed. It's the only viable event on mobile Safari.
-        // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-        _converse.unloadevent = 'pagehide';
-    } else if ('onbeforeunload' in window) {
-        _converse.unloadevent = 'beforeunload';
-    } else if ('onunload' in window) {
-        _converse.unloadevent = 'unload';
-    }
-}
 
 export const converse = window.converse || {};
 
@@ -1287,7 +864,7 @@ Object.assign(converse, {
      * });
      */
     async initialize (settings) {
-        await cleanup();
+        await cleanup(_converse);
 
         setUnloadEvent();
         initAppSettings(settings);
@@ -1316,11 +893,11 @@ Object.assign(converse, {
          */
         _converse.send_initial_presence = true;
 
-        await initSessionStorage();
-        await initClientConfig();
+        await initSessionStorage(_converse);
+        await initClientConfig(_converse);
         await i18n.initialize();
-        initPlugins();
-        registerGlobalEventHandlers();
+        initPlugins(_converse);
+        registerGlobalEventHandlers(_converse);
 
         try {
             !History.started && _converse.router.history.start();
@@ -1415,6 +992,7 @@ Object.assign(converse, {
         Model,
         Promise,
         Strophe,
+        URI,
         dayjs,
         html,
         log,

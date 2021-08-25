@@ -1,4 +1,4 @@
-import 'shared/chat/unfurl';
+import 'shared/chat/unfurl.js';
 import { __ } from 'i18n';
 import { html } from "lit";
 import { renderAvatar } from 'shared/directives/avatar';
@@ -39,7 +39,6 @@ export default (el, o) => {
                         ?correcting=${o.correcting}
                         ?editable=${o.editable}
                         ?hide_url_previews=${el.model.get('hide_url_previews')}
-                        ?is_newest_message=${o.is_newest_message}
                         ?is_retracted=${o.is_retracted}
                         unfurls="${el.model.get('ogp_metadata')?.length}"
                         message_type="${o.message_type}"></converse-message-actions>

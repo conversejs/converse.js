@@ -10,6 +10,8 @@
     }
     .message {
         .show-msg-author-modal {
+            align-self: flex-start; // Don't expand height to that of largest sibling
+                                    // https://stackoverflow.com/questions/27575779/prevent-a-flex-items-height-from-expanding-to-match-other-flex-items/40156422#40156422
             color: var(--text-color) !important;
         }
 

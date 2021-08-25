@@ -57,8 +57,8 @@ describe("The OMEMO module", function() {
                 type="result">
             <slot xmlns="urn:xmpp:http:upload:0">
                 <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/secret.txt">
-                <header name="Authorization">Basic Base64String==</header>
-                <header name="Cookie">foo=bar; user=romeo</header>
+                    <header name="Authorization">Basic Base64String==</header>
+                    <header name="Cookie">foo=bar; user=romeo</header>
                 </put>
                 <get url="${url}" />
             </slot>
@@ -139,6 +139,7 @@ describe("The OMEMO module", function() {
                 `<payload>${sent_stanza.querySelector('payload').textContent}</payload>`+
                 `</encrypted>`+
                 `<store xmlns="urn:xmpp:hints"/>`+
+                `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
 
         const link_el = await u.waitUntil(() => view.querySelector('.chat-msg__media'));

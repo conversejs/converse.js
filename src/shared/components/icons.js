@@ -6,8 +6,10 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import { html, css } from 'lit';
+import { html } from 'lit';
 import { CustomElement } from './element.js';
+
+import './styles/icon.scss';
 
 
 class ConverseIcon extends CustomElement {
@@ -19,16 +21,6 @@ class ConverseIcon extends CustomElement {
             style: String,
             size: String
         };
-    }
-
-    static get styles () {
-        return css`
-            :host {
-                display: inline-block;
-                padding: 0;
-                margin: 0;
-            }
-        `;
     }
 
     constructor () {
@@ -44,10 +36,12 @@ class ConverseIcon extends CustomElement {
     }
 
     getStyles () {
+        const cssprop = this.color.match(/var\((--.*)\)/)?.[1];
+        const color = cssprop ? getComputedStyle(this).getPropertyValue(cssprop) : this.color;
         return `
             ${this.size ? `width: ${this.size};` : ''}
             ${this.size ? `height: ${this.size};` : ''}
-            ${this.color ? `fill: ${this.color};` : ''}
+            ${color ? `fill: ${color};` : ''}
             ${this.style}
         `;
     }

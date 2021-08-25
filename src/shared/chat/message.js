@@ -8,12 +8,12 @@ import UserDetailsModal from 'modals/user-details.js';
 import filesize from 'filesize';
 import log from '@converse/headless/log';
 import tpl_message from './templates/message.js';
+import tpl_message_text from './templates/message-text.js';
 import tpl_spinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
 import { getHats } from './utils.js';
-import { getOOBURLMarkup } from 'utils/html.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
 
@@ -200,7 +200,6 @@ export default class Message extends CustomElement {
     getDerivedMessageProps () {
         const format = api.settings.get('time_format');
         return {
-            'is_newest_message': this.model === this.model.collection.last(),
             'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
             'has_mentions': this.hasMentions(),
             'hats': getHats(this.model),
@@ -238,45 +237,12 @@ export default class Message extends CustomElement {
     }
 
     renderMessageText () {
-        const i18n_edited = __('This message has been edited');
-        const i18n_show = __('Show more');
-        const is_groupchat_message = (this.model.get('type') === 'groupchat');
-        const i18n_show_less = __('Show less');
-
-        const tpl_spoiler_hint = html`
-            <div class="chat-msg__spoiler-hint">
-                <span class="spoiler-hint">${this.model.get('spoiler_hint')}</span>
-                <a class="badge badge-info spoiler-toggle" href="#" @click=${this.toggleSpoilerMessage}>
-                    <i class="fa ${this.model.get('is_spoiler_visible') ? 'fa-eye-slash' : 'fa-eye'}"></i>
-                    ${ this.model.get('is_spoiler_visible') ? i18n_show_less : i18n_show }
-                </a>
-            </div>
-        `;
-        const spoiler_classes = this.model.get('is_spoiler') ? `spoiler ${this.model.get('is_spoiler_visible') ? '' : 'hidden'}` : '';
-        const text = this.model.getMessageText();
-        return html`
-            ${ this.model.get('is_spoiler') ? tpl_spoiler_hint : '' }
-            ${ this.model.get('subject') ? html`<div class="chat-msg__subject">${this.model.get('subject')}</div>` : '' }
-            <span>
-                <converse-chat-message-body
-                    class="chat-msg__text ${this.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
-                    .model="${this.model}"
-                    ?is_me_message="${this.model.isMeCommand()}"
-                    ?show_images="${api.settings.get('show_images_inline')}"
-                    ?embed_videos="${api.settings.get('embed_videos')}"
-                    ?embed_audio="${api.settings.get('embed_audio')}"
-                    text="${text}"></converse-chat-message-body>
-                ${ (this.model.get('received') && !this.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
-                ${ (this.model.get('edited')) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }
-            </span>
-            ${ this.model.get('oob_url') ? html`<div class="chat-msg__media">${getOOBURLMarkup(this.model.get('oob_url'))}</div>` : '' }
-            <div class="chat-msg__error">${ this.model.get('error_text') || this.model.get('error') }</div>
-        `;
+        return tpl_message_text(this);
     }
 
     showUserModal (ev) {
         if (this.model.get('sender') === 'me') {
-            _converse.xmppstatusview.showProfileModal(ev);
+            api.modal.show(_converse.ProfileModal, {model: this.model}, ev);
         } else if (this.model.get('type') === 'groupchat') {
             ev.preventDefault();
             api.modal.show(OccupantModal, { 'model': this.model.occupant }, ev);

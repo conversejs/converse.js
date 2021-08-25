@@ -1,4 +1,4 @@
-import xss from "xss/dist/xss";
+import DOMPurify from 'dompurify';
 import { __ } from '../../i18n';
 import { api } from "@converse/headless/core";
 import { html } from "lit";
@@ -58,8 +58,8 @@ export default (o) => {
                         <div class="container">
                             <h6 class="brand-heading">Converse</h6>
                             <p class="brand-subtitle">${o.version_name}</p>
-                            <p class="brand-subtitle">${unsafeHTML(xss.filterXSS(first_subtitle, {'whiteList': {'a': []}}))}</p>
-                            <p class="brand-subtitle">${unsafeHTML(xss.filterXSS(second_subtitle, {'whiteList': {'a': []}}))}</p>
+                            <p class="brand-subtitle">${unsafeHTML(DOMPurify.sanitize(first_subtitle))}</p>
+                            <p class="brand-subtitle">${unsafeHTML(DOMPurify.sanitize(second_subtitle))}</p>
                         </div>
                     </div>
 

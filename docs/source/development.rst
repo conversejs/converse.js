@@ -2,7 +2,7 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/development.rst">Edit me on GitHub</a></div>
 
-.. _development:
+.. _`development`:
 
 ===========
 Development
@@ -25,6 +25,7 @@ to fix a bug or to add new functionality.
 
    dependencies
    style_guide
+   webserver
    plugin_development
    api/index
    testing

@@ -47,6 +47,7 @@ describe("The groupchat moderator tool", function () {
         let button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
+        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length);
         let user_els = modal.el.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
         expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: wiccarocks@shakespeare.lit');
@@ -57,6 +58,7 @@ describe("The groupchat moderator tool", function () {
         select.value = 'owner';
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
+        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 2);
         user_els = modal.el.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(2);
         expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: romeo@montague.lit');
@@ -113,6 +115,7 @@ describe("The groupchat moderator tool", function () {
         const alert = modal.el.querySelector('.alert-primary');
         expect(alert.textContent.trim()).toBe('Affiliation changed');
 
+        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 1);
         user_els = modal.el.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
         expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: romeo@montague.lit');
@@ -132,9 +135,8 @@ describe("The groupchat moderator tool", function () {
         select.value = 'participant';
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        user_els = roles_panel.querySelectorAll('.list-group--users > li')
-        expect(user_els.length).toBe(1);
-        expect(user_els[0].textContent.trim()).toBe('No users with that role found.');
+        await u.waitUntil(() => roles_panel.querySelectorAll('.list-group--users > li')[0]?.textContent.trim() === 'No users with that role found.');
+
     }));
 
     it("allows you to filter affiliation search results",
@@ -162,8 +164,7 @@ describe("The groupchat moderator tool", function () {
         const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        const user_els = modal.el.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(6);
+        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 6);
 
         const nicks = Array.from(modal.el.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
         expect(nicks.join(' ')).toBe('gower juliet romeo thirdwitch wiccan witch');
@@ -273,8 +274,7 @@ describe("The groupchat moderator tool", function () {
         const button = modal.el.querySelector('.btn-primary[name="users_with_role"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_role);
-        const user_els = modal.el.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(6);
+        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 6);
 
         const nicks = Array.from(modal.el.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
         expect(nicks.join(' ')).toBe('crone newb nomorenicks oldhag some1 tux');
@@ -338,9 +338,12 @@ describe("The groupchat moderator tool", function () {
         _converse.connection._dataRecv(mock.createRequest(error));
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
 
+        const alert = await u.waitUntil(() => modal.el.querySelector('.alert'));
+        expect(alert.textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
+
         const user_els = modal.el.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
-        expect(user_els[0].textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
+        expect(user_els[0].textContent.trim()).toBe('No users with that affiliation found.');
     }));
 
     it("shows an error message if a particular affiliation may not be set",
@@ -365,9 +368,9 @@ describe("The groupchat moderator tool", function () {
         const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        const user_els = modal.el.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(1);
+        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 1);
 
+        const user_els = modal.el.querySelectorAll('.list-group--users > li');
         const toggle = user_els[0].querySelector('.list-group-item:nth-child(3n) .toggle-form');
         const form = user_els[0].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
         expect(u.hasClass('hidden', form)).toBeTruthy();
@@ -429,9 +432,9 @@ describe("The groupchat moderator tool", function () {
         button.click();
 
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        const user_els = modal.el.querySelectorAll('.list-group--users > li');
-        expect(user_els.length).toBe(2);
+        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 2);
 
+        const user_els = modal.el.querySelectorAll('.list-group--users > li');
         let change_affiliation_dropdown = user_els[0].querySelector('.select-affiliation');
         expect(Array.from(change_affiliation_dropdown.options).map(o => o.value)).toEqual(['member', 'outcast', 'none']);
 
@@ -452,23 +455,23 @@ describe("The groupchat moderator tool", function () {
         const message_form = view.querySelector('converse-muc-message-form');
         message_form.onKeyDown(enter);
 
-        const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
+        await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
         const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
 
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner']);
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['admin', 'member', 'outcast', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['admin', 'member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin']);
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['member', 'outcast', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin', 'outcast']);
-        expect(modal.getAssignableAffiliations(occupant)).toEqual(['member', 'none']);
+        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['member', 'none']);
 
-        expect(modal.getAssignableRoles(occupant)).toEqual(['moderator', 'participant', 'visitor']);
+        expect(_converse.getAssignableRoles(occupant)).toEqual(['moderator', 'participant', 'visitor']);
 
         _converse.api.settings.set('modtools_disable_assign', ['admin', 'moderator']);
-        expect(modal.getAssignableRoles(occupant)).toEqual(['participant', 'visitor']);
+        expect(_converse.getAssignableRoles(occupant)).toEqual(['participant', 'visitor']);
     }));
 });

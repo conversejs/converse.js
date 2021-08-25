@@ -44,7 +44,6 @@ converse.plugins.add('converse-muc-views', {
             'cache_muc_messages': true,
             'locked_muc_nickname': false,
             'modtools_disable_query': [],
-            'modtools_disable_assign': false,
             'muc_disable_slash_commands': false,
             'muc_mention_autocomplete_filter': 'contains',
             'muc_mention_autocomplete_min_chars': 0,

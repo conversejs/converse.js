@@ -4,7 +4,7 @@ BOOTSTRAP		= ./node_modules/
 BUILDDIR		= ./docs
 KARMA			?= ./node_modules/.bin/karma
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
-CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
+CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss
 ESLINT			?= ./node_modules/.bin/eslint
 HTTPSERVE	 	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT	?= 8000
@@ -115,6 +115,17 @@ postrelease:
 $(LERNA):
 	npm install lerna
 
+${NVM_DIR}/nvm.sh:
+	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+	source ~/.bashrc
+
+.PHONY: nvm
+nvm: ${NVM_DIR}/nvm.sh
+
+.PHONY: node
+node: .nvmrc
+	. $(HOME)/.nvm/nvm.sh && nvm install
+
 package-lock.json: package.json
 	npm install
 
@@ -198,7 +209,6 @@ eslint: node_modules
 	$(ESLINT) src/utils/*.js
 	$(ESLINT) src/headless/*.js
 	$(ESLINT) src/headless/utils/*.js
-	$(ESLINT) spec/ --global converse
 
 .PHONY: check
 check: eslint | dist/converse.js dist/converse.css

@@ -1,6 +1,6 @@
 /* global mock, converse */
 
-const u = converse.env.utils;
+const { $msg, u } = converse.env;
 
 
 describe("A list of open groupchats", function () {
@@ -44,6 +44,52 @@ describe("A list of open groupchats", function () {
 
         list = controlbox.querySelector('.list-container--openrooms');
         expect(Array.from(list.classList).includes('hidden')).toBeTruthy();
+    }));
+
+    it("shows the number of unread mentions received",
+        mock.initConverse(
+            [], {'allow_bookmarks': false},
+            async function (_converse) {
+
+        await mock.openControlBox(_converse);
+        const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
+        expect(roomspanel.querySelectorAll('.available-room').length).toBe(0);
+
+        const muc_jid = 'kitchen@conference.shakespeare.lit';
+        const message = 'fires: Your attention is required';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'fires');
+        const view = _converse.chatboxviews.get(muc_jid);
+        await u.waitUntil(() => roomspanel.querySelectorAll('.available-room').length);
+        expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
+        expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
+
+        view.model.set({'minimized': true});
+
+        const nick = mock.chatroom_names[0];
+        await view.model.handleMessageStanza($msg({
+                from: muc_jid+'/'+nick,
+                id: u.getUniqueId(),
+                to: 'romeo@montague.lit',
+                type: 'groupchat'
+            }).c('body').t(message).tree());
+        await u.waitUntil(() => view.model.messages.length);
+        expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
+        expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(1);
+        expect(roomspanel.querySelector('.msgs-indicator').textContent.trim()).toBe('1');
+
+        await view.model.handleMessageStanza($msg({
+            'from': muc_jid+'/'+nick,
+            'id': u.getUniqueId(),
+            'to': 'romeo@montague.lit',
+            'type': 'groupchat'
+        }).c('body').t(message).tree());
+        await u.waitUntil(() => view.model.messages.length > 1);
+        expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
+        expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(1);
+        expect(roomspanel.querySelector('.msgs-indicator').textContent.trim()).toBe('2');
+        view.model.set({'minimized': false});
+        expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
+        expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
     }));
 
     it("uses bookmarks to determine groupchat names",

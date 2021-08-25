@@ -94,8 +94,6 @@ describe("Notifications", function () {
                     _converse.connection._dataRecv(mock.createRequest(stanza));
 
                     await u.waitUntil(() => _converse.chatboxviews.keys().length === 2);
-                    const view = _converse.chatboxviews.get('notify.example.com');
-                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
                     expect(window.Notification).toHaveBeenCalled();
                 }));

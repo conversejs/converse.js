@@ -34,7 +34,7 @@ function populateContactsMap (contacts_map, contact) {
 }
 
 
-export default () => {
+export default (el) => {
     const i18n_heading_contacts = __('Contacts');
     const i18n_title_add_contact = __('Add a contact');
     const i18n_title_sync_contacts = __('Re-sync your contacts');
@@ -46,12 +46,17 @@ export default () => {
     return html`
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--contacts">${i18n_heading_contacts}</span>
-            <a class="controlbox-heading__btn sync-contacts fa fa-sync" title="${i18n_title_sync_contacts}"></a>
+            <a class="controlbox-heading__btn sync-contacts" @click=${ev => el.syncContacts(ev)} title="${i18n_title_sync_contacts}">
+                <converse-icon class="fa fa-sync right ${el.syncing_contacts ? 'fa-spin' : ''}" color="var(--subdued-color)" path-prefix="/dist" size="1em"></converse-icon>
+            </a>
             ${ api.settings.get('allow_contact_requests') ? html`
-                <a class="controlbox-heading__btn add-contact fa fa-user-plus"
+                <a class="controlbox-heading__btn add-contact"
+                    @click=${ev => el.showAddContactModal(ev)}
                     title="${i18n_title_add_contact}"
                     data-toggle="modal"
-                    data-target="#add-contact-modal"></a>` : '' }
+                    data-target="#add-contact-modal">
+                    <converse-icon class="fa fa-user-plus right" color="var(--subdued-color)" path-prefix="/dist" size="1.25em"></converse-icon>
+                </a>` : '' }
         </div>
         <converse-roster-filter></converse-roster-filter>
         <div class="list-container roster-contacts">

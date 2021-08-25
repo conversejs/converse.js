@@ -1,5 +1,4 @@
 import { html } from 'lit';
 
-export default (url) => {
-    return html`<audio controls src="${url}"></audio><a target="_blank" rel="noopener" href="${url}">${url}</a>`;
-}
+export default (url, hide_url) =>
+    html`<audio controls src="${url}"></audio>${ hide_url ? '' : html`<a target="_blank" rel="noopener" href="${url}">${url}</a>` }`;

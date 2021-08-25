@@ -486,9 +486,9 @@ describe("Groupchats", function () {
                 expect(u.isVisible(topic_el)).toBe(true);
 
                 const toggle = view.querySelector('.hide-topic');
-                expect(toggle.textContent).toBe('Hide topic');
+                expect(toggle.textContent.trim()).toBe('Hide topic');
                 toggle.click();
-                await u.waitUntil(() => view.querySelector('.hide-topic').textContent === 'Show topic');
+                await u.waitUntil(() => view.querySelector('.hide-topic').textContent.trim() === 'Show topic');
             }));
 
             it("will always be shown when it's new", mock.initConverse([], {}, async function (_converse) {
@@ -510,7 +510,7 @@ describe("Groupchats", function () {
                 expect(u.isVisible(topic_el)).toBe(true);
 
                 const toggle = view.querySelector('.hide-topic');
-                expect(toggle.textContent).toBe('Hide topic');
+                expect(toggle.textContent.trim()).toBe('Hide topic');
                 toggle.click();
                 await u.waitUntil(() => !u.isVisible(topic_el));
 
@@ -4581,55 +4581,6 @@ describe("Groupchats", function () {
             expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
             expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
             expect(rooms[3].textContent.trim()).toBe("The Palace");
-        }));
-    });
-
-    describe("The \"Groupchats\" section", function () {
-
-        it("shows the number of unread mentions received",
-            mock.initConverse(
-                [], {'allow_bookmarks': false},
-                async function (_converse) {
-
-            await mock.openControlBox(_converse);
-            const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
-            expect(roomspanel.querySelectorAll('.available-room').length).toBe(0);
-
-            const muc_jid = 'kitchen@conference.shakespeare.lit';
-            const message = 'fires: Your attention is required';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'fires');
-            const view = _converse.chatboxviews.get(muc_jid);
-            await u.waitUntil(() => roomspanel.querySelectorAll('.available-room').length);
-            expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
-            expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
-
-            view.model.set({'minimized': true});
-
-            const nick = mock.chatroom_names[0];
-            await view.model.handleMessageStanza($msg({
-                    from: muc_jid+'/'+nick,
-                    id: u.getUniqueId(),
-                    to: 'romeo@montague.lit',
-                    type: 'groupchat'
-                }).c('body').t(message).tree());
-            await u.waitUntil(() => view.model.messages.length);
-            expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
-            expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(1);
-            expect(roomspanel.querySelector('.msgs-indicator').textContent.trim()).toBe('1');
-
-            await view.model.handleMessageStanza($msg({
-                'from': muc_jid+'/'+nick,
-                'id': u.getUniqueId(),
-                'to': 'romeo@montague.lit',
-                'type': 'groupchat'
-            }).c('body').t(message).tree());
-            await u.waitUntil(() => view.model.messages.length > 1);
-            expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
-            expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(1);
-            expect(roomspanel.querySelector('.msgs-indicator').textContent.trim()).toBe('2');
-            view.model.set({'minimized': false});
-            expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
-            expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
         }));
     });
 

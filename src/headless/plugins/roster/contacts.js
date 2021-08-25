@@ -5,7 +5,7 @@ import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from "@converse/skeletor/src/model";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, sizzle, u } = converse.env;

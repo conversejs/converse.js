@@ -2,7 +2,7 @@ import DropdownBase from "shared/components/dropdown.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit";
-import { initStorage } from '@converse/headless/shared/utils.js';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { until } from 'lit/directives/until.js';
 
 const u = converse.env.utils;

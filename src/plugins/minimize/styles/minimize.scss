@@ -67,6 +67,10 @@
                         width: 100%;
                         max-width: 9em;
                         flex-wrap: nowrap;
+                        background-color: var(--chat-head-color);
+                    }
+                    .chat-head-chatroom {
+                        background-color: var(--chatroom-head-bg-color);
                     }
                     &.minimized {
                         height: auto;

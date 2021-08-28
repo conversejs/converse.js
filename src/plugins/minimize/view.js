@@ -1,25 +1,28 @@
 import MinimizedChatsToggle from './toggle.js';
 import tpl_chats_panel from './templates/chats-panel.js';
-import { ElementView } from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element';
 import { _converse, api } from '@converse/headless/core';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { render } from 'lit';
 
 
-export default class MinimizedChats extends ElementView {
+export default class MinimizedChats extends CustomElement {
+
+    constructor () {
+        super();
+        this.initialize();
+    }
 
     async initialize () {
         this.model = _converse.chatboxes;
         await this.initToggle();
-        this.render();
-        this.listenTo(this.minchats, 'change:collapsed', this.render)
-        this.listenTo(this.model, 'add', this.render)
-        this.listenTo(this.model, 'change:fullname', this.render)
-        this.listenTo(this.model, 'change:jid', this.render)
-        this.listenTo(this.model, 'change:minimized', this.render)
-        this.listenTo(this.model, 'change:name', this.render)
-        this.listenTo(this.model, 'change:num_unread', this.render)
-        this.listenTo(this.model, 'remove', this.render)
+        this.listenTo(this.minchats, 'change:collapsed', this.requestUpdate)
+        this.listenTo(this.model, 'add', this.requestUpdate)
+        this.listenTo(this.model, 'change:fullname', this.requestUpdate)
+        this.listenTo(this.model, 'change:jid', this.requestUpdate)
+        this.listenTo(this.model, 'change:minimized', this.requestUpdate)
+        this.listenTo(this.model, 'change:name', this.requestUpdate)
+        this.listenTo(this.model, 'change:num_unread', this.requestUpdate)
+        this.listenTo(this.model, 'remove', this.requestUpdate)
     }
 
     render () {
@@ -29,7 +32,7 @@ export default class MinimizedChats extends ElementView {
         const collapsed = this.minchats.get('collapsed');
         const data = { chats, num_unread, num_minimized, collapsed };
         data.toggle = ev => this.toggle(ev);
-        render(tpl_chats_panel(data), this);
+        return tpl_chats_panel(data);
     }
 
     async initToggle () {

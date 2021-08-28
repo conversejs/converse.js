@@ -12,10 +12,11 @@
     <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="dist/converse.css" />
     <script src="https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js"></script>
+    <script src="dist/website.css"></script>
     <script src="dist/converse.js"></script>
 </head>
 
-<body class="reset">
+<body class="reset" style="background-color: #211018;">
 <div id="conversejs-bg"></div>
 <script>
 
@@ -36,8 +37,8 @@
         muc_show_logs_before_join: true,
         notify_all_room_messages: ['discuss@conference.conversejs.org'],
         persistent_store: 'IndexedDB',
-        theme: 'concord',
-        view_mode: 'fullscreen',
+        // theme: 'concord',
+        // view_mode: 'fullscreen',
         websocket_url: 'wss://conversejs.org/xmpp-websocket',
         // websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
         whitelisted_plugins: ['converse-debug'],

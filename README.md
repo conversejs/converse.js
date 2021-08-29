@@ -40,19 +40,19 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 In overlay mode, Converse appears overlayed chats on top of the website.
 
-![Screenshot of Converse in overlay mode](https://conversejs.org/screenshots/Converse%20overlayed.png)
+![Screenshot of Converse in overlay mode](https://conversejs.org/screenshots/Converse-overlayed.png)
 
 ### Fullpage
 
 In fullpage mode, Converse behaves like a single-page app that covers the whole browser viewport.
 
-![Screenshot of Converse in fullpage mode](https://conversejs.org/screenshots/Converse%20fullscreen.png)
+![Screenshot of Converse in fullpage mode](https://conversejs.org/screenshots/Converse-fullscreen.png)
 
 ### Embedded
 
 In embedded mode, Converse can be embedded into an element in the DOM.
 
-![Screenshot of Converse in embedded mode](https://conversejs.org/screenshots/Converse%20embedded.png)
+![Screenshot of Converse in embedded mode](https://conversejs.org/screenshots/Converse-embedded.png)
 
 ## Features
 -   Available as overlayed chat boxes or as a fullscreen application. See [inverse.chat](https://inverse.chat) for the fullscreen version.

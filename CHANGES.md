@@ -46,6 +46,15 @@
 
 ### Breaking Changes
 
+The default persistent store, set via the [persistent_store](https://conversejs.org/docs/html/configuration.html#persistent-store),
+is now IndexedDB. This main advantage of using IndexedDB is that it doesn't
+have a fixed size limit. We don't provide a tool to migrate data from
+localStorage to IndexedDB. For almost all data this is not a problem since
+the data can be fetched again from the XMPP server. However,
+decrypted OMEMO messages cannot be fetched again from the server, since the
+double ratchet makes it impossible to again decrypt them. This means your
+decrypted OMEMO history will be lost in the transition.
+
 The [afterMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:afterMessageBodyTransformed) and [beforeMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:beforeMessageBodyTransformed) events now has a different signatures.
 When leaving a MUC, the message history is deleted. This means that decrypted
 OMEMO messages are gone and cannot be recovered on that device. See [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave).

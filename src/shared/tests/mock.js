@@ -622,7 +622,7 @@ async function _initConverse (settings) {
         'discover_connection_methods': false,
         'enable_smacks': false,
         'i18n': 'en',
-        // 'persistent_store': 'IndexedDB',
+        'persistent_store': 'localStorage',
         'loglevel': 'warn',
         'no_trimming': true,
         'play_sounds': false,

@@ -103,7 +103,7 @@ describe("The Controlbox", function () {
             await u.waitUntil(() => el.querySelector('.restore-chat .message-count')?.textContent === '2');
             expect(rosterview.querySelector('.msgs-indicator').textContent).toBe('2');
             chatview.model.set({'minimized': false});
-            expect(el.querySelector('.restore-chat .message-count')).toBe(null);
+            await u.waitUntil(() => el.querySelector('.restore-chat .message-count') === null);
             await u.waitUntil(() => rosterview.querySelector('.msgs-indicator') === null);
         }));
     });

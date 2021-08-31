@@ -25,6 +25,7 @@ export default (el) => {
     `;
     const spoiler_classes = el.model.get('is_spoiler') ? `spoiler ${el.model.get('is_spoiler_visible') ? '' : 'hidden'}` : '';
     const text = el.model.getMessageText();
+    const show_oob = el.model.get('oob_url') && text !== el.model.get('oob_url');
     return html`
         ${ el.model.get('is_spoiler') ? tpl_spoiler_hint : '' }
         ${ el.model.get('subject') ? html`<div class="chat-msg__subject">${el.model.get('subject')}</div>` : '' }
@@ -41,7 +42,7 @@ export default (el) => {
             ${ (el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
             ${ (el.model.get('edited')) ? tpl_edited_icon(el) : '' }
         </span>
-        ${ el.model.get('oob_url') ? html`<div class="chat-msg__media">${getOOBURLMarkup(el.model.get('oob_url'))}</div>` : '' }
+        ${ show_oob ? html`<div class="chat-msg__media">${getOOBURLMarkup(el.model.get('oob_url'))}</div>` : '' }
         <div class="chat-msg__error">${ el.model.get('error_text') || el.model.get('error') }</div>
     `;
 }

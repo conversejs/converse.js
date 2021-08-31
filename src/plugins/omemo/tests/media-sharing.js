@@ -142,8 +142,8 @@ describe("The OMEMO module", function() {
                 `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
 
-        const link_el = await u.waitUntil(() => view.querySelector('.chat-msg__media'));
-        expect(link_el.textContent.trim()).toBe('Download file "secret.txt"', 1000);
+        const link_el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(link_el.textContent.trim()).toBe(url);
 
         const message = view.model.messages.at(0);
         expect(message.get('is_encrypted')).toBe(true);

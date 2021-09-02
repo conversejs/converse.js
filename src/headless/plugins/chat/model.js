@@ -160,7 +160,7 @@ const ChatBox = ModelWithContact.extend({
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
         const attrs = await parseMessage(stanza, _converse);
-        if (!await this.shouldShowErrorMessage(attrs)) {
+        if (await !this.shouldShowErrorMessage(attrs)) {
             return;
         }
         const message = this.getMessageReferencedByError(attrs);
@@ -227,7 +227,7 @@ const ChatBox = ModelWithContact.extend({
         } else if (
                 !this.handleReceipt(attrs) &&
                 !this.handleChatMarker(attrs) &&
-                !(await this.handleRetraction(attrs))
+                await !this.handleRetraction(attrs)
         ) {
             this.setEditable(attrs, attrs.time);
 

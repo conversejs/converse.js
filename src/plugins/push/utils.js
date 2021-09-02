@@ -7,7 +7,7 @@ async function disablePushAppServer (domain, push_app_server) {
     if (!push_app_server.jid) {
         return;
     }
-    if (!(await api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid))) {
+    if (await !api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid)) {
         log.warn(`Not disabling push app server "${push_app_server.jid}", no disco support from your server.`);
         return;
     }

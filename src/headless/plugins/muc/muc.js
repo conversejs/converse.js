@@ -429,7 +429,7 @@ const ChatRoomMixin = {
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
         const attrs = await parseMUCMessage(stanza, this, _converse);
-        if (!(await this.shouldShowErrorMessage(attrs))) {
+        if (await !this.shouldShowErrorMessage(attrs)) {
             return;
         }
         const message = this.getMessageReferencedByError(attrs);
@@ -1858,7 +1858,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#rejoinIfNecessary
      */
     async rejoinIfNecessary () {
-        if (!(await this.isJoined())) {
+        if (await !this.isJoined()) {
             this.rejoin();
             return true;
         }

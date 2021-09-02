@@ -129,7 +129,7 @@ export async function fetchArchivedMessages (model, options = {}, should_page = 
     }
     const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
     const mam_jid = is_muc ? model.get('jid') : _converse.bare_jid;
-    if (!(await api.disco.supports(NS.MAM, mam_jid))) {
+    if (await !api.disco.supports(NS.MAM, mam_jid)) {
         return;
     }
     const max = api.settings.get('archived_messages_page_size');

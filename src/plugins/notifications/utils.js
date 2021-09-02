@@ -249,7 +249,7 @@ function playSoundNotification () {
  * to play sounds and show HTML5 notifications.
  */
 export async function handleMessageNotification (data) {
-    if (!await shouldNotifyOfMessage(data)) {
+    if (await !shouldNotifyOfMessage(data)) {
         return false;
     }
     /**

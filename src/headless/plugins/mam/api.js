@@ -209,8 +209,7 @@ export default {
             }
 
             const jid = attrs.to || _converse.bare_jid;
-            const supported = await api.disco.supports(NS.MAM, jid);
-            if (!supported) {
+            if (await !api.disco.supports(NS.MAM, jid)) {
                 log.warn(`Did not fetch MAM archive for ${jid} because it doesn't support ${NS.MAM}`);
                 return {'messages': []};
             }

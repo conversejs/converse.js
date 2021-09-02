@@ -1869,11 +1869,9 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#shouldShowErrorMessage
      * @returns {Promise<boolean>}
      */
-    async shouldShowErrorMessage (attrs) {
-        if (attrs['error_condition'] === 'not-acceptable' && (await this.rejoinIfNecessary())) {
-            return false;
-        }
-        return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, attrs);
+    async shouldShowErrorMessage(o) {
+        return ("not-acceptable" !== o.error_condition || await !this.rejoinIfNecessary())
+            && _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, o);
     },
 
     /**

@@ -1,6 +1,6 @@
 # Changelog
 
-## 8.0.0 (Unreleased)
+## 8.0.0 (2021-09-03)
 
 - Requires Node 12 or above
 
@@ -73,7 +73,7 @@ The `api.chatviews` and `api.roomviews` API groupings and methods have been
 removed. The original "views" don't really exist anymore, the UI is now composed web
 components which should update reactively based on changes made on the models.
 
-## 7.0.6 (unreleased)
+## 7.0.6 (2021-06-11)
 
 - #2500: Wrong assignment in OMEMO code
 

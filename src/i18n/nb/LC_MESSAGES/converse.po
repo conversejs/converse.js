@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2020-11-21 10:28+0000\n"
+"PO-Revision-Date: 2021-09-09 21:45+0200\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -809,19 +809,19 @@ msgstr "Trekk tilbake"
 
 #: dist/converse-no-dependencies.js:64976
 msgid "Show URL previews"
-msgstr ""
+msgstr "Forhåndsvis nettadresser"
 
 #: dist/converse-no-dependencies.js:64976
 msgid "Hide URL previews"
-msgstr ""
+msgstr "Ikke forhåndsvis nettadresser"
 
 #: dist/converse-no-dependencies.js:64978
 msgid "Show URL preview"
-msgstr ""
+msgstr "Forhåndsvis nettadresser"
 
 #: dist/converse-no-dependencies.js:64978
 msgid "Hide URL preview"
-msgstr ""
+msgstr "Ikke forhåndsvis nettadresser"
 
 #: dist/converse-no-dependencies.js:64980
 #, fuzzy

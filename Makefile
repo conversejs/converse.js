@@ -107,7 +107,7 @@ release:
 
 .PHONY: postrelease
 postrelease:
-	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/converse-core.js
+	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/core.js
 
 ########################################################################
 ## Install dependencies

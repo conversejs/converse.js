@@ -31,7 +31,7 @@ describe("A Chat Message", function () {
             expect(msg.classList.length).toEqual(1);
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you heard this funny audio?');
-            let media = view.querySelector('.chat-msg .chat-msg__media');
+            const media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
                 `<audio controls="" src="https://montague.lit/audio.mp3"></audio>`+
                 `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">${url}</a>`);
@@ -41,15 +41,21 @@ describe("A Chat Message", function () {
                 <message from="${contact_jid}"
                          type="chat"
                          to="romeo@montague.lit/orchard">
-                    <body>https://montague.lit/audio.mp3</body>
-                    <x xmlns="jabber:x:oob"><url>https://montague.lit/audio.mp3</url></x>
+                    <body>${url}</body>
+                    <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
+
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            msg = view.querySelector('.chat-msg:last-child .chat-msg__text');
+            msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you heard this funny audio?'); // Emtpy
-            media = view.querySelector('.chat-msg:last-child .chat-msg__media');
-            expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
+
+            // We don't render the OOB data
+            expect(view.querySelector('converse-chat-message:last-child .chat-msg__media')).toBe(null);
+
+            // But we do render the body
+            const msg_el = view.querySelector('converse-chat-message:last-child .chat-msg__text');
+            await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim() ===
                 `<audio controls="" src="https://montague.lit/audio.mp3"></audio>`+
                 `<a target="_blank" rel="noopener" href="${url}">${url}</a>`);
         }));
@@ -78,7 +84,7 @@ describe("A Chat Message", function () {
             let msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(msg.classList.length).toBe(1);
             expect(msg.textContent).toEqual('Have you seen this funny video?');
-            let media = view.querySelector('.chat-msg .chat-msg__media');
+            const media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
                 `<video controls="" preload="metadata" src="${Strophe.xmlescape(url)}"></video>`+
                 `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(url)}">${Strophe.xmlescape(url)}</a>`);
@@ -93,12 +99,9 @@ describe("A Chat Message", function () {
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            msg = view.querySelector('.chat-msg:last-child .chat-msg__text');
+            msg = view.querySelector('converse-chat-message .chat-msg__text');
             expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you seen this funny video?');
-            media = view.querySelector('.chat-msg:last-child .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
-                `<video controls="" preload="metadata" src="${Strophe.xmlescape(url)}"></video>`+
-                `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(url)}">${Strophe.xmlescape(url)}</a>`);
+            expect(view.querySelector('converse-chat-message:last-child .chat-msg__media')).toBe(null);
         }));
 
         it("will render download links for files from oob URLs",

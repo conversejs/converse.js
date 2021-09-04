@@ -261,5 +261,11 @@
         <xmpp:since>8.0.0</xmpp:since>
       </xmpp:SupportedXep>
     </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0454.html"/>
+        <xmpp:since>8.0.0</xmpp:since>
+      </xmpp:SupportedXep>
+    </implements>
   </Project>
 </rdf:RDF>

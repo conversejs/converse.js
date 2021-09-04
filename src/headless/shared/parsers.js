@@ -243,8 +243,13 @@ export function getErrorAttributes (stanza) {
 }
 
 export function getReferences (stanza) {
-    const text = stanza.querySelector('body')?.textContent;
     return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
+        const anchor = ref.getAttribute('anchor');
+        const text = stanza.querySelector(anchor ? `#${anchor}` : 'body')?.textContent;
+        if (!text) {
+            log.warn(`Could not find referenced text for ${ref}`);
+            return null;
+        }
         const begin = ref.getAttribute('begin');
         const end = ref.getAttribute('end');
         return {
@@ -254,7 +259,7 @@ export function getReferences (stanza) {
             'value': text.slice(begin, end),
             'uri': ref.getAttribute('uri')
         };
-    });
+    }).filter(r => r);
 }
 
 export function getReceiptId (stanza) {

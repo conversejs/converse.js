@@ -3,9 +3,10 @@ import log from '@converse/headless/log';
 import { api } from '@converse/headless/core';
 
 function checkTLS (uri) {
+    const uri_protocol = uri.protocol().toLowerCase();
     return (
         window.location.protocol === 'http:' ||
-        (window.location.protocol === 'https:' && uri.protocol().toLowerCase() === 'https')
+        (window.location.protocol === 'https:' && ['http', 'aesgcm'].includes(uri_protocol))
     );
 }
 

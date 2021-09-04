@@ -1,4 +1,5 @@
 import { html } from "lit";
+import { api } from '@converse/headless/core.js';
 
 
 export default () => html`
@@ -46,4 +47,5 @@ export default () => html`
                 <p class="byline">messaging freedom</p>
             </span>
         </div>
+        ${ api.settings.get('view_mode') === 'overlayed' ? html`<div class="converse-brand__padding"></div>` : '' }
     </div>`;

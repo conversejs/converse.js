@@ -16,5 +16,6 @@ converse.plugins.add('converse-caps', {
 
     initialize () {
         api.listen.on('constructedPresence', (_, p) => (p.root().cnode(createCapsNode()).up() && p));
+        api.listen.on('constructedMUCPresence', (_, p) => (p.root().cnode(createCapsNode()).up() && p));
     }
 });

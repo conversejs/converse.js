@@ -87,7 +87,7 @@ po:
 
 .PHONY: release
 release:
-	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/converse-core.js
+	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/core.js
 	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
 	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' src/i18n/converse.pot
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json
@@ -107,7 +107,7 @@ release:
 
 .PHONY: postrelease
 postrelease:
-	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/converse-core.js
+	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/core.js
 
 ########################################################################
 ## Install dependencies

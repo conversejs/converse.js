@@ -274,10 +274,6 @@ describe("XEP-0363: HTTP File Upload", function () {
                     expect(img_link_el.outerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
-
-                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
-                        `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                        `Download file "conversejs-filled.svg"</a>`);
                     XMLHttpRequest.prototype.send = send_backup;
                 }));
 

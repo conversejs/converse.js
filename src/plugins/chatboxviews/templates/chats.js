@@ -5,7 +5,8 @@ import { _converse, api } from '@converse/headless/core';
 
 function shouldShowChat (c) {
     const { CONTROLBOX_TYPE } = _converse;
-    return c.get('type') === CONTROLBOX_TYPE || !(c.get('hidden') || c.get('minimized'));
+    const is_minimized = (api.settings.get('view_mode') === 'overlayed' && c.get('minimized'));
+    return c.get('type') === CONTROLBOX_TYPE || !(c.get('hidden') || is_minimized);
 }
 
 

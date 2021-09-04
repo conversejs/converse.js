@@ -39,7 +39,7 @@ export const DEFAULT_SETTINGS = {
     ],
     nickname: undefined,
     password: undefined,
-    persistent_store: 'localStorage',
+    persistent_store: 'IndexedDB',
     rid: undefined,
     root: window.document,
     sid: undefined,

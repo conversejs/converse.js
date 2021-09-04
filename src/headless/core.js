@@ -47,6 +47,7 @@ import {
 dayjs.extend(advancedFormat);
 
 // Add Strophe Namespaces
+Strophe.addNamespace('ACTIVITY', 'http://jabber.org/protocol/activity');
 Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
 Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
@@ -82,7 +83,7 @@ Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
-_converse.VERSION_NAME = "v7.0.3dev";
+_converse.VERSION_NAME = "v8.0.1dev";
 
 Object.assign(_converse, Events);
 

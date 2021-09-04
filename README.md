@@ -5,7 +5,7 @@
 </h2>
 
 
-[![XMPP Chat](https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
+[![XMPP Chat](https://conference.conversejs.org/muc_badge/discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
 [![Travis](https://api.travis-ci.com/conversejs/converse.js.png?branch=master)](https://travis-ci.com/conversejs/converse.js)
 [![Bountysource bounties](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
@@ -40,19 +40,19 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 In overlay mode, Converse appears overlayed chats on top of the website.
 
-![Screenshot of Converse in overlay mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.15.16.png)
+![Screenshot of Converse in overlay mode](https://conversejs.org/screenshots/Converse-overlayed.png)
 
 ### Fullpage
 
 In fullpage mode, Converse behaves like a single-page app that covers the whole browser viewport.
 
-![Screenshot of Converse in fullpage mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.16.46.png)
+![Screenshot of Converse in fullpage mode](https://conversejs.org/screenshots/Converse-fullscreen.png)
 
 ### Embedded
 
 In embedded mode, Converse can be embedded into an element in the DOM.
 
-![Screenshot of Converse in embedded mode](https://opkode.com/img/Converse-embedded.png)
+![Screenshot of Converse in embedded mode](https://conversejs.org/screenshots/Converse-embedded.png)
 
 ## Features
 -   Available as overlayed chat boxes or as a fullscreen application. See [inverse.chat](https://inverse.chat) for the fullscreen version.
@@ -94,6 +94,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0297](https://xmpp.org/extensions/xep-0297.html) Stanza Forwarding (limited support)
 - [XEP-0308](https://xmpp.org/extensions/xep-0308.html) Last Message Correction
 - [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management
+- [XEP-0316](https://xmpp.org/extensions/xep-0316.html) MUC Eventing protocol (limited support)
 - [XEP-0317](https://xmpp.org/extensions/xep-0317.html) Hats (limited support)
 - [XEP-0333](https://xmpp.org/extensions/xep-0333.html) Chat Markers (limited support)
 - [XEP-0352](https://xmpp.org/extensions/xep-0352.html) Client State Indication
@@ -108,6 +109,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0424](https://xmpp.org/extensions/xep-0424.html) Message Retractions
 - [XEP-0425](https://xmpp.org/extensions/xep-0425.html) Message Moderation
 - [XEP-0437](https://xmpp.org/extensions/xep-0437.html) Room Activity Indicators
+- [XEP-0453](https://xmpp.org/extensions/xep-0453.html) DOAP Usage in XMPP
 - [XEP-0454](https://xmpp.org/extensions/xep-0454.html) OMEMO Media sharing
 
 ## Integration into other servers and frameworks
@@ -170,7 +172,12 @@ We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapa
   </a>
 </p>
 <p>
-  <a href="https://mailbox.org?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="Mailbox - Email and cloud storage" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/mailbox.svg" width="120">
+  <a href="https://www.pluckeye.net/?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Pluckeye" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/pluckeye.svg" width="200">
+  </a>
+</p>
+<p>
+  <a href="https://originalenergie.de/?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Original Energie" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/originalenergie-black.png" width="200">
   </a>
 </p>

@@ -46,7 +46,8 @@ export function updateUnreadFavicon () {
  * @param { MUCMessageAttributes } attrs
  */
 export async function shouldNotifyOfGroupMessage (attrs) {
-    if (!attrs?.body) {
+    if (!attrs?.body && !attrs?.message) {
+        // attrs.message is used by 'info' messages
         return false;
     }
     const jid = attrs.from;
@@ -174,9 +175,11 @@ function showMessageNotification (data) {
         return;
     }
     let title, roster_item;
-    const full_from_jid = attrs.from,
-        from_jid = Strophe.getBareJidFromJid(full_from_jid);
-    if (attrs.type === 'headline') {
+    const full_from_jid = attrs.from;
+    const from_jid = Strophe.getBareJidFromJid(full_from_jid);
+    if (attrs.type == 'info') {
+        title = attrs.message;
+    } else if (attrs.type === 'headline') {
         if (!from_jid.includes('@') || api.settings.get('allow_non_roster_messaging')) {
             title = __('Notification from %1$s', from_jid);
         } else {
@@ -204,10 +207,16 @@ function showMessageNotification (data) {
         }
     }
 
-    const body = attrs.is_encrypted ? __('Encrypted message received') : attrs.body;
-    if (!body) {
-        return;
+    let body;
+    if (attrs.type == 'info') {
+        body = attrs.reason;
+    } else {
+        body = attrs.is_encrypted ? attrs.plaintext : attrs.body;
+        if (!body) {
+            return;
+        }
     }
+
     const n = new Notification(title, {
         'body': body,
         'lang': _converse.locale,

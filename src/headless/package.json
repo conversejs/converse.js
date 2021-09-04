@@ -38,9 +38,9 @@
   "devDependencies": {},
   "dependencies": {
     "@converse/skeletor": "0.0.5",
-    "dayjs": "1.10.5",
+    "dayjs": "1.10.6",
     "filesize": "^7.0.0",
-    "localforage": "^1.9.0",
+    "localforage": "^1.10.0",
     "localforage-driver-memory": "^1.0.5",
     "localforage-setitems": "^1.4.0",
     "localforage-webextensionstorage-driver": "^2.0.0",

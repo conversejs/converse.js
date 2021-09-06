@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.0.1 (Unreleased)
+
+- #2634: Image previews not loading when not serving Converse locally
+
 ## 8.0.0 (2021-09-03)
 
 - Requires Node 12 or above

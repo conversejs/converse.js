@@ -39,9 +39,7 @@ export default class BookmarksView extends ElementView {
     }
 
     toggleBookmarksList (ev) {
-        if (ev && ev.preventDefault) {
-            ev.preventDefault();
-        }
+        ev?.preventDefault?.();
         const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
         if (u.hasClass('fa-caret-down', icon_el)) {
             u.slideIn(this.querySelector('.bookmarks'));

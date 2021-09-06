@@ -16,7 +16,7 @@ export default () => {
     const connection = _converse?.connection;
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
     return html`
-        ${view_mode === 'overlayed' ? html`<converse-minimized-chats></converse-minimized-chats>` : ''}
+        ${!logged_out && view_mode === 'overlayed' ? html`<converse-minimized-chats></converse-minimized-chats>` : ''}
         ${repeat(chatboxes.filter(shouldShowChat), m => m.get('jid'), m => {
             if (m.get('type') === CONTROLBOX_TYPE) {
                 return html`

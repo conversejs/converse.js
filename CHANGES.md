@@ -7,6 +7,7 @@
 - #2629: OMEMO button tooltip is wrong in private chat
 - #2633: Excessive logging of warning
 - #2634: Image previews not loading when not serving Converse locally
+- Bugfix: Don't show minimized chats when logged out
 
 ## 8.0.0 (2021-09-03)
 

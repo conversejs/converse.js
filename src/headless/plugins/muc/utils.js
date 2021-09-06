@@ -186,13 +186,16 @@ export async function autoJoinRooms () {
  * @param { XMLElement } stanza
  */
 async function handleMEPNotification (stanza) {
-    const msgid = stanza.getAttribute('id');
     const from = stanza.getAttribute('from');
+    if (u.isSameBareJID(from, _converse.bare_jid)) {
+        return;
+    }
     const room = await api.rooms.get(from);
     if (!room) {
         log.warn(`Received a MEP message for a non-existent room: ${from}`);
         return;
     }
+    const msgid = stanza.getAttribute('id');
     if (room.messages.findWhere({ msgid })) {
         // We already handled this stanza before
         return;

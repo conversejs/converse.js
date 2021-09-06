@@ -5,6 +5,7 @@
 - #2326: 404 for asset /logo/conversejs-filled.svg
 - #2628: Open groupchats toggle emits an error
 - #2629: OMEMO button tooltip is wrong in private chat
+- #2633: Excessive logging of warning
 - #2634: Image previews not loading when not serving Converse locally
 
 ## 8.0.0 (2021-09-03)

@@ -28,7 +28,9 @@ async function handleErrorMessage (stanza) {
         return;
     }
     const chatbox = await api.chatboxes.get(from_jid);
-    chatbox?.handleErrorMessageStanza(stanza);
+    if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        chatbox?.handleErrorMessageStanza(stanza);
+    }
 }
 
 export function autoJoinChats () {

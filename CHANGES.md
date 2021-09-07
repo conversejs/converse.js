@@ -1,5 +1,14 @@
 # Changelog
 
+## 8.0.1 (Unreleased)
+
+- #2326: 404 for asset /logo/conversejs-filled.svg
+- #2628: Open groupchats toggle emits an error
+- #2629: OMEMO button tooltip is wrong in private chat
+- #2633: Excessive logging of warning
+- #2634: Image previews not loading when not serving Converse locally
+- Bugfix: Don't show minimized chats when logged out
+
 ## 8.0.0 (2021-09-03)
 
 - Requires Node 12 or above

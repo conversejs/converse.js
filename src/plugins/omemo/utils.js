@@ -654,16 +654,19 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
     const model = toolbar_el.model;
     const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
     let title;
-    if (is_muc && model.get('omemo_supported')) {
+    if (model.get('omemo_supported')) {
         const i18n_plaintext = __('Messages are being sent in plaintext');
         const i18n_encrypted = __('Messages are sent encrypted');
         title = model.get('omemo_active') ? i18n_encrypted : i18n_plaintext;
-    } else {
+    } else if (is_muc) {
         title = __(
             'This groupchat needs to be members-only and non-anonymous in ' +
                 'order to support OMEMO encrypted messages'
         );
+    } else {
+        title = __('OMEMO encryption is not supported');
     }
+
     let color;
     if (model.get('omemo_supported')) {
         color = model.get('omemo_active') ? `var(--info-color)` : `var(--error-color)`;

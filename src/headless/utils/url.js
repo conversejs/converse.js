@@ -6,7 +6,7 @@ function checkTLS (uri) {
     const uri_protocol = uri.protocol().toLowerCase();
     return (
         window.location.protocol === 'http:' ||
-        (window.location.protocol === 'https:' && ['http', 'aesgcm'].includes(uri_protocol))
+        (window.location.protocol === 'https:' && ['https', 'aesgcm'].includes(uri_protocol))
     );
 }
 

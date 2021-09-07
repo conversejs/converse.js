@@ -1,32 +1,13 @@
 import RoomDetailsModal from 'modals/muc-details.js';
 import tpl_roomslist from "./templates/roomslist.js";
 import { ElementView } from '@converse/skeletor/src/element.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import RoomsListModel from './model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { render } from 'lit';
 
-const { Strophe } = converse.env;
-const u = converse.env.utils;
-
-
-const RoomsListModel = Model.extend({
-    defaults: function () {
-        return {
-            'muc_domain': api.settings.get('muc_domain'),
-            'nick': _converse.getDefaultMUCNickname(),
-            'toggle-state':  _converse.OPENED,
-        };
-    },
-
-    setDomain (jid) {
-        if (!api.settings.get('locked_muc_domain')) {
-            this.save('muc_domain', Strophe.getDomainFromJid(jid));
-        }
-    }
-});
-
+const { Strophe, u } = converse.env;
 
 export class RoomsList extends ElementView {
 
@@ -109,16 +90,16 @@ export class RoomsList extends ElementView {
     }
 
     toggleRoomsList (ev) {
-        if (ev && ev.preventDefault) { ev.preventDefault(); }
+        ev?.preventDefault?.();
         const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
         if (icon_el.classList.contains("fa-caret-down")) {
-            u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
+            u.slideIn(this.querySelector('.open-rooms-list')).then(() => {
                 this.model.save({'toggle-state': _converse.CLOSED});
                 icon_el.classList.remove("fa-caret-down");
                 icon_el.classList.add("fa-caret-right");
             });
         } else {
-            u.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
+            u.slideOut(this.querySelector('.open-rooms-list')).then(() => {
                 this.model.save({'toggle-state': _converse.OPENED});
                 icon_el.classList.remove("fa-caret-right");
                 icon_el.classList.add("fa-caret-down");

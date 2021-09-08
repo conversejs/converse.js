@@ -8,6 +8,7 @@
 - #2633: Excessive logging of warning
 - #2634: Image previews not loading when not serving Converse locally
 - Bugfix: Don't show minimized chats when logged out
+- Bugfix: Ensure that the converse session is actually present before trying to get things from it
 
 ## 8.0.0 (2021-09-03)
 

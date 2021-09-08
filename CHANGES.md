@@ -7,8 +7,8 @@
 - #2629: OMEMO button tooltip is wrong in private chat
 - #2633: Excessive logging of warning
 - #2634: Image previews not loading when not serving Converse locally
+- #2636: Don't fail when setting up a new XEP-0198 managed stream and `_converse.session` is undefined
 - Bugfix: Don't show minimized chats when logged out
-- Bugfix: Ensure that the converse session is actually present before trying to get things from it
 
 ## 8.0.0 (2021-09-03)
 

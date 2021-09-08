@@ -72,14 +72,13 @@ export function initSessionData () {
 }
 
 function resetSessionData () {
-    _converse.session &&
-        _converse.session.save({
-            'smacks_enabled': false,
-            'num_stanzas_handled': 0,
-            'num_stanzas_handled_by_server': 0,
-            'num_stanzas_since_last_ack': 0,
-            'unacked_stanzas': []
-        });
+    _converse.session?.save({
+        'smacks_enabled': false,
+        'num_stanzas_handled': 0,
+        'num_stanzas_handled_by_server': 0,
+        'num_stanzas_since_last_ack': 0,
+        'unacked_stanzas': []
+    });
 }
 
 function saveSessionData (el) {
@@ -196,7 +195,7 @@ export async function enableStreamManagement () {
     smacks_handlers.push(conn.addHandler(stanzaHandler));
     smacks_handlers.push(conn.addHandler(sendAck, Strophe.NS.SM, 'r'));
     smacks_handlers.push(conn.addHandler(handleAck, Strophe.NS.SM, 'a'));
-    if (_converse.session && _converse.session.get('smacks_stream_id')) {
+    if (_converse.session?.get('smacks_stream_id')) {
         await sendResumeStanza();
     } else {
         resetSessionData();

@@ -2112,8 +2112,10 @@ const ChatRoomMixin = {
             return false;
         }
         attrs.activities?.forEach(activity_attrs => {
-            const mdata = Object.assign({ 'msgid': attrs.msgid }, activity_attrs);
-            this.createMessage(mdata)
+            const data = Object.assign({ 'msgid': attrs.msgid, 'from_muc': attrs.from }, activity_attrs);
+            this.createMessage(data)
+            // Trigger so that notifications are shown
+            api.trigger('message', { 'attrs': data, 'chatbox': this });
         });
         return !!attrs.activities.length
     },

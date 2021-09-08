@@ -182,6 +182,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
         {
             from,
             nick,
+            'is_forwarded': !!stanza?.querySelector('forwarded'),
             'activities': getMEPActivities(stanza),
             'body': stanza.querySelector('body')?.textContent?.trim(),
             'chat_state': getChatState(stanza),

@@ -143,32 +143,12 @@ u.isEmptyMessage = function (attrs) {
 };
 
 //TODO: Remove
-u.isOnlyChatStateNotification = function (msg) {
-    if (msg instanceof Element) {
-        // See XEP-0085 Chat State Notification
-        return (msg.querySelector('body') === null) && (
-                    (msg.querySelector('active') !== null) ||
-                    (msg.querySelector('composing') !== null) ||
-                    (msg.querySelector('inactive') !== null) ||
-                    (msg.querySelector('paused') !== null) ||
-                    (msg.querySelector('gone') !== null));
-    }
-    if (msg instanceof Model) {
-        msg = msg.attributes;
-    }
-    return msg['chat_state'] && u.isEmptyMessage(msg);
+u.isOnlyChatStateNotification = function (attrs) {
+    return attrs['chat_state'] && u.isEmptyMessage(attrs);
 };
 
-u.isOnlyMessageDeliveryReceipt = function (msg) {
-    if (msg instanceof Element) {
-        // See XEP-0184 Message Delivery Receipts
-        return (msg.querySelector('body') === null) &&
-                    (msg.querySelector('received') !== null);
-    }
-    if (msg instanceof Model) {
-        msg = msg.attributes;
-    }
-    return msg['received'] && u.isEmptyMessage(msg);
+u.isOnlyMessageDeliveryReceipt = function (attrs) {
+    return attrs['received'] && u.isEmptyMessage(attrs);
 };
 
 u.isChatRoom = function (model) {

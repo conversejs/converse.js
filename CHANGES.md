@@ -1,6 +1,6 @@
 # Changelog
 
-## 8.0.1 (Unreleased)
+## 8.0.1 (2021-09-09)
 
 - #2326: 404 for asset /logo/conversejs-filled.svg
 - #2628: Open groupchats toggle emits an error

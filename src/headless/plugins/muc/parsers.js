@@ -18,7 +18,7 @@ import {
     isCarbon,
     isHeadline,
     isValidReceiptRequest,
-    rejectUnencapsulatedForward,
+    throwErrorIfInvalidForward,
 } from '@converse/headless/shared/parsers';
 import { api, converse } from '@converse/headless/core';
 
@@ -103,10 +103,7 @@ function getModerationAttributes (stanza) {
  * @returns { Promise<MUCMessageAttributes|Error> }
  */
 export async function parseMUCMessage (stanza, chatbox, _converse) {
-    const err = rejectUnencapsulatedForward(stanza);
-    if (err) {
-        return err;
-    }
+    throwErrorIfInvalidForward(stanza);
 
     const selector = `[xmlns="${NS.MAM}"] > forwarded[xmlns="${NS.FORWARD}"] > message`;
     const original_stanza = stanza;

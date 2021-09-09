@@ -554,13 +554,17 @@ const ChatRoomMixin = {
         }
         /**
          * @typedef { Object } MUCMessageData
-         * An object containing the original groupchat message stanza,
-         * as well as the parsed attributes.
-         * @property { XMLElement } stanza
+         * An object containing the parsed { @link MUCMessageAttributes } and
+         * current { @link ChatRoom }.
          * @property { MUCMessageAttributes } attrs
          * @property { ChatRoom } chatbox
          */
-        const attrs = await parseMUCMessage(stanza, this, _converse);
+        let attrs;
+        try {
+            attrs = await parseMUCMessage(stanza, this, _converse);
+        } catch (e) {
+            return log.error(e.message);
+        }
         const data = { stanza, attrs, 'chatbox': this };
         /**
          * Triggered when a groupchat message stanza has been received and parsed.

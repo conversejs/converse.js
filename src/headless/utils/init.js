@@ -248,6 +248,10 @@ function fetchLoginCredentials (wait=0) {
                 }
             };
             xhr.onerror = reject;
+            /**
+             * *Hook* which allows modifying the server request
+             * @event _converse#beforeFetchLoginCredentials
+             */
             xhr = await _converse.api.hook('beforeFetchLoginCredentials', this, xhr);
             xhr.send();
         }, wait)

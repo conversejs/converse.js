@@ -25,7 +25,7 @@ export default class MUCView extends BaseChatView {
         this.onConnectionStatusChanged();
         this.model.maybeShow();
         /**
-         * Triggered once a { @link _converse.ChatRoomView } has been opened
+         * Triggered once a {@link _converse.ChatRoomView} has been opened
          * @event _converse#chatRoomViewInitialized
          * @type { _converse.ChatRoomView }
          * @example _converse.api.listen.on('chatRoomViewInitialized', view => { ... });

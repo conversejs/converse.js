@@ -51,8 +51,8 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'), 1000);
     }));
 
-    it("will not render images if show_images_inline is false",
-            mock.initConverse(['chatBoxesFetched'], {'show_images_inline': false}, async function (_converse) {
+    it("will not render images if render_media is false",
+            mock.initConverse(['chatBoxesFetched'], {'render_media': false}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         const base_url = 'https://conversejs.org';
         const message = base_url+"/logo/conversejs-filled.svg";
@@ -68,7 +68,7 @@ describe("A Chat Message", function () {
 
     it("will render images from approved URLs only",
         mock.initConverse(
-            ['chatBoxesFetched'], {'show_images_inline': ['conversejs.org']},
+            ['chatBoxesFetched'], {'render_media': ['conversejs.org']},
             async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -111,7 +111,7 @@ describe("A Chat Message", function () {
     it("will fall back to rendering URLs that match image_urls_regex as URLs",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {
-                'show_images_inline': ['twimg.com'],
+                'render_media': ['twimg.com'],
                 'image_urls_regex': /^https?:\/\/(www.)?(pbs\.twimg\.com\/)/i
             },
             async function (_converse) {
@@ -130,9 +130,9 @@ describe("A Chat Message", function () {
             `<a target="_blank" rel="noopener" href="https://pbs.twimg.com/media/string?format=jpg&amp;name=small">https://pbs.twimg.com/media/string?format=jpg&amp;name=small</a>`, 1000);
     }));
 
-    it("will respect a changed setting when re-rendered",
+    it("will respect a changed allowed_image_domains setting when re-rendered",
         mock.initConverse(
-            ['chatBoxesFetched'], {'show_images_inline': true},
+            ['chatBoxesFetched'], {'render_media': true},
             async function (_converse) {
 
         const { api } = _converse;
@@ -143,14 +143,26 @@ describe("A Chat Message", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('converse-chat-message-body .chat-image').length === 1);
-        api.settings.set('show_images_inline', false);
-        view.querySelector('converse-chat-message').requestUpdate();
+        expect(view.querySelector('.chat-msg__action-hide-previews')).not.toBe(null);
+
+        api.settings.set('allowed_image_domains', []);
+
+        // FIXME: remove once we can update based on settings change event
+        view.querySelector('converse-chat-message-body').requestUpdate();
+        view.querySelector('converse-message-actions').requestUpdate();
         await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image') === null);
-        expect(true).toBe(true);
+        expect(view.querySelector('.chat-msg__action-hide-previews')).toBe(null);
+
+        // FIXME: remove once we can update based on settings change event
+        api.settings.set('allowed_image_domains', null);
+        view.querySelector('converse-chat-message-body').requestUpdate();
+        view.querySelector('converse-message-actions').requestUpdate();
+        await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image'));
+        expect(view.querySelector('.chat-msg__action-hide-previews')).not.toBe(null);
     }));
 
     it("will allow the user to toggle visibility of rendered images",
-            mock.initConverse(['chatBoxesFetched'], {'show_images_inline': true}, async function (_converse) {
+            mock.initConverse(['chatBoxesFetched'], {'render_media': true}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         // let message = "https://i.imgur.com/Py9ifJE.mp4";

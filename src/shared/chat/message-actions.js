@@ -1,8 +1,10 @@
 import log from '@converse/headless/log';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core.js';
+import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { html } from 'lit';
+import { isMediaURLDomainAllowed } from '@converse/headless/utils/url.js';
 import { until } from 'lit/directives/until.js';
 
 const { Strophe, u } = converse.env;
@@ -218,17 +220,29 @@ class MessageActions extends CustomElement {
         }
         const ogp_metadata = this.model.get('ogp_metadata') || [];
         const unfurls_to_show = api.settings.get('muc_show_ogp_unfurls') && ogp_metadata.length;
-        const media_to_show = this.model.get('media_urls')?.length;
-
+        const media_urls = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'));
+        const media_to_show = media_urls.reduce((result, o) => result || isMediaURLDomainAllowed(o), false);
         if (unfurls_to_show || media_to_show) {
             let title;
             const hidden_preview = this.hide_url_previews;
             if (ogp_metadata.length > 1) {
-                title = hidden_preview ? __('Show URL previews') : __('Hide URL previews');
+                if (typeof hidden_preview === 'boolean') {
+                    title = hidden_preview ? __('Show URL previews') : __('Hide URL previews');
+                } else {
+                    title = api.settings.get('render_media') ? __('Hide URL previews') : __('Show URL previews');
+                }
             } else if (ogp_metadata.length === 1) {
-                title = hidden_preview ? __('Show URL preview') : __('Hide URL preview');
+                if (typeof hidden_preview === 'boolean') {
+                    title = hidden_preview ? __('Show URL preview') : __('Hide URL preview');
+                } else {
+                    title = api.settings.get('render_media') ? __('Hide URL previews') : __('Show URL previews');
+                }
             } else  {
-                title = hidden_preview ? __('Show media') : __('Hide media');
+                if (typeof hidden_preview === 'boolean') {
+                    title = hidden_preview ? __('Show media') : __('Hide media');
+                } else {
+                    title = api.settings.get('render_media') ? __('Hide media') : __('Show media');
+                }
             }
             buttons.push({
                 'i18n_text': title,

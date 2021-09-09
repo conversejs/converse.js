@@ -9,9 +9,9 @@ import { _converse, api, converse } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { debouncedPruneHistory, pruneHistory } from '@converse/headless/shared/chat/utils.js';
-import { getMediaURLs } from '@converse/headless/shared/parsers';
+import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { parseMessage } from './parsers.js';
-import { sendMarker } from '@converse/headless/shared/actions';
+import { sendMarker } from '@converse/headless/shared/actions.js';
 
 const { Strophe, $msg } = converse.env;
 
@@ -870,7 +870,7 @@ const ChatBox = ModelWithContact.extend({
             body,
             is_spoiler,
             origin_id
-        }, getMediaURLs(text));
+        }, getMediaURLsMetadata(text));
     },
 
     /**

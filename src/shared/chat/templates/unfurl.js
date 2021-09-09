@@ -1,4 +1,4 @@
-import { getURI, isAudioURL, isGIFURL, isVideoURL, isImageDomainAllowed } from '@converse/headless/utils/url.js';
+import { getURI, isAudioURL, isGIFURL, isVideoURL, isDomainAllowed } from '@converse/headless/utils/url.js';
 import { html } from 'lit';
 
 
@@ -8,7 +8,7 @@ function isValidURL (url) {
 }
 
 function isValidImage (image) {
-    return image && isImageDomainAllowed(image) && isValidURL(image);
+    return image && isDomainAllowed(image, 'allowed_image_domains') && isValidURL(image);
 }
 
 function shouldHideMediaURL (o) {

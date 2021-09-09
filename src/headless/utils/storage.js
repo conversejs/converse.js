@@ -25,7 +25,7 @@ export function createStore (id, store) {
 
 export function initStorage (model, id, type) {
     const store = type || getDefaultStore();
-    model.browserStorage = _converse.createStore(id, store);
+    model.browserStorage = createStore(id, store);
     if (storeUsesIndexedDB(store)) {
         const flush = () => model.browserStorage.flush();
         window.addEventListener(_converse.unloadevent, flush);

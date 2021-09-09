@@ -254,9 +254,9 @@ describe("A Groupchat Message", function () {
         expect(unfurls.length).toBe(1);
     }));
 
-    it("will not render an unfurl image if the domain is not in show_images_inline",
+    it("will not render an unfurl image if the domain is not in allowed_image_domains",
             mock.initConverse(['chatBoxesFetched'],
-            {'show_images_inline': []},
+            {'allowed_image_domains': []},
             async function (_converse) {
 
         const nick = 'romeo';
@@ -294,7 +294,7 @@ describe("A Groupchat Message", function () {
 
     it("lets the user hide an unfurl",
             mock.initConverse(['chatBoxesFetched'],
-            {'show_images_inline': []},
+            {'render_media': []},
             async function (_converse) {
 
         const nick = 'romeo';

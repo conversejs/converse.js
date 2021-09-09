@@ -1,9 +1,10 @@
 import Favico from 'favico.js-slevomat';
 import log from '@converse/headless/log';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core.js';
+import { isEmptyMessage } from '@converse/headless/utils/core.js';
 
-const { Strophe, u } = converse.env;
+const { Strophe } = converse.env;
 const supports_html5_notification = 'Notification' in window;
 
 converse.env.Favico = Favico;
@@ -132,8 +133,7 @@ function shouldNotifyOfMessage (data) {
     }
     const is_me = Strophe.getBareJidFromJid(attrs.from) === _converse.bare_jid;
     return (
-        !u.isOnlyChatStateNotification(attrs) &&
-        !u.isOnlyMessageDeliveryReceipt(attrs) &&
+        !isEmptyMessage(attrs) &&
         !is_me &&
         (api.settings.get('show_desktop_notifications') === 'all' || isMessageToHiddenChat(attrs))
     );

@@ -23,6 +23,38 @@ all the available configuration settings.
 Configuration settings
 ======================
 
+.. _`allowed_audio_domains`:
+
+allowed_audio_domains
+---------------------
+
+* Default: ``null``
+
+If falsy, all domains are allowed. Set it to an array to specify a whitelist of allowed domains.
+
+
+.. _`allowed_image_domains`:
+
+allowed_image_domains
+---------------------
+
+* Default: ``null``
+
+If falsy, all domains are allowed. Set it to an array to specify a whitelist of allowed domains.
+
+E.g. ``['imgur.com', 'imgbb.com']``
+
+.. _`allowed_video_domains`:
+
+allowed_video_domains
+---------------------
+
+* Default: ``null``
+
+If falsy, all domains are allowed. Set it to an array to specify a whitelist of allowed domains.
+
+E.g. ``['imgur.com']``
+
 authentication
 --------------
 
@@ -751,14 +783,6 @@ JIDs with other domains are still allowed but need to be provided in full.
 To specify only one domain and disallow other domains, see the `locked_domain`_
 option.
 
-registration_domain
--------------------
-
-* Default: ``''``
-
-Specify a domain name for which the registration form will be fetched automatically,
-without the user having to enter any XMPP server domain name.
-
 default_state
 -------------
 
@@ -791,28 +815,6 @@ domain_placeholder
 * Default: ``e.g. conversejs.org``
 
 The placeholder text shown in the domain input on the registration form.
-
-
-embed_audio
------------
-
-* Default:  ``true``
-
-If set to ``false``, audio files won't be embedded in chats, instead only their links will be shown.
-
-It also accepts an array strings of whitelisted domain names to only render audio files that belong to those domains.
-E.g. ``['conversejs.org']``
-
-
-embed_videos
-------------
-
-* Default:  ``true``
-
-If set to ``false``, videos won't be rendered in chats, instead only their links will be shown.
-
-It also accepts an array strings of whitelisted domain names to only render videos that belong to those domains.
-E.g. ``['imgur.com', 'imgbb.com']``
 
 
 emoji_categories
@@ -1449,11 +1451,10 @@ Example:
 muc_show_info_messages
 ----------------------
 
-* Default: List composed of MUC status codes, role changes, join and leave events
-and affiliation changes. The values of converse.MUC_INFO_CODES below are joined to
-build the default list:
+* Default: List composed of MUC status codes, role changes, join and leave events and affiliation changes. The values of converse.MUC_INFO_CODES below are joined to build the default list:
 
 .. code-block:: javascript
+
     converse.MUC_AFFILIATION_CHANGES_LIST = ['owner', 'admin', 'member', 'exowner', 'exadmin', 'exmember', 'exoutcast']
     converse.MUC_ROLE_CHANGES_LIST = ['op', 'deop', 'voice', 'mute'];
     converse.MUC_TRAFFIC_STATES_LIST = ['entered', 'exited'];
@@ -1475,6 +1476,7 @@ It is recommended to use the aforementioned Converse object in the following fas
 to build the list of desired info messages that will be shown:
 
 .. code-block:: javascript
+
     muc_show_info_messages: [
         ...converse.MUC_INFO_CODES.visibility_changes,
         ...converse.MUC_INFO_CODES.self,
@@ -1813,6 +1815,40 @@ For example:
         });
 
 
+registration_domain
+-------------------
+
+* Default: ``''``
+
+Specify a domain name for which the registration form will be fetched automatically,
+without the user having to enter any XMPP server domain name.
+
+render_media
+------------
+
+* Default: ``true``
+
+If ``true``, media files (images, audio and video) will be rendered in the chat.
+Otherwise, only their URLs will be shown.
+
+Note, even if this setting is ``false``, a user can still click on the message
+dropdown and click to show the media for that particular message.
+
+If you want to disable this ability, you can set the allowed domains for that
+media type to an empty array.
+
+See:
+
+* `allowed_audio_domains`_
+* `allowed_video_domains`_
+* `allowed_image_domains`_
+
+.. note::
+
+  This setting, together with the three allowed domain settings above, obsolete
+  the ``show_images_inline``, ``embed_audio`` and ``embed_videos`` settings.
+
+
 .. _`roomconfig_whitelist`:
 
 roomconfig_whitelist
@@ -1973,8 +2009,8 @@ show_images_inline
 
 If set to ``false``, images won't be rendered in chats, instead only their links will be shown.
 
-It also accepts an array strings of whitelisted domain names to only render images that belong to those domains.
-E.g. ``['imgur.com', 'imgbb.com']``
+Users will however still have the ability to render individual images via the message actions dropdown.
+If you want to disallow users from doing so, set the ``allowed_image_domains`` option to an empty array ``[]``.
 
 
 show_retraction_warning

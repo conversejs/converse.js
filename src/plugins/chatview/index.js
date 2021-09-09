@@ -34,15 +34,16 @@ converse.plugins.add('converse-chatview', {
          * loaded by converse.js's plugin machinery.
          */
         api.settings.extend({
+            'allowed_audio_domains': null,
+            'allowed_image_domains': null,
+            'allowed_video_domains': null,
             'auto_focus': true,
             'debounced_content_rendering': true,
-            'embed_videos': true,
-            'embed_audio': true,
             'filter_url_query_params': null,
             'image_urls_regex': null,
             'message_limit': 0,
             'muc_hats': ['xep317'],
-            'show_images_inline': true,
+            'render_media': true,
             'show_message_avatar': true,
             'show_retraction_warning': true,
             'show_send_button': true,

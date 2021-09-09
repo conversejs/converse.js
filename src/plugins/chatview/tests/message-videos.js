@@ -29,8 +29,8 @@ describe("A chat message containing video URLs", function () {
             `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(message)}">${Strophe.xmlescape(message)}</a>`);
     }));
 
-    it("will not render videos if embed_videos is false",
-            mock.initConverse(['chatBoxesFetched'], {'embed_videos': false}, async function (_converse) {
+    it("will not render videos if render_media is false",
+            mock.initConverse(['chatBoxesFetched'], {'render_media': false}, async function (_converse) {
         await mock.waitForRoster(_converse, 'current');
         // let message = "https://i.imgur.com/Py9ifJE.mp4";
         const base_url = 'https://conversejs.org';
@@ -47,7 +47,7 @@ describe("A chat message containing video URLs", function () {
 
     it("will render videos from approved URLs only",
         mock.initConverse(
-            ['chatBoxesFetched'], {'embed_videos': ['conversejs.org']},
+            ['chatBoxesFetched'], {'allowed_video_domains': ['conversejs.org']},
             async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -70,7 +70,7 @@ describe("A chat message containing video URLs", function () {
     }));
 
     it("will allow the user to toggle visibility of rendered videos",
-            mock.initConverse(['chatBoxesFetched'], {'embed_videos': true}, async function (_converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
         // let message = "https://i.imgur.com/Py9ifJE.mp4";

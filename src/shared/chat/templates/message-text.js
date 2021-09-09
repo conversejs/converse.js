@@ -33,11 +33,9 @@ export default (el) => {
             <converse-chat-message-body
                 class="chat-msg__text ${el.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                 .model="${el.model}"
-                ?hide_url_previews=${el.model.get('hide_url_previews')}
+                hide_url_previews=${el.model.get('hide_url_previews')}
                 ?is_me_message=${el.model.isMeCommand()}
-                ?show_images=${api.settings.get('show_images_inline')}
-                ?embed_videos=${api.settings.get('embed_videos')}
-                ?embed_audio=${api.settings.get('embed_audio')}
+                ?render_media=${api.settings.get('render_media')}
                 text="${text}"></converse-chat-message-body>
             ${ (el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
             ${ (el.model.get('edited')) ? tpl_edited_icon(el) : '' }

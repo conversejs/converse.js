@@ -1,12 +1,12 @@
-import log from '@converse/headless/log';
 import tpl_audio from 'templates/audio.js';
 import tpl_gif from 'templates/gif.js';
 import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
-import { URL_PARSE_OPTIONS } from '@converse/headless/shared/constants.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
+import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
+import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import {
     convertASCII2Emoji,
     getCodePointReferences,
@@ -15,19 +15,14 @@ import {
 } from '@converse/headless/plugins/emoji/index.js';
 import {
     filterQueryParamsFromURL,
-    isAudioDomainAllowed,
     isAudioURL,
-    isEncryptedFileURL,
+    isDomainAllowed,
     isGIFURL,
-    isImageDomainAllowed,
     isImageURL,
-    isVideoDomainAllowed,
     isVideoURL
 } from '@converse/headless/utils/url.js';
 
 import { html } from 'lit';
-
-const { URI } = converse.env;
 
 const isString = s => typeof s === 'string';
 
@@ -63,21 +58,35 @@ export class RichText extends String {
      *  from the start of the original message text. This is necessary because
      *  RichText instances can be nested when templates call directives
      *  which create new RichText instances (as happens with XEP-393 styling directives).
-     * @param { Array } mentions - An array of mention references
      * @param { Object } options
      * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
      * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
-     * @param { Boolean } options.show_images - Whether image URLs should be rendered as <img> tags.
-     * @param { Boolean } options.embed_videos - Whether video URLs should be rendered as <video> tags.
+     * @param { Boolean } [options.embed_audio] - Whether audio URLs should be rendered as <audio> elements.
+     *  If set to `true`, then audio files will always be rendered with an
+     *  audio player. If set to `false`, they won't, and if not defined, then the `embed_audio` setting
+     *  is used to determine whether they should be rendered as playable audio or as hyperlinks.
+     * @param { Boolean } [options.embed_videos] - Whether video URLs should be rendered as <video> elements.
+     *  If set to `true`, then videos will always be rendered with a video
+     *  player. If set to `false`, they won't, and if not defined, then the `embed_videos` setting
+     *  is used to determine whether they should be rendered as videos or as hyperlinks.
+     * @param { Array } [options.mentions] - An array of mention references
+     * @param { Array } [options.media_urls] - An array of {@link MediaURLMetadata} objects,
+     *  used to render media such as images, videos and audio. It might not be
+     *  possible to have the media metadata available, so if this value is
+     *  `undefined` then the passed-in `text` will be parsed for URLs. If you
+     *  don't want this parsing to happen, pass in an empty array for this
+     *  option.
+     * @param { Boolean } [options.show_images] - Whether image URLs should be rendered as <img> elements.
      * @param { Boolean } options.show_me_message - Whether /me messages should be rendered differently
      * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked
      * @param { Function } options.onImgLoad - Callback for when an inline rendered image has been loaded
      */
-    constructor (text, offset = 0, mentions = [], options = {}) {
+    constructor (text, offset = 0, options = {}) {
         super(text);
         this.embed_audio = options?.embed_audio;
         this.embed_videos = options?.embed_videos;
-        this.mentions = mentions;
+        this.mentions = options?.mentions || [];
+        this.media_urls = options?.media_urls;
         this.nick = options?.nick;
         this.offset = offset;
         this.onImgClick = options?.onImgClick;
@@ -90,36 +99,42 @@ export class RichText extends String {
         this.hide_media_urls = options?.hide_media_urls;
     }
 
+    shouldRenderMedia (url_text, type) {
+        let override;
+        if (type === 'image') {
+            override = this.show_images;
+        } else if (type === 'audio') {
+            override = this.embed_audio;
+        } else if (type === 'video') {
+            override = this.embed_videos;
+        }
+        if (typeof override === 'boolean') {
+            return override;
+        }
+        const may_render = api.settings.get('render_media');
+        return may_render && isDomainAllowed(url_text, `allowed_${type}_domains`);
+    }
+
     /**
      * Look for `http` URIs and return templates that render them as URL links
      * @param { String } text
-     * @param { Integer } offset - The index of the passed in text relative to
-     *  the start of the message body text.
+     * @param { Integer } local_offset - The index of the passed in text relative to
+     *  the start of this RichText instance (which is not necessarily the same as the
+     *  offset from the start of the original message stanza's body text).
      */
-    addHyperlinks (text, offset) {
-        const objs = [];
-        try {
-            URI.withinString(
-                text,
-                (url, start, end) => {
-                    objs.push({ url, start, end });
-                    return url;
-                },
-                URL_PARSE_OPTIONS
-            );
-        } catch (error) {
-            log.debug(error);
-            return;
-        }
+    addHyperlinks (text, local_offset) {
+        const full_offset = local_offset + this.offset;
+        const urls_meta = this.media_urls || getMediaURLsMetadata(text).media_urls || [];
+        const media_urls = getMediaURLs(urls_meta, text, full_offset);
 
-        objs.filter(o => !isEncryptedFileURL(text.slice(o.start, o.end))).forEach(url_obj => {
+        media_urls.filter(o => !o.is_encrypted).forEach(url_obj => {
             const url_text = url_obj.url;
             const filtered_url = filterQueryParamsFromURL(url_text);
-            let template;
 
-            if (this.show_images && isGIFURL(url_text) && isImageDomainAllowed(url_text)) {
+            let template;
+            if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
                 template = tpl_gif(filtered_url, this.hide_media_urls);
-            } else if (this.show_images && isImageURL(url_text) && isImageDomainAllowed(url_text)) {
+            } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
                 template = tpl_image({
                     'url': filtered_url,
                     // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
@@ -127,14 +142,14 @@ export class RichText extends String {
                     'onClick': this.onImgClick,
                     'onLoad': this.onImgLoad
                 });
-            } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
+            } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, 'video')) {
                 template = tpl_video(filtered_url, this.hide_media_urls);
-            } else if (this.embed_audio && isAudioURL(url_text) && isAudioDomainAllowed(url_text)) {
+            } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
                 template = tpl_audio(filtered_url, this.hide_media_urls);
             } else {
                 template = getHyperlinkTemplate(filtered_url);
             }
-            this.addTemplateResult(url_obj.start + offset, url_obj.end + offset, template);
+            this.addTemplateResult(url_obj.start + local_offset, url_obj.end + local_offset, template);
         });
     }
 
@@ -226,7 +241,7 @@ export class RichText extends String {
                     const text = this.slice(slice_begin, slice_end);
                     references.push({
                         'begin': i,
-                        'template': getDirectiveTemplate(d, text, offset, this.mentions, this.options),
+                        'template': getDirectiveTemplate(d, text, offset, this.options),
                         end
                     });
                     i = end;

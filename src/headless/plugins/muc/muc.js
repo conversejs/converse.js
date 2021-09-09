@@ -13,7 +13,7 @@ import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isArchived, getMediaURLs } from '@converse/headless/shared/parsers';
+import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -554,8 +554,8 @@ const ChatRoomMixin = {
         }
         /**
          * @typedef { Object } MUCMessageData
-         * An object containing the parsed { @link MUCMessageAttributes } and
-         * current { @link ChatRoom }.
+         * An object containing the parsed {@link MUCMessageAttributes} and
+         * current {@link ChatRoom}.
          * @property { MUCMessageAttributes } attrs
          * @property { ChatRoom } chatbox
          */
@@ -996,7 +996,7 @@ const ChatRoomMixin = {
             'nick': this.get('nick'),
             'sender': 'me',
             'type': 'groupchat'
-        }, getMediaURLs(text));
+        }, getMediaURLsMetadata(text));
     },
 
     /**
@@ -2107,7 +2107,7 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Given { @link MessageAttributes } look for XEP-0316 Room Notifications and create info
+     * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
      * messages for them.
      * @param { XMLElement } stanza
      */
@@ -2129,7 +2129,7 @@ const ChatRoomMixin = {
      * passed in attributes map.
      * @method _converse.ChatRoom#getDuplicateMessage
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by { @link parseMUCMessage }
+     *  message, as returned by {@link parseMUCMessage}
      * @returns {Promise<_converse.Message>}
      */
     getDuplicateMessage (attrs) {

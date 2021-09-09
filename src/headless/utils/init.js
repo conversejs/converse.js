@@ -230,8 +230,8 @@ async function getLoginCredentials () {
 
 function fetchLoginCredentials (wait=0) {
     return new Promise(
-        debounce((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
+        debounce(async (resolve, reject) => {
+            let xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.api.settings.get("credentials_url"), true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
             xhr.onload = () => {
@@ -248,6 +248,7 @@ function fetchLoginCredentials (wait=0) {
                 }
             };
             xhr.onerror = reject;
+            xhr = await _converse.api.hook('beforeFetchLoginCredentials', this, xhr);
             xhr.send();
         }, wait)
     );

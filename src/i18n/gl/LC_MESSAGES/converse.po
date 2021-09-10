@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-07-21 04:33+0000\n"
+"PO-Revision-Date: 2021-09-12 15:32+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.2-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
@@ -174,19 +174,19 @@ msgstr "Adhesivos"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Erro: esgotouse o tempo obtendo a %1s lista de MUC %2s"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Erro: non hai permiso para obter a %1s lista de MUC %2s"
 
 #: dist/converse-no-dependencies.js:48377
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr ""
-"Non se enviou a retracción porque non estás presente na conversa en grupo."
+"Non se enviou a rectificación porque non estás presente na conversa en grupo."
 
 #: dist/converse-no-dependencies.js:48384
 msgid "Your message was not delivered because you weren't allowed to send it."
@@ -790,14 +790,12 @@ msgid "Hide URL preview"
 msgstr "Agochar vista previa do URL"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Show media"
-msgstr "Mostrar máis"
+msgstr "Mostrar multimedia"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Hide media"
-msgstr "Agochar o tema"
+msgstr "Agochar multimedia"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:65083
@@ -1111,9 +1109,8 @@ msgid "Click to open this server message"
 msgstr "Preme para abrir a esta mensaxe do servidor"
 
 #: dist/converse-no-dependencies.js:81581
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Preme para abrir a esta mensaxe do servidor"
+msgstr "Preme para cargar as mensaxe que faltan"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82025
@@ -1567,9 +1564,8 @@ msgstr "Autor do asunto"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88756
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "Enderezo da conversa en grupo"
+msgstr "Enderezo da conversa en grupo XMPP"
 
 #: dist/converse-no-dependencies.js:88758
 msgid "Message archiving"
@@ -1632,7 +1628,7 @@ msgstr "Non anónima"
 
 #: dist/converse-no-dependencies.js:88786
 msgid "All other groupchat participants can see your XMPP address"
-msgstr "Calquera outro participante da conversa pode ver o seu enderezo XMPP"
+msgstr "Calquera outro participante da conversa pode ver o teu enderezo XMPP"
 
 #: dist/converse-no-dependencies.js:88788
 msgid "Not moderated"
@@ -1683,7 +1679,7 @@ msgstr "Semi anónima"
 
 #: dist/converse-no-dependencies.js:88810
 msgid "Only moderators can see your XMPP address"
-msgstr "Só os moderadores poden ver o seu enderezo XMPP"
+msgstr "Só os moderadores poden ver o teu enderezo XMPP"
 
 #: dist/converse-no-dependencies.js:88812
 #: dist/converse-no-dependencies.js:97262
@@ -1921,9 +1917,8 @@ msgid "Personal status message"
 msgstr "Mensaxe de estado persoal"
 
 #: dist/converse-no-dependencies.js:91664
-#, fuzzy
 msgid "Your profile picture"
-msgstr "O seu perfil"
+msgstr "Imaxe do teu perfil"
 
 #: dist/converse-no-dependencies.js:91757
 msgid "Checkbox for selecting the following fingerprint"
@@ -2001,13 +1996,12 @@ msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "Lamentámolo, non se descifrou a mensaxe OMEMO debido a un fallo."
 
 #: dist/converse-no-dependencies.js:92968
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Lamentámolo, non se descifrou a mensaxe OMEMO porque non temos o JID desta "
-"usuaria."
+"Lamentámolo, non se descifrou a mensaxe OMEMO recibida porque non temos o "
+"enderezo XMPP desta usuaria."
 
 #: dist/converse-no-dependencies.js:93513
 #, javascript-format
@@ -2240,9 +2234,8 @@ msgid "Description:"
 msgstr "Descrición:"
 
 #: dist/converse-no-dependencies.js:97238
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Enderezo da conversa en grupo"
+msgstr "Enderezo XMPP da conversa en grupo:"
 
 #: dist/converse-no-dependencies.js:97240
 msgid "Participants:"

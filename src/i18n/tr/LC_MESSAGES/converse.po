@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-04-10 06:04+0000\n"
+"PO-Revision-Date: 2021-09-12 15:32+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
@@ -174,12 +174,12 @@ msgstr "Çıkartma"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Hata: %1s listesi MUC %2s için alınırken zaman aşımı"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Hata: %1s listesinin MUC %2s için alınmasına izin verilmiyor"
 
 #: dist/converse-no-dependencies.js:48377
 msgid ""
@@ -791,14 +791,12 @@ msgid "Hide URL preview"
 msgstr "URL ön izlemesini gizle"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Show media"
-msgstr "Fazlasını göster"
+msgstr "Ortamı göster"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Hide media"
-msgstr "Konuyu gizle"
+msgstr "Ortamı gizle"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:65083
@@ -1113,9 +1111,8 @@ msgid "Click to open this server message"
 msgstr "Bu sunucu mesajını açmak için tıkla"
 
 #: dist/converse-no-dependencies.js:81581
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Bu sunucu mesajını açmak için tıkla"
+msgstr "Eksik mesajları yüklemek için tıklayın"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82025
@@ -1571,9 +1568,8 @@ msgstr "Konu sahibi"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88756
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "Grup sohbeti adresi"
+msgstr "Grup sohbeti XMPP adresi"
 
 #: dist/converse-no-dependencies.js:88758
 msgid "Message archiving"
@@ -1925,9 +1921,8 @@ msgid "Personal status message"
 msgstr "Kişisel durum mesajı"
 
 #: dist/converse-no-dependencies.js:91664
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Profilin"
+msgstr "Profil resminiz"
 
 #: dist/converse-no-dependencies.js:91757
 msgid "Checkbox for selecting the following fingerprint"
@@ -2005,13 +2000,12 @@ msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "Üzgünüm, bir hata nedeniyle alınan OMEMO mesajının şifresi çözülemedi."
 
 #: dist/converse-no-dependencies.js:92968
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Üzgünüm, o kullanıcı için JID'ye sahip olmadığımız için alınan OMEMO'nun "
-"şifresi çözülemedi."
+"Üzgünüm, o kullanıcı için XMPP adresine sahip olmadığımız için alınan OMEMO "
+"mesajının şifresi çözülemedi."
 
 #: dist/converse-no-dependencies.js:93513
 #, javascript-format
@@ -2245,9 +2239,8 @@ msgid "Description:"
 msgstr "Açıklama:"
 
 #: dist/converse-no-dependencies.js:97238
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Grup sohbeti adresi"
+msgstr "Grup Sohbeti XMPP Adresi:"
 
 #: dist/converse-no-dependencies.js:97240
 msgid "Participants:"

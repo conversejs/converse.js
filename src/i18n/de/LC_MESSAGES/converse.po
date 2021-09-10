@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-04-09 13:30+0200\n"
+"PO-Revision-Date: 2021-09-12 15:32+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -189,12 +189,12 @@ msgstr "Aufkleber"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Fehler: Zeitüberschreitung beim Abrufen der Liste %1s für MUC %2s"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Fehler: Liste %1s für MUC %2s darf nicht abgeholt werden"
 
 #: dist/converse-no-dependencies.js:48377
 msgid ""
@@ -821,14 +821,12 @@ msgid "Hide URL preview"
 msgstr "URL-Vorschau ausblenden"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Show media"
-msgstr "Mehr anzeigen"
+msgstr "Medien anzeigen"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Hide media"
-msgstr "Thema ausblenden"
+msgstr "Medien ausblenden"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:65083
@@ -1148,14 +1146,13 @@ msgid "Click to open this server message"
 msgstr "Klicken Sie hier, um diese Servernachricht zu öffnen"
 
 #: dist/converse-no-dependencies.js:81581
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Klicken Sie hier, um diese Servernachricht zu öffnen"
+msgstr "Klicken Sie hier, um fehlende Nachrichten zu laden"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82025
 msgid "Click to restore this chat"
-msgstr "Hier klicken, um diesen Chat wiederherzustellen"
+msgstr "Klicken Sie hier, um diesen Chat wiederherzustellen"
 
 #: dist/converse-no-dependencies.js:82278
 #: dist/converse-no-dependencies.js:82296
@@ -1617,9 +1614,8 @@ msgstr "Autor des Themas"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88756
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "Gruppenchat-Adresse"
+msgstr "Gruppenchat-XMPP-Adresse"
 
 #: dist/converse-no-dependencies.js:88758
 msgid "Message archiving"
@@ -1975,9 +1971,8 @@ msgid "Personal status message"
 msgstr "Persönliche Statusnachricht"
 
 #: dist/converse-no-dependencies.js:91664
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Dein Profil"
+msgstr "Ihr Profilbild"
 
 #: dist/converse-no-dependencies.js:91757
 msgid "Checkbox for selecting the following fingerprint"
@@ -2058,13 +2053,12 @@ msgstr ""
 "entschlüsselt werden."
 
 #: dist/converse-no-dependencies.js:92968
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Leider konnte eine empfangene OMEMO-Nachricht aufgrund der fehlenden JID des "
-"Nutzers nicht entschlüsselt werden."
+"Leider konnte eine empfangene OMEMO-Nachricht nicht entschlüsselt werden, da "
+"uns die XMPP-Adresse für diesen Benutzer nicht vorliegt."
 
 #: dist/converse-no-dependencies.js:93513
 #, javascript-format
@@ -2309,9 +2303,8 @@ msgid "Description:"
 msgstr "Beschreibung:"
 
 #: dist/converse-no-dependencies.js:97238
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Gruppenchat-Adresse"
+msgstr "Gruppenchat-XMPP-Adresse"
 
 #: dist/converse-no-dependencies.js:97240
 msgid "Participants:"

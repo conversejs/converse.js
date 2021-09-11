@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-02-20 01:50+0000\n"
-"Last-Translator: Kornelijus Tvarijanavičius <kornelitvari@protonmail.com>\n"
+"PO-Revision-Date: 2021-09-12 15:32+0000\n"
+"Last-Translator: Gediminas Murauskas <muziejusinfo@gmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/lt/>\n"
 "Language: lt\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
 "%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
@@ -29,10 +29,9 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "Bandant prisijungti prie pokalbių serverio įvyko klaida."
 
 #: dist/converse-no-dependencies.js:36047
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
-"Jūsų vartotojo vardas ir / arba slaptažodis yra neteisingas. Prašome, "
+"Jūsų XMPP adresas ir / arba slaptažodis yra neteisingas. Prašome, "
 "pabandykite dar kartą."
 
 #: dist/converse-no-dependencies.js:36059
@@ -46,58 +45,54 @@ msgstr "XMPP serveris nepateikė palaikomo autentifikavimo mechanizmo"
 
 #: dist/converse-no-dependencies.js:41601
 #: dist/converse-no-dependencies.js:50662
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is typing"
 msgstr "%1$s rašo"
 
 #: dist/converse-no-dependencies.js:41603
 #: dist/converse-no-dependencies.js:50664
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s nustojo rašyti"
 
 #: dist/converse-no-dependencies.js:41605
 #: dist/converse-no-dependencies.js:42030
 #: dist/converse-no-dependencies.js:50666
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s pasišalino"
 
 #: dist/converse-no-dependencies.js:41693
 #: dist/converse-no-dependencies.js:48375
-#, fuzzy
 msgid "You're not allowed to retract your message."
 msgstr "Deja, jums neleidžiama atšaukti šios žinutės."
 
 #: dist/converse-no-dependencies.js:41695
 #: dist/converse-no-dependencies.js:48379
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "Deja, įvyko klaida bandant atšaukti jūsų žinutę."
 
 #: dist/converse-no-dependencies.js:41700
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "Jums neleidžiama registruotis šiame kambaryje."
+msgstr "Jums neleidžiama siųsti žinutės."
 
 #: dist/converse-no-dependencies.js:41702
 #: dist/converse-no-dependencies.js:48388
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Deja, įvyko klaida bandant pašalinti įrenginį."
+msgstr "Atsiprašome, bandant išsiųsti jūsų žinutę įvyko klaida."
 
 #: dist/converse-no-dependencies.js:42028
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone offline"
 msgstr "%1$s atsijungė"
 
 #: dist/converse-no-dependencies.js:42032
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is busy"
 msgstr "%1$s užsiėmęs"
 
 #: dist/converse-no-dependencies.js:42034
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is online"
 msgstr "%1$s prisijungęs"
 
@@ -115,9 +110,8 @@ msgstr ""
 "Jūsų failo dYdis, %1$s, viršyja serverio maksimalų leistiną, kuris yra %2$s."
 
 #: dist/converse-no-dependencies.js:43342
-#, fuzzy
 msgid "Undecryptable OMEMO message"
-msgstr "Neužšifruotas OMEMO pranešimas"
+msgstr "Neužšifruota OMEMO žinutė"
 
 #: dist/converse-no-dependencies.js:43397
 msgid "Sorry, could not determine upload URL."
@@ -182,12 +176,12 @@ msgstr "Lipdukai"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Klaida: baigėsi skirtasis laikas gaunant %1s sąrašą MUC %2s"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Klaida: neleidžiama gauti %1s sąrašo MUC %2s"
 
 #: dist/converse-no-dependencies.js:48377
 #, fuzzy
@@ -197,26 +191,22 @@ msgid ""
 msgstr "Jūsų žinutė nepristatyta kadangi nesate šiame grupiniame pokalbyje."
 
 #: dist/converse-no-dependencies.js:48384
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
-"Jūsų žinutė nepristatyta kadangi neturite teisės siųsti žinutes šiame "
-"grupiniame pokalbyje."
+msgstr "Jūsų žinutė nepristatyta kadangi neturėjote teisės ją siųsti."
 
 #: dist/converse-no-dependencies.js:48386
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Jūsų žinutė nepristatyta kadangi nesate šiame grupiniame pokalbyje."
+msgstr ""
+"Jūsų žinutė nebuvo pristatyta kadangi nesate šiame grupiniame pokalbyje."
 
 #: dist/converse-no-dependencies.js:48746
 msgid "A timeout happened while while trying to retract your message."
 msgstr "Įvyko pasibaigusio laiko klaida bandant atšaukti žinutę."
 
 #: dist/converse-no-dependencies.js:49501
-#, fuzzy
 msgid "Sorry, an error happened while running the command."
-msgstr "Deja, įvyko klaida bandant išsaugoti jūsų profilio duomenis."
+msgstr "Atsiprašome, vykdant komandą įvyko klaida."
 
 #: dist/converse-no-dependencies.js:49501
 #: dist/converse-no-dependencies.js:88055

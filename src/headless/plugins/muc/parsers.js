@@ -18,7 +18,7 @@ import {
     isCarbon,
     isHeadline,
     isValidReceiptRequest,
-    rejectUnencapsulatedForward,
+    throwErrorIfInvalidForward,
 } from '@converse/headless/shared/parsers';
 import { api, converse } from '@converse/headless/core';
 
@@ -33,7 +33,7 @@ const { NS } = Strophe;
 export function getMEPActivities (stanza) {
     const items_el = sizzle(`items[node="${Strophe.NS.CONFINFO}"]`, stanza).pop();
     if (!items_el) {
-        return [];
+        return null;
     }
     const from = stanza.getAttribute('from');
     const msgid = stanza.getAttribute('id');
@@ -103,10 +103,7 @@ function getModerationAttributes (stanza) {
  * @returns { Promise<MUCMessageAttributes|Error> }
  */
 export async function parseMUCMessage (stanza, chatbox, _converse) {
-    const err = rejectUnencapsulatedForward(stanza);
-    if (err) {
-        return err;
-    }
+    throwErrorIfInvalidForward(stanza);
 
     const selector = `[xmlns="${NS.MAM}"] > forwarded[xmlns="${NS.FORWARD}"] > message`;
     const original_stanza = stanza;
@@ -127,6 +124,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
      * @typedef { Object } MUCMessageAttributes
      * The object which {@link parseMUCMessage} returns
      * @property { ('me'|'them') } sender - Whether the message was sent by the current user or someone else
+     * @property { Array<Object> } activities - A list of objects representing XEP-0316 MEP notification data
      * @property { Array<Object> } references - A list of objects representing XEP-0372 references
      * @property { Boolean } editable - Is this message editable via XEP-0308?
      * @property { Boolean } is_archived -  Is this message from a XEP-0313 MAM archive?
@@ -181,6 +179,8 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
         {
             from,
             nick,
+            'is_forwarded': !!stanza?.querySelector('forwarded'),
+            'activities': getMEPActivities(stanza),
             'body': stanza.querySelector('body')?.textContent?.trim(),
             'chat_state': getChatState(stanza),
             'from_muc': Strophe.getBareJidFromJid(from),

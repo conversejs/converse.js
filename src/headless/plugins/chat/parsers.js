@@ -23,7 +23,7 @@ import {
     isHeadline,
     isServerMessage,
     isValidReceiptRequest,
-    rejectUnencapsulatedForward,
+    throwErrorIfInvalidForward,
 } from '@converse/headless/shared/parsers';
 
 const { Strophe, sizzle } = converse.env;
@@ -37,10 +37,7 @@ const { Strophe, sizzle } = converse.env;
  * @returns { (MessageAttributes|Error) }
  */
 export async function parseMessage (stanza, _converse) {
-    const err = rejectUnencapsulatedForward(stanza);
-    if (err) {
-        return err;
-    }
+    throwErrorIfInvalidForward(stanza);
 
     let to_jid = stanza.getAttribute('to');
     const to_resource = Strophe.getResourceFromJid(to_jid);

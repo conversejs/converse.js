@@ -576,7 +576,6 @@ describe("Message Retractions", function () {
             occupant.save('role', 'member');
             const retraction_stanza = await sendAndThenRetractMessage(_converse, view);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1, 1000);
-            console.log('XXX: First message retracted by author');
 
             const msg_obj = view.model.messages.last();
             expect(msg_obj.get('retracted')).toBeTruthy();
@@ -598,19 +597,15 @@ describe("Message Retractions", function () {
             const reflection = u.toStanza(`
                 <message type="groupchat" id="${retraction_stanza.getAttribute('id')}" from="${muc_jid}" to="${muc_jid}/romeo">
                     <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by='${_converse.bare_jid}' xmlns='urn:xmpp:message-moderate:0'>
-                            <retract xmlns='urn:xmpp:message-retract:0' />
-                        </moderated>
+                        <retract xmlns='urn:xmpp:message-retract:0' />
                     </apply-to>
                 </message>`);
 
             spyOn(view.model, 'handleRetraction').and.callThrough();
             _converse.connection._dataRecv(mock.createRequest(reflection));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1, 1000);
-            console.log('XXX: Handle retraction was called on reflection');
 
-            await u.waitUntil(() => view.model.messages.length === 1, 1000);
-            console.log('XXX: We have one message');
+            await u.waitUntil(() => view.model.messages.length === 2, 1000);
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             expect(view.model.messages.last().get('is_ephemeral')).toBe(false);
             expect(view.model.messages.last().get('editable')).toBe(false);
@@ -648,9 +643,7 @@ describe("Message Retractions", function () {
                         <forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
                     <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by='${_converse.bare_jid}' xmlns='urn:xmpp:message-moderate:0'>
                         <retract xmlns='urn:xmpp:message-retract:0' />
-                        </moderated>
                     </apply-to>
                 </message>`);
 

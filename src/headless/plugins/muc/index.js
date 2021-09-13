@@ -26,7 +26,6 @@ import {
     onStatusInitialized,
     onWindowStateChanged,
     registerDirectInvitationHandler,
-    registerPEPPushHandler,
     routeToRoom,
 } from './utils.js';
 import { computeAffiliationsDelta } from './affiliations/utils.js';
@@ -289,8 +288,6 @@ converse.plugins.add('converse-muc', {
         api.listen.on('beforeResourceBinding', onBeforeResourceBinding);
         api.listen.on('beforeTearDown', onBeforeTearDown);
         api.listen.on('chatBoxesFetched', autoJoinRooms);
-        api.listen.on('connected', registerPEPPushHandler);
-        api.listen.on('reconnected', registerPEPPushHandler);
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
         api.listen.on('windowStateChanged', onWindowStateChanged);

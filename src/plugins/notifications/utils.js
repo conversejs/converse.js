@@ -1,9 +1,10 @@
 import Favico from 'favico.js-slevomat';
 import log from '@converse/headless/log';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core.js';
+import { isEmptyMessage } from '@converse/headless/utils/core.js';
 
-const { Strophe, u } = converse.env;
+const { Strophe } = converse.env;
 const supports_html5_notification = 'Notification' in window;
 
 converse.env.Favico = Favico;
@@ -40,6 +41,13 @@ export function updateUnreadFavicon () {
     }
 }
 
+
+function isReferenced (references, muc_jid, nick) {
+    const check = r => [_converse.bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
+    return references.reduce((acc, r) => acc || check(r), false);
+}
+
+
 /**
  * Is this a group message for which we should notify the user?
  * @private
@@ -63,16 +71,11 @@ export async function shouldNotifyOfGroupMessage (attrs) {
         is_mentioned = new RegExp(`\\b${nick}\\b`).test(attrs.body);
     }
 
-    const references_me = r => {
-        const jid = r.uri.replace(/^xmpp:/, '');
-        return jid == _converse.bare_jid || jid === `${muc_jid}/${nick}`;
-    };
-    const is_referenced = attrs.references.reduce((acc, r) => acc || references_me(r), false);
     const is_not_mine = sender !== nick;
     const should_notify_user =
         notify_all === true ||
         (Array.isArray(notify_all) && notify_all.includes(muc_jid)) ||
-        is_referenced ||
+        isReferenced(attrs.references, muc_jid, nick) ||
         is_mentioned;
 
     if (is_not_mine && !!should_notify_user) {
@@ -91,27 +94,46 @@ export async function shouldNotifyOfGroupMessage (attrs) {
     return false;
 }
 
+async function shouldNotifyOfInfoMessage (attrs) {
+    if (!attrs.from_muc) {
+        return false;
+    }
+    const room = await api.rooms.get(attrs.from_muc);
+    if (!room) {
+        return false;
+    }
+    const nick = room.get('nick');
+    const muc_jid = attrs.from_muc;
+    const notify_all = api.settings.get('notify_all_room_messages');
+    return (
+        notify_all === true ||
+        (Array.isArray(notify_all) && notify_all.includes(muc_jid)) ||
+        isReferenced(attrs.references, muc_jid, nick)
+    );
+}
+
 /**
  * @private
+ * @async
  * @method shouldNotifyOfMessage
  * @param { MessageData|MUCMessageData } data
  */
-async function shouldNotifyOfMessage (data) {
-    const { attrs, stanza } = data;
-    if (!attrs || stanza.querySelector('forwarded') !== null) {
+function shouldNotifyOfMessage (data) {
+    const { attrs } = data;
+    if (!attrs || attrs.is_forwarded) {
         return false;
     }
     if (attrs['type'] === 'groupchat') {
-        const result = await shouldNotifyOfGroupMessage(attrs);
-        return result;
+        return shouldNotifyOfGroupMessage(attrs);
+    } else if (attrs['type'] === 'info') {
+        return shouldNotifyOfInfoMessage(attrs);
     } else if (attrs.is_headline) {
         // We want to show notifications for headline messages.
         return isMessageToHiddenChat(attrs);
     }
     const is_me = Strophe.getBareJidFromJid(attrs.from) === _converse.bare_jid;
     return (
-        !u.isOnlyChatStateNotification(stanza) &&
-        !u.isOnlyMessageDeliveryReceipt(stanza) &&
+        !isEmptyMessage(attrs) &&
         !is_me &&
         (api.settings.get('show_desktop_notifications') === 'all' || isMessageToHiddenChat(attrs))
     );
@@ -266,7 +288,7 @@ export async function handleMessageNotification (data) {
      * message has will be made.
      * @event _converse#messageNotification
      * @type { MessageData|MUCMessageData}
-     * @example _converse.api.listen.on('messageNotification', stanza => { ... });
+     * @example _converse.api.listen.on('messageNotification', data => { ... });
      */
     api.trigger('messageNotification', data);
     playSoundNotification();

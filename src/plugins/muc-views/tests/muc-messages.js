@@ -143,10 +143,9 @@ describe("A Groupchat Message", function () {
             </message>
         `);
         const view = _converse.chatboxviews.get(muc_jid);
-        spyOn(view.model, 'onMessage').and.callThrough();
-        spyOn(converse.env.log, 'error');
+        spyOn(converse.env.log, 'error').and.callThrough();
         _converse.connection._dataRecv(mock.createRequest(received_stanza));
-        await u.waitUntil(() => view.model.onMessage.calls.count() === 1);
+        await u.waitUntil(() => converse.env.log.error.calls.count() === 1);
         expect(converse.env.log.error).toHaveBeenCalledWith(
             `Ignoring unencapsulated forwarded message from ${muc_jid}/mallory`
         );

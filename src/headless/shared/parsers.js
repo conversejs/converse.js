@@ -307,12 +307,17 @@ export function isValidReceiptRequest (stanza, attrs) {
     );
 }
 
-export function rejectUnencapsulatedForward (stanza) {
+/**
+ * Check whether the passed-in stanza is a forwarded message that is "bare",
+ * i.e. it's not forwarded as part of a larger protocol, like MAM.
+ * @param { XMLElement } stanza
+ */
+export function throwErrorIfInvalidForward (stanza) {
     const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
     if (bare_forward) {
         rejectMessage(stanza, 'Forwarded messages not part of an encapsulating protocol are not supported');
         const from_jid = stanza.getAttribute('from');
-        return new StanzaParseError(`Ignoring unencapsulated forwarded message from ${from_jid}`, stanza);
+        throw new StanzaParseError(`Ignoring unencapsulated forwarded message from ${from_jid}`, stanza);
     }
 }
 

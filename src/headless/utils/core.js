@@ -1,5 +1,5 @@
 /**
- * @copyright 2020, the Converse.js contributors
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
@@ -14,6 +14,17 @@ import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
+
+export function isEmptyMessage (attrs) {
+    if (attrs instanceof Model) {
+        attrs = attrs.attributes;
+    }
+    return !attrs['oob_url'] &&
+        !attrs['file'] &&
+        !(attrs['is_encrypted'] && attrs['plaintext']) &&
+        !attrs['message'];
+}
+
 
 /**
  * The utils object
@@ -125,51 +136,12 @@ u.isNewMessage = function (message) {
 
 u.shouldCreateMessage = function (attrs) {
     return attrs['retracted'] || // Retraction received *before* the message
-        !u.isEmptyMessage(attrs);
+        !isEmptyMessage(attrs);
 }
 
 u.shouldCreateGroupchatMessage = function (attrs) {
     return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
 }
-
-u.isEmptyMessage = function (attrs) {
-    if (attrs instanceof Model) {
-        attrs = attrs.attributes;
-    }
-    return !attrs['oob_url'] &&
-        !attrs['file'] &&
-        !(attrs['is_encrypted'] && attrs['plaintext']) &&
-        !attrs['message'];
-};
-
-//TODO: Remove
-u.isOnlyChatStateNotification = function (msg) {
-    if (msg instanceof Element) {
-        // See XEP-0085 Chat State Notification
-        return (msg.querySelector('body') === null) && (
-                    (msg.querySelector('active') !== null) ||
-                    (msg.querySelector('composing') !== null) ||
-                    (msg.querySelector('inactive') !== null) ||
-                    (msg.querySelector('paused') !== null) ||
-                    (msg.querySelector('gone') !== null));
-    }
-    if (msg instanceof Model) {
-        msg = msg.attributes;
-    }
-    return msg['chat_state'] && u.isEmptyMessage(msg);
-};
-
-u.isOnlyMessageDeliveryReceipt = function (msg) {
-    if (msg instanceof Element) {
-        // See XEP-0184 Message Delivery Receipts
-        return (msg.querySelector('body') === null) &&
-                    (msg.querySelector('received') !== null);
-    }
-    if (msg instanceof Model) {
-        msg = msg.attributes;
-    }
-    return msg['received'] && u.isEmptyMessage(msg);
-};
 
 u.isChatRoom = function (model) {
     return model && (model.get('type') === 'chatroom');
@@ -598,4 +570,6 @@ export function decodeHTMLEntities (str) {
     return str;
 }
 
-export default u;
+export default Object.assign({
+    isEmptyMessage
+}, u);

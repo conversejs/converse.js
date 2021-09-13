@@ -193,7 +193,7 @@ export default {
                 if (!jid) {
                     return _converse.disco_entities;
                 }
-                if (_converse.disco_entities === undefined && !api.connection.connected()) {
+                if (_converse.disco_entities === undefined) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
                     const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
                     log.warn(msg);

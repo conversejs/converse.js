@@ -434,6 +434,7 @@ const ChatRoomMixin = {
         if (!(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
+
         const message = this.getMessageReferencedByError(attrs);
         if (message) {
             const new_attrs = {
@@ -535,28 +536,35 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     async handleMessageStanza (stanza) {
-        if (stanza.getAttribute('type') !== 'groupchat') {
-            this.handleForwardedMentions(stanza);
-            return;
-        } else if (isArchived(stanza)) {
-            // MAM messages are handled in converse-mam.
-            // We shouldn't get MAM messages here because
-            // they shouldn't have a `type` attribute.
-            return log.warn(`Received a MAM message with type "groupchat"`);
+        const type = stanza.getAttribute('type');
+        if (type === 'error') {
+            return this.handleErrorMessageStanza(stanza);
         }
-
-        this.createInfoMessages(stanza);
-        this.fetchFeaturesIfConfigurationChanged(stanza);
-
+        if (type === 'groupchat') {
+            if (isArchived(stanza)) {
+                // MAM messages are handled in converse-mam.
+                // We shouldn't get MAM messages here because
+                // they shouldn't have a `type` attribute.
+                return log.warn(`Received a MAM message with type "groupchat"`);
+            }
+            this.createInfoMessages(stanza);
+            this.fetchFeaturesIfConfigurationChanged(stanza);
+        } else if (!type) {
+            return this.handleForwardedMentions(stanza);
+        }
         /**
          * @typedef { Object } MUCMessageData
-         * An object containing the original groupchat message stanza,
-         * as well as the parsed attributes.
-         * @property { XMLElement } stanza
+         * An object containing the parsed { @link MUCMessageAttributes } and
+         * current { @link ChatRoom }.
          * @property { MUCMessageAttributes } attrs
          * @property { ChatRoom } chatbox
          */
-        const attrs = await parseMUCMessage(stanza, this, _converse);
+        let attrs;
+        try {
+            attrs = await parseMUCMessage(stanza, this, _converse);
+        } catch (e) {
+            return log.error(e.message);
+        }
         const data = { stanza, attrs, 'chatbox': this };
         /**
          * Triggered when a groupchat message stanza has been received and parsed.
@@ -2099,10 +2107,44 @@ const ChatRoomMixin = {
     },
 
     /**
+     * Given { @link MessageAttributes } look for XEP-0316 Room Notifications and create info
+     * messages for them.
+     * @param { XMLElement } stanza
+     */
+    handleMEPNotification (attrs) {
+        if (attrs.from !== this.get('jid') || !attrs.activities) {
+            return false;
+        }
+        attrs.activities?.forEach(activity_attrs => {
+            const data = Object.assign({ 'msgid': attrs.msgid, 'from_muc': attrs.from }, activity_attrs);
+            this.createMessage(data)
+            // Trigger so that notifications are shown
+            api.trigger('message', { 'attrs': data, 'chatbox': this });
+        });
+        return !!attrs.activities.length
+    },
+
+    /**
+     * Returns an already cached message (if it exists) based on the
+     * passed in attributes map.
+     * @method _converse.ChatRoom#getDuplicateMessage
+     * @param { object } attrs - Attributes representing a received
+     *  message, as returned by { @link parseMUCMessage }
+     * @returns {Promise<_converse.Message>}
+     */
+    getDuplicateMessage (attrs) {
+        if (attrs.activities?.length) {
+            return this.messages.findWhere({'type': 'info', 'msgid': attrs.msgid});
+        } else {
+            return _converse.ChatBox.prototype.getDuplicateMessage.call(this, attrs);
+        }
+    },
+
+
+    /**
      * Handler for all MUC messages sent to this groupchat. This method
      * shouldn't be called directly, instead {@link _converse.ChatRoom#queueMessage}
      * should be called.
-     * @private
      * @method _converse.ChatRoom#onMessage
      * @param { MessageAttributes } attrs - A promise which resolves to the message attributes.
      */
@@ -2114,13 +2156,15 @@ const ChatRoomMixin = {
         }
         const message = this.getDuplicateMessage(attrs);
         if (message) {
-            return this.updateMessage(message, attrs);
+            (message.get('type') === 'groupchat') && this.updateMessage(message, attrs);
+            return;
         } else if (attrs.is_valid_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
             return;
         }
 
         if (
             this.handleMetadataFastening(attrs) ||
+            this.handleMEPNotification(attrs) ||
             (await this.handleRetraction(attrs)) ||
             (await this.handleModeration(attrs)) ||
             (await this.handleSubjectChange(attrs))
@@ -2128,6 +2172,7 @@ const ChatRoomMixin = {
             attrs.nick && this.removeNotification(attrs.nick, ['composing', 'paused']);
             return;
         }
+
         this.setEditable(attrs, attrs.time);
 
         if (attrs['chat_state']) {

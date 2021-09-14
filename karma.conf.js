@@ -79,6 +79,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/muc-registration.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muclist.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/occupants.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/rai.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/retractions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/styling.js", type: 'module' },

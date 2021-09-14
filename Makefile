@@ -245,4 +245,4 @@ doc: node_modules docsdev apidoc
 
 PHONY: apidoc
 apidoc:
-	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/templates/*.js src/*.js src/**/*.js src/headless/**/*.js src/shared/**/*.js
+	find ./src -type d -name node_modules -prune -false -o -name "*.js" | xargs $(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api

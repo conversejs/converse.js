@@ -43,8 +43,8 @@ export default class MUCSidebar extends CustomElement {
 
     onOccupantClicked (ev) {
         ev?.preventDefault?.();
-        const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
-        chatview?.getBottomPanel().insertIntoTextArea(`@${ev.target.textContent}`);
+        const view = _converse.chatboxviews.get(this.getAttribute('jid'));
+        view?.getMessageForm().insertIntoTextArea(`@${ev.target.textContent}`);
     }
 }
 

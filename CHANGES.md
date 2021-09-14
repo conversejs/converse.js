@@ -3,6 +3,7 @@
 ## 8.0.2 (Unreleased)
 
 - #2640: Add `beforeFetchLoginCredentials` hook
+- #2650: Clicking on occupant in sidebar should add nickname to textarea
 
 ## 8.0.1 (2021-09-09)
 

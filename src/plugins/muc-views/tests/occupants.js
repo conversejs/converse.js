@@ -2,7 +2,7 @@
 
 const { $pres, sizzle, u } = converse.env;
 
-describe("A Groupchat", function () {
+describe("The occupants sidebar", function () {
 
     it("shows all members even if they're not currently present in the groupchat",
             mock.initConverse([], {}, async function (_converse) {
@@ -133,6 +133,34 @@ describe("A Groupchat", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
         }
         await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
+    }));
+
+    it("lets you click on an occupant to insert it into the chat textarea",
+            mock.initConverse([], {'view_mode': 'fullscreen'}, async function (_converse) {
+
+        const muc_jid = 'lounge@montague.lit';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        var view = _converse.chatboxviews.get(muc_jid);
+        const occupants = view.querySelector('.occupant-list');
+        const name = mock.chatroom_names[0];
+        const presence = $pres({
+            to:'romeo@montague.lit/pda',
+            from:'lounge@montague.lit/'+name
+        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+        .c('item').attrs({
+            affiliation: 'none',
+            jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
+            role: 'participant'
+        }).up()
+        .c('status');
+        _converse.connection._dataRecv(mock.createRequest(presence));
+
+        await u.waitUntil(() => occupants.querySelectorAll('li').length > 1, 500);
+        expect(occupants.querySelectorAll('li').length).toBe(2);
+        view.querySelectorAll('.occupant-nick')[1].click()
+
+        const textarea = view.querySelector('.chat-textarea');
+        expect(textarea.value).toBe('@Dyon van de Wege ');
     }));
 
     it("indicates moderators and visitors by means of a special css class and tooltip",

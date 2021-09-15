@@ -6,7 +6,7 @@ import { __ } from 'i18n';
 
 
 export function getHeadingButtons (view, buttons) {
-    if (_converse.allow_bookmarks && view.model.get('type') === _converse.CHATROOMS_TYPE) {
+    if (api.settings.get('allow_bookmarks') && view.model.get('type') === _converse.CHATROOMS_TYPE) {
         const bookmarked = view.model.get('bookmarked');
         const data = {
             'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),

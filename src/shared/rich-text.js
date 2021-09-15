@@ -166,7 +166,7 @@ export class RichText extends String {
             this.addTemplateResult(
                 m.index + offset,
                 m.index + m[0].length + offset,
-                getHyperlinkTemplate(m[0].replace(regex, _converse.geouri_replacement))
+                getHyperlinkTemplate(m[0].replace(regex, api.settings.get('geouri_replacement')))
             );
         }
     }

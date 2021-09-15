@@ -21,7 +21,6 @@ export function initAppSettings (settings) {
     app_settings = {};
     // Allow only whitelisted settings to be overwritten via converse.initialize
     const allowed_settings = pick(settings, Object.keys(DEFAULT_SETTINGS));
-    assignIn(_converse, DEFAULT_SETTINGS, allowed_settings); // FIXME: remove
     assignIn(app_settings, DEFAULT_SETTINGS, allowed_settings);
 }
 
@@ -43,17 +42,14 @@ export function extendAppSettings (settings) {
     const allowed_site_settings = pick(init_settings, allowed_keys);
     const updated_settings = assignIn(pick(settings, allowed_keys), allowed_site_settings);
     u.merge(app_settings, updated_settings);
-    u.merge(_converse, updated_settings); // FIXME: remove
 }
 
 export function updateAppSettings (key, val) {
     const o = {};
     if (isObject(key)) {
-        assignIn(_converse, pick(key, Object.keys(DEFAULT_SETTINGS))); // FIXME: remove
         assignIn(app_settings, pick(key, Object.keys(DEFAULT_SETTINGS)));
     } else if (typeof key === 'string') {
         o[key] = val;
-        assignIn(_converse, pick(o, Object.keys(DEFAULT_SETTINGS))); // FIXME: remove
         assignIn(app_settings, pick(o, Object.keys(DEFAULT_SETTINGS)));
     }
 }

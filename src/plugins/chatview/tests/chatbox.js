@@ -298,6 +298,7 @@ describe("Chatboxes", function () {
             it("can contain a button for starting a call",
                     mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -306,7 +307,10 @@ describe("Chatboxes", function () {
                 spyOn(_converse.api, "trigger").and.callThrough();
                 // First check that the button doesn't show if it's not enabled
                 // via "visible_toolbar_buttons"
-                _converse.visible_toolbar_buttons.call = false;
+
+                let buttons = api.settings.get('visible_toolbar_buttons');
+                api.settings.set('visible_toolbar_buttons', Object.assign({}, buttons, {'call': false}));
+
                 await mock.openChatBoxFor(_converse, contact_jid);
                 let view = _converse.chatboxviews.get(contact_jid);
                 toolbar = view.querySelector('.chat-toolbar');
@@ -315,7 +319,9 @@ describe("Chatboxes", function () {
                 view.close();
                 // Now check that it's shown if enabled and that it emits
                 // callButtonClicked
-                _converse.visible_toolbar_buttons.call = true; // enable the button
+                buttons = api.settings.get('visible_toolbar_buttons');
+                api.settings.set('visible_toolbar_buttons', Object.assign({}, buttons, {'call': true}));
+
                 await mock.openChatBoxFor(_converse, contact_jid);
                 view = _converse.chatboxviews.get(contact_jid);
                 toolbar = view.querySelector('.chat-toolbar');

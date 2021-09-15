@@ -78,13 +78,14 @@ describe("A Chat Message", function () {
     it("can be received out of order, and will still be displayed in the right order",
             mock.initConverse([], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
 
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const rosterview = document.querySelector('converse-roster');
         await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length)
-        _converse.filter_by_resource = true;
+        api.settings.set('filter_by_resource', true);
 
         let msg = $msg({
                 'xmlns': 'jabber:client',
@@ -629,6 +630,8 @@ describe("A Chat Message", function () {
             [], {'debounced_content_rendering': false},
             async function (_converse) {
 
+        const { api } = _converse;
+
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
 
@@ -638,7 +641,7 @@ describe("A Chat Message", function () {
         const rosterview = document.querySelector('converse-roster');
         await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 300);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        _converse.filter_by_resource = true;
+        api.settings.set('filter_by_resource', true);
 
         jasmine.clock().install();
         jasmine.clock().mockDate(base_time);

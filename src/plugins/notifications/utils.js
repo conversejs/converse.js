@@ -144,7 +144,7 @@ export function showFeedbackNotification (data) {
         const n = new Notification(data.subject, {
             body: data.message,
             lang: _converse.locale,
-            icon: _converse.notification_icon
+            icon: api.settings.get('notification_icon')
         });
         setTimeout(n.close.bind(n), 5000);
     }
@@ -155,7 +155,7 @@ export function showFeedbackNotification (data) {
  * contact's chat state.
  */
 function showChatStateNotification (contact) {
-    if (_converse.chatstate_notification_blacklist.includes(contact.jid)) {
+    if (api.settings.get('chatstate_notification_blacklist')?.includes(contact.jid)) {
         // Don't notify if the user is being ignored.
         return;
     }
@@ -176,7 +176,7 @@ function showChatStateNotification (contact) {
     const n = new Notification(contact.getDisplayName(), {
         body: message,
         lang: _converse.locale,
-        icon: _converse.notification_icon
+        icon: api.settings.get('notification_icon')
     });
     setTimeout(() => n.close(), 5000);
 }
@@ -243,7 +243,7 @@ function showMessageNotification (data) {
         'body': body,
         'lang': _converse.locale,
         'icon': api.settings.get('notification_icon'),
-        'requireInteraction': !_converse.notification_delay
+        'requireInteraction': !api.settings.get('notification_delay')
     });
     if (api.settings.get('notification_delay')) {
         setTimeout(() => n.close(), api.settings.get('notification_delay'));
@@ -315,7 +315,7 @@ function showContactRequestNotification (contact) {
     const n = new Notification(contact.getDisplayName(), {
         body: __('wants to be your contact'),
         lang: _converse.locale,
-        icon: _converse.notification_icon
+        icon: api.settings.get('notification_icon')
     });
     setTimeout(() => n.close(), 5000);
 }

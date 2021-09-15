@@ -135,6 +135,7 @@ describe("A chat room", function () {
             ['chatBoxesFetched'], {}, async function (_converse) {
 
         const { u } = converse.env;
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -162,7 +163,7 @@ describe("A chat room", function () {
         expect(!!_converse.chatboxviews.get(jid)).toBe(true);
 
         // Check that we don't auto-join if muc_respect_autojoin is false
-        _converse.muc_respect_autojoin = false;
+        api.settings.set('muc_respect_autojoin', false);
         jid = 'balcony@conference.shakespeare.lit';
         _converse.bookmarks.create({
             'jid': jid,

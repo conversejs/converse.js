@@ -7,7 +7,8 @@ describe("Converse", function() {
     describe("Authentication", function () {
 
         it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(async (_converse) => {
-            const url = _converse.bosh_service_url;
+            const { api } = _converse;
+            const url = api.settings.get('bosh_service_url');
             const connection = _converse.connection;
             _converse.api.settings.set('bosh_service_url', undefined);
             delete _converse.connection;
@@ -53,6 +54,8 @@ describe("Converse", function() {
 
         it("happens when the client is idle for long enough",
                 mock.initConverse(['initialized'], {}, async (_converse) => {
+
+            const { api } = _converse;
             let i = 0;
             // Usually initialized by registerIntervalHandler
             _converse.idle_seconds = 0;
@@ -66,7 +69,7 @@ describe("Converse", function() {
             }
             expect(_converse.auto_changed_status).toBe(true);
 
-            while (i <= _converse.auto_xa) {
+            while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('away');
                 _converse.onEverySecond();
                 i++;
@@ -86,7 +89,7 @@ describe("Converse", function() {
                 i++;
             }
             expect(_converse.auto_changed_status).toBe(true);
-            while (i <= _converse.auto_xa) {
+            while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('away');
                 _converse.onEverySecond();
                 i++;
@@ -107,7 +110,7 @@ describe("Converse", function() {
             }
             expect(await _converse.api.user.status.get()).toBe('dnd');
             expect(_converse.auto_changed_status).toBe(false);
-            while (i <= _converse.auto_xa) {
+            while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('dnd');
                 _converse.onEverySecond();
                 i++;

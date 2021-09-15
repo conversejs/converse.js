@@ -22,7 +22,7 @@ const XMPPStatus = Model.extend({
     },
 
     getNickname () {
-        return _converse.nickname;
+        return api.settings.get('nickname');
     },
 
     getFullname () {

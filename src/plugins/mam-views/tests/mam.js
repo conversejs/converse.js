@@ -305,7 +305,7 @@ describe("Message Archive Management", function () {
             view.model.afterMessagesFetched(view.model.messages);
             view.model.messages.fetched.resolve();
 
-            const affs = _converse.muc_fetch_members;
+            const affs = api.settings.get('muc_fetch_members');
             const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
             await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
 

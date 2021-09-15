@@ -1,16 +1,22 @@
 import _converse from '@converse/headless/shared/_converse';
 import assignIn from 'lodash-es/assignIn';
+import isEqual from "lodash-es/isEqual.js";
 import isObject from 'lodash-es/isObject';
 import log from '@converse/headless/log';
 import pick from 'lodash-es/pick';
 import u from '@converse/headless/utils/core';
 import { DEFAULT_SETTINGS } from './constants.js';
+import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { initStorage } from '@converse/headless/utils/storage.js';
 
 let init_settings = {}; // Container for settings passed in via converse.initialize
 let app_settings = {};
 let user_settings; // User settings, populated via api.users.settings
+
+const app_settings_emitter = {};
+Object.assign(app_settings_emitter, Events);
+
 
 export function getAppSettings () {
     return app_settings;
@@ -44,14 +50,36 @@ export function extendAppSettings (settings) {
     u.merge(app_settings, updated_settings);
 }
 
+export function registerListener (name, func, context) {
+    app_settings_emitter.on(name, func, context)
+}
+
+export function unregisterListener (name, func) {
+    app_settings_emitter.off(name, func);
+}
+
 export function updateAppSettings (key, val) {
-    const o = {};
+    if (key == null) return this; // eslint-disable-line no-eq-null
+
+    let attrs;
     if (isObject(key)) {
-        assignIn(app_settings, pick(key, Object.keys(DEFAULT_SETTINGS)));
+        attrs = key;
     } else if (typeof key === 'string') {
-        o[key] = val;
-        assignIn(app_settings, pick(o, Object.keys(DEFAULT_SETTINGS)));
+        attrs = {};
+        attrs[key] = val;
     }
+
+    const allowed_keys = Object.keys(pick(attrs, Object.keys(DEFAULT_SETTINGS)));
+    const changed = {};
+    allowed_keys.forEach(k => {
+        const val = attrs[k];
+        if (!isEqual(app_settings[k], val)) {
+            changed[k] = val;
+            app_settings[k] = val;
+        }
+    });
+    Object.keys(changed).forEach(k => app_settings_emitter.trigger('change:' + k, changed[k]));
+    app_settings_emitter.trigger('change', changed);
 }
 
 /**

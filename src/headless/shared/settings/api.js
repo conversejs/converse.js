@@ -5,6 +5,8 @@ import {
     extendAppSettings,
     getAppSetting,
     getUserSettings,
+    registerListener,
+    unregisterListener,
     updateAppSettings,
     updateUserSettings,
 } from '@converse/headless/shared/settings/utils.js';
@@ -81,6 +83,40 @@ export const settings_api = {
     set (key, val) {
         updateAppSettings(key, val);
     },
+
+    /**
+     * The `listen` namespace exposes methods for creating event listeners
+     * (aka handlers) for events related to settings.
+     *
+     * @namespace _converse.api.settings.listen
+     * @memberOf _converse.api.settings
+     */
+    listen: {
+        /**
+         * Register an event listener for the passed in event.
+         * @method _converse.api.settings.listen.on
+         * @param { ('change') } name - The name of the event to listen for.
+         *  Currently there is only the 'change' event.
+         * @param { Function } handler - The event handler function
+         * @param { Object } [context] - The context of the `this` attribute of the
+         *  handler function.
+         * @example _converse.api.settings.listen.on('change', callback);
+         */
+        on (name, handler, context) {
+            registerListener(name, handler, context);
+        },
+
+        /**
+         * To stop listening to an event, you can use the `not` method.
+         * @method _converse.api.settings.listen.not
+         * @param { String } name The event's name
+         * @param { Function } callback The callback method that is to no longer be called when the event fires
+         * @example _converse.api.settings.listen.not('change', callback);
+         */
+        not (name, handler) {
+            unregisterListener(name, handler);
+        }
+    }
 };
 
 

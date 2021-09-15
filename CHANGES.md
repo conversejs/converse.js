@@ -2,6 +2,7 @@
 
 ## 9.0.0 (Unreleased)
 
+- Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:
   - [render_media](https://conversejs.org/docs/html/configuration.html#render-media)
   - [allowed_audio_domains](https://conversejs.org/docs/html/configuration.html#allowed-audio-domains)

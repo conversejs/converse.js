@@ -48,7 +48,7 @@ describe("The <converse-muc> component", function () {
         await muc_creation_promise;
         const model = _converse.chatboxes.get(muc_jid);
         await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        const affs = _converse.muc_fetch_members;
+        const affs = api.settings.get('muc_fetch_members');
         const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
         await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
         await model.messages.fetched;

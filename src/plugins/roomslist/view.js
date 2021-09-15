@@ -40,7 +40,7 @@ export class RoomsList extends ElementView {
     render () {
         render(tpl_roomslist({
             'addBookmark': ev => this.addBookmark(ev),
-            'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
+            'allow_bookmarks': api.settings.get('allow_bookmarks') && _converse.bookmarks,
             'closeRoom': ev => this.closeRoom(ev),
             'collapsed': this.model.get('toggle-state') !== _converse.OPENED,
             'currently_open': room => _converse.isUniView() && !room.get('hidden'),

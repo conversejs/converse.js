@@ -94,8 +94,9 @@ describe("Notifications", function () {
                     expect(window.Notification).toHaveBeenCalled();
                 }));
 
-                it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse((_converse) => {
-                    _converse.allow_non_roster_messaging = false;
+                it("is not shown for full JID headline messages if allow_non_roster_messaging is false",
+                        mock.initConverse([], {'allow_non_roster_messaging': false}, (_converse) => {
+
                     const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                     spyOn(window, 'Notification').and.returnValue(stub);
                     const stanza = $msg({

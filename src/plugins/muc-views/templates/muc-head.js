@@ -1,7 +1,7 @@
 import 'shared/components/dropdown.js';
 import 'shared/components/rich-text.js';
 import { __ } from 'i18n';
-import { _converse } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
 
@@ -15,7 +15,7 @@ export default (o) => {
     return html`
         <div class="chatbox-title ${ show_subject ? '' :  "chatbox-title--no-desc"}">
             ${ (!_converse.api.settings.get("singleton")) ?  html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>` : '' }
-            <div class="chatbox-title__text" title="${ (_converse.locked_muc_domain !== 'hidden') ? o.jid : '' }">${ o.title }
+            <div class="chatbox-title__text" title="${ (api.settings.get('locked_muc_domain') !== 'hidden') ? o.jid : '' }">${ o.title }
                 ${ (o.bookmarked) ? html`<i class="fa fa-bookmark chatbox-title__text--bookmarked" title="${i18n_bookmarked}"></i>` : '' }
             </div>
             <div class="chatbox-title__buttons row no-gutters">

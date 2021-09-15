@@ -14,6 +14,12 @@ Three config settings have been obsoleted:
   - show_images_inline
 
 
+### Breaking Changes
+
+Configuration settings are no longer available on the `_converse` object.
+Instead, use `api.settings.get` and `api.settings.set`.
+
+
 ## 8.0.2 (Unreleased)
 
 - #2640: Add `beforeFetchLoginCredentials` hook

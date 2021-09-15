@@ -45,7 +45,7 @@ const register_link = () => {
 }
 
 const show_register_link = () => {
-    return _converse.allow_registration &&
+    return api.settings.get('allow_registration') &&
         !api.settings.get("auto_login") &&
         _converse.pluggable.plugins['converse-register'].enabled(_converse);
 }

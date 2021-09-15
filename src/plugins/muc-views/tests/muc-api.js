@@ -99,6 +99,8 @@ describe("Groupchats", function () {
         it("has a method 'open' which opens (optionally configures) and returns a wrapped chat box",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+            const { api } = _converse;
+
             // Mock 'getDiscoInfo', otherwise the room won't be
             // displayed as it waits first for the features to be returned
             // (when it's a new room being created).
@@ -146,7 +148,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => u.isVisible(chatroomview));
             chatroomview.close();
 
-            _converse.muc_instant_rooms = false;
+            api.settings.set('muc_instant_rooms', false);
             const sendIQ = _converse.connection.sendIQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);

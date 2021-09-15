@@ -1,5 +1,6 @@
 import DOMPurify from 'dompurify';
 import { __ } from 'i18n';
+import { api } from '@converse/headless/core.js';
 import { html } from "lit";
 import { modal_header_close_button } from "plugins/modal/templates/buttons.js"
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
@@ -36,7 +37,7 @@ export default (o) => {
                             <input type="text" required="required" name="chatroom" class="form-control roomjid-input" placeholder="${o.chatroom_placeholder}"/>
                         </div>
                         ${ o.muc_roomid_policy_hint ?  html`<div class="form-group">${unsafeHTML(DOMPurify.sanitize(o.muc_roomid_policy_hint, {'ALLOWED_TAGS': ['b', 'br', 'em']}))}</div>` : '' }
-                        ${ !o._converse.locked_muc_nickname ? nickname_input(o) : '' }
+                        ${ !api.settings.get('locked_muc_nickname') ? nickname_input(o) : '' }
                         <input type="submit" class="btn btn-primary" name="join" value="${i18n_join || ''}" ?disabled=${o.muc_roomid_policy_error_msg}>
                     </form>
                 </div>

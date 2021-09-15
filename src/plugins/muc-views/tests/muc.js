@@ -161,6 +161,7 @@ describe("Groupchats", function () {
                     'enable_smacks': false
                 }, async function (_converse) {
 
+            const { api } = _converse;
             const nick = 'romeo';
             const sent_IQs = _converse.connection.IQ_stanzas;
             const muc_jid = 'lounge@montague.lit'
@@ -241,7 +242,7 @@ describe("Groupchats", function () {
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(message));
 
-            const affs = _converse.muc_fetch_members;
+            const affs = api.settings.get('muc_fetch_members');
             const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
             await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
 

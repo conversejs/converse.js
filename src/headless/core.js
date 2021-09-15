@@ -9,26 +9,20 @@ import dayjs from 'dayjs';
 import i18n from '@converse/headless/shared/i18n';
 import invoke from 'lodash-es/invoke';
 import isFunction from 'lodash-es/isFunction';
-import isObject from 'lodash-es/isObject';
 import log from '@converse/headless/log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
-import settings_api from '@converse/headless/api/settings.js';
+import { settings_api, user_settings_api } from '@converse/headless/shared/settings/api.js';
 import sizzle from 'sizzle';
 import u, { setUnloadEvent, replacePromise } from '@converse/headless/utils/core.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
-import {
-    clearUserSettings,
-    getUserSettings,
-    initAppSettings,
-    updateUserSettings
-} from '@converse/headless/shared/settings.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
 import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit';
+import { initAppSettings, } from '@converse/headless/shared/settings/utils.js';
 import { sprintf } from 'sprintf-js';
 
 export { _converse };
@@ -270,6 +264,8 @@ export const api = _converse.api = {
      * @memberOf _converse.api
      */
     user: {
+        settings: user_settings_api,
+
         /**
          * @method _converse.api.user.jid
          * @returns {string} The current user's full JID (Jabber ID)
@@ -355,72 +351,6 @@ export const api = _converse.api = {
                 complete();
             }
             return promise;
-        },
-
-        /**
-         * API for accessing and setting user settings. User settings are
-         * different from the application settings from {@link _converse.api.settings}
-         * because they are per-user and set via user action.
-         * @namespace _converse.api.user.settings
-         * @memberOf _converse.api.user
-         */
-        settings: {
-            /**
-             * Returns the user settings model. Useful when you want to listen for change events.
-             * @async
-             * @method _converse.api.user.settings.getModel
-             * @returns {Promise<Model>}
-             * @example const settings = await _converse.api.user.settings.getModel();
-             */
-            getModel () {
-                return getUserSettings();
-            },
-
-            /**
-             * Get the value of a particular user setting.
-             * @method _converse.api.user.settings.get
-             * @param {String} key - The setting name
-             * @param {*} [fallback] - An optional fallback value if the user setting is undefined
-             * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
-             * @example _converse.api.user.settings.get("foo");
-             */
-            async get (key, fallback) {
-                const user_settings = await getUserSettings();
-                return user_settings.get(key) === undefined ? fallback : user_settings.get(key);
-            },
-
-            /**
-             * Set one or many user settings.
-             * @async
-             * @method _converse.api.user.settings.set
-             * @param {Object} [settings] An object containing configuration settings.
-             * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
-             * @param {string} [value]
-             * @example _converse.api.user.settings.set("foo", "bar");
-             * @example
-             * _converse.api.user.settings.set({
-             *     "foo": "bar",
-             *     "baz": "buz"
-             * });
-             */
-            set (key, val) {
-                if (isObject(key)) {
-                    return updateUserSettings(key, {'promise': true});
-                } else {
-                    const o = {};
-                    o[key] = val;
-                    return updateUserSettings(o, {'promise': true});
-                }
-            },
-
-            /**
-             * Clears all the user settings
-             * @async
-             * @method _converse.api.user.settings.clear
-             */
-            clear () {
-                return clearUserSettings();
-            }
         }
     },
 

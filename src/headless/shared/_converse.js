@@ -4,7 +4,7 @@ import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { Router } from '@converse/skeletor/src/router.js';
 import { TimeoutError } from '@converse/headless/shared/errors';
 import { createStore, getDefaultStore } from '@converse/headless/utils/storage.js';
-import { getInitSettings } from '@converse/headless/shared/settings';
+import { getInitSettings } from '@converse/headless/shared/settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 

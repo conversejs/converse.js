@@ -1,10 +1,10 @@
 /**
- * @copyright 2020, the Converse.js contributors
+ * @copyright The Converse.js developers
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
 import '../chatboxviews/index.js';
-import '../modal.js';
+import 'plugins/modal/index.js';
 import './adhoc-commands.js';
 import MUCView from './muc.js';
 import { api, converse } from '@converse/headless/core';

@@ -1,6 +1,6 @@
-import BootstrapModal from "./base.js";
-import tpl_chat_status_modal from "./templates/chat-status.js";
-import { __ } from '../i18n';
+import BootstrapModal from "plugins/modal/base.js";
+import tpl_chat_status_modal from "../templates/chat-status-modal.js";
+import { __ } from 'i18n';
 import { _converse, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;

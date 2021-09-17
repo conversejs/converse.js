@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { __ } from 'i18n';
 import { html } from "lit";
-import { modal_header_close_button } from "modals/templates/buttons.js"
+import { modal_header_close_button } from "plugins/modal/templates/buttons.js"
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 

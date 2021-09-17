@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../chatboxviews/index.js';
-import '../modal.js';
+import 'plugins/modal/index.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';

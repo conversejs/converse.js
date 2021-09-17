@@ -3,7 +3,7 @@ import spinner from "templates/spinner.js";
 import { __ } from 'i18n';
 import { _converse, converse } from  "@converse/headless/core";
 import { html } from "lit";
-import { modal_header_close_button } from "./buttons.js";
+import { modal_header_close_button } from "plugins/modal/templates/buttons.js";
 
 const u = converse.env.utils;
 

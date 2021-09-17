@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { __ } from '../../i18n';
+import { __ } from 'i18n';
 
 
 const tpl_field = (f) => html`

@@ -1,9 +1,9 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
-import tpl_profile_modal from "./templates/profile.js";
-import { __ } from '../i18n';
-import { _converse, api } from "@converse/headless/core";
+import tpl_profile_modal from "../templates/profile_modal.js";
+import { __ } from 'i18n';
+import { _converse, api, converse } from "@converse/headless/core";
 
 const { sizzle } = converse.env;
 

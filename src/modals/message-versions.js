@@ -1,4 +1,4 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import tpl_message_versions_modal from "./templates/message-versions.js";
 
 

@@ -1,5 +1,5 @@
 import 'shared/autocomplete/index.js';
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import tpl_muc_invite_modal from "./templates/muc-invite.js";
 import { _converse, converse } from "@converse/headless/core";
 

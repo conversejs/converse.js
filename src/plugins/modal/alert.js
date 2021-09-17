@@ -1,6 +1,6 @@
 import BootstrapModal from "./base.js";
 import tpl_alert_modal from "./templates/alert.js";
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 
 
 const Alert = BootstrapModal.extend({

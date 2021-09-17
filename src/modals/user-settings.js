@@ -1,4 +1,4 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import tpl_user_settings_modal from "./templates/user-settings.js";
 
 let _converse;

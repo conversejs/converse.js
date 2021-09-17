@@ -1,4 +1,4 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import tpl_occupant_modal from "./templates/occupant.js";
 import { _converse, api } from "@converse/headless/core";
 

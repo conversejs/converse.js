@@ -1,4 +1,4 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import tpl_image_modal from "./templates/image.js";
 
 

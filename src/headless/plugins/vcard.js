@@ -280,14 +280,14 @@ converse.plugins.add('converse-vcard', {
                  * @param {string} jid The JID for which the VCard should be set
                  * @param {object} data A map of VCard keys and values
                  * @example
-                 * _converse.api.vcard.set({
-                 *     'jid': _converse.bare_jid,
+                 * let jid = _converse.bare_jid;
+                 * _converse.api.vcard.set( jid, {
                  *     'fn': 'John Doe',
                  *     'nickname': 'jdoe'
                  * }).then(() => {
                  *     // Succes
-                 * }).catch(() => {
-                 *     // Failure
+                 * }).catch((e) => {
+                 *     // Failure, e is your error object
                  * }).
                  */
                 async set (jid, data) {

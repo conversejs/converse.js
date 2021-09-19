@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-04-14 08:39+0000\n"
-"Last-Translator: member7me <zegucdx5@mail.ru>\n"
+"PO-Revision-Date: 2021-09-20 18:23+0000\n"
+"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
@@ -175,12 +175,12 @@ msgstr "Наклейки"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Ошибка: тайм-аут при получении списка %1s для MUC %2s"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Ошибка: не разрешено получить список %1s для MUC %2s"
 
 #: dist/converse-no-dependencies.js:48377
 msgid ""

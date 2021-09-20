@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-05-20 18:33+0000\n"
-"Last-Translator: lilim <lionel@les-miquelots.net>\n"
+"PO-Revision-Date: 2021-09-20 18:23+0000\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -188,12 +188,14 @@ msgstr "Autocollants"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Erreur : délais dépassé en récupérant la liste %1s pour le salon %2s"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
 msgstr ""
+"Erreur : la récupération de la liste %1s pour le salon %2s n’est pas "
+"autorisée"
 
 #: dist/converse-no-dependencies.js:48377
 msgid ""
@@ -828,14 +830,12 @@ msgid "Hide URL preview"
 msgstr "Cacher la prévisualisation de l'URL"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Show media"
-msgstr "Afficher plus"
+msgstr "Afficher les média"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Hide media"
-msgstr "Masquer le sujet"
+msgstr "Cacher les média"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:65083
@@ -1156,9 +1156,8 @@ msgid "Click to open this server message"
 msgstr "Cliquez pour ouvrir le message de ce serveur"
 
 #: dist/converse-no-dependencies.js:81581
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Cliquez pour ouvrir le message de ce serveur"
+msgstr "Cliquez pour charger les messages manquants"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82025
@@ -1617,9 +1616,8 @@ msgstr "Auteur du sujet"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88756
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "Adresse du salon"
+msgstr "Adresse XMPP du salon"
 
 #: dist/converse-no-dependencies.js:88758
 msgid "Message archiving"
@@ -1971,9 +1969,8 @@ msgid "Personal status message"
 msgstr "Message de statut personnel"
 
 #: dist/converse-no-dependencies.js:91664
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Votre profil"
+msgstr "Votre photo de profil"
 
 #: dist/converse-no-dependencies.js:91757
 msgid "Checkbox for selecting the following fingerprint"
@@ -2056,13 +2053,12 @@ msgstr ""
 "erreur."
 
 #: dist/converse-no-dependencies.js:92968
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
 "Désolé, impossible de déchiffrer un message chiffré avec OMEMO parce que "
-"nous n'avons pas le JID pour cet utilisateur."
+"nous n'avons pas l’adresse XMPP de cet utilisateur."
 
 #: dist/converse-no-dependencies.js:93513
 #, javascript-format
@@ -2301,9 +2297,8 @@ msgid "Description:"
 msgstr "Description :"
 
 #: dist/converse-no-dependencies.js:97238
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Adresse du salon"
+msgstr "Adresse XMPP du salon :"
 
 #: dist/converse-no-dependencies.js:97240
 msgid "Participants:"

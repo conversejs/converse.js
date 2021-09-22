@@ -10,12 +10,9 @@ import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { initStorage } from '@converse/headless/utils/storage.js';
 
+let app_settings;
 let init_settings = {}; // Container for settings passed in via converse.initialize
-let app_settings = {};
 let user_settings; // User settings, populated via api.users.settings
-
-const app_settings_emitter = {};
-Object.assign(app_settings_emitter, Events);
 
 
 export function getAppSettings () {
@@ -24,7 +21,10 @@ export function getAppSettings () {
 
 export function initAppSettings (settings) {
     init_settings = settings;
+
     app_settings = {};
+    Object.assign(app_settings, Events);
+
     // Allow only whitelisted settings to be overwritten via converse.initialize
     const allowed_settings = pick(settings, Object.keys(DEFAULT_SETTINGS));
     assignIn(app_settings, DEFAULT_SETTINGS, allowed_settings);
@@ -51,11 +51,11 @@ export function extendAppSettings (settings) {
 }
 
 export function registerListener (name, func, context) {
-    app_settings_emitter.on(name, func, context)
+    app_settings.on(name, func, context)
 }
 
 export function unregisterListener (name, func) {
-    app_settings_emitter.off(name, func);
+    app_settings.off(name, func);
 }
 
 export function updateAppSettings (key, val) {
@@ -78,8 +78,8 @@ export function updateAppSettings (key, val) {
             app_settings[k] = val;
         }
     });
-    Object.keys(changed).forEach(k => app_settings_emitter.trigger('change:' + k, changed[k]));
-    app_settings_emitter.trigger('change', changed);
+    Object.keys(changed).forEach(k => app_settings.trigger('change:' + k, changed[k]));
+    app_settings.trigger('change', changed);
 }
 
 /**

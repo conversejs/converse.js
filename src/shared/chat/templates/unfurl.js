@@ -1,3 +1,4 @@
+import { api } from '@converse/headless/core.js';
 import { getURI, isAudioURL, isGIFURL, isVideoURL, isDomainAllowed } from '@converse/headless/utils/url.js';
 import { html } from 'lit';
 
@@ -22,11 +23,11 @@ const tpl_url_wrapper = (o, wrapped_template) =>
 const tpl_image = (o) => html`<converse-rich-text class="card-img-top" text="${o.image}" show_images ?hide_media_urls=${shouldHideMediaURL(o.url)} .onImgLoad=${o.onload}></converse-rich-text>`;
 
 export default (o) => {
-    const valid_image = isValidImage(o.image);
+    const show_image = isValidImage(o.image) && api.settings.get('render_media');
     const has_body_info = o.title || o.description || o.url;
-    if (valid_image || has_body_info) {
+    if (show_image || has_body_info) {
         return html`<div class="card card--unfurl">
-            ${ valid_image ? tpl_url_wrapper(o, tpl_image) : '' }
+            ${ show_image ? tpl_url_wrapper(o, tpl_image) : '' }
             ${ has_body_info ? html`
                 <div class="card-body">
                 ${ o.title ? tpl_url_wrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}

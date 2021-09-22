@@ -31,7 +31,6 @@ class MessageActions extends CustomElement {
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
     }
 
-
     render () {
         return html`${until(this.renderActions(), '')}`;
     }

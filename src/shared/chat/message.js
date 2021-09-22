@@ -17,6 +17,7 @@ import { _converse, api, converse } from  '@converse/headless/core';
 import { getHats } from './utils.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
+import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 
 const { Strophe, dayjs } = converse.env;
 
@@ -38,16 +39,21 @@ export default class Message extends CustomElement {
             return;
         }
 
-        this.listenTo(this.chatbox, 'change:first_unread_id', this.requestUpdate);
-        this.listenTo(this.model, 'change', this.requestUpdate);
-        this.model.vcard && this.listenTo(this.model.vcard, 'change', this.requestUpdate);
+        const settings = getAppSettings();
+        // Reset individual show/hide state of media when the `render_media` config setting changes.
+        this.listenTo(settings, 'change:render_media',
+            () => this.model.get('hide_url_previews') && this.model.save('hide_url_previews', undefined));
+
+        this.listenTo(this.chatbox, 'change:first_unread_id', () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.model.vcard && this.listenTo(this.model.vcard, 'change', () => this.requestUpdate());
 
         if (this.model.get('type') === 'groupchat') {
             if (this.model.occupant) {
-                this.listenTo(this.model.occupant, 'change', this.requestUpdate);
+                this.listenTo(this.model.occupant, 'change', () => this.requestUpdate());
             } else {
                 this.listenTo(this.model, 'occupantAdded', () => {
-                    this.listenTo(this.model.occupant, 'change', this.requestUpdate)
+                    this.listenTo(this.model.occupant, 'change', () => this.requestUpdate())
                 });
             }
         }

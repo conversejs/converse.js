@@ -294,8 +294,10 @@ describe("A Groupchat Message", function () {
 
     it("lets the user hide an unfurl",
             mock.initConverse(['chatBoxesFetched'],
-            {'render_media': []},
+            {'render_media': true},
             async function (_converse) {
+
+        const { api } = _converse;
 
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
@@ -327,10 +329,20 @@ describe("A Groupchat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
-        const button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-hide-previews'));
+        let button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-hide-previews'));
+        expect(button.textContent.trim()).toBe('Hide URL previews');
         button.click();
         await u.waitUntil(() => view.querySelector('converse-message-unfurl') === null, 750);
+        button = view.querySelector('.chat-msg__content .chat-msg__action-hide-previews');
+        expect(button.textContent.trim()).toBe('Show URL preview');
         button.click();
         await u.waitUntil(() => view.querySelector('converse-message-unfurl'), 750);
+
+        // Check that the image doesn't render if the domain is not allowed
+        expect(view.querySelector('converse-message-unfurl .chat-image')).not.toBe(null);
+        api.settings.set('allowed_image_domains', []);
+        await u.waitUntil(() => view.querySelector('converse-message-unfurl .chat-image') === null);
+        api.settings.set('allowed_image_domains', undefined);
+        await u.waitUntil(() => view.querySelector('converse-message-unfurl .chat-image') !== null);
     }));
 });

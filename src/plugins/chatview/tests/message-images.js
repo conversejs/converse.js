@@ -147,16 +147,10 @@ describe("A Chat Message", function () {
 
         api.settings.set('allowed_image_domains', []);
 
-        // FIXME: remove once we can update based on settings change event
-        view.querySelector('converse-chat-message-body').requestUpdate();
-        view.querySelector('converse-message-actions').requestUpdate();
         await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image') === null);
         expect(view.querySelector('.chat-msg__action-hide-previews')).toBe(null);
 
-        // FIXME: remove once we can update based on settings change event
         api.settings.set('allowed_image_domains', null);
-        view.querySelector('converse-chat-message-body').requestUpdate();
-        view.querySelector('converse-message-actions').requestUpdate();
         await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image'));
         expect(view.querySelector('.chat-msg__action-hide-previews')).not.toBe(null);
     }));

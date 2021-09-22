@@ -26,6 +26,7 @@ export default (el) => {
     const spoiler_classes = el.model.get('is_spoiler') ? `spoiler ${el.model.get('is_spoiler_visible') ? '' : 'hidden'}` : '';
     const text = el.model.getMessageText();
     const show_oob = el.model.get('oob_url') && text !== el.model.get('oob_url');
+
     return html`
         ${ el.model.get('is_spoiler') ? tpl_spoiler_hint : '' }
         ${ el.model.get('subject') ? html`<div class="chat-msg__subject">${el.model.get('subject')}</div>` : '' }

@@ -12,8 +12,8 @@ function isValidImage (image) {
     return image && isDomainAllowed(image, 'allowed_image_domains') && isValidURL(image);
 }
 
-function shouldHideMediaURL (o) {
-    return isGIFURL(o.url) || isVideoURL(o.url) || isAudioURL(o.url);
+function shouldHideMediaURL (url) {
+    return url && (isGIFURL(url) || isVideoURL(url) || isAudioURL(url));
 }
 
 const tpl_url_wrapper = (o, wrapped_template) =>

@@ -293,7 +293,7 @@ export const api = _converse.api = {
          *  @returns  {void}
          */
         async login (jid, password, automatic=false) {
-            jid = jid || _converse.jid;
+            jid = jid || api.settings.get('jid');
             if (!_converse.connection?.jid || (jid && !u.isSameDomain(_converse.connection.jid, jid))) {
                 await _converse.initConnection();
             }

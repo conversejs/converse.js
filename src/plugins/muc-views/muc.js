@@ -7,11 +7,6 @@ export default class MUCView extends BaseChatView {
     length = 300
     is_chatroom = true
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
-    }
-
     async initialize () {
         this.model = await api.rooms.get(this.jid);
         _converse.chatboxviews.add(this.jid, this);

@@ -7,11 +7,6 @@ import { initStorage } from '@converse/headless/utils/storage.js';
 
 export default class MinimizedChats extends CustomElement {
 
-    constructor () {
-        super();
-        this.initialize();
-    }
-
     async initialize () {
         this.model = _converse.chatboxes;
         await this.initToggle();

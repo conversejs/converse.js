@@ -17,11 +17,6 @@ export default class MUCChatArea extends CustomElement {
         }
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
-    }
-
     async initialize () {
         this.model = await api.rooms.get(this.jid);
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());

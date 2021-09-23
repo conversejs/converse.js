@@ -3,6 +3,7 @@ import ImageModal from 'modals/image.js';
 import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
+import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 
 import './styles/message-body.scss';
 
@@ -19,6 +20,14 @@ export default class MessageBody extends CustomElement {
             render_media: { type: Boolean },
             text: { type: String },
         }
+    }
+
+    initialize () {
+        const settings = getAppSettings();
+        this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
+        this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
+        this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
+        this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
     }
 
     onImgClick (ev) { // eslint-disable-line class-methods-use-this

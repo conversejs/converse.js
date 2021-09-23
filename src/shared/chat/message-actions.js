@@ -2,6 +2,7 @@ import log from '@converse/headless/log';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core.js';
+import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { html } from 'lit';
 import { isMediaURLDomainAllowed } from '@converse/headless/utils/url.js';
@@ -21,6 +22,15 @@ class MessageActions extends CustomElement {
             unfurls: { type: Number },
         };
     }
+
+    initialize () {
+        const settings = getAppSettings();
+        this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
+        this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
+        this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
+        this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
+    }
+
 
     render () {
         return html`${until(this.renderActions(), '')}`;

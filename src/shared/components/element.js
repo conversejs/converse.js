@@ -14,6 +14,11 @@ export class CustomElement extends LitElement {
         return this;
     }
 
+    connectedCallback () {
+        super.connectedCallback();
+        this.initialize?.();
+    }
+
     disconnectedCallback () {
         super.disconnectedCallback();
         this.stopListening();

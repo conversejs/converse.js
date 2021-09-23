@@ -30,11 +30,6 @@ export default class Message extends CustomElement {
         }
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
-    }
-
     async initialize () {
         await this.setModels();
         if (!this.model) {

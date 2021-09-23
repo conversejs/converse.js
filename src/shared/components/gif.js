@@ -6,7 +6,7 @@ import { html } from 'lit';
 
 import './styles/gif.scss';
 
-export default class ConverseGIF extends CustomElement {
+export default class ConverseGIFElement extends CustomElement {
     static get properties () {
         /**
          * @typedef { Object } ConverseGIFComponentProperties
@@ -33,7 +33,7 @@ export default class ConverseGIF extends CustomElement {
         this.fallback = 'url';
     }
 
-    initialize () {
+    initGIF () {
         const options = {
             'autoplay': this.autoplay,
             'loop': !this.noloop,
@@ -46,7 +46,7 @@ export default class ConverseGIF extends CustomElement {
 
     updated (changed) {
         if (!this.supergif || changed.has('src')) {
-            this.initialize();
+            this.initGIF();
             return;
         }
         if (changed.has('autoplay')) {
@@ -100,4 +100,4 @@ export default class ConverseGIF extends CustomElement {
     }
 }
 
-api.elements.define('converse-gif', ConverseGIF);
+api.elements.define('converse-gif', ConverseGIFElement);

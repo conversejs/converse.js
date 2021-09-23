@@ -9,11 +9,6 @@ import './styles/chat-head.scss';
 
 export default class ChatHeading extends CustomElement {
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
-    }
-
     initialize () {
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         this.listenTo(this.model, 'change:status', this.requestUpdate);

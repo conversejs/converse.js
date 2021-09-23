@@ -17,11 +17,6 @@ export const RosterFilter = Model.extend({
 
 export class RosterFilterView extends CustomElement {
 
-    constructor () {
-        super();
-        this.initialize();
-    }
-
     initialize () {
         const model = new _converse.RosterFilter();
         model.id = `_converse.rosterfilter-${_converse.bare_jid}`;

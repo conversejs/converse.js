@@ -17,11 +17,6 @@ converse.plugins.add('converse-chatboxviews', {
     dependencies: ['converse-chatboxes', 'converse-vcard'],
 
     initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
-        api.elements.register();
-
         api.promises.add(['chatBoxViewsInitialized']);
 
         // Configuration values for this plugin

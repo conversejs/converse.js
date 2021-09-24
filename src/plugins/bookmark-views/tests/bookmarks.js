@@ -205,7 +205,13 @@ describe("A chat room", function () {
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
-            await _converse.api.rooms.open(`lounge@montague.lit`);
+
+            const nick = 'romeo';
+            const muc_jid = 'lounge@montague.lit';
+            await _converse.api.rooms.open(muc_jid);
+            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForReservedNick(_converse, muc_jid, nick);
+
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
             _converse.bookmarks.create({
@@ -225,8 +231,12 @@ describe("A chat room", function () {
             const { u, Strophe } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
+            const nick = 'romeo';
             const muc_jid = 'theplay@conference.shakespeare.lit';
             await _converse.api.rooms.open(muc_jid);
+            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForReservedNick(_converse, muc_jid, nick);
+
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('.toggle-bookmark'));
 

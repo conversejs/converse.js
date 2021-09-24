@@ -1214,7 +1214,7 @@ describe("Groupchats", function () {
             });
 
             await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
-            const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+            const view = await u.waitUntil(() => _converse.chatboxviews.get('coven@chat.shakespeare.lit'));
             await u.waitUntil(() => u.isVisible(view));
             // We pretend this is a new room, so no disco info is returned.
             const features_stanza = $iq({
@@ -2275,7 +2275,7 @@ describe("Groupchats", function () {
              *  </presence>
              */
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            var presence = $pres().attrs({
+            const presence = $pres().attrs({
                     from:'lounge@montague.lit/romeo',
                     to:'romeo@montague.lit/pda',
                     type:'unavailable'
@@ -2335,16 +2335,16 @@ describe("Groupchats", function () {
         it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-            await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view.model, 'close').and.callThrough();
+            const model = await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            spyOn(model, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
-            spyOn(view.model, 'leave');
+            spyOn(model, 'leave');
             spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
+            const view = await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit'));
             const button = await u.waitUntil(() => view.querySelector('.close-chatbox-button'));
             button.click();
-            await u.waitUntil(() => view.model.close.calls.count());
-            expect(view.model.leave).toHaveBeenCalled();
+            await u.waitUntil(() => model.close.calls.count());
+            expect(model.leave).toHaveBeenCalled();
             await u.waitUntil(() => _converse.api.trigger.calls.count());
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
         }));
@@ -3980,7 +3980,7 @@ describe("Groupchats", function () {
             var new_list = [];
             var old_list = [];
             const muc_utils = converse.env.muc_utils;
-            var delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+            let delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
             expect(delta.length).toBe(0);
 
             new_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
@@ -4272,7 +4272,7 @@ describe("Groupchats", function () {
             rooms[4].querySelector('.open-room').click();
             await u.waitUntil(() => _converse.chatboxes.length > 1);
             expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
-            var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
+            const view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
             expect(view.querySelector('.chatbox-title__text').textContent.trim()).toBe("Macbeth's Castle");
         }));
 
@@ -4577,7 +4577,7 @@ describe("Groupchats", function () {
                 // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
 
                 // <composing> state
-                var msg = $msg({
+                let msg = $msg({
                         from: muc_jid+'/newguy',
                         id: u.getUniqueId(),
                         to: 'romeo@montague.lit',

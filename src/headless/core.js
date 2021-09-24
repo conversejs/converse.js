@@ -828,6 +828,10 @@ Object.assign(converse, {
         await initClientConfig(_converse);
         await i18n.initialize();
         initPlugins(_converse);
+
+        // Register all custom elements
+        api.elements.register();
+
         registerGlobalEventHandlers(_converse);
 
         try {

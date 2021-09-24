@@ -1,0 +1,16 @@
+converse-root.converse-js {
+    &.converse-fullpage,
+    &.converse-overlayed,
+    &.converse-mobile {
+        bottom: 0;
+        height: 100%;
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        position: fixed;
+        z-index: 1031; // One more than bootstrap navbar
+    }
+
+    &.converse-embedded {
+        position: relative;
+    }
+}

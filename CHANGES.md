@@ -2,6 +2,8 @@
 
 ## 9.0.0 (Unreleased)
 
+- #2647: Singleton mode doesn't work
+
 - Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:
   - [render_media](https://conversejs.org/docs/html/configuration.html#render-media)

@@ -201,7 +201,6 @@ describe("A groupchat shown in the groupchats list", function () {
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
         await _converse.api.rooms.open(room_jid, {'nick': 'some1'});
-        const view = _converse.chatboxviews.get(room_jid);
 
         const selector = `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
         const features_query = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).pop());
@@ -233,6 +232,8 @@ describe("A groupchat shown in the groupchats list", function () {
                     .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                         .c('value').t(0);
         _converse.connection._dataRecv(mock.createRequest(features_stanza));
+
+        const view = _converse.chatboxviews.get(room_jid);
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
         let presence = $pres({
                 to: _converse.connection.jid,

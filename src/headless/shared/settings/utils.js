@@ -1,4 +1,4 @@
-import _converse from '@converse/headless/shared/_converse';
+import { _converse } from '@converse/headless/core.js';
 import assignIn from 'lodash-es/assignIn';
 import isEqual from "lodash-es/isEqual.js";
 import isObject from 'lodash-es/isObject';
@@ -13,7 +13,6 @@ import { initStorage } from '@converse/headless/utils/storage.js';
 let app_settings;
 let init_settings = {}; // Container for settings passed in via converse.initialize
 let user_settings; // User settings, populated via api.users.settings
-
 
 export function getAppSettings () {
     return app_settings;

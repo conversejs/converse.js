@@ -1,14 +1,8 @@
 .conversejs {
-    bottom: 0;
-    height: 100%;
-    position: fixed;
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
     color: var(--text-color);
     font-family: var(--normal-font);
     font-size: var(--font-size);
     direction: ltr;
-    z-index: 1031; // One more than bootstrap navbar
 
     .flyout {
       position: absolute;

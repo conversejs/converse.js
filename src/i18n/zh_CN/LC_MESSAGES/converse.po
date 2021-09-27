@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-04-09 13:31+0200\n"
-"Last-Translator: Hangyu Feng <hangyu.feng@mail.utoronto.ca>\n"
+"PO-Revision-Date: 2021-09-28 12:37+0000\n"
+"Last-Translator: 52871299hzy <bc3104hzy@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
@@ -700,7 +700,6 @@ msgstr ""
 #: dist/converse-no-dependencies.js:64672
 #: dist/converse-no-dependencies.js:64769
 #: dist/converse-no-dependencies.js:64806
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
 msgstr "您确定要收回这条消息吗？"
 
@@ -726,7 +725,6 @@ msgid "You are about to retract this message."
 msgstr "您在收回这条消息。"
 
 #: dist/converse-no-dependencies.js:64830
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
@@ -759,12 +757,10 @@ msgid "Retract"
 msgstr "收回"
 
 #: dist/converse-no-dependencies.js:64976
-#, fuzzy
 msgid "Show URL previews"
 msgstr "显示链接预览"
 
 #: dist/converse-no-dependencies.js:64976
-#, fuzzy
 msgid "Hide URL previews"
 msgstr "隐藏链接预览"
 

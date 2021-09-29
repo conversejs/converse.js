@@ -2,7 +2,7 @@ import MAMPlaceholderMessage from '@converse/headless/plugins/mam/placeholder.js
 import log from '@converse/headless/log.js';
 import { _converse, api } from '@converse/headless/core';
 import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
-import { html } from 'lit-html';
+import { html } from 'lit/html.js';
 
 
 export function getPlaceholderTemplate (message, tpl) {

@@ -1,10 +1,11 @@
 import RoomDetailsModal from 'modals/muc-details.js';
+import RoomsListModel from './model.js';
 import tpl_roomslist from "./templates/roomslist.js";
 import { ElementView } from '@converse/skeletor/src/element.js';
-import RoomsListModel from './model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
+import { isUniView } from '@converse/headless/utils/core.js';
 import { render } from 'lit';
 
 const { Strophe, u } = converse.env;
@@ -43,7 +44,7 @@ export class RoomsList extends ElementView {
             'allow_bookmarks': api.settings.get('allow_bookmarks') && _converse.bookmarks,
             'closeRoom': ev => this.closeRoom(ev),
             'collapsed': this.model.get('toggle-state') !== _converse.OPENED,
-            'currently_open': room => _converse.isUniView() && !room.get('hidden'),
+            'currently_open': room => isUniView() && !room.get('hidden'),
             'model': this.model,
             'openRoom': ev => this.openRoom(ev),
             'removeBookmark': ev => this.removeBookmark(ev),

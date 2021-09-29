@@ -570,16 +570,6 @@ export const api = _converse.api = {
 };
 
 
-_converse.isUniView = function () {
-    /* We distinguish between UniView and MultiView instances.
-     *
-     * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
-     * MultiView means that multiple chats may be visible simultaneously.
-     */
-    return ['mobile', 'fullscreen', 'embedded'].includes(api.settings.get("view_mode"));
-};
-
-
 export async function tearDown () {
     await _converse.api.trigger('beforeTearDown', {'synchronous': true});
     window.removeEventListener('click', _converse.onUserActivity);

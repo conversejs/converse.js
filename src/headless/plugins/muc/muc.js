@@ -14,6 +14,7 @@ import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from '
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
+import { isUniView } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -63,7 +64,7 @@ const ChatRoomMixin = {
             'bookmarked': false,
             'chat_state': undefined,
             'has_activity': false, // XEP-437
-            'hidden': _converse.isUniView() && !api.settings.get('singleton'),
+            'hidden': isUniView() && !api.settings.get('singleton'),
             'hidden_occupants': !!api.settings.get('hide_muc_participants'),
             'message_type': 'groupchat',
             'name': '',

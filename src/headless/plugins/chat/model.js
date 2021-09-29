@@ -6,10 +6,11 @@ import log from '@converse/headless/log';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
-import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/utils/storage.js';
 import { debouncedPruneHistory, pruneHistory } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
+import { getOpenPromise } from '@converse/openpromise';
+import { initStorage } from '@converse/headless/utils/storage.js';
+import { isUniView } from '@converse/headless/utils/core.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions.js';
 
@@ -30,7 +31,7 @@ const ChatBox = ModelWithContact.extend({
         return {
             'bookmarked': false,
             'chat_state': undefined,
-            'hidden': _converse.isUniView() && !api.settings.get('singleton'),
+            'hidden': isUniView() && !api.settings.get('singleton'),
             'message_type': 'chat',
             'nickname': undefined,
             'num_unread': 0,
@@ -1040,7 +1041,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     maybeShow (force) {
-        if (_converse.isUniView()) {
+        if (isUniView()) {
             const filter = c => !c.get('hidden') &&
                 c.get('jid') !== this.get('jid') &&
                 c.get('id') !== 'controlbox';

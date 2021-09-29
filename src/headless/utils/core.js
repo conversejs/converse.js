@@ -14,6 +14,7 @@ import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { settings_api } from '@converse/headless/shared/settings/api.js';
 
 export function isEmptyMessage (attrs) {
     if (attrs instanceof Model) {
@@ -23,6 +24,16 @@ export function isEmptyMessage (attrs) {
         !attrs['file'] &&
         !(attrs['is_encrypted'] && attrs['plaintext']) &&
         !attrs['message'];
+}
+
+
+/* We distinguish between UniView and MultiView instances.
+ *
+ * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
+ * MultiView means that multiple chats may be visible simultaneously.
+ */
+export function isUniView () {
+    return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
 }
 
 
@@ -443,9 +454,9 @@ u.getUniqueId = function (suffix) {
     }
 }
 
-u.httpToGeoUri = function(text, _converse) {
+u.httpToGeoUri = function(text) {
     const replacement = 'geo:$1,$2';
-    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
+    return text.replace(settings_api.get("geouri_regex"), replacement);
 };
 
 

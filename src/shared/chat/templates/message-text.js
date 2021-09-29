@@ -1,5 +1,4 @@
 import { __ } from 'i18n/index.js';
-import { api } from  '@converse/headless/core';
 import { getOOBURLMarkup } from 'utils/html.js';
 import { html } from 'lit';
 
@@ -36,7 +35,6 @@ export default (el) => {
                 .model="${el.model}"
                 hide_url_previews=${el.model.get('hide_url_previews')}
                 ?is_me_message=${el.model.isMeCommand()}
-                ?render_media=${api.settings.get('render_media')}
                 text="${text}"></converse-chat-message-body>
             ${ (el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
             ${ (el.model.get('edited')) ? tpl_edited_icon(el) : '' }

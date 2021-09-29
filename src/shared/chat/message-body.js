@@ -17,7 +17,6 @@ export default class MessageBody extends CustomElement {
             hide_url_previews: { type: String },
             is_me_message: { type: Boolean },
             model: { type: Object },
-            render_media: { type: Boolean },
             text: { type: String },
         }
     }

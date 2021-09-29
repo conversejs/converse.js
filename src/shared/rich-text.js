@@ -2,7 +2,7 @@ import tpl_audio from 'templates/audio.js';
 import tpl_gif from 'templates/gif.js';
 import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
-import { _converse, api } from '@converse/headless/core';
+import { api } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';

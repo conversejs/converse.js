@@ -330,11 +330,11 @@ describe("A Groupchat Message", function () {
 
         await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         let button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-hide-previews'));
-        expect(button.textContent.trim()).toBe('Hide URL previews');
+        expect(button.textContent.trim()).toBe('Hide media');
         button.click();
         await u.waitUntil(() => view.querySelector('converse-message-unfurl') === null, 750);
         button = view.querySelector('.chat-msg__content .chat-msg__action-hide-previews');
-        expect(button.textContent.trim()).toBe('Show URL preview');
+        expect(button.textContent.trim()).toBe('Show media');
         button.click();
         await u.waitUntil(() => view.querySelector('converse-message-unfurl'), 750);
 

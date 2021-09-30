@@ -41,8 +41,7 @@ export default class Message extends CustomElement {
 
         const settings = getAppSettings();
         // Reset individual show/hide state of media when the `render_media` config setting changes.
-        this.listenTo(settings, 'change:render_media',
-            () => this.model.get('hide_url_previews') && this.model.save('hide_url_previews', undefined));
+        this.listenTo(settings, 'change:render_media', () => this.model.save('hide_url_previews', undefined));
 
         this.listenTo(this.chatbox, 'change:first_unread_id', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());

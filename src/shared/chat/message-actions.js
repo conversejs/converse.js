@@ -5,7 +5,7 @@ import { _converse, api, converse } from '@converse/headless/core.js';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { html } from 'lit';
-import { isMediaURLDomainAllowed } from '@converse/headless/utils/url.js';
+import { isMediaURLDomainAllowed, isDomainWhitelisted } from '@converse/headless/utils/url.js';
 import { until } from 'lit/directives/until.js';
 
 const { Strophe, u } = converse.env;
@@ -15,7 +15,6 @@ class MessageActions extends CustomElement {
         return {
             correcting: { type: Boolean },
             editable: { type: Boolean },
-            hide_url_previews: { type: Boolean },
             is_retracted: { type: Boolean },
             message_type: { type: String },
             model: { type: Object },
@@ -29,6 +28,7 @@ class MessageActions extends CustomElement {
         this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:hide_url_previews', () => this.requestUpdate());
     }
 
     render () {
@@ -178,9 +178,10 @@ class MessageActions extends CustomElement {
         }
     }
 
-    onHidePreviewsButtonClicked (ev) {
+    onMediaToggleClicked (ev) {
         ev?.preventDefault?.();
-        if (this.hide_url_previews) {
+
+        if (this.hasHiddenMedia(this.getMediaURLs())) {
             this.model.save({
                 'hide_url_previews': false,
                 'url_preview_transition': 'fade-in',
@@ -199,9 +200,82 @@ class MessageActions extends CustomElement {
         }
     }
 
+    /**
+     * Check whether media is hidden or shown, which is used to determine the toggle text.
+     *
+     * If `render_media` is an array, check if there are media URLs outside
+     * of that array, in which case we consider message media on the whole to be hidden (since
+     * those excluded by the whitelist will be, even if the render_media whitelisted URLs are shown).
+     * @param { Array<String> } media_urls
+     * @returns { Boolean }
+     */
+    hasHiddenMedia (media_urls) {
+        if (typeof this.model.get('hide_url_previews') === 'boolean') {
+            return this.model.get('hide_url_previews');
+        }
+        const render_media = api.settings.get('render_media');
+        if (Array.isArray(render_media)) {
+            return media_urls.reduce((acc, url) => acc || !isDomainWhitelisted(render_media, url), false);
+        } else {
+            return !render_media;
+        }
+    }
+
+    getMediaURLs () {
+        let unfurls_to_show = [];
+        if (api.settings.get('muc_show_ogp_unfurls')) {
+            unfurls_to_show = (this.model.get('ogp_metadata') || [])
+                .map(o => ({ 'url': o['og:image'], 'is_image': true }))
+                .filter(o => isMediaURLDomainAllowed(o));
+        }
+
+        const media_urls = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'))
+            .filter(o => isMediaURLDomainAllowed(o));
+
+        return [...new Set([...media_urls.map(o => o.url), ...unfurls_to_show.map(o => o['og:image'])])];
+    }
+
+    /**
+     * Adds a media rendering toggle to this message's action buttons if necessary.
+     *
+     * The toggle is only added if the message contains media URLs and if the
+     * user is allowed to show or hide media for those URLs.
+     *
+     * Whether a user is allowed to show or hide domains depends on the config settings:
+     * * allowed_audio_domains
+     * * allowed_video_domains
+     * * allowed_image_domains
+     *
+     * Whether media is currently shown or hidden is determined by the { @link hasHiddenMedia } method.
+     *
+     * @param { Array<MessageActionAttributes> } buttons - An array of objects representing action buttons
+     */
+    addMediaRenderingToggle (buttons) {
+        const urls = this.getMediaURLs();
+        if (urls.length) {
+            const hidden = this.hasHiddenMedia(urls);
+            buttons.push({
+                'i18n_text': hidden ? __('Show media') : __('Hide media'),
+                'handler': ev => this.onMediaToggleClicked(ev),
+                'button_class': 'chat-msg__action-hide-previews',
+                'icon_class': hidden ? 'fas fa-eye' : 'fas fa-eye-slash',
+                'name': 'hide',
+            });
+        }
+    }
+
     async getActionButtons () {
         const buttons = [];
         if (this.editable) {
+            /**
+             * @typedef { Object } MessageActionAttributes
+             * An object which represents a message action (as shown in the message dropdown);
+             * @property { String } i18n_text
+             * @property { Function } handler
+             * @property { String } button_class
+             * @property { String } icon_class
+             * @property { String } name
+             */
             buttons.push({
                 'i18n_text': this.correcting ? __('Cancel Editing') : __('Edit'),
                 'handler': ev => this.onMessageEditButtonClicked(ev),
@@ -227,40 +301,8 @@ class MessageActions extends CustomElement {
             // collection (happens during tests)
             return [];
         }
-        const ogp_metadata = this.model.get('ogp_metadata') || [];
-        const unfurls_to_show = api.settings.get('muc_show_ogp_unfurls') && ogp_metadata.length;
-        const media_urls = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'));
-        const media_to_show = media_urls.reduce((result, o) => result || isMediaURLDomainAllowed(o), false);
-        if (unfurls_to_show || media_to_show) {
-            let title;
-            const hidden_preview = this.hide_url_previews;
-            if (ogp_metadata.length > 1) {
-                if (typeof hidden_preview === 'boolean') {
-                    title = hidden_preview ? __('Show URL previews') : __('Hide URL previews');
-                } else {
-                    title = api.settings.get('render_media') ? __('Hide URL previews') : __('Show URL previews');
-                }
-            } else if (ogp_metadata.length === 1) {
-                if (typeof hidden_preview === 'boolean') {
-                    title = hidden_preview ? __('Show URL preview') : __('Hide URL preview');
-                } else {
-                    title = api.settings.get('render_media') ? __('Hide URL previews') : __('Show URL previews');
-                }
-            } else  {
-                if (typeof hidden_preview === 'boolean') {
-                    title = hidden_preview ? __('Show media') : __('Hide media');
-                } else {
-                    title = api.settings.get('render_media') ? __('Hide media') : __('Show media');
-                }
-            }
-            buttons.push({
-                'i18n_text': title,
-                'handler': ev => this.onHidePreviewsButtonClicked(ev),
-                'button_class': 'chat-msg__action-hide-previews',
-                'icon_class': this.hide_url_previews ? 'fas fa-eye' : 'fas fa-eye-slash',
-                'name': 'hide',
-            });
-        }
+
+        this.addMediaRenderingToggle(buttons);
 
         /**
          * *Hook* which allows plugins to add more message action buttons

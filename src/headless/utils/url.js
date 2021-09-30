@@ -28,12 +28,23 @@ function checkFileTypes (types, url) {
     return !!types.filter(ext => filename.endsWith(ext)).length;
 }
 
-function isDomainWhitelisted (whitelist, url) {
+export function isDomainWhitelisted (whitelist, url) {
     const uri = getURI(url);
     const subdomain = uri.subdomain();
     const domain = uri.domain();
     const fulldomain = `${subdomain ? `${subdomain}.` : ''}${domain}`;
     return whitelist.includes(domain) || whitelist.includes(fulldomain);
+}
+
+export function shouldRenderMediaFromURL (url_text, type) {
+    const may_render = api.settings.get('render_media');
+    const is_domain_allowed = isDomainAllowed(url_text, `allowed_${type}_domains`);
+
+    if (Array.isArray(may_render)) {
+        return is_domain_allowed && isDomainWhitelisted (may_render, url_text);
+    } else {
+        return is_domain_allowed && may_render;
+    }
 }
 
 export function filterQueryParamsFromURL (url) {

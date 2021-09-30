@@ -16,10 +16,10 @@ import {
 import {
     filterQueryParamsFromURL,
     isAudioURL,
-    isDomainAllowed,
     isGIFURL,
     isImageURL,
-    isVideoURL
+    isVideoURL,
+    shouldRenderMediaFromURL,
 } from '@converse/headless/utils/url.js';
 
 import { html } from 'lit';
@@ -111,8 +111,7 @@ export class RichText extends String {
         if (typeof override === 'boolean') {
             return override;
         }
-        const may_render = api.settings.get('render_media');
-        return may_render && isDomainAllowed(url_text, `allowed_${type}_domains`);
+        return shouldRenderMediaFromURL(url_text, type);
     }
 
     /**

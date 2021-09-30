@@ -38,7 +38,6 @@ export default (el, o) => {
                         .model=${el.model}
                         ?correcting=${o.correcting}
                         ?editable=${o.editable}
-                        ?hide_url_previews=${el.model.get('hide_url_previews')}
                         ?is_retracted=${o.is_retracted}
                         unfurls="${el.model.get('ogp_metadata')?.length}"
                         message_type="${o.message_type}"></converse-message-actions>

@@ -1828,20 +1828,31 @@ render_media
 
 * Default: ``true``
 
-If ``true``, media files (images, audio and video) will be rendered in the chat.
-Otherwise, only their URLs will be shown.
+* Possible values: ``true``, ``false`` or an array of domains for which media
+  should automatically be rendered.
 
-Note, even if this setting is ``false``, a user can still click on the message
-dropdown and click to show the media for that particular message.
+If ``true``, media URLs (images, audio and video) will be rendered in the chat.
 
-If you want to disable this ability, you can set the allowed domains for that
-media type to an empty array.
+If ``false``, the URLs won't render as media, and instead only clickable links
+will be shown.
 
-See:
+Setting it to an array of domains means that media will be rendered only for URLs
+matching those domains.
 
-* `allowed_audio_domains`_
-* `allowed_video_domains`_
-* `allowed_image_domains`_
+.. note::
+
+  Note, even if this setting is ``false`` (or if the URL domain is not in the
+  array of allowed domains), a user can still click on the message
+  dropdown and click to show or hide the media for that particular message.
+
+  If you want to disable this ability, you can set the allowed domains for the
+  media type to an empty array.
+
+  See:
+
+  * `allowed_audio_domains`_
+  * `allowed_video_domains`_
+  * `allowed_image_domains`_
 
 .. note::
 

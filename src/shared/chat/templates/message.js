@@ -2,6 +2,7 @@ import 'shared/chat/unfurl.js';
 import { __ } from 'i18n';
 import { html } from "lit";
 import { renderAvatar } from 'shared/directives/avatar';
+import { shouldRenderMediaFromURL } from '@converse/headless/utils/url.js';
 
 
 export default (el, o) => {
@@ -43,15 +44,21 @@ export default (el, o) => {
                         message_type="${o.message_type}"></converse-message-actions>
                 </div>
 
-                ${ !el.model.get('hide_url_previews') ? el.model.get('ogp_metadata')?.map(m =>
-                    html`<converse-message-unfurl
+                ${ el.model.get('ogp_metadata')?.map(m => {
+                    if (el.model.get('hide_url_previews') === true) {
+                        return '';
+                    }
+                    if (!shouldRenderMediaFromURL(m['og:image'], 'image')) {
+                        return '';
+                    }
+                    return html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"
                         jid="${el.chatbox?.get('jid')}"
                         description="${m['og:description'] || ''}"
                         title="${m['og:title'] || ''}"
                         image="${m['og:image'] || ''}"
-                        url="${m['og:url'] || ''}"></converse-message-unfurl>`) : '' }
+                        url="${m['og:url'] || ''}"></converse-message-unfurl>` }) }
             </div>
         </div>`;
 }

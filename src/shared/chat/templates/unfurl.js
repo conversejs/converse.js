@@ -3,8 +3,7 @@ import {
     isAudioURL,
     isGIFURL,
     isVideoURL,
-    isDomainAllowed,
-    shouldRenderMediaFromURL,
+    isDomainAllowed
 } from '@converse/headless/utils/url.js';
 import { html } from 'lit';
 
@@ -36,7 +35,7 @@ const tpl_image = o =>
     ></converse-rich-text>`;
 
 export default o => {
-    const show_image = isValidImage(o.image) && shouldRenderMediaFromURL(o.url);
+    const show_image = isValidImage(o.image);
     const has_body_info = o.title || o.description || o.url;
     if (show_image || has_body_info) {
         return html`<div class="card card--unfurl">

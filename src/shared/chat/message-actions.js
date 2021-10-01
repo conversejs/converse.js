@@ -188,8 +188,7 @@ class MessageActions extends CustomElement {
             });
         } else {
             const ogp_metadata = this.model.get('ogp_metadata') || [];
-            const unfurls_to_show = api.settings.get('muc_show_ogp_unfurls') && ogp_metadata.length;
-            if (unfurls_to_show) {
+            if (ogp_metadata.length) {
                 this.model.set('url_preview_transition', 'fade-out');
             } else {
                 this.model.save({
@@ -222,12 +221,9 @@ class MessageActions extends CustomElement {
     }
 
     getMediaURLs () {
-        let unfurls_to_show = [];
-        if (api.settings.get('muc_show_ogp_unfurls')) {
-            unfurls_to_show = (this.model.get('ogp_metadata') || [])
-                .map(o => ({ 'url': o['og:image'], 'is_image': true }))
-                .filter(o => isMediaURLDomainAllowed(o));
-        }
+        const unfurls_to_show = (this.model.get('ogp_metadata') || [])
+            .map(o => ({ 'url': o['og:image'], 'is_image': true }))
+            .filter(o => isMediaURLDomainAllowed(o));
 
         const media_urls = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'))
             .filter(o => isMediaURLDomainAllowed(o));

@@ -2083,9 +2083,6 @@ const ChatRoomMixin = {
     },
 
     handleMetadataFastening (attrs) {
-        if (!api.settings.get('muc_show_ogp_unfurls')) {
-            return false;
-        }
         if (attrs.ogp_for_id) {
             if (attrs.from !== this.get('jid')) {
                 // For now we only allow metadata from the MUC itself and not

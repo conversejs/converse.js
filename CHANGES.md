@@ -15,6 +15,7 @@ Three config settings have been obsoleted:
   - embed_audio
   - embed_video
   - show_images_inline
+  - muc_show_ogp_unfurls
 
 
 ### Breaking Changes

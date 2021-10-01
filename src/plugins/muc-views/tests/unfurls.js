@@ -174,10 +174,12 @@ describe("A Groupchat Message", function () {
         expect(view.querySelector('converse-message-unfurl')).toBe(null);
     }));
 
-    it("will not render an unfurl based on OGP data if muc_show_ogp_unfurls is false",
+    it("will not render an unfurl based on OGP data if render_media is false",
             mock.initConverse(['chatBoxesFetched'],
-            {'muc_show_ogp_unfurls': false},
+            { 'render_media': false },
             async function (_converse) {
+
+        const { api } = _converse;
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -209,9 +211,18 @@ describe("A Groupchat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
 
-        await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
-        expect(view.model.handleMetadataFastening.calls.first().returnValue).toBe(false);
         expect(view.querySelector('converse-message-unfurl')).toBe(null);
+
+        api.settings.set('render_media', true);
+        await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
+
+        let button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-hide-previews'));
+        expect(button.textContent.trim()).toBe('Hide media');
+        button.click();
+
+        await u.waitUntil(() => !view.querySelector('converse-message-unfurl'), 1000);
+        button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-hide-previews'));
+        expect(button.textContent.trim()).toBe('Show media');
     }));
 
     it("will only render a single unfurl when receiving the same OGP data multiple times",
@@ -259,6 +270,8 @@ describe("A Groupchat Message", function () {
             {'allowed_image_domains': []},
             async function (_converse) {
 
+        const { api } = _converse;
+
         const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -288,8 +301,10 @@ describe("A Groupchat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
 
-        const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
-        expect(unfurl.querySelector('.card-img-top')).toBe(null);
+        await u.waitUntil(() => !view.querySelector('converse-message-unfurl'));
+
+        api.settings.set('allowed_image_domains', null);
+        await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
     }));
 
     it("lets the user hide an unfurl",

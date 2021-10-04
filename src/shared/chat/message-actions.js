@@ -228,7 +228,7 @@ class MessageActions extends CustomElement {
         const media_urls = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'))
             .filter(o => isMediaURLDomainAllowed(o));
 
-        return [...new Set([...media_urls.map(o => o.url), ...unfurls_to_show.map(o => o['og:image'])])];
+        return [...new Set([...media_urls.map(o => o.url), ...unfurls_to_show.map(o => o.url)])];
     }
 
     /**

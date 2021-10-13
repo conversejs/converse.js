@@ -71,6 +71,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/hats.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/http-file-upload.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/info-messages.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/mam.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/markers.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/me-messages.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/mentions.js", type: 'module' },

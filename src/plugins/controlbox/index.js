@@ -69,9 +69,7 @@ converse.plugins.add('converse-controlbox', {
         _converse.ControlBox = ControlBox;
         _converse.ControlBoxToggle = ControlBoxToggle;
 
-        /******************** Event Handlers ********************/
         api.listen.on('chatBoxesFetched', onChatBoxesFetched);
-        api.listen.on('cleanup', () => delete _converse.controlboxtoggle);
         api.listen.on('clearSession', clearSession);
         api.listen.on('will-reconnect', disconnect);
 

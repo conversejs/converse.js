@@ -164,7 +164,7 @@ describe("A Chatbox", function () {
         await u.waitUntil(() => _converse.chatboxviews.keys().length === 1);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         minimized_chats.querySelector("a.restore-chat").click();
-        expect(_converse.minimize.trimChats.calls.count()).toBe(17);
+        expect(_converse.minimize.trimChats.calls.count()).toBe(16);
     }));
 });
 

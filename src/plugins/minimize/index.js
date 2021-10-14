@@ -3,10 +3,10 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './view.js';
 import './components/minimized-chat.js';
 import 'plugins/chatview/index.js';
 import debounce from 'lodash-es/debounce';
-import MinimizedChats from './view.js';
 import MinimizedChatsToggle from './toggle.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import {
@@ -104,30 +104,19 @@ converse.plugins.add('converse-minimize', {
 
 
     initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by Converse.js's plugin machinery.
-         */
-
         api.settings.extend({'no_trimming': false});
 
         api.promises.add('minimizedChatsInitialized');
 
         _converse.MinimizedChatsToggle = MinimizedChatsToggle;
-        _converse.MinimizedChats = MinimizedChats;
-
-        _converse.minimize = {};
-        _converse.minimize.trimChats = trimChats;
-        _converse.minimize.minimize = minimize;
-        _converse.minimize.maximize = maximize;
+        _converse.minimize = { trimChats, minimize, maximize };
 
         function onChatInitialized (model) {
             model.on( 'change:minimized', () => onMinimizedChanged(model));
         }
 
-        /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxViewInitialized', view => _converse.minimize.trimChats(view));
         api.listen.on('chatRoomViewInitialized', view => _converse.minimize.trimChats(view));
-        api.listen.on('chatBoxMaximized', view => _converse.minimize.trimChats(view));
         api.listen.on('controlBoxOpened', view => _converse.minimize.trimChats(view));
         api.listen.on('chatBoxInitialized', onChatInitialized);
         api.listen.on('chatRoomInitialized', onChatInitialized);

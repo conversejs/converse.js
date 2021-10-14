@@ -2,6 +2,7 @@
 
 ## 9.0.0 (Unreleased)
 
+- Fix trimming of chats in overlayed view mode
 - #2647: Singleton mode doesn't work
 
 - Emit a `change` event when a configuration setting changes

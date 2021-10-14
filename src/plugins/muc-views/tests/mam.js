@@ -5,7 +5,7 @@ const u = converse.env.utils;
 
 describe("A MAM archived message", function () {
 
-    fit("will appear in the correct order",
+    it("will appear in the correct order",
             mock.initConverse([], {}, async function (_converse) {
 
         const nick = 'romeo';

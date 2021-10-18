@@ -1,6 +1,7 @@
+import { __ } from 'i18n';
+import { api } from '@converse/headless/core.js';
 import { html } from "lit";
-import { __ } from '../../i18n';
-import { modal_header_close_button } from "./buttons.js"
+import { modal_header_close_button } from "plugins/modal/templates/buttons.js"
 
 
 export default (o) => {
@@ -24,7 +25,7 @@ export default (o) => {
                             <label class="clearfix" for="jid">${i18n_xmpp_address}:</label>
                             <div class="suggestion-box suggestion-box__jid">
                                 <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
-                                <input type="text" name="jid" ?required=${(!o._converse.xhr_user_search_url)}
+                                <input type="text" name="jid" ?required=${(!api.settings.get('xhr_user_search_url'))}
                                     value="${o.jid || ''}"
                                     class="form-control suggestion-box__input"
                                     placeholder="${i18n_contact_placeholder}"/>

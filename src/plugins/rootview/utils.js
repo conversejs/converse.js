@@ -6,7 +6,7 @@ export function ensureElement () {
         return;
     }
     const root = api.settings.get('root');
-    if (!root.querySelector('converse-root#conversejs')) {
+    if (!root.querySelector('converse-root')) {
         const el = document.createElement('converse-root');
         const body = root.querySelector('body');
         if (body) {

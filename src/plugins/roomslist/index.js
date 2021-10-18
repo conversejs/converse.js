@@ -7,7 +7,7 @@
  */
 import "@converse/headless/plugins/muc/index.js";
 import './view.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { api, converse } from "@converse/headless/core";
 
 
 converse.plugins.add('converse-roomslist', {
@@ -17,7 +17,7 @@ converse.plugins.add('converse-roomslist', {
     initialize () {
         // Event handlers
         api.listen.on('connected', async () =>  {
-            if (_converse.allow_bookmarks) {
+            if (api.settings.get('allow_bookmarks')) {
                 await api.waitUntil('bookmarksInitialized');
             } else {
                 await Promise.all([

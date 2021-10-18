@@ -15,11 +15,6 @@ export default class ChatContent extends CustomElement {
         }
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
-    }
-
     disconnectedCallback () {
         super.disconnectedCallback();
         this.removeEventListener('scroll', markScrolled);

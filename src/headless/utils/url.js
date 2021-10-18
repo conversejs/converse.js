@@ -28,12 +28,23 @@ function checkFileTypes (types, url) {
     return !!types.filter(ext => filename.endsWith(ext)).length;
 }
 
-function isDomainAllowed (whitelist, url) {
+export function isDomainWhitelisted (whitelist, url) {
     const uri = getURI(url);
     const subdomain = uri.subdomain();
     const domain = uri.domain();
     const fulldomain = `${subdomain ? `${subdomain}.` : ''}${domain}`;
     return whitelist.includes(domain) || whitelist.includes(fulldomain);
+}
+
+export function shouldRenderMediaFromURL (url_text, type) {
+    const may_render = api.settings.get('render_media');
+    const is_domain_allowed = isDomainAllowed(url_text, `allowed_${type}_domains`);
+
+    if (Array.isArray(may_render)) {
+        return is_domain_allowed && isDomainWhitelisted (may_render, url_text);
+    } else {
+        return is_domain_allowed && may_render;
+    }
 }
 
 export function filterQueryParamsFromURL (url) {
@@ -43,43 +54,29 @@ export function filterQueryParamsFromURL (url) {
     return parsed_uri.removeQuery(paramsArray).toString();
 }
 
-export function isAudioDomainAllowed (url) {
-    const embed_audio = api.settings.get('embed_audio');
-    if (!Array.isArray(embed_audio)) {
-        return embed_audio;
+export function isDomainAllowed (url, setting) {
+    const allowed_domains = api.settings.get(setting);
+    if (!Array.isArray(allowed_domains)) {
+        return true;
     }
     try {
-        return isDomainAllowed(embed_audio, url);
+        return isDomainWhitelisted(allowed_domains, url);
     } catch (error) {
         log.debug(error);
         return false;
     }
 }
 
-export function isVideoDomainAllowed (url) {
-    const embed_videos = api.settings.get('embed_videos');
-    if (!Array.isArray(embed_videos)) {
-        return embed_videos;
-    }
-    try {
-        return isDomainAllowed(embed_videos, url);
-    } catch (error) {
-        log.debug(error);
-        return false;
-    }
-}
-
-export function isImageDomainAllowed (url) {
-    const show_images_inline = api.settings.get('show_images_inline');
-    if (!Array.isArray(show_images_inline)) {
-        return show_images_inline;
-    }
-    try {
-        return isDomainAllowed(show_images_inline, url);
-    } catch (error) {
-        log.debug(error);
-        return false;
-    }
+/**
+ * Accepts a {@link MediaURL} object and then checks whether its domain is
+ * allowed for rendering in the chat.
+ * @param { MediaURL } o
+ * @returns { Bool }
+ */
+export function isMediaURLDomainAllowed (o) {
+    return o.is_audio && isDomainAllowed(o.url, 'allowed_audio_domains') ||
+        o.is_video && isDomainAllowed(o.url, 'allowed_video_domains') ||
+        o.is_image && isDomainAllowed(o.url, 'allowed_image_domains');
 }
 
 export function isURLWithImageExtension (url) {

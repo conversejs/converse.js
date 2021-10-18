@@ -14,5 +14,4 @@ export default (o) => html`
               ${ o.messages.map(message => html`<p>${message}</p>`) }
             </div>
         </div>
-    </div>
-`;
+    </div>`;

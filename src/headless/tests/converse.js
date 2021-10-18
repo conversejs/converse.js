@@ -7,7 +7,8 @@ describe("Converse", function() {
     describe("Authentication", function () {
 
         it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(async (_converse) => {
-            const url = _converse.bosh_service_url;
+            const { api } = _converse;
+            const url = api.settings.get('bosh_service_url');
             const connection = _converse.connection;
             _converse.api.settings.set('bosh_service_url', undefined);
             delete _converse.connection;
@@ -53,6 +54,8 @@ describe("Converse", function() {
 
         it("happens when the client is idle for long enough",
                 mock.initConverse(['initialized'], {}, async (_converse) => {
+
+            const { api } = _converse;
             let i = 0;
             // Usually initialized by registerIntervalHandler
             _converse.idle_seconds = 0;
@@ -66,7 +69,7 @@ describe("Converse", function() {
             }
             expect(_converse.auto_changed_status).toBe(true);
 
-            while (i <= _converse.auto_xa) {
+            while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('away');
                 _converse.onEverySecond();
                 i++;
@@ -86,7 +89,7 @@ describe("Converse", function() {
                 i++;
             }
             expect(_converse.auto_changed_status).toBe(true);
-            while (i <= _converse.auto_xa) {
+            while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('away');
                 _converse.onEverySecond();
                 i++;
@@ -107,7 +110,7 @@ describe("Converse", function() {
             }
             expect(await _converse.api.user.status.get()).toBe('dnd');
             expect(_converse.auto_changed_status).toBe(false);
-            while (i <= _converse.auto_xa) {
+            while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('dnd');
                 _converse.onEverySecond();
                 i++;
@@ -243,59 +246,7 @@ describe("Converse", function() {
         }));
     });
 
-    describe("The \"settings\" API", function() {
-        it("has methods 'get' and 'set' to set configuration settings",
-                mock.initConverse(null, {'play_sounds': true}, (_converse) => {
-
-            expect(Object.keys(_converse.api.settings)).toEqual(["extend", "update", "get", "set"]);
-            expect(_converse.api.settings.get("play_sounds")).toBe(true);
-            _converse.api.settings.set("play_sounds", false);
-            expect(_converse.api.settings.get("play_sounds")).toBe(false);
-            _converse.api.settings.set({"play_sounds": true});
-            expect(_converse.api.settings.get("play_sounds")).toBe(true);
-            // Only whitelisted settings allowed.
-            expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
-            _converse.api.settings.set("non_existing", true);
-            expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
-        }));
-
-        it("extended via settings.extend don't override settings passed in via converse.initialize",
-                mock.initConverse([], {'emoji_categories': {"travel": ":rocket:"}}, (_converse) => {
-
-            expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
-
-            // Test that the extend command doesn't override user-provided site
-            // settings (i.e. settings passed in via converse.initialize).
-            _converse.api.settings.extend({'emoji_categories': {"travel": ":motorcycle:", "food": ":burger:"}});
-
-            expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
-            expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
-        }));
-
-        it("only overrides the passed in properties",
-                mock.initConverse([],
-                {
-                    'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
-                    'emoji_categories': { 'travel': ':rocket:' },
-                },
-                (_converse) => {
-                    expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
-
-                    // Test that the extend command doesn't override user-provided site
-                    // settings (i.e. settings passed in via converse.initialize).
-                    _converse.api.settings.extend({
-                        'emoji_categories': { 'travel': ':motorcycle:', 'food': ':burger:' },
-                    });
-
-                    expect(_converse.api.settings.get('emoji_categories').travel).toBe(':rocket:');
-                    expect(_converse.api.settings.get('emoji_categories').food).toBe(undefined);
-                }
-            )
-        );
-
-    });
-
-    describe("The \"plugins\" API", function() {
+    describe("The \"plugins\" API", function () {
         it("only has a method 'add' for registering plugins", mock.initConverse((_converse) => {
             expect(Object.keys(converse.plugins)).toEqual(["add"]);
             // Cheating a little bit. We clear the plugins to test more easily.
@@ -308,7 +259,7 @@ describe("Converse", function() {
             _converse.pluggable.plugins = _old_plugins;
         }));
 
-        describe("The \"plugins.add\" method", function() {
+        describe("The \"plugins.add\" method", function () {
             it("throws an error when multiple plugins attempt to register with the same name",
                     mock.initConverse((_converse) => {  // eslint-disable-line no-unused-vars
 

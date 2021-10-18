@@ -38,11 +38,6 @@ export default class ModeratorTools extends CustomElement {
         this.roles_filter = '';
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
-    }
-
     updated (changed) {
         changed.has('role') && this.onSearchRoleChange();
         changed.has('affiliation') && this.onSearchAffiliationChange();

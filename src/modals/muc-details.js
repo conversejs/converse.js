@@ -1,6 +1,6 @@
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import tpl_muc_details from "./templates/muc-details.js";
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 
 
 export default BootstrapModal.extend({

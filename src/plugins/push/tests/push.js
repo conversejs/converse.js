@@ -20,11 +20,12 @@ describe("XEP-0357 Push Notifications", function () {
                 }]
             }, async function (_converse) {
 
+        const { api } = _converse;
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
 
         await mock.waitUntilDiscoConfirmed(
-            _converse, _converse.push_app_servers[0].jid,
+            _converse, api.settings.get('push_app_servers')[0].jid,
             [{'category': 'pubsub', 'type':'push'}],
             ['urn:xmpp:push:0'], [], 'info');
         await mock.waitUntilDiscoConfirmed(
@@ -58,9 +59,10 @@ describe("XEP-0357 Push Notifications", function () {
                 }]
             }, async function (_converse) {
 
+        const { api } = _converse;
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         await mock.waitUntilDiscoConfirmed(
-            _converse, _converse.push_app_servers[0].jid,
+            _converse, api.settings.get('push_app_servers')[0].jid,
             [{'category': 'pubsub', 'type':'push'}],
             ['urn:xmpp:push:0'], [], 'info');
         await mock.waitUntilDiscoConfirmed(
@@ -144,11 +146,12 @@ describe("XEP-0357 Push Notifications", function () {
                 }]
             }, async function (_converse) {
 
+        const { api } = _converse;
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
 
         await mock.waitUntilDiscoConfirmed(
-            _converse, _converse.push_app_servers[0].jid,
+            _converse, api.settings.get('push_app_servers')[0].jid,
             [{'category': 'pubsub', 'type':'push'}],
             ['urn:xmpp:push:0'], [], 'info');
         await mock.waitUntilDiscoConfirmed(

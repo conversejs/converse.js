@@ -1,23 +1,11 @@
-/**
- * @module converse-modal
- * @copyright The Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- */
-import Alert from '../modals/alert.js';
-import BootstrapModal from '../modals/base.js';
-import Confirm from '../modals/confirm.js';
+import Alert from './alert.js';
+import Confirm from './confirm.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "@converse/headless/core";
-
-
-converse.env.BootstrapModal = BootstrapModal; // expose to plugins
-
 
 let modals = [];
 
 
 const modal_api = {
-
     /**
      * API namespace for methods relating to modals
      * @namespace _converse.api.modal
@@ -82,7 +70,7 @@ const modal_api = {
      * Show a confirm modal to the user.
      * @method _converse.api.confirm
      * @param { String } title - The header text for the confirmation dialog
-     * @param { (String[]|String) } messages - The text to show to the user
+     * @param { (Array<String>|String) } messages - The text to show to the user
      * @param { Array<Field> } fields - An object representing a fields presented to the user.
      * @property { String } Field.label - The form label for the input field.
      * @property { String } Field.name - The name for the input field.
@@ -113,7 +101,7 @@ const modal_api = {
      * Show a prompt modal to the user.
      * @method _converse.api.prompt
      * @param { String } title - The header text for the prompt
-     * @param { (String[]|String) } messages - The prompt text to show to the user
+     * @param { (Array<String>|String) } messages - The prompt text to show to the user
      * @param { String } placeholder - The placeholder text for the prompt input
      * @returns { Promise<String|false> } A promise which resolves with the text provided by the
      *  user or `false` if the user canceled the prompt.
@@ -148,7 +136,7 @@ const modal_api = {
      * @method _converse.api.alert
      * @param { ('info'|'warn'|'error') } type - The type of alert.
      * @param { String } title - The header text for the alert.
-     * @param { (String[]|String) } messages - The alert text to show to the user.
+     * @param { (Array<String>|String) } messages - The alert text to show to the user.
      */
     alert (type, title, messages) {
         if (typeof messages === 'string') {
@@ -169,23 +157,8 @@ const modal_api = {
             'level': level,
             'type': 'alert'
         })
-        api.modal.show(Alert, {model});
+        modal_api.modal.show(Alert, {model});
     }
 }
 
-
-converse.plugins.add('converse-modal', {
-
-    initialize () {
-        api.listen.on('disconnect', () => {
-            const container = document.querySelector("#converse-modals");
-            if (container) {
-                container.innerHTML = '';
-            }
-        });
-
-        api.listen.on('clearSession', () => api.modal.removeAll());
-
-        Object.assign(_converse.api, modal_api);
-    }
-});
+export default modal_api;

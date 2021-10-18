@@ -99,6 +99,7 @@ describe("Groupchats", function () {
         it("has a method 'open' which opens (optionally configures) and returns a wrapped chat box",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+            const { api } = _converse;
             // Mock 'getDiscoInfo', otherwise the room won't be
             // displayed as it waits first for the features to be returned
             // (when it's a new room being created).
@@ -114,14 +115,14 @@ describe("Groupchats", function () {
             let room = await _converse.api.rooms.open(jid);
             // Test on groupchat that's not yet open
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = _converse.chatboxviews.get(jid);
+            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid));
             expect(chatroomview.is_chatroom).toBeTruthy();
             await u.waitUntil(() => u.isVisible(chatroomview));
 
             // Test again, now that the room exists.
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = _converse.chatboxviews.get(jid);
+            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid));
             expect(chatroomview.is_chatroom).toBeTruthy();
             expect(u.isVisible(chatroomview)).toBeTruthy();
             await chatroomview.close();
@@ -130,23 +131,23 @@ describe("Groupchats", function () {
             jid = 'Leisure@montague.lit';
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
             await u.waitUntil(() => u.isVisible(chatroomview));
 
             jid = 'leisure@montague.lit';
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
             await u.waitUntil(() => u.isVisible(chatroomview));
 
             jid = 'leiSure@montague.lit';
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
             await u.waitUntil(() => u.isVisible(chatroomview));
             chatroomview.close();
 
-            _converse.muc_instant_rooms = false;
+            api.settings.set('muc_instant_rooms', false);
             const sendIQ = _converse.connection.sendIQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
@@ -166,7 +167,6 @@ describe("Groupchats", function () {
                 }
             });
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = _converse.chatboxviews.get('room@conference.example.org');
 
             // We pretend this is a new room, so no disco info is returned.
             const features_stanza = $iq({
@@ -245,6 +245,7 @@ describe("Groupchats", function () {
                 </query>
                 </iq>`);
 
+            chatroomview = _converse.chatboxviews.get('room@conference.example.org');
             spyOn(chatroomview.model, 'sendConfiguration').and.callThrough();
             _converse.connection._dataRecv(mock.createRequest(node));
             await u.waitUntil(() => chatroomview.model.sendConfiguration.calls.count() === 1);

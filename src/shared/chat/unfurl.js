@@ -1,6 +1,7 @@
+import tpl_unfurl from './templates/unfurl.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
-import tpl_unfurl from './templates/unfurl.js';
+import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 
 import './styles/unfurl.scss';
 
@@ -15,6 +16,12 @@ export default class MessageUnfurl extends CustomElement {
             title: { type: String },
             url: { type: String },
         }
+    }
+
+    initialize () {
+        const settings = getAppSettings();
+        this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
+        this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
     }
 
     render () {

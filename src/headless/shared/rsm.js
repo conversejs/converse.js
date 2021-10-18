@@ -82,7 +82,7 @@ export class RSM {
 
     /**
      * Returns a `<set>` XML element that confirms to XEP-0059 Result Set Management.
-     * The element is constructed based on the { @link module:converse-rsm~RSMQueryParameters }
+     * The element is constructed based on the {@link module:converse-rsm~RSMQueryParameters}
      * that are set on this RSM instance.
      * @returns { XMLElement }
      */

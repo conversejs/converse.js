@@ -6,7 +6,7 @@ import {
     getCorrectionAttributes,
     getEncryptionAttributes,
     getErrorAttributes,
-    getMediaURLs,
+    getMediaURLsMetadata,
     getOpenGraphMetadata,
     getOutOfBandAttributes,
     getReceiptId,
@@ -251,7 +251,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
     // We call this after the hook, to allow plugins to decrypt encrypted
     // messages, since we need to parse the message text to determine whether
     // there are media urls.
-    return Object.assign(attrs, getMediaURLs(attrs.is_encrypted ? attrs.plaintext : attrs.body));
+    return Object.assign(attrs, getMediaURLsMetadata(attrs.is_encrypted ? attrs.plaintext : attrs.body));
 }
 
 /**

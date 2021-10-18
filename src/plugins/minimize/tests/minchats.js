@@ -71,14 +71,15 @@ describe("A Groupchat", function () {
     it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-        await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-        const view = _converse.chatboxviews.get('lounge@montague.lit');
+        const muc_jid = 'lounge@conference.shakespeare.lit';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const view = _converse.chatboxviews.get(muc_jid);
         spyOn(_converse.api, "trigger").and.callThrough();
         const button = await u.waitUntil(() => view.querySelector('.toggle-chatbox-button'));
         button.click();
 
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-        expect(u.isVisible(view)).toBeFalsy();
+        await u.waitUntil(() => !u.isVisible(view));
         expect(view.model.get('minimized')).toBeTruthy();
         const el = await u.waitUntil(() => document.querySelector("converse-minimized-chat a.restore-chat"));
         el.click();
@@ -107,7 +108,7 @@ describe("A Chatbox", function () {
 
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
         expect(_converse.api.trigger.calls.count(), 2);
-        expect(u.isVisible(chatview)).toBeFalsy();
+        await u.waitUntil(() => !u.isVisible(chatview));
         expect(chatview.model.get('minimized')).toBeTruthy();
         const restore_el = await u.waitUntil(() => document.querySelector("converse-minimized-chat a.restore-chat"));
         restore_el.click();
@@ -163,7 +164,7 @@ describe("A Chatbox", function () {
         await u.waitUntil(() => _converse.chatboxviews.keys().length === 1);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         minimized_chats.querySelector("a.restore-chat").click();
-        expect(_converse.minimize.trimChats.calls.count()).toBe(17);
+        expect(_converse.minimize.trimChats.calls.count()).toBe(16);
     }));
 });
 

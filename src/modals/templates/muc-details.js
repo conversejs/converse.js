@@ -1,7 +1,7 @@
-import { __ } from '../../i18n';
+import { __ } from 'i18n';
 import { html } from "lit";
-import { modal_close_button, modal_header_close_button } from "./buttons.js"
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { modal_close_button, modal_header_close_button } from "plugins/modal/templates/buttons.js";
+
 
 const subject = (o) => {
     const i18n_topic = __('Topic');

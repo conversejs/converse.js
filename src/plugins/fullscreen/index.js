@@ -3,19 +3,20 @@
  * @license Mozilla Public License (MPLv2)
  * @copyright 2020, the Converse.js contributors
  */
+import "@converse/headless/plugins/muc/index.js";
 import "plugins/chatview/index.js";
 import "plugins/controlbox/index.js";
 import "plugins/singleton.js";
-import "@converse/headless/plugins/muc/index.js";
 import { api, converse } from "@converse/headless/core";
+import { isUniView } from '@converse/headless/utils/core.js';
 
 import './styles/fullscreen.scss';
 
 
 converse.plugins.add('converse-fullscreen', {
 
-    enabled (_converse) {
-        return _converse.isUniView();
+    enabled () {
+        return isUniView();
     },
 
     initialize () {

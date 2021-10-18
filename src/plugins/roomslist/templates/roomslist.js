@@ -44,7 +44,7 @@ const room_item = (o) => {
                 title="${__('Click to open this groupchat')}"
                 @click=${o.openRoom}>${o.room.getDisplayName()}</a>
 
-            ${ o.allow_bookmarks ? bookmark(o) : '' }
+            ${ api.settings.get('allow_bookmarks') ? bookmark(o) : '' }
 
             <a class="list-item-action room-info fa fa-info-circle"
                 data-room-jid="${o.room.get('jid')}"

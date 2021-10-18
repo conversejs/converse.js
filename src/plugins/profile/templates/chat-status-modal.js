@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { modal_header_close_button } from "./buttons.js"
+import { modal_header_close_button } from "plugins/modal/templates/buttons.js";
 
 
 export default (o) => html`

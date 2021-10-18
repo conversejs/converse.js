@@ -1,8 +1,34 @@
 # Changelog
 
+## 9.0.0 (Unreleased)
+
+- Fix trimming of chats in overlayed view mode
+- #2647: Singleton mode doesn't work
+
+- Emit a `change` event when a configuration setting changes
+- 3 New configuration settings:
+  - [render_media](https://conversejs.org/docs/html/configuration.html#render-media)
+  - [allowed_audio_domains](https://conversejs.org/docs/html/configuration.html#allowed-audio-domains)
+  - [allowed_video_domains](https://conversejs.org/docs/html/configuration.html#allowed-video-domains)
+  - [allowed_image_domains](https://conversejs.org/docs/html/configuration.html#allowed-image-domains)
+
+Three config settings have been obsoleted:
+  - embed_audio
+  - embed_video
+  - show_images_inline
+  - muc_show_ogp_unfurls
+
+
+### Breaking Changes
+
+Configuration settings are no longer available on the `_converse` object.
+Instead, use `api.settings.get` and `api.settings.set`.
+
+
 ## 8.0.2 (Unreleased)
 
 - #2640: Add `beforeFetchLoginCredentials` hook
+- #2650: Clicking on occupant in sidebar should add nickname to textarea
 
 ## 8.0.1 (2021-09-09)
 
@@ -27,7 +53,7 @@
 - #2348: `auto_join_room` not showing the room in `fullscreen` `view_mode`.
 - #2400: Fixes infinite loop bug when appending .png to allowed image urls
 - #2409: Integrate App Badging API for unread messages
-- #2464: New configuration setting [allow-url-history-change](https://conversejs.org/docs/html/configuration.html#allow-url-history-change)
+- #2464: New configuration setting [allow_url_history_change](https://conversejs.org/docs/html/configuration.html#allow-url-history-change)
 - #2497: Bugfix /nick command is not working
 - Add a Description Of A Project (DOAP) file
 - Add ability to deregister nickname when closing a MUC by setting `auto_register_muc_nickname` to `'unregister'`.

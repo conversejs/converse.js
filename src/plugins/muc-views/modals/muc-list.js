@@ -1,4 +1,4 @@
-import BootstrapModal from "modals/base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import head from "lodash-es/head";
 import log from "@converse/headless/log";
 import tpl_list_chatrooms_modal from "../templates/muc-list.js";

@@ -316,7 +316,7 @@ async function openAndEnterChatRoom (_converse, muc_jid, nick, features=[], memb
     const model = _converse.chatboxes.get(muc_jid);
     await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
 
-    const affs = _converse.muc_fetch_members;
+    const affs = api.settings.get('muc_fetch_members');
     const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
     await returnMemberLists(_converse, muc_jid, members, all_affiliations);
     await model.messages.fetched;

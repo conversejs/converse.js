@@ -24,12 +24,12 @@ const dont_escape = ['_', '>', '`', '~'];
 const styling_templates = {
     // m is the chatbox model
     // i is the offset of this directive relative to the start of the original message
-    'emphasis': (txt, i, mentions, options) => html`<span class="styling-directive">_</span><i>${renderStylingDirectiveBody(txt, i, mentions, options)}</i><span class="styling-directive">_</span>`,
+    'emphasis': (txt, i, options) => html`<span class="styling-directive">_</span><i>${renderStylingDirectiveBody(txt, i, options)}</i><span class="styling-directive">_</span>`,
     'preformatted': txt => html`<span class="styling-directive">\`</span><code>${txt}</code><span class="styling-directive">\`</span>`,
     'preformatted_block': txt => html`<div class="styling-directive">\`\`\`</div><code class="block">${txt}</code><div class="styling-directive">\`\`\`</div>`,
-    'quote': (txt, i, mentions, options) => html`<blockquote>${renderStylingDirectiveBody(txt, i, mentions, options)}</blockquote>`,
-    'strike': (txt, i, mentions, options) => html`<span class="styling-directive">~</span><del>${renderStylingDirectiveBody(txt, i, mentions, options)}</del><span class="styling-directive">~</span>`,
-    'strong': (txt, i, mentions, options) => html`<span class="styling-directive">*</span><b>${renderStylingDirectiveBody(txt, i, mentions, options)}</b><span class="styling-directive">*</span>`,
+    'quote': (txt, i, options) => html`<blockquote>${renderStylingDirectiveBody(txt, i, options)}</blockquote>`,
+    'strike': (txt, i, options) => html`<span class="styling-directive">~</span><del>${renderStylingDirectiveBody(txt, i, options)}</del><span class="styling-directive">~</span>`,
+    'strong': (txt, i, options) => html`<span class="styling-directive">*</span><b>${renderStylingDirectiveBody(txt, i, options)}</b><span class="styling-directive">*</span>`,
 };
 
 
@@ -141,15 +141,15 @@ export function getDirectiveAndLength (text, i) {
 export const isQuoteDirective = (d) => ['>', '&gt;'].includes(d);
 
 
-export function getDirectiveTemplate (d, text, offset, mentions, options) {
+export function getDirectiveTemplate (d, text, offset, options) {
     const template = styling_templates[styling_map[d].name];
     if (isQuoteDirective(d)) {
         const newtext = text
             .replace(/\n>/g, '\n') // Don't show the directive itself
             .replace(/\n$/, ''); // Trim line-break at the end
-        return template(newtext, offset, mentions, options);
+        return template(newtext, offset, options);
     } else {
-        return template(text, offset, mentions, options);
+        return template(text, offset, options);
     }
 }
 

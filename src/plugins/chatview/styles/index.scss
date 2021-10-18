@@ -101,28 +101,6 @@
                 box-shadow: none;
                 overflow: hidden;
             }
-            &:not(#controlbox) {
-                .box-flyout {
-                    @include media-breakpoint-up(md) {
-                        max-width: 66.666667%;
-                    }
-                    @include media-breakpoint-up(lg) {
-                        max-width: 75%;
-                    }
-                    @include media-breakpoint-up(xl) {
-                        max-width: 83.333333%;
-                    }
-                }
-            }
-            @include media-breakpoint-up(md) {
-                @include make-col(8);
-            }
-            @include media-breakpoint-up(lg) {
-                @include make-col(9);
-            }
-            @include media-breakpoint-up(xl) {
-                @include make-col(10);
-            }
         }
 
         &.converse-singleton {
@@ -134,6 +112,14 @@
             }
             .chatbox {
                 margin: 0;
+                position: relative;
+            }
+        }
+    }
+
+    converse-chats.converse-fullscreen  {
+        &.converse-singleton {
+            .chatbox {
                 @include make-col-ready();
                 @include media-breakpoint-up(md) {
                     @include make-col(12);
@@ -143,6 +129,34 @@
                 }
                 @include media-breakpoint-up(xl) {
                     @include make-col(12);
+                }
+            }
+        }
+
+        &:not(.converse-singleton) {
+            .chatbox {
+                @include media-breakpoint-up(md) {
+                    @include make-col(8);
+                }
+                @include media-breakpoint-up(lg) {
+                    @include make-col(9);
+                }
+                @include media-breakpoint-up(xl) {
+                    @include make-col(10);
+                }
+
+                &:not(#controlbox) {
+                    .box-flyout {
+                        @include media-breakpoint-up(md) {
+                            max-width: 66.666667%;
+                        }
+                        @include media-breakpoint-up(lg) {
+                            max-width: 75%;
+                        }
+                        @include media-breakpoint-up(xl) {
+                            max-width: 83.333333%;
+                        }
+                    }
                 }
             }
         }

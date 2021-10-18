@@ -13,6 +13,15 @@ class ChatBoxViews {
         return this.views[key];
     }
 
+    xget (id) {
+        return this.keys()
+            .filter(k => (k !== id))
+            .reduce((acc, k) => {
+                acc[k] = this.views[k]
+                return acc;
+            }, {});
+    }
+
     getAll () {
         return Object.values(this.views);
     }

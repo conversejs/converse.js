@@ -8,11 +8,9 @@ import { _converse, api } from '@converse/headless/core';
 import { decodeHTMLEntities } from '@converse/headless/utils/core.js';
 import { rejectMessage } from '@converse/headless/shared/actions';
 import {
-    isAudioDomainAllowed,
     isAudioURL,
-    isImageDomainAllowed,
+    isEncryptedFileURL,
     isImageURL,
-    isVideoDomainAllowed,
     isVideoURL
 } from '@converse/headless/utils/url.js';
 
@@ -178,7 +176,7 @@ export function getOpenGraphMetadata (stanza) {
 }
 
 
-export function getMediaURLs (text) {
+export function getMediaURLsMetadata (text) {
     const objs = [];
     if (!text) {
         return {};
@@ -187,6 +185,14 @@ export function getMediaURLs (text) {
         URI.withinString(
             text,
             (url, start, end) => {
+                if (url.startsWith('_')) {
+                    url = url.slice(1);
+                    start += 1;
+                }
+                if (url.endsWith('_')) {
+                    url = url.slice(0, url.length-1);
+                    end -= 1;
+                }
                 objs.push({ url, start, end });
                 return url;
             },
@@ -195,11 +201,27 @@ export function getMediaURLs (text) {
     } catch (error) {
         log.debug(error);
     }
-    const media_urls = objs.filter(o => {
-        return (isImageURL(o.url) && isImageDomainAllowed(o.url)) ||
-           (isVideoURL(o.url) && isVideoDomainAllowed(o.url)) ||
-            (isAudioURL(o.url) && isAudioDomainAllowed(o.url));
-    }).map(o => ({ 'start': o.start, 'end': o.end }));
+
+    /**
+     * @typedef { Object } MediaURLMetadata
+     * An object representing the metadata of a URL found in a chat message
+     * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
+     * @property { Boolean } is_audio
+     * @property { Boolean } is_image
+     * @property { Boolean } is_video
+     * @property { String } end
+     * @property { String } start
+     */
+    const media_urls = objs
+        .map(o => ({
+            'end': o.end,
+            'is_audio': isAudioURL(o.url),
+            'is_image': isImageURL(o.url),
+            'is_video': isVideoURL(o.url),
+            'is_encrypted': isEncryptedFileURL(o.url),
+            'start': o.start
+
+        }));
     return media_urls.length ? { media_urls } : {};
 }
 

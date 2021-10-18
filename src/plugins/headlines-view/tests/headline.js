@@ -144,11 +144,10 @@ describe("A headlines box", function () {
 
     it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
         mock.initConverse(
-            ['chatBoxesFetched'], {}, async function (_converse) {
+            ['chatBoxesFetched'], {'allow_non_roster_messaging': false}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
         const { $msg } = converse.env;
-        _converse.allow_non_roster_messaging = false;
         const stanza = $msg({
                 'type': 'headline',
                 'from': 'andre5114@jabber.snc.ru/Spark',

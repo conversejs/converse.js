@@ -1,5 +1,5 @@
 import '../modtools.js';
-import BootstrapModal from "modals/base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import tpl_moderator_tools from './templates/moderator-tools.js';
 
 const ModeratorToolsModal = BootstrapModal.extend({

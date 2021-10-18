@@ -9,7 +9,7 @@ const { Strophe, sizzle, u } = converse.env;
 /**
  * Given an occupant model, see which roles may be assigned to that user.
  * @param { Model } occupant
- * @returns { ('moderator', 'participant', 'visitor')[] } - An array of assignable roles
+ * @returns { Array<('moderator'|'participant'|'visitor')> } - An array of assignable roles
  */
 export function getAssignableRoles (occupant) {
     let disabled = api.settings.get('modtools_disable_assign');

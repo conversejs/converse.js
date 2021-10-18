@@ -97,7 +97,6 @@ describe("Groupchats", function () {
                 `<iq id="${iq.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#owner"><x type="submit" xmlns="jabber:x:data"/>`+
                 `</query></iq>`);
-
         }));
     });
 
@@ -162,6 +161,7 @@ describe("Groupchats", function () {
                     'enable_smacks': false
                 }, async function (_converse) {
 
+            const { api } = _converse;
             const nick = 'romeo';
             const sent_IQs = _converse.connection.IQ_stanzas;
             const muc_jid = 'lounge@montague.lit'
@@ -242,7 +242,7 @@ describe("Groupchats", function () {
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(message));
 
-            const affs = _converse.muc_fetch_members;
+            const affs = api.settings.get('muc_fetch_members');
             const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
             await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
 
@@ -1214,7 +1214,7 @@ describe("Groupchats", function () {
             });
 
             await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
-            const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+            const view = await u.waitUntil(() => _converse.chatboxviews.get('coven@chat.shakespeare.lit'));
             await u.waitUntil(() => u.isVisible(view));
             // We pretend this is a new room, so no disco info is returned.
             const features_stanza = $iq({
@@ -1419,199 +1419,6 @@ describe("Groupchats", function () {
             expect(sent_IQ.querySelector('field[var="muc#roomconfig_presencebroadcast"] value').textContent.trim()).toBe('moderator');
         }));
 
-        it("shows all members even if they're not currently present in the groupchat",
-                mock.initConverse([], {}, async function (_converse) {
-
-            const muc_jid = 'lounge@montague.lit'
-            const members = [{
-                'nick': 'juliet',
-                'jid': 'juliet@capulet.lit',
-                'affiliation': 'member'
-            }];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
-            const view = _converse.chatboxviews.get(muc_jid);
-            await u.waitUntil(() => view.model.occupants.length === 2);
-
-            const occupants = view.querySelector('.occupant-list');
-            for (let i=0; i<mock.chatroom_names.length; i++) {
-                const name = mock.chatroom_names[i];
-                const role = mock.chatroom_roles[name].role;
-                // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                        to:'romeo@montague.lit/pda',
-                        from:'lounge@montague.lit/'+name
-                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-                .c('item').attrs({
-                    affiliation: mock.chatroom_roles[name].affiliation,
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                    role: role
-                });
-                _converse.connection._dataRecv(mock.createRequest(presence));
-            }
-
-            await u.waitUntil(() => occupants.querySelectorAll('li').length > 2, 500);
-            expect(occupants.querySelectorAll('li').length).toBe(2+mock.chatroom_names.length);
-            expect(view.model.occupants.length).toBe(2+mock.chatroom_names.length);
-
-            mock.chatroom_names.forEach(name => {
-                const model = view.model.occupants.findWhere({'nick': name});
-                const index = view.model.occupants.indexOf(model);
-                expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(name);
-            });
-
-            // Test users leaving the groupchat
-            // https://xmpp.org/extensions/xep-0045.html#exit
-            for (let i=mock.chatroom_names.length-1; i>-1; i--) {
-                const name = mock.chatroom_names[i];
-                // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                    to:'romeo@montague.lit/pda',
-                    from:'lounge@montague.lit/'+name,
-                    type: 'unavailable'
-                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-                .c('item').attrs({
-                    affiliation: mock.chatroom_roles[name].affiliation,
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                    role: 'none'
-                }).nodeTree;
-                _converse.connection._dataRecv(mock.createRequest(presence));
-                expect(occupants.querySelectorAll('li').length).toBe(8);
-            }
-            const presence = $pres({
-                    to: 'romeo@montague.lit/pda',
-                    from: 'lounge@montague.lit/nonmember'
-            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: null,
-                jid: 'servant@montague.lit',
-                role: 'visitor'
-            });
-            _converse.connection._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() => occupants.querySelectorAll('li').length > 8, 500);
-            expect(occupants.querySelectorAll('li').length).toBe(9);
-            expect(view.model.occupants.length).toBe(9);
-            expect(view.model.occupants.filter(o => o.isMember()).length).toBe(8);
-
-            view.model.rejoin();
-            // Test that members aren't removed when we reconnect
-            expect(view.model.occupants.length).toBe(8);
-            view.model.session.set('connection_status', converse.ROOMSTATUS.ENTERED); // Hack
-            await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length === 8);
-        }));
-
-        it("shows users currently present in the groupchat",
-            mock.initConverse([], {}, async function (_converse) {
-
-            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            var view = _converse.chatboxviews.get('lounge@montague.lit');
-            const occupants = view.querySelector('.occupant-list');
-            for (var i=0; i<mock.chatroom_names.length; i++) {
-                const name = mock.chatroom_names[i];
-                // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                    to:'romeo@montague.lit/pda',
-                    from:'lounge@montague.lit/'+name
-                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-                .c('item').attrs({
-                    affiliation: 'none',
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                    role: 'participant'
-                }).up()
-                .c('status');
-                _converse.connection._dataRecv(mock.createRequest(presence));
-            }
-
-            await u.waitUntil(() => occupants.querySelectorAll('li').length > 1, 500);
-            expect(occupants.querySelectorAll('li').length).toBe(1+mock.chatroom_names.length);
-
-            mock.chatroom_names.forEach(name => {
-                const model = view.model.occupants.findWhere({'nick': name});
-                const index = view.model.occupants.indexOf(model);
-                expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(name);
-            });
-
-            // Test users leaving the groupchat
-            // https://xmpp.org/extensions/xep-0045.html#exit
-            for (i=mock.chatroom_names.length-1; i>-1; i--) {
-                const name = mock.chatroom_names[i];
-                // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                const presence = $pres({
-                    to:'romeo@montague.lit/pda',
-                    from:'lounge@montague.lit/'+name,
-                    type: 'unavailable'
-                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-                .c('item').attrs({
-                    affiliation: "none",
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                    role: 'none'
-                });
-                _converse.connection._dataRecv(mock.createRequest(presence));
-            }
-            await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
-        }));
-
-        it("indicates moderators and visitors by means of a special css class and tooltip",
-                mock.initConverse([], {'view_mode': 'fullscreen'}, async function (_converse) {
-
-            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
-            let contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-
-            await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length, 500);
-            let occupants = view.querySelectorAll('.occupant-list li');
-            expect(occupants.length).toBe(1);
-            expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("romeo");
-            expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
-            expect(occupants[0].querySelectorAll('.badge')[0].textContent.trim()).toBe('Owner');
-            expect(sizzle('.badge:last', occupants[0]).pop().textContent.trim()).toBe('Moderator');
-
-            var presence = $pres({
-                    to:'romeo@montague.lit/pda',
-                    from:'lounge@montague.lit/moderatorman'
-            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: 'admin',
-                jid: contact_jid,
-                role: 'moderator',
-            }).up()
-            .c('status').attrs({code:'110'}).nodeTree;
-
-            _converse.connection._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 1, 500);
-            occupants = view.querySelectorAll('.occupant-list li');
-            expect(occupants.length).toBe(2);
-            expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("moderatorman");
-            expect(occupants[1].querySelector('.occupant-nick').textContent.trim()).toBe("romeo");
-            expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
-            expect(occupants[0].querySelectorAll('.badge')[0].textContent.trim()).toBe('Admin');
-            expect(occupants[0].querySelectorAll('.badge')[1].textContent.trim()).toBe('Moderator');
-
-            expect(occupants[0].getAttribute('title')).toBe(
-                contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
-            );
-
-            contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            presence = $pres({
-                to:'romeo@montague.lit/pda',
-                from:'lounge@montague.lit/visitorwoman'
-            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                jid: contact_jid,
-                role: 'visitor',
-            }).up()
-            .c('status').attrs({code:'110'}).nodeTree;
-            _converse.connection._dataRecv(mock.createRequest(presence));
-
-            await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 2, 500);
-            occupants = view.querySelector('.occupant-list').querySelectorAll('li');
-            expect(occupants.length).toBe(3);
-            expect(occupants[2].querySelector('.occupant-nick').textContent.trim()).toBe("visitorwoman");
-            expect(occupants[2].querySelectorAll('.badge').length).toBe(1);
-            expect(sizzle('.badge', occupants[2]).pop().textContent.trim()).toBe('Visitor');
-            expect(occupants[2].getAttribute('title')).toBe(
-                contact_jid + ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.'
-            );
-        }));
 
         it("properly handles notification that a room has been destroyed",
                 mock.initConverse([], {}, async function (_converse) {
@@ -2468,7 +2275,7 @@ describe("Groupchats", function () {
              *  </presence>
              */
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            var presence = $pres().attrs({
+            const presence = $pres().attrs({
                     from:'lounge@montague.lit/romeo',
                     to:'romeo@montague.lit/pda',
                     type:'unavailable'
@@ -2528,16 +2335,16 @@ describe("Groupchats", function () {
         it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-            await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
-            spyOn(view.model, 'close').and.callThrough();
+            const model = await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            spyOn(model, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
-            spyOn(view.model, 'leave');
+            spyOn(model, 'leave');
             spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
+            const view = await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit'));
             const button = await u.waitUntil(() => view.querySelector('.close-chatbox-button'));
             button.click();
-            await u.waitUntil(() => view.model.close.calls.count());
-            expect(view.model.leave).toHaveBeenCalled();
+            await u.waitUntil(() => model.close.calls.count());
+            expect(model.leave).toHaveBeenCalled();
             await u.waitUntil(() => _converse.api.trigger.calls.count());
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
         }));
@@ -4173,7 +3980,7 @@ describe("Groupchats", function () {
             var new_list = [];
             var old_list = [];
             const muc_utils = converse.env.muc_utils;
-            var delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+            let delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
             expect(delta.length).toBe(0);
 
             new_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
@@ -4465,7 +4272,7 @@ describe("Groupchats", function () {
             rooms[4].querySelector('.open-room').click();
             await u.waitUntil(() => _converse.chatboxes.length > 1);
             expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
-            var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
+            const view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
             expect(view.querySelector('.chatbox-title__text').textContent.trim()).toBe("Macbeth's Castle");
         }));
 
@@ -4770,7 +4577,7 @@ describe("Groupchats", function () {
                 // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
 
                 // <composing> state
-                var msg = $msg({
+                let msg = $msg({
                         from: muc_jid+'/newguy',
                         id: u.getUniqueId(),
                         to: 'romeo@montague.lit',

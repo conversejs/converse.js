@@ -1,7 +1,7 @@
 import tpl_muc_chatarea from './templates/muc-chatarea.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless/core';
 
 
 const { u } = converse.env;
@@ -15,11 +15,6 @@ export default class MUCChatArea extends CustomElement {
             show_help_messages: { type: Boolean },
             type: { type: String },
         }
-    }
-
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
     }
 
     async initialize () {
@@ -41,7 +36,7 @@ export default class MUCChatArea extends CustomElement {
             'jid': this.jid,
             'model': this.model,
             'onMousedown': ev => this.onMousedown(ev),
-            'show_send_button': _converse.show_send_button,
+            'show_send_button': api.settings.get('show_send_button'),
             'shouldShowSidebar': () => this.shouldShowSidebar(),
             'type': this.type,
         });

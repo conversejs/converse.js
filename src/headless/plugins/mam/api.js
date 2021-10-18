@@ -34,7 +34,7 @@ export default {
           */
 
          /**
-          * The options that can be passed in to the { @link _converse.api.archive.query } method
+          * The options that can be passed in to the {@link _converse.api.archive.query } method
           * @typedef { module:converse-mam~MAMFilterParameters } ArchiveQueryOptions
           * @property { Boolean } [groupchat=false] - Whether the MAM archive is for a groupchat.
           */
@@ -49,7 +49,7 @@ export default {
           * @param { module:converse-mam~ArchiveQueryOptions } options - An object containing query parameters
           * @throws {Error} An error is thrown if the XMPP server responds with an error.
           * @returns { Promise<module:converse-mam~MAMQueryResult> } A promise which resolves
-          *     to a { @link module:converse-mam~MAMQueryResult } object.
+          *     to a {@link module:converse-mam~MAMQueryResult } object.
           *
           * @example
           * // Requesting all archived messages
@@ -292,7 +292,7 @@ export default {
             /**
              * @typedef { Object } MAMQueryResult
              * @property { Array } messages
-             * @property { RSM } [rsm] - An instance of { @link RSM }.
+             * @property { RSM } [rsm] - An instance of {@link RSM}.
              *  You can call `next()` or `previous()` on this instance,
              *  to get the RSM query parameters for the next or previous
              *  page in the result set.

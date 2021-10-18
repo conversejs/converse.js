@@ -13,7 +13,8 @@ import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isArchived, getMediaURLs } from '@converse/headless/shared/parsers';
+import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
+import { isUniView } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -63,7 +64,7 @@ const ChatRoomMixin = {
             'bookmarked': false,
             'chat_state': undefined,
             'has_activity': false, // XEP-437
-            'hidden': _converse.isUniView() && !api.settings.get('singleton'),
+            'hidden': isUniView() && !api.settings.get('singleton'),
             'hidden_occupants': !!api.settings.get('hide_muc_participants'),
             'message_type': 'groupchat',
             'name': '',
@@ -554,8 +555,8 @@ const ChatRoomMixin = {
         }
         /**
          * @typedef { Object } MUCMessageData
-         * An object containing the parsed { @link MUCMessageAttributes } and
-         * current { @link ChatRoom }.
+         * An object containing the parsed {@link MUCMessageAttributes} and
+         * current {@link ChatRoom}.
          * @property { MUCMessageAttributes } attrs
          * @property { ChatRoom } chatbox
          */
@@ -996,7 +997,7 @@ const ChatRoomMixin = {
             'nick': this.get('nick'),
             'sender': 'me',
             'type': 'groupchat'
-        }, getMediaURLs(text));
+        }, getMediaURLsMetadata(text));
     },
 
     /**
@@ -2082,9 +2083,6 @@ const ChatRoomMixin = {
     },
 
     handleMetadataFastening (attrs) {
-        if (!api.settings.get('muc_show_ogp_unfurls')) {
-            return false;
-        }
         if (attrs.ogp_for_id) {
             if (attrs.from !== this.get('jid')) {
                 // For now we only allow metadata from the MUC itself and not
@@ -2107,7 +2105,7 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Given { @link MessageAttributes } look for XEP-0316 Room Notifications and create info
+     * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
      * messages for them.
      * @param { XMLElement } stanza
      */
@@ -2116,7 +2114,12 @@ const ChatRoomMixin = {
             return false;
         }
         attrs.activities?.forEach(activity_attrs => {
-            const data = Object.assign({ 'msgid': attrs.msgid, 'from_muc': attrs.from }, activity_attrs);
+            const data = Object.assign({
+                'from_muc': attrs.from,
+                'msgid': attrs.msgid,
+                'received': attrs.received,
+                'time': attrs.time,
+            }, activity_attrs);
             this.createMessage(data)
             // Trigger so that notifications are shown
             api.trigger('message', { 'attrs': data, 'chatbox': this });
@@ -2129,7 +2132,7 @@ const ChatRoomMixin = {
      * passed in attributes map.
      * @method _converse.ChatRoom#getDuplicateMessage
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by { @link parseMUCMessage }
+     *  message, as returned by {@link parseMUCMessage}
      * @returns {Promise<_converse.Message>}
      */
     getDuplicateMessage (attrs) {

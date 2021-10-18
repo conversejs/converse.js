@@ -185,7 +185,6 @@ converse.plugins.add('converse-muc', {
                 ...converse.MUC.INFO_CODES.role_changes,
             ],
             'muc_show_logs_before_join': false,
-            'muc_show_ogp_unfurls': true,
             'muc_subscribe_to_rai': false,
         });
         api.promises.add(['roomsAutoJoined']);

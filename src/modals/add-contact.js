@@ -1,5 +1,5 @@
 import 'shared/autocomplete/index.js';
-import BootstrapModal from "./base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import compact from 'lodash-es/compact';
 import debounce from 'lodash-es/debounce';
 import tpl_add_contact_modal from "./templates/add-contact.js";

@@ -65,15 +65,16 @@ export default class RichText extends CustomElement {
         const options = {
             embed_audio: this.embed_audio,
             embed_videos: this.embed_videos,
+            hide_media_urls: this.hide_media_urls,
+            mentions: this.mentions,
             nick: this.nick,
             onImgClick: this.onImgClick,
             onImgLoad: this.onImgLoad,
             render_styling: this.render_styling,
             show_images: this.show_images,
             show_me_message: this.show_me_message,
-            hide_media_urls: this.hide_media_urls,
         }
-        return renderRichText(this.text, this.offset, this.mentions, options);
+        return renderRichText(this.text, this.offset, options);
     }
 }
 

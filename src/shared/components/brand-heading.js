@@ -2,7 +2,7 @@ import './brand-byline.js';
 import './brand-logo.js';
 import { CustomElement } from './element.js';
 import { api } from '@converse/headless/core';
-import { html } from 'lit-html';
+import { html } from 'lit/html.js';
 
 
 export class ConverseBrandHeading extends CustomElement {

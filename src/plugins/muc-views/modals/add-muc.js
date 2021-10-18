@@ -1,5 +1,5 @@
 import tpl_add_muc from "../templates/add-muc.js";
-import BootstrapModal from "modals/base.js";
+import BootstrapModal from "plugins/modal/base.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 
@@ -84,7 +84,7 @@ export default BootstrapModal.extend({
     checkRoomidPolicy () {
         if (api.settings.get('muc_roomid_policy') && api.settings.get('muc_domain')) {
             let jid = this.el.querySelector('.roomjid-input').value;
-            if (converse.locked_muc_domain || !u.isValidJID(jid)) {
+            if (api.settings.get('locked_muc_domain') || !u.isValidJID(jid)) {
                 jid = `${Strophe.escapeNode(jid)}@${api.settings.get('muc_domain')}`;
             }
             const roomid = Strophe.getNodeFromJid(jid);

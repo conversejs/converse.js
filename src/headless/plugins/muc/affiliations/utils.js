@@ -48,7 +48,7 @@ export async function getAffiliationList (affiliation, muc_jid) {
 /**
  * Given an occupant model, see which affiliations may be assigned to that user.
  * @param { Model } occupant
- * @returns { ('owner', 'admin', 'member', 'outcast', 'none')[] } - An array of assignable affiliations
+ * @returns { Array<('owner'|'admin'|'member'|'outcast'|'none')> } - An array of assignable affiliations
  */
 export function getAssignableAffiliations (occupant) {
     let disabled = api.settings.get('modtools_disable_assign');
@@ -70,7 +70,7 @@ _converse.getAssignableAffiliations = getAssignableAffiliations;
 /**
  * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
- * @param { Object[] } users
+ * @param { Array<Object> } users
  * @param { string } users[].jid - The JID of the user whose affiliation will change
  * @param { Array } users[].affiliation - The new affiliation for this user
  * @param { string } [users[].reason] - An optional reason for the affiliation change

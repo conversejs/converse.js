@@ -2,6 +2,7 @@ import 'shared/components/icons.js';
 import { __ } from 'i18n';
 import { _converse, converse } from "@converse/headless/core";
 import { html } from "lit";
+import { isUniView } from '@converse/headless/utils/core.js';
 import { toggleGroup } from '../utils.js';
 
 const { u } = converse.env;
@@ -10,7 +11,7 @@ const { u } = converse.env;
 function renderContact (contact) {
     const jid = contact.get('jid');
     const extra_classes = [];
-    if (_converse.isUniView()) {
+    if (isUniView()) {
         const chatbox = _converse.chatboxes.get(jid);
         if (chatbox && !chatbox.get('hidden')) {
             extra_classes.push('open');

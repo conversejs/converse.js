@@ -1,5 +1,5 @@
-import BootstrapModal from "./base.js";
-import { __ } from '../i18n';
+import BootstrapModal from "plugins/modal/base.js";
+import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
 import log from "@converse/headless/log";
 import tpl_muc_commands_modal from "../templates/muc_commands-modal.js";

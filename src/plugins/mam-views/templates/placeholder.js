@@ -1,6 +1,6 @@
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
-import { html } from 'lit-html';
+import { html } from 'lit/html.js';
 
 export default (el) => {
     return el.model.get('fetching') ? tpl_spinner({'classes': 'hor_centered'}) :

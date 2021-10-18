@@ -23,7 +23,7 @@ export default () => {
                     ${view_mode === 'overlayed' ? html`<converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>` : ''}
                     <converse-controlbox
                         id="controlbox"
-                        class="chatbox ${m.get('closed') ? 'hidden' : ''} ${logged_out ? 'logged-out': ''}"
+                        class="chatbox ${view_mode === 'overlayed' && m.get('closed') ? 'hidden' : ''} ${logged_out ? 'logged-out': ''}"
                         style="${m.get('width') ? `width: ${m.get('width')}` : ''}"></converse-controlbox>
                 `;
             } else if (m.get('type') === CHATROOMS_TYPE) {

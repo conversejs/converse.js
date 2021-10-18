@@ -1,7 +1,7 @@
 import { __ } from 'i18n';
 import { html } from "lit";
 import { repeat } from 'lit/directives/repeat.js';
-import { modal_close_button, modal_header_close_button } from "modals/templates/buttons.js"
+import { modal_close_button, modal_header_close_button } from "plugins/modal/templates/buttons.js"
 import spinner from "templates/spinner.js";
 
 

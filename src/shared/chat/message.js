@@ -17,6 +17,7 @@ import { _converse, api, converse } from  '@converse/headless/core';
 import { getHats } from './utils.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
+import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 
 const { Strophe, dayjs } = converse.env;
 
@@ -30,11 +31,6 @@ export default class Message extends CustomElement {
         }
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.initialize();
-    }
-
     async initialize () {
         await this.setModels();
         if (!this.model) {
@@ -43,16 +39,23 @@ export default class Message extends CustomElement {
             return;
         }
 
-        this.listenTo(this.chatbox, 'change:first_unread_id', this.requestUpdate);
-        this.listenTo(this.model, 'change', this.requestUpdate);
-        this.model.vcard && this.listenTo(this.model.vcard, 'change', this.requestUpdate);
+        const settings = getAppSettings();
+        this.listenTo(settings, 'change:render_media', () => {
+            // Reset individual show/hide state of media
+            this.model.save('hide_url_previews', undefined)
+            this.requestUpdate();
+        });
+
+        this.listenTo(this.chatbox, 'change:first_unread_id', () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.model.vcard && this.listenTo(this.model.vcard, 'change', () => this.requestUpdate());
 
         if (this.model.get('type') === 'groupchat') {
             if (this.model.occupant) {
-                this.listenTo(this.model.occupant, 'change', this.requestUpdate);
+                this.listenTo(this.model.occupant, 'change', () => this.requestUpdate());
             } else {
                 this.listenTo(this.model, 'occupantAdded', () => {
-                    this.listenTo(this.model.occupant, 'change', this.requestUpdate)
+                    this.listenTo(this.model.occupant, 'change', () => this.requestUpdate())
                 });
             }
         }
@@ -132,7 +135,7 @@ export default class Message extends CustomElement {
     onUnfurlAnimationEnd () {
         if (this.model.get('url_preview_transition') === 'fade-out') {
             this.model.save({
-                'hide_url_previews': !this.model.get('hide_url_previews'),
+                'hide_url_previews': true,
                 'url_preview_transition': 'fade-in'
             });
         }

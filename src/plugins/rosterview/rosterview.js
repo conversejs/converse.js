@@ -11,11 +11,6 @@ import { _converse, api } from "@converse/headless/core";
  */
 export default class RosterView extends CustomElement {
 
-    constructor () {
-        super();
-        this.initialize();
-    }
-
     async initialize () {
         await api.waitUntil('rosterInitialized')
         this.listenTo(_converse, 'rosterContactsFetched', this.requestUpdate);

@@ -1,3 +1,4 @@
+import log from '@converse/headless/log.js';
 import { Directive, directive } from 'lit/directive.js';
 import { RichText } from 'shared/rich-text.js';
 import { html } from "lit";
@@ -6,16 +7,19 @@ import { until } from 'lit/directives/until.js';
 
 class RichTextRenderer {
 
-    constructor (text, offset, mentions=[], options={}) {
-        this.mentions = mentions;
+    constructor (text, offset, options={}) {
         this.offset = offset;
         this.options = options;
         this.text = text;
     }
 
     async transform () {
-        const text = new RichText(this.text, this.offset, this.mentions, this.options);
-        await text.addTemplates();
+        const text = new RichText(this.text, this.offset, this.options);
+        try {
+            await text.addTemplates();
+        } catch (e) {
+            log.error(e);
+        }
         return text.payload;
     }
 
@@ -26,8 +30,8 @@ class RichTextRenderer {
 
 
 class RichTextDirective extends Directive {
-    render (text, offset, mentions, options, callback) { // eslint-disable-line class-methods-use-this
-        const renderer = new RichTextRenderer(text, offset, mentions, options);
+    render (text, offset, options, callback) { // eslint-disable-line class-methods-use-this
+        const renderer = new RichTextRenderer(text, offset, options);
         const result = renderer.render();
         callback?.();
         return result;

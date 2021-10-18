@@ -9,12 +9,12 @@ const sizzle = converse.env.sizzle;
 describe("The Controlbox", function () {
 
     it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
-            mock.initConverse([], {}, function (_converse) {
+            mock.initConverse([], {}, async function (_converse) {
 
         spyOn(_converse.api, "trigger").and.callThrough();
         document.querySelector('.toggle-controlbox').click();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
-        const el = document.querySelector("#controlbox");
+        const el = await u.waitUntil(() => document.querySelector("#controlbox"));
         expect(u.isVisible(el)).toBe(true);
     }));
 

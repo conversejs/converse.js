@@ -1,7 +1,7 @@
 import 'shared/components/message-versions.js';
 import { __ } from 'i18n';
 import { html } from "lit";
-import { modal_close_button, modal_header_close_button } from "./buttons.js"
+import { modal_close_button, modal_header_close_button } from "plugins/modal/templates/buttons.js"
 
 
 export default (model) => html`

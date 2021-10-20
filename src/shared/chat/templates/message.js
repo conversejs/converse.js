@@ -37,11 +37,7 @@ export default (el, o) => {
                     </div>
                     <converse-message-actions
                         .model=${el.model}
-                        ?correcting=${o.correcting}
-                        ?editable=${o.editable}
-                        ?is_retracted=${o.is_retracted}
-                        unfurls="${el.model.get('ogp_metadata')?.length}"
-                        message_type="${o.message_type}"></converse-message-actions>
+                        ?is_retracted=${o.is_retracted}></converse-message-actions>
                 </div>
 
                 ${ el.model.get('ogp_metadata')?.map(m => {

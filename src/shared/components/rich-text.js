@@ -2,6 +2,8 @@ import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
 
+import './styles/rich-text.scss';
+
 /**
  * The RichText custom element allows you to parse transform text into rich DOM elements.
  * @example <converse-rich-text text="*_hello_ world!*"></converse-rich-text>

@@ -45,7 +45,7 @@ export function getMEPActivities (stanza) {
         if (message) {
             const references = getReferences(stanza);
             const reason = el.querySelector('reason')?.textContent;
-            return { from, msgid, message, reason,  references, 'type': 'info' };
+            return { from, msgid, message, reason,  references, 'type': 'mep' };
         }
         return {};
     });
@@ -175,6 +175,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
      * @property { String } to - The recipient JID
      * @property { String } type - The type of message
      */
+
     let attrs = Object.assign(
         {
             from,

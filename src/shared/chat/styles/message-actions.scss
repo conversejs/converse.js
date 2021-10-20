@@ -1,0 +1,38 @@
+converse-message-actions {
+    margin-left: 0.5em;
+
+    .chat-msg__actions {
+        .dropdown-menu {
+            min-width: 5rem;
+        }
+        i {
+            color: var(--text-color-lighten-15-percent);
+            font-size: 70%;
+        }
+        button {
+            border: none;
+            background: transparent;
+            color: var(--text-color-lighten-15-percent);
+            padding: 0 0.25em;
+        }
+        .btn--standalone {
+            opacity: 0;
+            margin-top: -0.2em;
+        }
+        .chat-msg__action {
+            width: 100%;
+            padding: 0.5em 1em;
+            text-align: left;
+            white-space: nowrap;
+
+            converse-icon {
+                margin-right: 0.25em;
+            }
+
+            &:hover {
+                color: var(--text-color);
+                background-color: var(--list-item-hover-color);
+            }
+        }
+    }
+}

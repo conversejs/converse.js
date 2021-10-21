@@ -130,6 +130,42 @@ describe("A XEP-0316 MEP notification", function () {
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
     }));
 
+    it("renders URLs as links", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        const muc_jid = 'lounge@montague.lit';
+        const nick = 'romeo';
+        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true);
+        const msg = 'An anonymous user has waved at romeo';
+        const reason = 'Check out https://conversejs.org';
+        const message = u.toStanza(`
+            <message from='${muc_jid}'
+                    to='${_converse.jid}'
+                    type='headline'
+                    id='zns61f38'>
+                <event xmlns='http://jabber.org/protocol/pubsub#event'>
+                    <items node='urn:ietf:params:xml:ns:conference-info'>
+                        <item id='ehs51f40'>
+                            <conference-info xmlns='urn:ietf:params:xml:ns:conference-info'>
+                                <activity xmlns='http://jabber.org/protocol/activity'>
+                                    <other/>
+                                    <text id="activity-text" xml:lang="en">${msg}</text>
+                                    <reference anchor="activity-text" xmlns="urn:xmpp:reference:0" begin="31" end="37" type="mention" uri="xmpp:${_converse.bare_jid}"/>
+                                    <reason id="activity-reason">${reason}</reason>
+                                </activity>
+                            </conference-info>
+                        </item>
+                    </items>
+                </event>
+            </message>`);
+        _converse.connection._dataRecv(mock.createRequest(message));
+        await u.waitUntil(() => model.messages.length === 1);
+
+        const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
+        await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1, 1000);
+        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.reason converse-rich-text').innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
+            'Check out <a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>');
+    }));
+
     it("can be retracted by a moderator",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 

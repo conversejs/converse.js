@@ -20,7 +20,8 @@ export default (el) => {
                                 render_styling
                                 text=${el.model.getMessageText()}>
                             </converse-rich-text>
-                            ${ el.model.get('reason') ? html`<q class="reason">${el.model.get('reason')}</q>` : `` }
+                            ${ el.model.get('reason') ?
+                                html`<q class="reason"><converse-rich-text text=${el.model.get('reason')}></converse-rich-text></q>` : `` }
                         `}
                     </div>
                     <converse-message-actions

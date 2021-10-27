@@ -8,17 +8,15 @@ import { html } from 'lit';
 import { isMediaURLDomainAllowed, isDomainWhitelisted } from '@converse/headless/utils/url.js';
 import { until } from 'lit/directives/until.js';
 
+import './styles/message-actions.scss';
+
 const { Strophe, u } = converse.env;
 
 class MessageActions extends CustomElement {
     static get properties () {
         return {
-            correcting: { type: Boolean },
-            editable: { type: Boolean },
             is_retracted: { type: Boolean },
-            message_type: { type: String },
-            model: { type: Object },
-            unfurls: { type: Number },
+            model: { type: Object }
         };
     }
 
@@ -28,7 +26,7 @@ class MessageActions extends CustomElement {
         this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:hide_url_previews', () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
     }
 
     render () {
@@ -262,7 +260,7 @@ class MessageActions extends CustomElement {
 
     async getActionButtons () {
         const buttons = [];
-        if (this.editable) {
+        if (this.model.get('editable')) {
             /**
              * @typedef { Object } MessageActionAttributes
              * An object which represents a message action (as shown in the message dropdown);
@@ -273,14 +271,16 @@ class MessageActions extends CustomElement {
              * @property { String } name
              */
             buttons.push({
-                'i18n_text': this.correcting ? __('Cancel Editing') : __('Edit'),
+                'i18n_text': this.model.get('correcting') ? __('Cancel Editing') : __('Edit'),
                 'handler': ev => this.onMessageEditButtonClicked(ev),
                 'button_class': 'chat-msg__action-edit',
                 'icon_class': 'fa fa-pencil-alt',
                 'name': 'edit',
             });
         }
-        const may_be_moderated = this.model.get('type') === 'groupchat' && (await this.model.mayBeModerated());
+
+        const may_be_moderated = ['groupchat', 'mep'].includes(this.model.get('type')) &&
+            (await this.model.mayBeModerated());
         const retractable = !this.is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
         if (retractable) {
             buttons.push({

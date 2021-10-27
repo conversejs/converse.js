@@ -753,6 +753,12 @@ describe("Message Retractions", function () {
 
             view.model.sendMessage({'body': 'Visit this site to get free bitcoin'});
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
+
+            // Check that you can only edit a message before it's been
+            // reflected. You can't retract because it hasn't
+            await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-edit'));
+            expect(view.querySelectorAll('.chat-msg__action').length).toBe(1);
+
             const stanza_id = 'retraction-id-1';
             const msg_obj = view.model.messages.at(0);
             const reflection_stanza = u.toStanza(`
@@ -766,6 +772,7 @@ describe("Message Retractions", function () {
                             by="lounge@montague.lit"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
+
             await view.model.handleMessageStanza(reflection_stanza);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
             expect(view.model.messages.length).toBe(1);

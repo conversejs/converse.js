@@ -8,16 +8,18 @@ import UserDetailsModal from 'modals/user-details.js';
 import filesize from 'filesize';
 import log from '@converse/headless/log';
 import tpl_info_message from './templates/info-message.js';
+import tpl_mep_message from 'plugins/muc-views/templates/mep-message.js';
 import tpl_message from './templates/message.js';
 import tpl_message_text from './templates/message-text.js';
+import tpl_retraction from './templates/retraction.js';
 import tpl_spinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
+import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getHats } from './utils.js';
 import { html } from 'lit';
 import { renderAvatar } from 'shared/directives/avatar';
-import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 
 const { Strophe, dayjs } = converse.env;
 
@@ -76,6 +78,8 @@ export default class Message extends CustomElement {
             return tpl_spinner();
         } else if (this.model.get('file') && this.model.get('upload') !== _converse.SUCCESS) {
             return this.renderFileProgress();
+        } else if (['mep'].includes(this.model.get('type'))) {
+            return this.renderMEPMessage();
         } else if (['error', 'info'].includes(this.model.get('type'))) {
             return this.renderInfoMessage();
         } else {
@@ -88,6 +92,18 @@ export default class Message extends CustomElement {
             this.model.toJSON(),
             this.getDerivedMessageProps()
         );
+    }
+
+    renderRetraction () {
+        return tpl_retraction(this);
+    }
+
+    renderMessageText () {
+        return tpl_message_text(this);
+    }
+
+    renderMEPMessage () {
+        return tpl_mep_message(this);
     }
 
     renderInfoMessage () {
@@ -117,7 +133,9 @@ export default class Message extends CustomElement {
     }
 
     shouldShowAvatar () {
-        return api.settings.get('show_message_avatar') && !this.model.isMeCommand() && this.type !== 'headline';
+        return api.settings.get('show_message_avatar') &&
+            !this.model.isMeCommand() &&
+            ['chat', 'groupchat'].includes(this.model.get('type'));
     }
 
     getAvatarData () {
@@ -202,7 +220,7 @@ export default class Message extends CustomElement {
     }
 
     getRetractionText () {
-        if (this.model.get('type') === 'groupchat' && this.model.get('moderated_by')) {
+        if (['groupchat', 'mep'].includes(this.model.get('type')) && this.model.get('moderated_by')) {
             const retracted_by_mod = this.model.get('moderated_by');
             const chatbox = this.model.collection.chatbox;
             if (!this.model.mod) {
@@ -215,19 +233,6 @@ export default class Message extends CustomElement {
         } else {
             return __('%1$s has removed this message', this.model.getDisplayName());
         }
-    }
-
-    renderRetraction () {
-        const retraction_text = this.isRetracted() ? this.getRetractionText() : null;
-        return html`
-            <div>${retraction_text}</div>
-            ${ this.model.get('moderation_reason') ?
-                    html`<q class="chat-msg--retracted__reason">${this.model.get('moderation_reason')}</q>` : '' }
-        `;
-    }
-
-    renderMessageText () {
-        return tpl_message_text(this);
     }
 
     showUserModal (ev) {

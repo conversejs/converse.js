@@ -1825,6 +1825,8 @@ const ChatRoomMixin = {
 
     getUpdatedMessageAttributes (message, attrs) {
         const new_attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs);
+        new_attrs['from_muc'] = attrs['from_muc'];
+
         if (this.isOwnMessage(attrs)) {
             const stanza_id_keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id'));
             Object.assign(new_attrs, pick(attrs, stanza_id_keys));
@@ -2114,12 +2116,7 @@ const ChatRoomMixin = {
             return false;
         }
         attrs.activities?.forEach(activity_attrs => {
-            const data = Object.assign({
-                'from_muc': attrs.from,
-                'msgid': attrs.msgid,
-                'received': attrs.received,
-                'time': attrs.time,
-            }, activity_attrs);
+            const data = Object.assign(attrs,activity_attrs);
             this.createMessage(data)
             // Trigger so that notifications are shown
             api.trigger('message', { 'attrs': data, 'chatbox': this });
@@ -2137,7 +2134,7 @@ const ChatRoomMixin = {
      */
     getDuplicateMessage (attrs) {
         if (attrs.activities?.length) {
-            return this.messages.findWhere({'type': 'info', 'msgid': attrs.msgid});
+            return this.messages.findWhere({'type': 'mep', 'msgid': attrs.msgid});
         } else {
             return _converse.ChatBox.prototype.getDuplicateMessage.call(this, attrs);
         }

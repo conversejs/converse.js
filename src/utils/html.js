@@ -44,6 +44,28 @@ const XFORM_TYPE_MAP = {
     'list-multi': 'dropdown'
 };
 
+const XFORM_VALIDATE_TYPE_MAP = {
+	'xs:anyURI': 'url',
+	'xs:byte': 'number',
+	'xs:date': 'date',
+	'xs:dateTime': 'datetime',
+	'xs:int': 'number',
+	'xs:integer': 'number',
+	'xs:time': 'time',
+}
+
+function getInputType(field) {
+	const type = XFORM_TYPE_MAP[field.getAttribute('type')]
+	if (type == 'text') {
+		const datatypes = field.getElementsByTagNameNS("http://jabber.org/protocol/xdata-validate", "validate");
+		if (datatypes.length === 1) {
+			const datatype = datatypes[0].getAttribute("datatype");
+			return XFORM_VALIDATE_TYPE_MAP[datatype] || type;
+		}
+	}
+	return type;
+}
+
 function slideOutWrapup (el) {
     /* Wrapup function for slideOut. */
     el.removeAttribute('data-slider-marker');
@@ -459,7 +481,7 @@ u.xForm2TemplateResult = function (field, stanza, options) {
         return tpl_form_username({
             'domain': ' @' + options.domain,
             'name': field.getAttribute('var'),
-            'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+            'type': getInputType(field),
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')
@@ -485,7 +507,7 @@ u.xForm2TemplateResult = function (field, stanza, options) {
             'autocomplete': getAutoCompleteProperty(name, options),
             'placeholder': null,
             'required': !!field.querySelector('required'),
-            'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+            'type': getInputType(field),
             'value': field.querySelector('value')?.textContent
         });
     }

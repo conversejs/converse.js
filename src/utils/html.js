@@ -45,25 +45,25 @@ const XFORM_TYPE_MAP = {
 };
 
 const XFORM_VALIDATE_TYPE_MAP = {
-	'xs:anyURI': 'url',
-	'xs:byte': 'number',
-	'xs:date': 'date',
-	'xs:dateTime': 'datetime',
-	'xs:int': 'number',
-	'xs:integer': 'number',
-	'xs:time': 'time',
+    'xs:anyURI': 'url',
+    'xs:byte': 'number',
+    'xs:date': 'date',
+    'xs:dateTime': 'datetime',
+    'xs:int': 'number',
+    'xs:integer': 'number',
+    'xs:time': 'time',
 }
 
 function getInputType(field) {
-	const type = XFORM_TYPE_MAP[field.getAttribute('type')]
-	if (type == 'text') {
-		const datatypes = field.getElementsByTagNameNS("http://jabber.org/protocol/xdata-validate", "validate");
-		if (datatypes.length === 1) {
-			const datatype = datatypes[0].getAttribute("datatype");
-			return XFORM_VALIDATE_TYPE_MAP[datatype] || type;
-		}
-	}
-	return type;
+    const type = XFORM_TYPE_MAP[field.getAttribute('type')]
+    if (type == 'text') {
+        const datatypes = field.getElementsByTagNameNS("http://jabber.org/protocol/xdata-validate", "validate");
+        if (datatypes.length === 1) {
+            const datatype = datatypes[0].getAttribute("datatype");
+            return XFORM_VALIDATE_TYPE_MAP[datatype] || type;
+        }
+    }
+    return type;
 }
 
 function slideOutWrapup (el) {

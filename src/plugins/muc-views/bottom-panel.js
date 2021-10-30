@@ -40,7 +40,7 @@ export default class MUCBottomPanel extends BottomPanel {
     }
 
     sendButtonClicked (ev) {
-        this.querySelector('converse-message-form')?.onFormSubmitted(ev);
+        this.querySelector('converse-muc-message-form')?.onFormSubmitted(ev);
     }
 
     hideOccupants (ev) {

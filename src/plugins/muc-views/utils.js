@@ -364,14 +364,7 @@ export function parseMessageForMUCCommands (muc, text) {
                 const message = __('Your nickname is "%1$s"', muc.get('nick'));
                 muc.createMessage({ message, 'type': 'error' });
             } else {
-                const jid = Strophe.getBareJidFromJid(muc.get('jid'));
-                api.send(
-                    $pres({
-                        from: _converse.connection.jid,
-                        to: `${jid}/${args}`,
-                        id: u.getUniqueId()
-                    }).tree()
-                );
+                muc.setNickname(args);
             }
             break;
         }

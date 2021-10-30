@@ -1403,6 +1403,29 @@ const ChatRoomMixin = {
         return this.occupants.findWhere({ 'jid': _converse.bare_jid });
     },
 
+    async setNickname (nick) {
+        this.set({ nick });
+        if (this.features.get('membersonly')) {
+            try {
+                await this.registerNickname();
+            } catch (e) {
+                const { __ } = _converse;
+                log.error(e);
+                const message = __("Error: couldn't register new nickname in members only room");
+                this.createMessage({ message, 'type': 'error' });
+                return;
+            }
+        }
+        const jid = Strophe.getBareJidFromJid(this.get('jid'));
+        api.send(
+            $pres({
+                from: _converse.connection.jid,
+                to: `${jid}/${nick}`,
+                id: u.getUniqueId()
+            }).tree()
+        )
+    },
+
     /**
      * Send an IQ stanza to modify an occupant's role
      * @private

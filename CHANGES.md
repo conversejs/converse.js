@@ -6,6 +6,7 @@
 - Fix trimming of chats in overlayed view mode
 - #2647: Singleton mode doesn't work
 - OMEMO bugfix: Always create device session based on real JID.
+- If `auto_register_muc_nickname` is set, make sure to register when the user changes current nick.
 
 - Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:

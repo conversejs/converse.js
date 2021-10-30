@@ -1404,8 +1404,12 @@ const ChatRoomMixin = {
     },
 
     async setNickname (nick) {
-        this.set({ nick });
-        if (this.features.get('membersonly')) {
+        if (
+            api.settings.get('auto_register_muc_nickname') &&
+            (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
+        ) {
+            const old_nick = this.get('nick');
+            this.set({ nick });
             try {
                 await this.registerNickname();
             } catch (e) {
@@ -1413,6 +1417,7 @@ const ChatRoomMixin = {
                 log.error(e);
                 const message = __("Error: couldn't register new nickname in members only room");
                 this.createMessage({ message, 'type': 'error' });
+                this.set({ 'nick': old_nick });
                 return;
             }
         }

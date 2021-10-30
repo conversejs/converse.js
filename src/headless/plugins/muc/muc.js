@@ -221,7 +221,7 @@ const ChatRoomMixin = {
      *  message, even if it didn't include a `markable` element.
      */
     sendMarkerForMessage (msg, type = 'displayed', force = false) {
-        if (!msg || !api.settings.get('send_chat_markers').includes(type)) {
+        if (!msg || !api.settings.get('send_chat_markers').includes(type) || msg?.get('type') !== 'groupchat') {
             return;
         }
         if (msg?.get('is_markable') || force) {

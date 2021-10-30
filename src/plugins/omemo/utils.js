@@ -251,14 +251,30 @@ export function getSessionCipher (jid, id) {
     return new window.libsignal.SessionCipher(_converse.omemo_store, address);
 }
 
+function getJIDForDecryption (attrs) {
+    const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
+    if (!from_jid) {
+        Object.assign(attrs, {
+            'error_text': __("Sorry, could not decrypt a received OMEMO message because we don't have the XMPP address for that user."),
+            'error_type': 'Decryption',
+            'is_ephemeral': false,
+            'is_error': true,
+            'type': 'error'
+        });
+        throw new Error("Could not find JID to decrypt OMEMO message for");
+    }
+    return from_jid;
+}
+
 async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
-    const encrypted = attrs.encrypted;
-    const devicelist = _converse.devicelists.getDeviceList(attrs.from);
+    const from_jid = getJIDForDecryption(attrs);
+    const devicelist = _converse.devicelists.getDeviceList(from_jid);
     await devicelist._devices_promise;
 
+    const encrypted = attrs.encrypted;
     let device = devicelist.get(encrypted.device_id);
     if (!device) {
-        device = await devicelist.devices.create({ 'id': encrypted.device_id, 'jid': attrs.from }, { 'promise': true });
+        device = await devicelist.devices.create({ 'id': encrypted.device_id, 'jid': from_jid }, { 'promise': true });
     }
     if (encrypted.payload) {
         const key = key_and_tag.slice(0, 16);
@@ -285,7 +301,8 @@ function getDecryptionErrorAttributes (e) {
 }
 
 async function decryptPrekeyWhisperMessage (attrs) {
-    const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
+    const from_jid = getJIDForDecryption(attrs);
+    const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = base64ToArrayBuffer(attrs.encrypted.key);
     let key_and_tag;
     try {
@@ -332,16 +349,7 @@ async function decryptPrekeyWhisperMessage (attrs) {
 }
 
 async function decryptWhisperMessage (attrs) {
-    const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
-    if (!from_jid) {
-        Object.assign(attrs, {
-            'error_text': __("Sorry, could not decrypt a received OMEMO message because we don't have the XMPP address for that user."),
-            'error_type': 'Decryption',
-            'is_ephemeral': false,
-            'is_error': true,
-            'type': 'error'
-        });
-    }
+    const from_jid = getJIDForDecryption(attrs);
     const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = base64ToArrayBuffer(attrs.encrypted.key);
     try {
@@ -432,9 +440,6 @@ export function generateDeviceID () {
 }
 
 async function buildSession (device) {
-    // TODO: check device-get('jid') versus the 'from' attribute which is used
-    // to build a session when receiving an encrypted message in a MUC.
-    // https://github.com/conversejs/converse.js/issues/1481#issuecomment-509183431
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
     const prekey = device.getRandomPreKey();

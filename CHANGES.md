@@ -2,8 +2,10 @@
 
 ## 9.0.0 (Unreleased)
 
+- Use more specific types for form fields based on XEP-0122
 - Fix trimming of chats in overlayed view mode
 - #2647: Singleton mode doesn't work
+- OMEMO bugfix: Always create device session based on real JID.
 
 - Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:
@@ -18,7 +20,6 @@ Three config settings have been obsoleted:
   - show_images_inline
   - muc_show_ogp_unfurls
 
-- Use more specific types for form fields based on XEP-0122
 
 ### Breaking Changes
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-06-25 10:43+0200\n"
+"PO-Revision-Date: 2021-11-02 12:35+0000\n"
 "Last-Translator: Kim Alvefur <zash@zash.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/conversejs/"
 "translations/sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
@@ -173,12 +173,12 @@ msgstr "Klistermärken"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Fel: timeout när %1s lista för MUC %2s hämtades"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Fel: inte tillåten att hämta %1s lista för MUC %2s"
 
 #: dist/converse-no-dependencies.js:48377
 msgid ""
@@ -799,14 +799,12 @@ msgid "Hide URL preview"
 msgstr "Dölj förhandsvisning av URL"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Show media"
-msgstr "Visa mer"
+msgstr "Visa media"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Hide media"
-msgstr "Dölj ämne"
+msgstr "Dölj media"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:65083
@@ -1123,9 +1121,8 @@ msgid "Click to open this server message"
 msgstr "Klicka för att öppna servermeddelandet"
 
 #: dist/converse-no-dependencies.js:81581
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Klicka för att öppna servermeddelandet"
+msgstr "Klicka för att ladda saknade meddelanden"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82025
@@ -1934,9 +1931,8 @@ msgid "Personal status message"
 msgstr "Personligt statusmeddelande"
 
 #: dist/converse-no-dependencies.js:91664
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Din Profil"
+msgstr "Din Profilbild"
 
 #: dist/converse-no-dependencies.js:91757
 msgid "Checkbox for selecting the following fingerprint"

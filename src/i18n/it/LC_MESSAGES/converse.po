@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-10-23 09:46+0000\n"
+"PO-Revision-Date: 2021-11-03 14:33+0000\n"
 "Last-Translator: random r <epsilin@yopmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
@@ -1148,9 +1148,8 @@ msgid "Click to open this server message"
 msgstr "Clicca per aprire questo messaggio del server"
 
 #: dist/converse-no-dependencies.js:81581
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Clicca per aprire questo messaggio del server"
+msgstr "Clicca per caricare i messaggi mancanti"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82025
@@ -1613,9 +1612,8 @@ msgstr "Autore argomento"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88756
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "Indirizzo conversazione di gruppo"
+msgstr "Indirizzo XMPP del gruppo"
 
 #: dist/converse-no-dependencies.js:88758
 msgid "Message archiving"
@@ -1972,9 +1970,8 @@ msgid "Personal status message"
 msgstr "Messaggio personale di stato"
 
 #: dist/converse-no-dependencies.js:91664
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Il tuo profilo"
+msgstr "La tua immagine del profilo"
 
 #: dist/converse-no-dependencies.js:91757
 msgid "Checkbox for selecting the following fingerprint"
@@ -2058,13 +2055,12 @@ msgstr ""
 "errore."
 
 #: dist/converse-no-dependencies.js:92968
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Spiacenti, non è stato possibile decifrare un OMEMO ricevuto perché non "
-"abbiamo il JID per quell'utente."
+"Spiacenti, non è stato possibile decifrare un messaggio OMEMO ricevuto "
+"perché non abbiamo l'indirizzo XMPP di quell'utente."
 
 #: dist/converse-no-dependencies.js:93513
 #, javascript-format
@@ -2305,9 +2301,8 @@ msgid "Description:"
 msgstr "Descrizione:"
 
 #: dist/converse-no-dependencies.js:97238
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Indirizzo conversazione di gruppo"
+msgstr "Indirizzo XMPP del gruppo:"
 
 #: dist/converse-no-dependencies.js:97240
 msgid "Participants:"

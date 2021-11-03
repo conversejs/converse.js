@@ -57,6 +57,7 @@ export default class Message extends CustomElement {
                 this.listenTo(this.model.occupant, 'change', () => this.requestUpdate());
             } else {
                 this.listenTo(this.model, 'occupantAdded', () => {
+                    this.requestUpdate();
                     this.listenTo(this.model.occupant, 'change', () => this.requestUpdate())
                 });
             }

@@ -255,9 +255,10 @@ function getJIDForDecryption (attrs) {
     const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
     if (!from_jid) {
         Object.assign(attrs, {
-            'error_text': __("Sorry, could not decrypt a received OMEMO message because we don't have the XMPP address for that user."),
+            'error_text': __("Sorry, could not decrypt a received OMEMO "+
+                "message because we don't have the XMPP address for that user."),
             'error_type': 'Decryption',
-            'is_ephemeral': false,
+            'is_ephemeral': true,
             'is_error': true,
             'type': 'error'
         });

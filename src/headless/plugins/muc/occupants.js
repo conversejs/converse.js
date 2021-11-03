@@ -92,6 +92,7 @@ const ChatRoomOccupants = Collection.extend({
      * @typedef { Object} OccupantData
      * @property { String } [jid]
      * @property { String } [nick]
+     * @property { String } [occupant_id]
      */
     /**
      * Try to find an existing occupant based on the passed in
@@ -105,8 +106,10 @@ const ChatRoomOccupants = Collection.extend({
      * @param { OccupantData } data
      */
     findOccupant (data) {
-        const jid = Strophe.getBareJidFromJid(data.jid);
-        return (jid && this.findWhere({ jid })) || this.findWhere({ 'nick': data.nick });
+        const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
+        return jid && this.findWhere({ jid }) ||
+            data.occupant_id && this.findWhere({ 'occupant_id': data.occupant_id }) ||
+            data.nick && this.findWhere({ 'nick': data.nick });
     }
 });
 

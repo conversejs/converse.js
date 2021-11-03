@@ -150,9 +150,7 @@ const MessageMixin = {
     },
 
     getDisplayName () {
-        if (this.get('type') === 'groupchat') {
-            return this.get('nick');
-        } else if (this.contact) {
+        if (this.contact) {
             return this.contact.getDisplayName();
         } else if (this.vcard) {
             return this.vcard.getDisplayName();

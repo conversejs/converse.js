@@ -1165,6 +1165,8 @@ const ChatRoomMixin = {
             if (!fieldname.startsWith('muc_')) {
                 if (fieldname === Strophe.NS.MAM) {
                     attrs.mam_enabled = true;
+                } else {
+                    attrs[fieldname] = true;
                 }
                 return;
             }
@@ -1684,8 +1686,8 @@ const ChatRoomMixin = {
      * @param { XMLElement } pres - The presence stanza
      */
     updateOccupantsOnPresence (pres) {
-        const data = parseMUCPresence(pres);
-        if (data.type === 'error' || (!data.jid && !data.nick)) {
+        const data = parseMUCPresence(pres, this);
+        if (data.type === 'error' || (!data.jid && !data.nick && !data.occupant_id)) {
             return true;
         }
         const occupant = this.occupants.findOccupant(data);

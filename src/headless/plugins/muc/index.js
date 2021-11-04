@@ -117,6 +117,7 @@ converse.ROOMSTATUS = {
     ENTERED: 5,
     DESTROYED: 6,
     BANNED: 7,
+    CLOSING: 8
 };
 
 converse.plugins.add('converse-muc', {

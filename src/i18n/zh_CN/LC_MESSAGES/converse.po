@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-09-28 12:37+0000\n"
+"PO-Revision-Date: 2021-11-10 13:03+0000\n"
 "Last-Translator: 52871299hzy <bc3104hzy@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.9.1-dev\n"
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
@@ -171,12 +171,12 @@ msgstr "贴纸"
 #: dist/converse-no-dependencies.js:47309
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "错误：获取 %2s 聊天室的 %1s 列表时超时"
 
 #: dist/converse-no-dependencies.js:47321
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "错误：不被允许获取 %2s 聊天室的 %1s 列表"
 
 #: dist/converse-no-dependencies.js:48377
 msgid ""
@@ -689,13 +689,10 @@ msgstr "您将会丢失一条未送出的消息。确定要继续吗？"
 
 #: dist/converse-no-dependencies.js:64671
 #: dist/converse-no-dependencies.js:64762
-#, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
-msgstr ""
-"注意并非所有 XMPP/Jabber 用户端软件皆支持消息回收功能，这条消息有可能会未被收"
-"回。"
+msgstr "注意并非所有 XMPP/Jabber 用户端（和服务端）软件皆支持消息回收功能，这条消息有可能会未被收回。"
 
 #: dist/converse-no-dependencies.js:64672
 #: dist/converse-no-dependencies.js:64769
@@ -720,9 +717,8 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr "抱歉，您不能收回这条消息。"
 
 #: dist/converse-no-dependencies.js:64830
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "您在收回这条消息。"
+msgstr "您正要收回这条消息。"
 
 #: dist/converse-no-dependencies.js:64830
 msgid ""
@@ -733,16 +729,15 @@ msgstr "您可以选择写下收回消息的原因。"
 #: dist/converse-no-dependencies.js:64837
 #, fuzzy
 msgid "Message Retraction"
-msgstr "消息版本"
+msgstr "收回消息"
 
 #: dist/converse-no-dependencies.js:64837
 msgid "Optional reason"
 msgstr "可选原因"
 
 #: dist/converse-no-dependencies.js:64848
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "抱歉，您不能收回这条消息。"
+msgstr "抱歉，您不能收回这条消息"
 
 #: dist/converse-no-dependencies.js:64921
 msgid "Cancel Editing"
@@ -773,14 +768,12 @@ msgid "Hide URL preview"
 msgstr "隐藏链接预览"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Show media"
-msgstr "显示更多"
+msgstr "显示媒体内容"
 
 #: dist/converse-no-dependencies.js:64980
-#, fuzzy
 msgid "Hide media"
-msgstr "隐藏话题"
+msgstr "隐藏媒体内容"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:65083
@@ -1095,7 +1088,7 @@ msgstr "点击展开这条服务器消息"
 #: dist/converse-no-dependencies.js:81581
 #, fuzzy
 msgid "Click to load missing messages"
-msgstr "点击展开这条服务器消息"
+msgstr "点击加载缺失的消息"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:82025
@@ -1490,9 +1483,9 @@ msgid "This groupchat no longer exists"
 msgstr "这间聊天室已经关闭"
 
 #: dist/converse-no-dependencies.js:88132
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "给出的理由是：%1$s。"
+msgstr "给出的理由是：%1$s"
 
 #: dist/converse-no-dependencies.js:88610
 #, javascript-format
@@ -1532,7 +1525,6 @@ msgstr "话题定立人"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88756
-#, fuzzy
 msgid "Groupchat XMPP address"
 msgstr "聊天室地址"
 
@@ -1886,7 +1878,7 @@ msgstr "个人状态消息"
 #: dist/converse-no-dependencies.js:91664
 #, fuzzy
 msgid "Your profile picture"
-msgstr "您的个人数据"
+msgstr "您的个人资料图片"
 
 #: dist/converse-no-dependencies.js:91757
 msgid "Checkbox for selecting the following fingerprint"
@@ -1960,7 +1952,6 @@ msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "抱歉，解密一条 OMEMO 加密消息时遇到了错误。"
 
 #: dist/converse-no-dependencies.js:92968
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
@@ -2186,9 +2177,8 @@ msgid "Description:"
 msgstr "介绍："
 
 #: dist/converse-no-dependencies.js:97238
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "聊天室地址"
+msgstr "聊天室地址："
 
 #: dist/converse-no-dependencies.js:97240
 msgid "Participants:"

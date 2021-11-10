@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-11-10 13:03+0000\n"
-"Last-Translator: 52871299hzy <bc3104hzy@126.com>\n"
+"PO-Revision-Date: 2021-11-11 13:51+0000\n"
+"Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -727,9 +727,8 @@ msgid ""
 msgstr "您可以选择写下收回消息的原因。"
 
 #: dist/converse-no-dependencies.js:64837
-#, fuzzy
 msgid "Message Retraction"
-msgstr "收回消息"
+msgstr "消息撤回"
 
 #: dist/converse-no-dependencies.js:64837
 msgid "Optional reason"
@@ -737,7 +736,7 @@ msgstr "可选原因"
 
 #: dist/converse-no-dependencies.js:64848
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "抱歉，您不能收回这条消息"
+msgstr "抱歉，您不被允许撤回此消息"
 
 #: dist/converse-no-dependencies.js:64921
 msgid "Cancel Editing"
@@ -1086,7 +1085,6 @@ msgid "Click to open this server message"
 msgstr "点击展开这条服务器消息"
 
 #: dist/converse-no-dependencies.js:81581
-#, fuzzy
 msgid "Click to load missing messages"
 msgstr "点击加载缺失的消息"
 
@@ -1472,10 +1470,9 @@ msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "抱歉，尝试送出配置时遭遇错误。"
 
 #: dist/converse-no-dependencies.js:88122
-#, fuzzy
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
-msgstr "这则对话已经被搬移。点击下方进入。"
+msgstr "对话已移至新地址。 点击下方链接进入。"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:88130
@@ -1876,7 +1873,6 @@ msgid "Personal status message"
 msgstr "个人状态消息"
 
 #: dist/converse-no-dependencies.js:91664
-#, fuzzy
 msgid "Your profile picture"
 msgstr "您的个人资料图片"
 

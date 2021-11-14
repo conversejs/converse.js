@@ -36,7 +36,7 @@ function initConverse (promise_names=[], settings=null, func) {
 
 async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, features=[], items=[], type='info') {
     const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
-    const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop(), 300);
+    const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
     const stanza = $iq({
         'type': 'result',
         'from': entity_jid,

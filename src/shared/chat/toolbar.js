@@ -1,5 +1,6 @@
 import './emoji-picker.js';
 import 'shared/chat/message-limit.js';
+import tpl_toolbar from './templates/toolbar.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
@@ -33,11 +34,7 @@ export class ChatToolbar extends CustomElement {
     }
 
     render () {
-        const i18n_send_message = __('Send the message');
-        return html`
-            <span class="toolbar-buttons">${until(this.getButtons(), '')}</span>
-            ${ this.show_send_button ? html`<button type="submit" class="btn send-button fa fa-paper-plane" title="${ i18n_send_message }"></button>` : '' }
-        `;
+        return tpl_toolbar(this);
     }
 
     firstUpdated () {

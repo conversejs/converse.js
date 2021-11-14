@@ -263,10 +263,9 @@
 
             .controlbox-heading__btn {
                 cursor: pointer;
+                padding: 0 0 0 1em;
                 font-size: 1em;
-                padding: 0;
                 margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0;
-                min-width: 25px;
                 text-align: center;
                 &.fa-vcard {
                     margin-top: 1em;

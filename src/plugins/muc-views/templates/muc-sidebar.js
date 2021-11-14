@@ -28,7 +28,9 @@ export default (o) => {
 
     return html`
         <div class="occupants-header">
-            <i class="hide-occupants fa fa-times" @click=${o.closeSidebar}></i>
+            <i class="hide-occupants" @click=${o.closeSidebar}>
+                <converse-icon color="var(--text-color)" class="fa fa-times" size="1em"></converse-icon>
+            </i>
             <div class="occupants-header--title">
                 <span class="occupants-heading">${i18n_participants}</span>
             </div>

@@ -2,6 +2,7 @@
 
 ## 9.0.0 (Unreleased)
 
+- Add initial support for XEP-0421 occupant Ids.
 - Use more specific types for form fields based on XEP-0122
 - Fix trimming of chats in overlayed view mode
 - OMEMO bugfix: Always create device session based on real JID.

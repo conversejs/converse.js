@@ -7,7 +7,7 @@ import { html } from "lit";
 import { parseMessageForCommands } from 'plugins/chatview/utils.js';
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
-const { Strophe, $pres, $iq, sizzle, u } = converse.env;
+const { Strophe, $iq, sizzle, u } = converse.env;
 
 const COMMAND_TO_AFFILIATION = {
     'admin': 'admin',

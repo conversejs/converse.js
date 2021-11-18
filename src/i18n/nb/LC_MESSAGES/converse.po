@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-03 15:31+0200\n"
-"PO-Revision-Date: 2021-09-09 21:45+0200\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"PO-Revision-Date: 2021-11-19 05:49+0000\n"
+"Last-Translator: Siw Falch <siiw@hotmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 4.9.1-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -21,20 +21,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35790
 msgid "The connection has dropped, attempting to reconnect."
-msgstr "Tilkoblingen har gått ned, prøver å koble til igjen."
+msgstr "Forbindelsen ble brutt, prøver å koble til igjen."
 
 #: dist/converse-no-dependencies.js:36040
 msgid "An error occurred while connecting to the chat server."
-msgstr "En feil skjedde under tilkobling til sludretjeneren."
+msgstr "En feil skjedde under tilkobling til chatteserveren."
 
 #: dist/converse-no-dependencies.js:36047
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr "Din XMPP adresse og/eller passord er feilaktig. Prøv igjen."
+msgstr "XMPP-adressen og/eller passordet er feil. Prøv igjen."
 
 #: dist/converse-no-dependencies.js:36059
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "Kunne ikke koble til XMPP-verten med domenet: %1$s."
+msgstr "Kunne ikke koble til XMPP-verten med domenet: %1$s"
 
 #: dist/converse-no-dependencies.js:36061
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -67,20 +67,17 @@ msgstr "Du tillates ikke å trekke tilbake denne meldingen."
 
 #: dist/converse-no-dependencies.js:41695
 #: dist/converse-no-dependencies.js:48379
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Noe gikk galt under gjenoppfrisking."
+msgstr "Noe gikk dessverre galt under tilbaketrekking."
 
 #: dist/converse-no-dependencies.js:41700
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "Du tillates ikke å sende meldinger i dette rommet."
+msgstr "Du har ikke tillatelse til å sende meldinger."
 
 #: dist/converse-no-dependencies.js:41702
 #: dist/converse-no-dependencies.js:48388
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "En feil skjedde ved forsøk på å sende inn oppsettsskjemaet."
+msgstr "En feil skjedde ved sending av meldingen."
 
 #: dist/converse-no-dependencies.js:42028
 #, javascript-format
@@ -113,9 +110,8 @@ msgstr ""
 "tjeneren din, som er %2$s."
 
 #: dist/converse-no-dependencies.js:43342
-#, fuzzy
 msgid "Undecryptable OMEMO message"
-msgstr "Ukrypterbar OMEMO-melding"
+msgstr "Udekrypterbar OMEMO-melding"
 
 #: dist/converse-no-dependencies.js:43397
 msgid "Sorry, could not determine upload URL."
@@ -126,11 +122,11 @@ msgid "Sorry, could not determine file upload URL."
 msgstr "Beklager, kunne ikke fastsette filopplastingsnettadresse."
 
 #: dist/converse-no-dependencies.js:43498
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
-msgstr "Kunne ikke laste opp filen din. Din tjeners svar: \"%1$s\""
+msgstr "Kunne ikke laste opp filen din. Serveren svarte: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:43500
 msgid "Sorry, could not succesfully upload your file."

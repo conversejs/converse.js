@@ -1,5 +1,7 @@
+import 'shared/avatar/avatar.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
+import { getPrettyStatus } from '../utils.js';
 import { html } from "lit";
 
 
@@ -17,15 +19,18 @@ function tpl_user_settings_button (o) {
     </a>`;
 }
 
-export default (o) => {
+export default (el) => {
+    const chat_status = el.model.get('status') || 'offline';
+    const fullname = el.model.vcard?.get('fullname') || _converse.bare_jid;
+    const status_message = el.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status));
     const i18n_change_status = __('Click to change your chat status');
     const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
     let classes, color;
-    if (o.chat_status === 'online') {
+    if (chat_status === 'online') {
         [classes, color] = ['fa fa-circle chat-status', 'chat-status-online'];
-    } else if (o.chat_status === 'dnd') {
+    } else if (chat_status === 'dnd') {
         [classes, color] =  ['fa fa-minus-circle chat-status', 'chat-status-busy'];
-    } else if (o.chat_status === 'away') {
+    } else if (chat_status === 'away') {
         [classes, color] =  ['fa fa-circle chat-status', 'chat-status-away'];
     } else {
         [classes, color] = ['fa fa-circle chat-status', 'subdued-color'];
@@ -33,17 +38,17 @@ export default (o) => {
     return html`
         <div class="userinfo controlbox-padded">
             <div class="controlbox-section profile d-flex">
-                <a class="show-profile" href="#" @click=${o.showProfileModal}>
-                    <canvas class="avatar align-self-center" height="40" width="40"></canvas>
+                <a class="show-profile" href="#" @click=${el.showProfileModal}>
+                    <converse-avatar class="avatar align-self-center" .model=${el.model.vcard} height="40" width="40"></converse-avatar>
                 </a>
-                <span class="username w-100 align-self-center">${o.fullname}</span>
-                ${show_settings_button  ? tpl_user_settings_button(o) : ''}
-                ${api.settings.get('allow_logout') ? tpl_signout(o) : ''}
+                <span class="username w-100 align-self-center">${fullname}</span>
+                ${show_settings_button  ? tpl_user_settings_button(el) : ''}
+                ${api.settings.get('allow_logout') ? tpl_signout(el) : ''}
             </div>
             <div class="d-flex xmpp-status">
-                <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${o.showStatusChangeModal}>
-                    <span class="${o.chat_status} w-100 align-self-center" data-value="${o.chat_status}">
-                    <converse-icon color="var(--${color})" size="1em" class="${classes}"></converse-icon> ${o.status_message}</span>
+                <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${el.showStatusChangeModal}>
+                    <span class="${chat_status} w-100 align-self-center" data-value="${chat_status}">
+                    <converse-icon color="var(--${color})" size="1em" class="${classes}"></converse-icon> ${status_message}</span>
                 </a>
             </div>
         </div>`

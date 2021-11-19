@@ -1,7 +1,6 @@
 import 'shared/chat/unfurl.js';
 import { __ } from 'i18n';
 import { html } from "lit";
-import { renderAvatar } from 'shared/directives/avatar';
 import { shouldRenderMediaFromURL } from '@converse/headless/utils/url.js';
 
 
@@ -18,7 +17,11 @@ export default (el, o) => {
             <!-- Anchor to allow us to scroll the message into view -->
             <a id="${o.msgid}"></a>
 
-            <a class="show-msg-author-modal" @click=${el.showUserModal}>${ o.should_show_avatar ? renderAvatar(el.getAvatarData()) : '' }</a>
+            ${ o.should_show_avatar ?
+                html`<a class="show-msg-author-modal" @click=${el.showUserModal}>
+                    <converse-avatar class="avatar align-self-center" .model=${el.model.vcard} height="40" width="40"></converse-avatar>
+                </a>` : '' }
+
             <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
 
                 ${ !o.is_me_message ? html`

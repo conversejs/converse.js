@@ -2,10 +2,10 @@ import './message-actions.js';
 import './message-body.js';
 import 'shared/components/dropdown.js';
 import 'shared/registry';
+import tpl_file_progress from './templates/file-progress.js';
 import MessageVersionsModal from 'modals/message-versions.js';
 import OccupantModal from 'modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
-import filesize from 'filesize';
 import log from '@converse/headless/log';
 import tpl_info_message from './templates/info-message.js';
 import tpl_mep_message from 'plugins/muc-views/templates/mep-message.js';
@@ -18,8 +18,6 @@ import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getHats } from './utils.js';
-import { html } from 'lit';
-import { renderAvatar } from 'shared/directives/avatar';
 
 const { Strophe, dayjs } = converse.env;
 
@@ -116,17 +114,7 @@ export default class Message extends CustomElement {
             // Can happen when file upload failed and page was reloaded
             return '';
         }
-        const i18n_uploading = __('Uploading file:');
-        const filename = this.model.file.name;
-        const size = filesize(this.model.file.size);
-        return html`
-            <div class="message chat-msg">
-                ${ renderAvatar(this.getAvatarData()) }
-                <div class="chat-msg__content">
-                    <span class="chat-msg__text">${i18n_uploading} <strong>${filename}</strong>, ${size}</span>
-                    <progress value="${this.model.get('progress')}"/>
-                </div>
-            </div>`;
+        return tpl_file_progress(this);
     }
 
     renderChatMessage () {

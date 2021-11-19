@@ -1,4 +1,4 @@
-import tpl_avatar from 'shared/templates/avatar.js';
+import tpl_avatar from 'shared/avatar/templates/avatar.js';
 import { Directive, directive } from "lit/directive.js";
 
 

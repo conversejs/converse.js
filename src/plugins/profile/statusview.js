@@ -1,54 +1,21 @@
 import UserSettingsModal from 'modals/user-settings';
 import tpl_profile from './templates/profile.js';
-import { ElementViewWithAvatar } from 'shared/avatar.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless/core';
-import { render } from 'lit';
 
-
-function getPrettyStatus (stat) {
-    if (stat === 'chat') {
-        return __('online');
-    } else if (stat === 'dnd') {
-        return __('busy');
-    } else if (stat === 'xa') {
-        return __('away for long');
-    } else if (stat === 'away') {
-        return __('away');
-    } else if (stat === 'offline') {
-        return __('offline');
-    } else {
-        return __(stat) || __('online');
-    }
-}
-
-
-class ProfileView extends ElementViewWithAvatar {
+class ProfileView extends CustomElement {
 
     async initialize () {
         this.model = _converse.xmppstatus;
-        this.listenTo(this.model, "change", this.render);
+        this.listenTo(this.model, "change", this.requestUpdate);
         await api.waitUntil('VCardsInitialized');
-        this.listenTo(this.model.vcard, "change", this.render);
-        this.render();
+        this.listenTo(this.model.vcard, "change", this.requestUpdate);
+        this.requestUpdate();
     }
 
     render () {
-        const chat_status = this.model.get('status') || 'offline';
-        render(tpl_profile(Object.assign(
-            this.model.toJSON(),
-            this.model.vcard.toJSON(), {
-            chat_status,
-            'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
-            "showUserSettingsModal": ev => this.showUserSettingsModal(ev),
-            'status_message': this.model.get('status_message') ||
-                                __("I am %1$s", getPrettyStatus(chat_status)),
-            'logout': this.logout,
-            'showStatusChangeModal': () => this.showStatusChangeModal(),
-            'showProfileModal': () => this.showProfileModal()
-        })), this);
-
-        this.renderAvatar();
+        return tpl_profile(this);
     }
 
     showProfileModal (ev) {

@@ -6,7 +6,6 @@
 import './view.js';
 import '@converse/headless/plugins/chatboxes/index.js';
 import ChatBoxViews from './container.js';
-import { ViewWithAvatar } from 'shared/avatar.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import { calculateViewportHeightUnit } from './utils.js';
 
@@ -28,7 +27,6 @@ converse.plugins.add('converse-chatboxviews', {
             'theme': 'default'
         });
 
-        _converse.ViewWithAvatar = ViewWithAvatar;
         _converse.chatboxviews = new ChatBoxViews();
 
         /************************ BEGIN Event Handlers ************************/

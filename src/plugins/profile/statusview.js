@@ -4,7 +4,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless/core';
 
-class ProfileView extends CustomElement {
+class Profile extends CustomElement {
 
     initialize () {
         this.model = _converse.xmppstatus;
@@ -41,4 +41,4 @@ class ProfileView extends CustomElement {
     }
 }
 
-api.elements.define('converse-user-profile', ProfileView);
+api.elements.define('converse-user-profile', Profile);

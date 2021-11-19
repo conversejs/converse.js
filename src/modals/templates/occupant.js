@@ -16,7 +16,7 @@ export default (o) => {
                     <div class="row">
                         <div class="col-auto">
                             <converse-avatar
-                                class="avatar chat-msg__avatar"
+                                class="avatar modal-avatar"
                                 .data=${o.vcard?.attributes}
                                 nonce=${o.vcard?.get('vcard_updated')}
                                 height="120" width="120"></converse-avatar>

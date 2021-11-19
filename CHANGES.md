@@ -8,6 +8,7 @@
 - Fix trimming of chats in overlayed view mode
 - OMEMO bugfix: Always create device session based on real JID.
 - If `auto_register_muc_nickname` is set, make sure to register when the user changes current nick.
+- #1322: Display occupants’ avatars in the occupants list
 - #1419: Clicking on avatar should show bigger version
 - #2647: Singleton mode doesn't work
 - #2704: Send button doesn't work in a multi-user chat

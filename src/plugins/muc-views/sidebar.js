@@ -3,6 +3,7 @@ import tpl_muc_sidebar from "./templates/muc-sidebar.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from "@converse/headless/core";
 
+import 'shared/styles/status.scss';
 import './styles/muc-occupants.scss';
 
 const { u } = converse.env;
@@ -21,6 +22,8 @@ export default class MUCSidebar extends CustomElement {
         this.listenTo(this.model.occupants, 'add', this.requestUpdate);
         this.listenTo(this.model.occupants, 'remove', this.requestUpdate);
         this.listenTo(this.model.occupants, 'change', this.requestUpdate);
+        this.listenTo(this.model.occupants, 'vcard:change', this.requestUpdate);
+        this.listenTo(this.model.occupants, 'vcard:add', this.requestUpdate);
         this.model.initialized.then(() => this.requestUpdate());
     }
 

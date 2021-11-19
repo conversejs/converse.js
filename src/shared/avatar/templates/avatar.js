@@ -7,9 +7,9 @@ const getImgHref = (image, image_type) => {
 export default  (o) => {
     if (o.image) {
         return html`
-                <svg xmlns="http://www.w3.org/2000/svg" class="avatar ${o.classes}" width="${o.width}" height="${o.height}">
-                    <image width="${o.width}" height="${o.height}" preserveAspectRatio="xMidYMid meet" href="${getImgHref(o.image, o.image_type)}"/>
-                </svg>`;
+            <svg xmlns="http://www.w3.org/2000/svg" class="avatar ${o.classes}" width="${o.width}" height="${o.height}">
+                <image width="${o.width}" height="${o.height}" preserveAspectRatio="xMidYMid meet" href="${getImgHref(o.image, o.image_type)}"/>
+            </svg>`;
     } else {
         return '';
     }

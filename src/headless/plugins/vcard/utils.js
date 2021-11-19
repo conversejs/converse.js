@@ -82,8 +82,10 @@ function getVCardForChatroomOccupant (message) {
 export async function setVCardOnOccupant (occupant) {
     await api.waitUntil('VCardsInitialized');
     occupant.vcard = getVCardForChatroomOccupant(occupant);
-    occupant.vcard.on('change', () => occupant.trigger('vcard:change'));
-    occupant.trigger('vcard:add');
+    if (occupant.vcard) {
+        occupant.vcard.on('change', () => occupant.trigger('vcard:change'));
+        occupant.trigger('vcard:add');
+    }
 }
 
 export async function setVCardOnMUCMessage (message) {
@@ -92,8 +94,10 @@ export async function setVCardOnMUCMessage (message) {
     } else {
         await api.waitUntil('VCardsInitialized');
         message.vcard = getVCardForChatroomOccupant(message);
-        message.vcard.on('change', () => message.trigger('vcard:change'));
-        message.trigger('vcard:add');
+        if (message.vcard) {
+            message.vcard.on('change', () => message.trigger('vcard:change'));
+            message.trigger('vcard:add');
+        }
     }
 }
 

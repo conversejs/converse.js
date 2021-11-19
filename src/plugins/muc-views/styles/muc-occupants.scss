@@ -1,5 +1,15 @@
 .conversejs {
     converse-muc.chatroom {
+
+        .chat-status--avatar {
+            background: var(--occupants-background-color);
+            border: 1px solid var(--occupants-background-color);
+        }
+
+        .badge-groupchat {
+            background-color: var(--groupchats-header-color);
+        }
+
         .box-flyout {
             .occupants {
                 display: flex;
@@ -90,6 +100,7 @@
                                     flex-direction: row;
 
                                     span {
+                                        height: 1.6em;
                                         margin-right: 0.25rem;
                                     }
                                 }
@@ -101,30 +112,6 @@
                             }
                             .badge {
                                 margin-bottom: 0.125rem;
-                            }
-
-                            .occupant-status {
-                                display: inline-block;
-                                margin: 0 0.5em 0.125em 0;
-                                width: 0.5em;
-                                height: 0.5em;
-
-                                &.occupant-online,
-                                &.occupant-chat {
-                                    background-color: #1A9707;
-                                }
-                                &.occupant-dnd {
-                                    background-color: red;
-                                }
-                                &.occupant-away {
-                                    background-color: darkorange;
-                                }
-                                &.occupant-xa {
-                                    background-color: orange;
-                                }
-                                &.occupant-offline {
-                                    background-color: darkgrey;
-                                }
                             }
                         }
                     }

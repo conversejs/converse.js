@@ -75,6 +75,11 @@
         order: -1;
         color: var(--controlbox-text-color);
 
+        .chat-status--avatar {
+            border: 1px solid var(--controlbox-pane-background-color);
+            background: var(--controlbox-pane-background-color);
+        }
+
         converse-brand-logo {
             width: 100%;
             display: block;

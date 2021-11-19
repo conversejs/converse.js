@@ -1,4 +1,5 @@
 import ModeratorToolsModal from './modals/moderator-tools.js';
+import OccupantModal from 'modals/occupant.js';
 import log from "@converse/headless/log";
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
@@ -289,6 +290,11 @@ export function showModeratorToolsModal (muc, affiliation) {
         modal = api.modal.create(ModeratorToolsModal, { affiliation, 'jid': muc.get('jid') });
     }
     modal.show();
+}
+
+
+export function showOccupantModal (ev, occupant) {
+    api.modal.show(OccupantModal, { 'model': occupant }, ev);
 }
 
 

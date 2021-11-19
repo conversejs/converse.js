@@ -1,0 +1,34 @@
+.conversejs {
+    .chat-status {
+        vertical-align: middle;
+        margin-right: 0;
+        border-radius: 50%;
+        font-size: 1em;
+
+        &.chat-status--avatar {
+          font-size: 0.6rem;
+          margin-left: -0.7em;
+          margin-bottom: -1.9em;
+          border-radius: 50%;
+        }
+    }
+    .chat-status--offline {
+        margin-right: 0.8em;
+    }
+    .chat-status--online {
+        color: var(--chat-status-online);
+    }
+    .chat-status--busy {
+        color: var(--chat-status-busy);
+    }
+    .chat-status--away {
+        color: var(--chat-status-away);
+    }
+    .chat-status--offline {
+        display: none;
+    }
+    .far.fa-circle,
+    .fa-times-circle {
+        color: var(--subdued-color);
+    }
+}

@@ -231,15 +231,6 @@
                 }
             }
 
-            .chat-msg__avatar {
-                margin-top: 0.5em;
-                vertical-align: middle;
-                height: var(--message-avatar-height);
-                width: var(--message-avatar-width);
-                min-height: var(--message-avatar-height);
-                min-width: var(--message-avatar-width);
-            }
-
             .chat-msg__author {
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -295,10 +286,11 @@
 
             &.chat-msg--followup {
                 .chat-msg__heading,
-                .chat-msg__avatar {
+                .show-msg-author-modal {
                     display: none;
                 }
                 &.chat-msg--with-avatar .chat-msg__content {
+                    margin-left: 2.75rem;
                     width: 100%;
                 }
             }

@@ -12,6 +12,7 @@
 - #1419: Clicking on avatar should show bigger version
 - #2647: Singleton mode doesn't work
 - #2704: Send button doesn't work in a multi-user chat
+- #2725: Send new presence status to all connected MUCs
 
 - Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:

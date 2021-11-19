@@ -1,3 +1,4 @@
+import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
 import { __ } from 'i18n';
 import { html } from "lit";

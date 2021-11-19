@@ -1,6 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import tpl_avatar from './templates/avatar.js';
-import { api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless/core';
 
 
 export default class Avatar extends CustomElement {
@@ -20,12 +20,15 @@ export default class Avatar extends CustomElement {
     }
 
     render  () {
+        const image_type = this.model?.get('image_type') || _converse.DEFAULT_IMAGE_TYPE;
+        const image_data = this.model?.get('image') || _converse.DEFAULT_IMAGE;
+        const image = "data:" + image_type + ";base64," + image_data;
         return tpl_avatar({
             'classes': this.getAttribute('class'),
-            'width': this.width,
             'height': this.height,
-            'image_type': this.model?.get('image_type'),
-            'image': this.model?.get('image')
+            'width': this.width,
+            image,
+            image_type,
         });
     }
 }

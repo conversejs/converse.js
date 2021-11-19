@@ -229,7 +229,7 @@ export default class Message extends CustomElement {
             api.modal.show(_converse.ProfileModal, {model: this.model}, ev);
         } else if (this.model.get('type') === 'groupchat') {
             ev.preventDefault();
-            api.modal.show(OccupantModal, { 'model': this.model.occupant }, ev);
+            api.modal.show(OccupantModal, { 'model': this.model.occupant, 'message': this.model }, ev);
         } else {
             ev.preventDefault();
             const chatbox = this.model.collection.chatbox;

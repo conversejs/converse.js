@@ -129,7 +129,6 @@ export class RichText extends String {
         media_urls.filter(o => !o.is_encrypted).forEach(url_obj => {
             const url_text = url_obj.url;
             const filtered_url = filterQueryParamsFromURL(url_text);
-
             let template;
             if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
                 template = tpl_gif(filtered_url, this.hide_media_urls);

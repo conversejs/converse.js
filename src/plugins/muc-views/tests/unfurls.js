@@ -79,7 +79,6 @@ describe("A Groupchat Message", function () {
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         expect(unfurl.querySelector('.card-img-top').getAttribute('text')).toBe('https://conversejs.org/dist/images/custom_emojis/converse.png');
-        expect(unfurl.querySelector('.card-img-top a')?.getAttribute('href')).toBe('https://conversejs.org/dist/images/custom_emojis/converse.png');
         expect(unfurl.querySelector('.card-body')).toBe(null);
     }));
 

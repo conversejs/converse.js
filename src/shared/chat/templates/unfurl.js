@@ -1,10 +1,5 @@
-import {
-    getURI,
-    isAudioURL,
-    isGIFURL,
-    isVideoURL,
-    isDomainAllowed
-} from '@converse/headless/utils/url.js';
+import 'shared/components/image.js';
+import { getURI, isGIFURL, isDomainAllowed } from '@converse/headless/utils/url.js';
 import { html } from 'lit';
 
 function isValidURL (url) {
@@ -16,23 +11,13 @@ function isValidImage (image) {
     return image && isDomainAllowed(image, 'allowed_image_domains') && isValidURL(image);
 }
 
-function shouldHideMediaURL (url) {
-    return url && (isGIFURL(url) || isVideoURL(url) || isAudioURL(url));
-}
-
 const tpl_url_wrapper = (o, wrapped_template) =>
-    o.url && isValidURL(o.url) && !isGIFURL(o.url)
+    o.url && isValidURL(o.url) && !isGIFURL(o.image)
         ? html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>`
         : wrapped_template(o);
 
 const tpl_image = o =>
-    html`<converse-rich-text
-        class="card-img-top"
-        text="${o.image}"
-        show_images
-        ?hide_media_urls=${shouldHideMediaURL(o.url)}
-        .onImgLoad=${o.onload}
-    ></converse-rich-text>`;
+    html`<converse-image class="card-img-top" text="${o.image}" href="${o.url}" .onImgLoad=${o.onload}></converse-image>`;
 
 export default o => {
     const show_image = isValidImage(o.image);

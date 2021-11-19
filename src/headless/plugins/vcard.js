@@ -181,6 +181,7 @@ converse.plugins.add('converse-vcard', {
                 model.vcard = _converse.vcards.create({'jid': jid});
             }
             model.vcard.on('change', () => model.trigger('vcard:change'));
+            model.trigger('vcard:add');
         }
 
 

@@ -30,20 +30,8 @@ const ProfileModal = BootstrapModal.extend({
         return tpl_profile_modal(Object.assign(
             this.model.toJSON(),
             this.model.vcard.toJSON(),
-            this.getAvatarData(),
             { 'view': this }
         ));
-    },
-
-    getAvatarData () {
-        const image_type = this.model.vcard.get('image_type');
-        const image_data = this.model.vcard.get('image');
-        const image = "data:" + image_type + ";base64," + image_data;
-        return {
-            'height': 128,
-            'width': 128,
-            image,
-        };
     },
 
     afterRender () {

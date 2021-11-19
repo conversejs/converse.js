@@ -19,7 +19,12 @@ async function getDropdownButtons (promise) {
 
 export default (o) => {
     const i18n_profile = __("The User's Profile Image");
-    const avatar = html`<span title="${i18n_profile}"><converse-avatar class="avatar chat-msg__avatar" .model=${o.model.vcard} height="40" width="40"></converse-avatar></span>`;
+    const avatar = html`<span title="${i18n_profile}">
+        <converse-avatar
+            class="avatar chat-msg__avatar"
+            .data=${o.model.vcard?.attributes}
+            nonce=${o.model.vcard?.get('vcard_updated')}
+            height="40" width="40"></converse-avatar></span>`;
     const display_name = o.model.getDisplayName();
 
     const tpl_dropdown_btns = () => getDropdownButtons(o.heading_buttons_promise)

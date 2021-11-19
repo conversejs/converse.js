@@ -209,11 +209,13 @@ converse.plugins.add('converse-vcard', {
                 return;
             } else {
                 message.vcard = getVCardForChatroomOccupant(message);
+                message.vcard.on('change', () => message.trigger('vcard:change'));
+                message.trigger('vcard:add');
             }
         }
 
 
-        _converse.initVCardCollection = async function () {
+        async function initVCardCollection () {
             _converse.vcards = new _converse.VCards();
             const id = `${_converse.bare_jid}-converse.vcards`;
             initStorage(_converse.vcards, id);
@@ -226,7 +228,12 @@ converse.plugins.add('converse-vcard', {
             const vcards = _converse.vcards;
             if (_converse.session) {
                 const jid = _converse.session.get('bare_jid');
-                _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+                const status = _converse.xmppstatus;
+                status.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+                if (status.vcard) {
+                    status.vcard.on('change', () => status.trigger('vcard:change'));
+                    status.trigger('vcard:add');
+                }
             }
             /**
              * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
@@ -256,7 +263,7 @@ converse.plugins.add('converse-vcard', {
         api.listen.on('clearSession', () => clearVCardsSession());
         api.listen.on('messageInitialized', m => setVCardOnModel(m));
         api.listen.on('rosterContactInitialized', m => setVCardOnModel(m));
-        api.listen.on('statusInitialized', _converse.initVCardCollection);
+        api.listen.on('statusInitialized', initVCardCollection);
 
 
         /************************ BEGIN API ************************/

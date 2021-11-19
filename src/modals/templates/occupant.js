@@ -15,7 +15,11 @@ export default (o) => {
                 <div class="modal-body" class="d-flex">
                     <div class="row">
                         <div class="col-auto">
-                            <converse-avatar class="avatar chat-msg__avatar" .model=${o.vcard} height="120" width="120"></converse-avatar>
+                            <converse-avatar
+                                class="avatar chat-msg__avatar"
+                                .data=${o.vcard?.attributes}
+                                nonce=${o.vcard?.get('vcard_updated')}
+                                height="120" width="120"></converse-avatar>
                         </div>
                         <div class="col">
                             <ul class="occupant-details">

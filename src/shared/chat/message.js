@@ -127,18 +127,6 @@ export default class Message extends CustomElement {
             ['chat', 'groupchat'].includes(this.model.get('type'));
     }
 
-    getAvatarData () {
-        const image_type = this.model.vcard?.get('image_type') || _converse.DEFAULT_IMAGE_TYPE;
-        const image_data = this.model.vcard?.get('image') || _converse.DEFAULT_IMAGE;
-        const image = "data:" + image_type + ";base64," + image_data;
-        return {
-            'classes': 'chat-msg__avatar',
-            'height': 36,
-            'width': 36,
-            image,
-        };
-    }
-
     onUnfurlAnimationEnd () {
         if (this.model.get('url_preview_transition') === 'fade-out') {
             this.model.save({

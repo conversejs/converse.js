@@ -25,7 +25,11 @@ export default  (el, item) => {
    const i18n_remove = __('Click to remove %1$s as a contact', display_name);
    return html`
    <a class="list-item-link cbox-list-item open-chat ${ num_unread ? 'unread-msgs' : '' }" title="${i18n_chat}" href="#" @click=${el.openChat}>
-      <converse-avatar class="avatar" .model=${el.model.vcard} height="30" width="30"></converse-avatar>
+      <converse-avatar
+         class="avatar"
+         .data=${el.model.vcard?.attributes}
+         nonce=${el.model.vcard?.get('vcard_updated')}
+         height="30" width="30"></converse-avatar>
       <span class="${status_icon}" title="${desc_status}"></span>
       ${ num_unread ? html`<span class="msgs-indicator">${ num_unread }</span>` : '' }
       <span class="contact-name contact-name--${el.show} ${ num_unread ? 'unread-msgs' : ''}">${display_name}</span>

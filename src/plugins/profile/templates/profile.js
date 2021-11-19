@@ -39,7 +39,10 @@ export default (el) => {
         <div class="userinfo controlbox-padded">
             <div class="controlbox-section profile d-flex">
                 <a class="show-profile" href="#" @click=${el.showProfileModal}>
-                    <converse-avatar class="avatar align-self-center" .model=${el.model.vcard} height="40" width="40"></converse-avatar>
+                    <converse-avatar class="avatar align-self-center"
+                        .data=${el.model.vcard?.attributes}
+                        nonce=${el.model.vcard?.get('vcard_updated')}
+                        height="40" width="40"></converse-avatar>
                 </a>
                 <span class="username w-100 align-self-center">${fullname}</span>
                 ${show_settings_button  ? tpl_user_settings_button(el) : ''}

@@ -6,12 +6,11 @@ import { _converse, api } from '@converse/headless/core';
 
 class ProfileView extends CustomElement {
 
-    async initialize () {
+    initialize () {
         this.model = _converse.xmppstatus;
+        this.listenTo(this.model, "vcard:add", this.requestUpdate);
         this.listenTo(this.model, "change", this.requestUpdate);
-        await api.waitUntil('VCardsInitialized');
-        this.listenTo(this.model.vcard, "change", this.requestUpdate);
-        this.requestUpdate();
+        this.listenTo(this.model, "vcard:change", this.requestUpdate);
     }
 
     render () {

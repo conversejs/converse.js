@@ -125,7 +125,7 @@ export default (o) => {
                             <form class="converse-form converse-form--modal profile-form" action="#">
                                 <div class="row">
                                     <div class="col-auto">
-                                        <converse-image-picker image="${o.image}" width="${o.width}" height="${o.height}"></converse-image-picker>
+                                        <converse-image-picker .data="${{image: o.image, image_type: o.image_type}}" width="128" height="128"></converse-image-picker>
                                     </div>
                                     <div class="col">
                                         <div class="form-group">

@@ -9,9 +9,10 @@ export default class Avatar extends CustomElement {
 
     static get properties () {
         return {
-            model: { type: Object },
+            data: { type: Object },
             width: { type: String },
             height: { type: String },
+            nonce: { type: String }, // Used to trigger rerenders
         }
     }
 
@@ -22,9 +23,14 @@ export default class Avatar extends CustomElement {
     }
 
     render  () {
-        const image_type = this.model?.get('image_type') || _converse.DEFAULT_IMAGE_TYPE;
-        const image_data = this.model?.get('image') || _converse.DEFAULT_IMAGE;
-        const image = "data:" + image_type + ";base64," + image_data;
+        const image_type = this.data?.image_type || _converse.DEFAULT_IMAGE_TYPE;
+        let image;
+        if (this.data?.data_uri) {
+            image = this.data?.data_uri;
+        } else {
+            const image_data = this.data?.image || _converse.DEFAULT_IMAGE;
+            image = "data:" + image_type + ";base64," + image_data;
+        }
         return tpl_avatar({
             'classes': this.getAttribute('class'),
             'height': this.height,

@@ -170,8 +170,6 @@ $mobile_portrait_length: 480px !default;
     --embedded-emoji-picker-height: 300px;
 
     --avatar-border-radius: 10%;
-    --avatar-border: 1px solid lightgrey;
-    --avatar-background-color: white;
 
     --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
     --fullpage-chat-width: 100%;
@@ -200,8 +198,6 @@ $mobile_portrait_length: 480px !default;
 
 .conversejs.theme-concord {
     --avatar-border-radius: 10%;
-    --avatar-border: 0px;
-    --avatar-background-color: none;
 
     --controlbox-pane-background-color: #333;
     --panel-divider-color: #333;

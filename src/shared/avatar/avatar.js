@@ -2,6 +2,8 @@ import { CustomElement } from 'shared/components/element.js';
 import tpl_avatar from './templates/avatar.js';
 import { _converse, api } from '@converse/headless/core';
 
+import './avatar.scss';
+
 
 export default class Avatar extends CustomElement {
 

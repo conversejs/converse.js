@@ -1,0 +1,7 @@
+converse-avatar {
+    border: 0;
+    background: transparent;
+    .avatar {
+        border-radius: var(--avatar-border-radius);
+    }
+}

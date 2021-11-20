@@ -1928,7 +1928,14 @@ const ChatRoomMixin = {
      * @returns {Promise<boolean>}
      */
     async shouldShowErrorMessage (attrs) {
-        if (attrs['error_condition'] === 'not-acceptable' && (await this.rejoinIfNecessary())) {
+        if (attrs.error_type === 'Decryption') {
+            if (attrs.error_message === "Message key not found. The counter was repeated or the key was not filled.") {
+                // OMEMO message which we already decrypted before
+                return false;
+            } else if ( attrs.error_condition === 'not-encrypted-for-this-device') {
+                return false;
+            }
+        } else if (attrs.error_condition === 'not-acceptable' && (await this.rejoinIfNecessary())) {
             return false;
         }
         return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, attrs);
@@ -2198,7 +2205,10 @@ const ChatRoomMixin = {
         if (u.isErrorObject(attrs)) {
             attrs.stanza && log.error(attrs.stanza);
             return log.error(attrs.message);
+        } else if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
+            return;
         }
+
         const message = this.getDuplicateMessage(attrs);
         if (message) {
             (message.get('type') === 'groupchat') && this.updateMessage(message, attrs);

@@ -204,12 +204,22 @@ export function handleEncryptedFiles (richtext) {
 }
 
 export function parseEncryptedMessage (stanza, attrs) {
-    if (attrs.is_encrypted && attrs.encrypted.key) {
-        // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
-        if (attrs.encrypted.prekey === true) {
-            return decryptPrekeyWhisperMessage(attrs);
+    if (attrs.is_encrypted) {
+        if (!attrs.encrypted.key) {
+            return Object.assign(attrs, {
+                'error_condition': 'not-encrypted-for-this-device',
+                'error_type': 'Decryption',
+                'is_ephemeral': true,
+                'is_error': true,
+                'type': 'error'
+            });
         } else {
-            return decryptWhisperMessage(attrs);
+            // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+            if (attrs.encrypted.prekey === true) {
+                return decryptPrekeyWhisperMessage(attrs);
+            } else {
+                return decryptWhisperMessage(attrs);
+            }
         }
     } else {
         return attrs;
@@ -287,18 +297,16 @@ async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
 }
 
 function getDecryptionErrorAttributes (e) {
-    if (api.settings.get('loglevel') === 'debug') {
-        return {
-            'error_text':
-                __('Sorry, could not decrypt a received OMEMO message due to an error.') + ` ${e.name} ${e.message}`,
-            'error_type': 'Decryption',
-            'is_ephemeral': true,
-            'is_error': true,
-            'type': 'error'
-        };
-    } else {
-        return {};
-    }
+    return {
+        'error_text':
+            __('Sorry, could not decrypt a received OMEMO message due to an error.') + ` ${e.name} ${e.message}`,
+        'error_condition': e.name,
+        'error_message': e.message,
+        'error_type': 'Decryption',
+        'is_ephemeral': true,
+        'is_error': true,
+        'type': 'error'
+    };
 }
 
 async function decryptPrekeyWhisperMessage (attrs) {

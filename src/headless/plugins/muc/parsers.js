@@ -52,6 +52,24 @@ export function getMEPActivities (stanza) {
 }
 
 /**
+ * Given a MUC stanza, check whether it has extended message information that
+ * includes the sender's real JID, as described here:
+ * https://xmpp.org/extensions/xep-0313.html#business-storeret-muc-archives
+ *
+ * If so, parse and return that data and return the user's JID
+ *
+ * Note, this function doesn't check whether this is actually a MAM archived stanza.
+ *
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ * @returns { Object }
+ */
+function getJIDFromMUCUserData (stanza) {
+    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
+    return item?.getAttribute('jid');
+}
+
+/**
  * @private
  * @param { XMLElement } stanza - The message stanza
  * @param { XMLElement } original_stanza - The original stanza, that contains the
@@ -224,16 +242,16 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
 
     await api.emojis.initialize();
 
-    attrs = Object.assign(
-        {
-            'from_real_jid': chatbox.occupants.findOccupant(attrs)?.get('jid'),
-            'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
-            'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
-            'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
-            'sender': attrs.nick === chatbox.get('nick') ? 'me' : 'them',
-        },
-        attrs
-    );
+    const from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza, attrs) ||
+        chatbox.occupants.findOccupant(attrs)?.get('jid');
+
+    attrs = Object.assign( {
+        from_real_jid,
+        'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
+        'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
+        'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
+        'sender': attrs.nick === chatbox.get('nick') ? 'me' : 'them',
+    }, attrs);
 
     if (attrs.is_archived && original_stanza.getAttribute('from') !== attrs.from_muc) {
         return new StanzaParseError(

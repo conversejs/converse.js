@@ -1396,12 +1396,11 @@ const ChatRoomMixin = {
     /**
      * Get the {@link _converse.ChatRoomOccupant} instance which
      * represents the current user.
-     * @private
      * @method _converse.ChatRoom#getOwnOccupant
      * @returns { _converse.ChatRoomOccupant }
      */
     getOwnOccupant () {
-        return this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        return this.occupants.getOwnOccupant();
     },
 
     async setNickname (nick) {

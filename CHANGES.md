@@ -14,6 +14,7 @@
 - #2647: Singleton mode doesn't work
 - #2704: Send button doesn't work in a multi-user chat
 - #2725: Send new presence status to all connected MUCs
+- #2728: Not sending headers with upload request
 
 - Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:

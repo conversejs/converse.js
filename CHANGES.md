@@ -11,6 +11,7 @@
 - #1322: Display occupants’ avatars in the occupants list
 - #1419: Clicking on avatar should show bigger version
 - #1426: Don't fetch member list if not affiliated
+- #2423: Could not find dependency "converse-controlbox" for plugin "converse-muc"
 - #2647: Singleton mode doesn't work
 - #2704: Send button doesn't work in a multi-user chat
 - #2725: Send new presence status to all connected MUCs

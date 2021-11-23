@@ -1,14 +1,14 @@
 import "shared/components/image-picker.js";
 import spinner from "templates/spinner.js";
 import { __ } from 'i18n';
-import { _converse, converse } from  "@converse/headless/core";
+import { _converse } from  "@converse/headless/core";
 import { html } from "lit";
 import { modal_header_close_button } from "plugins/modal/templates/buttons.js";
+import { formatFingerprint } from 'plugins/omemo/utils.js';
 
-const u = converse.env.utils;
 
 const fingerprint = (o) => html`
-    <span class="fingerprint">${u.formatFingerprint(o.view.current_device.get('bundle').fingerprint)}</span>`;
+    <span class="fingerprint">${formatFingerprint(o.view.current_device.get('bundle').fingerprint)}</span>`;
 
 
 const device_with_fingerprint = (o) => {
@@ -18,7 +18,7 @@ const device_with_fingerprint = (o) => {
             <label>
             <input type="checkbox" value="${o.device.get('id')}"
                 aria-label="${i18n_fingerprint_checkbox_label}"/>
-            <span class="fingerprint">${u.formatFingerprint(o.device.get('bundle').fingerprint)}</span>
+            <span class="fingerprint">${formatFingerprint(o.device.get('bundle').fingerprint)}</span>
             </label>
         </li>
     `;

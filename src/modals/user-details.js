@@ -27,7 +27,6 @@ const UserDetailsModal = BootstrapModal.extend({
 
     events: {
         'click button.refresh-contact': 'refreshContact',
-        'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
     },
 
     initialize () {
@@ -36,11 +35,11 @@ const UserDetailsModal = BootstrapModal.extend({
         this.listenTo(this.model, 'change', this.render);
         this.registerContactEventHandlers();
         /**
-            * Triggered once the UserDetailsModal has been initialized
-            * @event _converse#userDetailsModalInitialized
-            * @type { _converse.ChatBox }
-            * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
-            */
+         * Triggered once the UserDetailsModal has been initialized
+         * @event _converse#userDetailsModalInitialized
+         * @type { _converse.ChatBox }
+         * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
+         */
         api.trigger('userDetailsModalInitialized', this.model);
     },
 

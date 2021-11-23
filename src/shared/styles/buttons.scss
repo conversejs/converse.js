@@ -24,8 +24,8 @@
     }
 
     .btn-primary {
-        background-color: var(--primary-color);
-        border-color: transparent;
+        background-color: var(--primary-color) !important;
+        border-color: transparent !important;
         &:focus, &:hover, &:active {
             background-color: var(--primary-color-dark) !important;
             border-color: transparent !important;

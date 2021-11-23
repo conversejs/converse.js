@@ -203,26 +203,47 @@ export function handleEncryptedFiles (richtext) {
     richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
 }
 
-export function parseEncryptedMessage (stanza, attrs) {
-    if (attrs.is_encrypted) {
-        if (!attrs.encrypted.key) {
-            return Object.assign(attrs, {
-                'error_condition': 'not-encrypted-for-this-device',
-                'error_type': 'Decryption',
-                'is_ephemeral': true,
-                'is_error': true,
-                'type': 'error'
-            });
-        } else {
-            // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
-            if (attrs.encrypted.prekey === true) {
-                return decryptPrekeyWhisperMessage(attrs);
-            } else {
-                return decryptWhisperMessage(attrs);
-            }
-        }
-    } else {
+/**
+ * Hook handler for { @link parseMessage } and { @link parseMUCMessage }, which
+ * parses the passed in `message` stanza for OMEMO attributes and then sets
+ * them on the attrs object.
+ * @param { XMLElement } stanza - The message stanza
+ * @param { (MUCMessageAttributes|MessageAttributes) } attrs
+ * @returns (MUCMessageAttributes|MessageAttributes)
+ */
+export async function parseEncryptedMessage (stanza, attrs) {
+    if (api.settings.get('clear_cache_on_logout') ||
+            !attrs.is_encrypted ||
+            attrs.encryption_namespace !== Strophe.NS.OMEMO) {
         return attrs;
+    }
+    const encrypted_el = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
+    const header = encrypted_el.querySelector('header');
+    attrs.encrypted = { 'device_id': header.getAttribute('sid') };
+
+    const device_id = await api.omemo?.getDeviceID();
+    const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted_el).pop();
+    if (key) {
+        Object.assign(attrs.encrypted, {
+            'iv': header.querySelector('iv').textContent,
+            'key': key.textContent,
+            'payload': encrypted_el.querySelector('payload')?.textContent || null,
+            'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
+        });
+    } else {
+        return Object.assign(attrs, {
+            'error_condition': 'not-encrypted-for-this-device',
+            'error_type': 'Decryption',
+            'is_ephemeral': true,
+            'is_error': true,
+            'type': 'error'
+        });
+    }
+    // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+    if (attrs.encrypted.prekey === true) {
+        return decryptPrekeyWhisperMessage(attrs);
+    } else {
+        return decryptWhisperMessage(attrs);
     }
 }
 
@@ -499,7 +520,7 @@ function updateBundleFromStanza (stanza) {
     const jid = stanza.getAttribute('from');
     const bundle_el = sizzle(`item > bundle`, items_el).pop();
     const devicelist = _converse.devicelists.getDeviceList(jid);
-    const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, 'jid': jid });
+    const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, jid });
     device.save({ 'bundle': parseBundle(bundle_el) });
 }
 
@@ -566,11 +587,21 @@ export function restoreOMEMOSession () {
 }
 
 function fetchDeviceLists () {
-    return new Promise((success, error) => _converse.devicelists.fetch({ success, 'error': (m, e) => error(e) }));
+    _converse.devicelists = new _converse.DeviceLists();
+    const id = `converse.devicelists-${_converse.bare_jid}`;
+    initStorage(_converse.devicelists, id);
+    return new Promise(resolve => {
+        _converse.devicelists.fetch({
+            'success': resolve,
+            'error': (m, e) => {
+                log.error(e);
+                resolve();
+            }
+        })
+    });
 }
 
 async function fetchOwnDevices () {
-    await fetchDeviceLists();
     let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
     if (own_devicelist) {
         own_devicelist.fetchDevices();
@@ -585,10 +616,8 @@ export async function initOMEMO () {
         log.warn('Not initializing OMEMO, since this browser is not trusted or clear_cache_on_logout is set to true');
         return;
     }
-    _converse.devicelists = new _converse.DeviceLists();
-    const id = `converse.devicelists-${_converse.bare_jid}`;
-    initStorage(_converse.devicelists, id);
     try {
+        await fetchDeviceLists();
         await fetchOwnDevices();
         await restoreOMEMOSession();
         await _converse.omemo_store.publishBundle();

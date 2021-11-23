@@ -1,4 +1,4 @@
-import { _converse } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless/core';
 import { generateFingerprint } from './utils.js';
 
 export default {
@@ -10,6 +10,14 @@ export default {
      * @memberOf _converse.api
      */
     'omemo': {
+        /**
+         * Returns the device ID of the current device.
+         */
+        async getDeviceID () {
+            await api.waitUntil('OMEMOInitialized');
+            return _converse.omemo_store.get('device_id');
+        },
+
         /**
          * The "bundle" namespace groups methods relevant to the user's
          * OMEMO bundle.
@@ -25,6 +33,7 @@ export default {
              * @returns {promise} Promise which resolves once we have a result from the server.
              */
             'generate': async () => {
+                await api.waitUntil('OMEMOInitialized');
                 // Remove current device
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
                 const device_id = _converse.omemo_store.get('device_id');

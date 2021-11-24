@@ -14,6 +14,7 @@
 - #2423: Could not find dependency "converse-controlbox" for plugin "converse-muc"
 - #2647: Singleton mode doesn't work
 - #2704: Send button doesn't work in a multi-user chat
+- #2718: Message is not displayed if it contains an invalid URL
 - #2725: Send new presence status to all connected MUCs
 - #2728: Not sending headers with upload request
 - #2733: OMEMO Messages received while client closed not decrypted

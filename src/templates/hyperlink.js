@@ -1,5 +1,6 @@
-import { html } from "lit";
+import log from '@converse/headless/log';
 import { api } from  "@converse/headless/core";
+import { html } from "lit";
 
 function onClickXMPPURI (ev) {
     ev.preventDefault();
@@ -7,7 +8,13 @@ function onClickXMPPURI (ev) {
 }
 
 export default (uri, url_text) => {
-    let normalized_url = uri.normalize()._string;
+    let normalized_url;
+    try {
+        normalized_url = uri.normalize()._string;
+    } catch (e) {
+        log.error(e);
+        return url_text;
+    }
     const pretty_url = uri._parts.urn ? normalized_url : uri.readable();
     const visible_url = url_text || pretty_url;
     if (!uri._parts.protocol && !normalized_url.startsWith('http://') && !normalized_url.startsWith('https://')) {

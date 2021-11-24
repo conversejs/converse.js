@@ -84,7 +84,7 @@ export default (o) => {
                                 </div>
                             </form>
                         </div>
-                        ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? omemo_page(o) : '' }
+                        ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? omemo_page() : '' }
                     </div>
                 </div>
             </div>

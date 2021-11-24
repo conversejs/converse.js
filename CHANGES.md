@@ -13,6 +13,7 @@
 - #1426: Don't fetch member list if not affiliated
 - #2423: Could not find dependency "converse-controlbox" for plugin "converse-muc"
 - #2647: Singleton mode doesn't work
+- #2683: Show error messages that don't refer to specific chat messages
 - #2704: Send button doesn't work in a multi-user chat
 - #2715: Singleton + fullscreen mode styling issue
 - #2718: Message is not displayed if it contains an invalid URL

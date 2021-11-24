@@ -508,9 +508,9 @@ const ChatBox = ModelWithContact.extend({
      */
     shouldShowErrorMessage (attrs) {
         const msg = this.getMessageReferencedByError(attrs);
-        if (!msg && !attrs.body) {
+        if (!msg && attrs.chat_state) {
             // If the error refers to a message not included in our store,
-            // and it doesn't have a <body> tag, we assume that this was a
+            // and it has a chat state tag, we assume that this was a
             // CSI message (which we don't store).
             // See https://github.com/conversejs/converse.js/issues/1317
             return;

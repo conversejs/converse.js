@@ -1006,13 +1006,15 @@ describe("A Chat Message", function () {
             }));
         });
 
-
         describe("and for which then an error message is received from the server", function () {
 
             it("will have the error message displayed after itself",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                    mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
                 await mock.waitForRoster(_converse, 'current', 1);
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+
+                await mock.openChatBoxFor(_converse, sender_jid);
 
                 // TODO: what could still be done for error
                 // messages... if the <error> element has type
@@ -1029,8 +1031,6 @@ describe("A Chat Message", function () {
                  *  </message>
                  */
                 const error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
-                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                await _converse.api.chats.open(sender_jid)
                 let msg_text = 'This message will not be sent, due to an error';
                 const view = _converse.chatboxviews.get(sender_jid);
                 const message = await view.model.sendMessage({'body': msg_text});
@@ -1090,7 +1090,7 @@ describe("A Chat Message", function () {
                 stanza = $msg({
                         'to': _converse.connection.jid,
                         'type':'error',
-                        'id': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
+                        'id': second_message.get('id'),
                         'from': sender_jid
                     })
                     .c('error', {'type': 'cancel'})
@@ -1134,36 +1134,86 @@ describe("A Chat Message", function () {
 
                 // See #1317
                 // https://github.com/conversejs/converse.js/issues/1317
-                await mock.waitForRoster(_converse, 'current');
-                await mock.openControlBox(_converse);
-
-                const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
-
-                const messages = _converse.connection.sent_stanzas.filter(s => s.nodeName === 'message');
-                expect(messages.length).toBe(1);
-                expect(Strophe.serialize(messages[0])).toBe(
-                    `<message id="${messages[0].getAttribute('id')}" to="tybalt@montague.lit" type="chat" xmlns="jabber:client">`+
-                       `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                       `<no-store xmlns="urn:xmpp:hints"/>`+
-                       `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
-                    `</message>`);
-
-                const stanza = $msg({
-                        'from': contact_jid,
-                        'type': 'error',
-                        'id': messages[0].getAttribute('id')
-                    }).c('error', {'type': 'cancel', 'code': '503'})
-                        .c('service-unavailable', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' }).up()
-                        .c('text', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' })
-                            .t('User session not found')
-                _converse.connection._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get(contact_jid);
-                const msg_text = 'This message will show!';
-                await view.model.sendMessage({'body': msg_text});
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-                expect(view.querySelectorAll('.chat-error').length).toEqual(0);
+
+                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+                textarea.value = 'hello world'
+                const enter_event = {
+                    'target': textarea,
+                    'preventDefault': function preventDefault () {},
+                    'stopPropagation': function stopPropagation () {},
+                    'keyCode': 13 // Enter
+                }
+                const message_form = view.querySelector('converse-message-form');
+                message_form.onKeyDown(enter_event);
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+                const msg = $msg({
+                    from: contact_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: u.getUniqueId()
+                }).c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                await _converse.handleMessageStanza(msg);
+
+                _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+                    <message xml:lang="en" type="error" from="${contact_jid}">
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                        <no-store xmlns="urn:xmpp:hints"/>
+                        <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        <error code="503" type="cancel">
+                        <service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                        <text xml:lang="en" xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">User session not found</text></error>
+                    </message>
+                `)));
+                return new Promise(resolve => setTimeout(() => {
+                    expect(view.querySelector('.chat-msg__error').textContent).toBe('');
+                    resolve();
+                }, 500));
             }));
+
+            it("will have the error displayed below it",
+                    mock.initConverse([], {}, async function (_converse) {
+
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+
+                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
+                textarea.value = 'hello world'
+                const enter_event = {
+                    'target': textarea,
+                    'preventDefault': function preventDefault () {},
+                    'stopPropagation': function stopPropagation () {},
+                    'keyCode': 13 // Enter
+                }
+                const message_form = view.querySelector('converse-message-form');
+                message_form.onKeyDown(enter_event);
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+                // Normally "modify" errors need to have their id set to the
+                // message that couldn't be sent. Not doing that here on purpose to
+                // check the case where it's not done.
+                // See issue #2683
+                const err_txt = `Your message to ${contact_jid} was not end-to-end encrypted. For security reasons, using one of the following E2EE schemes is *REQUIRED* for conversations on this server: pgp, omemo`;
+                const error = u.toStanza(`
+                    <message xmlns="jabber:client" from="${contact_jid}" type="error" to="${_converse.jid}">
+                        <error type="modify">
+                            <policy-violation xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                            <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${err_txt}</text>
+                        </error>
+                    </message>
+                `);
+                _converse.connection._dataRecv(mock.createRequest(error));
+
+                expect(await u.waitUntil(() => view.querySelector('.chat-error')?.textContent?.trim())).toBe(err_txt);
+                expect(view.model.messages.length).toBe(2);
+            }));
+
         });
 
         it("will cause the chat area to be scrolled down only if it was at the bottom originally",

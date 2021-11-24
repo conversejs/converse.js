@@ -2397,7 +2397,7 @@ const ChatRoomMixin = {
      */
     createInfoMessage (code, stanza, is_self) {
         const __ = _converse.__;
-        const data = { 'type': 'info' };
+        const data = { 'type': 'info', 'is_ephemeral': true };
         if (!_converse.isInfoVisible(code)) {
             return;
         }
@@ -2424,13 +2424,6 @@ const ChatRoomMixin = {
         }
         if (data.message) {
             if (code === '201' && this.messages.findWhere(data)) {
-                return;
-            } else if (
-                code in _converse.muc.info_messages &&
-                this.messages.length &&
-                this.messages.pop().get('message') === data.message
-            ) {
-                // XXX: very naive duplication checking
                 return;
             }
             this.createMessage(data);

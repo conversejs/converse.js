@@ -52,6 +52,24 @@ export function getMEPActivities (stanza) {
 }
 
 /**
+ * Given a MUC stanza, check whether it has extended message information that
+ * includes the sender's real JID, as described here:
+ * https://xmpp.org/extensions/xep-0313.html#business-storeret-muc-archives
+ *
+ * If so, parse and return that data and return the user's JID
+ *
+ * Note, this function doesn't check whether this is actually a MAM archived stanza.
+ *
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ * @returns { Object }
+ */
+function getJIDFromMUCUserData (stanza) {
+    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
+    return item?.getAttribute('jid');
+}
+
+/**
  * @private
  * @param { XMLElement } stanza - The message stanza
  * @param { XMLElement } original_stanza - The original stanza, that contains the
@@ -93,6 +111,12 @@ function getModerationAttributes (stanza) {
     return {};
 }
 
+function getOccupantID (stanza, chatbox) {
+    if (chatbox.features.get(Strophe.NS.OCCUPANTID)) {
+        return sizzle(`occupant-id[xmlns="${Strophe.NS.OCCUPANTID}"]`, stanza).pop()?.getAttribute('id');
+    }
+}
+
 /**
  * Parses a passed in message stanza and returns an object of attributes.
  * @param { XMLElement } stanza - The message stanza
@@ -117,6 +141,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
     }
     const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
     const from = stanza.getAttribute('from');
+    const from_muc = Strophe.getBareJidFromJid(from);
     const nick = Strophe.unescapeNode(Strophe.getResourceFromJid(from));
     const marker = getChatMarker(stanza);
     const now = new Date().toISOString();
@@ -159,6 +184,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
      * @property { String } moderation_reason - The reason provided why this message moderates another
      * @property { String } msgid - The root `id` attribute of the stanza
      * @property { String } nick - The MUC nickname of the sender
+     * @property { String } occupant_id - The XEP-0421 occupant ID
      * @property { String } oob_desc - The description of the XEP-0066 out of band data
      * @property { String } oob_url - The URL of the XEP-0066 out of band data
      * @property { String } origin_id - The XEP-0359 Origin ID
@@ -175,17 +201,15 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
      * @property { String } to - The recipient JID
      * @property { String } type - The type of message
      */
-
     let attrs = Object.assign(
         {
             from,
+            from_muc,
             nick,
-            'is_forwarded': !!stanza?.querySelector('forwarded'),
+            'is_forwarded': !!stanza.querySelector('forwarded'),
             'activities': getMEPActivities(stanza),
             'body': stanza.querySelector('body')?.textContent?.trim(),
             'chat_state': getChatState(stanza),
-            'from_muc': Strophe.getBareJidFromJid(from),
-            'from_real_jid': chatbox.occupants.findOccupant({ nick })?.get('jid'),
             'is_archived': isArchived(original_stanza),
             'is_carbon': isCarbon(original_stanza),
             'is_delayed': !!delay,
@@ -195,6 +219,7 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
             'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
             'marker_id': marker && marker.getAttribute('id'),
             'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
+            'occupant_id': getOccupantID(stanza, chatbox),
             'receipt_id': getReceiptId(stanza),
             'received': new Date().toISOString(),
             'references': getReferences(stanza),
@@ -215,17 +240,18 @@ export async function parseMUCMessage (stanza, chatbox, _converse) {
         getEncryptionAttributes(stanza, _converse),
     );
 
-
     await api.emojis.initialize();
-    attrs = Object.assign(
-        {
-            'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
-            'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
-            'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
-            'sender': attrs.nick === chatbox.get('nick') ? 'me' : 'them'
-        },
-        attrs
-    );
+
+    const from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza, attrs) ||
+        chatbox.occupants.findOccupant(attrs)?.get('jid');
+
+    attrs = Object.assign( {
+        from_real_jid,
+        'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
+        'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
+        'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
+        'sender': attrs.nick === chatbox.get('nick') ? 'me' : 'them',
+    }, attrs);
 
     if (attrs.is_archived && original_stanza.getAttribute('from') !== attrs.from_muc) {
         return new StanzaParseError(
@@ -299,13 +325,26 @@ export function parseMemberListIQ (iq) {
  * Parses a passed in MUC presence stanza and returns an object of attributes.
  * @method parseMUCPresence
  * @param { XMLElement } stanza - The presence stanza
- * @returns { Object }
+ * @param { _converse.ChatRoom } chatbox
+ * @returns { MUCPresenceAttributes }
  */
-export function parseMUCPresence (stanza) {
+export function parseMUCPresence (stanza, chatbox) {
+    /**
+     * @typedef { Object } MUCPresenceAttributes
+     * The object which {@link parseMUCPresence} returns
+     * @property { ("offline|online") } show
+     * @property { Array<MUCHat> } hats - An array of XEP-0317 hats
+     * @property { Array<string> } states
+     * @property { String } from - The sender JID (${muc_jid}/${nick})
+     * @property { String } nick - The nickname of the sender
+     * @property { String } occupant_id - The XEP-0421 occupant ID
+     * @property { String } type - The type of presence
+     */
     const from = stanza.getAttribute('from');
     const type = stanza.getAttribute('type');
     const data = {
         'from': from,
+        'occupant_id': getOccupantID(stanza, chatbox),
         'nick': Strophe.getResourceFromJid(from),
         'type': type,
         'states': [],
@@ -331,6 +370,12 @@ export function parseMUCPresence (stanza) {
         } else if (child.matches('x') && child.getAttribute('xmlns') === Strophe.NS.VCARDUPDATE) {
             data.image_hash = child.querySelector('photo')?.textContent;
         } else if (child.matches('hats') && child.getAttribute('xmlns') === Strophe.NS.MUC_HATS) {
+            /**
+             * @typedef { Object } MUCHat
+             * Object representing a XEP-0371 Hat
+             * @property { String } title
+             * @property { String } uri
+             */
             data['hats'] = Array.from(child.children).map(
                 c =>
                     c.matches('hat') && {

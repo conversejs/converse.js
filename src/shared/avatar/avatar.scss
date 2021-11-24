@@ -1,0 +1,13 @@
+converse-avatar {
+    border: 0;
+    background: transparent;
+
+    &.modal-avatar {
+        display: block;
+        margin-bottom: 1em;
+    }
+
+    .avatar {
+        border-radius: var(--avatar-border-radius);
+    }
+}

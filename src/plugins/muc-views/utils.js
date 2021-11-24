@@ -1,4 +1,5 @@
 import ModeratorToolsModal from './modals/moderator-tools.js';
+import OccupantModal from 'modals/occupant.js';
 import log from "@converse/headless/log";
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
@@ -7,7 +8,7 @@ import { html } from "lit";
 import { parseMessageForCommands } from 'plugins/chatview/utils.js';
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
-const { Strophe, $pres, $iq, sizzle, u } = converse.env;
+const { Strophe, $iq, sizzle, u } = converse.env;
 
 const COMMAND_TO_AFFILIATION = {
     'admin': 'admin',
@@ -292,6 +293,11 @@ export function showModeratorToolsModal (muc, affiliation) {
 }
 
 
+export function showOccupantModal (ev, occupant) {
+    api.modal.show(OccupantModal, { 'model': occupant }, ev);
+}
+
+
 export function parseMessageForMUCCommands (muc, text) {
     if (
         api.settings.get('muc_disable_slash_commands') &&
@@ -364,14 +370,7 @@ export function parseMessageForMUCCommands (muc, text) {
                 const message = __('Your nickname is "%1$s"', muc.get('nick'));
                 muc.createMessage({ message, 'type': 'error' });
             } else {
-                const jid = Strophe.getBareJidFromJid(muc.get('jid'));
-                api.send(
-                    $pres({
-                        from: _converse.connection.jid,
-                        to: `${jid}/${args}`,
-                        id: u.getUniqueId()
-                    }).tree()
-                );
+                muc.setNickname(args);
             }
             break;
         }

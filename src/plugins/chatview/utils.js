@@ -11,12 +11,12 @@ export function clearHistory (jid) {
 
 export async function getHeadingDropdownItem (promise_or_data) {
     const data = await promise_or_data;
-    return html`
+    return data ? html`
         <a href="#" class="dropdown-item ${data.a_class}" @click=${data.handler} title="${data.i18n_title}">
             <converse-icon size="1em" color="var(--text-color-lighten-15-percent)" class="fa ${data.icon_class}"></converse-icon>
             ${data.i18n_text}
         </a>
-    `;
+    ` : '';
 }
 
 export async function getHeadingStandaloneButton (promise_or_data) {

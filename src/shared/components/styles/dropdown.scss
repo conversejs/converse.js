@@ -5,36 +5,43 @@
 .conversejs {
     @import "bootstrap/scss/dropdown";
     converse-dropdown {
-	&.dropup {
-	    &.dropup--left {
-		.dropdown-menu {
-		    right: 100%;
-		    left: auto;
-		}
-	    }
-	}
+        &.dropup {
+            &.dropup--left {
+                .dropdown-menu {
+                    right: 100%;
+                    left: auto;
+                }
+            }
+        }
 
-	.btn--standalone {
-	    padding: 0 0.2em;
-	    margin: 0;
-	}
-	.dropdown-menu {
-	    margin-top: -0.2em !important;
-	}
+        .btn--standalone {
+            padding: 0 0.2em;
+            margin: 0;
+        }
 
-	.dropdown-item {
-	    padding: 0.5rem 1rem;
-	    .fa {
-		width: 1.25em;
-		margin-right: 0.75rem;
-	    }
-	    &:active, &.selected {
-		color: white !important;
-		background-color: var(--list-item-open-color);
-		.fa {
-		    color: white !important;
-		}
-	    }
-	}
+        .dropdown-menu {
+            margin-top: -0.2em !important;
+        }
+
+        .dropdown-item {
+            line-height: 1em;
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            converse-icon {
+                margin-top: -0.1em;
+                width: 1.25em;
+                margin-right: 0;
+            }
+            &:active, &.selected {
+                color: white !important;
+                background-color: var(--list-item-open-color);
+                .fa {
+                    color: white !important;
+                }
+            }
+            &:hover {
+                color: var(--text-color);
+            }
+        }
     }
 }

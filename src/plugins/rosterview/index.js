@@ -12,6 +12,7 @@ import { RosterFilter, RosterFilterView } from './filterview.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { highlightRosterItem } from './utils.js';
 
+import 'shared/styles/status.scss';
 import './styles/roster.scss';
 
 

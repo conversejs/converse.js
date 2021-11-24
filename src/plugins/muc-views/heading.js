@@ -173,6 +173,7 @@ export default class MUCHeading extends ElementView {
                 'name': 'signout'
             });
         }
+
         const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
         if (chatview) {
             return _converse.api.hook('getHeadingButtons', chatview, buttons);

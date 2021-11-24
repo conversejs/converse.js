@@ -32,7 +32,7 @@ class ConverseIcon extends CustomElement {
     }
 
     getSource () {
-        return `#icon-${this.class_name.split(" ")[1].replace("fa-", "")}`;
+        return `#icon-${this.class_name.trim().split(" ")[1].replace("fa-", "")}`;
     }
 
     getStyles () {

@@ -28,6 +28,11 @@ const ChatRoomMessageMixin = {
         api.trigger('chatRoomMessageInitialized', this);
     },
 
+
+    getDisplayName () {
+        return this.occupant?.getDisplayName() || this.get('nick');
+    },
+
     /**
      * Determines whether this messsage may be moderated,
      * based on configuration settings and server support.
@@ -66,16 +71,21 @@ const ChatRoomMessageMixin = {
     },
 
     onOccupantAdded (occupant) {
-        if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
-            this.occupant = occupant;
-            this.trigger('occupantAdded');
-            this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-            const chatbox = this?.collection?.chatbox;
-            if (!chatbox) {
-                return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
+        if (this.get('occupant_id')) {
+            if (occupant.get('occupant_id') !== this.get('occupant_id')) {
+                return;
             }
-            this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
+        } else if (occupant.get('nick') !== Strophe.getResourceFromJid(this.get('from'))) {
+            return;
         }
+        this.occupant = occupant;
+        this.trigger('occupantAdded');
+        this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
+        const chatbox = this?.collection?.chatbox;
+        if (!chatbox) {
+            return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
+        }
+        this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
     },
 
     setOccupant () {
@@ -87,7 +97,7 @@ const ChatRoomMessageMixin = {
             return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
         }
         const nick = Strophe.getResourceFromJid(this.get('from'));
-        this.occupant = chatbox.occupants.findWhere({ nick });
+        this.occupant = chatbox.occupants.findOccupant({ nick, 'occupant_id': this.get('occupant_id') });
 
         if (!this.occupant && api.settings.get('muc_send_probes')) {
             this.occupant = chatbox.occupants.create({ nick, 'type': 'unavailable' });

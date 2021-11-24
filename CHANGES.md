@@ -2,8 +2,20 @@
 
 ## 9.0.0 (Unreleased)
 
+- Compress new avatar images before uploading them
+- Add initial support for XEP-0421 occupant Ids.
+- Use more specific types for form fields based on XEP-0122
 - Fix trimming of chats in overlayed view mode
+- OMEMO bugfix: Always create device session based on real JID.
+- If `auto_register_muc_nickname` is set, make sure to register when the user changes current nick.
+- #1322: Display occupants’ avatars in the occupants list
+- #1419: Clicking on avatar should show bigger version
+- #1426: Don't fetch member list if not affiliated
+- #2423: Could not find dependency "converse-controlbox" for plugin "converse-muc"
 - #2647: Singleton mode doesn't work
+- #2704: Send button doesn't work in a multi-user chat
+- #2725: Send new presence status to all connected MUCs
+- #2728: Not sending headers with upload request
 
 - Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:
@@ -18,7 +30,6 @@ Three config settings have been obsoleted:
   - show_images_inline
   - muc_show_ogp_unfurls
 
-- Use more specific types for form fields based on XEP-0122
 
 ### Breaking Changes
 

@@ -70,7 +70,7 @@ export default {
          * @returns {Promise} Promise which resolves with the Model representing the chat.
          *
          * @example
-         * this.api.rooms.open('group@muc.example.com')
+         * api.rooms.open('group@muc.example.com')
          *
          * @example
          * // To return an array of rooms, provide an array of room JIDs:

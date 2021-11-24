@@ -36,7 +36,7 @@ function initConverse (promise_names=[], settings=null, func) {
 
 async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, features=[], items=[], type='info') {
     const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
-    const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop(), 300);
+    const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
     const stanza = $iq({
         'type': 'result',
         'from': entity_jid,
@@ -283,7 +283,7 @@ async function returnMemberLists (_converse, muc_jid, members=[], affiliations=[
     return new Promise(resolve => _converse.api.listen.on('membersFetched', resolve));
 }
 
-async function receiveOwnMUCPresence (_converse, muc_jid, nick) {
+async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='owner', role='moderator') {
     const sent_stanzas = _converse.connection.sent_stanzas;
     await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
     const presence = $pres({
@@ -291,17 +291,23 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick) {
             from: `${muc_jid}/${nick}`,
             id: u.getUniqueId()
     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-        .c('item').attrs({
-            affiliation: 'owner',
-            jid: _converse.bare_jid,
-            role: 'moderator'
-        }).up()
+        .c('item').attrs({ affiliation, role, 'jid': _converse.bare_jid }).up()
         .c('status').attrs({code:'110'});
     _converse.connection._dataRecv(createRequest(presence));
 }
 
 
-async function openAndEnterChatRoom (_converse, muc_jid, nick, features=[], members=[], force_open=true, settings={}) {
+async function openAndEnterChatRoom (
+        _converse,
+        muc_jid,
+        nick,
+        features=[],
+        members=[],
+        force_open=true,
+        settings={},
+        own_affiliation='owner',
+        own_role='moderator',
+    ) {
     const { api } = _converse;
     muc_jid = muc_jid.toLowerCase();
     const room_creation_promise = api.rooms.open(muc_jid, settings, force_open);
@@ -310,7 +316,7 @@ async function openAndEnterChatRoom (_converse, muc_jid, nick, features=[], memb
     // The user has just entered the room (because join was called)
     // and receives their own presence from the server.
     // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
-    await receiveOwnMUCPresence(_converse, muc_jid, nick);
+    await receiveOwnMUCPresence(_converse, muc_jid, nick, own_affiliation, own_role);
 
     await room_creation_promise;
     const model = _converse.chatboxes.get(muc_jid);
@@ -318,7 +324,10 @@ async function openAndEnterChatRoom (_converse, muc_jid, nick, features=[], memb
 
     const affs = api.settings.get('muc_fetch_members');
     const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
-    await returnMemberLists(_converse, muc_jid, members, all_affiliations);
+
+    if (['member', 'admin', 'owner'].includes(own_affiliation)) {
+        await returnMemberLists(_converse, muc_jid, members, all_affiliations);
+    }
     await model.messages.fetched;
     return model;
 }

@@ -2,10 +2,20 @@ import BootstrapModal from "plugins/modal/base.js";
 import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
 import tpl_profile_modal from "../templates/profile_modal.js";
+import Compress from 'client-compress';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 
 const { sizzle } = converse.env;
+
+const options = {
+  targetSize: 0.1,
+  quality: 0.75,
+  maxWidth: 256,
+  maxHeight: 256
+}
+
+const compress = new Compress(options)
 
 
 const ProfileModal = BootstrapModal.extend({
@@ -30,20 +40,8 @@ const ProfileModal = BootstrapModal.extend({
         return tpl_profile_modal(Object.assign(
             this.model.toJSON(),
             this.model.vcard.toJSON(),
-            this.getAvatarData(),
             { 'view': this }
         ));
-    },
-
-    getAvatarData () {
-        const image_type = this.model.vcard.get('image_type');
-        const image_data = this.model.vcard.get('image');
-        const image = "data:" + image_type + ";base64," + image_data;
-        return {
-            'height': 128,
-            'width': 128,
-            image,
-        };
     },
 
     afterRender () {
@@ -83,14 +81,18 @@ const ProfileModal = BootstrapModal.extend({
             });
             this.setVCard(data);
         } else {
-            reader.onloadend = () => {
-                Object.assign(data, {
-                    'image': btoa(reader.result),
-                    'image_type': image_file.type
-                });
-                this.setVCard(data);
-            };
-            reader.readAsBinaryString(image_file);
+            const files = [image_file];
+            compress.compress(files).then((conversions) => {
+                const { photo, } = conversions[0];
+                reader.onloadend = () => {
+                    Object.assign(data, {
+                        'image': btoa(reader.result),
+                        'image_type': image_file.type
+                    });
+                    this.setVCard(data);
+                };
+                reader.readAsBinaryString(photo.data);
+            });
         }
     }
 });

@@ -221,7 +221,7 @@ const ChatRoomMixin = {
      *  message, even if it didn't include a `markable` element.
      */
     sendMarkerForMessage (msg, type = 'displayed', force = false) {
-        if (!msg || !api.settings.get('send_chat_markers').includes(type)) {
+        if (!msg || !api.settings.get('send_chat_markers').includes(type) || msg?.get('type') !== 'groupchat') {
             return;
         }
         if (msg?.get('is_markable') || force) {
@@ -259,19 +259,20 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#onHiddenChange
      */
     async onHiddenChange () {
+        const roomstatus = converse.ROOMSTATUS;
         const conn_status = this.session.get('connection_status');
         if (this.get('hidden')) {
-            if (conn_status === converse.ROOMSTATUS.ENTERED &&
+            if (conn_status === roomstatus.ENTERED &&
                     api.settings.get('muc_subscribe_to_rai') &&
                     this.getOwnAffiliation() !== 'none') {
-                if (conn_status !== converse.ROOMSTATUS.DISCONNECTED) {
+                if (conn_status !== roomstatus.DISCONNECTED && conn_status !== roomstatus.CLOSING) {
                     this.sendMarkerForLastMessage('received', true);
                     await this.leave();
                 }
                 this.enableRAI();
             }
         } else {
-            if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
+            if (conn_status === roomstatus.DISCONNECTED) {
                 this.rejoin();
             }
             this.clearUnreadMsgCounter();
@@ -339,7 +340,11 @@ const ChatRoomMixin = {
     async onConnectionStatusChanged () {
         if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
             if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
-                await this.leave();
+                try {
+                    await this.leave();
+                } catch (e) {
+                    log.error(e);
+                }
                 this.enableRAI();
             } else {
                 await this.onRoomEntered();
@@ -852,28 +857,35 @@ const ChatRoomMixin = {
      * @param { string } [exit_msg] - Message to indicate your reason for leaving
      */
     async leave (exit_msg) {
-        this.features.destroy();
+        api.connection.connected() && api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg);
 
+        // Delete the features model
+        if (this.features) {
+            await new Promise(resolve =>
+                this.features.destroy({
+                    'success': resolve,
+                    'error': (m, e) => { log.error(e); resolve(); }
+                })
+            );
+        }
+        // Delete disco entity
         const disco_entity = _converse.disco_entities?.get(this.get('jid'));
         if (disco_entity) {
-            await new Promise((success, error) => disco_entity.destroy({ success, error }));
-        }
-        if (api.connection.connected()) {
-            api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg);
+            await new Promise(resolve => disco_entity.destroy({
+                'success': resolve,
+                'error': (m, e) => { log.error(e); resolve(); }
+            }));
         }
         u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
     },
 
     async close (ev) {
+        u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.CLOSING });
+        this.sendMarkerForLastMessage('received', true);
+        await this.unregisterNickname();
         await this.leave();
-        if (
-            api.settings.get('auto_register_muc_nickname') === 'unregister' &&
-            (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
-        ) {
-            this.unregisterNickname();
-        }
-        this.occupants.clearStore();
 
+        this.occupants.clearStore();
         if (ev?.name !== 'closeAllChatBoxes' && api.settings.get('muc_clear_messages_on_leave')) {
             this.clearMessages();
         }
@@ -882,20 +894,7 @@ const ChatRoomMixin = {
         await new Promise(resolve =>
             this.session.destroy({
                 'success': resolve,
-                'error': (m, e) => {
-                    log.error(e);
-                    resolve();
-                }
-            })
-        );
-        // Delete the features model
-        await new Promise(resolve =>
-            this.features.destroy({
-                'success': resolve,
-                'error': (m, e) => {
-                    log.error(e);
-                    resolve();
-                }
+                'error': (m, e) => { log.error(e); resolve(); }
             })
         );
         return _converse.ChatBox.prototype.close.call(this);
@@ -1166,6 +1165,8 @@ const ChatRoomMixin = {
             if (!fieldname.startsWith('muc_')) {
                 if (fieldname === Strophe.NS.MAM) {
                     attrs.mam_enabled = true;
+                } else {
+                    attrs[fieldname] = true;
                 }
                 return;
             }
@@ -1395,12 +1396,39 @@ const ChatRoomMixin = {
     /**
      * Get the {@link _converse.ChatRoomOccupant} instance which
      * represents the current user.
-     * @private
      * @method _converse.ChatRoom#getOwnOccupant
      * @returns { _converse.ChatRoomOccupant }
      */
     getOwnOccupant () {
-        return this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        return this.occupants.getOwnOccupant();
+    },
+
+    async setNickname (nick) {
+        if (
+            api.settings.get('auto_register_muc_nickname') &&
+            (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
+        ) {
+            const old_nick = this.get('nick');
+            this.set({ nick });
+            try {
+                await this.registerNickname();
+            } catch (e) {
+                const { __ } = _converse;
+                log.error(e);
+                const message = __("Error: couldn't register new nickname in members only room");
+                this.createMessage({ message, 'type': 'error' });
+                this.set({ 'nick': old_nick });
+                return;
+            }
+        }
+        const jid = Strophe.getBareJidFromJid(this.get('jid'));
+        api.send(
+            $pres({
+                from: _converse.connection.jid,
+                to: `${jid}/${nick}`,
+                id: u.getUniqueId()
+            }).tree()
+        )
     },
 
     /**
@@ -1620,14 +1648,30 @@ const ChatRoomMixin = {
     },
 
     /**
+     * Check whether we should unregister the user from this MUC, and if so,
+     * call { @link _converse.ChatRoom#sendUnregistrationIQ }
+     * @method _converse.ChatRoom#unregisterNickname
+     */
+    async unregisterNickname () {
+        if (api.settings.get('auto_register_muc_nickname') === 'unregister') {
+            try {
+                if (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
+                    await this.sendUnregistrationIQ();
+                }
+            } catch (e) {
+                log.error(e);
+            }
+        }
+    },
+
+    /**
      * Send an IQ stanza to the MUC to unregister this user's nickname.
      * If the user had a 'member' affiliation, it'll be removed and their
      * nickname will no longer be reserved and can instead be used (and
      * registered) by other users.
-     * @private
-     * @method _converse.ChatRoom#unregisterNickname
+     * @method _converse.ChatRoom#sendUnregistrationIQ
      */
-    unregisterNickname () {
+    sendUnregistrationIQ () {
         const iq = $iq({ 'to': this.get('jid'), 'type': 'set' })
             .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
             .c('remove');
@@ -1641,8 +1685,8 @@ const ChatRoomMixin = {
      * @param { XMLElement } pres - The presence stanza
      */
     updateOccupantsOnPresence (pres) {
-        const data = parseMUCPresence(pres);
-        if (data.type === 'error' || (!data.jid && !data.nick)) {
+        const data = parseMUCPresence(pres, this);
+        if (data.type === 'error' || (!data.jid && !data.nick && !data.occupant_id)) {
             return true;
         }
         const occupant = this.occupants.findOccupant(data);
@@ -1883,7 +1927,14 @@ const ChatRoomMixin = {
      * @returns {Promise<boolean>}
      */
     async shouldShowErrorMessage (attrs) {
-        if (attrs['error_condition'] === 'not-acceptable' && (await this.rejoinIfNecessary())) {
+        if (attrs.error_type === 'Decryption') {
+            if (attrs.error_message === "Message key not found. The counter was repeated or the key was not filled.") {
+                // OMEMO message which we already decrypted before
+                return false;
+            } else if ( attrs.error_condition === 'not-encrypted-for-this-device') {
+                return false;
+            }
+        } else if (attrs.error_condition === 'not-acceptable' && (await this.rejoinIfNecessary())) {
             return false;
         }
         return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, attrs);
@@ -2153,7 +2204,10 @@ const ChatRoomMixin = {
         if (u.isErrorObject(attrs)) {
             attrs.stanza && log.error(attrs.stanza);
             return log.error(attrs.message);
+        } else if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
+            return;
         }
+
         const message = this.getDuplicateMessage(attrs);
         if (message) {
             (message.get('type') === 'groupchat') && this.updateMessage(message, attrs);
@@ -2560,7 +2614,10 @@ const ChatRoomMixin = {
     async onOwnPresence (stanza) {
         await this.occupants.fetched;
         const old_status = this.session.get('connection_status');
-        if (stanza.getAttribute('type') !== 'unavailable' && old_status !== converse.ROOMSTATUS.ENTERED) {
+        if (stanza.getAttribute('type') !== 'unavailable' &&
+            old_status !== converse.ROOMSTATUS.ENTERED &&
+            old_status !== converse.ROOMSTATUS.CLOSING
+        ) {
             // Set connection_status before creating the occupant, but
             // only trigger afterwards, so that plugins can access the
             // occupant in their event handlers.
@@ -2599,7 +2656,6 @@ const ChatRoomMixin = {
                 }
             }
         }
-        this.session.save({ 'connection_status': converse.ROOMSTATUS.ENTERED });
     },
 
     /**

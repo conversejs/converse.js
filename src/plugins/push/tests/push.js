@@ -106,7 +106,7 @@ describe("XEP-0357 Push Notifications", function () {
 
     it("can be disabled",
         mock.initConverse(
-            [], {
+            ['chatBoxesFetched'], {
                 'push_app_servers': [{
                     'jid': 'push-5@client.example',
                     'node': 'yxs32uqsflafdk3iuqo',

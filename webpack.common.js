@@ -3,6 +3,7 @@ const path = require('path');
 
 let bootstrap_ignore_modules = ['carousel', 'scrollspy', 'tooltip', 'toast'];
 
+
 const BOOTSTRAP_IGNORE_MODULES = (process.env.BOOTSTRAP_IGNORE_MODULES || '').replace(/ /g, '').trim();
 if (BOOTSTRAP_IGNORE_MODULES.length > 0) {
     bootstrap_ignore_modules = bootstrap_ignore_modules.concat(BOOTSTRAP_IGNORE_MODULES.split(','));
@@ -23,9 +24,6 @@ module.exports = {
     module: {
         rules: [
         {
-            test: path.resolve(__dirname, "node_modules/xss/dist/xss"),
-            use: "exports-loader?filterXSS"
-        }, {
             test: /LC_MESSAGES\/converse.po$/,
             type: "json",
             use: [

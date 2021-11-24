@@ -202,7 +202,7 @@ export function fetchNewestMessages (model) {
     if (model.disable_mam) {
         return;
     }
-    const most_recent_msg = model.most_recent_cached_message;
+    const most_recent_msg = model.getMostRecentMessage();
 
     // if clear_messages_on_reconnection is true, than any recent messages
     // must have been received *after* connection and we instead must query

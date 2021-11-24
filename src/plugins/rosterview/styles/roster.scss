@@ -81,35 +81,6 @@
 
         .current-xmpp-contact {
             margin: 0.25em 0;
-
-            .chat-status {
-                vertical-align: middle;
-                font-size: 0.6em;
-                margin-right: 0;
-                margin-left: -0.7em;
-                margin-bottom: -1.5em;
-                border-radius: 50%;
-                border: 2px solid var(--occupants-background-color);
-            }
-            .chat-status--offline {
-                margin-right: 0.8em;
-            }
-            .chat-status--online {
-                color: var(--chat-status-online);
-            }
-            .chat-status--busy {
-                color: var(--chat-status-busy);
-            }
-            .chat-status--away {
-                color: var(--chat-status-away);
-            }
-            .chat-status--offline {
-                display: none;
-            }
-            .far.fa-circle,
-            .fa-times-circle {
-                color: var(--subdued-color);
-            }
         }
 
         li {

@@ -449,6 +449,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                     </iq>`);
 
                 const promise = u.getOpenPromise();
+
+                spyOn(XMLHttpRequest.prototype, 'setRequestHeader');
                 spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async () => {
                     const message = view.model.messages.at(0);
                     const el = await u.waitUntil(() => view.querySelector('.chat-content progress'));
@@ -461,7 +463,12 @@ describe("XEP-0363: HTTP File Upload", function () {
                     promise.resolve();
                 });
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                return promise;
+                await promise;
+                expect(XMLHttpRequest.prototype.setRequestHeader.calls.count()).toBe(2);
+                expect(XMLHttpRequest.prototype.setRequestHeader.calls.all()[0].args[0]).toBe('Content-type');
+                expect(XMLHttpRequest.prototype.setRequestHeader.calls.all()[0].args[1]).toBe('image/jpeg');
+                expect(XMLHttpRequest.prototype.setRequestHeader.calls.all()[1].args[0]).toBe('Authorization');
+                expect(XMLHttpRequest.prototype.setRequestHeader.calls.all()[1].args[1]).toBe('Basic Base64String==');
             }));
         });
     });

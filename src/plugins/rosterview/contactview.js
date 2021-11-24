@@ -69,53 +69,7 @@ export default class RosterContact extends CustomElement {
     }
 
     renderRosterItem (item) {
-        const STATUSES = {
-            'dnd': __('This contact is busy'),
-            'online': __('This contact is online'),
-            'offline': __('This contact is offline'),
-            'unavailable': __('This contact is unavailable'),
-            'xa': __('This contact is away for an extended period'),
-            'away': __('This contact is away')
-        };
-
-        const show = item.presence.get('show') || 'offline';
-        let status_icon;
-        if (show === 'online') {
-            status_icon = 'fa fa-circle chat-status chat-status--online';
-        } else if (show === 'away') {
-            status_icon = 'fa fa-circle chat-status chat-status--away';
-        } else if (show === 'xa') {
-            status_icon = 'far fa-circle chat-status chat-status-xa';
-        } else if (show === 'dnd') {
-            status_icon = 'fa fa-minus-circle chat-status chat-status--busy';
-        } else {
-            status_icon = 'fa fa-times-circle chat-status chat-status--offline';
-        }
-        const display_name = item.getDisplayName();
-        return tpl_roster_item(
-            Object.assign(item.toJSON(), {
-                show,
-                display_name,
-                status_icon,
-                'openChat': ev => this.openChat(ev),
-                'removeContact':  ev => this.removeContact(ev),
-                'getAvatarData': () => this.getAvatarData(),
-                'desc_status': STATUSES[show],
-                'num_unread': item.get('num_unread') || 0
-            })
-        );
-    }
-
-    getAvatarData () {
-        const image_type = this.model.vcard?.get('image_type') || _converse.DEFAULT_IMAGE_TYPE;
-        const image_data = this.model.vcard?.get('image') || _converse.DEFAULT_IMAGE;
-        const image = "data:" + image_type + ";base64," + image_data;
-        return {
-            'classes': 'avatar',
-            'height': 30,
-            'width': 30,
-            image,
-        };
+        return tpl_roster_item(this, item);
     }
 
     openChat (ev) {

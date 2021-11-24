@@ -117,6 +117,7 @@ converse.ROOMSTATUS = {
     ENTERED: 5,
     DESTROYED: 6,
     BANNED: 7,
+    CLOSING: 8
 };
 
 converse.plugins.add('converse-muc', {
@@ -132,7 +133,7 @@ converse.plugins.add('converse-muc', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ['converse-chatboxes', 'converse-chat', 'converse-disco', 'converse-controlbox'],
+    dependencies: ['converse-chatboxes', 'converse-chat', 'converse-disco'],
 
     overrides: {
         ChatBoxes: {

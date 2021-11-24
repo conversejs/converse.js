@@ -2,7 +2,6 @@ import { __ } from 'i18n';
 import { _converse } from '@converse/headless/core';
 import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
 import { html } from "lit";
-import { renderAvatar } from 'shared/directives/avatar.js';
 import { until } from 'lit/directives/until.js';
 
 
@@ -19,19 +18,13 @@ async function getDropdownButtons (promise) {
 }
 
 export default (o) => {
-    const vcard = o.model?.vcard;
-    const vcard_json = vcard ? vcard.toJSON() : {};
     const i18n_profile = __("The User's Profile Image");
-    const avatar_data = Object.assign(
-        {
-            'alt_text': i18n_profile,
-            'extra_classes': '',
-            'height': 40,
-            'width': 40
-        },
-        vcard_json
-    );
-    const avatar = html`<span class="mr-2">${renderAvatar(avatar_data)}</span>`;
+    const avatar = html`<span title="${i18n_profile}">
+        <converse-avatar
+            class="avatar chat-msg__avatar"
+            .data=${o.model.vcard?.attributes}
+            nonce=${o.model.vcard?.get('vcard_updated')}
+            height="40" width="40"></converse-avatar></span>`;
     const display_name = o.model.getDisplayName();
 
     const tpl_dropdown_btns = () => getDropdownButtons(o.heading_buttons_promise)

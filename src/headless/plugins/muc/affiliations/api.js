@@ -19,6 +19,21 @@ export default {
          * @param { String } users[].jid - The JID of the user whose affiliation will change
          * @param { ('outcast'|'member'|'admin'|'owner') } users[].affiliation - The new affiliation for this user
          * @param { String } [users[].reason] - An optional reason for the affiliation change
+         * @returns { Promise }
+         *
+         * @example
+         *  api.rooms.affiliations.set(
+         *      [
+         *          'muc1@muc.example.org',
+         *          'muc2@muc.example.org'
+         *      ], [
+         *          {
+         *              'jid': 'user@example.org',
+         *              'affiliation': 'member',
+         *              'reason': "You're one of us now!"
+         *          }
+         *      ]
+         *  )
          */
         set (muc_jids, users) {
             users = !Array.isArray(users) ? [users] : users;

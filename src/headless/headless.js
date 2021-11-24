@@ -18,7 +18,7 @@ import "./plugins/pubsub.js";           // XEP-0060 Pubsub
 import "./plugins/roster/index.js";     // RFC-6121 Contacts Roster
 import "./plugins/smacks/index.js";     // XEP-0198 Stream Management
 import "./plugins/status/index.js";
-import "./plugins/vcard.js";            // XEP-0054 VCard-temp
+import "./plugins/vcard/index.js";      // XEP-0054 VCard-temp
 /* END: Removable components */
 
 import { converse } from "./core.js";

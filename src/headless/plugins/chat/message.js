@@ -4,8 +4,7 @@ import log from '../../log.js';
 import { _converse, api, converse } from '../../core.js';
 import { getOpenPromise } from '@converse/openpromise';
 
-const u = converse.env.utils;
-const { Strophe } = converse.env;
+const { Strophe, sizzle, u } = converse.env;
 
 /**
  * Mixin which turns a `ModelWithContact` model into a non-MUC message. These can be either `chat` messages or `headline` messages.
@@ -150,9 +149,7 @@ const MessageMixin = {
     },
 
     getDisplayName () {
-        if (this.get('type') === 'groupchat') {
-            return this.get('nick');
-        } else if (this.contact) {
+        if (this.contact) {
             return this.contact.getDisplayName();
         } else if (this.vcard) {
             return this.vcard.getDisplayName();
@@ -194,6 +191,18 @@ const MessageMixin = {
         return api.sendIQ(iq);
     },
 
+    getUploadRequestMetadata (stanza) {
+        const headers = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"] put header`, stanza);
+        // https://xmpp.org/extensions/xep-0363.html#request
+        // TODO: Can't set the Cookie header in JavaScipt, instead cookies need
+        // to be manually set via document.cookie, so we're leaving it out here.
+        return {
+            'headers': headers
+                .map(h => ({ 'name': h.getAttribute('name'), 'value': h.textContent }))
+                .filter(h => ['Authorization', 'Expires'].includes(h.name))
+        }
+    },
+
     async getRequestSlotURL () {
         const { __ } = _converse;
         let stanza;
@@ -207,8 +216,9 @@ const MessageMixin = {
                 'is_ephemeral': true
             });
         }
-        const slot = stanza.querySelector('slot');
+        const slot = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"]`, stanza).pop();
         if (slot) {
+            this.upload_metadata = this.getUploadRequestMetadata(stanza);
             this.save({
                 'get': slot.querySelector('get').getAttribute('url'),
                 'put': slot.querySelector('put').getAttribute('url')
@@ -224,6 +234,7 @@ const MessageMixin = {
 
     uploadFile () {
         const xhr = new XMLHttpRequest();
+
         xhr.onreadystatechange = async () => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 log.info('Status: ' + xhr.status);
@@ -277,6 +288,7 @@ const MessageMixin = {
         };
         xhr.open('PUT', this.get('put'), true);
         xhr.setRequestHeader('Content-type', this.file.type);
+        this.upload_metadata.headers?.forEach(h => xhr.setRequestHeader(h.name, h.value));
         xhr.send(this.file);
     }
 };

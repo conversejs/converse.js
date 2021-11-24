@@ -1,10 +1,11 @@
 /**
- * @module converse-singleton
  * @copyright JC Brand
  * @license Mozilla Public License (MPLv2)
  * @description A plugin which restricts Converse to only one chat.
  */
 import { api, converse } from "@converse/headless/core";
+
+import './singleton.scss';
 
 
 converse.plugins.add('converse-singleton', {

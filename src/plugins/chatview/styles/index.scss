@@ -102,37 +102,9 @@
                 overflow: hidden;
             }
         }
-
-        &.converse-singleton {
-            .flyout {
-                border: none !important;
-            }
-            .chat-head {
-                padding: 0.5em;
-            }
-            .chatbox {
-                margin: 0;
-                position: relative;
-            }
-        }
     }
 
     converse-chats.converse-fullscreen  {
-        &.converse-singleton {
-            .chatbox {
-                @include make-col-ready();
-                @include media-breakpoint-up(md) {
-                    @include make-col(12);
-                }
-                @include media-breakpoint-up(lg) {
-                    @include make-col(12);
-                }
-                @include media-breakpoint-up(xl) {
-                    @include make-col(12);
-                }
-            }
-        }
-
         &:not(.converse-singleton) {
             .chatbox {
                 @include media-breakpoint-up(md) {

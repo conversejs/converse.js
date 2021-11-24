@@ -34,7 +34,7 @@ import "./plugins/register/index.js";       // XEP-0077 In-band registration
 import "./plugins/roomslist/index.js";      // Show currently open chat rooms
 import "./plugins/rootview/index.js";
 import "./plugins/rosterview/index.js";
-import "./plugins/singleton.js";
+import "./plugins/singleton/index.js";
 /* END: Removable components */
 
 

@@ -1,0 +1,17 @@
+.conversejs {
+    #controlbox {
+        #chatrooms {
+            padding: 0;
+
+            .add-chatroom {
+                input[type=button],
+                input[type=submit],
+                input[type=text] {
+                    width: 100%;
+                }
+                margin: 0;
+                padding: 0;
+            }
+        }
+    }
+}

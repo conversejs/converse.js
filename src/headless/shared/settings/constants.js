@@ -4,7 +4,7 @@
  * @property { Boolean } [allow_non_roster_messaging=false]
  * @property { Boolean } [allow_url_history_change=true]
  * @property { String } [assets_path='/dist']
- * @property { ('login'|'prebind'|'anonymous'|'external' } [authentication='login']
+ * @property { ('login'|'prebind'|'anonymous'|'external') } [authentication='login']
  * @property { Boolean } [auto_login=false] - Currently only used in connection with anonymous login
  * @property { Boolean } [auto_reconnect=true]
  * @property { Array<String>} [blacklisted_plugins]

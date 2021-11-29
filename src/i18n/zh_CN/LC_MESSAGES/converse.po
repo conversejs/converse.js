@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-11-11 13:51+0000\n"
+"PO-Revision-Date: 2021-11-30 10:57+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9.1-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -233,7 +233,7 @@ msgstr "被禁止：您的角色没有足够权限。"
 
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
-msgstr ""
+msgstr "错误：无法在仅限成员聊天室注册新昵称"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -812,17 +812,16 @@ msgid "Affiliation"
 msgstr "身份"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
 msgstr "角色"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
-msgstr ""
+msgstr "帽子"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "占有者 Id"
 
 #: dist/converse-no-dependencies.js:72950
 msgid "Remove as contact"
@@ -1810,7 +1809,7 @@ msgstr "若要支持 OMEMO 加密通信，这间聊天室必须仅限会员并�
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "不支持 OMEMO 加密"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""

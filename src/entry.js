@@ -28,7 +28,7 @@ const converse = {
     },
 
     initialize (settings={}) {
-        converse.load(settings).initialize(settings);
+        return converse.load(settings).initialize(settings);
     },
 
     /**

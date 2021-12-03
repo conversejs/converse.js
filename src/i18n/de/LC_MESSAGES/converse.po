@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-09-12 15:32+0000\n"
+"PO-Revision-Date: 2021-12-04 19:53+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -864,9 +864,8 @@ msgid "Affiliation"
 msgstr "Zugehörigkeit"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Rolle"
+msgstr "Rollen"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
@@ -1912,7 +1911,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "OMEMO-Verschlüsselung wird nicht unterstützt"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""

@@ -52,7 +52,7 @@ const show_register_link = () => {
 }
 
 
-const auth_fields = () => {
+const auth_fields = (el) => {
     const authentication = api.settings.get('authentication');
     const i18n_login = __('Log in');
     const i18n_xmpp_address = __("XMPP Address");
@@ -65,6 +65,7 @@ const auth_fields = () => {
             <label for="converse-login-jid">${i18n_xmpp_address}:</label>
             <input id="converse-login-jid"
                 ?autofocus=${api.settings.get('auto_focus') ? true : false}
+                @changed=${el.validate}
                 required
                 class="form-control"
                 type="text"
@@ -81,20 +82,20 @@ const auth_fields = () => {
 }
 
 
-const form_fields = () => {
+const form_fields = (el) => {
     const authentication = api.settings.get('authentication');
     const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND } = _converse;
     const i18n_disconnected = __('Disconnected');
     const i18n_anon_login = __('Click here to log in anonymously');
     return html`
-        ${ (authentication == LOGIN || authentication == EXTERNAL) ? auth_fields() : '' }
+        ${ (authentication == LOGIN || authentication == EXTERNAL) ? auth_fields(el) : '' }
         ${ authentication == ANONYMOUS ? html`<input class="btn btn-primary login-anon" type="submit" value="${i18n_anon_login}">` : '' }
         ${ authentication == PREBIND ? html`<p>${i18n_disconnected}</p>` : '' }
     `;
 }
 
 
-export default () => {
+export default (el) => {
     const connection_status = _converse.connfeedback.get('connection_status');
     let feedback_class, pretty_status;
     if (REPORTABLE_STATUSES.includes(connection_status)) {
@@ -104,11 +105,11 @@ export default () => {
     const conn_feedback_message = _converse.connfeedback.get('message');
     return html`
         <converse-brand-heading></converse-brand-heading>
-        <form id="converse-login" class="converse-form" method="post">
+        <form id="converse-login" class="converse-form" method="post" @submit=${el.authenticate}>
             <div class="conn-feedback fade-in ${ !pretty_status ? 'hidden' : feedback_class}">
                 <p class="feedback-subject">${ pretty_status }</p>
                 <p class="feedback-message ${ !conn_feedback_message ? 'hidden' : '' }">${conn_feedback_message}</p>
             </div>
-            ${ (_converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields() }
+            ${ (_converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields(el) }
         </form>`;
 }

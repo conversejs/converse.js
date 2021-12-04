@@ -26,7 +26,8 @@ export default o => html`
                           }`
                     : o['active-form'] === 'register'
                         ? html`<converse-register-panel></converse-register-panel>`
-                        : html`<converse-login-panel></converse-login-panel>`
+                        : html`<converse-login-panel id="converse-login-panel" class="controlbox-pane fade-in row no-gutters">
+                            </converse-login-panel>`
                 }
             </div>
         </div>

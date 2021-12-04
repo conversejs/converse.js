@@ -1,29 +1,24 @@
 import bootstrap from 'bootstrap.native';
 import tpl_login_panel from './templates/loginform.js';
-import { ElementView } from '@converse/skeletor/src/element';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
-import { render } from 'lit';
 
 const { Strophe, u } = converse.env;
 
 
-class LoginForm extends ElementView {
-    id = 'converse-login-panel';
-    className = 'controlbox-pane fade-in row no-gutters';
-    events = {
-        'submit form#converse-login': 'authenticate',
-        'change input': 'validate',
-    };
+class LoginForm extends CustomElement {
 
     initialize () {
-        this.listenTo(_converse.connfeedback, 'change', this.render);
-        this.render();
-        this.initPopovers();
+        this.listenTo(_converse.connfeedback, 'change', this.requesUpdate);
     }
 
     render () {
-        render(tpl_login_panel(), this);
+        return tpl_login_panel(this);
+    }
+
+    firstUpdated () {
+        this.initPopovers();
     }
 
     initPopovers () {

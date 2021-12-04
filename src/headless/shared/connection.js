@@ -102,6 +102,9 @@ export class Connection extends Strophe.Connection {
             const domain = Strophe.getDomainFromJid(jid);
             await this.discoverConnectionMethods(domain);
         }
+        if (!api.settings.get('bosh_service_url') && !api.settings.get("websocket_url")) {
+            throw new Error("You must supply a value for either the bosh_service_url or websocket_url or both.");
+        }
         super.connect(jid, password, callback || this.onConnectStatusChanged, BOSH_WAIT);
     }
 

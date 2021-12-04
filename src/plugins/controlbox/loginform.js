@@ -1,6 +1,7 @@
 import bootstrap from 'bootstrap.native';
 import tpl_login_panel from './templates/loginform.js';
 import { CustomElement } from 'shared/components/element.js';
+import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 
@@ -10,7 +11,9 @@ const { Strophe, u } = converse.env;
 class LoginForm extends CustomElement {
 
     initialize () {
-        this.listenTo(_converse.connfeedback, 'change', this.requesUpdate);
+        this.model = new Model();
+        this.listenTo(_converse.connfeedback, 'change', () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
     }
 
     render () {
@@ -19,6 +22,35 @@ class LoginForm extends CustomElement {
 
     firstUpdated () {
         this.initPopovers();
+    }
+
+    async onLoginFormSubmitted (ev) {
+        ev?.preventDefault();
+        if (api.settings.get('bosh_service_url') ||
+                api.settings.get('websocket_url') ||
+                this.model.get('show_connection_url_input')) {
+            this.authenticate(ev);
+        }
+        await this.discoverConnectionMethods(ev);
+        if (api.settings.get('bosh_service_url') || api.settings.get('websocket_url')) {
+            this.authenticate(ev);
+        } else {
+            this.model.set('show_connection_url_input', true);
+        }
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    async discoverConnectionMethods (ev) {
+        if (!api.settings.get("discover_connection_methods")) {
+            return;
+        }
+        const form_data = new FormData(ev.target);
+        const jid = form_data.get('jid');
+        const domain = Strophe.getDomainFromJid(jid);
+        if (!_converse.connection?.jid || (jid && !u.isSameDomain(_converse.connection.jid, jid))) {
+            await _converse.initConnection();
+        }
+        return _converse.connection.discoverConnectionMethods(domain);
     }
 
     initPopovers () {
@@ -52,7 +84,6 @@ class LoginForm extends CustomElement {
      * @param { Event } ev
      */
     authenticate (ev) {
-        ev?.preventDefault();
         if (api.settings.get('authentication') === _converse.ANONYMOUS) {
             return this.connect(_converse.jid, null);
         }
@@ -61,6 +92,13 @@ class LoginForm extends CustomElement {
         }
 
         const form_data = new FormData(ev.target);
+        const connection_url  = form_data.get('connection-url');
+        if (connection_url?.startsWith('ws')) {
+            api.settings.set('websocket_url', connection_url);
+        } else if (connection_url?.startsWith('http')) {
+            api.settings.set('bosh_service_url', connection_url);
+        }
+
         _converse.config.save({ 'trusted': (form_data.get('trusted') && true) || false });
 
         let jid = form_data.get('jid');

@@ -24,6 +24,24 @@ const trust_checkbox = (checked) => {
     `;
 }
 
+const connection_url_input = () => {
+    const i18n_connection_url = __('Connection URL');
+    const i18n_form_help = __('HTTP or websocket URL that is used to connect to your XMPP server');
+    const i18n_placeholder = __('e.g. wss://example.org/xmpp-websocket');
+    return html`
+        <div class="form-group fade-in">
+            <label for="converse-conn-url">${i18n_connection_url}</label>
+            <p class="form-help instructions">${i18n_form_help}</p>
+            <input id="converse-conn-url"
+                   class="form-control"
+                   required="required"
+                   type="url"
+                   name="connection-url"
+                   placeholder="${i18n_placeholder}"/>
+        </div>
+    `;
+}
+
 const password_input = () => {
     const i18n_password = __('Password');
     return html`
@@ -73,6 +91,7 @@ const auth_fields = (el) => {
                 placeholder="${placeholder_username}"/>
         </div>
         ${ (authentication !== _converse.EXTERNAL) ? password_input() : '' }
+        ${ el.model.get('show_connection_url_input') ? connection_url_input() : '' }
         ${ show_trust_checkbox ? trust_checkbox(show_trust_checkbox === 'off' ? false : true) : '' }
         <fieldset class="form-group buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_login}"/>
@@ -105,7 +124,7 @@ export default (el) => {
     const conn_feedback_message = _converse.connfeedback.get('message');
     return html`
         <converse-brand-heading></converse-brand-heading>
-        <form id="converse-login" class="converse-form" method="post" @submit=${el.authenticate}>
+        <form id="converse-login" class="converse-form" method="post" @submit=${el.onLoginFormSubmitted}>
             <div class="conn-feedback fade-in ${ !pretty_status ? 'hidden' : feedback_class}">
                 <p class="feedback-subject">${ pretty_status }</p>
                 <p class="feedback-message ${ !conn_feedback_message ? 'hidden' : '' }">${conn_feedback_message}</p>

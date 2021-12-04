@@ -612,30 +612,24 @@ _converse.initConnection = function () {
         if (api.settings.get("authentication") === _converse.PREBIND) {
             throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
         }
-        if (! api.settings.get("websocket_url")) {
-            throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-        }
     }
 
+    let connection_url = '';
     const XMPPConnection = _converse.isTestEnv() ? MockConnection : Connection;
     if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
-        _converse.connection = new XMPPConnection(
-            api.settings.get("websocket_url"),
-            Object.assign(_converse.default_connection_options, api.settings.get("connection_options"))
-        );
+        connection_url = api.settings.get('websocket_url');
     } else if (api.settings.get('bosh_service_url')) {
-        _converse.connection = new XMPPConnection(
-            api.settings.get('bosh_service_url'),
-            Object.assign(
-                _converse.default_connection_options,
-                api.settings.get("connection_options"),
-                {'keepalive': api.settings.get("keepalive")}
-            )
-        );
-    } else {
-        throw new Error("initConnection: this browser does not support "+
-                        "websockets and bosh_service_url wasn't specified.");
+        connection_url = api.settings.get('bosh_service_url');
     }
+    _converse.connection = new XMPPConnection(
+        connection_url,
+        Object.assign(
+            _converse.default_connection_options,
+            api.settings.get("connection_options"),
+            {'keepalive': api.settings.get("keepalive")}
+        )
+    );
+
     setUpXMLLogging();
     /**
      * Triggered once the `Connection` constructor has been initialized, which

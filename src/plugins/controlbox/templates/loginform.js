@@ -1,5 +1,6 @@
 import 'shared/components/brand-heading.js';
 import tpl_spinner from 'templates/spinner.js';
+import { REPORTABLE_STATUSES, PRETTY_CONNECTION_STATUS, CONNECTION_STATUS_CSS_CLASS } from '../constants.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { html } from "lit";
@@ -51,9 +52,14 @@ const show_register_link = () => {
 }
 
 
-const auth_fields = (o) => {
+const auth_fields = () => {
+    const authentication = api.settings.get('authentication');
     const i18n_login = __('Log in');
     const i18n_xmpp_address = __("XMPP Address");
+    const locked_domain = api.settings.get('locked_domain');
+    const default_domain = api.settings.get('default_domain');
+    const placeholder_username = ((locked_domain || default_domain) && __('Username')) || __('user@domain');
+    const show_trust_checkbox = api.settings.get('allow_user_trust_override');
     return html`
         <div class="form-group">
             <label for="converse-login-jid">${i18n_xmpp_address}:</label>
@@ -63,36 +69,46 @@ const auth_fields = (o) => {
                 class="form-control"
                 type="text"
                 name="jid"
-                placeholder="${o.placeholder_username}"/>
+                placeholder="${placeholder_username}"/>
         </div>
-        ${ (o.authentication !== o.EXTERNAL) ? password_input() : '' }
-        ${ o.show_trust_checkbox ? trust_checkbox(o.show_trust_checkbox === 'off' ? false : true) : '' }
+        ${ (authentication !== _converse.EXTERNAL) ? password_input() : '' }
+        ${ show_trust_checkbox ? trust_checkbox(show_trust_checkbox === 'off' ? false : true) : '' }
         <fieldset class="form-group buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_login}"/>
         </fieldset>
-        ${ show_register_link() ? register_link(o) : '' }
+        ${ show_register_link() ? register_link() : '' }
     `;
 }
 
 
-const form_fields = (o) => {
+const form_fields = () => {
+    const authentication = api.settings.get('authentication');
+    const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND } = _converse;
     const i18n_disconnected = __('Disconnected');
     const i18n_anon_login = __('Click here to log in anonymously');
     return html`
-        ${ (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) ? auth_fields(o) : '' }
-        ${ o.authentication == o.ANONYMOUS ? html`<input class="btn btn-primary login-anon" type="submit" value="${i18n_anon_login}">` : '' }
-        ${ o.authentication == o.PREBIND ? html`<p>${i18n_disconnected}</p>` : '' }
+        ${ (authentication == LOGIN || authentication == EXTERNAL) ? auth_fields() : '' }
+        ${ authentication == ANONYMOUS ? html`<input class="btn btn-primary login-anon" type="submit" value="${i18n_anon_login}">` : '' }
+        ${ authentication == PREBIND ? html`<p>${i18n_disconnected}</p>` : '' }
     `;
 }
 
 
-export default (o) => html`
-    <converse-brand-heading></converse-brand-heading>
-    <form id="converse-login" class="converse-form" method="post">
-        <div class="conn-feedback fade-in ${ !o.conn_feedback_subject ? 'hidden' : o.conn_feedback_class }">
-            <p class="feedback-subject">${ o.conn_feedback_subject }</p>
-            <p class="feedback-message ${ !o.conn_feedback_message ? 'hidden' : '' }">${o.conn_feedback_message}</p>
-        </div>
-        ${ (_converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields(o) }
-    </form>
-`;
+export default () => {
+    const connection_status = _converse.connfeedback.get('connection_status');
+    let feedback_class, pretty_status;
+    if (REPORTABLE_STATUSES.includes(connection_status)) {
+        pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
+        feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
+    }
+    const conn_feedback_message = _converse.connfeedback.get('message');
+    return html`
+        <converse-brand-heading></converse-brand-heading>
+        <form id="converse-login" class="converse-form" method="post">
+            <div class="conn-feedback fade-in ${ !pretty_status ? 'hidden' : feedback_class}">
+                <p class="feedback-subject">${ pretty_status }</p>
+                <p class="feedback-message ${ !conn_feedback_message ? 'hidden' : '' }">${conn_feedback_message}</p>
+            </div>
+            ${ (_converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields() }
+        </form>`;
+}

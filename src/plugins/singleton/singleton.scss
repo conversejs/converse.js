@@ -1,0 +1,49 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/media";
+@import "shared/styles/_variables.scss";
+@import "shared/styles/_mixins.scss";
+
+
+.conversejs {
+    converse-chats.converse-embedded,
+    converse-chats.converse-fullscreen  {
+        &.converse-singleton {
+            .flyout {
+                border: none !important;
+            }
+            .chat-head {
+                padding: 0.5em;
+            }
+            .chatbox {
+                margin: 0;
+                position: relative;
+                margin-left: -15px;
+                @media screen and (max-width: $mobile-portrait-length) {
+                    margin-left: 0;
+                }
+                @include media-breakpoint-down(sm) {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+
+    converse-chats.converse-fullscreen  {
+        &.converse-singleton {
+            .chatbox {
+                @include make-col-ready();
+                @include media-breakpoint-up(md) {
+                    @include make-col(12);
+                }
+                @include media-breakpoint-up(lg) {
+                    @include make-col(12);
+                }
+                @include media-breakpoint-up(xl) {
+                    @include make-col(12);
+                }
+            }
+        }
+    }
+}

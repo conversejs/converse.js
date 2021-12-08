@@ -6,7 +6,7 @@
 import "@converse/headless/plugins/muc/index.js";
 import "plugins/chatview/index.js";
 import "plugins/controlbox/index.js";
-import "plugins/singleton.js";
+import "plugins/singleton/index.js";
 import { api, converse } from "@converse/headless/core";
 import { isUniView } from '@converse/headless/utils/core.js';
 

@@ -415,15 +415,6 @@ u.getSelectValues = function (select) {
     return result;
 };
 
-u.formatFingerprint = function (fp) {
-    fp = fp.replace(/^05/, '');
-    for (let i=1; i<8; i++) {
-        const idx = i*8+i-1;
-        fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
-    }
-    return fp;
-};
-
 u.getRandomInt = function (max) {
     return Math.floor(Math.random() * Math.floor(max));
 };

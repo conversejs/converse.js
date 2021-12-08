@@ -423,6 +423,13 @@
                     width: var(--controlbox-width);
                 }
 
+                @media screen and (max-width: $mobile-portrait-length) {
+                    margin-left: -15px;
+                }
+                @include media-breakpoint-down(sm) {
+                    margin-left: -15px;
+                }
+
                 .login-trusted {
                     white-space: nowrap;
                     font-size: 90%;
@@ -467,6 +474,23 @@
 
                 .controlbox-panes {
                     border-radius: var(--chatbox-border-radius);
+                }
+            }
+
+            .brand-heading {
+                padding-top: 0.8rem;
+                padding-left: 0.8rem;
+                width: 100%;
+            }
+            .converse-svg-logo {
+                height: 1em;
+            }
+            #controlbox {
+                #converse-login-panel {
+                    height: 100%;
+                }
+                .controlbox-panes {
+                    margin-top: 0.5em;
                 }
             }
         }
@@ -587,28 +611,15 @@
         &.converse-fullscreen {
             #controlbox {
                 margin-left: -15px;
+                @media screen and (max-width: $mobile-portrait-length) {
+                    margin-left: 0;
+                }
+                @include media-breakpoint-down(sm) {
+                    margin-left: 0;
+                }
             }
             .controlbox-panes {
                 padding-top: 2em;
-            }
-        }
-
-        &.converse-overlayed {
-            .brand-heading {
-                padding-top: 0.8rem;
-                padding-left: 0.8rem;
-                width: 100%;
-            }
-            .converse-svg-logo {
-                height: 1em;
-            }
-            #controlbox {
-                #converse-login-panel {
-                    height: 100%;
-                }
-                .controlbox-panes {
-                    margin-top: 0.5em;
-                }
             }
         }
     }
@@ -633,7 +644,6 @@
 
             .chatbox {
                 .box-flyout {
-                    margin-left: 15px; // Counteracts Bootstrap margins, but not clear why needed...
                     left: 0;
                     bottom: 0;
                     border-radius: 0;
@@ -643,6 +653,7 @@
             }
 
             #controlbox {
+                margin-left: 0;
                 width: 100vw !important;
                 .box-flyout {
                     width: 100vw !important;

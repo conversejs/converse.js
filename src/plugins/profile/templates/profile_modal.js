@@ -1,90 +1,13 @@
 import "shared/components/image-picker.js";
-import spinner from "templates/spinner.js";
 import { __ } from 'i18n';
-import { _converse, converse } from  "@converse/headless/core";
+import { _converse } from  "@converse/headless/core";
 import { html } from "lit";
 import { modal_header_close_button } from "plugins/modal/templates/buttons.js";
 
-const u = converse.env.utils;
-
-const fingerprint = (o) => html`
-    <span class="fingerprint">${u.formatFingerprint(o.view.current_device.get('bundle').fingerprint)}</span>`;
-
-
-const device_with_fingerprint = (o) => {
-    const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
-    return html`
-        <li class="fingerprint-removal-item list-group-item nopadding">
-            <label>
-            <input type="checkbox" value="${o.device.get('id')}"
-                aria-label="${i18n_fingerprint_checkbox_label}"/>
-            <span class="fingerprint">${u.formatFingerprint(o.device.get('bundle').fingerprint)}</span>
-            </label>
-        </li>
-    `;
-}
-
-
-const device_without_fingerprint = (o) => {
-    const i18n_device_without_fingerprint = __('Device without a fingerprint');
-    const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following device');
-    return html`
-        <li class="fingerprint-removal-item list-group-item nopadding">
-            <label>
-            <input type="checkbox" value="${o.device.get('id')}"
-                aria-label="${i18n_fingerprint_checkbox_label}"/>
-            <span>${i18n_device_without_fingerprint}</span>
-            </label>
-        </li>
-    `;
-}
-
-
-const device_item = (o) => html`
-    ${(o.device.get('bundle') && o.device.get('bundle').fingerprint) ? device_with_fingerprint(o) : device_without_fingerprint(o) }
-`;
-
-
-const device_list = (o) => {
-    const i18n_other_devices = __('Other OMEMO-enabled devices');
-    const i18n_other_devices_label = __('Checkbox to select fingerprints of all other OMEMO devices');
-    const i18n_remove_devices = __('Remove checked devices and close');
-    const i18n_select_all = __('Select all');
-    return html`
-        <ul class="list-group fingerprints">
-            <li class="list-group-item nopadding active">
-                <label>
-                    <input type="checkbox" class="select-all" title="${i18n_select_all}" aria-label="${i18n_other_devices_label}"/>
-                    ${i18n_other_devices}
-                </label>
-            </li>
-            ${ o.view.other_devices?.map(device => device_item(Object.assign({device}, o))) }
-        </ul>
-        <div class="form-group"><button type="submit" class="save-form btn btn-primary">${i18n_remove_devices}</button></div>
-    `;
-}
-
-
-// TODO: this needs to go as a component into the OMEMO plugin folder
-const omemo_page = (o) => {
-    const i18n_fingerprint = __("This device's OMEMO fingerprint");
-    const i18n_generate = __('Generate new keys and fingerprint');
-    return html`
-        <div class="tab-pane" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
-            <form class="converse-form fingerprint-removal">
-                <ul class="list-group fingerprints">
-                    <li class="list-group-item active">${i18n_fingerprint}</li>
-                    <li class="list-group-item">
-                        ${ (o.view.current_device && o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) ? fingerprint(o) : spinner() }
-                    </li>
-                </ul>
-                <div class="form-group">
-                    <button type="button" class="generate-bundle btn btn-danger">${i18n_generate}</button>
-                </div>
-                ${ o.view.other_devices?.length ? device_list(o) : '' }
-            </form>
-        </div>`;
-}
+const omemo_page = () => html`
+    <div class="tab-pane" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
+        <converse-omemo-profile></converse-omemo-profile>
+    </div>`;
 
 
 export default (o) => {
@@ -100,7 +23,7 @@ export default (o) => {
     const i18n_omemo = __('OMEMO');
     const i18n_profile = __('Profile');
 
-    const navigation = o.view.current_device ?
+    const navigation =
         html`<ul class="nav nav-pills justify-content-center">
             <li role="presentation" class="nav-item">
                 <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">${i18n_profile}</a>
@@ -108,7 +31,7 @@ export default (o) => {
             <li role="presentation" class="nav-item">
                 <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">${i18n_omemo}</a>
             </li>
-        </ul>` : '';
+        </ul>`;
 
     return html`
         <div class="modal-dialog" role="document">
@@ -119,7 +42,7 @@ export default (o) => {
                 </div>
                 <div class="modal-body">
                     <span class="modal-alert"></span>
-                    ${_converse.pluggable.plugins['converse-omemo'].enabled(_converse) && navigation || ''}
+                    ${_converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? navigation : ''}
                     <div class="tab-content">
                         <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                             <form class="converse-form converse-form--modal profile-form" action="#">
@@ -161,7 +84,7 @@ export default (o) => {
                                 </div>
                             </form>
                         </div>
-                        ${ _converse.pluggable.plugins['converse-omemo'].enabled(_converse) && omemo_page(o) || '' }
+                        ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? omemo_page() : '' }
                     </div>
                 </div>
             </div>

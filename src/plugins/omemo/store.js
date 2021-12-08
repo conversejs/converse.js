@@ -154,9 +154,7 @@ const OMEMOStore = Model.extend({
             key.startsWith('session' + identifier) ? key : false
         );
         const attrs = {};
-        keys.forEach(key => {
-            attrs[key] = undefined;
-        });
+        keys.forEach(key => { attrs[key] = undefined; });
         this.save(attrs);
         return Promise.resolve();
     },
@@ -208,7 +206,7 @@ const OMEMOStore = Model.extend({
     },
 
     /**
-     * Generate a the data used by the X3DH key agreement protocol
+     * Generate the data used by the X3DH key agreement protocol
      * that can be used to build a session with a device.
      */
     async generateBundle () {
@@ -234,7 +232,7 @@ const OMEMOStore = Model.extend({
         });
         const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
 
-        _converse.omemo_store.storeSignedPreKey(signed_prekey);
+        this.storeSignedPreKey(signed_prekey);
         bundle['signed_prekey'] = {
             'id': signed_prekey.keyId,
             'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
@@ -243,7 +241,7 @@ const OMEMOStore = Model.extend({
         const keys = await Promise.all(
             range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id))
         );
-        keys.forEach(k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
+        keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
         const devicelist = _converse.devicelists.get(_converse.bare_jid);
         const device = await devicelist.devices.create(
             { 'id': bundle.device_id, 'jid': _converse.bare_jid },
@@ -262,7 +260,7 @@ const OMEMOStore = Model.extend({
             this._setup_promise = new Promise((resolve, reject) => {
                 this.fetch({
                     'success': () => {
-                        if (!_converse.omemo_store.get('device_id')) {
+                        if (!this.get('device_id')) {
                             this.generateBundle().then(resolve).catch(reject);
                         } else {
                             resolve();

@@ -1,6 +1,6 @@
 # Changelog
 
-## 9.0.0 (Unreleased)
+## 9.0.0 (2021-11-26)
 
 - Compress new avatar images before uploading them
 - Add initial support for XEP-0421 occupant Ids.
@@ -12,10 +12,16 @@
 - #1419: Clicking on avatar should show bigger version
 - #1426: Don't fetch member list if not affiliated
 - #2423: Could not find dependency "converse-controlbox" for plugin "converse-muc"
+- #2640: Add `beforeFetchLoginCredentials` hook
 - #2647: Singleton mode doesn't work
+- #2650: Clicking on occupant in sidebar should add nickname to textarea
+- #2683: Show error messages that don't refer to specific chat messages
 - #2704: Send button doesn't work in a multi-user chat
+- #2715: Singleton + fullscreen mode styling issue
+- #2718: Message is not displayed if it contains an invalid URL
 - #2725: Send new presence status to all connected MUCs
 - #2728: Not sending headers with upload request
+- #2733: OMEMO Messages received while client closed not decrypted
 
 - Emit a `change` event when a configuration setting changes
 - 3 New configuration settings:
@@ -36,11 +42,6 @@ Three config settings have been obsoleted:
 Configuration settings are no longer available on the `_converse` object.
 Instead, use `api.settings.get` and `api.settings.set`.
 
-
-## 8.0.2 (Unreleased)
-
-- #2640: Add `beforeFetchLoginCredentials` hook
-- #2650: Clicking on occupant in sidebar should add nickname to textarea
 
 ## 8.0.1 (2021-09-09)
 

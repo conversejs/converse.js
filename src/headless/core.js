@@ -78,7 +78,7 @@ Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
-_converse.VERSION_NAME = "v8.0.2dev";
+_converse.VERSION_NAME = "v9.0.0";
 
 Object.assign(_converse, Events);
 

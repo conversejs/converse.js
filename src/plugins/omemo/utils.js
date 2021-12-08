@@ -26,6 +26,14 @@ import {
 
 const { $msg, Strophe, URI, sizzle, u } = converse.env;
 
+export function formatFingerprint (fp) {
+    fp = fp.replace(/^05/, '');
+    for (let i=1; i<8; i++) {
+        const idx = i*8+i-1;
+        fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
+    }
+    return fp;
+}
 
 async function encryptMessage (plaintext) {
     // The client MUST use fresh, randomly generated key/IV pairs
@@ -69,12 +77,6 @@ async function decryptMessage (obj) {
     };
     return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
 }
-
-export const omemo = {
-    decryptMessage,
-    encryptMessage
-}
-
 
 export async function encryptFile (file) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -203,26 +205,47 @@ export function handleEncryptedFiles (richtext) {
     richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
 }
 
-export function parseEncryptedMessage (stanza, attrs) {
-    if (attrs.is_encrypted) {
-        if (!attrs.encrypted.key) {
-            return Object.assign(attrs, {
-                'error_condition': 'not-encrypted-for-this-device',
-                'error_type': 'Decryption',
-                'is_ephemeral': true,
-                'is_error': true,
-                'type': 'error'
-            });
-        } else {
-            // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
-            if (attrs.encrypted.prekey === true) {
-                return decryptPrekeyWhisperMessage(attrs);
-            } else {
-                return decryptWhisperMessage(attrs);
-            }
-        }
-    } else {
+/**
+ * Hook handler for { @link parseMessage } and { @link parseMUCMessage }, which
+ * parses the passed in `message` stanza for OMEMO attributes and then sets
+ * them on the attrs object.
+ * @param { XMLElement } stanza - The message stanza
+ * @param { (MUCMessageAttributes|MessageAttributes) } attrs
+ * @returns (MUCMessageAttributes|MessageAttributes)
+ */
+export async function parseEncryptedMessage (stanza, attrs) {
+    if (api.settings.get('clear_cache_on_logout') ||
+            !attrs.is_encrypted ||
+            attrs.encryption_namespace !== Strophe.NS.OMEMO) {
         return attrs;
+    }
+    const encrypted_el = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
+    const header = encrypted_el.querySelector('header');
+    attrs.encrypted = { 'device_id': header.getAttribute('sid') };
+
+    const device_id = await api.omemo?.getDeviceID();
+    const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted_el).pop();
+    if (key) {
+        Object.assign(attrs.encrypted, {
+            'iv': header.querySelector('iv').textContent,
+            'key': key.textContent,
+            'payload': encrypted_el.querySelector('payload')?.textContent || null,
+            'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
+        });
+    } else {
+        return Object.assign(attrs, {
+            'error_condition': 'not-encrypted-for-this-device',
+            'error_type': 'Decryption',
+            'is_ephemeral': true,
+            'is_error': true,
+            'type': 'error'
+        });
+    }
+    // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+    if (attrs.encrypted.prekey === true) {
+        return decryptPrekeyWhisperMessage(attrs);
+    } else {
+        return decryptWhisperMessage(attrs);
     }
 }
 
@@ -279,9 +302,7 @@ function getJIDForDecryption (attrs) {
 
 async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
     const from_jid = getJIDForDecryption(attrs);
-    const devicelist = _converse.devicelists.getDeviceList(from_jid);
-    await devicelist._devices_promise;
-
+    const devicelist = await _converse.devicelists.getDeviceList(from_jid);
     const encrypted = attrs.encrypted;
     let device = devicelist.get(encrypted.device_id);
     if (!device) {
@@ -490,7 +511,7 @@ export async function getSession (device) {
     }
 }
 
-function updateBundleFromStanza (stanza) {
+async function updateBundleFromStanza (stanza) {
     const items_el = sizzle(`items`, stanza).pop();
     if (!items_el || !items_el.getAttribute('node').startsWith(Strophe.NS.OMEMO_BUNDLES)) {
         return;
@@ -498,12 +519,12 @@ function updateBundleFromStanza (stanza) {
     const device_id = items_el.getAttribute('node').split(':')[1];
     const jid = stanza.getAttribute('from');
     const bundle_el = sizzle(`item > bundle`, items_el).pop();
-    const devicelist = _converse.devicelists.getDeviceList(jid);
-    const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, 'jid': jid });
+    const devicelist = await _converse.devicelists.getDeviceList(jid);
+    const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, jid });
     device.save({ 'bundle': parseBundle(bundle_el) });
 }
 
-function updateDevicesFromStanza (stanza) {
+async function updateDevicesFromStanza (stanza) {
     const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
     if (!items_el) {
         return;
@@ -511,7 +532,7 @@ function updateDevicesFromStanza (stanza) {
     const device_selector = `item list[xmlns="${Strophe.NS.OMEMO}"] device`;
     const device_ids = sizzle(device_selector, items_el).map(d => d.getAttribute('id'));
     const jid = stanza.getAttribute('from');
-    const devicelist = _converse.devicelists.getDeviceList(jid);
+    const devicelist = await _converse.devicelists.getDeviceList(jid);
     const devices = devicelist.devices;
     const removed_ids = difference(devices.pluck('id'), device_ids);
 
@@ -539,11 +560,12 @@ function updateDevicesFromStanza (stanza) {
 export function registerPEPPushHandler () {
     // Add a handler for devices pushed from other connected clients
     _converse.connection.addHandler(
-        message => {
+        async message => {
             try {
                 if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
-                    updateDevicesFromStanza(message);
-                    updateBundleFromStanza(message);
+                    await api.waitUntil('OMEMOInitialized');
+                    await updateDevicesFromStanza(message);
+                    await updateBundleFromStanza(message);
                 }
             } catch (e) {
                 log.error(e.message);
@@ -565,19 +587,26 @@ export function restoreOMEMOSession () {
     return _converse.omemo_store.fetchSession();
 }
 
-function fetchDeviceLists () {
-    return new Promise((success, error) => _converse.devicelists.fetch({ success, 'error': (m, e) => error(e) }));
-}
-
-async function fetchOwnDevices () {
-    await fetchDeviceLists();
-    let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
-    if (own_devicelist) {
-        own_devicelist.fetchDevices();
-    } else {
-        own_devicelist = await _converse.devicelists.create({ 'jid': _converse.bare_jid }, { 'promise': true });
+async function fetchDeviceLists () {
+    _converse.devicelists = new _converse.DeviceLists();
+    const id = `converse.devicelists-${_converse.bare_jid}`;
+    initStorage(_converse.devicelists, id);
+    await new Promise(resolve => {
+        _converse.devicelists.fetch({
+            'success': resolve,
+            'error': (m, e) => {
+                log.error(e);
+                resolve();
+            }
+        })
+    });
+    const promises = _converse.devicelists.map(l => l.initialized);
+    if (!_converse.devicelists.get(_converse.bare_jid)) {
+        // Create own device list if we none was restored
+        const own_list = await _converse.devicelists.create({ 'jid': _converse.bare_jid }, { 'promise': true });
+        return Promise.all([...promises, own_list.initialized]);
     }
-    return own_devicelist._devices_promise;
+    return Promise.all(promises);
 }
 
 export async function initOMEMO () {
@@ -585,11 +614,8 @@ export async function initOMEMO () {
         log.warn('Not initializing OMEMO, since this browser is not trusted or clear_cache_on_logout is set to true');
         return;
     }
-    _converse.devicelists = new _converse.DeviceLists();
-    const id = `converse.devicelists-${_converse.bare_jid}`;
-    initStorage(_converse.devicelists, id);
     try {
-        await fetchOwnDevices();
+        await fetchDeviceLists();
         await restoreOMEMOSession();
         await _converse.omemo_store.publishBundle();
     } catch (e) {
@@ -600,7 +626,8 @@ export async function initOMEMO () {
     /**
      * Triggered once OMEMO support has been initialized
      * @event _converse#OMEMOInitialized
-     * @example _converse.api.listen.on('OMEMOInitialized', () => { ... }); */
+     * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
+     */
     api.trigger('OMEMOInitialized');
 }
 
@@ -787,4 +814,10 @@ export function createOMEMOMessageStanza (chatbox, message, devices) {
                 return stanza;
             });
     });
+}
+
+export const omemo = {
+    decryptMessage,
+    encryptMessage,
+    formatFingerprint
 }

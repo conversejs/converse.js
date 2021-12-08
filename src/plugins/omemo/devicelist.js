@@ -1,6 +1,7 @@
 import log from '@converse/headless/log';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { restoreOMEMOSession } from './utils.js';
 
@@ -14,15 +15,17 @@ const { Strophe, $build, $iq, sizzle } = converse.env;
 const DeviceList = Model.extend({
     idAttribute: 'jid',
 
-    initialize () {
-        this.initDevices();
+    async initialize () {
+        this.initialized = getOpenPromise();
+        await this.initDevices();
+        this.initialized.resolve();
     },
 
     initDevices () {
         this.devices = new _converse.Devices();
         const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
         initStorage(this.devices, id);
-        this.fetchDevices();
+        return this.fetchDevices();
     },
 
     async onDevicesFound (collection) {
@@ -123,11 +126,16 @@ const DeviceList = Model.extend({
         return api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
     },
 
-    removeOwnDevices (device_ids) {
+    async removeOwnDevices (device_ids) {
         if (this.get('jid') !== _converse.bare_jid) {
             throw new Error("Cannot remove devices from someone else's device list");
         }
-        device_ids.forEach(device_id => this.devices.get(device_id).destroy());
+        await Promise.all(device_ids.map(id => this.devices.get(id)).map(d =>
+            new Promise(resolve => d.destroy({
+                'success': resolve,
+                'error': (m, e) => { log.error(e); resolve(); }
+            }))
+        ));
         return this.publishDevices();
     }
 });

@@ -1,8 +1,9 @@
 /**
- * @module converse-omemo
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './fingerprints.js';
+import './profile.js';
 import 'modals/user-details.js';
 import 'plugins/profile/index.js';
 import ChatBox from './overrides/chatbox.js';
@@ -12,8 +13,6 @@ import DeviceList from './devicelist.js';
 import DeviceLists from './devicelists.js';
 import Devices from './devices.js';
 import OMEMOStore from './store.js';
-import ProfileModal from './overrides/profile-modal.js';
-import UserDetailsModal from './overrides/user-details-modal.js';
 import log from '@converse/headless/log';
 import omemo_api from './api.js';
 import { OMEMOEnabledChatBox } from './mixins/chatbox.js';
@@ -51,9 +50,9 @@ converse.plugins.add('converse-omemo', {
         );
     },
 
-    dependencies: ['converse-chatview', 'converse-pubsub', 'converse-profile'],
+    dependencies: ['converse-chatview', 'converse-pubsub'],
 
-    overrides: { ProfileModal, UserDetailsModal, ChatBox },
+    overrides: { ChatBox },
 
     initialize () {
         api.settings.extend({ 'omemo_default': false });

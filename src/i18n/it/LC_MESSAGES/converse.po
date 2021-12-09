@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-11-03 14:33+0000\n"
+"PO-Revision-Date: 2021-12-10 09:53+0000\n"
 "Last-Translator: random r <epsilin@yopmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -259,6 +259,7 @@ msgstr "Non consentito: non hai il ruolo necessario per fare questo."
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Errore: impossibile registrare un nuovo nickname nella stanza per soli membri"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -867,17 +868,16 @@ msgid "Affiliation"
 msgstr "Affiliazione"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Ruolo"
+msgstr "Ruoli"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
-msgstr ""
+msgstr "Cappelli"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "ID occupante"
 
 #: dist/converse-no-dependencies.js:72950
 msgid "Remove as contact"
@@ -1912,7 +1912,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "La crittografia OMEMO non è supportata"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""

@@ -115,7 +115,12 @@ export async function handleMessageStanza (stanza) {
         const from = stanza.getAttribute('from');
         return log.info(`handleMessageStanza: Ignoring incoming server message from JID: ${from}`);
     }
-    const attrs = await parseMessage(stanza, _converse);
+    let attrs;
+    try {
+        attrs = await parseMessage(stanza, _converse);
+    } catch (e) {
+        return log.error(e);
+    }
     if (u.isErrorObject(attrs)) {
         attrs.stanza && log.error(attrs.stanza);
         return log.error(attrs.message);

@@ -5,7 +5,7 @@ import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/core';
 import { _converse, api, clearSession, tearDown } from "../core.js";
 import { getOpenPromise } from '@converse/openpromise';
-
+import { setUserJID, } from '@converse/headless/utils/init.js';
 
 const BOSH_WAIT = 59;
 
@@ -134,7 +134,7 @@ export class Connection extends Strophe.Connection {
     async onConnected (reconnecting) {
         delete this.reconnecting;
         this.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-        await _converse.setUserJID(this.jid);
+        await setUserJID(this.jid);
 
         /**
          * Synchronous event triggered after we've sent an IQ to bind the

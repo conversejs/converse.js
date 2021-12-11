@@ -29,13 +29,18 @@ class LoginForm extends CustomElement {
         if (api.settings.get('bosh_service_url') ||
                 api.settings.get('websocket_url') ||
                 this.model.get('show_connection_url_input')) {
-            this.authenticate(ev);
-        }
-        await this.discoverConnectionMethods(ev);
-        if (api.settings.get('bosh_service_url') || api.settings.get('websocket_url')) {
+            // The connection class will still try to discover XEP-0156 connection methods
             this.authenticate(ev);
         } else {
-            this.model.set('show_connection_url_input', true);
+            // We don't have a connection URL available, so we try here to discover
+            // XEP-0156 connection methods now, and if not found we present the user
+            // with the option to enter their own connection URL
+            await this.discoverConnectionMethods(ev);
+            if (api.settings.get('bosh_service_url') || api.settings.get('websocket_url')) {
+                this.authenticate(ev);
+            } else {
+                this.model.set('show_connection_url_input', true);
+            }
         }
     }
 

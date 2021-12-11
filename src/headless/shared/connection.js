@@ -228,6 +228,16 @@ export class Connection extends Strophe.Connection {
                 } else {
                     return this.finishDisconnection();
                 }
+            } else if (this.status === Strophe.Status.CONNECTING) {
+                // Don't try to reconnect if we were never connected to begin
+                // with, otherwise an infinite loop can occur (e.g. when the
+                // BOSH service URL returns a 404).
+                const { __ } = _converse;
+                this.setConnectionStatus(
+                    Strophe.Status.CONNFAIL,
+                    __('An error occurred while connecting to the chat server.')
+                );
+                return this.finishDisconnection();
             } else if (
                 this.disconnection_cause === _converse.LOGOUT ||
                 reason === Strophe.ErrorCondition.NO_AUTH_MECH ||

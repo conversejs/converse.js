@@ -1909,9 +1909,19 @@ const ChatRoomMixin = {
     },
 
     /**
+     * When sending a status update presence (i.e. based on the `<show>`
+     * element), we need to first make sure that the MUC is connected,
+     * otherwise we will get an error from the MUC service.
+     * @method _converse.ChatRoom#sendStatusPresence
+     */
+    async sendStatusPresence (presence) {
+        await this.rejoinIfNecessary();
+        api.send(presence);
+    },
+
+    /**
      * Check whether we're still joined and re-join if not
      * @async
-     * @private
      * @method _converse.ChatRoom#rejoinIfNecessary
      */
     async rejoinIfNecessary () {

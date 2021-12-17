@@ -14,6 +14,7 @@ import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { setUserJID, } from '@converse/headless/utils/init.js';
 import { settings_api } from '@converse/headless/shared/settings/api.js';
 
 export function isEmptyMessage (attrs) {
@@ -539,7 +540,7 @@ export async function getLoginCredentialsFromBrowser () {
     try {
         const creds = await navigator.credentials.get({'password': true});
         if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-            await _converse.setUserJID(creds.id);
+            await setUserJID(creds.id);
             return {'jid': creds.id, 'password': creds.password};
         }
     } catch (e) {

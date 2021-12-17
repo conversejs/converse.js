@@ -114,6 +114,89 @@ what you're using as the HTTP file server.
 CORS is enabled by adding an ``Access-Control-Allow-Origin`` header, so you'll
 have to configure your file server to add this header.
 
+Users don't stay logged in across page reloads
+==============================================
+
+A common complaint in the Converse chat room (`<xmpp:discuss@conference.conversejs.org?join>`_)
+is that users are logged out when they reload the page.
+
+The main way in which websites and web apps maintain a user's login session is via
+authentication cookies, which are included in every HTTP request sent to the server.
+
+XMPP is however not HTTP, cookies aren't automatically included in traffic to
+the XMPP server and XMPP servers don't rely on cookies for authentication.
+
+Instead, an XMPP client is expected to store the user credentials (username and
+password, either plaintext or hashed and salted if
+`SCRAM <https://en.wikipedia.org/wiki/Salted_Challenge_Response_Authentication_Mechanism>`_
+is being used) and to then present those credentials to the XMPP server when authenticating.
+
+This works well for non-web XMPP clients, but Converse has so far avoided
+storing user credentials in browser storage, since they can then be accessed by
+any scripts running in the browser under the same domain.
+
+So what does Converse do to keep users logged in?
+-------------------------------------------------
+
+Use the Web Auth API
+********************
+
+Converse supports the `Web Authentication API <https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API>`_
+which let's it use the secure credential management of the browser to get the
+uesr credentials to automatically log the user in. This however requires that
+the user saves his or her username and password in the browser. Often the user
+is automatically asked by the browser whether he/she wants to store the
+credentials. If that doesn't happen, the user has to do so manually, usually by
+clicking the key icon in the address bar. This works well on most modern browsers,
+but not on Firefox, which has insufficient support for the Web Authentication API.
+
+What can users do to stay logged in?
+------------------------------------
+
+Outsource credential management to something else
+*************************************************
+
+The issues mentioned above mostly related to users logging in manually, and not
+to integrations where Converse automatically fetches user credentials from the
+backend via the :ref:`credentials_url` setting.
+
+Use BOSH instead of websocket
+*****************************
+
+`BOSH <https://xmpp.org/extensions/xep-0206.html>`_ can be thought of
+XMPP-over-HTTP and because HTTP is stateless, BOSH needs to maintain login
+sessions for a certain amount of time (usually 60 seconds) even if there is no
+HTTP traffic between the client and server. This means that if you have a BOSH
+session running, you can reload the page and you will stay logged in.
+
+Note, Websocket connections are however faster and have less overhead than BOSH.
+
+User a browser with adequate support for the Web Auth API
+*********************************************************
+
+Another option is to only use a browser with proper support for the Web Auth
+API (which mainly means avoiding Firefox) and then to save your credentials in the browser.
+
+Use Converse Desktop
+********************
+
+The `desktop version of Converse <https://github.com/conversejs/converse-desktop>`_
+also doesn't have this problem, since the credentials are stored in Electron
+and there is no significant risk of other malicious scripts running.
+
+What else can Converse do to keep users logged in?
+--------------------------------------------------
+
+This problem could also potentially be fixed by storing the
+XMPP credentials securely with web crypto and IndexedDB. This could be done by
+generating a private encryption key in non-exportable format, and then using that
+to encrypt the credentials before storing them in IndexedDB.
+
+This would protect the credentials from someone who has access to your
+computer (or harddrive), but it still won't protect them from malicious scripts
+running in the same domain as Converse is being hosted, since they would have the
+same level of access as Converse itself (which legitimately needs access to the
+credentials).
 
 Common errors
 =============

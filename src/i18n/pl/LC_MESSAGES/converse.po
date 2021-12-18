@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-09-20 18:23+0000\n"
-"Last-Translator: Jakub Tabor <taborjakub2@gmail.com>\n"
+"PO-Revision-Date: 2021-12-19 04:53+0000\n"
+"Last-Translator: Wie Paw <pawlow@nobilla.net.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
 "translations/pl/>\n"
 "Language: pl\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -64,7 +64,7 @@ msgstr "%1$s odszedł od klawiatury"
 #: dist/converse-no-dependencies.js:42823
 #: dist/converse-no-dependencies.js:49600
 msgid "You're not allowed to retract your message."
-msgstr "Nie wolno  tobie wycofać tej wiadomości."
+msgstr "Nie wolno Ci wycofać tej wiadomości."
 
 #: dist/converse-no-dependencies.js:42825
 #: dist/converse-no-dependencies.js:49604
@@ -73,12 +73,12 @@ msgstr "Przepraszam, pojawił się błąd podczas próby cofnięcia wiadomości.
 
 #: dist/converse-no-dependencies.js:42830
 msgid "You're not allowed to send a message."
-msgstr "Nie możesz wysyłać wiadomości"
+msgstr "Nie możesz wysyłać wiadomości."
 
 #: dist/converse-no-dependencies.js:42832
 #: dist/converse-no-dependencies.js:49613
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Przepraszam, wystąpił błąd podczas próby wysłania twojej wiadomości."
+msgstr "Wybacz, wystąpił błąd w czasie próby wysyłania wiadomości."
 
 #: dist/converse-no-dependencies.js:43158
 #, javascript-format
@@ -178,12 +178,12 @@ msgstr "Naklejki"
 #: dist/converse-no-dependencies.js:48522
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Error: timeout podczas pobierania %1s listy dla MUC %2s"
 
 #: dist/converse-no-dependencies.js:48534
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Błąd: brak pozwolenia dla pobrania %1s listy dla MUC %2s"
 
 #: dist/converse-no-dependencies.js:49602
 msgid ""
@@ -206,9 +206,8 @@ msgstr ""
 "czacie grupowym."
 
 #: dist/converse-no-dependencies.js:49989
-#, fuzzy
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Podczas próby cofnięcia komunikatu pojawił się limit czasu"
+msgstr "Przekroczono limit czasu podczas próby wycofania wiadomości."
 
 #: dist/converse-no-dependencies.js:50739
 msgid "Sorry, an error happened while running the command."
@@ -253,6 +252,7 @@ msgstr "Zakazane: nie masz do tego niezbędnej roli."
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Błąd: nie można zarejestrować nowego pseudonimu w pokoju tylko dla członków"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -348,7 +348,7 @@ msgstr "%1$s wszedł na czat groupowy"
 #: dist/converse-no-dependencies.js:52086
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr "%1$s opuścił  czat groupowy"
+msgstr "%1$s opuścił czat groupowy"
 
 #: dist/converse-no-dependencies.js:52088
 #, javascript-format
@@ -356,7 +356,7 @@ msgid "%1$s are now moderators"
 msgstr "%1$s został moderatorem"
 
 #: dist/converse-no-dependencies.js:52090
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are no longer moderators"
 msgstr "%1$s nie jest już moderatorem"
 
@@ -388,7 +388,7 @@ msgstr "%1$s zmienił pseudonim"
 #: dist/converse-no-dependencies.js:52469
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s został wykopany przez %2$s"
+msgstr "%1$s został wyrzucony przez %2$s"
 
 #: dist/converse-no-dependencies.js:52469
 #, javascript-format
@@ -684,14 +684,12 @@ msgid "Unbookmark this groupchat"
 msgstr "Usuń zakładkę do tego pokoju"
 
 #: dist/converse-no-dependencies.js:62331
-#, fuzzy
 msgid "Unbookmark"
-msgstr "Zakładki"
+msgstr "Odznacz"
 
 #: dist/converse-no-dependencies.js:62331
-#, fuzzy
 msgid "Bookmark"
-msgstr "Zakładki"
+msgstr "Zaznacz"
 
 #: dist/converse-no-dependencies.js:62356
 #, javascript-format
@@ -733,13 +731,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:66159
 #: dist/converse-no-dependencies.js:66250
-#, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
-"Bądź świadomy, że inni klienci (i serwery) XMPP/Jabber mogą jeszcze nie "
-"obsługiwać zwijania i że ta wiadomość może nie być wszędzie usuwana."
+"Inni klienci (i serwery) XMPP/Jabber mogą jeszcze nie obsługiwać usuwania i "
+"że ta wiadomość może nie być wszędzie usuwana."
 
 #: dist/converse-no-dependencies.js:66160
 #: dist/converse-no-dependencies.js:66257
@@ -783,26 +780,23 @@ msgstr "Opcjonalny powód"
 
 #: dist/converse-no-dependencies.js:66336
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Przepraszam, nie wolno ci wycofać tej wiadomości."
+msgstr "Przepraszam, nie wolno ci wycofać tej wiadomości"
 
 #: dist/converse-no-dependencies.js:66467
-#, fuzzy
 msgid "Show media"
-msgstr "Pokaż więcej"
+msgstr "Pokaż media"
 
 #: dist/converse-no-dependencies.js:66467
-#, fuzzy
 msgid "Hide media"
-msgstr "Ukryj temat"
+msgstr "Ukryj media"
 
 #: dist/converse-no-dependencies.js:66501
-#, fuzzy
 msgid "Cancel Editing"
-msgstr "Zmiana ustawień"
+msgstr "Przestań edytować"
 
 #: dist/converse-no-dependencies.js:66501
 msgid "Edit"
-msgstr "Edycja"
+msgstr "Edytuj"
 
 #: dist/converse-no-dependencies.js:66530
 msgid "Retract"
@@ -856,21 +850,20 @@ msgid "Affiliation"
 msgstr "Przynależność"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Rola"
+msgstr "Role"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
-msgstr ""
+msgstr "Czapki"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "ID zajęte"
 
 #: dist/converse-no-dependencies.js:72950
 msgid "Remove as contact"
-msgstr "Usuń jako kontakt"
+msgstr "Usuń kontakt"
 
 #: dist/converse-no-dependencies.js:72958
 #: dist/converse-no-dependencies.js:96255
@@ -1126,12 +1119,11 @@ msgstr "Ogłoszenia"
 
 #: dist/converse-no-dependencies.js:83415
 msgid "Click to open this server message"
-msgstr "Kliknij, aby otworzyć tę wiadomość z serwera"
+msgstr "Kliknij, aby otworzyć tę wiadomość serwera"
 
 #: dist/converse-no-dependencies.js:83520
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Kliknij, aby otworzyć tę wiadomość z serwera"
+msgstr "Kliknij, aby załadować brakujące wiadomości"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:83972
@@ -1523,9 +1515,10 @@ msgid "Loading configuration form"
 msgstr "Wczytywanie formularza konfiguracyjnego"
 
 #: dist/converse-no-dependencies.js:89873
-#, fuzzy
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr "Wystąpił błąd w czasie próby usunięcia urządzenia."
+msgstr ""
+"Przepraszamy, wystąpił błąd podczas próby przesłania formularza "
+"konfiguracyjnego."
 
 #: dist/converse-no-dependencies.js:89940
 msgid ""
@@ -1581,9 +1574,8 @@ msgstr "Autor tematu"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:90573
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "Adres  pokoju"
+msgstr "Adres pokoju"
 
 #: dist/converse-no-dependencies.js:90575
 msgid "Message archiving"
@@ -1754,21 +1746,19 @@ msgstr "Ukryj temat"
 
 #: dist/converse-no-dependencies.js:91391
 msgid "Show the topic message in the heading"
-msgstr ""
+msgstr "Pokaż temat wiadomości w nagłówku"
 
 #: dist/converse-no-dependencies.js:91391
 msgid "Hide the topic in the heading"
-msgstr ""
+msgstr "Ukryj temat wiadomości w nagłówku"
 
 #: dist/converse-no-dependencies.js:91408
-#, fuzzy
 msgid "Moderate"
-msgstr "Moderowany"
+msgstr "Moderuj"
 
 #: dist/converse-no-dependencies.js:91409
-#, fuzzy
 msgid "Moderate this groupchat"
-msgstr "Opuść ten pokój"
+msgstr "Moderuj ten czat grupowy"
 
 #: dist/converse-no-dependencies.js:91421
 msgid "Destroy"
@@ -1834,12 +1824,12 @@ msgid "wants to be your contact"
 msgstr "chce być twoim kontaktem"
 
 #: dist/converse-no-dependencies.js:93808
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Ups, problem z odszyfrowaniem odebranego komunikatu OMEMO z powodu błędu."
+"Przepraszamy, nie można odszyfrować otrzymanej wiadomości OMEMO, ponieważ "
+"nie mamy adresu XMPP dla tego użytkownika."
 
 #: dist/converse-no-dependencies.js:93887
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1888,10 +1878,12 @@ msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
 msgstr ""
+"Ten czat grupowy musi być przeznaczony tylko dla członków i nie może być "
+"anonimowy, aby obsługiwać zaszyfrowane wiadomości OMEMO"
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "Szyfrowanie OMEMO nie jest obsługiwane"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""
@@ -1934,9 +1926,8 @@ msgid "Device without a fingerprint"
 msgstr "Urządzenie bez odcisku palca"
 
 #: dist/converse-no-dependencies.js:95216
-#, fuzzy
 msgid "Checkbox for selecting the following device"
-msgstr "Pole wyboru dla wybrania następującego odcisku palca"
+msgstr "Pole wyboru dla wybrania następującego urządzenia"
 
 #: dist/converse-no-dependencies.js:95228
 msgid "Other OMEMO-enabled devices"
@@ -1984,7 +1975,7 @@ msgstr "Informacje"
 
 #: dist/converse-no-dependencies.js:95646
 msgid "Commands"
-msgstr ""
+msgstr "Komendy"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:95652
@@ -2084,9 +2075,8 @@ msgid "Personal status message"
 msgstr "Osobisty komunikat o statusie"
 
 #: dist/converse-no-dependencies.js:96162
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Twój profil"
+msgstr "Twoje zdjęcie profilowe"
 
 #: dist/converse-no-dependencies.js:96253
 msgid "Your Profile"
@@ -2255,12 +2245,11 @@ msgstr "Nazwa czatu grupowego"
 
 #: dist/converse-no-dependencies.js:99788
 msgid "Groupchat address"
-msgstr "Adres  pokoju"
+msgstr "Adres pokoju"
 
 #: dist/converse-no-dependencies.js:99859
-#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr "Logowanie na czacie grupowym jest teraz włączone"
+msgstr "Identyfikator czatu grupowego jest nieprawidłowy."
 
 #: dist/converse-no-dependencies.js:99912
 msgid "Show groupchats"

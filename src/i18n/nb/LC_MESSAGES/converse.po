@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-11-19 05:49+0000\n"
-"Last-Translator: Siw Falch <siiw@hotmail.com>\n"
+"PO-Revision-Date: 2021-12-21 05:53+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1-dev\n"
+"X-Generator: Weblate 4.10\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -174,14 +174,14 @@ msgid "Stickers"
 msgstr "Klistremerker"
 
 #: dist/converse-no-dependencies.js:48522
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Feil: Tidsavbrudd ved innhending av %1s-liste for %2s-MUC"
 
 #: dist/converse-no-dependencies.js:48534
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Feil: Henting av %1s-listen for %2s-MUC tillates ikke"
 
 #: dist/converse-no-dependencies.js:49602
 #, fuzzy
@@ -247,8 +247,9 @@ msgid "Forbidden: you do not have the necessary role in order to do that."
 msgstr "Forbudt: Du innehar ikke nødvendig rolle for å utføre dette."
 
 #: dist/converse-no-dependencies.js:50998
+#, fuzzy
 msgid "Error: couldn't register new nickname in members only room"
-msgstr ""
+msgstr "Feil: Kunne ikke registrere nytt kallenavn i rom forbeholdt medlemmer"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -870,12 +871,13 @@ msgid "Roles"
 msgstr "Rolle"
 
 #: dist/converse-no-dependencies.js:72840
+#, fuzzy
 msgid "Hats"
-msgstr ""
+msgstr "Hatter"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "Bruker-ID"
 
 #: dist/converse-no-dependencies.js:72950
 #, fuzzy
@@ -1570,7 +1572,7 @@ msgstr "Tillat stumme brukere å skrive meldinger"
 
 #: dist/converse-no-dependencies.js:89578
 msgid "Loading configuration form"
-msgstr ""
+msgstr "Laster inn oppsettsskjema …"
 
 #: dist/converse-no-dependencies.js:89873
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1963,7 +1965,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "OMEMO-kryptering støttes ikke"
 
 #: dist/converse-no-dependencies.js:94752
 #, fuzzy

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-08-22 19:34+0000\n"
-"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
+"PO-Revision-Date: 2021-12-27 10:51+0000\n"
+"Last-Translator: Anas Yaseen <anasyaseen1@outlook.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
 "Language: ar\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -69,14 +69,12 @@ msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
 
 #: dist/converse-no-dependencies.js:42825
 #: dist/converse-no-dependencies.js:49604
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
+msgstr "المعذرة، لقد طرأ خطأ أثناء محاولة التراجع عن رسالتك."
 
 #: dist/converse-no-dependencies.js:42830
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "لا يُسمح لك بإرسال رسائل إلى هذه الغرفة"
+msgstr "لا يُسمح لك بإرسال رسالة."
 
 #: dist/converse-no-dependencies.js:42832
 #: dist/converse-no-dependencies.js:49613
@@ -193,9 +191,8 @@ msgid ""
 msgstr "لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا."
 
 #: dist/converse-no-dependencies.js:49609
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr "المعذرة، لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا"
+msgstr "رسالتك لم يتم توصيلها لأنه ليس من المسموح لك ارسالها."
 
 #: dist/converse-no-dependencies.js:49611
 #, fuzzy
@@ -263,8 +260,7 @@ msgstr "لا يُسمح لك بإنشاء غُرف محادثة جديدة."
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
-msgstr ""
-"لا يمكن تسجيل اسمك المستعار في في فريق الدردشة هذا ، إنه لا يدعم التسجيل."
+msgstr "لا يمكن تسجيل اسمك المستعار في فريق الدردشة هذا ، إنه لا يدعم التسجيل."
 
 #: dist/converse-no-dependencies.js:51370
 msgid ""
@@ -399,7 +395,7 @@ msgstr "تمت إزالة %1$s لأنه ليس عضو مُنتم إلى الغر
 #: dist/converse-no-dependencies.js:52494
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "لم يعد %1$s مديرا لفريق المحادثة هذا بعد الآن"
+msgstr "لم يعد %1$s مشرفًا لفريق المحادثة هذا بعد الآن"
 
 #: dist/converse-no-dependencies.js:52499
 #, javascript-format
@@ -407,9 +403,9 @@ msgid "%1$s is no longer an owner of this groupchat"
 msgstr "لم يعد %1$s مالكا لفريق المحادثة الجماعية هذا"
 
 #: dist/converse-no-dependencies.js:52504
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "لقد تم طردُك مِن فريق المحادثة هذا"
+msgstr "%1$s لم يعد محظورًا من غرفة المحادثة هذه"
 
 #: dist/converse-no-dependencies.js:52511
 #, fuzzy, javascript-format
@@ -417,9 +413,9 @@ msgid "%1$s is no longer a member of this groupchat"
 msgstr "لم يعد %1$s مالكا لفريق المحادثة الجماعية هذا"
 
 #: dist/converse-no-dependencies.js:52518
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr "أصبح الآن %1$s  مِن بين الأعضاء الدائمين في فريق المحادثة هذا"
+msgstr "أصبح الآن %1$s مِن بين الأعضاء في هذه المحادثة"
 
 #: dist/converse-no-dependencies.js:52524
 #, javascript-format
@@ -739,9 +735,8 @@ msgid "Confirm"
 msgstr "أكّد"
 
 #: dist/converse-no-dependencies.js:66216
-#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+msgstr "لقد حدث انقطاع في الاتصال أثناء محاولة التراجع عن الرسالة."
 
 #: dist/converse-no-dependencies.js:66220
 #, fuzzy
@@ -749,9 +744,8 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
 
 #: dist/converse-no-dependencies.js:66318
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "لقد ورَدَت إليك رسائل غير مقروءة"
+msgstr "انت على وشك التراجع عن الرسالة."
 
 #: dist/converse-no-dependencies.js:66318
 msgid ""
@@ -770,9 +764,8 @@ msgid "Optional reason"
 msgstr "دليل اختياري"
 
 #: dist/converse-no-dependencies.js:66336
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+msgstr "عذراً، لا يسمح لك بالتراجع عن هذه الرسالة."
 
 #: dist/converse-no-dependencies.js:66467
 #, fuzzy
@@ -1161,6 +1154,8 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"المدراء مستخدمون متميزون يمكنهم تغيير أدوار المستخدمين الآخرين (باستثناء "
+"أولئك الذين لديهم انتماء مدير أو مالك)."
 
 #: dist/converse-no-dependencies.js:86061
 msgid "The default role, implies that you can read and write messages."
@@ -1176,16 +1171,20 @@ msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"المالك هو أعلى انتساب، يمكن للملّاك تعديل الأدوار والانتسابات لجميع "
+"المستخدمين الآخرين."
 
 #: dist/converse-no-dependencies.js:86071
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"المشرف هو ثاني أعلى انتساب، يمكن للمشرفون تعديل الأدوار والانتسابات لجميع "
+"المستخدمين الآخرين ما عدا الملّاك."
 
 #: dist/converse-no-dependencies.js:86073
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "لحظر مستخدم، امنحه انتماء \"منبوذ\"."
 
 #: dist/converse-no-dependencies.js:86086
 #, fuzzy
@@ -1213,12 +1212,11 @@ msgstr "انتماء جديد"
 
 #: dist/converse-no-dependencies.js:86132
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "لم يتم العثور على أي مستخدم لهذا الانتساب."
 
 #: dist/converse-no-dependencies.js:86134
-#, fuzzy
 msgid "No users with that role found."
-msgstr "لم يتم العثور على أي مستخدِم"
+msgstr "لم يتم العثور على أي مستخدِم بهذا الدور."
 
 #: dist/converse-no-dependencies.js:86136
 msgid "Type here to filter the search results"
@@ -1235,6 +1233,9 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"يتم تعيين الأدوار للمستخدمين لمنحهم او منع بعض القدرات عنهم في الدردشة "
+"متعددة المستخدمين. يتم تعيينهم إما بشكل صريح أو ضمني كجزء من الانتماء. الدور "
+"الغير الناجم عن الانتماء يكون صالح فقط لمدة جلسة المستخدم."
 
 #: dist/converse-no-dependencies.js:86144
 msgid ""
@@ -1242,6 +1243,8 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"الانتساب هو استحقاق طويل الأمد يوحي عادةً إلى دور معين ويمنح امتيازات "
+"ومسؤوليات. على سبيل المثال، يحصل المسؤولون والمالكون على دور المدير تلقائيًا."
 
 #: dist/converse-no-dependencies.js:86662
 #, fuzzy
@@ -1249,9 +1252,8 @@ msgid "Timeout error while trying to set the affiliation"
 msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
 
 #: dist/converse-no-dependencies.js:86664
-#, fuzzy
 msgid "Sorry, you're not allowed to make that change"
-msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+msgstr "عذراً، لا يُسمح لك بالقيام بهذا التغيير"
 
 #: dist/converse-no-dependencies.js:86666
 #, fuzzy
@@ -1268,9 +1270,8 @@ msgid "Role changed"
 msgstr "الانتقال إلى الدردشة"
 
 #: dist/converse-no-dependencies.js:86715
-#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+msgstr "لا يُسمح لك بالقيام بهذا التغيير"
 
 #: dist/converse-no-dependencies.js:86717
 #, fuzzy
@@ -1288,9 +1289,8 @@ msgid "Are you sure you want to destroy this groupchat?"
 msgstr "هل أنت متأكد أنك تريد الإنسحاب مِن فريق المحادثة %1$s ؟"
 
 #: dist/converse-no-dependencies.js:86949
-#, fuzzy
 msgid "Please enter the XMPP address of this groupchat to confirm"
-msgstr "يرجى إدخال مزود خدمة XMPP الذي تود إنشاء حسابك فيه :"
+msgstr "يرجى إدخال مزود خدمة XMPP الذي تود إنشاء حسابك فيه"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:86951
@@ -1299,9 +1299,8 @@ msgid "name@example.org"
 msgstr "name@example.org"
 
 #: dist/converse-no-dependencies.js:86955
-#, fuzzy
 msgid "Optional reason for destroying this groupchat"
-msgstr "هل أنت متأكد أنك تريد الإنسحاب مِن فريق المحادثة %1$s ؟"
+msgstr "سبب اختياري لحذف غرفة المحادثة هذه"
 
 #: dist/converse-no-dependencies.js:86959
 msgid "Optional XMPP address for a new groupchat that replaces this one"
@@ -1362,11 +1361,11 @@ msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:87898
-#, fuzzy
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+msgstr ""
+"عذرًا، لقد طرأ خطأ أثناء محاولة تطبيق الأمر. انظر لوحدة تحكم المطوّر للتفاصيل"
 
 #: dist/converse-no-dependencies.js:88277
 msgid "Enter groupchat"
@@ -1528,9 +1527,9 @@ msgid "This groupchat no longer exists"
 msgstr "فريق المحادثة هذا لم يعد موجودا"
 
 #: dist/converse-no-dependencies.js:89950
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "السبب : \"%1$s\"."
+msgstr "السبب التالي تم اعطاؤه : \"%1$s\""
 
 #: dist/converse-no-dependencies.js:90428
 #, javascript-format
@@ -1755,14 +1754,12 @@ msgid "Hide the topic in the heading"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:91408
-#, fuzzy
 msgid "Moderate"
-msgstr "تحت الإشراف"
+msgstr "إدارة"
 
 #: dist/converse-no-dependencies.js:91409
-#, fuzzy
 msgid "Moderate this groupchat"
-msgstr "مغادرة فريق المحادثة"
+msgstr "إدارة هذه الدردشة"
 
 #: dist/converse-no-dependencies.js:91421
 #, fuzzy
@@ -2222,9 +2219,8 @@ msgid "Groupchat address"
 msgstr "عنوان فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:99859
-#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr "الإلتحاق بفريق المحادثة مسموح الآن للجميع"
+msgstr "ال id الخاص بغرفة المحادثة غير صالح."
 
 #: dist/converse-no-dependencies.js:99912
 msgid "Show groupchats"
@@ -2250,9 +2246,8 @@ msgid "Description:"
 msgstr "التفاصيل :"
 
 #: dist/converse-no-dependencies.js:99956
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "عنوان فريق المحادثة"
+msgstr "عنوان ال XMPP الخاص بمجموعة المحادثة:"
 
 #: dist/converse-no-dependencies.js:99958
 msgid "Participants:"
@@ -2287,9 +2282,8 @@ msgid "conference.example.org"
 msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:100127
-#, fuzzy
 msgid "Groupchats found"
-msgstr "تم العثور على فِرَق المحادثة :"
+msgstr "تم العثور على فِرَق المحادثة"
 
 #: dist/converse-no-dependencies.js:100135
 msgid "No groupchats found"

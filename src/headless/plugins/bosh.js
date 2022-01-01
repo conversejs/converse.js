@@ -1,13 +1,13 @@
 /**
- * @module converse-bosh
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
  */
 import 'strophe.js/src/bosh';
+import log from "../log.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../core.js";
-import log from "../log.js";
+import { setUserJID, } from '@converse/headless/utils/init.js';
 
 const { Strophe } = converse.env;
 
@@ -36,13 +36,13 @@ converse.plugins.add('converse-bosh', {
             }
             if (_converse.jid) {
                 if (_converse.bosh_session.get('jid') !== _converse.jid) {
-                    const jid = await _converse.setUserJID(_converse.jid);
+                    const jid = await setUserJID(_converse.jid);
                     _converse.bosh_session.clear({'silent': true });
                     _converse.bosh_session.save({jid});
                 }
             } else { // Keepalive
                 const jid = _converse.bosh_session.get('jid');
-                jid && await _converse.setUserJID(jid);
+                jid && await setUserJID(jid);
             }
             return _converse.bosh_session;
         }
@@ -58,7 +58,7 @@ converse.plugins.add('converse-bosh', {
             xhr.onload = async function () {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
-                    const jid = await _converse.setUserJID(data.jid);
+                    const jid = await setUserJID(data.jid);
                     _converse.connection.attach(
                         jid,
                         data.sid,

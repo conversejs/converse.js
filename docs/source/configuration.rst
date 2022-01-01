@@ -181,7 +181,7 @@ allow_dragresize
 * Default: ``true``
 
 Allow users to resize chats by dragging the edges. The min-height and min-width
-CSS properties set on a chatboxes (specifically on the ``#converse.js .chatbox > .box-flyout`` element)
+CSS properties set on a chatboxes (specifically on the ``.chatbox > .box-flyout`` element)
 will be honored, IF they are set in pixels.
 
 allow_logout
@@ -2258,7 +2258,7 @@ The ``view_mode`` setting configures Converse's mode and resulting behavior.
 
 * ``overlayed`` is the original mode, in which the chats appeared as small boxes overlaying a webpage which can contain arbitrary content.
 * ``fullscreen`` is for a fullpage and single-page app.
-* ``embedded`` is used to embed a single chat into a DOM element in the page. The DOM element must have the id ``#conversejs``.
+* ``embedded`` is used to embed Converse into a particular part of the web page. Put the custom element ``<converse-root></converse-root>`` into your page HTML there were you want Converse to appear. See `conversejs.org/demo/embedded.html <https://conversejs.org/demo/embedded.html>`_ for an example of this view mode.
 * ``mobile`` is for smaller viewports. Converse is responsive, and the other views will also resize to fit a smaller viewport, but certain behavioural changes won't be made. For example, when using ``overlayed`` in a mobile view, Converse won't know which chat is currently visible and therefore won't be able to properly show notifications for chats that are obscured.
 
 .. note::

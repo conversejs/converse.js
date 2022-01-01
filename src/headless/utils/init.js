@@ -143,6 +143,28 @@ function saveJIDtoSession (_converse, jid) {
     _converse.connection.jid = jid;
 }
 
+/**
+ * Stores the passed in JID for the current user, potentially creating a
+ * resource if the JID is bare.
+ *
+ * Given that we can only create an XMPP connection if we know the domain of
+ * the server connect to and we only know this once we know the JID, we also
+ * call {@link _converse.initConnection } (if necessary) to make sure that the
+ * connection is set up.
+ *
+ * @emits _converse#setUserJID
+ * @params { String } jid
+ */
+export async function setUserJID (jid) {
+    await initSession(_converse, jid);
+    /**
+     * Triggered whenever the user's JID has been updated
+     * @event _converse#setUserJID
+     */
+    _converse.api.trigger('setUserJID');
+    return jid;
+}
+
 export async function initSession (_converse, jid) {
     const is_shared_session = _converse.api.settings.get('connection_options').worker;
 
@@ -237,7 +259,7 @@ function fetchLoginCredentials (wait=0) {
             xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
-                    _converse.setUserJID(data.jid).then(() => {
+                    setUserJID(data.jid).then(() => {
                         resolve({
                             jid: data.jid,
                             password: data.password

@@ -33,7 +33,7 @@ import {
     cleanup,
     initClientConfig,
     initPlugins,
-    initSession,
+    setUserJID,
     initSessionStorage,
     registerGlobalEventHandlers
 } from './utils/init.js';
@@ -152,7 +152,7 @@ export const api = _converse.api = {
                 // We also call `_proto._doDisconnect` so that connection event handlers
                 // for the old transport are removed.
                 if (api.connection.isType('websocket') && api.settings.get('bosh_service_url')) {
-                    await _converse.setUserJID(_converse.bare_jid);
+                    await setUserJID(_converse.bare_jid);
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Bosh(_converse.connection);
                     _converse.connection.service = api.settings.get('bosh_service_url');
@@ -161,9 +161,9 @@ export const api = _converse.api = {
                         // When reconnecting anonymously, we need to connect with only
                         // the domain, not the full JID that we had in our previous
                         // (now failed) session.
-                        await _converse.setUserJID(api.settings.get("jid"));
+                        await setUserJID(api.settings.get("jid"));
                     } else {
-                        await _converse.setUserJID(_converse.bare_jid);
+                        await setUserJID(_converse.bare_jid);
                     }
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
@@ -173,7 +173,7 @@ export const api = _converse.api = {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
-                await _converse.setUserJID(api.settings.get("jid"));
+                await setUserJID(api.settings.get("jid"));
             }
 
             if (_converse.connection?.reconnecting) {
@@ -302,7 +302,7 @@ export const api = _converse.api = {
                 return;
             }
             if (jid) {
-                jid = await _converse.setUserJID(jid);
+                jid = await setUserJID(jid);
             }
 
             // See whether there is a BOSH session to re-attach to
@@ -612,30 +612,24 @@ _converse.initConnection = function () {
         if (api.settings.get("authentication") === _converse.PREBIND) {
             throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
         }
-        if (! api.settings.get("websocket_url")) {
-            throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-        }
     }
 
+    let connection_url = '';
     const XMPPConnection = _converse.isTestEnv() ? MockConnection : Connection;
     if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
-        _converse.connection = new XMPPConnection(
-            api.settings.get("websocket_url"),
-            Object.assign(_converse.default_connection_options, api.settings.get("connection_options"))
-        );
+        connection_url = api.settings.get('websocket_url');
     } else if (api.settings.get('bosh_service_url')) {
-        _converse.connection = new XMPPConnection(
-            api.settings.get('bosh_service_url'),
-            Object.assign(
-                _converse.default_connection_options,
-                api.settings.get("connection_options"),
-                {'keepalive': api.settings.get("keepalive")}
-            )
-        );
-    } else {
-        throw new Error("initConnection: this browser does not support "+
-                        "websockets and bosh_service_url wasn't specified.");
+        connection_url = api.settings.get('bosh_service_url');
     }
+    _converse.connection = new XMPPConnection(
+        connection_url,
+        Object.assign(
+            _converse.default_connection_options,
+            api.settings.get("connection_options"),
+            {'keepalive': api.settings.get("keepalive")}
+        )
+    );
+
     setUpXMLLogging();
     /**
      * Triggered once the `Connection` constructor has been initialized, which
@@ -644,30 +638,6 @@ _converse.initConnection = function () {
      * @event _converse#connectionInitialized
      */
     api.trigger('connectionInitialized');
-}
-
-
-/**
- * Stores the passed in JID for the current user, potentially creating a
- * resource if the JID is bare.
- *
- * Given that we can only create an XMPP connection if we know the domain of
- * the server connect to and we only know this once we know the JID, we also
- * call {@link _converse.initConnection } (if necessary) to make sure that the
- * connection is set up.
- *
- * @method _converse#setUserJID
- * @emits _converse#setUserJID
- * @params { String } jid
- */
-_converse.setUserJID = async function (jid) {
-    await initSession(_converse, jid);
-    /**
-     * Triggered whenever the user's JID has been updated
-     * @event _converse#setUserJID
-     */
-    _converse.api.trigger('setUserJID');
-    return jid;
 }
 
 

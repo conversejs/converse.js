@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.0.1 (2021-??-??)
+
+- #2751: Media not rendered when Converse runs in a browser extension
+
 ## 9.0.0 (2021-11-26)
 
 - Compress new avatar images before uploading them

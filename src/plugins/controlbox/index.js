@@ -4,7 +4,7 @@
  */
 import "shared/components/brand-heading";
 import "../chatview/index.js";
-import './loginpanel.js';
+import './loginform.js';
 import './navback.js';
 import ControlBox from './model.js';
 import ControlBoxToggle from './toggle.js';

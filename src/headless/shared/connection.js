@@ -5,7 +5,7 @@ import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js/src/core';
 import { _converse, api, clearSession, tearDown } from "../core.js";
 import { getOpenPromise } from '@converse/openpromise';
-
+import { setUserJID, } from '@converse/headless/utils/init.js';
 
 const BOSH_WAIT = 59;
 
@@ -102,6 +102,9 @@ export class Connection extends Strophe.Connection {
             const domain = Strophe.getDomainFromJid(jid);
             await this.discoverConnectionMethods(domain);
         }
+        if (!api.settings.get('bosh_service_url') && !api.settings.get("websocket_url")) {
+            throw new Error("You must supply a value for either the bosh_service_url or websocket_url or both.");
+        }
         super.connect(jid, password, callback || this.onConnectStatusChanged, BOSH_WAIT);
     }
 
@@ -134,7 +137,7 @@ export class Connection extends Strophe.Connection {
     async onConnected (reconnecting) {
         delete this.reconnecting;
         this.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-        await _converse.setUserJID(this.jid);
+        await setUserJID(this.jid);
 
         /**
          * Synchronous event triggered after we've sent an IQ to bind the
@@ -225,6 +228,16 @@ export class Connection extends Strophe.Connection {
                 } else {
                     return this.finishDisconnection();
                 }
+            } else if (this.status === Strophe.Status.CONNECTING) {
+                // Don't try to reconnect if we were never connected to begin
+                // with, otherwise an infinite loop can occur (e.g. when the
+                // BOSH service URL returns a 404).
+                const { __ } = _converse;
+                this.setConnectionStatus(
+                    Strophe.Status.CONNFAIL,
+                    __('An error occurred while connecting to the chat server.')
+                );
+                return this.finishDisconnection();
             } else if (
                 this.disconnection_cause === _converse.LOGOUT ||
                 reason === Strophe.ErrorCondition.NO_AUTH_MECH ||

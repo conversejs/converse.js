@@ -5,6 +5,7 @@
 - Updated translations: lt
 - #2751: Media not rendered when Converse runs in a browser extension
 - #2789: Implement new hook parseMessageForCommands for plugins to add custom
+- #2786: Fix webpack configuration not working on Windows OS
 
 ### New hooks and events
 

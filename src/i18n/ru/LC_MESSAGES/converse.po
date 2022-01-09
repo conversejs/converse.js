@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-09-20 18:23+0000\n"
-"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
+"PO-Revision-Date: 2022-01-10 13:47+0000\n"
+"Last-Translator: Andrey <andrey@mailbox.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -844,9 +844,8 @@ msgid "Affiliation"
 msgstr "Принадлежность"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Роль"
+msgstr "Роли"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
@@ -2065,9 +2064,8 @@ msgid "Personal status message"
 msgstr "Личное сообщение"
 
 #: dist/converse-no-dependencies.js:96162
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Ваш профиль"
+msgstr "Ваше изображение профиля"
 
 #: dist/converse-no-dependencies.js:96253
 msgid "Your Profile"
@@ -2266,9 +2264,8 @@ msgid "Description:"
 msgstr "Описание:"
 
 #: dist/converse-no-dependencies.js:99956
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Адрес комнаты (идентификатор)"
+msgstr "Адрес группового чата XMPP:"
 
 #: dist/converse-no-dependencies.js:99958
 msgid "Participants:"

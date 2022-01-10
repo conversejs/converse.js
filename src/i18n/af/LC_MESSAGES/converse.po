@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-04-09 13:29+0200\n"
+"PO-Revision-Date: 2022-01-10 14:17+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -180,12 +180,12 @@ msgstr "Plakkers"
 #: dist/converse-no-dependencies.js:48522
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Fout: tyd is oorskry tydens afhaal van die %1s lys vir MUC %2s"
 
 #: dist/converse-no-dependencies.js:48534
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Fout: Lys %1s vir MUC %2s mag nie gehaal word nie"
 
 #: dist/converse-no-dependencies.js:49602
 msgid ""
@@ -252,6 +252,7 @@ msgstr "Geen toestemming: jy het nie die benodigde rol om dit te doen nie."
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Fout: kon nie 'n nuwe bynaam in kletskamer slegs vir lede registreer nie"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -298,7 +299,7 @@ msgstr "%1$s het die groepgesprek bygetree"
 #: dist/converse-no-dependencies.js:52057
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr "%1$s  het die groepgesprek verlaat"
+msgstr "%1$s het die groepgesprek verlaat"
 
 #: dist/converse-no-dependencies.js:52059
 #, javascript-format
@@ -784,17 +785,15 @@ msgstr "Opsionele rede"
 
 #: dist/converse-no-dependencies.js:66336
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Jammer, u word nie toegelaat om die boodskap te herroep nie."
+msgstr "Jammer, u word nie toegelaat om die boodskap te herroep nie"
 
 #: dist/converse-no-dependencies.js:66467
-#, fuzzy
 msgid "Show media"
-msgstr "Wys meer"
+msgstr "Wys media"
 
 #: dist/converse-no-dependencies.js:66467
-#, fuzzy
 msgid "Hide media"
-msgstr "Verskuil onderwerp"
+msgstr "Verskuil media"
 
 #: dist/converse-no-dependencies.js:66501
 msgid "Cancel Editing"
@@ -856,17 +855,16 @@ msgid "Affiliation"
 msgstr "Affiliasie"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Rol"
+msgstr "Rolle"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
-msgstr ""
+msgstr "Hoede"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "Occupant Id"
 
 #: dist/converse-no-dependencies.js:72950
 msgid "Remove as contact"
@@ -1129,9 +1127,8 @@ msgid "Click to open this server message"
 msgstr "Klik om hierdie bediener-boodskap te open"
 
 #: dist/converse-no-dependencies.js:83520
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Klik om hierdie bediener-boodskap te open"
+msgstr "Klik om vermisde boodskappe te laai"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:83972
@@ -1263,8 +1260,8 @@ msgid ""
 "and owners automatically have the moderator role."
 msgstr ""
 "'n Affiliasie is 'n blywende aanspraak wat gewoonlik 'n specifieke rol "
-"impliseer en sekere voorregte en verantwoordelikhede toeken.\n"
-"Byvoorbeeld, admins en eienaars het automaties die moderator rol."
+"impliseer en sekere voorregte en verantwoordelikhede toeken. Byvoorbeeld, "
+"admins en eienaars het automaties die moderator rol."
 
 #: dist/converse-no-dependencies.js:86662
 msgid "Timeout error while trying to set the affiliation"
@@ -1384,7 +1381,7 @@ msgid ""
 "developer console for details"
 msgstr ""
 "Jammer, 'n fout het voorgekom tydens die uitvoer van die opdrag. Sien die "
-"webblaaier se ontwikkelaarskonsole vir besonderhede."
+"webblaaier se ontwikkelaarskonsole vir besonderhede"
 
 #: dist/converse-no-dependencies.js:88277
 msgid "Enter groupchat"
@@ -1544,7 +1541,7 @@ msgstr "Hierdie groepgesprek bestaan nie meer nie"
 #: dist/converse-no-dependencies.js:89950
 #, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "Die gegewe rede is: \"%1$s\"."
+msgstr "Die gegewe rede is: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:90428
 #, javascript-format
@@ -1584,9 +1581,8 @@ msgstr "Outeur van onderwerp"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:90573
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "groepgesprek-adres"
+msgstr "Groepgesprek XMPP-adres"
 
 #: dist/converse-no-dependencies.js:90575
 msgid "Message archiving"
@@ -1836,13 +1832,12 @@ msgid "wants to be your contact"
 msgstr "wil jou kontak wees"
 
 #: dist/converse-no-dependencies.js:93808
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
 "Jammer, kon nie 'n ontvangde OMEMO-boodskap ontsleutel nie omdat ons nie die "
-"gebruiker XMPP adres het nie."
+"gebruiker se XMPP-adres het nie."
 
 #: dist/converse-no-dependencies.js:93887
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1893,7 +1888,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "OMEMO-enkripsie word nie ondersteun nie"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""
@@ -2080,9 +2075,8 @@ msgid "Personal status message"
 msgstr "Persoonlike status-boodskap"
 
 #: dist/converse-no-dependencies.js:96162
-#, fuzzy
 msgid "Your profile picture"
-msgstr "U profiel"
+msgstr "U profielbeeld"
 
 #: dist/converse-no-dependencies.js:96253
 msgid "Your Profile"
@@ -2278,9 +2272,8 @@ msgid "Description:"
 msgstr "Beskrywing:"
 
 #: dist/converse-no-dependencies.js:99956
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "groepgesprek-adres"
+msgstr "Groepgesprek XMPP-adres:"
 
 #: dist/converse-no-dependencies.js:99958
 msgid "Participants:"

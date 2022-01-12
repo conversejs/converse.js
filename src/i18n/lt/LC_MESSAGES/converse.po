@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-12-17 10:11+0000\n"
+"PO-Revision-Date: 2022-01-12 11:17+0100\n"
 "Last-Translator: Oleg Kazak <oleg@wroot.lt>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/lt/>\n"
@@ -1957,7 +1957,7 @@ msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
 msgstr "Šis kambarys privalo būti tik nariams ir neanonimiškas, kad "
-"galėtų palaikyti OMEMO šifruotas žinutes
+"galėtų palaikyti OMEMO šifruotas žinutes"
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"

@@ -13,7 +13,7 @@ export default {
      * @namespace _converse.api.vcard
      * @memberOf _converse.api
      */
-    'vcard': {
+    vcard: {
         /**
          * Enables setting new values for a VCard.
          *
@@ -74,8 +74,9 @@ export default {
          *     chat or chatroom occupant).
          *
          * @example
-         * _converse.api.waitUntil('rosterContactsFetched').then(() => {
-         *     _converse.api.vcard.get('someone@example.org').then(
+         * const { api } = _converse;
+         * api.waitUntil('rosterContactsFetched').then(() => {
+         *     api.vcard.get('someone@example.org').then(
          *         (vcard) => {
          *             // Do something with the vcard...
          *         }
@@ -84,16 +85,16 @@ export default {
          */
          get (model, force) {
             if (typeof model === 'string') {
-                return getVCard(_converse, model);
-            } else if (force ||
-                    !model.get('vcard_updated') ||
-                    !dayjs(model.get('vcard_error')).isSame(new Date(), "day")) {
-
+                return getVCard(model);
+            }
+            const error_date = model.get('vcard_error');
+            const already_tried_today = error_date && dayjs(error_date).isSame(new Date(), "day");
+            if (force || !model.get('vcard_updated') && !already_tried_today) {
                 const jid = model.get('jid');
                 if (!jid) {
                     log.error("No JID to get vcard for");
                 }
-                return getVCard(_converse, jid);
+                return getVCard(jid);
             } else {
                 return Promise.resolve({});
             }
@@ -110,9 +111,10 @@ export default {
          *     fetched again even if it's been fetched before.
          * @returns {promise} A promise which resolves once the update has completed.
          * @example
-         * _converse.api.waitUntil('rosterContactsFetched').then(async () => {
-         *     const chatbox = await _converse.chatboxes.getChatBox('someone@example.org');
-         *     _converse.api.vcard.update(chatbox);
+         * const { api } = _converse;
+         * api.waitUntil('rosterContactsFetched').then(async () => {
+         *     const chatbox = await api.chats.get('someone@example.org');
+         *     api.vcard.update(chatbox);
          * });
          */
         async update (model, force) {

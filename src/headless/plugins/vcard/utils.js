@@ -140,15 +140,15 @@ export function clearVCardsSession () {
     }
 }
 
-export async function getVCard (_converse, jid) {
+export async function getVCard (jid) {
     const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
     let iq;
     try {
         iq = await api.sendIQ(createStanza("get", to))
     } catch (iq) {
         return {
+            jid,
             'stanza': iq,
-            'jid': jid,
             'vcard_error': (new Date()).toISOString()
         }
     }

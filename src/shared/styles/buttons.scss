@@ -5,6 +5,9 @@
     .btn {
         font-weight: normal;
         color: var(--button-text-color);
+        &:hover {
+            color: var(--button-hover-text-color);
+        }
         &.fa {
             color: var(--button-text-color) !important;
         }

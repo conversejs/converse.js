@@ -91,7 +91,6 @@ export const tpl_emoji_picker = (o) => {
                 query="${o.query}"></converse-emoji-picker-content>` : ''}
 
         <div class="emoji-skintone-picker">
-            <label>Skin tone</label>
             <ul>${ skintones.map(skintone => skintone_emoji(Object.assign({skintone}, o))) }</ul>
         </div>`;
 }

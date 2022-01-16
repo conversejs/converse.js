@@ -38,6 +38,8 @@ export default class EmojiDropdown extends DropdownBase {
     }
 
     render() {
+        const is_groupchat = this.chatview.model.get('type') === _converse.CHATROOMS_TYPE;
+        const color = is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
         return html`
             <div class="dropup">
                 <button class="toggle-emojis"
@@ -46,6 +48,7 @@ export default class EmojiDropdown extends DropdownBase {
                         aria-haspopup="true"
                         aria-expanded="false">
                     <converse-icon
+                        color="var(${color})"
                         class="fa fa-smile "
                         path-prefix="${api.settings.get('assets_path')}"
                         size="1em"></converse-icon>

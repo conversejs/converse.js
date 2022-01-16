@@ -8,12 +8,26 @@
       position: absolute;
     }
 
+    .img-thumbnail {
+        background-color: var(--img-thumbnail-background-color);
+        border: 1px solid var(--img-thumbnail-border-color);
+    }
+
     textarea:disabled {
-        background-color: #EEE !important;
+        background-color: var(--chat-textarea-disabled-bg-color) !important;
     }
 
     .subdued {
         opacity: 0.35;
+    }
+
+    .close {
+      color: var(--close-color);
+      text-shadow: none;
+
+      &:hover {
+        color: var(--close-color-hover);
+      }
     }
 
     .fit-content {
@@ -408,10 +422,6 @@
     .form-help {
         color: var(--subdued-color);
         font-size: 90%;
-    }
-
-    .form-control--labeled {
-        margin-top: 0.5em;
     }
 
     .nav-pills .nav-link.active,

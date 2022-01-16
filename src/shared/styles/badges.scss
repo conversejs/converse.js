@@ -2,7 +2,7 @@
     @import "bootstrap/scss/badge";
 
     .badge {
-        color: white;
+        color: var(--badge-color);
         font-size: 90%;
         font-weight: normal;
         line-height: 1;

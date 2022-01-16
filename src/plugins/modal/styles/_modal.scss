@@ -7,6 +7,10 @@
 
     #converse-modals {
         .modal {
+            .modal-content {
+                box-shadow: var(--raised-el-shadow);
+            }
+
             .modal-body {
                 overflow-y: auto;
                 max-height: 75vh;

@@ -34,7 +34,6 @@
             padding-bottom: 0;
             background-color: var(--chat-head-color);
             overflow-y: hidden;
-            background: white;
             .emoji-picker__lists {
                 height: 8em;
                 overflow-y: auto;
@@ -49,6 +48,7 @@
                 }
 
                 .emoji-lists__container {
+                    background-color: var(--background);
                     overflow-x: hidden;
                 }
 
@@ -66,13 +66,6 @@
                 background-color: var(--chat-head-color);
                 width: 100%;
                 font-size: var(--font-size);
-                label {
-                    margin: 0;
-                    padding: 0 0.5em;
-                    white-space: nowrap;
-                    font-size: var(--font-size-small);
-                    color: var(--heading-color);
-                }
                 ul {
                     display: flex;
                     flex-direction: row;
@@ -83,7 +76,7 @@
                 }
             }
             .emoji-picker {
-                background-color: white;
+                background-color: var(--background);
                 padding: 0.5em 0 0 0.5em;
                 &:last-child {
                     padding-bottom: 0.5em;
@@ -114,7 +107,6 @@
                             vertical-align: baseline;
                         }
                         a {
-                            padding: 3px;
                             display: inline-block;
                             font-size: var(--font-size-huge);
                             line-height: calc(var(--font-size-huge) * 1.5);
@@ -148,10 +140,8 @@
                     .emoji-category {
                         padding: 0.25em 0;
                         font-size: var(--font-size-huge);
-                        &.picked {
-                            background-color: white;
-                            border: 1px var(--chat-head-color) solid;
-                            border-bottom: none;
+                        &.picked a {
+                            background-color: var(--heading-color);
                         }
                         &.selected a, &:hover a {
                             background-color: var(--highlight-color-darker);
@@ -173,20 +163,11 @@
     .chatroom {
         converse-emoji-picker {
             background-color: var(--chatroom-head-bg-color);
-            background: white;
             .emoji-skintone-picker {
                 background-color: var(--chatroom-head-bg-color);
             }
             .emoji-picker__header {
                 background-color: var(--chatroom-head-bg-color);
-                ul {
-                    .emoji-category {
-                        &.picked {
-                            border: 1px var(--chatroom-head-bg-color) solid;
-                            border-bottom: none;
-                        }
-                    }
-                }
             }
         }
     }

@@ -1,4 +1,9 @@
 .conversejs {
+
+    .modal-content {
+        background-color: var(--modal-background-color);
+    }
+
     .modal-body {
         .row {
             margin-left: 0;

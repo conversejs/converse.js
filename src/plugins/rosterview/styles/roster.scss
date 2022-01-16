@@ -83,7 +83,7 @@
             margin: 0.25em 0;
         }
 
-        li {
+        .list-item {
             &.requesting-xmpp-contact {
                 a {
                     line-height: var(--line-height);
@@ -98,6 +98,7 @@
                 padding: 0;
                 &.unread-msgs {
                     font-weight: bold;
+                    color: var(--unread-msgs-color);
                     .contact-name {
                         width: 70%;
                     }
@@ -142,7 +143,7 @@
                 margin-left: 5px;
             }
             &:hover {
-                background-color: var(controlbox-pane-bg-hover-color);
+                background-color: var(--controlbox-pane-bg-hover-color);
             }
         }
     }

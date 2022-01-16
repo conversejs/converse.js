@@ -5,6 +5,7 @@
 .conversejs {
     @import "bootstrap/scss/dropdown";
     converse-dropdown {
+
         &.dropup {
             &.dropup--left {
                 .dropdown-menu {
@@ -20,7 +21,9 @@
         }
 
         .dropdown-menu {
+            background: var(--background);
             margin-top: -0.2em !important;
+            box-shadow: var(--raised-el-shadow);
         }
 
         .dropdown-item {
@@ -41,6 +44,7 @@
             }
             &:hover {
                 color: var(--text-color);
+                background-color: var(--list-item-hover-color);
             }
         }
     }

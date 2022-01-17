@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-09-12 15:32+0000\n"
+"PO-Revision-Date: 2021-12-23 06:53+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -239,7 +239,7 @@ msgstr "Prohibido: non ten os permisos necesarios para facer iso."
 
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
-msgstr ""
+msgstr "Erro: non se puido rexistrar o alcume na sala só para membros"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -833,17 +833,16 @@ msgid "Affiliation"
 msgstr "Afiliación"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Rol"
+msgstr "Roles"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
-msgstr ""
+msgstr "Sombreiros"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "Id do ocupante"
 
 #: dist/converse-no-dependencies.js:72950
 msgid "Remove as contact"
@@ -1855,7 +1854,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "Non hai soporte para cifrado OMEMO"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""
@@ -1882,7 +1881,7 @@ msgstr "Non confiable"
 #. harmony default export
 #: dist/converse-no-dependencies.js:94946
 msgid "OMEMO Fingerprints"
-msgstr "Pegadas dixitais OMEMO"
+msgstr "Impresións dixitais OMEMO"
 
 #: dist/converse-no-dependencies.js:94948
 msgid "No OMEMO-enabled devices found"
@@ -1890,11 +1889,11 @@ msgstr "Non se atoparon dispositivos con OMEMO activado"
 
 #: dist/converse-no-dependencies.js:95208
 msgid "Checkbox for selecting the following fingerprint"
-msgstr "Marque para escoller a seguinte pegada dixital"
+msgstr "Marca para escoller a seguinte impresión dixital"
 
 #: dist/converse-no-dependencies.js:95214
 msgid "Device without a fingerprint"
-msgstr "Dispositivo sen pegada dixital"
+msgstr "Dispositivo sen impresión dixital"
 
 #: dist/converse-no-dependencies.js:95216
 msgid "Checkbox for selecting the following device"
@@ -1907,7 +1906,8 @@ msgstr "Outros dispositivos con OMEMO habilitado"
 #: dist/converse-no-dependencies.js:95230
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
-"Marque para seleccionar as pegadas dixitais OMEMO de todos os dispositivos"
+"Marca para elexir as impresións dixitais de todos os outros dispositivos "
+"OMEMO"
 
 #: dist/converse-no-dependencies.js:95232
 msgid "Remove checked devices and close"
@@ -1919,11 +1919,11 @@ msgstr "Escoller todo"
 
 #: dist/converse-no-dependencies.js:95246
 msgid "This device's OMEMO fingerprint"
-msgstr "Pegada dixital OMEMO de este dispositivo"
+msgstr "Impresión dixital OMEMO deste dispositivo"
 
 #: dist/converse-no-dependencies.js:95248
 msgid "Generate new keys and fingerprint"
-msgstr "Xerar novas chaves e pegada dixital"
+msgstr "Crear novas chaves e impresión dixital"
 
 #: dist/converse-no-dependencies.js:95554
 msgid "Sorry, an error occurred while trying to remove the devices."

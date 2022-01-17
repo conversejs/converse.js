@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-09-12 15:32+0000\n"
+"PO-Revision-Date: 2021-11-30 10:57+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -240,7 +240,7 @@ msgstr "Yasak: Bunu yapabilmek için gerekli rolün yok."
 
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
-msgstr ""
+msgstr "Hata: yalnızca üyelere özel odada yeni takma ad kaydedilemedi"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -834,9 +834,8 @@ msgid "Affiliation"
 msgstr "Üyelik"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "rol"
+msgstr "Roller"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
@@ -1860,7 +1859,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "OMEMO şifrelemesi desteklenmiyor"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""

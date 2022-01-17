@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-02-01 15:41+0000\n"
+"PO-Revision-Date: 2021-12-16 20:07+0000\n"
 "Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.10\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -203,28 +203,26 @@ msgid "A timeout happened while while trying to retract your message."
 msgstr "Denbora agortu da zure mezua ezeztatzeko saiakeran."
 
 #: dist/converse-no-dependencies.js:50739
-#, fuzzy
 msgid "Sorry, an error happened while running the command."
-msgstr "Errore bat gertatu da zure profileko datuak gordetzen saiatzean."
+msgstr "Barkatu, akats bat izan da komandoa exekutatzerakoan."
 
 #: dist/converse-no-dependencies.js:50739
 #: dist/converse-no-dependencies.js:89873
-#, fuzzy
 msgid "Check your browser's developer console for details."
-msgstr ""
-"Zure nabigatzaileko garatzaile kontsolan egiaztatu dezakezu errorerik dagoen."
+msgstr "Nabigatzaileko garatzaile kontsola ikus dezakezu xehetasun gehiagorako."
 
 #: dist/converse-no-dependencies.js:50764
 #: dist/converse-no-dependencies.js:50787
-#, fuzzy
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr "Errorea: ezin izan da gelako parte-hartzaile bat aurkitu \"%1$s\""
+msgstr ""
+"Errorea: ez da zure eskaerarekin bat datorren kiderik aurkitu talde-"
+"berriketan"
 
 #: dist/converse-no-dependencies.js:50774
-#, fuzzy
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
-"Gelako gainontzeko parte-hartzaileek zure XMPP erabiltzailea ikus dezakete"
+"Errorea: zure eskaerarekin bat datozen hainbat kide aurkitu dira talde-"
+"berriketan"
 
 #: dist/converse-no-dependencies.js:50802
 #, javascript-format
@@ -247,6 +245,8 @@ msgstr "Debekatua: Ez duzu hori egiteko behar den rola."
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Errorea: ezin izan da ezizen berririk erregistratu kideentzako soilik den "
+"gelan"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -315,44 +315,44 @@ msgid "%1$s has been muted"
 msgstr "%1$s ezikusia izan da"
 
 #: dist/converse-no-dependencies.js:52074
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$s"
-msgstr "%1$s -k dio"
+msgstr "%1$s eta %2$s"
 
 #: dist/converse-no-dependencies.js:52078
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are typing"
-msgstr "%1$s idazten ari da"
+msgstr "%1$s idazten ari dira"
 
 #: dist/converse-no-dependencies.js:52080
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have stopped typing"
-msgstr "%1$s idazteari utzi dio"
+msgstr "%1$s idazteari utzi diote"
 
 #: dist/converse-no-dependencies.js:52082
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have gone away"
-msgstr "%1$s joan egin da"
+msgstr "%1$s joan egin dira"
 
 #: dist/converse-no-dependencies.js:52084
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr "%1$s gelara elkartu da"
+msgstr "%1$s gelara sartu dira"
 
 #: dist/converse-no-dependencies.js:52086
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr "%1$s gelatik atera da"
+msgstr "%1$s elkarrizketa utzi dute"
 
 #: dist/converse-no-dependencies.js:52088
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are now moderators"
-msgstr "%1$s orain moderatzailea da"
+msgstr "%1$s orain moderatzaileak dira"
 
 #: dist/converse-no-dependencies.js:52090
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr "%1$s jada ez da moderatzailea"
+msgstr "%1$s jada ez dira moderatzaileak"
 
 #: dist/converse-no-dependencies.js:52092
 #, fuzzy, javascript-format
@@ -735,7 +735,6 @@ msgstr ""
 #: dist/converse-no-dependencies.js:66160
 #: dist/converse-no-dependencies.js:66257
 #: dist/converse-no-dependencies.js:66294
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
 msgstr "Ziur al zaude mezu hau baztertu nahi duzula?"
 
@@ -748,52 +747,44 @@ msgid "Confirm"
 msgstr "Baieztatu"
 
 #: dist/converse-no-dependencies.js:66216
-#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
-msgstr "Errore bat gertatu da gailuak kentzen saiatzean."
+msgstr "Denbora-muga errore bat gertatu da mezua baztertzen saiatzerakoan"
 
 #: dist/converse-no-dependencies.js:66220
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "Ez duzu baimenik gela berriak sortzeko."
+msgstr "Barkatu, ez duzu baimenik mezu hau baztertzeko."
 
 #: dist/converse-no-dependencies.js:66318
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "Irakurri gabeko mezuak dituzu"
+msgstr "Mezu hau baztertzera zoaz."
 
 #: dist/converse-no-dependencies.js:66318
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
-msgstr ""
-"%1$s \"%2$s\" txat gelara gonbidatzera zoaz. Gonbidapenaren arrazoia "
-"adierazten duen mezu bat gehitzeko aukera duzu."
+msgstr "Bazterketaren arrazoiak azaltzen dituen mezu bat zehazteko aukera duzu."
 
 #: dist/converse-no-dependencies.js:66325
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Mezuaren bertsioak"
+msgstr "Mezu Bazterketa"
 
 #: dist/converse-no-dependencies.js:66325
-#, fuzzy
 msgid "Optional reason"
-msgstr "Aukerako haztarna"
+msgstr "Aukerako arrazoia"
 
 #: dist/converse-no-dependencies.js:66336
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Ez duzu baimenik gela berriak sortzeko."
+msgstr "Barkatu, ez duzu baimenik mezu hau baztertzeko"
 
 #: dist/converse-no-dependencies.js:66467
 #, fuzzy
 msgid "Show media"
-msgstr "Gehiago erakutsi"
+msgstr "Bitartekoak erakutsi"
 
 #: dist/converse-no-dependencies.js:66467
+#, fuzzy
 msgid "Hide media"
-msgstr ""
+msgstr "Bitartekoak ezkutatu"
 
 #: dist/converse-no-dependencies.js:66501
 msgid "Cancel Editing"
@@ -855,9 +846,8 @@ msgid "Affiliation"
 msgstr "Afiliazioa"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Rola"
+msgstr "Rolak"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
@@ -1111,23 +1101,20 @@ msgid "Toggle chat"
 msgstr "Txata gaitu"
 
 #: dist/converse-no-dependencies.js:82861
-#, fuzzy
 msgid "Close these announcements"
-msgstr "Ezabatu chat talde hau"
+msgstr "Iragarpen hauek itxi"
 
 #: dist/converse-no-dependencies.js:83411
 msgid "Announcements"
-msgstr ""
+msgstr "Iragarpenak"
 
 #: dist/converse-no-dependencies.js:83415
-#, fuzzy
 msgid "Click to open this server message"
-msgstr "Klikatu gela hau irekitzeko"
+msgstr "Klikatu zerbitzariaren mezu hau irekitzeko"
 
 #: dist/converse-no-dependencies.js:83520
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Klikatu gela hau irekitzeko"
+msgstr "Klikatu falta diren mezuak kargatzeko"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:83972
@@ -1155,11 +1142,11 @@ msgstr "Elkarrizketa talde hau minimizatu"
 #. harmony default export
 #: dist/converse-no-dependencies.js:86012
 msgid "Hide"
-msgstr ""
+msgstr "Ezkutatu"
 
 #: dist/converse-no-dependencies.js:86014
 msgid "Execute"
-msgstr ""
+msgstr "Exekutatu"
 
 #: dist/converse-no-dependencies.js:86059
 msgid ""
@@ -1186,16 +1173,22 @@ msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Jabea da afiliaziorik altuena. Jabeek beste erabiltzaile guztien rolak eta "
+"afiliazioak alda ditzakete."
 
 #: dist/converse-no-dependencies.js:86071
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Administratzailea da 2. afiliaziorik altuena. Administratzaileek jabea ez "
+"beste erabiltzaile guztien rolak eta afiliazioak alda ditzakete."
 
 #: dist/converse-no-dependencies.js:86073
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
+"Erabiltzaile bati debekua ezartzeko, \"baztertu\" afiliazioa ezarri behar "
+"diozu."
 
 #: dist/converse-no-dependencies.js:86086
 msgid "Change role"
@@ -1229,7 +1222,7 @@ msgstr "Ez da rol hori duen erabiltzailerik aurkitu."
 
 #: dist/converse-no-dependencies.js:86136
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "Idatzi hemen bilaketa emaitzak iragazteko"
 
 #: dist/converse-no-dependencies.js:86140
 msgid "Show users"
@@ -1253,40 +1246,37 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Afiliazioa iraupen luzeko eskubidea da, berekin dakar nolabaiteko zeregina "
+"eta pribilegioak eta erantzukizunak ematen ditu. Adibidez, "
+"administratzaileek eta jabeek automatikoki dute moderatzaile-lana."
 
 #: dist/converse-no-dependencies.js:86662
-#, fuzzy
 msgid "Timeout error while trying to set the affiliation"
-msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan"
+msgstr "Denbora-muga errorea afiliazioa ezartzerakoan"
 
 #: dist/converse-no-dependencies.js:86664
-#, fuzzy
 msgid "Sorry, you're not allowed to make that change"
-msgstr "Ez duzu baimenik gela berriak sortzeko."
+msgstr "Barkatu, ez duzu baimenik aldaketa hori burutzeko"
 
 #: dist/converse-no-dependencies.js:86666
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan"
+msgstr "Barkatu, zerbaitek huts egin du afiliazioa ezartzerakoan"
 
 #: dist/converse-no-dependencies.js:86679
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Afiliazioa aldatu da"
 
 #: dist/converse-no-dependencies.js:86709
-#, fuzzy
 msgid "Role changed"
-msgstr "Txata gaitu"
+msgstr "Rola aldatu da"
 
 #: dist/converse-no-dependencies.js:86715
-#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr "Ez duzu baimenik gela berriak sortzeko."
+msgstr "Ez duzu baimenik aldaketa hori egiteko"
 
 #: dist/converse-no-dependencies.js:86717
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan"
+msgstr "Barkatu, zerbaitek huts egin du rola ezartzerakoan"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:86794
@@ -1294,9 +1284,8 @@ msgid "Moderator Tools"
 msgstr "Moderatzaile tresnak"
 
 #: dist/converse-no-dependencies.js:86946
-#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "Ziur al zaude %1$s gelatik atera nahi duzula?"
+msgstr "Ziur zaude berriketa-talde hau suntsitu nahi duzula?"
 
 #: dist/converse-no-dependencies.js:86949
 #, fuzzy

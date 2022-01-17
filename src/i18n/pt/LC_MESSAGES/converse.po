@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-05-09 13:32+0000\n"
+"PO-Revision-Date: 2021-12-31 07:51+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -180,12 +180,12 @@ msgstr "Autocolantes"
 #: dist/converse-no-dependencies.js:48522
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Erro: tempo limite ao buscar a lista %1s para MUC %2s"
 
 #: dist/converse-no-dependencies.js:48534
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Erro: não é permitido buscar a lista %1s para MUC %2s"
 
 #: dist/converse-no-dependencies.js:49602
 msgid ""
@@ -250,6 +250,7 @@ msgstr "Proibido: você não tem nas permissões necessárias para fazer isso."
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Erro: não foi possível registar um novo nickname na sala apenas para membros"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -785,14 +786,12 @@ msgid "Sorry, you're not allowed to retract this message"
 msgstr "Desculpe, não está autorizado a retrair esta mensagem"
 
 #: dist/converse-no-dependencies.js:66467
-#, fuzzy
 msgid "Show media"
-msgstr "Mostrar mais"
+msgstr "Mostrar mídia"
 
 #: dist/converse-no-dependencies.js:66467
-#, fuzzy
 msgid "Hide media"
-msgstr "Ocultar assunto"
+msgstr "Ocultar mídia"
 
 #: dist/converse-no-dependencies.js:66501
 msgid "Cancel Editing"
@@ -854,17 +853,16 @@ msgid "Affiliation"
 msgstr "Afiliação"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Função"
+msgstr "Funções"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
-msgstr ""
+msgstr "Chapéus"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "Identificação do ocupante"
 
 #: dist/converse-no-dependencies.js:72950
 msgid "Remove as contact"
@@ -1125,9 +1123,8 @@ msgid "Click to open this server message"
 msgstr "Clique para abrir esta mensagem no servidor"
 
 #: dist/converse-no-dependencies.js:83520
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Clique para abrir esta mensagem no servidor"
+msgstr "Clique para carregar mensagens ausentes"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:83972
@@ -1580,9 +1577,8 @@ msgstr "Autor do tópico"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:90573
-#, fuzzy
 msgid "Groupchat XMPP address"
-msgstr "Endereço da sala"
+msgstr "Endereço XMPP do bate-papo em grupo"
 
 #: dist/converse-no-dependencies.js:90575
 msgid "Message archiving"
@@ -1835,13 +1831,12 @@ msgid "wants to be your contact"
 msgstr "Quer ser seu contato"
 
 #: dist/converse-no-dependencies.js:93808
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Desculpe, não pude descriptografar um OMEMO recebido porque não temos o JID "
-"para esse utilizador."
+"Desculpe, não foi possível decifrar uma mensagem OMEMO recebida porque não "
+"temos o endereço XMPP para aquele utilizador."
 
 #: dist/converse-no-dependencies.js:93887
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1893,7 +1888,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "A criptografia OMEMO não é suportada"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""
@@ -2084,9 +2079,8 @@ msgid "Personal status message"
 msgstr "Mensagem de estado pessoal"
 
 #: dist/converse-no-dependencies.js:96162
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Seu perfil"
+msgstr "A sua foto de perfil"
 
 #: dist/converse-no-dependencies.js:96253
 msgid "Your Profile"
@@ -2287,9 +2281,8 @@ msgid "Description:"
 msgstr "Descrição:"
 
 #: dist/converse-no-dependencies.js:99956
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Endereço da sala"
+msgstr "Endereço do grupo de bate-papo XMPP:"
 
 #: dist/converse-no-dependencies.js:99958
 msgid "Participants:"

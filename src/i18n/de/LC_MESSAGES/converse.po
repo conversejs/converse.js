@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-09-12 15:32+0000\n"
+"PO-Revision-Date: 2021-12-06 09:50+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -61,7 +61,7 @@ msgstr "%1$s schreibt"
 #: dist/converse-no-dependencies.js:52051
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr "%1$s tippt nicht mehr"
+msgstr "%1$s schreibt nicht mehr"
 
 #: dist/converse-no-dependencies.js:42738
 #: dist/converse-no-dependencies.js:43160
@@ -79,8 +79,7 @@ msgstr "Sie dürfen Ihre Nachricht nicht widerrufen."
 #: dist/converse-no-dependencies.js:49604
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr ""
-"Es ist leider ein Fehler aufgetreten, als Sie versucht haben, Ihre Nachricht "
-"zu widerrufen."
+"Leider ist ein Fehler beim Versuch Ihre Nachricht zu widerrufen aufgetreten."
 
 #: dist/converse-no-dependencies.js:42830
 msgid "You're not allowed to send a message."
@@ -89,7 +88,7 @@ msgstr "Sie dürfen keine Nachricht senden."
 #: dist/converse-no-dependencies.js:42832
 #: dist/converse-no-dependencies.js:49613
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Es ist leider ein Fehler beim Senden Ihrer Nachricht aufgetreten."
+msgstr "Leider ist beim Senden Ihrer Nachricht ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:43158
 #, javascript-format
@@ -110,7 +109,8 @@ msgstr "%1$s ist jetzt online"
 #: dist/converse-no-dependencies.js:44069
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
-"Scheint als werde das Hochladen von Dateien auf dem Server nicht unterstützt."
+"Leider sieht es so aus, als ob das Hochladen von Dateien von Ihrem Server "
+"nicht unterstützt wird."
 
 #: dist/converse-no-dependencies.js:44096
 #, javascript-format
@@ -131,7 +131,7 @@ msgstr "Leider konnte die Upload-URL nicht ermittelt werden."
 
 #: dist/converse-no-dependencies.js:44566
 msgid "Sorry, could not determine file upload URL."
-msgstr "Konnte die Hochlade-URL leider nicht bestimmen."
+msgstr "Leider konnte die URL für den Datei-Upload nicht ermitteln werden."
 
 #: dist/converse-no-dependencies.js:44645
 #, javascript-format
@@ -139,8 +139,8 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
-"Leider konnte die Datei nicht hochgeladen werden. Der Server antwortete: "
-"\"%1$s\""
+"Leider konnte die Datei nicht hochgeladen werden. Ihr Server antwortete: \""
+"%1$s\""
 
 #: dist/converse-no-dependencies.js:44647
 msgid "Sorry, could not succesfully upload your file."
@@ -224,8 +224,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:50739
 msgid "Sorry, an error happened while running the command."
-msgstr ""
-"Entschuldigung, bei der Ausführung des Befehls ist ein Fehler aufgetreten."
+msgstr "Leider ist bei der Ausführung des Befehls ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:50739
 #: dist/converse-no-dependencies.js:89873
@@ -264,6 +263,8 @@ msgstr "Verboten: Sie haben nicht die nötigen Rechte, um das zu tun."
 #: dist/converse-no-dependencies.js:50998
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Fehler: Neuer Spitzname konnte im Raum nur für Mitglieder nicht registriert "
+"werden"
 
 #: dist/converse-no-dependencies.js:51322
 msgid "You're not allowed to register yourself in this groupchat."
@@ -273,7 +274,8 @@ msgstr "Sie dürfen nicht diesem Gruppenchat beitreten."
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
-"Es ist Ihnen nicht erlaubt diesem Raum beizutreten da sie kein Mitglied sind."
+"Sie dürfen sich in diesem Gruppenchat nicht anmelden, da er nur für "
+"Mitglieder zugänglich ist."
 
 #: dist/converse-no-dependencies.js:51368
 msgid ""
@@ -337,12 +339,12 @@ msgstr "%1$s und %2$s"
 #: dist/converse-no-dependencies.js:52078
 #, javascript-format
 msgid "%1$s are typing"
-msgstr "%1$s tippt"
+msgstr "%1$s schreiben"
 
 #: dist/converse-no-dependencies.js:52080
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr "%1$s tippt nicht mehr"
+msgstr "%1$s schreiben nicht mehr"
 
 #: dist/converse-no-dependencies.js:52082
 #, javascript-format
@@ -770,7 +772,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:66220
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "Es tut uns leid, Sie dürfen diese Nachricht nicht widerrufen."
+msgstr "Leider dürfen Sie diese Nachricht nicht widerrufen."
 
 #: dist/converse-no-dependencies.js:66318
 msgid "You are about to retract this message."
@@ -794,7 +796,7 @@ msgstr "Optionaler Grund"
 
 #: dist/converse-no-dependencies.js:66336
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Es tut uns leid, Sie dürfen diese Nachricht nicht widerrufen"
+msgstr "Leider dürfen Sie diese Nachricht nicht widerrufen"
 
 #: dist/converse-no-dependencies.js:66467
 msgid "Show media"
@@ -864,17 +866,16 @@ msgid "Affiliation"
 msgstr "Zugehörigkeit"
 
 #: dist/converse-no-dependencies.js:72840
-#, fuzzy
 msgid "Roles"
-msgstr "Rolle"
+msgstr "Rollen"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Hats"
-msgstr ""
+msgstr "Funktion"
 
 #: dist/converse-no-dependencies.js:72840
 msgid "Occupant Id"
-msgstr ""
+msgstr "Benutzer-ID"
 
 #: dist/converse-no-dependencies.js:72950
 msgid "Remove as contact"
@@ -1031,7 +1032,7 @@ msgstr "Optionaler Hinweis"
 #: dist/converse-no-dependencies.js:78627
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr ""
-"Die Verbindung wurde leider unterbrochen und Ihre Nachricht konnte nicht "
+"Leider wurde die Verbindung unterbrochen und Ihre Nachricht konnte nicht "
 "gesendet werden"
 
 #. harmony default export
@@ -1285,7 +1286,7 @@ msgstr "Zeitüberschreitungsfehler beim Versuch, die Zugehörigkeit festzulegen"
 
 #: dist/converse-no-dependencies.js:86664
 msgid "Sorry, you're not allowed to make that change"
-msgstr "Es tut uns leid, Sie dürfen diese Änderung nicht vornehmen"
+msgstr "Leider dürfen Sie diese Änderung nicht vornehmen"
 
 #: dist/converse-no-dependencies.js:86666
 msgid "Sorry, something went wrong while trying to set the affiliation"
@@ -1385,7 +1386,7 @@ msgstr "Keine Befehle gefunden"
 #: dist/converse-no-dependencies.js:87772
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr ""
-"Entschuldigung, bei der Suche nach Befehlen für diese Instanz ist ein Fehler "
+"Leider ist bei der Suche nach Befehlen für diese Instanz ist ein Fehler "
 "aufgetreten."
 
 #: dist/converse-no-dependencies.js:87783
@@ -1397,7 +1398,7 @@ msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
 msgstr ""
-"Es ist leider ein Fehler beim Ausführen des Befehls aufgetreten. Weitere "
+"Leider ist ein Fehler beim Ausführen des Befehls aufgetreten. Weitere "
 "Informationen finden Sie in der Entwicklerkonsole"
 
 #: dist/converse-no-dependencies.js:88277
@@ -1545,7 +1546,7 @@ msgstr "Konfigurationsformular laden"
 #: dist/converse-no-dependencies.js:89873
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr ""
-"Beim Senden des Konfigurationsformulars ist leider ein Fehler aufgetreten."
+"Leider ist beim Senden des Konfigurationsformulars ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:89940
 msgid ""
@@ -1912,7 +1913,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:94726
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "OMEMO-Verschlüsselung wird nicht unterstützt"
 
 #: dist/converse-no-dependencies.js:94752
 msgid ""
@@ -2120,7 +2121,7 @@ msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
-"Benutze Kommas um die Rollen zu separieren. Die Rollen erscheinen neben "
+"Benutze Kommas, um die Rollen zu separieren. Die Rollen erscheinen neben "
 "deinem Namen."
 
 #: dist/converse-no-dependencies.js:96271
@@ -2311,7 +2312,7 @@ msgstr "Beschreibung:"
 
 #: dist/converse-no-dependencies.js:99956
 msgid "Groupchat XMPP Address:"
-msgstr "Gruppenchat-XMPP-Adresse"
+msgstr "Gruppenchat-XMPP-Adresse:"
 
 #: dist/converse-no-dependencies.js:99958
 msgid "Participants:"

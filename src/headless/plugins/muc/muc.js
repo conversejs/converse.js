@@ -14,7 +14,7 @@ import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from '
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
-import { isUniView } from '@converse/headless/utils/core.js';
+import { isUniView, getUniqueId } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -188,6 +188,7 @@ const ChatRoomMixin = {
 
     async constructPresence (password) {
         let stanza = $pres({
+            'id': getUniqueId(),
             'from': _converse.connection.jid,
             'to': this.getRoomJIDAndNick()
         }).c('x', { 'xmlns': Strophe.NS.MUC })
@@ -732,7 +733,7 @@ const ChatRoomMixin = {
         }
         const editable = message.get('editable');
         const stanza = $msg({
-            'id': u.getUniqueId(),
+            'id': getUniqueId(),
             'to': this.get('jid'),
             'type': 'groupchat'
         })
@@ -980,7 +981,7 @@ const ChatRoomMixin = {
         if (attrs?.body) {
             [text, references] = this.parseTextForReferences(attrs.body);
         }
-        const origin_id = u.getUniqueId();
+        const origin_id = getUniqueId();
         const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
         return Object.assign({}, attrs, {
             body,
@@ -1073,7 +1074,7 @@ const ChatRoomMixin = {
         const invitation = $msg({
             'from': _converse.connection.jid,
             'to': recipient,
-            'id': u.getUniqueId()
+            'id': getUniqueId()
         }).c('x', attrs);
         api.send(invitation);
         /**
@@ -1424,9 +1425,9 @@ const ChatRoomMixin = {
         const jid = Strophe.getBareJidFromJid(this.get('jid'));
         api.send(
             $pres({
-                from: _converse.connection.jid,
-                to: `${jid}/${nick}`,
-                id: u.getUniqueId()
+                'from': _converse.connection.jid,
+                'to': `${jid}/${nick}`,
+                'id': getUniqueId()
             }).tree()
         )
     },

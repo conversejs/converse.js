@@ -5,6 +5,7 @@
  */
 import 'strophe.js/src/bosh';
 import log from "../log.js";
+import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../core.js";
 import { setUserJID, } from '@converse/headless/utils/init.js';
@@ -63,7 +64,8 @@ converse.plugins.add('converse-bosh', {
                         jid,
                         data.sid,
                         data.rid,
-                        _converse.connection.onConnectStatusChanged
+                        _converse.connection.onConnectStatusChanged,
+                        BOSH_WAIT
                     );
                 } else {
                     xhr.onerror();

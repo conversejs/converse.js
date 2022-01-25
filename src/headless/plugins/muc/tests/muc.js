@@ -85,7 +85,7 @@ describe("Groupchats", function () {
             const pres = await u.waitUntil(
                 () => sent_stanzas.slice(index).filter(s => s.nodeName === 'presence').pop());
             expect(Strophe.serialize(pres)).toBe(
-                `<presence from="${_converse.jid}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
+                `<presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
                     `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
                     `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);

@@ -1,5 +1,7 @@
 import { Strophe } from 'strophe.js/src/strophe';
 
+export const BOSH_WAIT = 59;
+
 export const CONNECTION_STATUS = {};
 CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
 CONNECTION_STATUS[Strophe.Status.AUTHENTICATING] = 'AUTHENTICATING';

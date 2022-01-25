@@ -6,8 +6,7 @@ import { Strophe } from 'strophe.js/src/core';
 import { _converse, api, clearSession, tearDown } from "../core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '@converse/headless/utils/init.js';
-
-const BOSH_WAIT = 59;
+import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
 
 
 /**

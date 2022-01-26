@@ -298,12 +298,15 @@ export function showOccupantModal (ev, occupant) {
 }
 
 
-export function parseMessageForMUCCommands (muc, text) {
+export async function parseMessageForMUCCommands (muc, text) {
+	  const handled = await api.hook('parseMessageForCommands', muc, text);
+	  if (handled) return true;
+  
     if (
         api.settings.get('muc_disable_slash_commands') &&
         !Array.isArray(api.settings.get('muc_disable_slash_commands'))
     ) {
-        return parseMessageForCommands(muc, text);
+        return await parseMessageForCommands(muc, text);
     }
     text = text.replace(/^\s*/, '');
     const command = (text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();
@@ -407,7 +410,7 @@ export function parseMessageForMUCCommands (muc, text) {
             break;
         }
         default:
-            return parseMessageForCommands(muc, text);
+            return await parseMessageForCommands(muc, text);
     }
     return true;
 }

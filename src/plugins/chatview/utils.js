@@ -1,7 +1,7 @@
 import { __ } from 'i18n';
 import { _converse } from "@converse/headless/core";
 import { html } from 'lit';
-
+import { api } from "@converse/headless/core";
 
 export function clearHistory (jid) {
     if (_converse.router.history.getFragment() === `converse/chat?jid=${jid}`) {
@@ -39,7 +39,10 @@ export async function clearMessages (chat) {
 }
 
 
-export function parseMessageForCommands (chat, text) {
+export async function parseMessageForCommands (chat, text) {
+	const handled = await api.hook('parseMessageForCommands', chat, text);
+	if (handled) return true;
+  
     const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
     if (match) {
         if (match[1] === 'clear') {
@@ -54,6 +57,7 @@ export function parseMessageForCommands (chat, text) {
             return true;
         }
     }
+	return false;
 }
 
 export function resetElementHeight (ev) {

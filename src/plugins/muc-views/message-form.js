@@ -47,6 +47,9 @@ export default class MUCMessageForm extends MessageForm {
         this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
     }
 
+    /**
+     * @async
+     */
     parseMessageForCommands (text) {
         return parseMessageForMUCCommands(this.model, text);
     }

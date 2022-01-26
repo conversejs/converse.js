@@ -298,7 +298,7 @@ export function showOccupantModal (ev, occupant) {
 }
 
 
-export function parseMessageForMUCCommands (muc, text) {
+export async function parseMessageForMUCCommands (muc, text) {
     if (
         api.settings.get('muc_disable_slash_commands') &&
         !Array.isArray(api.settings.get('muc_disable_slash_commands'))
@@ -310,6 +310,12 @@ export function parseMessageForMUCCommands (muc, text) {
     if (!command) {
         return false;
     }
+
+    const handled = await api.hook('parseMessageForCommands', {model: muc, text}, false);
+    if (handled) {
+        return true;
+    }
+
     const args = text.slice(('/' + command).length + 1).trim();
     if (!muc.getAllowedCommands().includes(command)) {
         return false;

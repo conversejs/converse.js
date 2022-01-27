@@ -64,7 +64,7 @@ serve_bg: node_modules
 ########################################################################
 ## Translation machinery
 
-dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js @converse/headless node_modules
+dist/converse-no-dependencies.js: src webpack/webpack.common.js webpack/webpack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
 GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=9.0.0 dist/converse-no-dependencies.js -c
@@ -185,10 +185,10 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 
 @converse/headless: src/headless
 
-src/headless/dist/converse-headless.js: src webpack.common.js node_modules @converse/headless
+src/headless/dist/converse-headless.js: src webpack/webpack.common.js node_modules @converse/headless
 	npm run headless-dev
 
-src/headless/dist/converse-headless.min.js: src webpack.common.js node_modules @converse/headless
+src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_modules @converse/headless
 	npm run headless
 
 dist:: node_modules src/* | dist/converse.js dist/converse.css dist/website.css dist/website.min.css src/headless/dist/converse-headless.min.js src/headless/dist/converse-headless.js

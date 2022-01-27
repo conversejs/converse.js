@@ -26,16 +26,16 @@
     "src/**/*.json"
   ],
   "scripts": {
-    "serve": "webpack serve --config webpack.serve.js",
+    "serve": "webpack serve --config webpack/webpack.serve.js",
     "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
-    "headless": "webpack --config webpack.headless.js",
-    "headless-dev": "webpack --config webpack.headless.dev.js",
-    "nodeps": "webpack --config webpack.nodeps.js",
+    "headless": "webpack --config webpack/webpack.headless.js",
+    "headless-dev": "webpack --config webpack/webpack.headless.dev.js",
+    "nodeps": "webpack --config webpack/webpack.nodeps.js",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run dev && ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",
-    "prod": "webpack --config webpack.prod.js",
+    "prod": "webpack --config webpack/webpack.prod.js",
     "build": "npm run dev && npm run prod",
-    "dev": "webpack --config webpack.dev.js",
-    "watch": "webpack --watch --config webpack.dev.js",
+    "dev": "webpack --config webpack/webpack.dev.js",
+    "watch": "webpack --watch --config webpack/webpack.dev.js",
     "lerna": "lerna bootstrap --hoist --ignore-scripts",
     "prepare": "npm run lerna && npm run build"
   },

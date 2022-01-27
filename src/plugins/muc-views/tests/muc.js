@@ -2661,6 +2661,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
+            await u.waitUntil(() => window.confirm.calls.count() === 1);
             expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
         }));
 

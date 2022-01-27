@@ -51,9 +51,9 @@ describe("A Chat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        expect(_converse.connection.send).toHaveBeenCalled();
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text);
 
+        expect(_converse.connection.send).toHaveBeenCalled();
         const msg = _converse.connection.send.calls.all()[0].args[0];
         expect(Strophe.serialize(msg))
         .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
@@ -202,12 +202,14 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
         spyOn(_converse.connection, 'send');
-        textarea.value = 'But soft, what light through yonder window breaks?';
+        const text = 'But soft, what light through yonder window breaks?';
+        textarea.value = text;
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === text);
         expect(_converse.connection.send).toHaveBeenCalled();
 
         const msg = _converse.connection.send.calls.all()[0].args[0];

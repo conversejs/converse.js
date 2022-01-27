@@ -203,10 +203,10 @@ describe("A Groupchat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        expect(_converse.connection.send).toHaveBeenCalled();
         await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
             .filter(m => m.textContent.replace(/<!-.*?->/g, '') === new_text).length);
 
+        expect(_converse.connection.send).toHaveBeenCalled();
         const msg = _converse.connection.send.calls.all()[0].args[0];
         expect(Strophe.serialize(msg))
         .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+

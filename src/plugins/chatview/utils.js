@@ -40,11 +40,29 @@ export async function clearMessages (chat) {
 
 
 export async function parseMessageForCommands (chat, text) {
-	const handled = await api.hook('parseMessageForCommands', chat, text);
-	if (handled) return true;
+    /**
+     * *Hook* which allows plugins to add more commands to a chat's textbox.
+	 * Data provided is the chatbox model and text typed - {model, text}.
+	 * Check handled to see if already handled and return a new consolidated handled value.
+     * @event _converse#parseMessageForCommands
+     * @example
+     *  api.listen.on('parseMessageForCommands', (data, handled) {
+     *      const jid = data.model.get('jid');
+	 *		const command = (data.text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();	
+	 *      ..........
+	 *      ..........
+     *      return handled;
+     *  }
+     */	
   
     const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
-    if (match) {
+    if (match) {		
+		let handled = false;
+		handled = await api.hook('parseMessageForCommands', {model: chat, text}, handled);
+		if (handled) {
+			return true;
+		}
+	
         if (match[1] === 'clear') {
             clearMessages(chat);
             return true;

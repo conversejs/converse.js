@@ -299,9 +299,6 @@ export function showOccupantModal (ev, occupant) {
 
 
 export async function parseMessageForMUCCommands (muc, text) {
-	  const handled = await api.hook('parseMessageForCommands', muc, text);
-	  if (handled) return true;
-  
     if (
         api.settings.get('muc_disable_slash_commands') &&
         !Array.isArray(api.settings.get('muc_disable_slash_commands'))
@@ -313,6 +310,13 @@ export async function parseMessageForMUCCommands (muc, text) {
     if (!command) {
         return false;
     }
+	
+	let handled = false;
+	handled = await api.hook('parseMessageForCommands', {model: muc, text}, handled);
+	if (handled) {
+		return true;
+	}
+		
     const args = text.slice(('/' + command).length + 1).trim();
     if (!muc.getAllowedCommands().includes(command)) {
         return false;

@@ -4,10 +4,11 @@
 
 - Updated translations: lt
 - #2751: Media not rendered when Converse runs in a browser extension
+- #2789: Implement new hook parseMessageForCommands for plugins to add custom
 
 ### New hooks and events
 
-- New hook: parseMessageForCommands
+- New hook: [parseMessageForCommands](https://conversejs.org/docs/html/api/-_converse.html#event:parseMessageForCommands)
 
 ## 9.0.0 (2021-11-26)
 

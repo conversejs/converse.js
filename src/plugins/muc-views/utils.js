@@ -298,7 +298,7 @@ export function showOccupantModal (ev, occupant) {
 }
 
 
-export async function parseMessageForMUCCommands (muc, text) {
+export function parseMessageForMUCCommands (muc, text) {
     if (
         api.settings.get('muc_disable_slash_commands') &&
         !Array.isArray(api.settings.get('muc_disable_slash_commands'))
@@ -309,11 +309,6 @@ export async function parseMessageForMUCCommands (muc, text) {
     const command = (text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();
     if (!command) {
         return false;
-    }
-
-    const handled = await api.hook('parseMessageForCommands', {model: muc, text}, false);
-    if (handled) {
-        return true;
     }
 
     const args = text.slice(('/' + command).length + 1).trim();

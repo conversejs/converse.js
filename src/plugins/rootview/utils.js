@@ -1,5 +1,12 @@
 import { api } from '@converse/headless/core';
 
+export function getTheme() {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return api.settings.get('dark_theme');
+    } else {
+        return api.settings.get('theme');
+    }
+}
 
 export function ensureElement () {
     if (!api.settings.get('auto_insert')) {

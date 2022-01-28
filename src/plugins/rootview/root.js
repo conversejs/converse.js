@@ -2,6 +2,7 @@ import tpl_root from "./templates/root.js";
 import { api } from '@converse/headless/core';
 import { CustomElement } from 'shared/components/element.js';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
+import { getTheme } from './utils.js';
 
 import './styles/root.scss';
 
@@ -25,13 +26,15 @@ export default class ConverseRoot extends CustomElement {
         const settings = getAppSettings();
         this.listenTo(settings, 'change:view_mode', () => this.setClasses())
         this.listenTo(settings, 'change:singleton', () => this.setClasses())
+        window.matchMedia('(prefers-color-scheme: dark)').addListener(() => this.setClasses());
+        window.matchMedia('(prefers-color-scheme: light)').addListener(() => this.setClasses());
     }
 
     setClasses () {
         this.className = "";
         this.classList.add('conversejs');
         this.classList.add(`converse-${api.settings.get('view_mode')}`);
-        this.classList.add(`theme-${api.settings.get('theme')}`);
+        this.classList.add(`theme-${getTheme()}`);
         this.requestUpdate();
     }
 }

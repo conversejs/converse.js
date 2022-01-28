@@ -6,7 +6,16 @@ import { ensureElement } from './utils.js';
 converse.plugins.add('converse-rootview', {
 
     initialize () {
-        api.settings.extend({ 'auto_insert': true });
+        // Configuration values for this plugin
+        // ====================================
+        // Refer to docs/source/configuration.rst for explanations of these
+        // configuration settings.
+        api.settings.extend({
+            'auto_insert': true,
+            'theme': 'classic',
+            'dark_theme': 'dracula',
+        });
+
         api.listen.on('chatBoxesInitialized', ensureElement);
 
         // Only define the element now, otherwise it it's already in the DOM

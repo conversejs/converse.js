@@ -40,23 +40,23 @@ export async function clearMessages (chat) {
 
 
 export async function parseMessageForCommands (chat, text) {
-    /**
-     * *Hook* which allows plugins to add more commands to a chat's textbox.
-     * Data provided is the chatbox model and the text typed - {model, text}.
-     * Check `handled` to see if the hook was already handled.
-     * @event _converse#parseMessageForCommands
-     * @example
-     *  api.listen.on('parseMessageForCommands', (data, handled) {
-     *      if (!handled) {
-     *         const command = (data.text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();
-     *         // custom code comes here
-     *      }
-     *      return handled;
-     *  }
-     */
     const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
     if (match) {
         let handled = false;
+        /**
+         * *Hook* which allows plugins to add more commands to a chat's textbox.
+         * Data provided is the chatbox model and the text typed - {model, text}.
+         * Check `handled` to see if the hook was already handled.
+         * @event _converse#parseMessageForCommands
+         * @example
+         *  api.listen.on('parseMessageForCommands', (data, handled) {
+         *      if (!handled) {
+         *         const command = (data.text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();
+         *         // custom code comes here
+         *      }
+         *      return handled;
+         *  }
+         */
         handled = await api.hook('parseMessageForCommands', {model: chat, text}, handled);
         if (handled) {
             return true;

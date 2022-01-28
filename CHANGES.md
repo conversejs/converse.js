@@ -3,7 +3,7 @@
 ## 9.0.1 (2021-??-??)
 
 - Updated translations: lt
-- Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
+- #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2751: Media not rendered when Converse runs in a browser extension
 - #2789: Implement new hook parseMessageForCommands for plugins to add custom
 

@@ -6,6 +6,7 @@
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2751: Media not rendered when Converse runs in a browser extension
 - #2789: Implement new hook parseMessageForCommands for plugins to add custom
+- Increased stanze timeout from 10 to 20 seconds
 
 ### New hooks and events
 

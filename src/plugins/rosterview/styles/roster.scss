@@ -32,7 +32,6 @@
 
         span {
             padding: 0.3em;
-            cursor: pointer;
             min-width: 25px;
             text-align: center;
         }
@@ -42,6 +41,7 @@
             margin: 0.2em;
             font-size: calc(var(--font-size) - 2px);
         }
+
         .state-type {
             font-size: calc(var(--font-size) - 2px);
             width: 100%;

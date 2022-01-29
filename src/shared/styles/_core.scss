@@ -211,7 +211,7 @@
       cursor: pointer;
     }
 
-    a, a:visited, a:not([href]):not([tabindex]) {
+    a, a:visited, a:not([href]):not([tabindex]), .clickable {
         text-decoration: none;
         color: var(--link-color);
         text-shadow: none;
@@ -223,11 +223,16 @@
         }
 
         &.fa, &.far, &.fas {
-            fill: var(--subdued-color);
             color: var(--subdued-color);
             &:hover {
-                color: var(--gray-color);
+                color: var(--icon-hover-color);
             }
+        }
+    }
+
+    .clickable {
+        &:hover {
+            cursor: pointer;
         }
     }
 
@@ -237,10 +242,6 @@
 
     .fa, .far, .fas {
         color: var(--subdued-color);
-    }
-
-    .fa:hover, .far:hover, .fas:hover {
-        color: var(--gray-color);
     }
 
     q {

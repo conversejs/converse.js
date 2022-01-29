@@ -34,7 +34,7 @@ export default (el, o) => {
                         <span class="chat-msg__author"><a class="show-msg-author-modal" @click=${el.showUserModal}>${o.username}</a></span>
                         ${ o.hats.map(h => html`<span class="badge badge-secondary">${h.title}</span>`) }
                         <time timestamp="${el.model.get('edited') || el.model.get('time')}" class="chat-msg__time">${o.pretty_time}</time>
-                        ${ o.is_encrypted ? html`<span class="fa fa-lock"></span>` : '' }
+                        ${ o.is_encrypted ? html`<converse-icon class="fa fa-lock" size="1.1em"></converse-icon>` : '' }
                     </span>` : '' }
 
                 <div class="chat-msg__body chat-msg__body--${o.message_type} ${o.received ? 'chat-msg__body--received' : '' } ${o.is_delayed ? 'chat-msg__body--delayed' : '' }">

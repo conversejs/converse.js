@@ -223,6 +223,7 @@
         }
 
         &.fa, &.far, &.fas {
+            fill: var(--subdued-color);
             color: var(--subdued-color);
             &:hover {
                 color: var(--gray-color);

@@ -256,6 +256,11 @@
                     padding-right: 0.25em;
                     color: var(--text-color-lighten-15-percent);
                 }
+                .fa-lock {
+                    svg {
+                        padding-bottom: 2px;
+                    }
+                }
             }
             &.chat-msg--action {
                 .chat-msg__message {

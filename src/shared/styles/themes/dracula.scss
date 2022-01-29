@@ -22,6 +22,8 @@
 
     // ---
 
+    --gray-color: var(--comment);
+
     --highlight-color: var(--foreground);
     --highlight-color-darker: var(--comment);
 
@@ -123,13 +125,13 @@
     --warning-color-dark: var(--orange);
     --warning-color: var(--orange);
 
-    --list-toggle-color: #818479; // $gray-color
-    --list-toggle-hover-color: #585B51; // $dark-gray-color
+    --list-toggle-color: var(--comment);
+    --list-toggle-hover-color: var(--comment);
     --list-item-hover-color: var(--current-line);
-    --list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)
+    --list-item-action-color: var(--cyan);
     --list-item-link-color: var(--foreground);
     --list-item-link-hover-color: var(--link-color);
     --list-item-open-color: var(--current-line);
     --list-item-open-hover-color: var(--controlbox-head-color);
-    --list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
+    --list-dot-circle-color: var(--orange);
 }

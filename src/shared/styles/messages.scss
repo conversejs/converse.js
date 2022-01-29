@@ -108,7 +108,11 @@
             display: inline-flex;
             width: 100%;
             flex-direction: row;
-            padding: 0.125rem 1rem;
+            padding: 0 1rem;
+
+            &.chat-msg--with-avatar {
+                padding-top: 0.25rem;
+            }
 
             &.onload {
                 animation: colorchange-chatmessage 1s;
@@ -245,7 +249,6 @@
             .chat-msg__heading {
                 width: 100%;
                 padding-right: 0.25rem;
-                padding-bottom: 0.25rem;
 
                 .badge {
                     margin-left: 0.5em;

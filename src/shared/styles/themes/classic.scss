@@ -1,14 +1,25 @@
 .conversejs, .conversejs-bg, #conversejs-bg, body.converse-fullscreen {
-
     // Theme-defined variables:
     --green: #3AA569;
     --redder-orange: #E77051;
     --orange: #E7A151;
     --light-blue: #578EA9;
     --lighter-blue: #85B47B;
-    --background: white;
+    --dark-red: #D24E2B;
+    --comment: #A8ABA1;
 
-    --subdued-color: #A8ABA1;
+    // Base variables
+    --foreground: #666;
+    --background: white;
+    --subdued-color: var(--comment);
+    --muc-color: var(--redder-orange);
+    --chat-color: var(--green);
+    --disabled-color: gray;
+    --error-color: var(--dark-red);
+
+    // ---
+
+    --info-color: #1E9652; // $dark-green
 
     --chat-status-online: var(--green);
     --chat-status-busy: var(--redder-orange);
@@ -37,6 +48,7 @@
     --controlbox-text-color: #666;
     --text-color-lighten-15-percent: #8c8c8c; // lighten(#666, 15%)
     --message-author-color: var(--text-color);
+    --text-color-invert: var(--background);
 
     --message-text-color: #555;
     --message-receipt-color: var(--green);
@@ -79,8 +91,6 @@
 
     --light-background-color: #FCFDFD;
 
-    --error-color: #D24E2B; // dark-red
-    --info-color: #1E9652; // $dark-green
 
     --groupchats-header-color: var(--chatroom-head-bg-color);
     --groupchats-header-color-dark: var(--chatroom-head-bg-color-dark);

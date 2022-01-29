@@ -98,22 +98,26 @@
             }
 
             &.open {
+                &:hover {
+                    .list-item-link {
+                        color: var(--inverse-link-color);
+                        &:hover {
+                            color: var(--inverse-link-color);
+                        }
+                    }
+                }
+
                 background-color: var(--list-item-open-color);
                 &:hover {
                     background-color: var(--list-item-open-hover-color);
                 }
                 a {
-                    color: white;
-                }
-                .list-item-link {
-                    &:hover {
-                        color: var(--list-item-link-hover-color);
-                    }
+                    color: var(--inverse-link-color);
                 }
                 .list-item-action {
                     color: var(--list-item-action-color);
                     &:hover {
-                        color: var(--list-item-link-hover-color);
+                        color: var(--list-item-action-hover-color);
                     }
                 }
             }

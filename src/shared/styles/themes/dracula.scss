@@ -129,10 +129,11 @@
     --list-toggle-color: var(--comment);
     --list-toggle-hover-color: var(--comment);
     --list-item-hover-color: var(--current-line);
-    --list-item-action-color: var(--cyan);
+    --list-item-action-color: var(--comment);
     --list-item-link-color: var(--foreground);
     --list-item-link-hover-color: var(--link-color);
     --list-item-open-color: var(--current-line);
-    --list-item-open-hover-color: var(--controlbox-head-color);
+    --list-item-open-hover-color: var(--current-line);
     --list-dot-circle-color: var(--orange);
+    --list-item-action-hover-color: var(--cyan);
 }

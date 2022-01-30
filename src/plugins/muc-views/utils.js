@@ -298,116 +298,102 @@ export function showOccupantModal (ev, occupant) {
 }
 
 
-export function parseMessageForMUCCommands (muc, text) {
-    if (
-        api.settings.get('muc_disable_slash_commands') &&
-        !Array.isArray(api.settings.get('muc_disable_slash_commands'))
-    ) {
-        return parseMessageForCommands(muc, text);
+export function parseMessageForMUCCommands (data, handled) {
+    if (handled || (
+            api.settings.get('muc_disable_slash_commands') &&
+            !Array.isArray(api.settings.get('muc_disable_slash_commands'))
+    )) {
+        return handled;
     }
+
+    let text = data.text;
     text = text.replace(/^\s*/, '');
     const command = (text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();
     if (!command) {
         return false;
     }
+
+    const model = data.model;
     const args = text.slice(('/' + command).length + 1).trim();
-    if (!muc.getAllowedCommands().includes(command)) {
+    const allowed_commands = model.getAllowedCommands() ?? [];
+
+    if (command === 'admin' && allowed_commands.includes(command)) {
+        verifyAndSetAffiliation(model, command, args, ['owner']);
+        return true;
+    } else if (command === 'ban' && allowed_commands.includes(command)) {
+        verifyAndSetAffiliation(model, command, args, ['admin', 'owner']);
+        return true;
+    } else if (command === 'modtools' && allowed_commands.includes(command)) {
+        showModeratorToolsModal(model, args);
+        return true;
+    } else if (command === 'deop' && allowed_commands.includes(command)) {
+        // FIXME: /deop only applies to setting a moderators
+        // role to "participant" (which only admin/owner can
+        // do). Moderators can however set non-moderator's role
+        // to participant (e.g. visitor => participant).
+        // Currently we don't distinguish between these two
+        // cases.
+        setRole(model, command, args, ['admin', 'owner']);
+        return true;
+    } else if (command === 'destroy' && allowed_commands.includes(command)) {
+        if (!model.verifyAffiliations(['owner'])) {
+            return true;
+        }
+        destroyMUC(model).catch(e => model.onCommandError(e));
+        return true;
+    } else if (command === 'help' && allowed_commands.includes(command)) {
+        model.set({ 'show_help_messages': false }, { 'silent': true });
+        model.set({ 'show_help_messages': true });
+        return true;
+    } else if (command === 'kick' && allowed_commands.includes(command)) {
+        setRole(model, command, args, [], ['moderator']);
+        return true;
+    } else if (command === 'mute' && allowed_commands.includes(command)) {
+        setRole(model, command, args, [], ['moderator']);
+        return true;
+    } else if (command === 'member' && allowed_commands.includes(command)) {
+        verifyAndSetAffiliation(model, command, args, ['admin', 'owner']);
+        return true;
+    } else if (command === 'nick' && allowed_commands.includes(command)) {
+        if (!model.verifyRoles(['visitor', 'participant', 'moderator'])) {
+            return true;
+        } else if (args.length === 0) {
+            // e.g. Your nickname is "coolguy69"
+            const message = __('Your nickname is "%1$s"', model.get('nick'));
+            model.createMessage({ message, 'type': 'error' });
+        } else {
+            model.setNickname(args);
+        }
+        return true;
+    } else if (command === 'owner' && allowed_commands.includes(command)) {
+        verifyAndSetAffiliation(model, command, args, ['owner']);
+        return true;
+    } else if (command === 'op' && allowed_commands.includes(command)) {
+        setRole(model, command, args, ['admin', 'owner']);
+        return true;
+    } else if (command === 'register' && allowed_commands.includes(command)) {
+        if (args.length > 1) {
+            model.createMessage({
+                'message': __('Error: invalid number of arguments'),
+                'type': 'error'
+            });
+        } else {
+            model.registerNickname().then(err_msg => {
+                err_msg && model.createMessage({ 'message': err_msg, 'type': 'error' });
+            });
+        }
+        return true;
+    } else if (command === 'revoke' && allowed_commands.includes(command)) {
+        verifyAndSetAffiliation(model, command, args, ['admin', 'owner']);
+        return true;
+    } else if (command === 'topic' && allowed_commands.includes(command) ||
+            command === 'subject' && allowed_commands.includes(command)) {
+        model.setSubject(args);
+        return true;
+    } else if (command === 'voice' && allowed_commands.includes(command)) {
+        setRole(model, command, args, [], ['moderator']);
+        return true;
+    } else {
         return false;
     }
-
-    switch (command) {
-        case 'admin': {
-            verifyAndSetAffiliation(muc, command, args, ['owner']);
-            break;
-        }
-        case 'ban': {
-            verifyAndSetAffiliation(muc, command, args, ['admin', 'owner']);
-            break;
-        }
-        case 'modtools': {
-            showModeratorToolsModal(muc, args);
-            break;
-        }
-        case 'deop': {
-            // FIXME: /deop only applies to setting a moderators
-            // role to "participant" (which only admin/owner can
-            // do). Moderators can however set non-moderator's role
-            // to participant (e.g. visitor => participant).
-            // Currently we don't distinguish between these two
-            // cases.
-            setRole(muc, command, args, ['admin', 'owner']);
-            break;
-        }
-        case 'destroy': {
-            if (!muc.verifyAffiliations(['owner'])) {
-                break;
-            }
-            destroyMUC(muc).catch(e => muc.onCommandError(e));
-            break;
-        }
-        case 'help': {
-            muc.set({ 'show_help_messages': false }, { 'silent': true });
-            muc.set({ 'show_help_messages': true });
-            break;
-        }
-        case 'kick': {
-            setRole(muc, command, args, [], ['moderator']);
-            break;
-        }
-        case 'mute': {
-            setRole(muc, command, args, [], ['moderator']);
-            break;
-        }
-        case 'member': {
-            verifyAndSetAffiliation(muc, command, args, ['admin', 'owner']);
-            break;
-        }
-        case 'nick': {
-            if (!muc.verifyRoles(['visitor', 'participant', 'moderator'])) {
-                break;
-            } else if (args.length === 0) {
-                // e.g. Your nickname is "coolguy69"
-                const message = __('Your nickname is "%1$s"', muc.get('nick'));
-                muc.createMessage({ message, 'type': 'error' });
-            } else {
-                muc.setNickname(args);
-            }
-            break;
-        }
-        case 'owner':
-            verifyAndSetAffiliation(muc, command, args, ['owner']);
-            break;
-        case 'op': {
-            setRole(muc, command, args, ['admin', 'owner']);
-            break;
-        }
-        case 'register': {
-            if (args.length > 1) {
-                muc.createMessage({
-                    'message': __('Error: invalid number of arguments'),
-                    'type': 'error'
-                });
-            } else {
-                muc.registerNickname().then(err_msg => {
-                    err_msg && muc.createMessage({ 'message': err_msg, 'type': 'error' });
-                });
-            }
-            break;
-        }
-        case 'revoke': {
-            verifyAndSetAffiliation(muc, command, args, ['admin', 'owner']);
-            break;
-        }
-        case 'topic':
-        case 'subject':
-            muc.setSubject(args);
-            break;
-        case 'voice': {
-            setRole(muc, command, args, [], ['moderator']);
-            break;
-        }
-        default:
-            return parseMessageForCommands(muc, text);
-    }
-    return true;
 }

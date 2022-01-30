@@ -6,6 +6,10 @@
     @import "bootstrap/scss/card";
 
     converse-chats {
+        .card--unfurl {
+            background-color: var(--chat-content-background-color);
+        }
+
         &.converse-embedded,
         &.converse-fullscreen {
             .message {
@@ -26,11 +30,7 @@
                 }
             }
         }
-    }
-}
 
-.conversejs {
-    converse-chats {
         &.converse-overlayed,
         &.converse-mobile {
             .message {

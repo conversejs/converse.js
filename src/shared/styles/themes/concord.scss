@@ -1,0 +1,60 @@
+.conversejs.theme-concord {
+    --controlbox-pane-background-color: #333;
+    --panel-divider-color: #333;
+    --controlbox-pane-bg-hover-color: #464646;
+    --controlbox-heading-color: #777;
+    --controlbox-heading-font-weight: bold;
+    --groupchats-header-color: var(--redder-orange);
+
+    --chat-textarea-background-color: #F6F6F6;
+    --chat-correcting-color: #FFFFC0;
+
+    --controlbox-text-color: #DDD;
+
+    --chat-info-color: var(--subdued-color);
+
+    --chatbox-border-radius: 0px;
+
+    --heading-display: inline;
+    --heading-color: #9B4D;
+
+    --link-hover-color: var(--lighter-blue);
+
+    --chatroom-badge-color: var(--redder-orange);
+    --chatroom-badge-hover-color: #D24E2B; // $red
+    --chatroom-correcting-color: #FFFFC0;
+    --chatroom-head-bg-color: white;
+    --chatroom-head-border-bottom: 1px solid #EEE;
+    --chatroom-head-button-color: #999;
+    --chatroom-head-color: #7E7E7E;
+    --chatroom-head-description-border-left: 1px solid #DDD;
+    --chatroom-head-description-color: black;
+    --chatroom-head-description-display: inline;
+    --chatroom-head-description-link-color: #00b3f4;
+    --chatroom-head-description-padding-left: 12px;
+    --chatroom-head-title-font-weight: bold;
+    --chatroom-head-title-padding-right: 12px;
+    --muc-toolbar-btn-color: #7E7E7E;
+    --muc-toolbar-btn-disabled-color: lightgray;
+
+    --occupants-background-color: #F3F3F3;
+    --occupants-border-left: 0px;
+    --occupants-border-bottom: 0px;
+
+    --separator-text-color: #AAA;
+    --chat-separator-border-bottom: 1px solid #AAA;
+    --chatroom-separator-border-bottom: 1px solid #AAA;
+
+    --chatroom-message-input-border-top: 1px solid #CCC;
+    --chatbox-message-input-border-top: 1px solid #CCC;
+
+    --fullpage-chatbox-button-size: 24px;
+
+    --list-toggle-font-weight: bold;
+    --list-item-link-color: #F1F1F1;
+    --list-item-link-hover-color: #DDD;
+    --list-item-open-color: #444;
+    --list-item-open-hover-color: #444;
+
+    --unread-msgs-color: #F1F1F1;
+}

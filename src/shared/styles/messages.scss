@@ -8,11 +8,12 @@
             font-weight: bold;
         }
     }
+
     .message {
         .show-msg-author-modal {
             align-self: flex-start; // Don't expand height to that of largest sibling
                                     // https://stackoverflow.com/questions/27575779/prevent-a-flex-items-height-from-expanding-to-match-other-flex-items/40156422#40156422
-            color: var(--text-color) !important;
+            color: var(--message-author-color) !important;
         }
 
         blockquote {
@@ -51,7 +52,7 @@
             }
 
             .separator-text {
-                background: white;
+                background: var(--chat-background-color);
                 bottom: 1px; // Offset needed due to .separator border size
                 color: var(--separator-text-color);
                 display: inline-block;
@@ -63,7 +64,7 @@
         }
 
         &.chat-info {
-            color: var(--chat-head-color);
+            color: var(--chat-info-color);
             font-size: var(--message-font-size);
             line-height: var(--line-height-small);
             font-size: 90%;
@@ -107,14 +108,18 @@
             display: inline-flex;
             width: 100%;
             flex-direction: row;
-            padding: 0.125rem 1rem;
+            padding: 0 1rem;
+
+            &.chat-msg--with-avatar {
+                padding-top: 0.25rem;
+            }
 
             &.onload {
                 animation: colorchange-chatmessage 1s;
                 -webkit-animation: colorchange-chatmessage 1s;
             }
             &:hover {
-                background-color: var(--list-item-hover-color);
+                background-color: var(--chat-msg-hover-color);
             }
             &.correcting {
                 &.groupchat  {
@@ -244,7 +249,6 @@
             .chat-msg__heading {
                 width: 100%;
                 padding-right: 0.25rem;
-                padding-bottom: 0.25rem;
 
                 .badge {
                     margin-left: 0.5em;
@@ -254,6 +258,11 @@
                     padding-left: 0.25em;
                     padding-right: 0.25em;
                     color: var(--text-color-lighten-15-percent);
+                }
+                .fa-lock {
+                    svg {
+                        padding-bottom: 2px;
+                    }
                 }
             }
             &.chat-msg--action {

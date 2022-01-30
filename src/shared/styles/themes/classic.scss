@@ -1,0 +1,171 @@
+.conversejs, .conversejs-bg, #conversejs-bg, body.converse-fullscreen {
+    // Theme-defined variables:
+    --green: #3AA569;
+    --redder-orange: #E77051;
+    --orange: #E7A151;
+    --light-blue: #578EA9;
+    --lighter-blue: #85B47B;
+    --dark-red: #D24E2B;
+    --comment: #A8ABA1;
+
+    // Base variables
+    --foreground: #666;
+    --background: white;
+    --subdued-color: var(--comment);
+    --muc-color: var(--redder-orange);
+    --chat-color: var(--green);
+    --disabled-color: gray;
+    --error-color: var(--dark-red);
+
+    // ---
+
+    --icon-hover-color: var(--text-color);
+    --info-color: #1E9652; // $dark-green
+
+    --chat-status-online: var(--green);
+    --chat-status-busy: var(--redder-orange);
+    --chat-status-away: var(--orange);
+
+    --brand-heading-color: #387592; // $blue
+
+    --completion-light-color: #FFB9A7; // $lightest-red
+    --completion-normal-color: var(--redder-orange);
+    --completion-dark-color: #D24E2B; // $dark-red
+
+    --dark-link-color: #206485; // $dark-blue
+    --inverse-link-color: white;
+    --link-color-lighten-10-percent: #79a5ba; // lighten($light-blue, 10%)
+    --link-color: var(--light-blue);
+    --link-hover-color: #345566;
+
+    --global-background-color: #397491; // dark blue
+    --modal-background-color: white;
+
+    --img-thumbnail-background-color: white;
+    --img-thumbnail-border-color: #DEE2E6;
+
+    --text-shadow-color: #FAFAFA;
+    --text-color: #666;
+    --controlbox-text-color: #666;
+    --text-color-lighten-15-percent: #8c8c8c; // lighten(#666, 15%)
+    --message-author-color: var(--text-color);
+    --text-color-invert: var(--background);
+
+    --message-text-color: #555;
+    --message-receipt-color: var(--green);
+
+    --save-button-color: var(--green);
+
+    --button-text-color: white;
+
+    --chat-background-color: white;
+    --chat-textarea-color: #666;
+    --chat-textarea-background-color: white;
+    --chat-textarea-disabled-bg-color: #EEE;
+    --chat-textarea-height: 60px;
+
+    --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
+    --chat-head-color-dark: #1E9652;
+    --chat-head-color-darker: #0E763B;
+    --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
+    --chat-head-color: var(--green);
+    --chat-head-text-color: white;
+    --chat-toolbar-btn-color: var(--green);
+    --chat-toolbar-btn-disabled-color: gray;
+
+    --toolbar-btn-text-color: white;
+
+    --chat-content-background-color: white;
+
+    --chat-info-color: var(--chatroom-head-bg-color);
+
+    --danger-color-dark: #A93415; // darker red
+    --danger-color: #D24E2B; // dark-red
+    --highlight-color-darker: #B0E8E2;
+    --highlight-color: #DCF9F6;
+    --primary-color-dark:  #397491;
+    --primary-color: var(--light-blue);
+    --secondary-color-dark: #585B51;
+    --secondary-color: #818479; // gray
+    --warning-color-dark: #D2842B;
+    --warning-color: var(--orange);
+
+    --light-background-color: #FCFDFD;
+
+
+    --groupchats-header-color: var(--chatroom-head-bg-color);
+    --groupchats-header-color-dark: var(--chatroom-head-bg-color-dark);
+
+    --controlbox-width: 250px;
+    --controlbox-head-color: var(--light-blue);
+    --controlbox-heading-color: inherit;
+    --controlbox-heading-font-weight: bold;
+    --controlbox-heading-top-margin: 0.75em;
+    --controlbox-pane-background-color: white;
+    --controlbox-pane-bg-hover-color: #eff4f7;
+    --panel-divider-color: #e7e7e7;
+
+    // TODO: figure out a way to concatenate custom properties with strings.
+    // --font-path: "webfonts/icomoon/fonts/";
+
+    --heading-display: block;
+    --heading-color: white;
+
+    --badge-color: white;
+
+    --chatroom-color: var(--redder-orange);
+    --chatroom-badge-color: var(--chatroom-head-bg-color);
+    --chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
+    --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
+    --chatroom-head-bg-color-dark: #D24E2B; // $red
+    --chatroom-head-bg-color: var(--redder-orange);
+    --chatroom-head-border-bottom: 0px;
+    --chatroom-head-button-color: var(--chatroom-head-bg-color);
+    --chatroom-head-color: white;
+    --chatroom-head-description-display: block;
+    --chatroom-head-description-link-color: white;
+    --chatroom-head-title-font-weight: normal;
+    --chatroom-head-title-padding-right: 0px;
+    --muc-toolbar-btn-color: var(--redder-orange);
+    --muc-toolbar-btn-disabled-color: gray;
+
+    --headline-head-color: var(--orange);
+    --headline-message-color: #D2842B;
+
+    --chatbox-button-size: 14px;
+    --fullpage-chatbox-button-size: 16px;
+
+    --separator-text-color: var(--message-text-color);
+    --chat-separator-border-bottom: 2px solid var(--chat-color);
+    --chatroom-separator-border-bottom: 2px solid var(--chatroom-head-bg-color);
+
+    --chatbox-message-input-border-top: 4px solid var(--chat-head-color);
+    --chatroom-message-input-border-top: 4px solid var(--chatroom-head-bg-color);
+
+    --occupants-background-color: white;
+    --occupants-border-left: 0.2rem solid var(--panel-divider-color);
+    --occupants-border-bottom: 1px solid lightgrey;
+
+    --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
+    --fullpage-chat-width: 100%;
+    --fullpage-emoji-picker-height: 300px;
+    --fullpage-max-chat-textarea-height: 15em;
+
+    --overlayed-badge-color: #818479; // $gray-color
+
+    --close-color: var(--text-color);
+    --close-color: #585B51;
+
+    --list-toggle-color: #818479;
+    --list-toggle-hover-color: #585B51;
+    --list-item-hover-color: rgba(0, 0, 0, 0.035);
+    --list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)
+    --list-item-link-color: inherit;
+    --list-item-link-hover-color: var(--dark-link-color);
+    --list-item-open-color: var(--controlbox-head-color);
+    --list-item-open-hover-color: var(--controlbox-head-color);
+    --list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
+    --list-item-action-hover-color: var(--inverse-link-color);
+
+    --chat-msg-hover-color: var(--list-item-hover-color);
+}

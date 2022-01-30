@@ -87,6 +87,10 @@
                         }
                         &.occupant {
                             cursor: pointer;
+                            color: var(--link-color);
+                            &:hover {
+                                color: var(--link-hover-color);
+                            }
 
                             .occupant-nick-badge {
                                 display: flex;

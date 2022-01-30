@@ -56,10 +56,11 @@ export class ChatToolbar extends CustomElement {
         }
 
         if (this.show_call_button) {
+            const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
             const i18n_start_call = __('Start a call');
             buttons.push(html`
                 <button class="toggle-call" @click=${this.toggleCall} title="${i18n_start_call}">
-                    <converse-icon class="fa fa-phone" path-prefix="/dist" size="1em"></converse-icon>
+                    <converse-icon color="var(${color})" class="fa fa-phone" path-prefix="/dist" size="1em"></converse-icon>
                 </button>`
             );
         }
@@ -86,8 +87,10 @@ export class ChatToolbar extends CustomElement {
                 <button class="toggle_occupants right"
                         title="${this.hidden_occupants ? i18n_show_occupants : i18n_hide_occupants}"
                         @click=${this.toggleOccupants}>
-                    <converse-icon class="fa ${this.hidden_occupants ? `fa-angle-double-left` : `fa-angle-double-right`}"
-                             path-prefix="${api.settings.get('assets_path')}" size="1em"></converse-icon>
+                    <converse-icon
+                        color="var(--muc-toolbar-btn-color)"
+                        class="fa ${this.hidden_occupants ? `fa-angle-double-left` : `fa-angle-double-right`}"
+                        path-prefix="${api.settings.get('assets_path')}" size="1em"></converse-icon>
                 </button>`
             );
         }
@@ -109,9 +112,12 @@ export class ChatToolbar extends CustomElement {
     getHTTPUploadButton (is_supported) {
         if (is_supported) {
             const i18n_choose_file =  __('Choose a file to send')
+            const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
             return html`
                 <button title="${i18n_choose_file}" @click=${this.toggleFileUpload}>
-                    <converse-icon class="fa fa-paperclip"
+                    <converse-icon
+                        color="var(${color})"
+                        class="fa fa-paperclip"
                         path-prefix="${api.settings.get('assets_path')}"
                         size="1em"></converse-icon>
                 </button>
@@ -133,13 +139,16 @@ export class ChatToolbar extends CustomElement {
         } else {
             i18n_toggle_spoiler = __("Click to write your message as a spoiler");
         }
+        const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
         const markup = html`
             <button class="toggle-compose-spoiler"
                     title="${i18n_toggle_spoiler}"
                     @click=${this.toggleComposeSpoilerMessage}>
-                <converse-icon class="fa ${this.composing_spoiler ? 'fa-eye-slash' : 'fa-eye'}"
-                         path-prefix="${api.settings.get('assets_path')}"
-                         size="1em"></converse-icon>
+                <converse-icon
+                    color="var(${color})"
+                    class="fa ${this.composing_spoiler ? 'fa-eye-slash' : 'fa-eye'}"
+                    path-prefix="${api.settings.get('assets_path')}"
+                    size="1em"></converse-icon>
             </button>`;
 
         if (this.is_groupchat) {

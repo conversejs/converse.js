@@ -8,14 +8,14 @@ import { html } from "lit";
 function tpl_signout (o) {
     const i18n_logout = __('Log out');
     return html`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${o.logout}>
-        <converse-icon color="var(--subdued-color)" class="fa fa-sign-out-alt" size="1em"></converse-icon>
+        <converse-icon class="fa fa-sign-out-alt" size="1em"></converse-icon>
     </a>`
 }
 
 function tpl_user_settings_button (o) {
     const i18n_details = __('Show details about this chat client');
     return html`<a class="controlbox-heading__btn show-client-info align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}>
-        <converse-icon color="var(--subdued-color)" class="fa fa-cog" size="1em"></converse-icon>
+        <converse-icon class="fa fa-cog" size="1em"></converse-icon>
     </a>`;
 }
 

@@ -1,9 +1,13 @@
 .conversejs {
     @import "bootstrap/scss/list-group";
 
-    .list-group-item.active {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color-dark);
+    .list-group-item {
+        &.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color-dark);
+        }
+
+        background-color: var(--comment);
     }
 
     .list-container {
@@ -37,6 +41,12 @@
 
             &.unread-msgs {
                 font-weight: bold;
+            }
+
+            &:hover {
+                .list-item-link {
+                    color: var(--list-item-link-hover-color);
+                }
             }
 
             .list-item-link {
@@ -88,22 +98,26 @@
             }
 
             &.open {
+                &:hover {
+                    .list-item-link {
+                        color: var(--inverse-link-color);
+                        &:hover {
+                            color: var(--inverse-link-color);
+                        }
+                    }
+                }
+
                 background-color: var(--list-item-open-color);
                 &:hover {
-                    background-color: var(--list-item-open-hover-color) !important;
+                    background-color: var(--list-item-open-hover-color);
                 }
                 a {
-                    color: white;
-                }
-                .list-item-link {
-                    &:hover {
-                        color: white;
-                    }
+                    color: var(--inverse-link-color);
                 }
                 .list-item-action {
                     color: var(--list-item-action-color);
                     &:hover {
-                        color: white;
+                        color: var(--list-item-action-hover-color);
                     }
                 }
             }

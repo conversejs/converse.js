@@ -47,7 +47,7 @@ export default (el) => {
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--contacts">${i18n_heading_contacts}</span>
             <a class="controlbox-heading__btn sync-contacts" @click=${ev => el.syncContacts(ev)} title="${i18n_title_sync_contacts}">
-                <converse-icon class="fa fa-sync right ${el.syncing_contacts ? 'fa-spin' : ''}" color="var(--subdued-color)" path-prefix="/dist" size="1em"></converse-icon>
+                <converse-icon class="fa fa-sync right ${el.syncing_contacts ? 'fa-spin' : ''}" size="1em"></converse-icon>
             </a>
             ${ api.settings.get('allow_contact_requests') ? html`
                 <a class="controlbox-heading__btn add-contact"
@@ -55,7 +55,7 @@ export default (el) => {
                     title="${i18n_title_add_contact}"
                     data-toggle="modal"
                     data-target="#add-contact-modal">
-                    <converse-icon class="fa fa-user-plus right" color="var(--subdued-color)" path-prefix="/dist" size="1.25em"></converse-icon>
+                    <converse-icon class="fa fa-user-plus right" size="1.25em"></converse-icon>
                 </a>` : '' }
         </div>
         <converse-roster-filter></converse-roster-filter>

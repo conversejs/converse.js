@@ -162,11 +162,6 @@ export default class MessageForm extends ElementView {
         }
     }
 
-    parseMessageForCommands (text) {
-        // Wrap util so that we can override in the MUC message-form component
-        return parseMessageForCommands(this.model, text);
-    }
-
     async onFormSubmitted (ev) {
         ev?.preventDefault?.();
 
@@ -194,7 +189,7 @@ export default class MessageForm extends ElementView {
         textarea.setAttribute('disabled', 'disabled');
         this.querySelector('converse-emoji-dropdown')?.hideMenu();
 
-        const is_command = this.parseMessageForCommands(message_text);
+        const is_command = await parseMessageForCommands(this.model, message_text);
         const message = is_command ? null : await this.model.sendMessage({'body': message_text, spoiler_hint});
         if (is_command || message) {
             hint_el.value = '';

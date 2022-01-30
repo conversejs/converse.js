@@ -710,7 +710,11 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
 
     let color;
     if (model.get('omemo_supported')) {
-        color = model.get('omemo_active') ? `var(--info-color)` : `var(--error-color)`;
+        if (model.get('omemo_active')) {
+            color = is_muc ? `var(--muc-color)` : `var(--chat-toolbar-btn-color)`;
+        } else {
+            color = `var(--error-color)`;
+        }
     } else {
         color = `var(--muc-toolbar-btn-disabled-color)`;
     }

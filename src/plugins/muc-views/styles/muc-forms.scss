@@ -7,7 +7,7 @@ converse-muc-config-form {
     .chatroom {
         .box-flyout {
             .muc-form-container {
-                background-color: white;
+                background-color: var(--background);
                 border: 0;
                 color: var(--text-color);
                 font-size: var(--font-size);

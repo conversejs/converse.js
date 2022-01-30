@@ -767,6 +767,12 @@ loglevel
 
 You can also set this value by changing a URL fragment `#converse?loglevel=debug`
 
+dark_theme
+----------
+
+* Default:  ``'dracula'``
+
+The theme being used in dark mode.
 
 default_domain
 --------------

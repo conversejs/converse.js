@@ -2499,8 +2499,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(_converse.connection.send).toHaveBeenCalled();
-            expect(Strophe.serialize(sent_stanza)).toBe(
+            await u.waitUntil(() => Strophe.serialize(sent_stanza) ===
                 `<iq id="${sent_stanza.getAttribute('id')}" to="lounge@muc.montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item affiliation="member" jid="marc@montague.lit">`+
@@ -2593,10 +2592,6 @@ describe("Groupchats", function () {
         it("takes /topic to set the groupchat topic", mock.initConverse([], {}, async function (_converse) {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            let sent_stanza;
-            spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                sent_stanza = stanza;
-            });
             // Check the alias /topic
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/topic This is the groupchat subject';
@@ -2606,8 +2601,8 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(_converse.connection.send).toHaveBeenCalled();
-            expect(sent_stanza.textContent.trim()).toBe('This is the groupchat subject');
+            const { sent_stanzas } = _converse.connection;
+            await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is the groupchat subject'));
 
             // Check /subject
             textarea.value = '/subject This is a new subject';
@@ -2617,7 +2612,7 @@ describe("Groupchats", function () {
                 keyCode: 13
             });
 
-            expect(sent_stanza.textContent.trim()).toBe('This is a new subject');
+            let sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is a new subject').pop());
             expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
                 '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
                     '<subject xmlns="jabber:client">This is a new subject</subject>'+
@@ -2630,12 +2625,15 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(sent_stanza.textContent.trim()).toBe('This is yet another subject');
+            sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is yet another subject').pop());
             expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
                 '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
                     '<subject xmlns="jabber:client">This is yet another subject</subject>'+
                 '</message>');
 
+            while (sent_stanzas.length) {
+                sent_stanzas.pop();
+            }
             // Check unsetting the topic
             textarea.value = '/topic';
             message_form.onKeyDown({
@@ -2643,6 +2641,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
+            sent_stanza = await u.waitUntil(() => sent_stanzas.pop());
             expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
                 '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
                     '<subject xmlns="jabber:client"></subject>'+
@@ -2661,6 +2660,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
+            await u.waitUntil(() => window.confirm.calls.count() === 1);
             expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
         }));
 
@@ -2697,7 +2697,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             const err_msg = await u.waitUntil(() => view.querySelector('.chat-error'));
             expect(err_msg.textContent.trim()).toBe(
                 "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
@@ -2724,7 +2724,7 @@ describe("Groupchats", function () {
             textarea.value = '/owner annoyingGuy You\'re responsible';
             message_form.onFormSubmitted(new Event('submit'));
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
             // Check that the member list now gets updated
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -2786,7 +2786,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
 
@@ -2801,7 +2801,7 @@ describe("Groupchats", function () {
             textarea.value = '/ban annoyingGuy You\'re annoying';
             message_form.onFormSubmitted(new Event('submit'));
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
             // Check that the member list now gets updated
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -2885,7 +2885,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
             expect(view.model.setRole).not.toHaveBeenCalled();
@@ -2896,7 +2896,7 @@ describe("Groupchats", function () {
             textarea.value = '/kick @annoying guy You\'re annoying';
             message_form.onFormSubmitted(new Event('submit'));
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -2987,7 +2987,7 @@ describe("Groupchats", function () {
                 keyCode: 13
             });
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
@@ -2999,7 +2999,7 @@ describe("Groupchats", function () {
             textarea.value = '/op trustworthyguy You\'re trustworthy';
             message_form.onFormSubmitted(new Event('submit'));
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3043,7 +3043,7 @@ describe("Groupchats", function () {
             textarea.value = '/deop trustworthyguy Perhaps not';
             message_form.onFormSubmitted(new Event('submit'));
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3126,7 +3126,7 @@ describe("Groupchats", function () {
                 keyCode: 13
             });
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
             await u.waitUntil(() => view.querySelector('.message:last-child')?.textContent?.trim() ===
                 "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
             expect(view.model.setRole).not.toHaveBeenCalled();
@@ -3137,7 +3137,7 @@ describe("Groupchats", function () {
             textarea.value = '/mute annoyingGuy You\'re annoying';
             message_form.onFormSubmitted(new Event('submit'));
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2)
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3178,7 +3178,7 @@ describe("Groupchats", function () {
             textarea.value = '/voice annoyingGuy Now you can talk again';
             message_form.onFormSubmitted(new Event('submit'));
 
-            expect(view.model.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
+            await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
             expect(view.model.setRole).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+

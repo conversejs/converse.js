@@ -64,8 +64,9 @@ describe("Chatboxes", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            expect(window.confirm).toHaveBeenCalled();
+            await u.waitUntil(() => window.confirm.calls.count() === 1);
             await u.waitUntil(() => sizzle('converse-chat-message', view).length === 0);
+            expect(true).toBe(true);
         }));
 
 
@@ -922,6 +923,7 @@ describe("Chatboxes", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
+            await u.waitUntil(() => window.confirm.calls.count() === 1);
             expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
             await u.waitUntil(() => view.model.messages.length === 0);
             await u.waitUntil(() => !view.querySelectorAll('.chat-msg__body').length);

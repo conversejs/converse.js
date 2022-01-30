@@ -6,6 +6,12 @@ import { getAutoCompleteListItem, parseMessageForMUCCommands } from './utils.js'
 
 export default class MUCMessageForm extends MessageForm {
 
+    async connectedCallback () {
+        super.connectedCallback();
+        await this.model.initialized;
+        api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
+    }
+
     toHTML () {
         return tpl_muc_message_form(
             Object.assign(this.model.toJSON(), {
@@ -45,10 +51,6 @@ export default class MUCMessageForm extends MessageForm {
             'item': getAutoCompleteListItem
         });
         this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
-    }
-
-    parseMessageForCommands (text) {
-        return parseMessageForMUCCommands(this.model, text);
     }
 
     getAutoCompleteList () {

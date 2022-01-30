@@ -21,9 +21,9 @@ export default (o) => {
             @submit=${o.submitFilter}>
             <div class="form-inline flex-nowrap">
                 <div class="filter-by d-flex flex-nowrap">
-                    <span @click=${o.changeTypeFilter} class="fa fa-user ${ (o.filter_type === 'contacts') ? 'selected' : '' }" data-type="contacts" title="${title_contact_filter}"></span>
-                    <span @click=${o.changeTypeFilter} class="fa fa-users ${ (o.filter_type === 'groups') ? 'selected' : '' }" data-type="groups" title="${title_group_filter}"></span>
-                    <span @click=${o.changeTypeFilter} class="fa fa-circle ${ (o.filter_type === 'state') ? 'selected' : '' }" data-type="state" title="${title_status_filter}"></span>
+                    <span @click=${o.changeTypeFilter} class="clickable fa fa-user ${ (o.filter_type === 'contacts') ? 'selected' : '' }" data-type="contacts" title="${title_contact_filter}"></span>
+                    <span @click=${o.changeTypeFilter} class="clickable fa fa-users ${ (o.filter_type === 'groups') ? 'selected' : '' }" data-type="groups" title="${title_group_filter}"></span>
+                    <span @click=${o.changeTypeFilter} class="clickable fa fa-circle ${ (o.filter_type === 'state') ? 'selected' : '' }" data-type="state" title="${title_status_filter}"></span>
                 </div>
                 <div class="btn-group">
                     <input .value="${o.filter_text || ''}"

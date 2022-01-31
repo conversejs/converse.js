@@ -21,18 +21,18 @@ export default (o) => {
             @submit=${o.submitFilter}>
             <div class="form-inline flex-nowrap">
                 <div class="filter-by d-flex flex-nowrap">
-                    <span @click=${o.changeTypeFilter} class="clickable fa fa-user ${ (o.filter_type === 'contacts') ? 'selected' : '' }" data-type="contacts" title="${title_contact_filter}"></span>
-                    <span @click=${o.changeTypeFilter} class="clickable fa fa-users ${ (o.filter_type === 'groups') ? 'selected' : '' }" data-type="groups" title="${title_group_filter}"></span>
-                    <span @click=${o.changeTypeFilter} class="clickable fa fa-circle ${ (o.filter_type === 'state') ? 'selected' : '' }" data-type="state" title="${title_status_filter}"></span>
+                    <converse-icon size="1em" @click=${o.changeTypeFilter} class="fa fa-user clickable ${ (o.filter_type === 'contacts') ? 'selected' : '' }" data-type="contacts" title="${title_contact_filter}"></converse-icon>
+                    <converse-icon size="1em" @click=${o.changeTypeFilter} class="fa fa-users clickable ${ (o.filter_type === 'groups') ? 'selected' : '' }" data-type="groups" title="${title_group_filter}"></converse-icon>
+                    <converse-icon size="1em" @click=${o.changeTypeFilter} class="fa fa-circle clickable ${ (o.filter_type === 'state') ? 'selected' : '' }" data-type="state" title="${title_status_filter}"></converse-icon>
                 </div>
                 <div class="btn-group">
                     <input .value="${o.filter_text || ''}"
                         @keydown=${o.liveFilter}
                         class="roster-filter form-control ${ (o.filter_type === 'state') ? 'hidden' : '' }"
                         placeholder="${i18n_placeholder}"/>
-                    <span class="clear-input fa fa-times ${ (!o.filter_text || o.filter_type === 'state') ? 'hidden' : '' }"
+                    <converse-icon size="1em" class="fa fa-times clear-input ${ (!o.filter_text || o.filter_type === 'state') ? 'hidden' : '' }"
                         @click=${o.clearFilter}>
-                    </span>
+                    </converse-icon>
                 </div>
                 <select class="form-control state-type ${ (o.filter_type !== 'state') ? 'hidden' : '' }"
                         @change=${o.changeChatStateFilter}>

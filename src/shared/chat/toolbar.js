@@ -60,7 +60,7 @@ export class ChatToolbar extends CustomElement {
             const i18n_start_call = __('Start a call');
             buttons.push(html`
                 <button class="toggle-call" @click=${this.toggleCall} title="${i18n_start_call}">
-                    <converse-icon color="var(${color})" class="fa fa-phone" path-prefix="/dist" size="1em"></converse-icon>
+                    <converse-icon color="var(${color})" class="fa fa-phone" size="1em"></converse-icon>
                 </button>`
             );
         }
@@ -90,7 +90,7 @@ export class ChatToolbar extends CustomElement {
                     <converse-icon
                         color="var(--muc-toolbar-btn-color)"
                         class="fa ${this.hidden_occupants ? `fa-angle-double-left` : `fa-angle-double-right`}"
-                        path-prefix="${api.settings.get('assets_path')}" size="1em"></converse-icon>
+                        size="1em"></converse-icon>
                 </button>`
             );
         }
@@ -118,7 +118,6 @@ export class ChatToolbar extends CustomElement {
                     <converse-icon
                         color="var(${color})"
                         class="fa fa-paperclip"
-                        path-prefix="${api.settings.get('assets_path')}"
                         size="1em"></converse-icon>
                 </button>
                 <input type="file" @change=${this.onFileSelection} class="fileupload" multiple="" style="display:none"/>`;
@@ -147,7 +146,6 @@ export class ChatToolbar extends CustomElement {
                 <converse-icon
                     color="var(${color})"
                     class="fa ${this.composing_spoiler ? 'fa-eye-slash' : 'fa-eye'}"
-                    path-prefix="${api.settings.get('assets_path')}"
                     size="1em"></converse-icon>
             </button>`;
 

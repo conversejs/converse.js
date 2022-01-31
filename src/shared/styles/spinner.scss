@@ -1,0 +1,19 @@
+.conversejs {
+
+    .spinner__container {
+        width: 100%;
+    }
+
+    .spinner {
+        animation: spin 2s infinite, linear;
+        width: 1em;
+        display: block;
+        text-align: center;
+        padding: 0.5em 0;
+        font-size: 24px;
+
+        svg {
+            fill: var(--primary-color);
+        }
+    }
+}

@@ -3,6 +3,7 @@ import tpl_roster_filter from "./templates/roster_filter.js";
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
+import { ancestor } from 'utils/html.js';
 import { initStorage } from '@converse/headless/utils/storage.js';
 
 export const RosterFilter = Model.extend({
@@ -62,7 +63,7 @@ export class RosterFilterView extends CustomElement {
 
     changeTypeFilter (ev) {
         ev && ev.preventDefault();
-        const type = ev.target.dataset.type;
+        const type = ancestor(ev.target, 'converse-icon')?.dataset.type || 'contacts';
         if (type === 'state') {
             this.model.save({
                 'filter_type': type,

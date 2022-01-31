@@ -17,32 +17,32 @@ export default (o) => html`
                             <input ?checked=${o.status === 'online'}
                                 type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input"/>
                             <label class="custom-control-label" for="radio-online">
-                                <span class="fa fa-circle chat-status chat-status--online"></span>${o.label_online}</label>
+                                <converse-icon size="1em" class="fa fa-circle chat-status chat-status--online"></converse-icon>${o.label_online}</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input ?checked=${o.status === 'busy'}
                                 type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input"/>
                             <label class="custom-control-label" for="radio-busy">
-                                <span class="fa fa-minus-circle  chat-status chat-status--busy"></span>${o.label_busy}</label>
+                                <converse-icon size="1em" class="fa fa-minus-circle  chat-status chat-status--busy"></converse-icon>${o.label_busy}</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input ?checked=${o.status === 'away'}
                                 type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input"/>
                             <label class="custom-control-label" for="radio-away">
-                                <span class="fa fa-circle chat-status chat-status--away"></span>${o.label_away}</label>
+                                <converse-icon size="1em" class="fa fa-circle chat-status chat-status--away"></converse-icon>${o.label_away}</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input ?checked=${o.status === 'xa'}
                                 type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input"/>
                             <label class="custom-control-label" for="radio-xa">
-                                <span class="far fa-circle chat-status chat-status--xa"></span>${o.label_xa}</label>
+                                <converse-icon size="1em" class="far fa-circle chat-status chat-status--xa"></converse-icon>${o.label_xa}</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="btn-group w-100">
                             <input name="status_message" type="text" class="form-control"
                                 value="${o.status_message || ''}" placeholder="${o.placeholder_status_message}"/>
-                            <span class="clear-input fa fa-times ${o.status_message ? '' : 'hidden'}"></span>
+                            <converse-icon size="1em" class="fa fa-times clear-input ${o.status_message ? '' : 'hidden'}"></converse-icon>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">${o.label_save}</button>

@@ -1,6 +1,5 @@
 import BootstrapModal from "plugins/modal/base.js";
 import tpl_muc_details from "./templates/muc-details.js";
-import { __ } from 'i18n';
 
 
 export default BootstrapModal.extend({
@@ -15,13 +14,6 @@ export default BootstrapModal.extend({
     },
 
     toHTML () {
-        return tpl_muc_details(Object.assign(
-            this.model.toJSON(), {
-                'config': this.model.config.toJSON(),
-                'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
-                'features': this.model.features.toJSON(),
-                'num_occupants': this.model.occupants.length,
-            })
-        );
+        return tpl_muc_details(this.model);
     }
 });

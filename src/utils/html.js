@@ -200,13 +200,13 @@ u.hideElement = function (el) {
     return el;
 };
 
-u.ancestor = function (el, selector) {
+export function ancestor (el, selector) {
     let parent = el;
     while (parent !== null && !sizzle.matchesSelector(parent, selector)) {
         parent = parent.parentElement;
     }
     return parent;
-};
+}
 
 /**
  * Return the element's siblings until one matches the selector.
@@ -513,6 +513,6 @@ u.xForm2TemplateResult = function (field, stanza, options) {
     }
 };
 
-Object.assign(u, { getOOBURLMarkup });
+Object.assign(u, { getOOBURLMarkup, ancestor });
 
 export default u;

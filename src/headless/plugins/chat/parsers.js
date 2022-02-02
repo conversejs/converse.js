@@ -215,7 +215,7 @@ export async function parseMessage (stanza, _converse) {
      */
     attrs = await api.hook('parseMessage', stanza, attrs);
 
-    // We call this after the hook, to allow plugins to decrypt encrypted
+    // We call this after the hook, to allow plugins (like omemo) to decrypt encrypted
     // messages, since we need to parse the message text to determine whether
     // there are media urls.
     return Object.assign(attrs, getMediaURLsMetadata(attrs.is_encrypted ? attrs.plaintext : attrs.body));

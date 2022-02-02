@@ -609,7 +609,10 @@ async function fetchDeviceLists () {
     return Promise.all(promises);
 }
 
-export async function initOMEMO () {
+export async function initOMEMO (reconnecting) {
+    if (reconnecting) {
+        return;
+    }
     if (!_converse.config.get('trusted') || api.settings.get('clear_cache_on_logout')) {
         log.warn('Not initializing OMEMO, since this browser is not trusted or clear_cache_on_logout is set to true');
         return;

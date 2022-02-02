@@ -5,6 +5,7 @@
 - Updated translations: lt
 - Increased stanza timeout from 10 to 20 seconds
 - Replace various font icons with SVG icons
+- Fix OMEMO race condition related to automatic reconnection
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2751: Media not rendered when Converse runs in a browser extension
 - #2786: Fix webpack configuration not working on Windows OS

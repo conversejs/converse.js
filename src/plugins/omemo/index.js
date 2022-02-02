@@ -99,9 +99,8 @@ converse.plugins.add('converse-omemo', {
             _converse.generateFingerprints(_converse.bare_jid).catch(e => log.error(e));
         });
 
-        api.listen.on('afterTearDown', () => delete _converse.omemo_store);
-
         api.listen.on('clearSession', () => {
+            delete _converse.omemo_store
             if (_converse.shouldClearCache() && _converse.devicelists) {
                 _converse.devicelists.clearStore();
                 delete _converse.devicelists;

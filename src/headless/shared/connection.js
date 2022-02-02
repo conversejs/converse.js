@@ -2,11 +2,12 @@ import debounce from 'lodash-es/debounce';
 import isElement from 'lodash-es/isElement';
 import log from "../log.js";
 import sizzle from 'sizzle';
+import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
 import { Strophe } from 'strophe.js/src/core';
-import { _converse, api, clearSession, tearDown } from "../core.js";
+import { _converse, api, clearSession } from "../core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '@converse/headless/utils/init.js';
-import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
+import { tearDown } from '@converse/headless/utils/core.js';
 
 
 /**
@@ -18,7 +19,7 @@ export class Connection extends Strophe.Connection {
 
     constructor (service, options) {
         super(service, options);
-        this.debouncedReconnect = debounce(this.reconnect, 2000);
+        this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 
     static generateResource () {
@@ -107,23 +108,67 @@ export class Connection extends Strophe.Connection {
         super.connect(jid, password, callback || this.onConnectStatusChanged, BOSH_WAIT);
     }
 
+    /**
+     * Switch to a different transport if a service URL is available for it.
+     *
+     * When reconnecting with a new transport, we call setUserJID
+     * so that a new resource is generated, to avoid multiple
+     * server-side sessions with the same resource.
+     *
+     * We also call `_proto._doDisconnect` so that connection event handlers
+     * for the old transport are removed.
+     */
+    async switchTransport () {
+        if (api.connection.isType('websocket') && api.settings.get('bosh_service_url')) {
+            await setUserJID(_converse.bare_jid);
+            this._proto._doDisconnect();
+            this._proto = new Strophe.Bosh(this);
+            this.service = api.settings.get('bosh_service_url');
+        } else if (api.connection.isType('bosh') && api.settings.get("websocket_url")) {
+            if (api.settings.get("authentication") === _converse.ANONYMOUS) {
+                // When reconnecting anonymously, we need to connect with only
+                // the domain, not the full JID that we had in our previous
+                // (now failed) session.
+                await setUserJID(api.settings.get("jid"));
+            } else {
+                await setUserJID(_converse.bare_jid);
+            }
+            this._proto._doDisconnect();
+            this._proto = new Strophe.Websocket(this);
+            this.service = api.settings.get("websocket_url");
+        }
+    }
+
     async reconnect () {
-        const { __ } = _converse;
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
+        this.reconnecting = true;
+        await tearDown();
+
+        const conn_status = _converse.connfeedback.get('connection_status');
+        if (conn_status === Strophe.Status.CONNFAIL) {
+            this.switchTransport();
+        } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === _converse.ANONYMOUS) {
+            // When reconnecting anonymously, we need to connect with only
+            // the domain, not the full JID that we had in our previous
+            // (now failed) session.
+            await setUserJID(api.settings.get("jid"));
+        }
+
+        const { __ } = _converse;
         this.setConnectionStatus(
             Strophe.Status.RECONNECTING,
             __('The connection has dropped, attempting to reconnect.')
         );
         /**
-        * Triggered when the connection has dropped, but Converse will attempt
-        * to reconnect again.
-        *
-        * @event _converse#will-reconnect
-        */
+         * Triggered when the connection has dropped, but Converse will attempt
+         * to reconnect again.
+         * @event _converse#will-reconnect
+         */
         api.trigger('will-reconnect');
 
-        this.reconnecting = true;
-        await tearDown();
+        if (api.settings.get("authentication") === _converse.ANONYMOUS) {
+            await clearSession();
+        }
         return api.user.login();
     }
 

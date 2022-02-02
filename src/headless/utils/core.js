@@ -38,6 +38,19 @@ export function isUniView () {
 }
 
 
+export async function tearDown () {
+    await _converse.api.trigger('beforeTearDown', {'synchronous': true});
+    window.removeEventListener('click', _converse.onUserActivity);
+    window.removeEventListener('focus', _converse.onUserActivity);
+    window.removeEventListener('keypress', _converse.onUserActivity);
+    window.removeEventListener('mousemove', _converse.onUserActivity);
+    window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
+    window.clearInterval(_converse.everySecondTrigger);
+    _converse.api.trigger('afterTearDown');
+    return _converse;
+}
+
+
 /**
  * The utils object
  * @namespace u

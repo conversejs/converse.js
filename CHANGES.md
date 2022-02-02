@@ -1,17 +1,15 @@
 # Changelog
 
-## 9.0.1 (2021-??-??)
+## 9.0.1 (Unreleased)
 
 - Updated translations: lt
 - Increased stanza timeout from 10 to 20 seconds
+- Replace various font icons with SVG icons
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2751: Media not rendered when Converse runs in a browser extension
 - #2786: Fix webpack configuration not working on Windows OS
-- #2789: Implement new hook parseMessageForCommands for plugins to add custom
+- #2789: Implement new hook `parseMessageForCommands` for plugins to add custom commands
 
-### New hooks and events
-
-- New hook: [parseMessageForCommands](https://conversejs.org/docs/html/api/-_converse.html#event:parseMessageForCommands)
 
 ## 9.0.0 (2021-11-26)
 
@@ -48,7 +46,6 @@ Three config settings have been obsoleted:
   - embed_video
   - show_images_inline
   - muc_show_ogp_unfurls
-
 
 ### Breaking Changes
 

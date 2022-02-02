@@ -57,7 +57,6 @@ class MessageActions extends CustomElement {
             <button class="chat-msg__action ${o.button_class}" @click=${o.handler}>
                 <converse-icon
                     class="${o.icon_class}"
-                    path-prefix="${api.settings.get('assets_path')}"
                     color="var(--text-color-lighten-15-percent)"
                     size="1em"
                 ></converse-icon>

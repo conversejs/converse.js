@@ -17,18 +17,23 @@
     }
     .chat-status--online {
         color: var(--chat-status-online);
+        svg {
+            fill: var(--chat-status-online);
+        }
     }
     .chat-status--busy {
         color: var(--chat-status-busy);
+        svg {
+            fill: var(--chat-status-busy);
+        }
     }
     .chat-status--away {
         color: var(--chat-status-away);
+        svg {
+            fill: var(--chat-status-away);
+        }
     }
     .chat-status--offline {
         display: none;
-    }
-    .far.fa-circle,
-    .fa-times-circle {
-        color: var(--subdued-color);
     }
 }

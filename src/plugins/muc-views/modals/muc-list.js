@@ -1,7 +1,7 @@
 import BootstrapModal from "plugins/modal/base.js";
 import head from "lodash-es/head";
 import log from "@converse/headless/log";
-import tpl_list_chatrooms_modal from "../templates/muc-list.js";
+import tpl_muc_list from "../templates/muc-list.js";
 import tpl_muc_description from "../templates/muc-description.js";
 import tpl_spinner from "templates/spinner.js";
 import { __ } from 'i18n';
@@ -87,7 +87,7 @@ export default BootstrapModal.extend({
 
     toHTML () {
         const muc_domain = this.model.get('muc_domain') || api.settings.get('muc_domain');
-        return tpl_list_chatrooms_modal(
+        return tpl_muc_list(
             Object.assign(this.model.toJSON(), {
                 'show_form': !api.settings.get('locked_muc_domain'),
                 'server_placeholder': muc_domain ? muc_domain : __('conference.example.org'),

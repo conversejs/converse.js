@@ -43,7 +43,7 @@ const _converse = {
      * @constant
      * @type { integer }
      */
-    STANZA_TIMEOUT: 10000,
+    STANZA_TIMEOUT: 20000,
 
     SUCCESS: 'success',
     FAILURE: 'failure',

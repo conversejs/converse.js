@@ -108,11 +108,7 @@
             display: inline-flex;
             width: 100%;
             flex-direction: row;
-            padding: 0 1rem;
-
-            &.chat-msg--with-avatar {
-                padding-top: 0.25rem;
-            }
+            padding: 0.25em 1rem;
 
             &.onload {
                 animation: colorchange-chatmessage 1s;
@@ -144,7 +140,7 @@
                 }
                 &:before {
                     padding-right: 0.25em;
-                    whitespace: nowrap;
+                    white-space: nowrap;
                 }
             }
 
@@ -170,7 +166,7 @@
             }
 
             .chat-msg__message {
-                line-height: 1.5em;
+                line-height: 1.65em;
                 display: inline-flex;
                 flex-direction: column;
                 width: 100%;

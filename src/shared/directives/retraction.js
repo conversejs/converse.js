@@ -1,5 +1,4 @@
 import { __ } from '../i18n';
-import { api } from "@converse/headless/core";
 import { directive, html } from "lit";
 
 
@@ -8,7 +7,6 @@ const tpl_retract = (o) => html`
     <button class="chat-msg__action chat-msg__action-retract" title="${i18n_retract_message}" @click=${o.onMessageRetractButtonClicked}>
         <converse-icon
             class="fas fa-trash-alt"
-            path-prefix="${api.settings.get("assets_path")}"
             color="var(--text-color-lighten-15-percent)"
             size="1em"
         ></converse-icon>

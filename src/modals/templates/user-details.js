@@ -8,7 +8,12 @@ const remove_button = (o) => {
     const i18n_remove_contact = __('Remove as contact');
     return html`
         <button type="button" @click="${o.removeContact}" class="btn btn-danger remove-contact">
-            <i class="far fa-trash-alt"></i>${i18n_remove_contact}
+            <converse-icon
+                class="fas fa-trash-alt"
+                color="var(--text-color-lighten-15-percent)"
+                size="1em"
+            ></converse-icon>
+            ${i18n_remove_contact}
         </button>
     `;
 }

@@ -24,7 +24,7 @@ module.exports = {
     module: {
         rules: [
         {
-            test: /LC_MESSAGES\/converse.po$/,
+            test: /LC_MESSAGES[\\/]converse.po$/,
             type: "json",
             use: [
             {
@@ -36,7 +36,7 @@ module.exports = {
             }
             ]
         }, {
-            test: /webfonts\/.*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
+            test: /webfonts[\\/].*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
             use: [
             {
                 loader: 'file-loader',

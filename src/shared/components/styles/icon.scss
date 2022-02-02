@@ -5,12 +5,19 @@ converse-icon {
     svg {
 	fill: var(--subdued-color);
     }
+    &.clickable {
+	&:hover {
+	    svg {
+		fill: var(--icon-hover-color);
+	    }
+	}
+    }
 }
 
 a, .clickable {
     converse-icon {
-	svg {
-	    &:hover {
+	&:hover {
+	    svg {
 		fill: var(--icon-hover-color);
 	    }
 	}

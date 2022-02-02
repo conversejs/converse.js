@@ -30,10 +30,8 @@
             padding: 0.2em;
         }
 
-        span {
-            padding: 0.3em;
-            min-width: 25px;
-            text-align: center;
+        converse-icon {
+            padding: 0.25em;
         }
 
         .roster-filter {
@@ -56,6 +54,16 @@
         overflow-y: auto;
         color: var(--text-color);
 
+        .roster-group-contacts {
+            .list-item {
+                &:hover {
+                    .list-item-action {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+
         converse-roster-contact {
             width: 100%;
             overflow: hidden;
@@ -63,6 +71,16 @@
             text-overflow: ellipsis;
             display: flex;
             justify-content: space-between;
+
+            .list-item-action {
+                line-height: 2em;
+            }
+
+            &:hover {
+                .list-item-action {
+                    opacity: 1;
+                }
+            }
         }
 
         .group-toggle {

@@ -740,7 +740,9 @@ Object.assign(converse, {
         initPlugins(_converse);
 
         // Register all custom elements
-        api.elements.register();
+        // XXX: api.elements is defined in the UI part of Converse, outside of @converse/headless.
+        // This line should probably be moved to the UI code as part of a larger refactoring.
+        api.elements?.register();
 
         registerGlobalEventHandlers(_converse);
 

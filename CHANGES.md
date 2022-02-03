@@ -9,6 +9,7 @@
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2751: Media not rendered when Converse runs in a browser extension
 - #2786: Fix webpack configuration not working on Windows OS
+- #2788: `TypeError` when trying to use `@converse/headless`
 - #2789: Implement new hook `parseMessageForCommands` for plugins to add custom commands
 
 

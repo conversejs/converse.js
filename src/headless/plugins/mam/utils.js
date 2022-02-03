@@ -81,7 +81,7 @@ export async function handleMAMResult (model, result, query, options, should_pag
     const doParseMessage = async (s) => {
         return await (is_muc ? parseMUCMessage(s, model, _converse) : parseMessage(s, _converse))
     }
-    const parsed_messages = await Promise.all(result.messages.map(doParseMessage));
+    await Promise.all(result.messages.map(doParseMessage));
 
     /**
      * Synchronous event which allows listeners to first do some

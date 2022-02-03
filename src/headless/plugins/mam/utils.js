@@ -77,9 +77,11 @@ export function preMUCJoinMAMFetch (muc) {
 export async function handleMAMResult (model, result, query, options, should_page) {
     await api.emojis.initialize();
     const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
-    result.messages = result.messages.map(s =>
-        is_muc ? parseMUCMessage(s, model, _converse) : parseMessage(s, _converse)
-    );
+    
+    const doParseMessage = async (s) => {
+        return await (is_muc ? parseMUCMessage(s, model, _converse) : parseMessage(s, _converse))
+    }
+    const parsed_messages = await Promise.all(result.messages.map(doParseMessage));
 
     /**
      * Synchronous event which allows listeners to first do some

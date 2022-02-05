@@ -304,7 +304,7 @@ async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
     const from_jid = getJIDForDecryption(attrs);
     const devicelist = await _converse.devicelists.getDeviceList(from_jid);
     const encrypted = attrs.encrypted;
-    let device = devicelist.get(encrypted.device_id);
+    let device = devicelist.devices.get(encrypted.device_id);
     if (!device) {
         device = await devicelist.devices.create({ 'id': encrypted.device_id, 'jid': from_jid }, { 'promise': true });
     }

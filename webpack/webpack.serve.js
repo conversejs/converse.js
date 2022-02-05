@@ -9,7 +9,7 @@ module.exports = merge(common, {
     devtool: "inline-source-map",
     devServer: {
         static: [ path.resolve(__dirname, '../') ],
-        port: 3003
+        port: 3004
     },
     plugins: [
         new HTMLWebpackPlugin({

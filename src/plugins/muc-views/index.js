@@ -14,7 +14,6 @@ import './styles/index.scss';
 
 converse.MUC.VIEWS = {
     CONFIG: 'config-form',
-    BOOKMARK: 'bookmark-form'
 }
 
 converse.plugins.add('converse-muc-views', {

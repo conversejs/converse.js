@@ -1,0 +1,19 @@
+import { __ } from 'i18n';
+import { html } from "lit";
+import { modal_header_close_button } from "plugins/modal/templates/buttons.js"
+
+export default (o) => {
+    const i18n_moderator_tools = __('Bookmark');
+    return html`
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="converse-modtools-modal-label">${i18n_moderator_tools}</h5>
+                    ${modal_header_close_button}
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <converse-muc-bookmark-form class="muc-form-container" jid="${o.jid}"></converse-muc-bookmark-form>
+                </div>
+            </div>
+        </div>`;
+}

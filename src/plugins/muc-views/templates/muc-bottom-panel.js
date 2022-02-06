@@ -1,6 +1,6 @@
 import '../message-form.js';
+import '../nickname-form.js';
 import 'shared/chat/toolbar.js';
-import tpl_muc_nickname_form from './muc-nickname-form.js';
 import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
 import { html } from "lit";
@@ -45,7 +45,9 @@ export default (o) => {
             ${(o.can_edit) ? tpl_can_edit(o) : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`}`;
     } else if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
         if (api.settings.get('muc_show_logs_before_join')) {
-            return html`<span class="muc-bottom-panel muc-bottom-panel--nickname">${tpl_muc_nickname_form(o.model)}</span>`;
+            return html`<span class="muc-bottom-panel muc-bottom-panel--nickname">
+                <converse-muc-nickname-form jid="${o.model.get('jid')}"></converse-muc-nickname-form>
+            </span>`;
         }
     } else {
         return '';

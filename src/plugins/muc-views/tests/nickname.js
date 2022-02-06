@@ -2,7 +2,36 @@
 
 const { $pres, $iq, Strophe, sizzle, u }  = converse.env;
 
-fdescribe("A MUC", function () {
+describe("A MUC", function () {
+
+    it("allows you to change your nickname via a modal",
+            mock.initConverse([], {'view_mode': 'fullscreen'}, async function (_converse) {
+
+        const muc_jid = 'lounge@montague.lit';
+        const nick = 'romeo';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+
+        const view = _converse.chatboxviews.get(muc_jid);
+        const dropdown_item = view.querySelector(".open-nickname-modal");
+        dropdown_item.click();
+
+        const modal = _converse.api.modal.get('change-nickname-modal');
+        await u.waitUntil(() => u.isVisible(modal.el));
+
+        const input = modal.el.querySelector('input[name="nick"]');
+        expect(input.value).toBe(nick);
+
+        const newnick = 'loverboy';
+        input.value = newnick;
+        modal.el.querySelector('input[type="submit"]')?.click();
+
+        await u.waitUntil(() => !u.isVisible(modal.el));
+
+        const { sent_stanzas } = _converse.connection;
+        const sent_stanza = sent_stanzas.pop()
+        expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
+            `<presence from="${_converse.jid}" id="${sent_stanza.getAttribute('id')}" to="${muc_jid}/${newnick}" xmlns="jabber:client"/>`);
+    }));
 
     it("informs users if their nicknames have been changed.",
             mock.initConverse([], {}, async function (_converse) {
@@ -44,9 +73,8 @@ fdescribe("A MUC", function () {
          */
         const __ = _converse.__;
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'oldnick');
-        const view = _converse.chatboxviews.get('lounge@montague.lit');
-        expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
+        const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => view.querySelectorAll('li .occupant-nick').length, 500);
         let occupants = view.querySelector('.occupant-list');
         expect(occupants.childElementCount).toBe(1);

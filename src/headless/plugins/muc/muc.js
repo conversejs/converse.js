@@ -124,6 +124,10 @@ const ChatRoomMixin = {
         this.initialized.resolve();
     },
 
+    isEntered () {
+        return this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+    },
+
     /**
      * Checks whether we're still joined and if so, restores the MUC state from cache.
      * @private
@@ -131,7 +135,7 @@ const ChatRoomMixin = {
      * @returns { Boolean } Returns `true` if we're still joined, otherwise returns `false`.
      */
     async restoreFromCache () {
-        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED && (await this.isJoined())) {
+        if (this.isEntered() && (await this.isJoined())) {
             // We've restored the room from cache and we're still joined.
             await new Promise(resolve => this.features.fetch({ 'success': resolve, 'error': resolve }));
             await this.fetchOccupants().catch(e => log.error(e));
@@ -154,7 +158,7 @@ const ChatRoomMixin = {
      *  model (if available).
      */
     async join (nick, password) {
-        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+        if (this.isEntered()) {
             // We have restored a groupchat from session storage,
             // so we don't send out a presence stanza again.
             return this;
@@ -293,7 +297,7 @@ const ChatRoomMixin = {
     onOccupantRemoved (occupant) {
         if (
             _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED) &&
-            this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
+            this.isEntered() &&
             occupant.get('show') === 'online'
         ) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.EXITED);
@@ -339,7 +343,7 @@ const ChatRoomMixin = {
     },
 
     async onConnectionStatusChanged () {
-        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+        if (this.isEntered()) {
             if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
                 try {
                     await this.leave();
@@ -491,8 +495,7 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     handleMessageFromMUCHost (stanza) {
-        const conn_status = this.session.get('connection_status');
-        if (conn_status === converse.ROOMSTATUS.ENTERED) {
+        if (this.isEntered()) {
             // We're not interested in activity indicators when already joined to the room
             return;
         }
@@ -513,7 +516,7 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     handleForwardedMentions (stanza) {
-        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+        if (this.isEntered()) {
             // Avoid counting mentions twice
             return;
         }
@@ -1023,7 +1026,7 @@ const ChatRoomMixin = {
         if (
             !api.settings.get('send_chat_state_notifications') ||
             !this.get('chat_state') ||
-            this.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+            !this.isEntered() ||
             (this.features.get('moderated') && this.getOwnRole() === 'visitor')
         ) {
             return;
@@ -1404,6 +1407,10 @@ const ChatRoomMixin = {
         return this.occupants.getOwnOccupant();
     },
 
+    /**
+     * Send a presence stanza to update the user's nickname in this MUC.
+     * @param { String } nick
+     */
     async setNickname (nick) {
         if (
             api.settings.get('auto_register_muc_nickname') &&

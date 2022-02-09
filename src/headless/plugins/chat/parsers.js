@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
 import u from '@converse/headless/utils/core';
-import { api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core';
 import { rejectMessage } from '@converse/headless/shared/actions';
 
 import {
@@ -36,7 +36,7 @@ const { Strophe, sizzle } = converse.env;
  * @param { _converse } _converse
  * @returns { (MessageAttributes|Error) }
  */
-export async function parseMessage (stanza, _converse) {
+export async function parseMessage (stanza) {
     throwErrorIfInvalidForward(stanza);
 
     let to_jid = stanza.getAttribute('to');

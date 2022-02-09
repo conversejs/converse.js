@@ -27,7 +27,7 @@ describe("Emojis", function () {
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown(tab_event);
             await u.waitUntil(() => view.querySelector('converse-emoji-picker .emoji-search')?.value === ':gri');
-            await u.waitUntil(() =>  sizzle('.emojis-lists__container--search .insert-emoji', view).length === 3, 1000);
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji', view).length === 3, 1000);
             let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', view);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
             expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grin:');

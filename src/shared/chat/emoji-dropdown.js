@@ -89,7 +89,8 @@ export default class EmojiDropdown extends DropdownBase {
         if (!this.render_emojis) {
             // Trigger an update so that emojis are rendered
             this.render_emojis = true;
-            await this.requestUpdate();
+            this.requestUpdate();
+            await this.updateComplete;
         }
         super.showMenu();
         setTimeout(() => this.querySelector('.emoji-search')?.focus());

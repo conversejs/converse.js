@@ -252,7 +252,7 @@ describe("The Contacts Roster", function () {
             const rosterview = document.querySelector('converse-roster');
             const roster = rosterview.querySelector('.roster-contacts');
 
-            const button = rosterview.querySelector('span[data-type="groups"]');
+            const button =  rosterview.querySelector('converse-icon[data-type="groups"]');
             button.click();
 
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 600);

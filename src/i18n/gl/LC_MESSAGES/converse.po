@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-12-23 06:53+0000\n"
+"PO-Revision-Date: 2022-02-10 13:07+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -1322,8 +1322,8 @@ msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
 msgstr ""
-"Certos servizos e entidades XMPP permítenlle a usuarias autorizadas executar "
-"comandos a medida neles."
+"Certos servizos e entidades XMPP permítenlle ás usuarias autorizadas "
+"executar neles comandos a medida."
 
 #: dist/converse-no-dependencies.js:87502
 msgid "Commands found"
@@ -1737,7 +1737,7 @@ msgstr "Moderar esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:91421
 msgid "Destroy"
-msgstr "Destruír"
+msgstr "Eliminar"
 
 #: dist/converse-no-dependencies.js:91435
 msgid "Leave"
@@ -1963,7 +1963,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:95656
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr "%1$sTradúzao%2$s para o seu idioma"
+msgstr "%1$sTradúceo%2$s ao teu idioma"
 
 #: dist/converse-no-dependencies.js:95685
 #: dist/converse-no-dependencies.js:95695

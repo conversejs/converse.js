@@ -16,7 +16,6 @@ export class ChatToolbar extends CustomElement {
 
     static get properties () {
         return {
-            composing_spoiler: { type: Boolean },
             hidden_occupants: { type: Boolean },
             is_groupchat: { type: Boolean },
             message_limit: { type: Number },
@@ -30,7 +29,7 @@ export class ChatToolbar extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdate);
+        this.listenTo(this.model, 'change:composing_spoiler', () => this.requestUpdate());
     }
 
     render () {
@@ -133,7 +132,7 @@ export class ChatToolbar extends CustomElement {
         }
 
         let i18n_toggle_spoiler;
-        if (this.composing_spoiler) {
+        if (model.get('composing_spoiler')) {
             i18n_toggle_spoiler = __("Click to write as a normal (non-spoiler) message");
         } else {
             i18n_toggle_spoiler = __("Click to write your message as a spoiler");
@@ -145,7 +144,7 @@ export class ChatToolbar extends CustomElement {
                     @click=${this.toggleComposeSpoilerMessage}>
                 <converse-icon
                     color="var(${color})"
-                    class="fa ${this.composing_spoiler ? 'fa-eye-slash' : 'fa-eye'}"
+                    class="fa ${model.get('composing_spoiler') ? 'fa-eye-slash' : 'fa-eye'}"
                     size="1em"></converse-icon>
             </button>`;
 

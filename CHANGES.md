@@ -2,7 +2,7 @@
 
 ## 9.0.1 (Unreleased)
 
-- Updated translations: lt
+- Updated translations: af, ar, es, eu, fr, gl, he, lt
 - Increased stanza timeout from 10 to 20 seconds
 - Replace various font icons with SVG icons
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme

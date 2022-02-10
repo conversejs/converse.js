@@ -152,6 +152,75 @@ describe("The OMEMO module", function() {
             .toBe('Another received encrypted message without fallback');
     }));
 
+    it("properly handles an already decrypted message being received again",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.initializedOMEMO(_converse);
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
+        let stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.getAttribute('id'),
+                'to': _converse.connection.jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                            .c('device', {'id': '555'});
+        _converse.connection._dataRecv(mock.createRequest(stanza));
+
+        await u.waitUntil(() => _converse.omemo_store);
+
+        const view = _converse.chatboxviews.get(contact_jid);
+        view.model.set('omemo_active', true);
+
+        // Test reception of an encrypted message
+        const msg_txt = 'This is an encrypted message from the contact';
+        const obj = await omemo.encryptMessage(msg_txt)
+        const id = _converse.connection.getUniqueId();
+        stanza = $msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                id
+            }).c('body').t('This is a fallback message').up()
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')})
+                            .t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('iv').t(obj.iv)
+                        .up().up()
+                    .c('payload').t(obj.payload);
+        _converse.connection._dataRecv(mock.createRequest(stanza));
+
+        // Test reception of the same message, but the decryption fails.
+        // The properly decrypted message should still show to the user.
+        // See issue: https://github.com/conversejs/converse.js/issues/2733#issuecomment-1035493594
+        stanza = $msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                id
+            }).c('body').t('This is a fallback message').up()
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')})
+                            .t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('iv').t(obj.iv)
+                        .up().up()
+                    .c('payload').t(obj.payload+'x'); // Hack to break decryption.
+        _converse.connection._dataRecv(mock.createRequest(stanza));
+
+        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.textContent.trim() === msg_txt);
+
+        expect(view.model.messages.length).toBe(1);
+        const msg = view.model.messages.at(0);
+        expect(msg.get('is_ephemeral')).toBe(false)
+    }));
+
     it("will create a new device based on a received carbon message",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 

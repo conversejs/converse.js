@@ -25,9 +25,11 @@
                 min-width: 20%;
                 flex: 0 0 25%;
 
-                .occupants-header {
+                .occupants-header--title {
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
+                    margin-bottom: 0.5em;
+
                     .hide-occupants {
                         align-self: flex-end;
                         cursor: pointer;
@@ -35,18 +37,12 @@
                     }
                 }
 
-                .occupants-header--title {
-                    margin-top: 0.5em;
-                    margin-bottom: 0.5em;
-                    display: flex;
-                    flex-direction: row;
-                }
-
                 .fa-user-plus {
                     margin-right: 0.25em;
                 }
 
                 .occupants-heading {
+                    width: 100%;
                     font-family: var(--heading-font);
                     color: var(--groupchats-header-color-dark);
                     padding-left: 0;

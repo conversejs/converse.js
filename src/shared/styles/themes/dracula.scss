@@ -30,6 +30,8 @@
 
     --redder-orange: var(--muc-color);
 
+    --light-background-color: var(--background);
+
     --chat-background-color: var(--background);
     --chat-content-background-color: var(--background);
     --chat-textarea-background-color: var(--background);
@@ -92,7 +94,7 @@
 
     --completion-light-color: var(--pink);
     --completion-normal-color: var(--red);
-    --completion-dark-color: var(--purple);
+    --completion-dark-color: var(--current-line);
 
     --button-text-color: var(--background);
     --button-hover-text-color: var(--background);

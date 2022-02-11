@@ -2,24 +2,18 @@ import { __ } from 'i18n';
 import { api } from "@converse/headless/core";
 import { html } from "lit";
 
-function submitNickname (ev, model) {
-    ev.preventDefault();
-    const nick = ev.target.nick.value.trim();
-    nick && model.join(nick);
-}
-
-export default (model) => {
+export default (el) => {
     const i18n_nickname =  __('Nickname');
-    const i18n_join = __('Enter groupchat');
+    const i18n_join = el.model?.isEntered() ? __('Change nickname') : __('Enter groupchat');
     const i18n_heading = api.settings.get('muc_show_logs_before_join') ?
         __('Choose a nickname to enter') :
         __('Please choose your nickname');
 
-    const validation_message = model.get('nickname_validation_message');
+    const validation_message = el.model?.get('nickname_validation_message');
 
     return html`
         <div class="chatroom-form-container muc-nickname-form"
-                @submit=${ev => submitNickname(ev, model)}>
+                @submit=${ev => el.submitNickname(ev)}>
             <form class="converse-form chatroom-form converse-centered-form">
                 <fieldset class="form-group">
                     <label>${i18n_heading}</label>
@@ -27,7 +21,7 @@ export default (model) => {
                     <input type="text"
                         required="required"
                         name="nick"
-                        value="${model.get('nick') || ''}"
+                        value="${el.model?.get('nick') || ''}"
                         class="form-control ${validation_message ? 'error': ''}"
                         placeholder="${i18n_nickname}"/>
                 </fieldset>

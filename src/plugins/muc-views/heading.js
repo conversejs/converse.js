@@ -1,5 +1,6 @@
 import { ElementView } from '@converse/skeletor/src/element.js';
 import MUCInviteModal from 'modals/muc-invite.js';
+import NicknameModal from './modals/nickname.js';
 import RoomDetailsModal from 'modals/muc-details.js';
 import debounce from 'lodash-es/debounce';
 import tpl_muc_head from './templates/muc-head.js';
@@ -106,6 +107,15 @@ export default class MUCHeading extends ElementView {
                 'name': 'configure'
             });
         }
+
+        buttons.push({
+            'i18n_text': __('Nickname'),
+            'i18n_title': __("Change the nickname you're using in this groupchat"),
+            'handler': ev => api.modal.show(NicknameModal, { 'model': this.model }, ev),
+            'a_class': 'open-nickname-modal',
+            'icon_class': 'fa-smile',
+            'name': 'nickname'
+        });
 
         if (this.model.invitesAllowed()) {
             buttons.push({

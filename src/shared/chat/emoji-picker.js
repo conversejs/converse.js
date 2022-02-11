@@ -19,7 +19,7 @@ export default class EmojiPicker extends CustomElement {
             'current_category': { type: String, 'reflect': true },
             'current_skintone': { type: String, 'reflect': true },
             'model': { type: Object },
-            'query': { type: String, 'reflet': true },
+            'query': { type: String, 'reflect': true },
             // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
             'render_emojis': { type: Boolean },
         }
@@ -33,6 +33,7 @@ export default class EmojiPicker extends CustomElement {
 
     constructor () {
         super();
+        this.query = '';
         this._search_results = [];
         this.debouncedFilter = debounce(input => this.model.set({'query': input.value}), 250);
     }
@@ -103,7 +104,6 @@ export default class EmojiPicker extends CustomElement {
             // Avoid re-rendering by only setting to new empty array if it wasn't empty before
             this.search_results = [];
         }
-        this.requestUpdate();
     }
 
     registerEvents () {

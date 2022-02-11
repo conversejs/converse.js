@@ -34,31 +34,36 @@
             padding-bottom: 0;
             background-color: var(--chat-head-color);
             overflow-y: hidden;
-            .emoji-picker__lists {
-                height: 8em;
-                overflow-y: auto;
-                .emoji-category__heading {
-                    clear: both;
-                    color: var(--subdued-color);
-                    cursor: auto;
-                    display: block;
-                    font-size: var(--font-size);
-                    margin: 0;
-                    padding: 0.75em 0 0 0.5em;
-                }
-
-                .emoji-lists__container {
+            converse-emoji-picker-content {
+                width: 100%;
+                .emoji-picker__lists {
                     background-color: var(--background);
-                    overflow-x: hidden;
-                }
+                    display: flex;
+                    flex-direction: column;
+                    height: 8em;
+                    overflow-y: auto;
+                    width: 100%;
+                    .emoji-category__heading {
+                        clear: both;
+                        color: var(--subdued-color);
+                        cursor: auto;
+                        display: block;
+                        font-size: var(--font-size);
+                        margin: 0;
+                        padding: 0.75em 0 0 0.5em;
+                    }
 
-                .emoji-picker {
-                    li {
-                        float: left;
+                    .emoji-lists__container {
+                        background-color: var(--background);
+                        overflow-x: hidden;
+                    }
+
+                    .emoji-picker {
+                        li {
+                            float: left;
+                        }
                     }
                 }
-                display: flex;
-                flex-direction: column;
             }
             .emoji-skintone-picker {
                 display: flex;

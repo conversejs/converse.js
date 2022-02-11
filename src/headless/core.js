@@ -137,47 +137,9 @@ export const api = _converse.api = {
          * @method reconnect
          * @memberOf _converse.api.connection
          */
-        async reconnect () {
-            const conn_status = _converse.connfeedback.get('connection_status');
-
-            if (api.settings.get("authentication") === _converse.ANONYMOUS) {
-                await tearDown();
-                await clearSession();
-            }
-            if (conn_status === Strophe.Status.CONNFAIL) {
-                // When reconnecting with a new transport, we call setUserJID
-                // so that a new resource is generated, to avoid multiple
-                // server-side sessions with the same resource.
-                //
-                // We also call `_proto._doDisconnect` so that connection event handlers
-                // for the old transport are removed.
-                if (api.connection.isType('websocket') && api.settings.get('bosh_service_url')) {
-                    await setUserJID(_converse.bare_jid);
-                    _converse.connection._proto._doDisconnect();
-                    _converse.connection._proto = new Strophe.Bosh(_converse.connection);
-                    _converse.connection.service = api.settings.get('bosh_service_url');
-                } else if (api.connection.isType('bosh') && api.settings.get("websocket_url")) {
-                    if (api.settings.get("authentication") === _converse.ANONYMOUS) {
-                        // When reconnecting anonymously, we need to connect with only
-                        // the domain, not the full JID that we had in our previous
-                        // (now failed) session.
-                        await setUserJID(api.settings.get("jid"));
-                    } else {
-                        await setUserJID(_converse.bare_jid);
-                    }
-                    _converse.connection._proto._doDisconnect();
-                    _converse.connection._proto = new Strophe.Websocket(_converse.connection);
-                    _converse.connection.service = api.settings.get("websocket_url");
-                }
-            } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === _converse.ANONYMOUS) {
-                // When reconnecting anonymously, we need to connect with only
-                // the domain, not the full JID that we had in our previous
-                // (now failed) session.
-                await setUserJID(api.settings.get("jid"));
-            }
-
+        reconnect () {
             if (_converse.connection?.reconnecting) {
-                _converse.connection.debouncedReconnect();
+                return _converse.connection.debouncedReconnect();
             } else {
                 return _converse.connection.reconnect();
             }
@@ -571,19 +533,6 @@ export const api = _converse.api = {
 };
 
 
-export async function tearDown () {
-    await _converse.api.trigger('beforeTearDown', {'synchronous': true});
-    window.removeEventListener('click', _converse.onUserActivity);
-    window.removeEventListener('focus', _converse.onUserActivity);
-    window.removeEventListener('keypress', _converse.onUserActivity);
-    window.removeEventListener('mousemove', _converse.onUserActivity);
-    window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
-    window.clearInterval(_converse.everySecondTrigger);
-    _converse.api.trigger('afterTearDown');
-    return _converse;
-}
-
-
 _converse.shouldClearCache = () => (
     !_converse.config.get('trusted') ||
     api.settings.get('clear_cache_on_logout') ||
@@ -791,7 +740,9 @@ Object.assign(converse, {
         initPlugins(_converse);
 
         // Register all custom elements
-        api.elements.register();
+        // XXX: api.elements is defined in the UI part of Converse, outside of @converse/headless.
+        // This line should probably be moved to the UI code as part of a larger refactoring.
+        api.elements?.register();
 
         registerGlobalEventHandlers(_converse);
 

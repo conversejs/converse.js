@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2021-12-27 10:51+0000\n"
-"Last-Translator: Anas Yaseen <anasyaseen1@outlook.com>\n"
+"PO-Revision-Date: 2022-02-05 20:58+0000\n"
+"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
 "Language: ar\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -29,9 +29,8 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "طرأ هناك خطأ أثناء الربط بخادم المحادثة."
 
 #: dist/converse-no-dependencies.js:37226
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr "مُعرِّف جابر الخاص بك أو كلمتك السرية خاطئة. يرجى إعادة المحاولة ثانية."
+msgstr "عنوان XMPP و/أو كلمة المرور غير صحيحة. الرجاء المحاولة مرة أخرى."
 
 #: dist/converse-no-dependencies.js:37238
 #, javascript-format
@@ -63,9 +62,8 @@ msgstr "%1$s غائب"
 
 #: dist/converse-no-dependencies.js:42823
 #: dist/converse-no-dependencies.js:49600
-#, fuzzy
 msgid "You're not allowed to retract your message."
-msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+msgstr "لا يسمح لك بسحب رسالتك."
 
 #: dist/converse-no-dependencies.js:42825
 #: dist/converse-no-dependencies.js:49604
@@ -78,9 +76,8 @@ msgstr "لا يُسمح لك بإرسال رسالة."
 
 #: dist/converse-no-dependencies.js:42832
 #: dist/converse-no-dependencies.js:49613
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+msgstr "عذرا ، حدث خطأ أثناء محاولة إرسال رسالتك."
 
 #: dist/converse-no-dependencies.js:43158
 #, javascript-format

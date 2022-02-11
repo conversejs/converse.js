@@ -1,8 +1,9 @@
-import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
+import MUCBookmarkFormModal from './modal.js';
 import invokeMap from 'lodash-es/invokeMap';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from '@converse/headless/core';
 import { __ } from 'i18n';
+import { _converse, api, converse } from '@converse/headless/core';
+import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
 
 
 export function getHeadingButtons (view, buttons) {
@@ -11,7 +12,7 @@ export function getHeadingButtons (view, buttons) {
         const data = {
             'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
             'i18n_text': bookmarked ? __('Unbookmark') : __('Bookmark'),
-            'handler': ev => view.toggleBookmark(ev),
+            'handler': ev => view.showBookmarkModal(ev),
             'a_class': 'toggle-bookmark',
             'icon_class': 'fa-bookmark',
             'name': 'bookmark'
@@ -33,11 +34,10 @@ export function removeBookmarkViaEvent (ev) {
     }
 }
 
-export async function addBookmarkViaEvent (ev) {
+export function addBookmarkViaEvent (ev) {
     ev.preventDefault();
     const jid = ev.target.getAttribute('data-room-jid');
-    const room = await api.rooms.open(jid, { 'bring_to_foreground': true });
-    room.session.save('view', converse.MUC.VIEWS.BOOKMARK);
+    api.modal.show(MUCBookmarkFormModal, { jid }, ev);
 }
 
 

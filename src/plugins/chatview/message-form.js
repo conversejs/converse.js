@@ -14,6 +14,7 @@ export default class MessageForm extends ElementView {
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
+        this.listenTo(this.model, 'change:composing_spoiler', () => this.render());
         this.render();
     }
 

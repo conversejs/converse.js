@@ -20,7 +20,7 @@ import {
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
 } from '@converse/headless/shared/parsers';
-import { api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core';
 
 const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;
@@ -126,7 +126,7 @@ function getOccupantID (stanza, chatbox) {
  * @param { _converse } _converse
  * @returns { Promise<MUCMessageAttributes|Error> }
  */
-export async function parseMUCMessage (stanza, chatbox, _converse) {
+export async function parseMUCMessage (stanza, chatbox) {
     throwErrorIfInvalidForward(stanza);
 
     const selector = `[xmlns="${NS.MAM}"] > forwarded[xmlns="${NS.FORWARD}"] > message`;

@@ -77,19 +77,19 @@ export function preMUCJoinMAMFetch (muc) {
 export async function handleMAMResult (model, result, query, options, should_page) {
     await api.emojis.initialize();
     const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
-    result.messages = result.messages.map(s =>
-        is_muc ? parseMUCMessage(s, model, _converse) : parseMessage(s, _converse)
-    );
+    const doParseMessage = s => is_muc ? parseMUCMessage(s, model) : parseMessage(s);
+    const messages = await Promise.all(result.messages.map(doParseMessage));
+    result.messages = messages;
 
     /**
      * Synchronous event which allows listeners to first do some
      * work based on the MAM result before calling the handlers here.
      * @event _converse#MAMResult
      */
-    const data = { query, 'chatbox': model, 'messages': result.messages };
+    const data = { query, 'chatbox': model, messages };
     await api.trigger('MAMResult', data, { 'synchronous': true });
 
-    result.messages.forEach(m => model.queueMessage(m));
+    messages.forEach(m => model.queueMessage(m));
     if (result.error) {
         const event_id = (result.error.retry_event_id = u.getUniqueId());
         api.listen.once(event_id, () => fetchArchivedMessages(model, options, should_page));

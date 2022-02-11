@@ -14,12 +14,14 @@ class MUCBookmarkForm extends CustomElement {
     connectedCallback () {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.jid);
+        this.bookmark  = _converse.bookmarks.findWhere({ 'jid': this.model.get('jid') });
     }
 
     render () {
         return tpl_muc_bookmark_form(
             Object.assign(this.model.toJSON(), {
-                'onCancel': ev => this.closeBookmarkForm(ev),
+                'bookmark': this.bookmark,
+                'onCancel': ev => this.removeBookmark(ev),
                 'onSubmit': ev => this.onBookmarkFormSubmitted(ev)
             })
         );
@@ -36,9 +38,16 @@ class MUCBookmarkForm extends CustomElement {
         this.closeBookmarkForm(ev);
     }
 
+    removeBookmark (ev) {
+        this.bookmark?.destroy();
+        this.closeBookmarkForm(ev);
+    }
+
     closeBookmarkForm (ev) {
         ev.preventDefault();
-        this.model.session.save('view', null);
+        const evt = document.createEvent('Event');
+        evt.initEvent('hide.bs.modal', true, true);
+        this.dispatchEvent(evt);
     }
 }
 

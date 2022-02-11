@@ -19,7 +19,27 @@ class MUCNicknameForm extends CustomElement {
     }
 
     render () {
-        return tpl_muc_nickname_form(this.model);
+        return tpl_muc_nickname_form(this);
+    }
+
+    submitNickname (ev) {
+        ev.preventDefault();
+        const nick = ev.target.nick.value.trim();
+        if (!nick) {
+            return;
+        }
+        if (this.model.isEntered()) {
+            this.model.setNickname(nick);
+            this.closeModal();
+        } else {
+            this.model.join(nick);
+        }
+    }
+
+    closeModal () {
+        const evt = document.createEvent('Event');
+        evt.initEvent('hide.bs.modal', true, true);
+        this.dispatchEvent(evt);
     }
 }
 

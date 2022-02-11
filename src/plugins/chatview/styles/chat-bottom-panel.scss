@@ -35,6 +35,8 @@
 
                 .spoiler-hint {
                     width: 100%;
+                    color: var(--foreground);
+                    background-color: var(--background);
                 }
 
                 .chat-textarea, input {

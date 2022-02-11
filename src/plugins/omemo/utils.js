@@ -304,7 +304,7 @@ async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
     const from_jid = getJIDForDecryption(attrs);
     const devicelist = await _converse.devicelists.getDeviceList(from_jid);
     const encrypted = attrs.encrypted;
-    let device = devicelist.get(encrypted.device_id);
+    let device = devicelist.devices.get(encrypted.device_id);
     if (!device) {
         device = await devicelist.devices.create({ 'id': encrypted.device_id, 'jid': from_jid }, { 'promise': true });
     }
@@ -609,7 +609,10 @@ async function fetchDeviceLists () {
     return Promise.all(promises);
 }
 
-export async function initOMEMO () {
+export async function initOMEMO (reconnecting) {
+    if (reconnecting) {
+        return;
+    }
     if (!_converse.config.get('trusted') || api.settings.get('clear_cache_on_logout')) {
         log.warn('Not initializing OMEMO, since this browser is not trusted or clear_cache_on_logout is set to true');
         return;

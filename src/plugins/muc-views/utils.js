@@ -124,8 +124,6 @@ export function getChatRoomBodyTemplate (o) {
 
     if (view === converse.MUC.VIEWS.CONFIG) {
         return html`<converse-muc-config-form class="muc-form-container" jid="${jid}"></converse-muc-config-form>`;
-    } else if (view === converse.MUC.VIEWS.BOOKMARK) {
-        return html`<converse-muc-bookmark-form class="muc-form-container" jid="${jid}"></converse-muc-bookmark-form>`;
     } else {
         return html`
             ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }

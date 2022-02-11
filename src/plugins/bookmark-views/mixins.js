@@ -1,4 +1,5 @@
-import { _converse, converse } from '@converse/headless/core';
+import MUCBookmarkFormModal from './modal.js';
+import { _converse, api, converse } from '@converse/headless/core';
 
 const { u } = converse.env;
 
@@ -30,13 +31,9 @@ export const bookmarkableChatRoomView = {
         u.showElement(this.bookmark_form.el);
     },
 
-    toggleBookmark (ev) {
+    showBookmarkModal(ev) {
         ev?.preventDefault();
-        const models = _converse.bookmarks.where({ 'jid': this.model.get('jid') });
-        if (!models.length) {
-            this.model.session.set('view', converse.MUC.VIEWS.BOOKMARK);
-        } else {
-            models.forEach(model => model.destroy());
-        }
+        const jid = this.model.get('jid');
+        api.modal.show(MUCBookmarkFormModal, { jid }, ev);
     }
 };

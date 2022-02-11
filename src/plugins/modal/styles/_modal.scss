@@ -5,6 +5,23 @@
 .conversejs {
     @import "bootstrap/scss/modal";
 
+    .modal-content {
+        background-color: var(--modal-background-color);
+    }
+
+    .modal-body {
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+
+    .occupant-details {
+        li {
+            margin-bottom: 1em;
+        }
+    }
+
     #converse-modals {
         .modal {
             .modal-content {

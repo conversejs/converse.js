@@ -1,7 +1,7 @@
 import { ElementView } from '@converse/skeletor/src/element.js';
-import MUCInviteModal from 'modals/muc-invite.js';
+import MUCInviteModal from './modals/muc-invite.js';
 import NicknameModal from './modals/nickname.js';
-import RoomDetailsModal from 'modals/muc-details.js';
+import RoomDetailsModal from './modals/muc-details.js';
 import debounce from 'lodash-es/debounce';
 import tpl_muc_head from './templates/muc-head.js';
 import { Model } from '@converse/skeletor/src/model.js';

@@ -1,11 +1,10 @@
 import ModeratorToolsModal from './modals/moderator-tools.js';
-import OccupantModal from 'modals/occupant.js';
+import OccupantModal from './modals/occupant.js';
 import log from "@converse/headless/log";
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit";
-import { parseMessageForCommands } from 'plugins/chatview/utils.js';
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
 const { Strophe, $iq, sizzle, u } = converse.env;

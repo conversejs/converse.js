@@ -1,16 +1,16 @@
 import 'shared/autocomplete/index.js';
-import BootstrapModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/base.js";
 import tpl_muc_invite_modal from "./templates/muc-invite.js";
 import { _converse, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 
 
-export default BootstrapModal.extend({
+export default BaseModal.extend({
     id: "muc-invite-modal",
 
     initialize () {
-        BootstrapModal.prototype.initialize.apply(this, arguments);
+        BaseModal.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change', this.render);
         this.initInviteWidget();
     },

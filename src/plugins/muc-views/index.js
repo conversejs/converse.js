@@ -8,7 +8,7 @@ import 'plugins/modal/index.js';
 import './adhoc-commands.js';
 import MUCView from './muc.js';
 import { api, converse } from '@converse/headless/core';
-import { clearHistory, fetchAndSetMUCDomain } from './utils.js';
+import { clearHistory, fetchAndSetMUCDomain, parseMessageForMUCCommands } from './utils.js';
 
 import './styles/index.scss';
 
@@ -80,5 +80,7 @@ converse.plugins.add('converse-muc-views', {
                 clearHistory(model.get('jid'));
             }
         });
+
+        api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
     }
 });

@@ -296,7 +296,9 @@ export function showOccupantModal (ev, occupant) {
 
 
 export function parseMessageForMUCCommands (data, handled) {
-    if (handled || (
+    const model = data.model;
+    if (handled ||
+            model.get('type') !== _converse.CHATROOMS_TYPE || (
             api.settings.get('muc_disable_slash_commands') &&
             !Array.isArray(api.settings.get('muc_disable_slash_commands'))
     )) {
@@ -310,7 +312,6 @@ export function parseMessageForMUCCommands (data, handled) {
         return false;
     }
 
-    const model = data.model;
     const args = text.slice(('/' + command).length + 1).trim();
     const allowed_commands = model.getAllowedCommands() ?? [];
 

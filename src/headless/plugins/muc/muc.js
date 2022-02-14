@@ -137,7 +137,8 @@ const ChatRoomMixin = {
     async restoreFromCache () {
         if (this.isEntered() && (await this.isJoined())) {
             // We've restored the room from cache and we're still joined.
-            await new Promise(resolve => this.features.fetch({ 'success': resolve, 'error': resolve }));
+            await new Promise(r => this.features.fetch({ 'success': r, 'error': r }));
+            await new Promise(r => this.config.fetch({ 'success': r, 'error': r }));
             await this.fetchOccupants().catch(e => log.error(e));
             await this.fetchMessages().catch(e => log.error(e));
             return true;
@@ -387,8 +388,8 @@ const ChatRoomMixin = {
         this.features.browserStorage = _converse.createStore(id, 'session');
         this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
-        id = `converse.muc-config-{_converse.bare_jid}-${this.get('jid')}`;
-        this.config = new Model();
+        id = `converse.muc-config-${_converse.bare_jid}-${this.get('jid')}`;
+        this.config = new Model({ id });
         this.config.browserStorage = _converse.createStore(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     },
@@ -1139,7 +1140,7 @@ const ChatRoomMixin = {
         const fields = await api.disco.getFields(this.get('jid'));
         const config = fields.reduce((config, f) => {
             const name = f.get('var');
-            if (name && name.startsWith('muc#roominfo_')) {
+            if (name?.startsWith('muc#roominfo_')) {
                 config[name.replace('muc#roominfo_', '')] = f.get('value');
             }
             return config;

@@ -1,6 +1,8 @@
 import BaseModal from "plugins/modal/base.js";
 import tpl_muc_details from "./templates/muc-details.js";
 
+import '../styles/muc-details.scss';
+
 
 export default BaseModal.extend({
     id: "muc-details-modal",

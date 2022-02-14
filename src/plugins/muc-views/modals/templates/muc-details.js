@@ -7,7 +7,7 @@ const subject = (o) => {
     const i18n_topic = __('Topic');
     const i18n_topic_author = __('Topic author');
     return html`
-        <p class="room-info"><strong>${i18n_topic}</strong>: ${o.subject.text}</p>
+        <p class="room-info"><strong>${i18n_topic}</strong>: <converse-rich-text text=${o.subject.text} render_styling></converse-rich-text></p>
         <p class="room-info"><strong>${i18n_topic_author}</strong>: ${o.subject && o.subject.author}</p>
     `;
 }
@@ -20,7 +20,7 @@ export default (model) => {
     const features = model.features.toJSON();
     const num_occupants = model.occupants.filter(o => o.get('show') !== 'offline').length;
 
-    const i18n_address =  __('Groupchat XMPP address');
+    const i18n_address =  __('XMPP address');
     const i18n_archiving = __('Message archiving');
     const i18n_archiving_help = __('Messages are archived on the server');
     const i18n_desc = __('Description');
@@ -61,8 +61,8 @@ export default (model) => {
                     <span class="modal-alert"></span>
                     <div class="room-info">
                         <p class="room-info"><strong>${i18n_name}</strong>: ${o.name}</p>
-                        <p class="room-info"><strong>${i18n_address}</strong>: ${o.jid}</p>
-                        <p class="room-info"><strong>${i18n_desc}</strong>: ${config.description}</p>
+                        <p class="room-info"><strong>${i18n_address}</strong>: <converse-rich-text text="xmpp:${o.jid}?join"></converse-rich-text></p>
+                        <p class="room-info"><strong>${i18n_desc}</strong>: <converse-rich-text text="${config.description}" render_styling></converse-rich-text></p>
                         ${ (o.subject) ? subject(o) : '' }
                         <p class="room-info"><strong>${i18n_online_users}</strong>: ${num_occupants}</p>
                         <p class="room-info"><strong>${i18n_features}</strong>:

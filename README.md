@@ -176,3 +176,8 @@ We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapa
     <img alt="Original Energie" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/originalenergie-black.png" width="200">
   </a>
 </p>
+<p>
+  <a href="https://primesound.org/?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Prime Sound" src="https://raw.githubusercontent.com/conversejs/media/main/logos/primesound.png" width="200">
+  </a>
+</p>

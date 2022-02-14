@@ -152,7 +152,7 @@ export function getOpenGraphMetadata (stanza) {
 }
 
 
-export function getMediaURLsMetadata (text) {
+export function getMediaURLsMetadata (text, offset=0) {
     const objs = [];
     if (!text) {
         return {};
@@ -169,7 +169,7 @@ export function getMediaURLsMetadata (text) {
                     url = url.slice(0, url.length-1);
                     end -= 1;
                 }
-                objs.push({ url, start, end });
+                objs.push({ url, 'start': start+offset, 'end': end+offset });
                 return url;
             },
             URL_PARSE_OPTIONS

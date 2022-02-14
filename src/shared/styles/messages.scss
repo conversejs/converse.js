@@ -133,9 +133,9 @@
                 margin-bottom: 0.5em;
             }
             .spoiler-toggle {
-                color: white;
+                color: var(--background);
                 i {
-                    color: white;
+                    color: var(--background);
                     padding-right: 0.5em;
                 }
                 &:before {

@@ -17,7 +17,7 @@ export default (el) => {
         <div class="chat-msg__spoiler-hint">
             <span class="spoiler-hint">${el.model.get('spoiler_hint')}</span>
             <a class="badge badge-info spoiler-toggle" href="#" @click=${el.toggleSpoilerMessage}>
-                <i class="fa ${el.model.get('is_spoiler_visible') ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                <converse-icon size="1em" color="var(--background)" class="fa ${el.model.get('is_spoiler_visible') ? 'fa-eye-slash' : 'fa-eye'}"></converse-icon>
                 ${ el.model.get('is_spoiler_visible') ? i18n_show_less : i18n_show }
             </a>
         </div>

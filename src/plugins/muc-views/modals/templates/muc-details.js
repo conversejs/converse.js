@@ -68,19 +68,19 @@ export default (model) => {
                         <p class="room-info"><strong>${i18n_features}</strong>:
                             <div class="chatroom-features">
                             <ul class="features-list">
-                                ${ features.passwordprotected ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-lock"></converse-icon size="1em">${i18n_password_protected} - <em>${i18n_password_help}</em></li>` : '' }
-                                ${ features.unsecured ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-unlock"></converse-icon size="1em">${i18n_no_password_required} - <em>${i18n_no_pass_help}</em></li>` : '' }
-                                ${ features.hidden ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-eye-slash"></converse-icon size="1em">${i18n_hidden} - <em>${i18n_hidden_help}</em></li>` : '' }
-                                ${ features.public_room ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-eye"></converse-icon size="1em">${i18n_public} - <em>${o.__('This groupchat is publicly searchable') }</em></li>` : '' }
-                                ${ features.membersonly ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-address-book"></converse-icon size="1em">${i18n_members_only} - <em>${i18n_members_help}</em></li>` : '' }
-                                ${ features.open ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-globe"></converse-icon size="1em">${i18n_open} - <em>${i18n_open_help}</em></li>` : '' }
-                                ${ features.persistent ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-save"></converse-icon size="1em">${i18n_persistent} - <em>${i18n_persistent_help}</em></li>` : '' }
-                                ${ features.temporary ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-snowflake-o"></converse-icon size="1em">${i18n_temporary} - <em>${i18n_temporary_help}</em></li>` : '' }
-                                ${ features.nonanonymous ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-id-card"></converse-icon size="1em">${i18n_not_anonymous} - <em>${i18n_not_anonymous_help}</em></li>` : '' }
-                                ${ features.semianonymous ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-user-secret"></converse-icon size="1em">${i18n_semi_anon} - <em>${i18n_semi_anon_help}</em></li>` : '' }
-                                ${ features.moderated ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-gavel"></converse-icon size="1em">${i18n_moderated} - <em>${i18n_moderated_help}</em></li>` : '' }
-                                ${ features.unmoderated ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-info-circle"></converse-icon size="1em">${i18n_not_moderated} - <em>${i18n_not_moderated_help}</em></li>` : '' }
-                                ${ features.mam_enabled ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-database"></converse-icon size="1em">${i18n_archiving} - <em>${i18n_archiving_help}</em></li>` : '' }
+                                ${ features.passwordprotected ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-lock"></converse-icon>${i18n_password_protected} - <em>${i18n_password_help}</em></li>` : '' }
+                                ${ features.unsecured ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-unlock"></converse-icon>${i18n_no_password_required} - <em>${i18n_no_pass_help}</em></li>` : '' }
+                                ${ features.hidden ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-eye-slash"></converse-icon>${i18n_hidden} - <em>${i18n_hidden_help}</em></li>` : '' }
+                                ${ features.public_room ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-eye"></converse-icon>${i18n_public} - <em>${o.__('This groupchat is publicly searchable') }</em></li>` : '' }
+                                ${ features.membersonly ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-address-book"></converse-icon>${i18n_members_only} - <em>${i18n_members_help}</em></li>` : '' }
+                                ${ features.open ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-globe"></converse-icon>${i18n_open} - <em>${i18n_open_help}</em></li>` : '' }
+                                ${ features.persistent ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-save"></converse-icon>${i18n_persistent} - <em>${i18n_persistent_help}</em></li>` : '' }
+                                ${ features.temporary ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-snowflake-o"></converse-icon>${i18n_temporary} - <em>${i18n_temporary_help}</em></li>` : '' }
+                                ${ features.nonanonymous ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-id-card"></converse-icon>${i18n_not_anonymous} - <em>${i18n_not_anonymous_help}</em></li>` : '' }
+                                ${ features.semianonymous ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-user-secret"></converse-icon>${i18n_semi_anon} - <em>${i18n_semi_anon_help}</em></li>` : '' }
+                                ${ features.moderated ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-gavel"></converse-icon>${i18n_moderated} - <em>${i18n_moderated_help}</em></li>` : '' }
+                                ${ features.unmoderated ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-info-circle"></converse-icon>${i18n_not_moderated} - <em>${i18n_not_moderated_help}</em></li>` : '' }
+                                ${ features.mam_enabled ? html`<li class="feature" ><converse-icon size="1em" class="fa fa-database"></converse-icon>${i18n_archiving} - <em>${i18n_archiving_help}</em></li>` : '' }
                             </ul>
                             </div>
                         </p>

@@ -172,11 +172,6 @@ We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapa
   </a>
 </p>
 <p>
-  <a href="https://www.pluckeye.net/?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="Pluckeye" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/pluckeye.svg" width="200">
-  </a>
-</p>
-<p>
   <a href="https://originalenergie.de/?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="Original Energie" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/originalenergie-black.png" width="200">
   </a>

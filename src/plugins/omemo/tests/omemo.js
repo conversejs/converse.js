@@ -219,6 +219,7 @@ describe("The OMEMO module", function() {
         expect(view.model.messages.length).toBe(1);
         const msg = view.model.messages.at(0);
         expect(msg.get('is_ephemeral')).toBe(false)
+        expect(msg.getDisplayName()).toBe('Mercutio');
     }));
 
     it("will create a new device based on a received carbon message",

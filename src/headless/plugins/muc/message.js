@@ -14,11 +14,14 @@ const ChatRoomMessageMixin = {
             return;
         }
         if (this.get('file')) {
-            this.on('change:put', this.uploadFile, this);
+            this.on('change:put', () => this.uploadFile());
         }
-        if (!this.setTimerForEphemeralMessage()) {
-            this.setOccupant();
-        }
+        // If `type` changes from `error` to `groupchat`, we want to set the occupant. See #2733
+        this.on('change:type', () => this.setOccupant());
+        this.on('change:is_ephemeral', () => this.setTimerForEphemeralMessage());
+
+        this.setTimerForEphemeralMessage();
+        this.setOccupant();
         /**
          * Triggered once a {@link _converse.ChatRoomMessageInitialized} has been created and initialized.
          * @event _converse#chatRoomMessageInitialized
@@ -89,7 +92,7 @@ const ChatRoomMessageMixin = {
     },
 
     setOccupant () {
-        if (this.get('type') !== 'groupchat') {
+        if (this.get('type') !== 'groupchat' || this.isEphemeral() || this.occupant) {
             return;
         }
         const chatbox = this?.collection?.chatbox;

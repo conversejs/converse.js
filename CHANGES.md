@@ -5,9 +5,10 @@
 - Updated translations: af, ar, es, eu, fr, gl, he, lt
 - Increased stanza timeout from 10 to 20 seconds
 - Replace various font icons with SVG icons
+- Fix bug where MUC config wasn't persisted across page loads
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2627: Spoiler toggles only after switching to another tab and back
-- #2733: Fix OMEMO race condition related to automatic reconnection
+- #2733: Fix OMEMO race condition related to automatic reconnection and SMACKS
 - #2733: Wait for decrypted/parsed message before queuing to UI
 - #2751: Media not rendered when Converse runs in a browser extension
 - #2786: Fix webpack configuration not working on Windows OS

@@ -460,6 +460,7 @@ const ChatBox = ModelWithContact.extend({
                 error_type: undefined,
                 is_archived: attrs.is_archived,
                 is_ephemeral: false,
+                is_error: undefined,
             });
         } else {
             return { is_archived: attrs.is_archived };

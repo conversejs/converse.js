@@ -521,7 +521,7 @@ describe("A Chat Message", function () {
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         expect(msg.textContent).toEqual(message);
         await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '') ===
-            'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
+        'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
     }));
 
     it("will remove url query parameters from hyperlinks as set",
@@ -550,6 +550,22 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '') ===
             'Another message with a hyperlink with forbidden query params: '+
             '<a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1">https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1</a>');
+    }));
+
+    it("properly renders URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        await mock.openControlBox(_converse);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        const message = 'https://mov.im/?node/pubsub.movim.eu/Dino/urn-uuid-979bd24f-0bf3-5099-9fa7-510b9ce9a884';
+        await mock.sendMessage(view, message);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
+        const anchor = await u.waitUntil(() => msg.querySelector('a'));
+        expect(anchor.innerHTML.replace(/<!-.*?->/g, '')).toBe(message);
+        expect(anchor.getAttribute('href')).toBe(message);
     }));
 
     it("will render newlines", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -595,7 +611,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
         await u.waitUntil(() => {
             const text = view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!-.*?->/g, '');
-            return text === 'Hey\nHave you heard\n\u200B\nthe news?\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>';
+            return text === 'Hey\nHave you heard\n\u200B\nthe news?\n<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>';
         });
     }));
 

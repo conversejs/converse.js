@@ -14,6 +14,7 @@
 - #2786: Fix webpack configuration not working on Windows OS
 - #2788: `TypeError` when trying to use `@converse/headless`
 - #2789: Implement new hook `parseMessageForCommands` for plugins to add custom commands
+- #2814: Links are mangled on open/copy
 
 
 ## 9.0.0 (2021-11-26)

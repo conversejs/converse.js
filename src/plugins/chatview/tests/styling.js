@@ -106,7 +106,7 @@ describe("An incoming chat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<span class="styling-directive">~</span>'+
-            '<del>Check out this site: <a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a></del>'+
+            '<del>Check out this site: <a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a></del>'+
             '<span class="styling-directive">~</span>');
 
         // Images inside directives aren't shown inline
@@ -182,7 +182,7 @@ describe("An incoming chat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             'Go to <span class="styling-directive">_</span>'+
-            '<i><a target="_blank" rel="noopener" href="https://converse_js.org/">https://converse_js.org</a></i>'+
+            '<i><a target="_blank" rel="noopener" href="https://converse_js.org">https://converse_js.org</a></i>'+
             '<span class="styling-directive">_</span> <span class="styling-directive">_</span><i>please</i><span class="styling-directive">_</span>');
 
     }));

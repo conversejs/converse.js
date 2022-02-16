@@ -64,6 +64,7 @@
     --chatroom-separator-border-bottom: 0.15em solid var(--muc-color);
     --chatroom-message-input-border-top: 0.15em solid var(--muc-color);
     --chatroom-head-bg-color-dark: var(--muc-color);
+    --chatroom-correcting-color: var(--comment);
     --muc-toolbar-btn-disabled-color: var(--disabled-color);
 
     --occupants-border-left: 0.15em solid var(--muc-color);
@@ -77,6 +78,7 @@
     --chat-head-border-bottom: 0.15em solid var(--chat-color);
     --chatbox-message-input-border-top: 0.15em solid var(--chat-color);
     --chat-toolbar-btn-color: var(--chat-color);
+    --chat-correcting-color: var(--comment);
 
     --toolbar-btn-text-color: var(--background);
 

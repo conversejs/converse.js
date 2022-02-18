@@ -21,18 +21,14 @@ export default {
             if (child_nodes && !Array.isArray(child_nodes)) {
                 child_nodes = [child_nodes];
             }
-            const model= _converse.xmppstatus
+            const model = _converse.xmppstatus
             const presence = await model.constructPresence(type, to, status);
             child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             api.send(presence);
 
             if (['away', 'chat', 'dnd', 'online', 'xa', undefined].includes(type)) {
                 const mucs = await api.rooms.get();
-                mucs.forEach(async muc => {
-                    const presence = await model.constructPresence(type, muc.getRoomJIDAndNick(), status);
-                    child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
-                    muc.sendStatusPresence(presence);
-                });
+                mucs.forEach(muc => muc.sendStatusPresence(type, status, child_nodes));
             }
         }
     },

@@ -175,7 +175,7 @@ const ChatRoomMixin = {
             }
             return this;
         }
-        api.send(await this.constructPresence(password));
+        api.send(await this.constructJoinPresence(password));
         return this;
     },
 
@@ -191,7 +191,7 @@ const ChatRoomMixin = {
         return this.join();
     },
 
-    async constructPresence (password) {
+    async constructJoinPresence (password) {
         let stanza = $pres({
             'id': getUniqueId(),
             'from': _converse.connection.jid,
@@ -205,6 +205,17 @@ const ChatRoomMixin = {
         if (password) {
             stanza.cnode(Strophe.xmlElement('password', [], password));
         }
+        stanza.up(); // Go one level up, out of the `x` element.
+
+        const status = _converse.xmppstatus.get('status');
+        if (['away', 'chat', 'dnd', 'online', 'xa'].includes(status)) {
+            stanza.c('show').t(status).up();
+        }
+        const status_message = _converse.xmppstatus.get('status_message');
+        if (status_message) {
+            stanza.c('status').t(status_message).up();
+        }
+
         stanza = await api.hook('constructedMUCPresence', null, stanza);
         return stanza;
     },
@@ -271,10 +282,9 @@ const ChatRoomMixin = {
             if (conn_status === roomstatus.ENTERED &&
                     api.settings.get('muc_subscribe_to_rai') &&
                     this.getOwnAffiliation() !== 'none') {
-                if (conn_status !== roomstatus.DISCONNECTED && conn_status !== roomstatus.CLOSING) {
-                    this.sendMarkerForLastMessage('received', true);
-                    await this.leave();
-                }
+
+                this.sendMarkerForLastMessage('received', true);
+                await this.leave();
                 this.enableRAI();
             }
         } else {
@@ -869,7 +879,7 @@ const ChatRoomMixin = {
             await new Promise(resolve =>
                 this.features.destroy({
                     'success': resolve,
-                    'error': (m, e) => { log.error(e); resolve(); }
+                    'error': (_, e) => { log.error(e); resolve(); }
                 })
             );
         }
@@ -878,7 +888,7 @@ const ChatRoomMixin = {
         if (disco_entity) {
             await new Promise(resolve => disco_entity.destroy({
                 'success': resolve,
-                'error': (m, e) => { log.error(e); resolve(); }
+                'error': (_, e) => { log.error(e); resolve(); }
             }));
         }
         u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
@@ -899,7 +909,7 @@ const ChatRoomMixin = {
         await new Promise(resolve =>
             this.session.destroy({
                 'success': resolve,
-                'error': (m, e) => { log.error(e); resolve(); }
+                'error': (_, e) => { log.error(e); resolve(); }
             })
         );
         return _converse.ChatBox.prototype.close.call(this);
@@ -1918,14 +1928,19 @@ const ChatRoomMixin = {
     },
 
     /**
-     * When sending a status update presence (i.e. based on the `<show>`
-     * element), we need to first make sure that the MUC is connected,
-     * otherwise we will get an error from the MUC service.
+     * Sends a status update presence (i.e. based on the `<show>` element)
      * @method _converse.ChatRoom#sendStatusPresence
+     * @param { String } type
+     * @param { String } [status] - An optional status message
+     * @param { Element[]|Strophe.Builder[]|Element|Strophe.Builder } [child_nodes]
+     *  Nodes(s) to be added as child nodes of the `presence` XML element.
      */
-    async sendStatusPresence (presence) {
-        await this.rejoinIfNecessary();
-        api.send(presence);
+    async sendStatusPresence (type, status, child_nodes) {
+        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+            const presence = await _converse.xmppstatus.constructPresence(type, this.getRoomJIDAndNick(), status);
+            child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
+            api.send(presence);
+        }
     },
 
     /**

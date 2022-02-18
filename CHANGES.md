@@ -11,6 +11,7 @@
 - #2733: Fix OMEMO race condition related to automatic reconnection and SMACKS
 - #2733: Wait for decrypted/parsed message before queuing to UI
 - #2751: Media not rendered when Converse runs in a browser extension
+- #2781: Flashing error when connecting to a room
 - #2786: Fix webpack configuration not working on Windows OS
 - #2788: `TypeError` when trying to use `@converse/headless`
 - #2789: Implement new hook `parseMessageForCommands` for plugins to add custom commands

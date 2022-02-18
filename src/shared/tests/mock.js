@@ -292,7 +292,11 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
             id: u.getUniqueId()
     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
         .c('item').attrs({ affiliation, role, 'jid': _converse.bare_jid }).up()
-        .c('status').attrs({code:'110'});
+        .c('status').attrs({code:'110'}).up().up()
+
+    if (_converse.xmppstatus.get('status')) {
+       presence.c('show').t(_converse.xmppstatus.get('status'));
+    }
     _converse.connection._dataRecv(createRequest(presence));
 }
 

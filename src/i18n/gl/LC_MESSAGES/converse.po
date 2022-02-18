@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2022-02-10 13:07+0000\n"
+"PO-Revision-Date: 2022-02-19 00:09+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -634,8 +634,7 @@ msgstr "Marcar esta conversa de grupo"
 
 #: dist/converse-no-dependencies.js:61975
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr ""
-"Desexaría conectarse automáticamente ao inicio a esta conversa de grupo?"
+msgstr "Queres entrar automáticamente a esta conversa de grupo ao inicio?"
 
 #: dist/converse-no-dependencies.js:61977
 #: dist/converse-no-dependencies.js:64836
@@ -1055,7 +1054,7 @@ msgstr "Non tes unha conta para conversar?"
 
 #: dist/converse-no-dependencies.js:80443
 msgid "Log in"
-msgstr "Conectar"
+msgstr "Acceder"
 
 #: dist/converse-no-dependencies.js:80451
 msgid "Disconnected"
@@ -1063,7 +1062,7 @@ msgstr "Desconectado"
 
 #: dist/converse-no-dependencies.js:80453
 msgid "Click here to log in anonymously"
-msgstr "Pulse aquí para conectar anónimamente"
+msgstr "Preme aquí para entrar anónimamente"
 
 #: dist/converse-no-dependencies.js:80707
 msgid "Username"
@@ -1988,7 +1987,7 @@ msgstr "desconectado"
 
 #: dist/converse-no-dependencies.js:95720
 msgid "Log out"
-msgstr "Desconectar"
+msgstr "Saír"
 
 #: dist/converse-no-dependencies.js:95726
 msgid "Show details about this chat client"
@@ -2005,7 +2004,7 @@ msgstr "Pulse para cambiar o estado da conversa"
 
 #: dist/converse-no-dependencies.js:95938
 msgid "Are you sure you want to log out?"
-msgstr "Seguro que quere desconectar?"
+msgstr "Seguro que queres saír?"
 
 #: dist/converse-no-dependencies.js:95984
 #: dist/converse-no-dependencies.js:102551
@@ -2151,7 +2150,7 @@ msgstr "Por favor, escribe o provedor XMPP no que rexistrarse:"
 
 #: dist/converse-no-dependencies.js:99032
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr "Lamentámolo, non puidemos conectar co provedor escollido."
+msgstr "Lamentámolo, non puidemos conectar co provedor elexido."
 
 #: dist/converse-no-dependencies.js:99048
 msgid ""

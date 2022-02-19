@@ -22,6 +22,7 @@ export default (el) => {
             </a>
         </div>
     `;
+
     const spoiler_classes = el.model.get('is_spoiler') ? `spoiler ${el.model.get('is_spoiler_visible') ? '' : 'hidden'}` : '';
     const text = el.model.getMessageText();
     const show_oob = el.model.get('oob_url') && text !== el.model.get('oob_url');

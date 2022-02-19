@@ -15,13 +15,13 @@ export class MessageVersions extends CustomElement {
 
     render () {
         const older_versions = this.model.get('older_versions');
-        const message = this.model.get('message');
         return html`
             <h4>Older versions</h4>
-            ${Object.keys(older_versions).map(k => html`<p class="older-msg"><time>${dayjs(k).format('MMM D, YYYY, HH:mm:ss')}</time>: ${older_versions[k]}</p>`) }
+            ${ Object.keys(older_versions).map(
+                k => html`<p class="older-msg"><time>${dayjs(k).format('MMM D, YYYY, HH:mm:ss')}</time>: ${older_versions[k]}</p>`) }
             <hr/>
             <h4>Current version</h4>
-            <p>${message}</p>`;
+            <p>${this.model.getMessageText()}</p>`;
     }
 }
 

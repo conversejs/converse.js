@@ -816,59 +816,79 @@ const ChatBox = ModelWithContact.extend({
      * @method _converse.ChatBox#createMessageStanza
      * @param { _converse.Message } message - The message object
      */
-    createMessageStanza (message) {
+    async createMessageStanza (message) {
         const stanza = $msg({
                 'from': _converse.connection.jid,
                 'to': this.get('jid'),
                 'type': this.get('message_type'),
                 'id': message.get('edited') && u.getUniqueId() || message.get('msgid'),
-            }).c('body').t(message.get('message')).up()
+            }).c('body').t(message.get('body')).up()
               .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).root();
 
         if (message.get('type') === 'chat') {
             stanza.c('request', {'xmlns': Strophe.NS.RECEIPTS}).root();
         }
-        if (message.get('is_spoiler')) {
-            if (message.get('spoiler_hint')) {
-                stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}, message.get('spoiler_hint')).root();
-            } else {
-                stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}).root();
-            }
-        }
-        (message.get('references') || []).forEach(reference => {
-            const attrs = {
-                'xmlns': Strophe.NS.REFERENCE,
-                'begin': reference.begin,
-                'end': reference.end,
-                'type': reference.type,
-            }
-            if (reference.uri) {
-                attrs.uri = reference.uri;
-            }
-            stanza.c('reference', attrs).root();
-        });
 
-        if (message.get('oob_url')) {
-            stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('oob_url')).root();
+        if (!message.get('is_encrypted')) {
+            if (message.get('is_spoiler')) {
+                if (message.get('spoiler_hint')) {
+                    stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}, message.get('spoiler_hint')).root();
+                } else {
+                    stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}).root();
+                }
+            }
+            (message.get('references') || []).forEach(reference => {
+                const attrs = {
+                    'xmlns': Strophe.NS.REFERENCE,
+                    'begin': reference.begin,
+                    'end': reference.end,
+                    'type': reference.type,
+                }
+                if (reference.uri) {
+                    attrs.uri = reference.uri;
+                }
+                stanza.c('reference', attrs).root();
+            });
+
+            if (message.get('oob_url')) {
+                stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('oob_url')).root();
+            }
         }
+
         if (message.get('edited')) {
             stanza.c('replace', {
                 'xmlns': Strophe.NS.MESSAGE_CORRECT,
                 'id': message.get('msgid')
             }).root();
         }
+
         if (message.get('origin_id')) {
             stanza.c('origin-id', {'xmlns': Strophe.NS.SID, 'id': message.get('origin_id')}).root();
         }
-        return stanza;
+        stanza.root();
+        /**
+         * *Hook* which allows plugins to update an outgoing message stanza
+         * @event _converse#createMessageStanza
+         * @param { _converse.ChatBox | _converse.ChatRoom } - The chat from
+         *      which this message stanza is being sent.
+         * @param { Object } data - Message data
+         * @param { _converse.Message | _converse.ChatRoomMessage } data.message
+         *      The message object from which the stanza is created and which gets persisted to storage.
+         * @param { Strophe.Builder } data.stanza
+         *      The stanza that will be sent out, as a Strophe.Builder object.
+         *      You can use the Strophe.Builder functions to extend the stanza.
+         *      See http://strophe.im/strophejs/doc/1.4.3/files/strophe-umd-js.html#Strophe.Builder.Functions
+         */
+        const data = await api.hook('createMessageStanza', this, { message, stanza });
+        return data.stanza;
     },
 
-    getOutgoingMessageAttributes (attrs) {
+    async getOutgoingMessageAttributes (attrs) {
         const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
         const text = attrs?.body;
         const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
-        return Object.assign({}, attrs, {
+        attrs = Object.assign({}, attrs, {
             'from': _converse.bare_jid,
             'fullname': _converse.xmppstatus.get('fullname'),
             'id': origin_id,
@@ -884,6 +904,19 @@ const ChatBox = ModelWithContact.extend({
             is_spoiler,
             origin_id
         }, getMediaURLsMetadata(text));
+
+        /**
+         * *Hook* which allows plugins to update the attributes of an outgoing message.
+         * These attributes get set on the { @link _converse.Message } or
+         * { @link _converse.ChatRoomMessage } and persisted to storage.
+         * @event _converse#getOutgoingMessageAttributes
+         * @param { _converse.ChatBox | _converse.ChatRoom } chat
+         *      The chat from which this message will be sent.
+         * @param { MessageAttributes } attrs
+         *      The message attributes, from which the stanza will be created.
+         */
+        attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
+        return attrs;
     },
 
     /**
@@ -939,26 +972,38 @@ const ChatBox = ModelWithContact.extend({
      * chat.sendMessage({'body': 'hello world'});
      */
     async sendMessage (attrs) {
-        attrs = this.getOutgoingMessageAttributes(attrs);
+        attrs = await this.getOutgoingMessageAttributes(attrs);
         let message = this.messages.findWhere('correcting')
         if (message) {
             const older_versions = message.get('older_versions') || {};
-            older_versions[message.get('time')] = message.get('message');
+            older_versions[message.get('time')] = message.getMessageText();
+            const plaintext = attrs.is_encrypted ? attrs.message : undefined;
+
             message.save({
+                'body': attrs.body,
+                'message': attrs.body,
                 'correcting': false,
                 'edited': (new Date()).toISOString(),
-                'message': attrs.message,
-                'older_versions': older_versions,
-                'references': attrs.references,
                 'is_only_emojis':  attrs.is_only_emojis,
                 'origin_id': u.getUniqueId(),
-                'received': undefined
+                'received': undefined,
+                'references': attrs.references,
+                older_versions,
+                plaintext,
             });
         } else {
             this.setEditable(attrs, (new Date()).toISOString());
             message = await this.createMessage(attrs);
         }
-        api.send(this.createMessageStanza(message));
+
+        try {
+            const stanza = await this.createMessageStanza(message);
+            api.send(stanza);
+        } catch (e) {
+            message.destroy();
+            log.error(e);
+            return;
+        }
 
        /**
         * Triggered when a message is being sent out
@@ -1026,6 +1071,10 @@ const ChatBox = ModelWithContact.extend({
              * *Hook* which allows plugins to transform files before they'll be
              * uploaded. The main use-case is to encrypt the files.
              * @event _converse#beforeFileUpload
+             * @param { _converse.ChatBox | _converse.ChatRoom } chat
+             *      The chat from which this file will be uploaded.
+             * @param { File } file
+             *      The file that will be uploaded
              */
             file = await api.hook('beforeFileUpload', this, file);
 
@@ -1037,8 +1086,8 @@ const ChatBox = ModelWithContact.extend({
                     'is_ephemeral': true
                 });
             } else {
-                const attrs = Object.assign(
-                    this.getOutgoingMessageAttributes(), {
+                const initial_attrs = await this.getOutgoingMessageAttributes();
+                const attrs = Object.assign(initial_attrs, {
                     'file': true,
                     'progress': 0,
                     'slot_request_url': slot_request_url

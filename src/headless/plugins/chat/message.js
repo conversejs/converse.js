@@ -162,11 +162,14 @@ const MessageMixin = {
     },
 
     getMessageText () {
-        const { __ } = _converse;
         if (this.get('is_encrypted')) {
+            const { __ } = _converse;
             return this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
+        } else if (['groupchat', 'chat'].includes(this.get('type'))) {
+            return this.get('body');
+        } else {
+            return this.get('message');
         }
-        return this.get('message');
     },
 
     /**

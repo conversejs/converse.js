@@ -8,6 +8,7 @@
 - Fix bug where MUC config wasn't persisted across page loads
 - Add support for calling the IndexedDB `getAll` method to speed up fetching models from storage.
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
+- #2557: Allow OMEMO encrypted messages to be edited
 - #2627: Spoiler toggles only after switching to another tab and back
 - #2733: Fix OMEMO race condition related to automatic reconnection and SMACKS
 - #2733: Wait for decrypted/parsed message before queuing to UI

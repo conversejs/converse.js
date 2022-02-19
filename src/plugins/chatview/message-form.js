@@ -1,8 +1,9 @@
 import tpl_message_form from './templates/message-form.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core.js";
 import { parseMessageForCommands } from './utils.js';
+import { prefixMentions } from '@converse/headless/utils/core.js';
 
 const { u } = converse.env;
 
@@ -86,11 +87,11 @@ export default class MessageForm extends ElementView {
 
     onMessageCorrecting (message) {
         if (message.get('correcting')) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
+            this.insertIntoTextArea(prefixMentions(message), true, true);
         } else {
             const currently_correcting = this.model.messages.findWhere('correcting');
             if (currently_correcting && currently_correcting !== message) {
-                this.insertIntoTextArea(u.prefixMentions(message), true, true);
+                this.insertIntoTextArea(prefixMentions(message), true, true);
             } else {
                 this.insertIntoTextArea('', true, false);
             }

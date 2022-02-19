@@ -210,12 +210,7 @@ export const api = _converse.api = {
             // Create a chain of promises, with each one feeding its output to
             // the next. The first input is a promise with the original data
             // sent to this hook.
-            const o = events.reduce((o, e) => o.then(d => e.callback(context, d)), Promise.resolve(data));
-            o.catch(e => {
-                log.error(e)
-                throw e;
-            });
-            return o;
+            return events.reduce((o, e) => o.then(d => e.callback(context, d)), Promise.resolve(data));
         } else {
             return data;
         }

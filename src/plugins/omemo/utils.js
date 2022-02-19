@@ -24,7 +24,7 @@ import {
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
 
-const { $msg, Strophe, URI, sizzle, u } = converse.env;
+const { Strophe, URI, sizzle, u } = converse.env;
 
 export function formatFingerprint (fp) {
     fp = fp.replace(/^05/, '');
@@ -33,6 +33,49 @@ export function formatFingerprint (fp) {
         fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
     }
     return fp;
+}
+
+export function handleMessageSendError (e, chat) {
+    if (e.name === 'IQError') {
+        chat.save('omemo_supported', false);
+
+        const err_msgs = [];
+        if (sizzle(`presence-subscription-required[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`, e.iq).length) {
+            err_msgs.push(
+                __(
+                    "Sorry, we're unable to send an encrypted message because %1$s " +
+                        'requires you to be subscribed to their presence in order to see their OMEMO information',
+                    e.iq.getAttribute('from')
+                )
+            );
+        } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
+            err_msgs.push(
+                __(
+                    "Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
+                    e.iq.getAttribute('from')
+                )
+            );
+        } else {
+            err_msgs.push(__('Unable to send an encrypted message due to an unexpected error.'));
+            err_msgs.push(e.iq.outerHTML);
+        }
+        api.alert('error', __('Error'), err_msgs);
+    } else if (e.user_facing) {
+        api.alert('error', __('Error'), [e.message]);
+    }
+    throw e;
+}
+
+export function getOutgoingMessageAttributes (chat, attrs) {
+    if (chat.get('omemo_active') && attrs.body) {
+        attrs['is_encrypted'] = true;
+        attrs['plaintext'] = attrs.body;
+        attrs['body'] = __(
+            'This is an OMEMO encrypted message which your client doesn’t seem to support. ' +
+            'Find more information on https://conversations.im/omemo'
+        );
+    }
+    return attrs;
 }
 
 async function encryptMessage (plaintext) {
@@ -730,7 +773,7 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
 }
 
 
-export async function getBundlesAndBuildSessions (chatbox) {
+async function getBundlesAndBuildSessions (chatbox) {
     const no_devices_err = __('Sorry, no devices found to which we can send an OMEMO encrypted message.');
     let devices;
     if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
@@ -767,56 +810,49 @@ export async function getBundlesAndBuildSessions (chatbox) {
     return devices;
 }
 
+function encryptKey (key_and_tag, device) {
+    return getSessionCipher(device.get('jid'), device.get('id'))
+        .encrypt(key_and_tag)
+        .then(payload => ({ 'payload': payload, 'device': device }));
+}
 
-export function createOMEMOMessageStanza (chatbox, message, devices) {
-    const body = __(
-        'This is an OMEMO encrypted message which your client doesn’t seem to support. ' +
-            'Find more information on https://conversations.im/omemo'
-    );
-
-    if (!message.get('message')) {
+export async function createOMEMOMessageStanza (chat, data) {
+    let { stanza } = data;
+    const { message } = data;
+    if (!message.get('is_encrypted')) {
+        return data;
+    }
+    if (!message.get('body')) {
         throw new Error('No message body to encrypt!');
     }
-    const stanza = $msg({
-        'from': _converse.connection.jid,
-        'to': chatbox.get('jid'),
-        'type': chatbox.get('message_type'),
-        'id': message.get('msgid')
-    }).c('body').t(body).up();
+    const devices = await getBundlesAndBuildSessions(chat);
 
-    if (message.get('type') === 'chat') {
-        stanza.c('request', { 'xmlns': Strophe.NS.RECEIPTS }).up();
-    }
     // An encrypted header is added to the message for
     // each device that is supposed to receive it.
     // These headers simply contain the key that the
     // payload message is encrypted with,
     // and they are separately encrypted using the
     // session corresponding to the counterpart device.
-    stanza
-        .c('encrypted', { 'xmlns': Strophe.NS.OMEMO })
+    stanza.c('encrypted', { 'xmlns': Strophe.NS.OMEMO })
         .c('header', { 'sid': _converse.omemo_store.get('device_id') });
 
-    return omemo.encryptMessage(message.get('message')).then(obj => {
-        // The 16 bytes key and the GCM authentication tag (The tag
-        // SHOULD have at least 128 bit) are concatenated and for each
-        // intended recipient device, i.e. both own devices as well as
-        // devices associated with the contact, the result of this
-        // concatenation is encrypted using the corresponding
-        // long-standing SignalProtocol session.
-        const promises = devices
-            .filter(device => device.get('trusted') != UNTRUSTED && device.get('active'))
-            .map(device => chatbox.encryptKey(obj.key_and_tag, device));
+    const { key_and_tag, iv, payload } = await omemo.encryptMessage(message.get('plaintext'));
 
-        return Promise.all(promises)
-            .then(dicts => addKeysToMessageStanza(stanza, dicts, obj.iv))
-            .then(stanza => {
-                stanza.c('payload').t(obj.payload).up().up();
-                stanza.c('store', { 'xmlns': Strophe.NS.HINTS }).up();
-                stanza.c('encryption', { 'xmlns': Strophe.NS.EME,  namespace: Strophe.NS.OMEMO });
-                return stanza;
-            });
-    });
+    // The 16 bytes key and the GCM authentication tag (The tag
+    // SHOULD have at least 128 bit) are concatenated and for each
+    // intended recipient device, i.e. both own devices as well as
+    // devices associated with the contact, the result of this
+    // concatenation is encrypted using the corresponding
+    // long-standing SignalProtocol session.
+    const dicts = await Promise.all(devices
+        .filter(device => device.get('trusted') != UNTRUSTED && device.get('active'))
+        .map(device => encryptKey(key_and_tag, device)));
+
+    stanza = await addKeysToMessageStanza(stanza, dicts, iv);
+    stanza.c('payload').t(payload).up().up();
+    stanza.c('store', { 'xmlns': Strophe.NS.HINTS }).up();
+    stanza.c('encryption', { 'xmlns': Strophe.NS.EME,  namespace: Strophe.NS.OMEMO });
+    return { message, stanza };
 }
 
 export const omemo = {

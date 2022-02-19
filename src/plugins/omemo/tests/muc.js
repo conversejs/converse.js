@@ -139,6 +139,8 @@ describe("The OMEMO module", function() {
                      `type="groupchat" `+
                      `xmlns="jabber:client">`+
                 `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
+                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                `<origin-id id="${sent_stanza.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
                 `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
                     `<header sid="123456789">`+
                         `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+

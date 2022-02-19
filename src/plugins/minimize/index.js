@@ -12,6 +12,7 @@ import { _converse, api, converse } from '@converse/headless/core';
 import {
     addMinimizeButtonToChat,
     addMinimizeButtonToMUC,
+    initializeChat,
     maximize,
     minimize,
     onMinimizedChanged,
@@ -19,8 +20,6 @@ import {
 } from './utils.js';
 
 import './styles/minimize.scss';
-
-const { dayjs } = converse.env;
 
 
 converse.plugins.add('converse-minimize', {
@@ -56,19 +55,6 @@ converse.plugins.add('converse-minimize', {
         // New functions which don't exist yet can also be added.
 
         ChatBox: {
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.on('change:hidden', m => !m.get('hidden') && maximize(this), this);
-
-                if (this.get('id') === 'controlbox') {
-                    return;
-                }
-                this.save({
-                    'minimized': this.get('minimized') || false,
-                    'time_minimized': this.get('time_minimized') || dayjs(),
-                });
-            },
-
             maybeShow (force) {
                 if (!force && this.get('minimized')) {
                     // Must return the chatbox
@@ -112,6 +98,7 @@ converse.plugins.add('converse-minimize', {
         _converse.minimize = { trimChats, minimize, maximize };
 
         function onChatInitialized (model) {
+            initializeChat(model);
             model.on( 'change:minimized', () => onMinimizedChanged(model));
         }
 

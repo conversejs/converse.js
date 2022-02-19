@@ -1,8 +1,19 @@
 import { _converse, api, converse } from '@converse/headless/core';
 import { __ } from 'i18n';
 
-const u = converse.env.utils;
+const { dayjs, u } = converse.env;
 
+export function initializeChat (chat) {
+    chat.on('change:hidden', m => !m.get('hidden') && maximize(chat), chat);
+
+    if (chat.get('id') === 'controlbox') {
+        return;
+    }
+    chat.save({
+        'minimized': chat.get('minimized') || false,
+        'time_minimized': chat.get('time_minimized') || dayjs(),
+    });
+}
 
 function getChatBoxWidth (view) {
     if (view.model.get('id') === 'controlbox') {

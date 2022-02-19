@@ -1383,7 +1383,7 @@ const ChatRoomMixin = {
         }
         if (show_error) {
             const message = __('Forbidden: you do not have the necessary role in order to do that.');
-            this.createMessage({ message, 'type': 'error' });
+            this.createMessage({ message, 'type': 'error', 'is_ephemeral': 20000 });
         }
         return false;
     },
@@ -1435,7 +1435,7 @@ const ChatRoomMixin = {
                 const { __ } = _converse;
                 log.error(e);
                 const message = __("Error: couldn't register new nickname in members only room");
-                this.createMessage({ message, 'type': 'error' });
+                this.createMessage({ message, 'type': 'error', 'is_ephemeral': true });
                 this.set({ 'nick': old_nick });
                 return;
             }
@@ -1825,7 +1825,7 @@ const ChatRoomMixin = {
                     prev_msg?.get('type') !== 'info' ||
                     prev_msg?.get('message') !== message
                 ) {
-                    this.createMessage({ message, 'nick': attrs.nick, 'type': 'info' });
+                    this.createMessage({ message, 'nick': attrs.nick, 'type': 'info', 'is_ephemeral': true });
                 }
                 if (await this.isSubjectHidden()) {
                     this.toggleSubjectHiddenState();

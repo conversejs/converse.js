@@ -64,8 +64,10 @@ const MessageMixin = {
         if (this.ephemeral_timer) {
             clearTimeout(this.ephemeral_timer);
         }
-        if (this.isEphemeral()) {
-            this.ephemeral_timer = window.setTimeout(() => this.safeDestroy(), 10000);
+        const is_ephemeral = this.isEphemeral();
+        if (is_ephemeral) {
+            const timeout = typeof is_ephemeral === "number" ? is_ephemeral : 10000;
+            this.ephemeral_timer = window.setTimeout(() => this.safeDestroy(), timeout);
         }
     },
 

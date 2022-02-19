@@ -382,7 +382,8 @@ const ChatBox = ModelWithContact.extend({
             const msg = await this.createMessage({
                 'type': 'error',
                 'message': error.message,
-                'retry_event_id': error.retry_event_id
+                'retry_event_id': error.retry_event_id,
+                'is_ephemeral': 30000,
             });
             msg.error = error;
         }

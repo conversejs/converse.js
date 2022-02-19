@@ -30,7 +30,7 @@ describe("XEP-0198 Stream Management", function () {
         expect(_converse.session.get('smacks_enabled')).toBe(true);
 
         let IQ_stanzas = _converse.connection.IQ_stanzas;
-        await u.waitUntil(() => IQ_stanzas.length === 4);
+        await u.waitUntil(() => IQ_stanzas.length === 5);
 
         let iq = IQ_stanzas[IQ_stanzas.length-1];
         expect(Strophe.serialize(iq)).toBe(
@@ -57,13 +57,13 @@ describe("XEP-0198 Stream Management", function () {
         iq = IQ_stanzas.pop();
         expect(expected_IQs(disco_iq).includes(Strophe.serialize(disco_iq))).toBe(true);
 
-        expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(2);
-        expect(_converse.session.get('unacked_stanzas').length).toBe(5);
+        expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(3);
+        expect(_converse.session.get('unacked_stanzas').length).toBe(6);
 
         // test handling of acks
         let ack = u.toStanza(`<a xmlns="urn:xmpp:sm:3" h="2"/>`);
         _converse.connection._dataRecv(mock.createRequest(ack));
-        expect(_converse.session.get('unacked_stanzas').length).toBe(3);
+        expect(_converse.session.get('unacked_stanzas').length).toBe(4);
 
         // test handling of ack requests
         let r = u.toStanza(`<r xmlns="urn:xmpp:sm:3"/>`);
@@ -89,7 +89,7 @@ describe("XEP-0198 Stream Management", function () {
 
         ack = u.toStanza(`<a xmlns="urn:xmpp:sm:3" h="3"/>`);
         _converse.connection._dataRecv(mock.createRequest(ack));
-        expect(_converse.session.get('unacked_stanzas').length).toBe(2);
+        expect(_converse.session.get('unacked_stanzas').length).toBe(3);
 
         r = u.toStanza(`<r xmlns="urn:xmpp:sm:3"/>`);
         _converse.connection._dataRecv(mock.createRequest(r));
@@ -112,11 +112,16 @@ describe("XEP-0198 Stream Management", function () {
         expect(_converse.session.get('smacks_enabled')).toBe(true);
 
         await new Promise(resolve => _converse.api.listen.once('reconnected', resolve));
-        await u.waitUntil(() => IQ_stanzas.length === 1);
+        await u.waitUntil(() => IQ_stanzas.length === 2);
 
         // Test that unacked stanzas get resent out
         iq = IQ_stanzas.pop();
         expect(Strophe.serialize(iq)).toBe(`<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
+
+        iq = IQ_stanzas.pop();
+        expect(Strophe.serialize(iq)).toBe(
+            `<iq from="romeo@montague.lit" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+            `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
 
         expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);
     }));

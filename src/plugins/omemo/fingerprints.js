@@ -1,6 +1,6 @@
 import tpl_fingerprints from './templates/fingerprints.js';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from "@converse/headless/core";
+import { api } from "@converse/headless/core";
 
 export class Fingerprints extends CustomElement {
 
@@ -11,7 +11,7 @@ export class Fingerprints extends CustomElement {
     }
 
     async initialize () {
-        this.devicelist = await _converse.devicelists.getDeviceList(this.jid);
+        this.devicelist = await api.omemo.devicelists.get(this.jid, true);
         this.listenTo(this.devicelist.devices, 'change:bundle', this.requestUpdate);
         this.listenTo(this.devicelist.devices, 'change:trusted', this.requestUpdate);
         this.listenTo(this.devicelist.devices, 'remove', this.requestUpdate);

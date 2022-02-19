@@ -43,7 +43,7 @@ const DeviceList = Model.extend({
                 this.destroy();
             }
             if (this.get('jid') === _converse.bare_jid) {
-                await this.publishCurrentDevice(ids);
+                this.publishCurrentDevice(ids);
             }
         }
     },
@@ -95,23 +95,14 @@ const DeviceList = Model.extend({
             'type': 'get',
             'from': _converse.bare_jid,
             'to': this.get('jid')
-        })
-            .c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
-            .c('items', { 'node': Strophe.NS.OMEMO_DEVICELIST });
+        }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
+          .c('items', { 'node': Strophe.NS.OMEMO_DEVICELIST });
 
-        let iq;
-        try {
-            iq = await api.sendIQ(stanza);
-        } catch (e) {
-            log.error(e);
-            return [];
-        }
+        const iq = await api.sendIQ(stanza);
         const selector = `list[xmlns="${Strophe.NS.OMEMO}"] device`;
         const device_ids = sizzle(selector, iq).map(d => d.getAttribute('id'));
-        await Promise.all(
-            device_ids.map(id => this.devices.create({ id, 'jid': this.get('jid') }, { 'promise': true }))
-        );
-        return device_ids;
+        const jid = this.get('jid');
+        return Promise.all(device_ids.map(id => this.devices.create({ id, jid }, { 'promise': true })));
     },
 
     /**

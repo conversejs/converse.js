@@ -302,7 +302,7 @@ function getJIDForDecryption (attrs) {
 
 async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
     const from_jid = getJIDForDecryption(attrs);
-    const devicelist = await _converse.devicelists.getDeviceList(from_jid);
+    const devicelist = await api.omemo.devicelists.get(from_jid, true);
     const encrypted = attrs.encrypted;
     let device = devicelist.devices.get(encrypted.device_id);
     if (!device) {
@@ -446,14 +446,15 @@ export async function generateFingerprint (device) {
 
 export async function getDevicesForContact (jid) {
     await api.waitUntil('OMEMOInitialized');
-    const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({ 'jid': jid });
+    const devicelist = await api.omemo.devicelists.get(jid, true);
     await devicelist.fetchDevices();
     return devicelist.devices;
 }
 
-export function generateDeviceID () {
+export async function generateDeviceID () {
     /* Generates a device ID, making sure that it's unique */
-    const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
+    const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
+    const existing_ids = devicelist.devices.pluck('id');
     let device_id = libsignal.KeyHelper.generateRegistrationId();
 
     // Before publishing a freshly generated device id for the first time,
@@ -519,7 +520,7 @@ async function updateBundleFromStanza (stanza) {
     const device_id = items_el.getAttribute('node').split(':')[1];
     const jid = stanza.getAttribute('from');
     const bundle_el = sizzle(`item > bundle`, items_el).pop();
-    const devicelist = await _converse.devicelists.getDeviceList(jid);
+    const devicelist = await api.omemo.devicelists.get(jid, true);
     const device = devicelist.devices.get(device_id) || devicelist.devices.create({ 'id': device_id, jid });
     device.save({ 'bundle': parseBundle(bundle_el) });
 }
@@ -532,7 +533,7 @@ async function updateDevicesFromStanza (stanza) {
     const device_selector = `item list[xmlns="${Strophe.NS.OMEMO}"] device`;
     const device_ids = sizzle(device_selector, items_el).map(d => d.getAttribute('id'));
     const jid = stanza.getAttribute('from');
-    const devicelist = await _converse.devicelists.getDeviceList(jid);
+    const devicelist = await api.omemo.devicelists.get(jid, true);
     const devices = devicelist.devices;
     const removed_ids = difference(devices.pluck('id'), device_ids);
 
@@ -578,35 +579,29 @@ export function registerPEPPushHandler () {
     );
 }
 
-export function restoreOMEMOSession () {
+export async function restoreOMEMOSession () {
     if (_converse.omemo_store === undefined) {
         const id = `converse.omemosession-${_converse.bare_jid}`;
         _converse.omemo_store = new _converse.OMEMOStore({ id });
         initStorage(_converse.omemo_store, id);
     }
-    return _converse.omemo_store.fetchSession();
+    await _converse.omemo_store.fetchSession();
 }
 
 async function fetchDeviceLists () {
-    _converse.devicelists = new _converse.DeviceLists();
     const id = `converse.devicelists-${_converse.bare_jid}`;
+    _converse.devicelists = new _converse.DeviceLists({ id });
     initStorage(_converse.devicelists, id);
     await new Promise(resolve => {
         _converse.devicelists.fetch({
             'success': resolve,
-            'error': (m, e) => {
-                log.error(e);
-                resolve();
-            }
+            'error': (m, e) => { log.error(e); resolve(); }
         })
     });
-    const promises = _converse.devicelists.map(l => l.initialized);
-    if (!_converse.devicelists.get(_converse.bare_jid)) {
-        // Create own device list if we none was restored
-        const own_list = await _converse.devicelists.create({ 'jid': _converse.bare_jid }, { 'promise': true });
-        return Promise.all([...promises, own_list.initialized]);
-    }
-    return Promise.all(promises);
+    // Call API method to wait for our own device list to be fetched from the
+    // server or to be created. If we have no pre-existing OMEMO session, this
+    // will cause a new device and bundle to be generated and published.
+    await api.omemo.devicelists.get(_converse.bare_jid, true);
 }
 
 export async function initOMEMO (reconnecting) {
@@ -748,7 +743,8 @@ export async function getBundlesAndBuildSessions (chatbox) {
             err.user_facing = true;
             throw err;
         }
-        const own_devices = _converse.devicelists.get(_converse.bare_jid).devices;
+        const own_list = await api.omemo.devicelists.get(_converse.bare_jid)
+        const own_devices = own_list.devices;
         devices = [...own_devices.models, ...their_devices.models];
     }
     // Filter out our own device

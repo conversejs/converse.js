@@ -19,6 +19,29 @@ export default {
         },
 
         /**
+         * The "devicelists" namespace groups methods related to OMEMO device lists
+         *
+         * @namespace _converse.api.omemo.devicelists
+         * @memberOf _converse.api.omemo
+         */
+        'devicelists': {
+            /**
+             * Returns the {@link _converse.DeviceList} for a particular JID.
+             * The device list will be created if it doesn't exist already.
+             * @method _converse.api.omemo.devicelists.get
+             * @param { String } jid - The Jabber ID for which the device list will be returned.
+             * @param { bool } create=false - Set to `true` if the device list
+             *      should be created if it cannot be found.
+             */
+            async get (jid, create=false) {
+                const list = _converse.devicelists.get(jid) ||
+                    (create ? _converse.devicelists.create({ jid }) : null);
+                await list.initialized;
+                return list;
+            }
+        },
+
+        /**
          * The "bundle" namespace groups methods relevant to the user's
          * OMEMO bundle.
          *
@@ -35,7 +58,8 @@ export default {
             'generate': async () => {
                 await api.waitUntil('OMEMOInitialized');
                 // Remove current device
-                const devicelist = _converse.devicelists.get(_converse.bare_jid);
+                const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
+
                 const device_id = _converse.omemo_store.get('device_id');
                 if (device_id) {
                     const device = devicelist.devices.get(device_id);

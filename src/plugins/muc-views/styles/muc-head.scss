@@ -37,7 +37,7 @@
             a, a:visited, a:hover, a:not([href]):not([tabindex]) {
                 &.chatbox-btn {
                     &.fa {
-                        color: var(--chat-head-text-color);
+                        color: var(--chatroom-head-color);
                         &.button-on:before {
                             color: var(--chatroom-head-button-color);
                         }

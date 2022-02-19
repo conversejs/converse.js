@@ -5,6 +5,18 @@
 .conversejs {
     @import "bootstrap/scss/modal";
 
+    .modal-header {
+        &.alert-danger {
+            background-color: var(--error-color);
+            color: var(--background);
+            border-bottom: none;
+
+            .close {
+                color: var(--background);
+            }
+        }
+    }
+
     .modal-content {
         background-color: var(--modal-background-color);
     }

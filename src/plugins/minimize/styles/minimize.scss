@@ -71,6 +71,9 @@
                     }
                     .chat-head-chatroom {
                         background-color: var(--chatroom-head-bg-color);
+                        a.restore-chat {
+                            color: var(--chatroom-head-color);
+                        }
                     }
                     &.minimized {
                         height: auto;

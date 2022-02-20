@@ -16,6 +16,7 @@
 - #2788: `TypeError` when trying to use `@converse/headless`
 - #2789: Implement new hook `parseMessageForCommands` for plugins to add custom commands
 - #2814: Links are mangled on open/copy
+- #2822: Singleton doesn't work in overlayed view mode
 
 
 ## 9.0.0 (2021-11-26)

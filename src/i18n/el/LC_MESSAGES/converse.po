@@ -8,21 +8,24 @@ msgstr ""
 "Project-Id-Version: Converse.js 7.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-02-21 21:56+0000\n"
+"Last-Translator: Γκουλιούμης Θεόδωρος <thegoul@yandex.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/conversejs/"
+"translations/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "Η σύνδεση έχει διακοπεί, επιχειρείται επανασύνδεση."
 
 #: dist/converse-no-dependencies.js:37219
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "Παρουσιάστηκε σφάλμα κατά τη σύνδεση στον διακομιστή συνομιλίας."
 
 #: dist/converse-no-dependencies.js:37226
 msgid "Your XMPP address and/or password is incorrect. Please try again."

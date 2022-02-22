@@ -208,7 +208,7 @@ const ChatRoomMixin = {
         stanza.up(); // Go one level up, out of the `x` element.
 
         const status = _converse.xmppstatus.get('status');
-        if (['away', 'chat', 'dnd', 'online', 'xa'].includes(status)) {
+        if (['away', 'chat', 'dnd', 'xa'].includes(status)) {
             stanza.c('show').t(status).up();
         }
         const status_message = _converse.xmppstatus.get('status_message');

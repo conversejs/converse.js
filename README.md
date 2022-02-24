@@ -6,7 +6,7 @@
 
 
 [![XMPP Chat](https://conference.conversejs.org/muc_badge/discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
-[![Travis](https://api.travis-ci.com/conversejs/converse.js.png?branch=master)](https://travis-ci.com/conversejs/converse.js)
+[![CI Tests](https://github.com/conversejs/converse.js/actions/workflows/karma-tests.yml/badge.svg)](https://github.com/conversejs/converse.js/actions/workflows/karma-tests.yml)
 [![Bountysource bounties](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
@@ -172,12 +172,12 @@ We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapa
   </a>
 </p>
 <p>
-  <a href="https://www.pluckeye.net/?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="Pluckeye" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/pluckeye.svg" width="200">
+  <a href="https://originalenergie.de/?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Original Energie" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/originalenergie-black.png" width="200">
   </a>
 </p>
 <p>
-  <a href="https://originalenergie.de/?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="Original Energie" src="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/originalenergie-black.png" width="200">
+  <a href="https://primesound.org/?utm_source=conversejs" target="_blank" rel="noopener">
+    <img alt="Prime Sound" src="https://raw.githubusercontent.com/conversejs/media/main/logos/primesound.png" width="200">
   </a>
 </p>

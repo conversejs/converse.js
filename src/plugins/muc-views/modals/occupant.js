@@ -1,15 +1,13 @@
-import BootstrapModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/base.js";
 import tpl_occupant_modal from "./templates/occupant.js";
 import { _converse, api } from "@converse/headless/core";
 
-import './modals.scss';
 
-
-const OccupantModal = BootstrapModal.extend({
+const OccupantModal = BaseModal.extend({
     id: "muc-occupant",
 
     initialize () {
-        BootstrapModal.prototype.initialize.apply(this, arguments);
+        BaseModal.prototype.initialize.apply(this, arguments);
         if (this.model) {
             this.listenTo(this.model, 'change', this.render);
         }

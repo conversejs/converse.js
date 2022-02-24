@@ -2,15 +2,12 @@
 {% extends "!layout.html" %}
 
 {# Custom CSS overrides #}
-{% set css_files = css_files + ['_static/style.css', "../../dist/converse.min.css"] %}
-{% set script_files = script_files + ["../../dist/converse.min.js", "../../analytics.js"] %}
+{% set css_files = css_files + ['_static/style.css'] %}
+{% set script_files = script_files + ["../../analytics.js"] %}
 
 {# Add some extra stuff before and use existing with 'super()' call. #}
 {% block footer %}
     {{ super() }}
-    <script>
-        converse.initialize({'bosh_service_url': 'https://conversejs.org/http-bind/'});
-    </script>
 {% endblock %}
 
 

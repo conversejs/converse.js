@@ -28,13 +28,14 @@ const MessageMixin = {
             return;
         }
         this.initialized = getOpenPromise();
-        if (this.get('type') === 'chat') {
-            ModelWithContact.prototype.initialize.apply(this, arguments);
-            this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
-        }
         if (this.get('file')) {
-            this.on('change:put', this.uploadFile, this);
+            this.on('change:put', () => this.uploadFile());
         }
+        // If `type` changes from `error` to `chat`, we want to set the contact. See #2733
+        this.on('change:type', () => this.setContact());
+        this.on('change:is_ephemeral', () => this.setTimerForEphemeralMessage());
+
+        await this.setContact();
         this.setTimerForEphemeralMessage();
         /**
          * Triggered once a {@link _converse.Message} has been created and initialized.
@@ -46,25 +47,27 @@ const MessageMixin = {
         this.initialized.resolve();
     },
 
+
+    setContact () {
+        if (this.get('type') === 'chat') {
+            ModelWithContact.prototype.initialize.apply(this, arguments);
+            this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
+        }
+    },
+
     /**
      * Sets an auto-destruct timer for this message, if it's is_ephemeral.
      * @private
      * @method _converse.Message#setTimerForEphemeralMessage
-     * @returns { Boolean } - Indicates whether the message is
-     *   ephemeral or not, and therefore whether the timer was set or not.
      */
     setTimerForEphemeralMessage () {
-        const setTimer = () => {
-            this.ephemeral_timer = window.setTimeout(this.safeDestroy.bind(this), 10000);
-        };
-        if (this.isEphemeral()) {
-            setTimer();
-            return true;
-        } else {
-            this.on('change:is_ephemeral', () =>
-                this.isEphemeral() ? setTimer() : clearTimeout(this.ephemeral_timer)
-            );
-            return false;
+        if (this.ephemeral_timer) {
+            clearTimeout(this.ephemeral_timer);
+        }
+        const is_ephemeral = this.isEphemeral();
+        if (is_ephemeral) {
+            const timeout = typeof is_ephemeral === "number" ? is_ephemeral : 10000;
+            this.ephemeral_timer = window.setTimeout(() => this.safeDestroy(), timeout);
         }
     },
 

@@ -23,7 +23,7 @@
                 #toggle-minimized-chats {
                     border-top-left-radius: var(--chatbox-border-radius);
                     border-top-right-radius: var(--chatbox-border-radius);
-                    background-color: var(--link-color);
+                    background-color: var(--subdued-color);
                     padding: 1em 0 0 0;
                     text-align: center;
                     color: white;
@@ -71,6 +71,9 @@
                     }
                     .chat-head-chatroom {
                         background-color: var(--chatroom-head-bg-color);
+                        a.restore-chat {
+                            color: var(--chatroom-head-color);
+                        }
                     }
                     &.minimized {
                         height: auto;

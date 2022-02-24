@@ -223,16 +223,14 @@
         converse-chats.converse-mobile,
         converse-chats.converse-overlayed,
         converse-chats.converse-fullscreen {
-            .chatbox {
-                .box-flyout {
-                    converse-controlbox-navback {
-                        margin: auto 0;
-                        margin-right: 1em;
-                        display: flex;
-                        .fa-arrow-left {
-                            &:before {
-                                color: var(--chat-head-text-color);
-                            }
+            .chat-head {
+                converse-controlbox-navback {
+                    margin: auto 0;
+                    margin-right: 1em;
+                    display: flex;
+                    .fa-arrow-left {
+                        svg {
+                            fill: var(--chat-head-text-color);
                         }
                     }
                 }

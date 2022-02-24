@@ -1,6 +1,15 @@
 .conversejs {
     converse-muc.chatroom {
         .chat-head-chatroom {
+
+            converse-controlbox-navback {
+                .fa-arrow-left {
+                    svg {
+                        fill: var(--chatroom-head-color);
+                    }
+                }
+            }
+
             color: var(--chatroom-head-color);
             background-color: var(--chatroom-head-bg-color);
             border-bottom: var(--chatroom-head-border-bottom);
@@ -37,7 +46,7 @@
             a, a:visited, a:hover, a:not([href]):not([tabindex]) {
                 &.chatbox-btn {
                     &.fa {
-                        color: var(--chat-head-text-color);
+                        color: var(--chatroom-head-color);
                         &.button-on:before {
                             color: var(--chatroom-head-button-color);
                         }

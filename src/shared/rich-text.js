@@ -123,7 +123,7 @@ export class RichText extends String {
      */
     addHyperlinks (text, local_offset) {
         const full_offset = local_offset + this.offset;
-        const urls_meta = this.media_urls || getMediaURLsMetadata(text).media_urls || [];
+        const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
         const media_urls = getMediaURLs(urls_meta, text, full_offset);
 
         media_urls.filter(o => !o.is_encrypted).forEach(url_obj => {

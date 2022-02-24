@@ -382,7 +382,8 @@ const ChatBox = ModelWithContact.extend({
             const msg = await this.createMessage({
                 'type': 'error',
                 'message': error.message,
-                'retry_event_id': error.retry_event_id
+                'retry_event_id': error.retry_event_id,
+                'is_ephemeral': 30000,
             });
             msg.error = error;
         }
@@ -449,8 +450,22 @@ const ChatBox = ModelWithContact.extend({
     },
 
     getUpdatedMessageAttributes (message, attrs) {
-        // Filter the attrs object, restricting it to only the `is_archived` key.
-        return (({ is_archived }) => ({ is_archived }))(attrs)
+        if (!attrs.error_type && message.get('error_type') === 'Decryption') {
+            // Looks like we have a failed decrypted message stored, and now
+            // we have a properly decrypted version of the same message.
+            // See issue: https://github.com/conversejs/converse.js/issues/2733#issuecomment-1035493594
+            return Object.assign({}, attrs, {
+                error_condition: undefined,
+                error_message: undefined,
+                error_text: undefined,
+                error_type: undefined,
+                is_archived: attrs.is_archived,
+                is_ephemeral: false,
+                is_error: false,
+            });
+        } else {
+            return { is_archived: attrs.is_archived };
+        }
     },
 
     updateMessage (message, attrs) {

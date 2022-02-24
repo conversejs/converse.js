@@ -1,11 +1,10 @@
 import ModeratorToolsModal from './modals/moderator-tools.js';
-import OccupantModal from 'modals/occupant.js';
+import OccupantModal from './modals/occupant.js';
 import log from "@converse/headless/log";
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit";
-import { parseMessageForCommands } from 'plugins/chatview/utils.js';
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
 const { Strophe, $iq, sizzle, u } = converse.env;
@@ -297,7 +296,9 @@ export function showOccupantModal (ev, occupant) {
 
 
 export function parseMessageForMUCCommands (data, handled) {
-    if (handled || (
+    const model = data.model;
+    if (handled ||
+            model.get('type') !== _converse.CHATROOMS_TYPE || (
             api.settings.get('muc_disable_slash_commands') &&
             !Array.isArray(api.settings.get('muc_disable_slash_commands'))
     )) {
@@ -311,7 +312,6 @@ export function parseMessageForMUCCommands (data, handled) {
         return false;
     }
 
-    const model = data.model;
     const args = text.slice(('/' + command).length + 1).trim();
     const allowed_commands = model.getAllowedCommands() ?? [];
 

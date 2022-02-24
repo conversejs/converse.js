@@ -4,7 +4,7 @@ import 'shared/components/dropdown.js';
 import 'shared/registry';
 import tpl_file_progress from './templates/file-progress.js';
 import MessageVersionsModal from 'modals/message-versions.js';
-import OccupantModal from 'modals/occupant.js';
+import OccupantModal from 'plugins/muc-views/modals/occupant.js';
 import UserDetailsModal from 'modals/user-details.js';
 import log from '@converse/headless/log';
 import tpl_info_message from './templates/info-message.js';

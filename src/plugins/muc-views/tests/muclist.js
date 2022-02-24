@@ -259,8 +259,12 @@ describe("A groupchat shown in the groupchats list", function () {
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         let els = modal.el.querySelectorAll('p.room-info');
         expect(els[0].textContent).toBe("Name: A Dark Cave")
-        expect(els[1].textContent).toBe("Groupchat XMPP address: coven@chat.shakespeare.lit")
-        expect(els[2].textContent).toBe("Description: This is the description")
+
+        expect(els[1].querySelector('strong').textContent).toBe("XMPP address");
+        expect(els[1].querySelector('converse-rich-text').textContent.trim()).toBe("xmpp:coven@chat.shakespeare.lit?join");
+        expect(els[2].querySelector('strong').textContent).toBe("Description");
+        expect(els[2].querySelector('converse-rich-text').textContent).toBe("This is the description");
+
         expect(els[3].textContent).toBe("Online users: 1")
         const features_list = modal.el.querySelector('.features-list');
         expect(features_list.textContent.replace(/(\n|\s{2,})/g, '')).toBe(
@@ -289,9 +293,14 @@ describe("A groupchat shown in the groupchats list", function () {
         view.model.set({'subject': {'author': 'someone', 'text': 'Hatching dark plots'}});
         els = modal.el.querySelectorAll('p.room-info');
         expect(els[0].textContent).toBe("Name: A Dark Cave")
-        expect(els[1].textContent).toBe("Groupchat XMPP address: coven@chat.shakespeare.lit")
-        expect(els[2].textContent).toBe("Description: This is the description")
-        expect(els[3].textContent).toBe("Topic: Hatching dark plots")
+
+        expect(els[1].querySelector('strong').textContent).toBe("XMPP address");
+        expect(els[1].querySelector('converse-rich-text').textContent.trim()).toBe("xmpp:coven@chat.shakespeare.lit?join");
+        expect(els[2].querySelector('strong').textContent).toBe("Description");
+        expect(els[2].querySelector('converse-rich-text').textContent).toBe("This is the description");
+        expect(els[3].querySelector('strong').textContent).toBe("Topic");
+        await u.waitUntil(() => els[3].querySelector('converse-rich-text').textContent === "Hatching dark plots");
+
         expect(els[4].textContent).toBe("Topic author: someone")
         expect(els[5].textContent).toBe("Online users: 2")
     }));

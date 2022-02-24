@@ -264,7 +264,8 @@ export default {
             }, NS.MAM);
 
             let error;
-            const iq_result = await api.sendIQ(stanza, api.settings.get('message_archiving_timeout'), false)
+            const timeout = api.settings.get('message_archiving_timeout');
+            const iq_result = await api.sendIQ(stanza, timeout, false)
             if (iq_result === null) {
                 const { __ } = _converse;
                 const err_msg = __("Timeout while trying to fetch archived messages.");

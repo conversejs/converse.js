@@ -1,4 +1,4 @@
-import RoomDetailsModal from 'modals/muc-details.js';
+import RoomDetailsModal from 'plugins/muc-views/modals/muc-details.js';
 import RoomsListModel from './model.js';
 import tpl_roomslist from "./templates/roomslist.js";
 import { ElementView } from '@converse/skeletor/src/element.js';

@@ -37,7 +37,59 @@ describe("Groupchats", function () {
         expect(model.get('num_unread')).toBe(0);
     }));
 
-    describe("An groupchat", function () {
+    describe("A groupchat", function () {
+
+        it("sends the user status when joining and when it changes",
+                mock.initConverse(['statusInitialized'], {}, async function (_converse) {
+
+            const muc_jid = 'coven@chat.shakespeare.lit';
+            _converse.xmppstatus.set('status', 'away');
+
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            while (sent_stanzas.length) sent_stanzas.pop();
+
+            const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+
+            let pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
+            expect(Strophe.serialize(pres)).toBe(
+                `<presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc_jid}/romeo" xmlns="jabber:client">`+
+                    `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
+                    `<show>away</show>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`);
+
+            expect(muc.getOwnOccupant().get('show')).toBe('away');
+
+            while (sent_stanzas.length) sent_stanzas.pop();
+
+            _converse.xmppstatus.set('status', 'xa');
+            pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
+            expect(Strophe.serialize(pres)).toBe(
+                `<presence to="${muc_jid}/romeo" xmlns="jabber:client">`+
+                    `<show>xa</show>`+
+                    `<priority>0</priority>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`)
+
+            _converse.xmppstatus.set('status', 'dnd');
+            _converse.xmppstatus.set('status_message', 'Do not disturb');
+            while (sent_stanzas.length) sent_stanzas.pop();
+
+            const muc2_jid = 'cave@chat.shakespeare.lit';
+            const muc2 = await mock.openAndEnterChatRoom(_converse, muc2_jid, 'romeo');
+
+            pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
+            expect(Strophe.serialize(pres)).toBe(
+                `<presence from="${_converse.jid}" id="${pres.getAttribute('id')}" to="${muc2_jid}/romeo" xmlns="jabber:client">`+
+                    `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
+                    `<show>dnd</show>`+
+                    `<status>Do not disturb</status>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`);
+
+            expect(muc2.getOwnOccupant().get('show')).toBe('dnd');
+
+        }));
 
         it("reconnects when no-acceptable error is returned when sending a message",
                 mock.initConverse([], {}, async function (_converse) {

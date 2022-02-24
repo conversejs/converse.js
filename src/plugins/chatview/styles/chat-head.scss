@@ -68,7 +68,7 @@
                     &.fa,
                     &.fas,
                     &.far {
-                        color: white;
+                        color: var(--chat-head-text-color);;
                         &.button-on:before {
                             padding: 0.2em;
                             background-color: var(--chat-head-text-color);

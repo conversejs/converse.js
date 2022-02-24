@@ -55,7 +55,13 @@ export default (o) => {
                 </div>
                 <div class="modal-footer">
                     ${modal_close_button}
-                    <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>${i18n_refresh}</button>
+                    <button type="button" class="btn btn-info refresh-contact">
+                        <converse-icon
+                            class="fa fa-refresh"
+                            color="var(--text-color-lighten-15-percent)"
+                            size="1em"
+                        ></converse-icon>
+                        ${i18n_refresh}</button>
                     ${ (o.allow_contact_removal && o.is_roster_contact) ? remove_button(o) : '' }
 
                 </div>

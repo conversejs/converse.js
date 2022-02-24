@@ -1,7 +1,7 @@
 import MessageForm from 'plugins/chatview/message-form.js';
 import tpl_muc_message_form from './templates/message-form.js';
 import { _converse, api, converse } from "@converse/headless/core";
-import { getAutoCompleteListItem, parseMessageForMUCCommands } from './utils.js';
+import { getAutoCompleteListItem } from './utils.js';
 
 
 export default class MUCMessageForm extends MessageForm {
@@ -9,7 +9,6 @@ export default class MUCMessageForm extends MessageForm {
     async connectedCallback () {
         super.connectedCallback();
         await this.model.initialized;
-        api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
     }
 
     toHTML () {

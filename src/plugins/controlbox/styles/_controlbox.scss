@@ -326,7 +326,6 @@
 
         .controlbox-panes {
             background-color: var(--controlbox-pane-background-color);
-            border-right: 0.2rem solid var(--panel-divider-color);
             height: 100%;
             overflow-y: auto;
         }
@@ -401,7 +400,7 @@
             .toggle-controlbox {
                 order: -2;
                 text-align: center;
-                background-color: var(--link-color);
+                background-color: var(--controlbox-head-color);
                 border-top-left-radius: var(--button-border-radius);
                 border-top-right-radius: var(--button-border-radius);
                 color: #0a0a0a;
@@ -471,10 +470,6 @@
                         font-size: 90%;
                     }
                 }
-
-                .controlbox-panes {
-                    border-radius: var(--chatbox-border-radius);
-                }
             }
 
             .brand-heading {
@@ -497,6 +492,9 @@
 
         &.converse-embedded,
         &.converse-fullscreen{
+            .controlbox-panes {
+                border-right: 0.2rem solid var(--panel-divider-color);
+            }
             .toggle-controlbox {
                 display: none;
             }

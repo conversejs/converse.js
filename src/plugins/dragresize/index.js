@@ -56,7 +56,9 @@ converse.plugins.add('converse-dragresize', {
 
         Object.assign(_converse.ChatBoxView.prototype, DragResizableMixin);
         Object.assign(_converse.ChatRoomView.prototype, DragResizableMixin);
-        Object.assign(_converse.ControlBoxView.prototype, DragResizableMixin);
+        if (_converse.ControlBoxView) {
+            Object.assign(_converse.ControlBoxView.prototype, DragResizableMixin);
+        }
 
         /************************ BEGIN Event Handlers ************************/
         function registerGlobalEventHandlers () {

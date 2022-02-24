@@ -1,12 +1,14 @@
-import BootstrapModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/base.js";
 import tpl_muc_details from "./templates/muc-details.js";
 
+import '../styles/muc-details.scss';
 
-export default BootstrapModal.extend({
+
+export default BaseModal.extend({
     id: "muc-details-modal",
 
     initialize () {
-        BootstrapModal.prototype.initialize.apply(this, arguments);
+        BaseModal.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change', this.render);
         this.listenTo(this.model.features, 'change', this.render);
         this.listenTo(this.model.occupants, 'add', this.render);

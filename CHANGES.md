@@ -2,17 +2,21 @@
 
 ## 9.0.1 (Unreleased)
 
-- Updated translations: lt
+- Updated translations: af, ar, es, eu, fr, gl, he, lt
 - Increased stanza timeout from 10 to 20 seconds
 - Replace various font icons with SVG icons
+- Fix bug where MUC config wasn't persisted across page loads
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2627: Spoiler toggles only after switching to another tab and back
-- #2733: Fix OMEMO race condition related to automatic reconnection
+- #2733: Fix OMEMO race condition related to automatic reconnection and SMACKS
 - #2733: Wait for decrypted/parsed message before queuing to UI
 - #2751: Media not rendered when Converse runs in a browser extension
+- #2781: Flashing error when connecting to a room
 - #2786: Fix webpack configuration not working on Windows OS
 - #2788: `TypeError` when trying to use `@converse/headless`
 - #2789: Implement new hook `parseMessageForCommands` for plugins to add custom commands
+- #2814: Links are mangled on open/copy
+- #2822: Singleton doesn't work in overlayed view mode
 
 
 ## 9.0.0 (2021-11-26)

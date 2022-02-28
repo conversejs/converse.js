@@ -108,7 +108,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.14.0",
-    "bootstrap": "^4.6.0",
+    "bootstrap": "^5.1.3",
     "bootstrap.native": "^2.0.27",
     "client-compress": "^2.2.2",
     "dompurify": "^2.3.1",

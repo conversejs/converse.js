@@ -6,6 +6,7 @@
 - Increased stanza timeout from 10 to 20 seconds
 - Replace various font icons with SVG icons
 - Fix bug where MUC config wasn't persisted across page loads
+- Add support for calling the IndexedDB `getAll` method to speed up fetching models from storage.
 - #1761: Add a new dark theme based on the [Dracula](https://draculatheme.com/) theme
 - #2627: Spoiler toggles only after switching to another tab and back
 - #2733: Fix OMEMO race condition related to automatic reconnection and SMACKS

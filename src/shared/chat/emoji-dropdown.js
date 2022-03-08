@@ -95,6 +95,12 @@ export default class EmojiDropdown extends DropdownBase {
         super.showMenu();
         setTimeout(() => this.querySelector('.emoji-search')?.focus());
     }
+
+    hideMenu () {
+        this.chatview.querySelector('converse-emoji-picker')?.disableArrowNavigation();
+        super.hideMenu();
+        setTimeout(() => this.chatview.querySelector('.chat-textarea')?.focus());
+    }
 }
 
 api.elements.define('converse-emoji-dropdown', EmojiDropdown);

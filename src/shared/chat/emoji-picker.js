@@ -189,7 +189,6 @@ export default class EmojiPicker extends CustomElement {
             this.onEnterPressed(ev);
         } else if (ev.keyCode === converse.keycodes.ESCAPE) {
             u.ancestor(this, 'converse-emoji-dropdown').hideMenu();
-            this.chatview.el.querySelector('.chat-textarea').focus();
             ev.stopPropagation();
             ev.preventDefault();
         } else if (

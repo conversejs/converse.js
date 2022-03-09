@@ -43,10 +43,10 @@ converse-muc-destroyed {
                         width: var(--chatroom-width);
                     }
                     .chatbox-title__text {
-                        @include make-col(7);
+                        @include make-col(10);
                     }
                     .chatbox-title__buttons {
-                        @include make-col(5);
+                        @include make-col(2);
                     }
 
                     .chat-head__desc {

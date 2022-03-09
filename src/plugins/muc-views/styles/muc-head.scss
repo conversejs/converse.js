@@ -60,6 +60,7 @@
                 }
             }
             .chatbox-title__text {
+                color: var(--chatroom-head-color);
                 display: var(--heading-display);
                 font-weight: var(--chatroom-head-title-font-weight);
                 margin: auto 0;

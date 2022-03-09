@@ -58,6 +58,7 @@ export default class EmojiDropdown extends DropdownBase {
                         <converse-emoji-picker
                                 .chatview=${this.chatview}
                                 .model=${this.model}
+                                @emojiSelected=${() => this.hideMenu()}
                                 ?render_emojis=${this.render_emojis}
                                 current_category="${this.model.get('current_category') || ''}"
                                 current_skintone="${this.model.get('current_skintone') || ''}"
@@ -94,12 +95,6 @@ export default class EmojiDropdown extends DropdownBase {
         }
         super.showMenu();
         setTimeout(() => this.querySelector('.emoji-search')?.focus());
-    }
-
-    hideMenu () {
-        this.chatview.querySelector('converse-emoji-picker')?.disableArrowNavigation();
-        super.hideMenu();
-        setTimeout(() => this.chatview.querySelector('.chat-textarea')?.focus());
     }
 }
 

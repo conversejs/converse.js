@@ -1,9 +1,10 @@
 import 'shared/components/icons.js';
 import DOMNavigator from "shared/dom-navigator.js";
-import { converse, api } from "@converse/headless/core";
+import DropdownBase from 'shared/components/dropdownbase.js';
+import { KEYCODES } from '@converse/headless/shared/constants.js';
+import { api } from "@converse/headless/core";
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import DropdownBase from 'shared/components/dropdownbase.js';
 
 import './styles/dropdown.scss';
 
@@ -40,6 +41,17 @@ export default class Dropdown extends DropdownBase {
         this.initArrowNavigation();
     }
 
+    connectedCallback () {
+        super.connectedCallback();
+        this.hideOnEscape = ev => (ev.keyCode === KEYCODES.ESCAPE && this.hideMenu());
+        document.addEventListener('keydown', this.hideOnEscape);
+    }
+
+    disconnectedCallback() {
+        document.removeEventListener('keydown', this.hideOnEscape);
+        super.disconnectedCallback();
+    }
+
     hideMenu () {
         super.hideMenu();
         this.navigator?.disable();
@@ -66,7 +78,7 @@ export default class Dropdown extends DropdownBase {
 
     handleKeyUp (ev) {
         super.handleKeyUp(ev);
-        if (ev.keyCode === converse.keycodes.DOWN_ARROW && !this.navigator.enabled) {
+        if (ev.keyCode === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }
     }

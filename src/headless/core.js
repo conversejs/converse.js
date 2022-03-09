@@ -11,18 +11,19 @@ import invoke from 'lodash-es/invoke';
 import isFunction from 'lodash-es/isFunction';
 import log from '@converse/headless/log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
-import { settings_api, user_settings_api } from '@converse/headless/shared/settings/api.js';
 import sizzle from 'sizzle';
 import u, { setUnloadEvent, replacePromise } from '@converse/headless/utils/core.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
 import { Events } from '@converse/skeletor/src/events.js';
+import { CHAT_STATES, KEYCODES } from './shared/constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
 import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit';
 import { initAppSettings, } from '@converse/headless/shared/settings/utils.js';
+import { settings_api, user_settings_api } from '@converse/headless/shared/settings/api.js';
 import { sprintf } from 'sprintf-js';
 
 export { _converse };
@@ -665,24 +666,9 @@ export const converse = window.converse || {};
  */
 Object.assign(converse, {
 
-    CHAT_STATES: ['active', 'composing', 'gone', 'inactive', 'paused'],
+    CHAT_STATES,
 
-    keycodes: {
-        TAB: 9,
-        ENTER: 13,
-        SHIFT: 16,
-        CTRL: 17,
-        ALT: 18,
-        ESCAPE: 27,
-        LEFT_ARROW: 37,
-        UP_ARROW: 38,
-        RIGHT_ARROW: 39,
-        DOWN_ARROW: 40,
-        FORWARD_SLASH: 47,
-        AT: 50,
-        META: 91,
-        META_RIGHT: 93
-    },
+    keycodes: KEYCODES,
 
     /**
      * Public API method which initializes Converse.

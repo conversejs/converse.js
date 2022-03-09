@@ -40,3 +40,22 @@ export const CORE_PLUGINS = [
 ];
 
 export const URL_PARSE_OPTIONS = { 'start': /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
+
+export const CHAT_STATES = ['active', 'composing', 'gone', 'inactive', 'paused'];
+
+export const KEYCODES = {
+    TAB: 9,
+    ENTER: 13,
+    SHIFT: 16,
+    CTRL: 17,
+    ALT: 18,
+    ESCAPE: 27,
+    LEFT_ARROW: 37,
+    UP_ARROW: 38,
+    RIGHT_ARROW: 39,
+    DOWN_ARROW: 40,
+    FORWARD_SLASH: 47,
+    AT: 50,
+    META: 91,
+    META_RIGHT: 93
+}

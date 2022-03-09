@@ -85,13 +85,13 @@ export default class MessageForm extends ElementView {
     }
 
     onEscapePressed (ev) {
-        ev.preventDefault();
         const idx = this.model.messages.findLastIndex('correcting');
         const message = idx >= 0 ? this.model.messages.at(idx) : null;
         if (message) {
+            ev.preventDefault();
             message.save('correcting', false);
+            this.insertIntoTextArea('', true, false);
         }
-        this.insertIntoTextArea('', true, false);
     }
 
     onPaste (ev) {

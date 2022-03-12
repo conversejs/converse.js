@@ -453,7 +453,7 @@ export async function getDevicesForContact (jid) {
 
 export async function generateDeviceID () {
     /* Generates a device ID, making sure that it's unique */
-    const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
+    const devicelist = await api.omemo.devicelists.get(_converse.bare_jid, true);
     const existing_ids = devicelist.devices.pluck('id');
     let device_id = libsignal.KeyHelper.generateRegistrationId();
 

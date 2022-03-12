@@ -36,7 +36,7 @@ export default {
             async get (jid, create=false) {
                 const list = _converse.devicelists.get(jid) ||
                     (create ? _converse.devicelists.create({ jid }) : null);
-                await list.initialized;
+                await list?.initialized;
                 return list;
             }
         },

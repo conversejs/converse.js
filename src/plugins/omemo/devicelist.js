@@ -30,7 +30,7 @@ const DeviceList = Model.extend({
 
     async onDevicesFound (collection) {
         if (collection.length === 0) {
-            let ids;
+            let ids = [];
             try {
                 ids = await this.fetchDevicesFromServer();
             } catch (e) {

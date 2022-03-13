@@ -244,7 +244,7 @@ const ChatBox = ModelWithContact.extend({
     async onMessageUploadChanged (message) {
         if (message.get('upload') === _converse.SUCCESS) {
             const attrs = {
-                'body': message.get('message'),
+                'body': message.get('body'),
                 'spoiler_hint': message.get('spoiler_hint'),
                 'oob_url': message.get('oob_url')
 
@@ -632,10 +632,10 @@ const ChatBox = ModelWithContact.extend({
             message.save({'older_versions': older_versions});
         } else {
             // This is a correction of an earlier message we already received
-            if(Object.keys(older_versions).length) {
-                older_versions[message.get('edited')] = message.get('message');
-            }else {
-                older_versions[message.get('time')] = message.get('message');
+            if (Object.keys(older_versions).length) {
+                older_versions[message.get('edited')] = message.getMessageText();
+            } else {
+                older_versions[message.get('time')] = message.getMessageText();
             }
             attrs = Object.assign(attrs, {'older_versions': older_versions});
             delete attrs['id']; // Delete id, otherwise a new cache entry gets created
@@ -976,7 +976,8 @@ const ChatBox = ModelWithContact.extend({
         let message = this.messages.findWhere('correcting')
         if (message) {
             const older_versions = message.get('older_versions') || {};
-            older_versions[message.get('time')] = message.getMessageText();
+            const edited_time = message.get('edited') || message.get('time');
+            older_versions[edited_time] = message.getMessageText();
             const plaintext = attrs.is_encrypted ? attrs.message : undefined;
 
             message.save({

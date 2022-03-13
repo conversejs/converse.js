@@ -71,7 +71,7 @@ class MessageActions extends CustomElement {
         // TODO: Use state intead of DOM querying
         // Then this code can also be put on the model
         const unsent_text = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.value;
-        if (unsent_text && (!currently_correcting || currently_correcting.get('message') !== unsent_text)) {
+        if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {
             if (!confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'))) {
                 return;
             }

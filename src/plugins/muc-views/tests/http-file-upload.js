@@ -112,7 +112,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         message.save({
                             'upload': _converse.SUCCESS,
                             'oob_url': message.get('get'),
-                            'message': message.get('get')
+                            'body': message.get('get'),
                         });
                         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                     });

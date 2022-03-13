@@ -2709,7 +2709,7 @@ const ChatRoomMixin = {
                 .map(ref => ref.value);
             return mentions.includes(nick);
         } else {
-            return new RegExp(`\\b${nick}\\b`).test(message.get('message'));
+            return new RegExp(`\\b${nick}\\b`).test(message.get('body'));
         }
     },
 

@@ -92,14 +92,14 @@ describe("An OMEMO encrypted message", function() {
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
 
-        const new_text = 'But soft, what light through yonder window breaks?';
-        textarea.value = new_text;
+        const newer_text = 'But soft, what light through yonder door breaks?';
+        textarea.value = newer_text;
         message_form.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text);
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newer_text);
 
         await u.waitUntil(() => _converse.connection.sent_stanzas.filter(s => s.nodeName === 'message').length === 3);
         const msg = _converse.connection.sent_stanzas.pop();
@@ -127,10 +127,10 @@ describe("An OMEMO encrypted message", function() {
             `</message>`);
 
         const older_versions = first_msg.get('older_versions');
-        const keys = Object.keys(older_versions);
+        let keys = Object.keys(older_versions);
         expect(keys.length).toBe(1);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
-        expect(first_msg.get('plaintext')).toBe(new_text);
+        expect(first_msg.get('plaintext')).toBe(newer_text);
         expect(first_msg.get('is_encrypted')).toBe(true);
         expect(first_msg.get('body')).toBe(fallback_text);
         expect(first_msg.get('message')).toBe(fallback_text);
@@ -139,7 +139,21 @@ describe("An OMEMO encrypted message", function() {
             target: textarea,
             keyCode: 38 // Up arrow
         });
-        expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
+        expect(textarea.value).toBe('But soft, what light through yonder door breaks?');
+
+        const newest_text = 'But soft, what light through yonder window breaks?';
+        textarea.value = newest_text;
+        message_form.onKeyDown({
+            target: textarea,
+            preventDefault: function preventDefault () {},
+            keyCode: 13 // Enter
+        });
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newest_text);
+
+        keys = Object.keys(older_versions);
+        expect(keys.length).toBe(2);
+        expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
+        expect(older_versions[keys[1]]).toBe('But soft, what light through yonder door breaks?');
     }));
 });
 

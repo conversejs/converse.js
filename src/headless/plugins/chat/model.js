@@ -6,7 +6,7 @@ import log from '@converse/headless/log';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
-import { debouncedPruneHistory, pruneHistory } from '@converse/headless/shared/chat/utils.js';
+import { debouncedPruneHistory } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
@@ -350,7 +350,7 @@ const ChatBox = ModelWithContact.extend({
             api.settings.get('pruning_behavior') === 'unscrolled' &&
             !this.ui.get('scrolled')
         ) {
-            pruneHistory(this);
+            debouncedPruneHistory(this);
         }
     },
 

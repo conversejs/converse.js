@@ -7,6 +7,9 @@ export function pruneHistory (model) {
     const max_history = api.settings.get('prune_messages_above');
     if (max_history && typeof max_history === 'number') {
         if (model.messages.length > max_history) {
+
+            model.messages.sort(); // Explicitly call sort() to avoid race-conditions
+
             const non_empty_messages = model.messages.filter((m) => !u.isEmptyMessage(m));
             if (non_empty_messages.length > max_history) {
                 while (non_empty_messages.length > max_history) {
@@ -58,4 +61,4 @@ export function getMediaURLs (arr, text, offset=0) {
     }).filter(o => o);
 }
 
-export const debouncedPruneHistory = debounce(pruneHistory, 250);
+export const debouncedPruneHistory = debounce(pruneHistory, 500);

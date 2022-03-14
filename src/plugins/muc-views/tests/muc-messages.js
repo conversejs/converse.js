@@ -51,37 +51,6 @@ describe("A Groupchat Message", function () {
         }));
     });
 
-    it("is rejected if it's an unencapsulated forwarded message",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
-        const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const impersonated_jid = `${muc_jid}/alice`;
-        const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
-                <forwarded xmlns='urn:xmpp:forward:0'>
-                    <delay xmlns='urn:xmpp:delay' stamp='2019-07-10T23:08:25Z'/>
-                    <message from='${impersonated_jid}'
-                            id='0202197'
-                            to='${_converse.bare_jid}'
-                            type='groupchat'
-                            xmlns='jabber:client'>
-                        <body>Yet I should kill thee with much cherishing.</body>
-                    </message>
-                </forwarded>
-            </message>
-        `);
-        const view = _converse.chatboxviews.get(muc_jid);
-        spyOn(converse.env.log, 'error').and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(received_stanza));
-        await u.waitUntil(() => converse.env.log.error.calls.count() === 1);
-        expect(converse.env.log.error).toHaveBeenCalledWith(
-            `Ignoring unencapsulated forwarded message from ${muc_jid}/mallory`
-        );
-        expect(view.querySelectorAll('.chat-msg').length).toBe(0);
-        expect(view.model.messages.length).toBe(0);
-    }));
-
     it("can contain a chat state notification and will still be shown",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
@@ -302,23 +271,6 @@ describe("A Groupchat Message", function () {
         expect(view.model.occupants._events.add.length).toBe(add_events);
     }));
 
-    it("keeps track whether you are the sender or not",
-            mock.initConverse([], {}, async function (_converse) {
-
-        const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.chatboxviews.get(muc_jid);
-        const msg = $msg({
-                from: 'lounge@montague.lit/romeo',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t('I wrote this message!').tree();
-        await view.model.handleMessageStanza(msg);
-        await u.waitUntil(() => view.model.messages.last()?.get('received'));
-        expect(view.model.messages.last().get('sender')).toBe('me');
-    }));
-
     it("will be shown as received upon MUC reflection",
             mock.initConverse([], {}, async function (_converse) {
 
@@ -358,38 +310,6 @@ describe("A Groupchat Message", function () {
         const message = view.model.messages.at(0);
         expect(message.get('stanza_id lounge@montague.lit')).toBe('5f3dbc5e-e1d3-4077-a492-693f3769c7ad');
         expect(message.get('origin_id')).toBe(msg_obj.get('origin_id'));
-    }));
-
-    it("gets updated with its stanza-id upon MUC reflection",
-            mock.initConverse([], {}, async function (_converse) {
-
-        const muc_jid = 'room@muc.example.com';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.chatboxviews.get(muc_jid);
-
-        view.model.sendMessage({'body': 'hello world'});
-        await u.waitUntil(() => view.model.messages.length === 1);
-        const msg = view.model.messages.at(0);
-        expect(msg.get('stanza_id')).toBeUndefined();
-        expect(msg.get('origin_id')).toBe(msg.get('origin_id'));
-
-        const stanza = u.toStanza(`
-            <message xmlns="jabber:client"
-                     from="room@muc.example.com/romeo"
-                     to="${_converse.connection.jid}"
-                     type="groupchat">
-                <body>Hello world</body>
-                <stanza-id xmlns="urn:xmpp:sid:0"
-                           id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
-                           by="room@muc.example.com"/>
-                <origin-id xmlns="urn:xmpp:sid:0" id="${msg.get('origin_id')}"/>
-            </message>`);
-        spyOn(view.model, 'updateMessage').and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.model.updateMessage.calls.count() === 1);
-        expect(view.model.messages.length).toBe(1);
-        expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
-        expect(view.model.messages.at(0).get('origin_id')).toBe(msg.get('origin_id'));
     }));
 
     it("can cause a delivery receipt to be returned",

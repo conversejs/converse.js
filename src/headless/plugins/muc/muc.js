@@ -2254,7 +2254,7 @@ const ChatRoomMixin = {
         if (message) {
             (message.get('type') === 'groupchat') && this.updateMessage(message, attrs);
             return;
-        } else if (attrs.is_valid_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
+        } else if (attrs.receipt_id || attrs.is_marker || this.ignorableCSN(attrs)) {
             return;
         }
 

@@ -58,4 +58,4 @@ export function getMediaURLs (arr, text, offset=0) {
     }).filter(o => o);
 }
 
-export const debouncedPruneHistory = debounce(pruneHistory, 250);
+export const debouncedPruneHistory = debounce(pruneHistory, 500);

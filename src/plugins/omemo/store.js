@@ -199,7 +199,7 @@ const OMEMOStore = Model.extend({
             'id': k.keyId,
             'key': u.arrayBufferToBase64(k.pubKey)
         }));
-        const devicelist = _converse.devicelists.get(_converse.bare_jid);
+        const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
         const device = devicelist.devices.get(this.get('device_id'));
         const bundle = await device.getBundle();
         device.save('bundle', Object.assign(bundle, { 'prekeys': marshalled_keys }));
@@ -218,7 +218,7 @@ const OMEMOStore = Model.extend({
         const identity_keypair = await libsignal.KeyHelper.generateIdentityKeyPair();
         const bundle = {};
         const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
-        const device_id = generateDeviceID();
+        const device_id = await generateDeviceID();
 
         bundle['identity_key'] = identity_key;
         bundle['device_id'] = device_id;
@@ -242,7 +242,7 @@ const OMEMOStore = Model.extend({
             range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id))
         );
         keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
-        const devicelist = _converse.devicelists.get(_converse.bare_jid);
+        const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
         const device = await devicelist.devices.create(
             { 'id': bundle.device_id, 'jid': _converse.bare_jid },
             { 'promise': true }

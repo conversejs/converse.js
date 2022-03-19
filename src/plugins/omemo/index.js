@@ -6,7 +6,6 @@ import './fingerprints.js';
 import './profile.js';
 import 'modals/user-details.js';
 import 'plugins/profile/index.js';
-import ChatBox from './overrides/chatbox.js';
 import ConverseMixins from './mixins/converse.js';
 import Device from './device.js';
 import DeviceList from './devicelist.js';
@@ -15,19 +14,21 @@ import Devices from './devices.js';
 import OMEMOStore from './store.js';
 import log from '@converse/headless/log';
 import omemo_api from './api.js';
-import { OMEMOEnabledChatBox } from './mixins/chatbox.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import {
+    createOMEMOMessageStanza,
     encryptFile,
     getOMEMOToolbarButton,
+    getOutgoingMessageAttributes,
     handleEncryptedFiles,
+    handleMessageSendError,
     initOMEMO,
     omemo,
     onChatBoxesInitialized,
     onChatInitialized,
     parseEncryptedMessage,
-    setEncryptedFileURL,
     registerPEPPushHandler,
+    setEncryptedFileURL,
 } from './utils.js';
 
 const { Strophe } = converse.env;
@@ -52,15 +53,12 @@ converse.plugins.add('converse-omemo', {
 
     dependencies: ['converse-chatview', 'converse-pubsub'],
 
-    overrides: { ChatBox },
-
     initialize () {
         api.settings.extend({ 'omemo_default': false });
         api.promises.add(['OMEMOInitialized']);
 
         _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
-        Object.assign(_converse.ChatBox.prototype, OMEMOEnabledChatBox);
         Object.assign(_converse, ConverseMixins);
         Object.assign(_converse.api, omemo_api);
 
@@ -72,6 +70,17 @@ converse.plugins.add('converse-omemo', {
 
         /******************** Event Handlers ********************/
         api.waitUntil('chatBoxesInitialized').then(onChatBoxesInitialized);
+
+        api.listen.on('getOutgoingMessageAttributes', getOutgoingMessageAttributes);
+
+        api.listen.on('createMessageStanza', async (chat, data) => {
+            try {
+                data = await createOMEMOMessageStanza(chat, data);
+            } catch (e) {
+                handleMessageSendError(e, chat);
+            }
+            return data;
+        });
 
         api.listen.on('afterFileUploaded', (msg, attrs) => msg.file.xep454_ivkey ? setEncryptedFileURL(msg, attrs) : attrs);
         api.listen.on('beforeFileUpload', (chat, file) => chat.get('omemo_active') ? encryptFile(file) : file);

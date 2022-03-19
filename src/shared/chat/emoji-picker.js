@@ -3,6 +3,7 @@ import './emoji-dropdown.js';
 import DOMNavigator from "shared/dom-navigator";
 import debounce from 'lodash-es/debounce';
 import { CustomElement } from 'shared/components/element.js';
+import { KEYCODES } from '@converse/headless/shared/constants.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { tpl_emoji_picker } from "./templates/emoji-picker.js";
 
@@ -56,7 +57,7 @@ export default class EmojiPicker extends CustomElement {
             'onCategoryPicked': ev => this.chooseCategory(ev),
             'onSearchInputBlurred': ev => this.chatview.emitFocused(ev),
             'onSearchInputFocus': ev => this.onSearchInputFocus(ev),
-            'onSearchInputKeyDown': ev => this.onKeyDown(ev),
+            'onSearchInputKeyDown': ev => this.onSearchInputKeyDown(ev),
             'onSkintonePicked': ev => this.chooseSkinTone(ev),
             'query': this.query,
             'search_results': this.search_results,
@@ -120,6 +121,7 @@ export default class EmojiPicker extends CustomElement {
     disconnectedCallback() {
         const body = document.querySelector('body');
         body.removeEventListener('keydown', this.onGlobalKeyDown);
+        this.disableArrowNavigation();
         super.disconnectedCallback();
     }
 
@@ -127,14 +129,15 @@ export default class EmojiPicker extends CustomElement {
         if (!this.navigator) {
             return;
         }
-        if (ev.keyCode === converse.keycodes.ENTER &&
-                this.navigator.selected &&
-                u.isVisible(this)) {
+        if (ev.keyCode === KEYCODES.ENTER && u.isVisible(this)) {
             this.onEnterPressed(ev);
-        } else if (ev.keyCode === converse.keycodes.DOWN_ARROW &&
+        } else if (ev.keyCode === KEYCODES.DOWN_ARROW &&
                 !this.navigator.enabled &&
                 u.isVisible(this)) {
             this.enableArrowNavigation(ev);
+        } else if (ev.keyCode === KEYCODES.ESCAPE) {
+            this.disableArrowNavigation();
+            setTimeout(() => this.chatview.querySelector('.chat-textarea').focus(), 50);
         }
     }
 
@@ -149,8 +152,13 @@ export default class EmojiPicker extends CustomElement {
     insertIntoTextArea (value) {
         const autocompleting = this.model.get('autocompleting');
         const ac_position = this.model.get('ac_position');
-        this.chatview.getMessageForm().insertIntoTextArea(value, autocompleting, false, ac_position);
         this.model.set({'autocompleting': null, 'query': '', 'ac_position': null});
+        this.disableArrowNavigation();
+        const options = {
+            'bubbles': true,
+            'detail': { value, autocompleting, ac_position }
+        };
+        this.dispatchEvent(new CustomEvent("emojiSelected", options));
     }
 
     chooseSkinTone (ev) {
@@ -174,8 +182,8 @@ export default class EmojiPicker extends CustomElement {
         !this.navigator.enabled && this.navigator.enable();
     }
 
-    onKeyDown (ev) {
-        if (ev.keyCode === converse.keycodes.TAB) {
+    onSearchInputKeyDown (ev) {
+        if (ev.keyCode === KEYCODES.TAB) {
             if (ev.target.value) {
                 ev.preventDefault();
                 const match = converse.emojis.shortnames.find(sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
@@ -183,32 +191,19 @@ export default class EmojiPicker extends CustomElement {
             } else if (!this.navigator.enabled) {
                 this.enableArrowNavigation(ev);
             }
-        } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && !this.navigator.enabled) {
+        } else if (ev.keyCode === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
-        } else if (ev.keyCode === converse.keycodes.ENTER) {
-            this.onEnterPressed(ev);
-        } else if (ev.keyCode === converse.keycodes.ESCAPE) {
-            u.ancestor(this, 'converse-emoji-dropdown').hideMenu();
-            this.chatview.el.querySelector('.chat-textarea').focus();
-            ev.stopPropagation();
-            ev.preventDefault();
         } else if (
-            ev.keyCode !== converse.keycodes.ENTER &&
-            ev.keyCode !== converse.keycodes.DOWN_ARROW
+            ev.keyCode !== KEYCODES.ENTER &&
+            ev.keyCode !== KEYCODES.DOWN_ARROW
         ) {
             this.debouncedFilter(ev.target);
         }
     }
 
     onEnterPressed (ev) {
-        if (ev.emoji_keypress_handled) {
-            // Prevent the emoji from being inserted a 2nd time due to this
-            // method being called by two event handlers: onKeyDown and _onGlobalKeyDown
-            return;
-        }
         ev.preventDefault();
         ev.stopPropagation();
-        ev.emoji_keypress_handled = true;
         if (converse.emojis.shortnames.includes(ev.target.value)) {
             this.insertIntoTextArea(ev.target.value);
         } else if (this.search_results.length === 1) {
@@ -260,7 +255,7 @@ export default class EmojiPicker extends CustomElement {
     }
 
     disableArrowNavigation () {
-        this.navigator.disable();
+        this.navigator?.disable();
     }
 
     enableArrowNavigation (ev) {

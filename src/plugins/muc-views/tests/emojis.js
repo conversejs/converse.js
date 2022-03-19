@@ -44,7 +44,7 @@ describe("Emojis", function () {
             expect(input.value).toBe(':grimacing:');
 
             // Check that ENTER now inserts the match
-            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input});
+            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input, 'bubbles': true});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
 
             await u.waitUntil(() => input.value === '');
@@ -148,7 +148,7 @@ describe("Emojis", function () {
             const input = picker.querySelector('.emoji-search');
             input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
             await u.waitUntil(() => input.value === ':100:');
-            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input});
+            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input, 'bubbles': true});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(textarea.value).toBe(':100: ');
 
@@ -193,7 +193,7 @@ describe("Emojis", function () {
             expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':smiley_cat:');
 
             // Check that pressing enter without an unambiguous match does nothing
-            const enter_event = Object.assign({}, event, {'keyCode': 13});
+            const enter_event = Object.assign({}, event, {'keyCode': 13, 'bubbles': true});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(input.value).toBe('smiley');
 

@@ -49,9 +49,11 @@
                 display: flex;
                 flex-direction: row;
                 overflow: hidden;
+                width: 100%;
             }
 
             .chatbox-title__text {
+                color: var(--chat-head-text-color);;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }

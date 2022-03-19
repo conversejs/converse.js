@@ -989,7 +989,7 @@ const ChatRoomMixin = {
         return [updated_message, updated_references];
     },
 
-    getOutgoingMessageAttributes (attrs) {
+    async getOutgoingMessageAttributes (attrs) {
         const is_spoiler = this.get('composing_spoiler');
         let text = '', references;
         if (attrs?.body) {
@@ -997,7 +997,7 @@ const ChatRoomMixin = {
         }
         const origin_id = getUniqueId();
         const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
-        return Object.assign({}, attrs, {
+        attrs = Object.assign({}, attrs, {
             body,
             is_spoiler,
             origin_id,
@@ -1012,6 +1012,14 @@ const ChatRoomMixin = {
             'sender': 'me',
             'type': 'groupchat'
         }, getMediaURLsMetadata(text));
+
+        /**
+         * *Hook* which allows plugins to update the attributes of an outgoing
+         * message.
+         * @event _converse#getOutgoingMessageAttributes
+         */
+        attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
+        return attrs;
     },
 
     /**
@@ -2246,7 +2254,7 @@ const ChatRoomMixin = {
         if (message) {
             (message.get('type') === 'groupchat') && this.updateMessage(message, attrs);
             return;
-        } else if (attrs.is_valid_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
+        } else if (attrs.receipt_id || attrs.is_marker || this.ignorableCSN(attrs)) {
             return;
         }
 
@@ -2701,7 +2709,7 @@ const ChatRoomMixin = {
                 .map(ref => ref.value);
             return mentions.includes(nick);
         } else {
-            return new RegExp(`\\b${nick}\\b`).test(message.get('message'));
+            return new RegExp(`\\b${nick}\\b`).test(message.get('body'));
         }
     },
 

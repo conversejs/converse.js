@@ -3,7 +3,7 @@ import { IQError } from './errors.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { UNDECIDED } from './consts.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { parseBundle } from './utils.js';
+import { parseBundle, handleMessageSendError } from './utils.js';
 
 const { Strophe, sizzle, u, $iq } = converse.env;
 
@@ -30,9 +30,8 @@ const Device = Model.extend({
             'type': 'get',
             'from': _converse.bare_jid,
             'to': this.get('jid')
-        })
-            .c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
-            .c('items', { 'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}` });
+        }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
+          .c('items', { 'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}` });
 
         let iq;
         try {

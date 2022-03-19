@@ -103,18 +103,19 @@ u.getLongestSubstring = function (string, candidates) {
     return candidates.reduce(reducer, '');
 }
 
-u.prefixMentions = function (message) {
-    /* Given a message object, return its text with @ chars
-     * inserted before the mentioned nicknames.
-     */
-    let text = message.get('message');
+/**
+ * Given a message object, return its text with @ chars
+ * inserted before the mentioned nicknames.
+ */
+export function prefixMentions (message) {
+    let text = message.getMessageText();
     (message.get('references') || [])
         .sort((a, b) => b.begin - a.begin)
         .forEach(ref => {
             text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`
         });
     return text;
-};
+}
 
 u.isValidJID = function (jid) {
     if (typeof jid === 'string') {
@@ -587,6 +588,7 @@ export function decodeHTMLEntities (str) {
 }
 
 export default Object.assign({
+    prefixMentions,
     isEmptyMessage,
     getUniqueId
 }, u);

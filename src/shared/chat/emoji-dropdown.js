@@ -58,6 +58,7 @@ export default class EmojiDropdown extends DropdownBase {
                         <converse-emoji-picker
                                 .chatview=${this.chatview}
                                 .model=${this.model}
+                                @emojiSelected=${() => this.hideMenu()}
                                 ?render_emojis=${this.render_emojis}
                                 current_category="${this.model.get('current_category') || ''}"
                                 current_skintone="${this.model.get('current_skintone') || ''}"

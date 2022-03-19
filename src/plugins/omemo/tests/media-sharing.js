@@ -71,7 +71,7 @@ describe("The OMEMO module", function() {
             message.save({
                 'upload': _converse.SUCCESS,
                 'oob_url': message.get('get'),
-                'message': message.get('get')
+                'body': message.get('get')
             });
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         });
@@ -129,7 +129,9 @@ describe("The OMEMO module", function() {
                 `type="chat" `+
                 `xmlns="jabber:client">`+
                     `<body>${fallback}</body>`+
+                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                     `<request xmlns="urn:xmpp:receipts"/>`+
+                    `<origin-id id="${sent_stanza.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
                     `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
                     `<header sid="123456789">`+
                         `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+

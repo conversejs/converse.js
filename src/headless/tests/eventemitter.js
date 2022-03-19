@@ -3,56 +3,56 @@
 describe("The _converse Event Emitter", function() {
 
     it("allows you to subscribe to emitted events", mock.initConverse((_converse) => {
-        this.callback = function () {};
-        spyOn(this, 'callback');
-        _converse.on('connected', this.callback);
+        window.callback = function () {};
+        spyOn(window, 'callback');
+        _converse.on('connected', window.callback);
         _converse.api.trigger('connected');
-        expect(this.callback).toHaveBeenCalled();
+        expect(window.callback).toHaveBeenCalled();
         _converse.api.trigger('connected');
-        expect(this.callback.calls.count(), 2);
+        expect(window.callback.calls.count(), 2);
         _converse.api.trigger('connected');
-        expect(this.callback.calls.count(), 3);
+        expect(window.callback.calls.count(), 3);
     }));
 
     it("allows you to listen once for an emitted event", mock.initConverse((_converse) => {
-        this.callback = function () {};
-        spyOn(this, 'callback');
-        _converse.once('connected', this.callback);
+        window.callback = function () {};
+        spyOn(window, 'callback');
+        _converse.once('connected', window.callback);
         _converse.api.trigger('connected');
-        expect(this.callback).toHaveBeenCalled();
+        expect(window.callback).toHaveBeenCalled();
         _converse.api.trigger('connected');
-        expect(this.callback.calls.count(), 1);
+        expect(window.callback.calls.count(), 1);
         _converse.api.trigger('connected');
-        expect(this.callback.calls.count(), 1);
+        expect(window.callback.calls.count(), 1);
     }));
 
     it("allows you to stop listening or subscribing to an event", mock.initConverse((_converse) => {
-        this.callback = function () {};
-        this.anotherCallback = function () {};
-        this.neverCalled = function () {};
+        window.callback = function () {};
+        window.anotherCallback = function () {};
+        window.neverCalled = function () {};
 
-        spyOn(this, 'callback');
-        spyOn(this, 'anotherCallback');
-        spyOn(this, 'neverCalled');
-        _converse.on('connected', this.callback);
-        _converse.on('connected', this.anotherCallback);
-
-        _converse.api.trigger('connected');
-        expect(this.callback).toHaveBeenCalled();
-        expect(this.anotherCallback).toHaveBeenCalled();
-
-        _converse.off('connected', this.callback);
+        spyOn(window, 'callback');
+        spyOn(window, 'anotherCallback');
+        spyOn(window, 'neverCalled');
+        _converse.on('connected', window.callback);
+        _converse.on('connected', window.anotherCallback);
 
         _converse.api.trigger('connected');
-        expect(this.callback.calls.count(), 1);
-        expect(this.anotherCallback.calls.count(), 2);
+        expect(window.callback).toHaveBeenCalled();
+        expect(window.anotherCallback).toHaveBeenCalled();
 
-        _converse.once('connected', this.neverCalled);
-        _converse.off('connected', this.neverCalled);
+        _converse.off('connected', window.callback);
 
         _converse.api.trigger('connected');
-        expect(this.callback.calls.count(), 1);
-        expect(this.anotherCallback.calls.count(), 3);
-        expect(this.neverCalled).not.toHaveBeenCalled();
+        expect(window.callback.calls.count(), 1);
+        expect(window.anotherCallback.calls.count(), 2);
+
+        _converse.once('connected', window.neverCalled);
+        _converse.off('connected', window.neverCalled);
+
+        _converse.api.trigger('connected');
+        expect(window.callback.calls.count(), 1);
+        expect(window.anotherCallback.calls.count(), 3);
+        expect(window.neverCalled).not.toHaveBeenCalled();
     }));
 });

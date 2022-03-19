@@ -1,8 +1,9 @@
 import tpl_message_form from './templates/message-form.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core.js";
 import { parseMessageForCommands } from './utils.js';
+import { prefixMentions } from '@converse/headless/utils/core.js';
 
 const { u } = converse.env;
 
@@ -15,7 +16,20 @@ export default class MessageForm extends ElementView {
         await this.model.initialized;
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model, 'change:composing_spoiler', () => this.render());
+
+        this.handleEmojiSelection = ({ detail }) => this.insertIntoTextArea(
+            detail.value,
+            detail.autocompleting,
+            false,
+            detail.ac_position
+        );
+        document.addEventListener("emojiSelected", this.handleEmojiSelection);
         this.render();
+    }
+
+    disconnectedCallback () {
+        super.disconnectedCallback();
+        document.removeEventListener("emojiSelected", this.handleEmojiSelection);
     }
 
     toHTML () {
@@ -73,11 +87,11 @@ export default class MessageForm extends ElementView {
 
     onMessageCorrecting (message) {
         if (message.get('correcting')) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
+            this.insertIntoTextArea(prefixMentions(message), true, true);
         } else {
             const currently_correcting = this.model.messages.findWhere('correcting');
             if (currently_correcting && currently_correcting !== message) {
-                this.insertIntoTextArea(u.prefixMentions(message), true, true);
+                this.insertIntoTextArea(prefixMentions(message), true, true);
             } else {
                 this.insertIntoTextArea('', true, false);
             }
@@ -85,13 +99,13 @@ export default class MessageForm extends ElementView {
     }
 
     onEscapePressed (ev) {
-        ev.preventDefault();
         const idx = this.model.messages.findLastIndex('correcting');
         const message = idx >= 0 ? this.model.messages.at(idx) : null;
         if (message) {
+            ev.preventDefault();
             message.save('correcting', false);
+            this.insertIntoTextArea('', true, false);
         }
-        this.insertIntoTextArea('', true, false);
     }
 
     onPaste (ev) {

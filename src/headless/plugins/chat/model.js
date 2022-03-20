@@ -730,7 +730,9 @@ const ChatBox = ModelWithContact.extend({
             .c("apply-to", {
                 'id': origin_id,
                 'xmlns': Strophe.NS.FASTEN
-            }).c('retract', {xmlns: Strophe.NS.RETRACT})
+            }).c('retract', {xmlns: Strophe.NS.RETRACT}).up().up()
+            .c('fallback', {xmlns: Strophe.NS.FALLBACK}).up()
+            .c('body').t('This person attempted to retract a previous message, but it’s unsupported by your client.');
         return _converse.connection.send(msg);
     },
 

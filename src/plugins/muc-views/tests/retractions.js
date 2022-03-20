@@ -339,6 +339,8 @@ describe("Message Retractions", function () {
                     `<apply-to id="${msg_obj.get('origin_id')}" xmlns="urn:xmpp:fasten:0">`+
                         `<retract xmlns="urn:xmpp:message-retract:0"/>`+
                     `</apply-to>`+
+                    `<fallback xmlns="urn:xmpp:fallback:0"/>`+
+                    `<body>This person attempted to retract a previous message, but it’s unsupported by your client.</body>`+
                 `</message>`);
 
             expect(view.model.messages.length).toBe(1);

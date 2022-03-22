@@ -125,7 +125,8 @@ export async function handleMessageStanza (stanza) {
         attrs.stanza && log.error(attrs.stanza);
         return log.error(attrs.message);
     }
-    const has_body = !!sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length;
+    // XXX: Need to take XEP-428 <fallback> into consideration
+    const has_body = !!(attrs.body || attrs.plaintext)
     const chatbox = await api.chats.get(attrs.contact_jid, { 'nickname': attrs.nick }, has_body);
     await chatbox?.queueMessage(attrs);
     /**

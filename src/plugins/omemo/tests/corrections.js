@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, $iq, $pres, u } = converse.env;
+const { Strophe, $iq, $msg, $pres, u, omemo } = converse.env;
 
 describe("An OMEMO encrypted message", function() {
 
@@ -126,7 +126,7 @@ describe("An OMEMO encrypted message", function() {
                     `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
 
-        const older_versions = first_msg.get('older_versions');
+        let older_versions = first_msg.get('older_versions');
         let keys = Object.keys(older_versions);
         expect(keys.length).toBe(1);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
@@ -154,6 +154,58 @@ describe("An OMEMO encrypted message", function() {
         expect(keys.length).toBe(2);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
         expect(older_versions[keys[1]]).toBe('But soft, what light through yonder door breaks?');
+
+        const first_rcvd_msg_id = u.getUniqueId();
+        let obj = await omemo.encryptMessage('This is an encrypted message from the contact')
+        _converse.connection._dataRecv(mock.createRequest($msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                'id': first_rcvd_msg_id
+            }).c('body').t(fallback_text).up()
+                .c('origin-id', {'id': first_rcvd_msg_id, 'xmlns': 'urn:xmpp:sid:0'}).up()
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('iv').t(obj.iv)
+                        .up().up()
+                    .c('payload').t(obj.payload)));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        expect(view.model.messages.length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim())
+            .toBe('This is an encrypted message from the contact');
+
+        const msg_id = u.getUniqueId();
+        obj = await omemo.encryptMessage('This is an edited encrypted message from the contact')
+        _converse.connection._dataRecv(mock.createRequest($msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                'id': msg_id
+            }).c('body').t(fallback_text).up()
+                .c('replace', {'id': first_rcvd_msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).up()
+                .c('origin-id', {'id': msg_id, 'xmlns': 'urn:xmpp:sid:0'}).up()
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('iv').t(obj.iv)
+                        .up().up()
+                    .c('payload').t(obj.payload)));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        expect(view.model.messages.length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim())
+            .toBe('This is an edited encrypted message from the contact');
+
+        const message = view.model.messages.at(1);
+        older_versions = message.get('older_versions');
+        keys = Object.keys(older_versions);
+        expect(keys.length).toBe(1);
+        expect(older_versions[keys[0]]).toBe('This is an encrypted message from the contact');
+        expect(message.get('plaintext')).toBe('This is an edited encrypted message from the contact');
+        expect(message.get('is_encrypted')).toBe(true);
+        expect(message.get('body')).toBe(fallback_text);
+        expect(message.get('message')).toBe(fallback_text);
+        expect(message.get('msgid')).toBe(first_rcvd_msg_id);
     }));
 });
 

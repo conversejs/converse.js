@@ -22,7 +22,7 @@ import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
 import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit';
-import { initAppSettings, } from '@converse/headless/shared/settings/utils.js';
+import { initAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { settings_api, user_settings_api } from '@converse/headless/shared/settings/api.js';
 import { sprintf } from 'sprintf-js';
 
@@ -32,11 +32,12 @@ export { i18n };
 import {
     attemptNonPreboundSession,
     cleanup,
+    getConnectionServiceURL,
     initClientConfig,
     initPlugins,
-    setUserJID,
     initSessionStorage,
-    registerGlobalEventHandlers
+    registerGlobalEventHandlers,
+    setUserJID,
 } from './utils/init.js';
 
 dayjs.extend(advancedFormat);
@@ -265,7 +266,7 @@ export const api = _converse.api = {
 
             // See whether there is a BOSH session to re-attach to
             const bosh_plugin = _converse.pluggable.plugins['converse-bosh'];
-            if (bosh_plugin && bosh_plugin.enabled()) {
+            if (bosh_plugin?.enabled()) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
                 } else if (api.settings.get("authentication") === _converse.PREBIND && (!automatic || api.settings.get("auto_login"))) {
@@ -559,15 +560,9 @@ _converse.initConnection = function () {
         }
     }
 
-    let connection_url = '';
     const XMPPConnection = _converse.isTestEnv() ? MockConnection : Connection;
-    if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
-        connection_url = api.settings.get('websocket_url');
-    } else if (api.settings.get('bosh_service_url')) {
-        connection_url = api.settings.get('bosh_service_url');
-    }
     _converse.connection = new XMPPConnection(
-        connection_url,
+        getConnectionServiceURL(),
         Object.assign(
             _converse.default_connection_options,
             api.settings.get("connection_options"),

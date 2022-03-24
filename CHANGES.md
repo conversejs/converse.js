@@ -21,6 +21,7 @@
 - #2814: Links are mangled on open/copy
 - #2822: Singleton doesn't work in overlayed view mode
 
+- New config option [show_connection_url_input](https://conversejs.org/docs/html/configuration.html#show-connection-url-input)
 
 ## 9.0.0 (2021-11-26)
 

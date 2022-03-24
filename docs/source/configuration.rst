@@ -1969,6 +1969,16 @@ show_client_info
 Specifies whether the info icon is shown on the controlbox which when clicked opens an
 "About" modal with more information about the version of Converse being used.
 
+show_connection_url_input
+-------------------------
+
+* Default: ``false``
+
+Determines whether the login form should show an input element where the user
+can enter the connection URL. If it's a websocket url, then upon form
+submission the `websocket_url`_ setting will be updated with this value, and if
+it's an HTTP URL then the `bosh_service_url`_ setting will be updated.
+
 show_controlbox_by_default
 --------------------------
 

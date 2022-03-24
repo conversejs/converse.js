@@ -58,6 +58,7 @@ converse.plugins.add('converse-controlbox', {
             allow_user_trust_override: true,
             default_domain: undefined,
             locked_domain: undefined,
+            show_connection_url_input: false,
             show_controlbox_by_default: false,
             sticky_controlbox: false
         });

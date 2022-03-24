@@ -47,7 +47,13 @@ const password_input = () => {
     return html`
         <div class="form-group">
             <label for="converse-login-password">${i18n_password}</label>
-            <input id="converse-login-password" class="form-control" required="required" type="password" name="password" placeholder="${i18n_password}"/>
+            <input id="converse-login-password"
+                class="form-control"
+                required="required"
+                value="${api.settings.get('password') ?? ''}"
+                type="password"
+                name="password"
+                placeholder="${i18n_password}"/>
         </div>
     `;
 }
@@ -84,6 +90,7 @@ const auth_fields = (el) => {
             <input id="converse-login-jid"
                 ?autofocus=${api.settings.get('auto_focus') ? true : false}
                 @changed=${el.validate}
+                value="${api.settings.get('jid') ?? ''}"
                 required
                 class="form-control"
                 type="text"

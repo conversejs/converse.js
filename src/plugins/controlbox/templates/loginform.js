@@ -34,7 +34,6 @@ const connection_url_input = () => {
             <p class="form-help instructions">${i18n_form_help}</p>
             <input id="converse-conn-url"
                    class="form-control"
-                   required="required"
                    type="url"
                    name="connection-url"
                    placeholder="${i18n_placeholder}"/>
@@ -84,7 +83,6 @@ const auth_fields = (el) => {
     const default_domain = api.settings.get('default_domain');
     const placeholder_username = ((locked_domain || default_domain) && __('Username')) || __('user@domain');
     const show_trust_checkbox = api.settings.get('allow_user_trust_override');
-    const show_connection_url_input = api.settings.get('show_connection_url_input')
 
     return html`
         <div class="form-group">
@@ -100,7 +98,7 @@ const auth_fields = (el) => {
                 placeholder="${placeholder_username}"/>
         </div>
         ${ (authentication !== _converse.EXTERNAL) ? password_input() : '' }
-        ${ show_connection_url_input ? connection_url_input() : '' }
+        ${ api.settings.get('show_connection_url_input') ? connection_url_input() : '' }
         ${ show_trust_checkbox ? trust_checkbox(show_trust_checkbox === 'off' ? false : true) : '' }
         <fieldset class="form-group buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_login}"/>

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2020-11-18 18:40+0100\n"
-"Last-Translator: Janne E <pyskoovits@gmail.com>\n"
+"PO-Revision-Date: 2022-03-27 17:07+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
 "translations/fi/>\n"
 "Language: fi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.12-dev\n"
 
 #: dist/converse-no-dependencies.js:36969
 msgid "The connection has dropped, attempting to reconnect."
@@ -69,9 +69,8 @@ msgstr "Valitettavasti et saa peruuttaa tätä viestiä."
 
 #: dist/converse-no-dependencies.js:42825
 #: dist/converse-no-dependencies.js:49604
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Anteeksi, jokin meni pieleen, kun yrität peruuttaa viestisi."
+msgstr "Anteeksi, tapahtui virhe yritettäessä perua viestiäsi."
 
 #: dist/converse-no-dependencies.js:42830
 msgid "You're not allowed to send a message."
@@ -79,9 +78,8 @@ msgstr "Et voi lähettää viestejä tässä huoneessa."
 
 #: dist/converse-no-dependencies.js:42832
 #: dist/converse-no-dependencies.js:49613
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Virhe yritettäessä lähettää määrityslomaketta."
+msgstr "Anteeksi, viestiäsi lähetettäessä tapahtui virhe."
 
 #: dist/converse-no-dependencies.js:43158
 #, javascript-format
@@ -101,7 +99,8 @@ msgstr "%1$s on online-tilassa"
 #: dist/converse-no-dependencies.js:44046
 #: dist/converse-no-dependencies.js:44069
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr "Valitettavasti palvelin ei tue tiedostojen lähettämistä."
+msgstr ""
+"Anteeksi, näyttää siltä, että palvelimesi ei tue tiedostojen uloslatausta."
 
 #: dist/converse-no-dependencies.js:44096
 #, javascript-format
@@ -123,7 +122,7 @@ msgstr "Valitettavasti lataus-URL-osoitetta ei voitu määrittää."
 
 #: dist/converse-no-dependencies.js:44566
 msgid "Sorry, could not determine file upload URL."
-msgstr "Valitettavasti tiedoston lataus-URL-osoitetta ei voitu määrittää."
+msgstr "Valitettavasti tiedoston uloslataus-URL-osoitetta ei voitu määrittää."
 
 #: dist/converse-no-dependencies.js:44645
 #, javascript-format
@@ -131,11 +130,11 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
-"Valitettavasti tiedostoa ei voitu ladata. Palvelimesi vastaus: \"%1$s\""
+"Valitettavasti tiedostoa ei voitu ulosladata. Palvelimesi vastaus: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:44647
 msgid "Sorry, could not succesfully upload your file."
-msgstr "Valitettavasti tiedostoa ei voitu ladata."
+msgstr "Valitettavasti tiedostoa ei voitu ulosladata."
 
 #: dist/converse-no-dependencies.js:47306
 msgid "Smileys and emotions"
@@ -210,7 +209,7 @@ msgstr "Aikakatkaisu yritettäessä peruuttaa viestiä."
 
 #: dist/converse-no-dependencies.js:50739
 msgid "Sorry, an error happened while running the command."
-msgstr "Anteeksi, komennon suorittamisessa tapahtui virhe."
+msgstr "Anteeksi, komennon suorittamisen aikana tapahtui virhe."
 
 #: dist/converse-no-dependencies.js:50739
 #: dist/converse-no-dependencies.js:89873
@@ -785,9 +784,8 @@ msgid "Optional reason"
 msgstr "Valinnainen syy"
 
 #: dist/converse-no-dependencies.js:66336
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Valitettavasti et saa peruuttaa tätä viestiä."
+msgstr "Valitettavasti et saa peruuttaa tätä viestiä"
 
 #: dist/converse-no-dependencies.js:66467
 #, fuzzy
@@ -1029,7 +1027,7 @@ msgstr "Valinnainen vihje"
 
 #: dist/converse-no-dependencies.js:78627
 msgid "Sorry, the connection has been lost, and your message could not be sent"
-msgstr ""
+msgstr "Valitettavasti yhteys katkesi, eikä viestiäsi voitu lähettää"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:78742
@@ -1281,9 +1279,8 @@ msgid "Timeout error while trying to set the affiliation"
 msgstr "Anteeksi, jokin meni pieleen, kun yrittää asettaa kuuluminen"
 
 #: dist/converse-no-dependencies.js:86664
-#, fuzzy
 msgid "Sorry, you're not allowed to make that change"
-msgstr "Et saa tehdä sitä muutosta"
+msgstr "Valitettavasti et saa tehdä tätä muutosta"
 
 #: dist/converse-no-dependencies.js:86666
 msgid "Sorry, something went wrong while trying to set the affiliation"
@@ -1303,7 +1300,7 @@ msgstr "Et saa tehdä sitä muutosta"
 
 #: dist/converse-no-dependencies.js:86717
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr "Anteeksi, jotain meni pieleen, kun yritetään asettaa rooli"
+msgstr "Anteeksi, jotain meni pieleen roolia määritettäessä"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:86794
@@ -1379,20 +1376,21 @@ msgid "No commands found"
 msgstr "Ryhmäkeskusteluja ei löytynyt"
 
 #: dist/converse-no-dependencies.js:87772
-#, fuzzy
 msgid "Sorry, an error occurred while looking for commands on that entity."
-msgstr "Virhe yritettäessä poistaa laitteita."
+msgstr ""
+"Valitettavasti tapahtui virhe etsittäessä komentoja kyseisestä entiteetistä."
 
 #: dist/converse-no-dependencies.js:87783
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:87898
-#, fuzzy
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
-msgstr "Virhe yritettäessä poistaa laitteita."
+msgstr ""
+"Valitettavasti tapahtui virhe yritettäessä suorittaa komentoa. Katso "
+"lisätietoja kehittäjäkonsolista"
 
 #: dist/converse-no-dependencies.js:88277
 msgid "Enter groupchat"
@@ -1535,7 +1533,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:89873
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr "Virhe yritettäessä lähettää määrityslomaketta."
+msgstr "Valitettavasti määrityslomakkeen lähettämisessä tapahtui virhe."
 
 #: dist/converse-no-dependencies.js:89940
 #, fuzzy
@@ -1850,16 +1848,18 @@ msgid "wants to be your contact"
 msgstr "haluaa olla yhteyshenkilösi"
 
 #: dist/converse-no-dependencies.js:93808
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
-msgstr "Salattua viestiä ei voi lähettää odottamattoman virheen vuoksi."
+msgstr ""
+"Valitettavasti vastaanotetun OMEMO-viestin salausta ei voitu purkaa, koska "
+"meillä ei ole XMPP-osoitetta tälle käyttäjälle."
 
 #: dist/converse-no-dependencies.js:93887
-#, fuzzy
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr "Salattua viestiä ei voi lähettää odottamattoman virheen vuoksi."
+msgstr ""
+"Valitettavasti vastaanotetun OMEMO-viestin salausta ei voitu purkaa virheen "
+"vuoksi."
 
 #: dist/converse-no-dependencies.js:94616
 #, javascript-format
@@ -1979,7 +1979,7 @@ msgstr "Luo uusia avaimia ja sormenjälkiä"
 
 #: dist/converse-no-dependencies.js:95554
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "Virhe yritettäessä poistaa laitteita."
+msgstr "Valitettavasti tapahtui virhe yritettäessä poistaa laitteita."
 
 #: dist/converse-no-dependencies.js:95587
 msgid ""
@@ -2146,7 +2146,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
-"Salattua viestiä ei voi lähettää, koska kohteen %1$s palvelinta ei löytynyt"
+"Valitettavasti emme voi lähettää salattua viestiä, koska kohteen %1$s "
+"etäpalvelinta ei löytynyt"
 
 #: dist/converse-no-dependencies.js:98150
 msgid "Unable to send an encrypted message due to an unexpected error."
@@ -2201,8 +2202,7 @@ msgstr "Ole hyvä ja kirjoita XMPP-palveluntarjoaja rekisteröidäksesi:"
 
 #: dist/converse-no-dependencies.js:99032
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
-"Valitettavasti emme voi muodostaa yhteyttä valitsemaasi palveluntarjoajaan."
+msgstr "Valitettavasti emme voi muodostaa yhteyttä valitsemaasi tarjoajaan."
 
 #: dist/converse-no-dependencies.js:99048
 msgid ""
@@ -2210,7 +2210,7 @@ msgid ""
 "Please try with a different provider."
 msgstr ""
 "Anteeksi, annettu tarjoaja ei tue bänditilin rekisteröintiä. Kokeile toista "
-"palveluntarjoajaa."
+"tarjoajaa."
 
 #: dist/converse-no-dependencies.js:99076
 #, javascript-format

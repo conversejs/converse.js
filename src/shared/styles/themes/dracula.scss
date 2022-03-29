@@ -19,6 +19,7 @@
     --chat-color: var(--green);
     --disabled-color: var(--comment);
     --error-color: var(--red);
+    --focus-color: var(--comment);
 
     // ---
 
@@ -141,4 +142,5 @@
     --list-item-open-hover-color: var(--current-line);
     --list-dot-circle-color: var(--orange);
     --list-item-action-hover-color: var(--cyan);
+    --list-group-item-bg-color: var(--comment);
 }

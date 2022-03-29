@@ -1,0 +1,16 @@
+.conversejs {
+    .alert-danger {
+        h3 {
+            color: var(--background);
+            font-size: large;
+        }
+        .disconnect-msg {
+            color: var(--background) !important;
+        }
+
+        color: var(--background);
+        border-color: var(--danger-color-dark);
+        background-color: var(--danger-color);
+    }
+
+}

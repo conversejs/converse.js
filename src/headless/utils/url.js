@@ -21,7 +21,7 @@ export function getURI (url) {
 
 function checkFileTypes (types, url) {
     const uri = getURI(url);
-    if (uri === null || (window.location.protocol !== 'chrome-extension:' && !checkTLS(uri))) {
+    if (uri === null || (!['chrome-extension:','file:'].includes(window.location.protocol) && !checkTLS(uri))) {
         return false;
     }
     const filename = uri.filename().toLowerCase();

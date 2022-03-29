@@ -2582,8 +2582,13 @@ const ChatRoomMixin = {
                 this.setDisconnectionState(message, reason);
             } else if (error.querySelector('remote-server-not-found')) {
                 const message = __('Remote server not found');
-                const feedback = reason ? __('The explanation given is: "%1$s".', reason) : undefined;
-                this.setDisconnectionState(message, feedback);
+                this.setDisconnectionState(message, reason);
+            } else if (error.querySelector('forbidden')) {
+                const message = __("You're not allowed to enter this groupchat");
+                this.setDisconnectionState(message, reason);
+            } else {
+                const message = __("An error happened while trying to enter this groupchat");
+                this.setDisconnectionState(message, reason);
             }
         }
     },

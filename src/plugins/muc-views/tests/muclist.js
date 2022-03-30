@@ -89,7 +89,7 @@ describe("A list of open groupchats", function () {
         expect(roomspanel.querySelector('.msgs-indicator').textContent.trim()).toBe('2');
         view.model.set({'minimized': false});
         expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
-        expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
+        await u.waitUntil(() => roomspanel.querySelectorAll('.msgs-indicator').length === 0);
     }));
 
     it("uses bookmarks to determine groupchat names",
@@ -395,6 +395,6 @@ describe("A groupchat shown in the groupchats list", function () {
         indicator_el = lview.querySelector(".msgs-indicator");
         expect(indicator_el === null);
         room_el = lview.querySelector(".available-chatroom");
-        expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
+        await u.waitUntil(() => Array.from(room_el.classList).includes('unread-msgs') === false);
     }));
 });

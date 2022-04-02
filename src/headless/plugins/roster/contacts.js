@@ -3,7 +3,6 @@ import log from "@converse/headless/log";
 import sum from 'lodash-es/sum';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from "@converse/skeletor/src/model";
-import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
@@ -163,6 +162,7 @@ const RosterContacts = Collection.extend({
         try {
             await this.sendContactAddIQ(jid, name, groups);
         } catch (e) {
+            const { __ } = _converse;
             log.error(e);
             alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
             return e;
@@ -355,6 +355,7 @@ const RosterContacts = Collection.extend({
             contact = this.get(bare_jid);
 
         if (!api.settings.get('allow_contact_requests')) {
+            const { __ } = _converse;
             rejectPresenceSubscription(
                 jid,
                 __("This client does not allow presence subscriptions")

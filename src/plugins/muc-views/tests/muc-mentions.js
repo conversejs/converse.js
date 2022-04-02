@@ -55,7 +55,8 @@ describe("MUC Mention Notfications", function () {
             </message>
         `);
         _converse.connection._dataRecv(mock.createRequest(message));
-        expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
+
+        await u.waitUntil(() => Array.from(room_el.classList).includes('unread-msgs'));
         expect(room_el.querySelector('.msgs-indicator')?.textContent.trim()).toBe('1');
 
         message = u.toStanza(`
@@ -80,6 +81,6 @@ describe("MUC Mention Notfications", function () {
         `);
         _converse.connection._dataRecv(mock.createRequest(message));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
-        expect(room_el.querySelector('.msgs-indicator')?.textContent.trim()).toBe('2');
+        await u.waitUntil(() => room_el.querySelector('.msgs-indicator')?.textContent.trim() === '2');
     }));
 });

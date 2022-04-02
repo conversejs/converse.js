@@ -11,7 +11,7 @@ Most of the style guide recommendations here come from Douglas Crockford's book
 Tabs or spaces?
 ---------------
 
-We always indent 4 spaces. Proper indentation is important for readability.
+We always indent 4 spaces.
 
 Underscores or camelCase?
 -------------------------
@@ -26,6 +26,12 @@ For example:
         let this_is_a_variable;
         ...
     }
+
+const versus let
+----------------
+
+Try to use `const` whenever possible. If a variable won't be reassigned, use
+`const`, otherwise use `let`.
 
 Spaces around operators
 -----------------------
@@ -50,6 +56,19 @@ An exception is when they appear inside for-loop expressions, for example:
 
 Generally though, rather err on the side of adding spaces, since they make the
 code much more readable.
+
+destructuring
+-------------
+
+When assigning to a variable via destructuring, add spaces between the curly
+brackets.
+
+For example:
+
+.. code-block:: javascript
+
+    const { foo } = bar;
+
 
 Global constants are written in ALL_CAPS
 ----------------------------------------

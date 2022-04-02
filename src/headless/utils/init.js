@@ -291,25 +291,40 @@ export async function attemptNonPreboundSession (credentials, automatic) {
         // So we can't do the check (!automatic || _converse.api.settings.get("auto_login")) here.
         if (credentials) {
             connect(credentials);
-        } else if (_converse.api.settings.get("credentials_url")) {
+        } else if (api.settings.get("credentials_url")) {
             // We give credentials_url preference, because
             // _converse.connection.pass might be an expired token.
             connect(await getLoginCredentials());
-        } else if (_converse.jid && (_converse.api.settings.get("password") || _converse.connection.pass)) {
+        } else if (_converse.jid && (api.settings.get("password") || _converse.connection.pass)) {
             connect();
         } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
             !_converse.isTestEnv() && log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
         }
-    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication")) && (!automatic || _converse.api.settings.get("auto_login"))) {
+    } else if (
+        [_converse.ANONYMOUS, _converse.EXTERNAL].includes(api.settings.get("authentication")) &&
+        (!automatic || api.settings.get("auto_login"))
+    ) {
         connect();
     }
 }
 
 
+export function getConnectionServiceURL () {
+    const { api } = _converse;
+    if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
+        return api.settings.get('websocket_url');
+    } else if (api.settings.get('bosh_service_url')) {
+        return api.settings.get('bosh_service_url');
+    }
+    return '';
+}
+
+
 function connect (credentials) {
-    if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication"))) {
+    const { api } = _converse;
+    if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(api.settings.get("authentication"))) {
         if (!_converse.jid) {
             throw new Error("Config Error: when using anonymous login " +
                 "you need to provide the server's domain via the 'jid' option. " +
@@ -320,19 +335,20 @@ function connect (credentials) {
             _converse.connection.reset();
         }
         _converse.connection.connect(_converse.jid.toLowerCase());
-    } else if (_converse.api.settings.get("authentication") === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_converse.connection?.pass || _converse.api.settings.get("password"));
+    } else if (api.settings.get("authentication") === _converse.LOGIN) {
+        const password = credentials?.password ?? (_converse.connection?.pass || api.settings.get("password"));
         if (!password) {
-            if (_converse.api.settings.get("auto_login")) {
+            if (api.settings.get("auto_login")) {
                 throw new Error("autoLogin: If you use auto_login and "+
                     "authentication='login' then you also need to provide a password.");
             }
             _converse.connection.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
-            _converse.api.connection.disconnect();
+            api.connection.disconnect();
             return;
         }
         if (!_converse.connection.reconnecting) {
             _converse.connection.reset();
+            _converse.connection.service = getConnectionServiceURL();
         }
         _converse.connection.connect(_converse.jid, password);
     }

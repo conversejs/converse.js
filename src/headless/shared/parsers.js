@@ -108,12 +108,10 @@ export function getCorrectionAttributes (stanza, original_stanza) {
     const el = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
     if (el) {
         const replace_id = el.getAttribute('id');
-        const msgid = replace_id;
         if (replace_id) {
             const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
             const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString();
             return {
-                msgid,
                 replace_id,
                 'edited': time
             };

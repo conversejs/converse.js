@@ -1,6 +1,9 @@
 # Changelog
 
-## 9.0.1 (Unreleased)
+## 9.1.1 (Unreleased)
+
+
+## 9.1.0 (2022-04-02)
 
 - Updated translations: af, ar, es, eu, fr, gl, he, lt
 - Increased stanza timeout from 10 to 20 seconds
@@ -21,6 +24,7 @@
 - #2814: Links are mangled on open/copy
 - #2822: Singleton doesn't work in overlayed view mode
 
+- New config option [show_connection_url_input](https://conversejs.org/docs/html/configuration.html#show-connection-url-input)
 
 ## 9.0.0 (2021-11-26)
 

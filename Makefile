@@ -67,7 +67,7 @@ serve_bg: node_modules
 dist/converse-no-dependencies.js: src webpack/webpack.common.js webpack/webpack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
-GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=9.0.0 dist/converse-no-dependencies.js -c
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=9.1.0 dist/converse-no-dependencies.js -c
 
 src/i18n/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
@@ -227,7 +227,7 @@ test:
 
 .installed.cfg: requirements.txt buildout.cfg
 	./bin/pip install -r requirements.txt
-	./bin/pip install --upgrade pip==22.0.3
+	./bin/pip install --upgrade pip==21.3.1
 	./bin/pip install --upgrade setuptools==51.3.3
 	./bin/buildout -v
 

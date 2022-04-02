@@ -1,16 +1,15 @@
 import RoomDetailsModal from 'plugins/muc-views/modals/muc-details.js';
 import RoomsListModel from './model.js';
 import tpl_roomslist from "./templates/roomslist.js";
-import { ElementView } from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isUniView } from '@converse/headless/utils/core.js';
-import { render } from 'lit';
 
 const { Strophe, u } = converse.env;
 
-export class RoomsList extends ElementView {
+export class RoomsList extends CustomElement {
 
     initialize () {
         const id = `converse.roomspanel${_converse.bare_jid}`;
@@ -23,23 +22,23 @@ export class RoomsList extends ElementView {
         this.listenTo(_converse.chatboxes, 'destroy', this.renderIfChatRoom)
         this.listenTo(_converse.chatboxes, 'change', this.renderIfRelevantChange)
 
-        this.render();
+        this.requestUpdate();
     }
 
     renderIfChatRoom (model) {
-        u.isChatRoom(model) && this.render();
+        u.isChatRoom(model) && this.requestUpdate();
     }
 
     renderIfRelevantChange (model) {
         const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
         const changed = model.changed || {};
         if (u.isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
-            this.render();
+            this.requestUpdate();
         }
     }
 
     render () {
-        render(tpl_roomslist({
+        return tpl_roomslist({
             'addBookmark': ev => this.addBookmark(ev),
             'allow_bookmarks': api.settings.get('allow_bookmarks') && _converse.bookmarks,
             'closeRoom': ev => this.closeRoom(ev),
@@ -52,7 +51,7 @@ export class RoomsList extends ElementView {
             'showRoomDetailsModal': ev => this.showRoomDetailsModal(ev),
             'toggleRoomsList': ev => this.toggleRoomsList(ev),
             'toggle_state': this.model.get('toggle-state')
-        }), this);
+        });
     }
 
     showRoomDetailsModal (ev) { // eslint-disable-line class-methods-use-this

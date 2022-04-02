@@ -3,7 +3,7 @@
  * @description
  * This is a Converse.js plugin which add support for in-band registration
  * as specified in XEP-0077.
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import './panel.js';

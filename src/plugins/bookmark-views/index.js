@@ -1,6 +1,6 @@
 /**
  * @description Converse.js plugin which adds views for XEP-0048 bookmarks
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import '@converse/headless/plugins/muc/index.js';

@@ -80,6 +80,8 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/mentions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/mep.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/modtools.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/muc-add-modal.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/muc-list-modal.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc-api.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc-mentions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc-messages.js", type: 'module' },

@@ -16,6 +16,7 @@
     --chat-color: var(--green);
     --disabled-color: gray;
     --error-color: var(--dark-red);
+    --focus-color: var(--white);
 
     // ---
 
@@ -80,7 +81,7 @@
     --chat-info-color: var(--chatroom-head-bg-color);
 
     --danger-color-dark: #A93415; // darker red
-    --danger-color: #D24E2B; // dark-red
+    --danger-color: var(--redder-orange); // dark-red
     --highlight-color-darker: #B0E8E2;
     --highlight-color: #DCF9F6;
     --primary-color-dark:  #397491;
@@ -166,6 +167,7 @@
     --list-item-open-hover-color: var(--controlbox-head-color);
     --list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
     --list-item-action-hover-color: var(--inverse-link-color);
+    --list-group-item-bg-color: var(--background);
 
     --chat-msg-hover-color: var(--list-item-hover-color);
 }

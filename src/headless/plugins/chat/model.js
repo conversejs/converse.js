@@ -637,7 +637,8 @@ const ChatBox = ModelWithContact.extend({
             } else {
                 older_versions[message.get('time')] = message.getMessageText();
             }
-            attrs = Object.assign(attrs, {'older_versions': older_versions});
+            attrs = Object.assign(attrs, { older_versions });
+            delete attrs['msgid']; // We want to keep the msgid of the original message
             delete attrs['id']; // Delete id, otherwise a new cache entry gets created
             attrs['time'] = message.get('time');
             message.save(attrs);
@@ -679,15 +680,16 @@ const ChatBox = ModelWithContact.extend({
     },
 
     getMessageBodyQueryAttrs (attrs) {
-        if (attrs.message && attrs.msgid) {
+        if (attrs.msgid) {
             const query = {
                 'from': attrs.from,
                 'msgid': attrs.msgid
             }
-            if (!attrs.is_encrypted) {
+            // XXX: Need to take XEP-428 <fallback> into consideration
+            if (!attrs.is_encrypted && attrs.body) {
                 // We can't match the message if it's a reflected
                 // encrypted message (e.g. via MAM or in a MUC)
-                query['message'] =  attrs.message;
+                query['body'] =  attrs.body;
             }
             return query;
         }

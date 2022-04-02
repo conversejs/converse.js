@@ -30,6 +30,7 @@
         background-color: var(--primary-color) !important;
         border-color: transparent !important;
         &:focus, &:hover, &:active {
+            color: var(--button-text-color);
             background-color: var(--primary-color-dark) !important;
             border-color: transparent !important;
         }

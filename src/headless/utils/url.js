@@ -1,12 +1,24 @@
 import URI from 'urijs';
 import log from '@converse/headless/log';
-import { api } from '@converse/headless/core';
+import { api, converse } from '@converse/headless/core';
 
-function checkTLS (uri) {
-    const uri_protocol = uri.protocol().toLowerCase();
+const { u } = converse.env;
+
+/**
+ * Given a url, check whether the protocol being used is allowed for rendering
+ * the media in the chat (as opposed to just rendering a URL hyperlink).
+ * @param { String } url
+ * @returns { Boolean }
+ */
+function isAllowedProtocolForMedia(url) {
+    const uri = getURI(url);
+    const { protocol } = window.location;
+    if (['chrome-extension:','file:'].includes(protocol)) {
+        return true;
+    }
     return (
-        window.location.protocol === 'http:' ||
-        (window.location.protocol === 'https:' && ['https', 'aesgcm'].includes(uri_protocol))
+        protocol === 'http:' ||
+        (protocol === 'https:' && ['https', 'aesgcm'].includes(uri.protocol().toLowerCase()))
     );
 }
 
@@ -19,10 +31,19 @@ export function getURI (url) {
     }
 }
 
+/**
+ * Given the an array of file extensions, check whether a URL points to a file
+ * ending in one of them.
+ * @param { String[] } types - An array of file extensions
+ * @param { String } url
+ * @returns { Boolean }
+ * @example
+ *  checkFileTypes(['.gif'], 'https://conversejs.org/cat.gif?foo=bar');
+ */
 function checkFileTypes (types, url) {
     const uri = getURI(url);
-    if (uri === null || (window.location.protocol !== 'chrome-extension:' && !checkTLS(uri))) {
-        return false;
+    if (uri === null) {
+        throw new Error(`checkFileTypes: could not parse url ${url}`);
     }
     const filename = uri.filename().toLowerCase();
     return !!types.filter(ext => filename.endsWith(ext)).length;
@@ -37,6 +58,9 @@ export function isDomainWhitelisted (whitelist, url) {
 }
 
 export function shouldRenderMediaFromURL (url_text, type) {
+    if (!isAllowedProtocolForMedia(url_text)) {
+        return false;
+    }
     const may_render = api.settings.get('render_media');
     const is_domain_allowed = isDomainAllowed(url_text, `allowed_${type}_domains`);
 
@@ -103,3 +127,15 @@ export function isImageURL (url) {
 export function isEncryptedFileURL (url) {
     return url.startsWith('aesgcm://');
 }
+
+Object.assign(u, {
+    isAudioURL,
+    isGIFURL,
+    isVideoURL,
+    isImageURL,
+    isURLWithImageExtension,
+    checkFileTypes,
+    getURI,
+    shouldRenderMediaFromURL,
+    isAllowedProtocolForMedia,
+});

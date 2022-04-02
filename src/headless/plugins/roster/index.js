@@ -7,7 +7,6 @@ import RosterContact from './contact.js';
 import RosterContacts from './contacts.js';
 import roster_api from './api.js';
 import { Presence, Presences } from './presence.js';
-import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import {
     onChatBoxesInitialized,
@@ -34,6 +33,7 @@ converse.plugins.add('converse-roster', {
         // API methods only available to plugins
         Object.assign(_converse.api, roster_api);
 
+        const { __ } = _converse;
         _converse.HEADER_CURRENT_CONTACTS = __('My contacts');
         _converse.HEADER_PENDING_CONTACTS = __('Pending contacts');
         _converse.HEADER_REQUESTING_CONTACTS = __('Contact requests');

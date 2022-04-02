@@ -1,5 +1,5 @@
 /**
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import "shared/components/brand-heading.js";
@@ -58,6 +58,7 @@ converse.plugins.add('converse-controlbox', {
             allow_user_trust_override: true,
             default_domain: undefined,
             locked_domain: undefined,
+            show_connection_url_input: false,
             show_controlbox_by_default: false,
             sticky_controlbox: false
         });

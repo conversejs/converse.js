@@ -2,7 +2,7 @@
  * @description
  * Converse.js plugin which add support for application-level pings
  * as specified in XEP-0199 XMPP Ping.
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import ping_api from './api.js';

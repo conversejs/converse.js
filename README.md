@@ -46,7 +46,11 @@ In overlay mode, Converse appears overlayed chats on top of the website.
 
 In fullpage mode, Converse behaves like a single-page app that covers the whole browser viewport.
 
-![Screenshot of Converse in fullpage mode](https://conversejs.org/screenshots/Converse-fullscreen.png)
+![Screenshot of Converse 9.0.0 in fullpage mode](https://conversejs.org/screenshots/Converse-fullscreen.png)
+
+### Dark mode
+
+![Screenshot of Converse 9.1.0 with a dark theme](https://conversejs.org/screenshots/Converse-Dracula-Theme.png)
 
 ### Embedded
 

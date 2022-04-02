@@ -1,7 +1,6 @@
 import "@converse/headless/plugins/muc/index.js";
 import Bookmark from './model.js';
 import log from "@converse/headless/log.js";
-import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
@@ -86,6 +85,7 @@ const Bookmarks = {
     },
 
     onBookmarkError (iq, options) {
+        const { __ } = _converse;
         log.error("Error while trying to add bookmark");
         log.error(iq);
         api.alert(
@@ -145,6 +145,7 @@ const Bookmarks = {
     },
 
     onBookmarksReceivedError (deferred, iq) {
+        const { __ } = _converse;
         if (iq === null) {
             log.error('Error: timeout while fetching bookmarks');
             api.alert('error', __('Timeout Error'),

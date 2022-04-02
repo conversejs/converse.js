@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, $iq, $pres, u } = converse.env;
+const { Strophe, $iq, $msg, $pres, u, omemo } = converse.env;
 
 describe("An OMEMO encrypted message", function() {
 
@@ -126,7 +126,7 @@ describe("An OMEMO encrypted message", function() {
                     `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
             `</message>`);
 
-        const older_versions = first_msg.get('older_versions');
+        let older_versions = first_msg.get('older_versions');
         let keys = Object.keys(older_versions);
         expect(keys.length).toBe(1);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
@@ -154,6 +154,58 @@ describe("An OMEMO encrypted message", function() {
         expect(keys.length).toBe(2);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
         expect(older_versions[keys[1]]).toBe('But soft, what light through yonder door breaks?');
+
+        const first_rcvd_msg_id = u.getUniqueId();
+        let obj = await omemo.encryptMessage('This is an encrypted message from the contact')
+        _converse.connection._dataRecv(mock.createRequest($msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                'id': first_rcvd_msg_id
+            }).c('body').t(fallback_text).up()
+                .c('origin-id', {'id': first_rcvd_msg_id, 'xmlns': 'urn:xmpp:sid:0'}).up()
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('iv').t(obj.iv)
+                        .up().up()
+                    .c('payload').t(obj.payload)));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        expect(view.model.messages.length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim())
+            .toBe('This is an encrypted message from the contact');
+
+        const msg_id = u.getUniqueId();
+        obj = await omemo.encryptMessage('This is an edited encrypted message from the contact')
+        _converse.connection._dataRecv(mock.createRequest($msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                'id': msg_id
+            }).c('body').t(fallback_text).up()
+                .c('replace', {'id': first_rcvd_msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).up()
+                .c('origin-id', {'id': msg_id, 'xmlns': 'urn:xmpp:sid:0'}).up()
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('iv').t(obj.iv)
+                        .up().up()
+                    .c('payload').t(obj.payload)));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        expect(view.model.messages.length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim())
+            .toBe('This is an edited encrypted message from the contact');
+
+        const message = view.model.messages.at(1);
+        older_versions = message.get('older_versions');
+        keys = Object.keys(older_versions);
+        expect(keys.length).toBe(1);
+        expect(older_versions[keys[0]]).toBe('This is an encrypted message from the contact');
+        expect(message.get('plaintext')).toBe('This is an edited encrypted message from the contact');
+        expect(message.get('is_encrypted')).toBe(true);
+        expect(message.get('body')).toBe(fallback_text);
+        expect(message.get('message')).toBe(fallback_text);
+        expect(message.get('msgid')).toBe(first_rcvd_msg_id);
     }));
 });
 
@@ -324,8 +376,8 @@ describe("An OMEMO encrypted MUC message", function() {
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text);
 
         const fallback_text = 'This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo';
-        const older_versions = first_msg.get('older_versions');
-        const keys = Object.keys(older_versions);
+        let older_versions = first_msg.get('older_versions');
+        let keys = Object.keys(older_versions);
         expect(keys.length).toBe(1);
         expect(older_versions[keys[0]]).toBe(original_text);
         expect(first_msg.get('plaintext')).toBe(new_text);
@@ -353,6 +405,60 @@ describe("An OMEMO encrypted MUC message", function() {
                     `<store xmlns="urn:xmpp:hints"/>`+
                     `<encryption namespace="eu.siacs.conversations.axolotl" xmlns="urn:xmpp:eme:0"/>`+
                 `</message>`);
-    }));
 
+
+        // Test reception of an encrypted message
+        const first_received_id = _converse.connection.getUniqueId()
+        const first_received_message = 'This is an encrypted message from the contact';
+        const first_obj = await omemo.encryptMessage(first_received_message)
+        _converse.connection._dataRecv(mock.createRequest($msg({
+                'from': `${muc_jid}/newguy`,
+                'to': _converse.connection.jid,
+                'type': 'groupchat',
+                'id': first_received_id
+            }).c('body').t(fallback_text).up()
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(first_obj.key_and_tag)).up()
+                        .c('iv').t(first_obj.iv)
+                        .up().up()
+                    .c('payload').t(first_obj.payload)));
+
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        expect(view.model.messages.length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim()).toBe(first_received_message);
+        expect(_converse.devicelists.length).toBe(2);
+        expect(_converse.devicelists.at(0).get('jid')).toBe(_converse.bare_jid);
+        expect(_converse.devicelists.at(1).get('jid')).toBe(contact_jid);
+
+        const second_received_message = 'This is an edited encrypted message from the contact';
+        const second_obj = await omemo.encryptMessage(second_received_message)
+        _converse.connection._dataRecv(mock.createRequest($msg({
+                'from': `${muc_jid}/newguy`,
+                'to': _converse.connection.jid,
+                'type': 'groupchat',
+                'id': _converse.connection.getUniqueId()
+            }).c('body').t(fallback_text).up()
+                .c('replace',  {'id':first_received_id, 'xmlns': 'urn:xmpp:message-correct:0'})
+                .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(second_obj.key_and_tag)).up()
+                        .c('iv').t(second_obj.iv)
+                        .up().up()
+                    .c('payload').t(second_obj.payload)));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+        expect(view.model.messages.length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim()).toBe(second_received_message);
+
+        const message = view.model.messages.at(1);
+        older_versions = message.get('older_versions');
+        keys = Object.keys(older_versions);
+        expect(keys.length).toBe(1);
+        expect(older_versions[keys[0]]).toBe('This is an encrypted message from the contact');
+        expect(message.get('plaintext')).toBe('This is an edited encrypted message from the contact');
+        expect(message.get('is_encrypted')).toBe(true);
+        expect(message.get('body')).toBe(fallback_text);
+        expect(message.get('msgid')).toBe(first_received_id);
+    }));
 });

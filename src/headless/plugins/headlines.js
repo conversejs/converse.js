@@ -1,6 +1,6 @@
 /**
  * @module converse-headlines
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @description XEP-0045 Multi-User Chat Views
  */
 import { _converse, api, converse } from "@converse/headless/core";

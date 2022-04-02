@@ -1,6 +1,6 @@
 /**
  * @description XEP-0313 Message Archive Management
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import '../disco/index.js';

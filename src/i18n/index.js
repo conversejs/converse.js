@@ -1,6 +1,6 @@
 /**
  * @module i18n
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description This is the internationalization module
  */

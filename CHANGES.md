@@ -1,6 +1,6 @@
 # Changelog
 
-## 9.0.1 (Unreleased)
+## 9.1.0 (2022-04-02)
 
 - Updated translations: af, ar, es, eu, fr, gl, he, lt
 - Increased stanza timeout from 10 to 20 seconds

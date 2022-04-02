@@ -1,5 +1,5 @@
 /**
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Utility functions to help with parsing XEP-393 message styling hints
  * @todo Other parsing helpers can be made more abstract and placed here.

@@ -2,7 +2,7 @@
  * @description
  *  Converse.js plugin which shows a list of currently open
  *  rooms in the "Rooms Panel" of the ControlBox.
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/plugins/muc/index.js";

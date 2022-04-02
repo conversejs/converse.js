@@ -1,6 +1,6 @@
 /**
  * @module converse-emoji
- * @copyright 2020, the Converse.js contributors
+ * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './regexes.js';

@@ -7,6 +7,10 @@ import status_api from './api.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import { initStatus, onEverySecond, onUserActivity, registerIntervalHandler, sendCSI } from './utils.js';
 
+const { Strophe } = converse.env;
+
+Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
+
 
 converse.plugins.add('converse-status', {
 
@@ -17,6 +21,7 @@ converse.plugins.add('converse-status', {
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             default_state: 'online',
+            idle_presence_timeout: 300, // Seconds after which an idle presence is sent
             priority: 0,
         });
         api.promises.add(['statusInitialized']);
@@ -28,6 +33,10 @@ converse.plugins.add('converse-status', {
         _converse.registerIntervalHandler = registerIntervalHandler;
 
         Object.assign(_converse.api.user, status_api);
+
+        if (api.settings.get("idle_presence_timeout") > 0) {
+            api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.IDLE));
+        }
 
         api.listen.on('presencesInitialized', (reconnecting) => {
             if (!reconnecting) {

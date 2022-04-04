@@ -53,7 +53,6 @@ Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
-Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
 Strophe.addNamespace('MARKERS', 'urn:xmpp:chat-markers:0');
 Strophe.addNamespace('MENTIONS', 'urn:xmpp:mmn:0');
@@ -726,10 +725,6 @@ Object.assign(converse, {
             !History.started && _converse.router.history.start();
         } catch (e) {
             log.error(e);
-        }
-
-        if (api.settings.get("idle_presence_timeout") > 0) {
-            api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.IDLE));
         }
 
         const plugins = _converse.pluggable.plugins

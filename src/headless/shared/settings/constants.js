@@ -15,7 +15,6 @@
  * @property { RegExp } [geouri_regex]
  * @property { RegExp } [geouri_replacement='https - //www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2']
  * @property { String } [i18n]
- * @property { Number } [idle_presence_timeout=300] - Seconds after which an idle presence is sent
  * @property { String } [jid]
  * @property { Boolean } [keepalive=true]
  * @property { ('debug'|'info'|'eror') } [loglevel='info']
@@ -47,7 +46,6 @@ export const DEFAULT_SETTINGS = {
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     i18n: undefined,
-    idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
     loglevel: 'info',

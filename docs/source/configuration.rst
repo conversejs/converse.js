@@ -1833,7 +1833,7 @@ Setting it to an array of domains means that media will be rendered only for URL
 matching those domains.
 
 Media URLs are those URLs which appear to point to media files as well as URLs
-for which `Open Graph Protocol (OGP) <https://modules.prosody.im/mod_ogp.html`_
+for which `Open Graph Protocol (OGP) <https://modules.prosody.im/mod_ogp.html>`_
 data was received (for example via Prosody's `mod_ogp <https://modules.prosody.im/mod_ogp.html>`_).
 
 The OGP metadata must come from the MUC itself, metadata sent from participants

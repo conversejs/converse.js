@@ -155,9 +155,10 @@ export default class EmojiPicker extends CustomElement {
         const ac_position = this.model.get('ac_position');
         this.model.set({'autocompleting': null, 'query': '', 'ac_position': null});
         this.disableArrowNavigation();
+        const jid = this.chatview.model.get('jid');
         const options = {
             'bubbles': true,
-            'detail': { value, autocompleting, ac_position }
+            'detail': { value, autocompleting, ac_position, jid }
         };
         this.dispatchEvent(new CustomEvent("emojiSelected", options));
     }

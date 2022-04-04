@@ -17,12 +17,12 @@ export default class MessageForm extends ElementView {
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model, 'change:composing_spoiler', () => this.render());
 
-        this.handleEmojiSelection = ({ detail }) => this.insertIntoTextArea(
-            detail.value,
-            detail.autocompleting,
-            false,
-            detail.ac_position
-        );
+        this.handleEmojiSelection = ({ detail }) => {
+            debugger;
+            if (this.model.get('jid') === detail.jid) {
+                this.insertIntoTextArea(detail.value, detail.autocompleting, false, detail.ac_position);
+            }
+        }
         document.addEventListener("emojiSelected", this.handleEmojiSelection);
         this.render();
     }

@@ -202,7 +202,7 @@ function getTemplateForObjectURL (uri, obj_url, richtext) {
     }
     if (isImageURL(file_url)) {
         return tpl_image({
-            'url': obj_url,
+            'src': obj_url,
             'onClick': richtext.onImgClick,
             'onLoad': richtext.onImgLoad
         });

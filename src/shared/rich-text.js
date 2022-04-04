@@ -134,7 +134,7 @@ export class RichText extends String {
                 template = tpl_gif(filtered_url, this.hide_media_urls);
             } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
                 template = tpl_image({
-                    'url': filtered_url,
+                    'src': filtered_url,
                     // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
                     'href': this.hide_media_urls ? null : filtered_url,
                     'onClick': this.onImgClick,

@@ -17,7 +17,7 @@ const tpl_url_wrapper = (o, wrapped_template) =>
         : wrapped_template(o);
 
 const tpl_image = o =>
-    html`<converse-image class="card-img-top" text="${o.image}" href="${o.url}" .onImgLoad=${o.onload}></converse-image>`;
+    html`<converse-image class="card-img-top" href="${o.url}" src="${o.image}" .onImgLoad=${o.onload}></converse-image>`;
 
 export default o => {
     const show_image = isValidImage(o.image);

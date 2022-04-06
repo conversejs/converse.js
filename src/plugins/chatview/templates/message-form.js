@@ -11,10 +11,15 @@ export default (o) => {
 
     return html`
         <form class="sendXMPPMessage">
-            <input type="text" placeholder="${label_spoiler_hint || ''}" value="${o.hint_value || ''}" class="${o.composing_spoiler ? '' : 'hidden'} spoiler-hint"/>
+            <input type="text"
+                   enterkeyhint="send"
+                   placeholder="${label_spoiler_hint || ''}"i
+                   value="${o.hint_value || ''}"
+                   class="${o.composing_spoiler ? '' : 'hidden'} spoiler-hint"/>
             <textarea
                 autofocus
                 type="text"
+                enterkeyhint="send"
                 @drop=${o.onDrop}
                 @input=${resetElementHeight}
                 @keydown=${o.onKeyDown}

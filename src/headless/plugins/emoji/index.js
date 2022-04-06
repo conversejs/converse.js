@@ -131,6 +131,7 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
         } else {
             const path = api.settings.get('emoji_image_path');
             return html`<img class="emoji"
+                loading="lazy"
                 draggable="false"
                 title="${shortname}"
                 alt="${emoji}"
@@ -140,6 +141,7 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
         return shortname;
     } else {
         return html`<img class="emoji"
+            loading="lazy"
             draggable="false"
             title="${shortname}"
             alt="${shortname}"

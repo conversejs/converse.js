@@ -18,6 +18,7 @@ class ImageDirective extends AsyncDirective {
 
     renderImage (src, href, onLoad, onClick) {
         return html`<img class="chat-image img-thumbnail"
+                loading="lazy"
                 src="${src}"
                 @click=${onClick}
                 @error=${() => this.onError(src, href, onLoad, onClick)}

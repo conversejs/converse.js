@@ -2,6 +2,7 @@
 
 ## 9.1.1 (Unreleased)
 
+- GIFs don't render inside unfurls and cause a TypeError
 
 ## 9.1.0 (2022-04-02)
 

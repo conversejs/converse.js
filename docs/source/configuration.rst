@@ -2174,7 +2174,7 @@ theme
 -----
 
 * Default: ``default``
-* Valid options: ``default``, ``concord``
+* Valid options: ``default``, ``concord``, ``dracula``
 
 Let's you set a color theme for Converse.
 

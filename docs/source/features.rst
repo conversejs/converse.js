@@ -31,7 +31,7 @@ End to end message encryption (`XEP-0384 OMEMO <https://xmpp.org/extensions/xep-
 =============================================================================================
 
 .. note::
-    Converse.js (as of version 4.1.2) does NOT support encryption or decryption
+    Converse versions older than 8.0.0 do NOT support encryption or decryption
     of uploaded files. Files will be uploaded WITHOUT ENCRYPTION, even when
     OMEMO is enabled.
 
@@ -44,7 +44,9 @@ ever tear down a session once one has been established.
 
 This means that a session needs to be stored permanently after logging out.
 
-Converse stores this session information in the browser's `localStorage <https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage>`_.
+Converse stores this session information in the browser's `IndexedDB <https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API>`_
+or `localStorage <https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage>`_
+database, depending on the value provided to :ref:`persistent-store`.
 
 If you've checked the "This is not a trusted device" checkbox when logging in,
 then `sessionStorage <https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage>`_
@@ -88,10 +90,7 @@ headers.
 Due to these reasons, it's NOT a good idea to use encrypted messaging with a
 browser-based solution in life-threatening situations.
 
-Security can be increased by using an installable app (like one based on `Electron <https://electronjs.org/>`_)
-with a strict Content Security Policy.
-
-Look out for an Electron based version of Converse coming in the following months.
+Security can be increased by using an installable app (like `Converse Desktop <https://github.com/conversejs/converse-desktop>`_).
 
 For further reading on the challenges of web-based crypto, take a look at these
 articles:

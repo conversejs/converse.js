@@ -1718,11 +1718,12 @@ compile time.
 
 This configuration seting allows this value to be set at runtime as well.
 
+.. _persistent-store:
 
 persistent_store
 ----------------
 
-* Default: ``localStorage``
+* Default: ``IndexedDB``
 * Valid options: ``localStorage``, ``IndexedDB``, ``sessionStorage``, ``BrowserExtLocal``, ``BrowserExtSync``
 
 Determines which store is used for storing persistent data.

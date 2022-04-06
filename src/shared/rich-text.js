@@ -4,15 +4,15 @@ import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
 import { api } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
+import { getEmojiMarkup } from './chat/utils.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import {
     convertASCII2Emoji,
     getCodePointReferences,
-    getEmojiMarkup,
     getShortnameReferences
-} from '@converse/headless/plugins/emoji/index.js';
+} from '@converse/headless/plugins/emoji/utils.js';
 import {
     filterQueryParamsFromURL,
     isAudioURL,
@@ -21,6 +21,7 @@ import {
     isVideoURL,
     shouldRenderMediaFromURL,
 } from '@converse/headless/utils/url.js';
+
 
 import { html } from 'lit';
 

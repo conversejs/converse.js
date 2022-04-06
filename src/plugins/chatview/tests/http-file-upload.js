@@ -273,7 +273,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     // Check that the image renders
                     expect(img_link_el.outerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                        `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
+                        `<img class="chat-image img-thumbnail" loading="lazy" src="${base_url}/logo/conversejs-filled.svg"></a>`);
                     XMLHttpRequest.prototype.send = send_backup;
                 }));
 

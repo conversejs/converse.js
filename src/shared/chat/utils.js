@@ -1,8 +1,14 @@
 import debounce from 'lodash/debounce';
 import tpl_new_day from "./templates/new-day.js";
 import { _converse, api, converse } from '@converse/headless/core';
+import { html } from 'lit';
+import {
+    convertASCII2Emoji,
+    getShortnameReferences,
+    getCodePointReferences
+} from '@converse/headless/plugins/emoji/utils.js';
 
-const { dayjs } = converse.env;
+const { dayjs, u } = converse.env;
 
 export function onScrolledDown (model) {
     if (!model.isHidden()) {
@@ -94,3 +100,102 @@ export function getHats (message) {
     }
     return [];
 }
+
+function unique (arr) {
+    return [...new Set(arr)];
+}
+
+export function getTonedEmojis () {
+    if (!converse.emojis.toned) {
+        converse.emojis.toned = unique(
+            Object.values(converse.emojis.json.people)
+                .filter(person => person.sn.includes('_tone'))
+                .map(person => person.sn.replace(/_tone[1-5]/, ''))
+        );
+    }
+    return converse.emojis.toned;
+}
+
+export function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: false}) {
+    const emoji = data.emoji;
+    const shortname = data.shortname;
+    if (emoji) {
+        if (options.unicode_only) {
+            return emoji;
+        } else if (api.settings.get('use_system_emojis')) {
+            if (options.add_title_wrapper) {
+                return shortname ? html`<span title="${shortname}">${emoji}</span>` : emoji;
+            } else {
+                return emoji;
+            }
+        } else {
+            const path = api.settings.get('emoji_image_path');
+            return html`<img class="emoji"
+                loading="lazy"
+                draggable="false"
+                title="${shortname}"
+                alt="${emoji}"
+                src="${path}/72x72/${data.cp}.png"/>`;
+        }
+    } else if (options.unicode_only) {
+        return shortname;
+    } else {
+        return html`<img class="emoji"
+            loading="lazy"
+            draggable="false"
+            title="${shortname}"
+            alt="${shortname}"
+            src="${converse.emojis.by_sn[shortname].url}">`;
+    }
+}
+
+export function addEmojisMarkup (text, options) {
+    let list = [text];
+    [...getShortnameReferences(text), ...getCodePointReferences(text)]
+        .sort((a, b) => b.begin - a.begin)
+        .forEach(ref => {
+            const text = list.shift();
+            const emoji = getEmojiMarkup(ref, options);
+            if (typeof emoji === 'string') {
+                list = [text.slice(0, ref.begin) + emoji + text.slice(ref.end), ...list];
+            } else {
+                list = [text.slice(0, ref.begin), emoji, text.slice(ref.end), ...list];
+            }
+        });
+    return list;
+}
+
+/**
+ * Returns an emoji represented by the passed in shortname.
+ * Scans the passed in text for shortnames and replaces them with
+ * emoji unicode glyphs or alternatively if it's a custom emoji
+ * without unicode representation then a lit TemplateResult
+ * which represents image tag markup is returned.
+ *
+ * The shortname needs to be defined in `emojis.json`
+ * and needs to have either a `cp` attribute for the codepoint, or
+ * an `url` attribute which points to the source for the image.
+ *
+ * @namespace u
+ * @method u.shortnamesToEmojis
+ * @param { String } str - String containg the shortname(s)
+ * @param { Object } options
+ * @param { Boolean } options.unicode_only - Whether emojis are rendered as
+ *  unicode codepoints. If so, the returned result will be an array
+ *  with containing one string, because the emojis themselves will
+ *  also be strings. If set to false, emojis will be represented by
+ *  lit TemplateResult objects.
+ * @param { Boolean } options.add_title_wrapper - Whether unicode
+ *  codepoints should be wrapped with a `<span>` element with a
+ *  title, so that the shortname is shown upon hovering with the
+ *  mouse.
+ * @returns {Array} An array of at least one string, or otherwise
+ * strings and lit TemplateResult objects.
+ */
+export function shortnamesToEmojis (str, options={unicode_only: false, add_title_wrapper: false}) {
+    str = convertASCII2Emoji(str);
+    return addEmojisMarkup(str, options);
+}
+
+
+Object.assign(u, { shortnamesToEmojis });

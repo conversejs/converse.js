@@ -316,6 +316,7 @@ const ChatBox = ModelWithContact.extend({
     async onReconnection () {
         if (api.settings.get('clear_messages_on_reconnection')) {
             await this.clearMessages();
+            await this.fetchMessages();
         }
         this.announceReconnection();
     },

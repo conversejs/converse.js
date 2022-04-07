@@ -3,6 +3,7 @@
 ## 9.1.1 (Unreleased)
 
 - GIFs don't render inside unfurls and cause a TypeError
+- #2872: Chat box empty after re-connection when 'clear_messages_on_reconnection' parameter is enabled
 
 ## 9.1.0 (2022-04-02)
 

@@ -14,6 +14,7 @@ function onDiscoInfoRequest (stanza) {
     if (from !== null) {
         iqresult.attrs({'to': from});
     }
+
     iqresult.c('query', attrs);
     _converse.disco._identities.forEach(identity => {
         const attrs = {

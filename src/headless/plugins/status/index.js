@@ -5,7 +5,14 @@
 import XMPPStatus from './status.js';
 import status_api from './api.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { initStatus, onEverySecond, onUserActivity, registerIntervalHandler, sendCSI } from './utils.js';
+import {
+    addStatusToMUCJoinPresence,
+    initStatus,
+    onEverySecond,
+    onUserActivity,
+    registerIntervalHandler,
+    sendCSI
+} from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -54,5 +61,6 @@ converse.plugins.add('converse-status', {
 
         api.listen.on('connected', () => initStatus(false));
         api.listen.on('reconnected', () => initStatus(true));
+        api.listen.on('constructedMUCPresence', addStatusToMUCJoinPresence);
     }
 });

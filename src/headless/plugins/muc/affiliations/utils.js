@@ -30,7 +30,6 @@ export async function getAffiliationList (affiliation, muc_jid) {
         const err_msg = __('Error: timeout while fetching %1s list for MUC %2s', affiliation, muc_jid);
         const err = new Error(err_msg);
         log.warn(err_msg);
-        log.warn(result);
         return err;
     }
     if (u.isErrorStanza(result)) {

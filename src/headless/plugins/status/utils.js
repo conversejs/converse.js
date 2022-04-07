@@ -126,3 +126,17 @@ export function registerIntervalHandler () {
     window.addEventListener(unloadevent, () => _converse.session?.save('active', false));
     _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
 }
+
+export function addStatusToMUCJoinPresence (_, stanza) {
+    const { xmppstatus } = _converse;
+
+    const status = xmppstatus.get('status');
+    if (['away', 'chat', 'dnd', 'xa'].includes(status)) {
+        stanza.c('show').t(status).up();
+    }
+    const status_message = xmppstatus.get('status_message');
+    if (status_message) {
+        stanza.c('status').t(status_message).up();
+    }
+    return stanza;
+}

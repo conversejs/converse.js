@@ -206,17 +206,13 @@ const ChatRoomMixin = {
             stanza.cnode(Strophe.xmlElement('password', [], password));
         }
         stanza.up(); // Go one level up, out of the `x` element.
-
-        const status = _converse.xmppstatus.get('status');
-        if (['away', 'chat', 'dnd', 'xa'].includes(status)) {
-            stanza.c('show').t(status).up();
-        }
-        const status_message = _converse.xmppstatus.get('status_message');
-        if (status_message) {
-            stanza.c('status').t(status_message).up();
-        }
-
-        stanza = await api.hook('constructedMUCPresence', null, stanza);
+         /**
+          * *Hook* which allows plugins to update an outgoing MUC join presence stanza
+          * @event _converse#constructedMUCPresence
+          * @param { _converse.ChatRoom } - The MUC from which this message stanza is being sent.
+          * @param { XMLElement } stanza - The stanza which will be sent out
+          */
+        stanza = await api.hook('constructedMUCPresence', this, stanza);
         return stanza;
     },
 

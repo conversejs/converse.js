@@ -3,6 +3,7 @@
 ## 9.1.1 (Unreleased)
 
 - GIFs don't render inside unfurls and cause a TypeError
+- #2746: Always reply to all iqs, even those not understood
 - #2868: Selected emoji is inserted into all open chat boxes
 
 ## 9.1.0 (2022-04-02)

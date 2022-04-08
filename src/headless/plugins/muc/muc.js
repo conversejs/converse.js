@@ -325,12 +325,7 @@ const ChatRoomMixin = {
     async onRoomEntered () {
         await this.occupants.fetchMembers();
         if (api.settings.get('clear_messages_on_reconnection')) {
-            // Don't call this.clearMessages because we don't want to
-            // recreate promises, since that will cause some existing
-            // awaiters to never proceed.
-            await this.messages.clearStore();
-            // A bit hacky. No need to fetch messages after clearing
-            this.messages.fetched.resolve();
+            await this.clearMessages();
         } else {
             await this.fetchMessages();
         }

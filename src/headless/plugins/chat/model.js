@@ -94,11 +94,11 @@ const ChatBox = ModelWithContact.extend({
         this.messages.fetched.then(() => {
             this.pruneHistoryWhenScrolledDown();
             /**
-             * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
-             * `sessionStorage` but **NOT** from the server.
+             * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
+             * has fetched its messages from the local cache.
              * @event _converse#afterMessagesFetched
-             * @type {_converse.ChatBoxView | _converse.ChatRoomView}
-             * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+             * @type { _converse.ChatBox| _converse.ChatRoom }
+             * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
              */
             api.trigger('afterMessagesFetched', this);
         });
@@ -270,9 +270,9 @@ const ChatBox = ModelWithContact.extend({
             this.messages.trigger('reset');
             log.error(e);
         } finally {
-            delete this.msg_chain;
-            delete this.messages.fetched_flag;
-            this.messages.fetched = getOpenPromise();
+            // No point in fetching messages from the cache if it's been cleared.
+            // Make sure to resolve the fetched promise to avoid freezes.
+            this.messages.fetched.resolve();
         }
     },
 

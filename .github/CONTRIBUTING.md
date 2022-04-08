@@ -17,7 +17,7 @@ Please follow the usual Github workflow. Create a fork of this repository, make 
 
 ### Before submitting a pull request
 
-Please read the `style guide <https://conversejs.org/docs/html/style_guide.html>`_ and make sure that your code follows it.
+Please read the [style guide](https://conversejs.org/docs/html/style_guide.html) and make sure that your code follows it.
 
 ### Add tests for your bugfix or feature
 

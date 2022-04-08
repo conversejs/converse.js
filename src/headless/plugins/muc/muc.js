@@ -14,7 +14,7 @@ import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from '
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
-import { isUniView, getUniqueId } from '@converse/headless/utils/core.js';
+import { isUniView, getUniqueId, safeSave } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -169,7 +169,7 @@ const ChatRoomMixin = {
         await this.refreshDiscoInfo();
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
-            u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
+            safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
             if (api.settings.get('muc_show_logs_before_join')) {
                 await this.fetchMessages();
             }
@@ -882,11 +882,11 @@ const ChatRoomMixin = {
                 'error': (_, e) => { log.error(e); resolve(); }
             }));
         }
-        u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
     },
 
     async close (ev) {
-        u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.CLOSING });
+        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.CLOSING });
         this.sendMarkerForLastMessage('received', true);
         await this.unregisterNickname();
         await this.leave();
@@ -1574,10 +1574,7 @@ const ChatRoomMixin = {
      */
     async getAndPersistNickname (nick) {
         nick = nick || this.get('nick') || (await this.getReservedNick()) || _converse.getDefaultMUCNickname();
-
-        if (nick) {
-            this.save({ nick }, { 'silent': true });
-        }
+        if (nick) safeSave(this, { nick }, { 'silent': true });
         return nick;
     },
 
@@ -1815,7 +1812,7 @@ const ChatRoomMixin = {
             // MUST NOT contain a <body/> element (or a <thread/> element).
             const subject = attrs.subject;
             const author = attrs.nick;
-            u.safeSave(this, { 'subject': { author, 'text': attrs.subject || '' } });
+            safeSave(this, { 'subject': { author, 'text': attrs.subject || '' } });
             if (!attrs.is_delayed && author) {
                 const message = subject ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
                 const prev_msg = this.messages.last();
@@ -2726,7 +2723,7 @@ const ChatRoomMixin = {
         if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0 || this.get('has_activity')) {
             this.sendMarkerForMessage(this.messages.last());
         }
-        u.safeSave(this, {
+        safeSave(this, {
             'has_activity': false,
             'num_unread': 0,
             'num_unread_general': 0

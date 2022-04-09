@@ -61,51 +61,6 @@ export async function destroyMUC (model) {
     }
 }
 
-
-function setMUCDomain (domain, controlboxview) {
-    controlboxview.querySelector('converse-rooms-list')
-        .model.save('muc_domain', Strophe.getDomainFromJid(domain));
-}
-
-function setMUCDomainFromDisco (controlboxview) {
-    /* Check whether service discovery for the user's domain
-     * returned MUC information and use that to automatically
-     * set the MUC domain in the "Add groupchat" modal.
-     */
-    function featureAdded (feature) {
-        if (!feature) {
-            return;
-        }
-        if (feature.get('var') === Strophe.NS.MUC) {
-            feature.entity.getIdentity('conference', 'text').then(identity => {
-                if (identity) {
-                    setMUCDomain(feature.get('from'), controlboxview);
-                }
-            });
-        }
-    }
-    api.waitUntil('discoInitialized')
-        .then(() => {
-            api.listen.on('serviceDiscovered', featureAdded);
-            // Features could have been added before the controlbox was
-            // initialized. We're only interested in MUC
-            _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({ 'var': Strophe.NS.MUC })));
-        })
-        .catch(e => log.error(e));
-}
-
-export function fetchAndSetMUCDomain (controlboxview) {
-    if (controlboxview.model.get('connected')) {
-        if (!controlboxview.querySelector('converse-rooms-list').model.get('muc_domain')) {
-            if (api.settings.get('muc_domain') === undefined) {
-                setMUCDomainFromDisco(controlboxview);
-            } else {
-                setMUCDomain(api.settings.get('muc_domain'), controlboxview);
-            }
-        }
-    }
-}
-
 export function getNicknameRequiredTemplate (model) {
     const jid = model.get('jid');
     if (api.settings.get('muc_show_logs_before_join')) {

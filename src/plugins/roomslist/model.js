@@ -4,12 +4,17 @@ import { _converse, api, converse } from "@converse/headless/core";
 const { Strophe } = converse.env;
 
 const RoomsListModel = Model.extend({
+
     defaults: function () {
         return {
             'muc_domain': api.settings.get('muc_domain'),
             'nick': _converse.getDefaultMUCNickname(),
             'toggle-state':  _converse.OPENED,
         };
+    },
+
+    initialize () {
+        api.settings.listen.on('change:muc_domain', (muc_domain) => this.setDomain(muc_domain));
     },
 
     setDomain (jid) {

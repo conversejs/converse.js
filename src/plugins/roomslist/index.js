@@ -7,23 +7,17 @@
  */
 import "@converse/headless/plugins/muc/index.js";
 import './view.js';
-import { api, converse } from "@converse/headless/core";
+import { converse } from "@converse/headless/core";
 
 
 converse.plugins.add('converse-roomslist', {
 
-    dependencies: ["converse-singleton", "converse-controlbox", "converse-muc", "converse-bookmarks"],
+    dependencies: [
+        "converse-singleton",
+        "converse-controlbox",
+        "converse-muc",
+        "converse-bookmarks"
+    ],
 
-    initialize () {
-        // Event handlers
-        api.listen.on('connected', async () =>  {
-            if (api.settings.get('allow_bookmarks')) {
-                await api.waitUntil('bookmarksInitialized');
-            } else {
-                await Promise.all([
-                    api.waitUntil('chatBoxesFetched'),
-                ]);
-            }
-        });
-    }
+    initialize () { }
 });

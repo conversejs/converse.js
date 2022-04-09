@@ -74,23 +74,23 @@ export default BootstrapModal.extend({
         this.loading_items = false;
 
         BootstrapModal.prototype.initialize.apply(this, arguments);
-        if (api.settings.get('muc_domain') && !this.model.get('muc_domain')) {
-            this.model.save('muc_domain', api.settings.get('muc_domain'));
-        }
         this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
+        this.listenTo(this.model, 'change:feedback_text', () => this.render());
+
 
         this.el.addEventListener('shown.bs.modal', () => api.settings.get('locked_muc_domain')
           ? this.updateRoomsList()
           : this.el.querySelector('input[name="server"]').focus()
         );
+
+        this.model.save('feedback_text', '');
     },
 
     toHTML () {
-        const muc_domain = this.model.get('muc_domain') || api.settings.get('muc_domain');
         return tpl_muc_list(
             Object.assign(this.model.toJSON(), {
                 'show_form': !api.settings.get('locked_muc_domain'),
-                'server_placeholder': muc_domain ? muc_domain : __('conference.example.org'),
+                'server_placeholder': this.model.get('muc_domain') || __('conference.example.org'),
                 'items': this.items,
                 'loading_items': this.loading_items,
                 'openRoom': ev => this.openRoom(ev),

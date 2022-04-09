@@ -6,6 +6,10 @@
 - #2746: Always reply to all iqs, even those not understood
 - #2868: Selected emoji is inserted into all open chat boxes
 
+Remove the very old and largely unused config option `allow_muc`.
+If you don't want MUC support, you can add `'converse-muc'` to the
+`blacklisted_plugins` setting.
+
 ## 9.1.0 (2022-04-02)
 
 - Updated translations: af, ar, es, eu, fr, gl, he, lt

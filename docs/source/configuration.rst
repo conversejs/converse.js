@@ -224,13 +224,6 @@ allow_message_styling
 
 Determines wehether support for XEP-0393 Message Styling hints are enabled or not.
 
-allow_muc
----------
-
-* Default:  ``true``
-
-Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
-the ``Chatrooms`` tab from the control box.
 
 allow_muc_invitations
 ---------------------

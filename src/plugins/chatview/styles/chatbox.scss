@@ -105,6 +105,9 @@
                 border-bottom-right-radius: 0;
             }
             border-top: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
             p {
                 color: var(--text-color);
                 font-size: var(--message-font-size);

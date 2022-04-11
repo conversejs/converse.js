@@ -5,6 +5,7 @@
 - GIFs don't render inside unfurls and cause a TypeError
 - Improve how the `muc_domain` setting is populated via service discovery
 - #2746: Always reply to all iqs, even those not understood
+- #2794: Some display problems with mobile view mode
 - #2868: Selected emoji is inserted into all open chat boxes
 
 Remove the very old and largely unused config option `allow_muc`.

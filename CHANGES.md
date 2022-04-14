@@ -4,6 +4,7 @@
 
 - GIFs don't render inside unfurls and cause a TypeError
 - Improve how the `muc_domain` setting is populated via service discovery
+- Remove local (non-requesting) contacts not returned from a full roster response
 - #2746: Always reply to all iqs, even those not understood
 - #2868: Selected emoji is inserted into all open chat boxes
 

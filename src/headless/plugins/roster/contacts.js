@@ -67,7 +67,7 @@ const RosterContacts = Collection.extend({
                 'add': true,
                 'silent': true,
                 'success': resolve,
-                'error': (c, e) => reject(e)
+                'error': (_, e) => reject(e)
             });
         });
         if (u.isErrorObject(result)) {
@@ -262,11 +262,19 @@ const RosterContacts = Collection.extend({
         if (this.rosterVersioningSupported()) {
             stanza.attrs({'ver': this.data.get('version')});
         }
+
         const iq = await api.sendIQ(stanza, null, false);
-        if (iq.getAttribute('type') !== 'error') {
+
+        if (iq.getAttribute('type') === 'result') {
             const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
             if (query) {
                 const items = sizzle(`item`, query);
+                if (!this.data.get('version')) {
+                    // We're getting the full roster, so remove all cached
+                    // contacts that aren't included in it.
+                    const jids = items.map(item => item.getAttribute('jid'));
+                    this.models.forEach(m => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
+                }
                 items.forEach(item => this.updateContact(item));
                 this.data.save('version', query.getAttribute('ver'));
             }
@@ -276,6 +284,7 @@ const RosterContacts = Collection.extend({
             log.error("Error while trying to fetch roster from the server");
             return;
         }
+
         _converse.session.save('roster_cached', true);
         /**
          * When the roster has been received from the XMPP server.
@@ -347,7 +356,6 @@ const RosterContacts = Collection.extend({
          */
         api.trigger('contactRequest', this.create(user_data));
     },
-
 
     handleIncomingSubscription (presence) {
         const jid = presence.getAttribute('from'),

@@ -5,7 +5,6 @@ export function highlightRosterItem (chatbox) {
     _converse.roster?.get(chatbox.get('jid'))?.trigger('highlight');
 }
 
-
 export function toggleGroup (ev, name) {
     ev?.preventDefault?.();
     const collapsed = _converse.roster.state.get('collapsed_groups');
@@ -71,4 +70,31 @@ export function shouldShowGroup (group) {
         }
     }
     return true;
+}
+
+export function populateContactsMap (contacts_map, contact) {
+    if (contact.get('requesting')) {
+        const name = _converse.HEADER_REQUESTING_CONTACTS;
+        contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
+    } else {
+        let contact_groups;
+        if (api.settings.get('roster_groups')) {
+            contact_groups = contact.get('groups');
+            contact_groups = (contact_groups.length === 0) ? [_converse.HEADER_UNGROUPED] : contact_groups;
+        } else {
+            if (contact.get('ask') === 'subscribe') {
+                contact_groups = [_converse.HEADER_PENDING_CONTACTS];
+            } else {
+                contact_groups = [_converse.HEADER_CURRENT_CONTACTS];
+            }
+        }
+        for (const name of contact_groups) {
+            contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
+        }
+    }
+    if (contact.get('num_unread')) {
+        const name = _converse.HEADER_UNREAD;
+        contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
+    }
+    return contacts_map;
 }

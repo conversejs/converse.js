@@ -27,7 +27,6 @@ const checkHeaderToggling = async function (group) {
 describe("The Contacts Roster", function () {
 
     it("verifies the origin of roster pushes", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
         // See: https://gultsch.de/gajim_roster_push_and_message_interception.html
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.waitForRoster(_converse, 'current', 1);
@@ -130,6 +129,40 @@ describe("The Contacts Roster", function () {
         expect(_converse.roster.data.get('version')).toBe('ver34');
         expect(_converse.roster.models.length).toBe(1);
         expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
+    }));
+
+    it("also contains contacts with subscription of none", mock.initConverse(
+        [], {}, async function (_converse) {
+
+        const sent_IQs = _converse.connection.IQ_stanzas;
+        const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+        _converse.connection._dataRecv(mock.createRequest($iq({
+            to: _converse.connection.jid,
+            type: 'result',
+            id: stanza.getAttribute('id')
+        }).c('query', {
+            xmlns: 'jabber:iq:roster',
+        }).c('item', {
+            jid: 'juliet@example.net',
+            name: 'Juliet',
+            subscription:'both'
+        }).c('group').t('Friends').up().up()
+        .c('item', {
+            jid: 'mercutio@example.net',
+            name: 'Mercutio',
+            subscription: 'from'
+        }).c('group').t('Friends').up().up()
+        .c('item', {
+            jid: 'lord.capulet@example.net',
+            name: 'Lord Capulet',
+            subscription:'none'
+        }).c('group').t('Acquaintences')));
+
+        while (sent_IQs.length) sent_IQs.pop();
+
+        await u.waitUntil(() => _converse.roster.length === 3);
+        expect(_converse.roster.pluck('jid')).toEqual(['juliet@example.net', 'mercutio@example.net', 'lord.capulet@example.net']);
+        expect(_converse.roster.get('lord.capulet@example.net').get('subscription')).toBe('none');
     }));
 
     it("can be refreshed", mock.initConverse(
@@ -402,7 +435,7 @@ describe("The Contacts Roster", function () {
             // Check that the groups appear alphabetically and that
             // requesting and pending contacts are last.
             const rosterview = document.querySelector('converse-roster');
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 6);
             let group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
             expect(group_titles).toEqual([
                 "Contact requests",
@@ -411,14 +444,13 @@ describe("The Contacts Roster", function () {
                 "friends & acquaintences",
                 "ænemies",
                 "Ungrouped",
-                "Pending contacts"
             ]);
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = await _converse.api.contacts.get(contact_jid);
             contact.save({'num_unread': 5});
 
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 8);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
             group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
 
             expect(group_titles).toEqual([
@@ -428,8 +460,7 @@ describe("The Contacts Roster", function () {
                 "Family",
                 "friends & acquaintences",
                 "ænemies",
-                "Ungrouped",
-                "Pending contacts"
+                "Ungrouped"
             ]);
             const contacts = sizzle('.roster-group[data-group="New messages"] li', rosterview);
             expect(contacts.length).toBe(1);
@@ -437,7 +468,7 @@ describe("The Contacts Roster", function () {
             expect(contacts[0].querySelector('.msgs-indicator').textContent).toBe("5");
 
             contact.save({'num_unread': 0});
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 6);
             group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
             expect(group_titles).toEqual([
                 "Contact requests",
@@ -445,8 +476,7 @@ describe("The Contacts Roster", function () {
                 "Family",
                 "friends & acquaintences",
                 "ænemies",
-                "Ungrouped",
-                "Pending contacts"
+                "Ungrouped"
             ]);
         }));
 
@@ -459,10 +489,8 @@ describe("The Contacts Roster", function () {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
             await mock.createContacts(_converse, 'requesting');
-            // Check that the groups appear alphabetically and that
-            // requesting and pending contacts are last.
             const rosterview = document.querySelector('converse-roster');
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 6);
             const group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
             expect(group_titles).toEqual([
                 "Contact requests",
@@ -471,7 +499,6 @@ describe("The Contacts Roster", function () {
                 "friends & acquaintences",
                 "ænemies",
                 "Ungrouped",
-                "Pending contacts"
             ]);
             // Check that usernames appear alphabetically per group
             Object.keys(mock.groups).forEach(name  => {
@@ -497,8 +524,6 @@ describe("The Contacts Roster", function () {
 
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 1);
-            // Check that the groups appear alphabetically and that
-            // requesting and pending contacts are last.
             let group_titles = await u.waitUntil(() => {
                 const toggles = sizzle('.roster-group a.group-toggle', rosterview);
                 if (toggles.reduce((result, t) => result && u.isVisible(t), true)) {
@@ -588,8 +613,8 @@ describe("The Contacts Roster", function () {
 
     describe("Pending Contacts", function () {
 
-        it("can be collapsed under their own header",
-                mock.initConverse([], {}, async function (_converse) {
+        it("can be collapsed under their own header (if roster_groups is false)",
+                mock.initConverse([], {'roster_groups': false}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -632,27 +657,25 @@ describe("The Contacts Roster", function () {
             expect(sizzle('ul.roster-group-contacts', rosterview).filter(u.isVisible).length).toBe(1);
         }));
 
-        it("can be removed by the user",
-                mock.initConverse([], {}, async function (_converse) {
-
+        it("can be removed by the user", mock.initConverse([], {'roster_groups': false}, async function (_converse) {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
             await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
             const name = mock.pend_names[0];
             const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
-            var sent_IQ;
-            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
+            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
             spyOn(contact, 'removeFromRoster').and.callThrough();
             const rosterview = document.querySelector('converse-roster');
-            await u.waitUntil(() => sizzle(".pending-contact-name:contains('"+name+"')", rosterview).length, 700);
+            await u.waitUntil(() => sizzle(`.pending-xmpp-contact .contact-name:contains("${name}")`, rosterview).length, 500);
+            let sent_IQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                 sent_IQ = iq;
                 callback();
             });
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
-            await u.waitUntil(() => (sizzle(".pending-contact-name:contains('"+name+"')", rosterview).length === 0), 1000);
+            await u.waitUntil(() => !sizzle(`.pending-xmpp-contact .contact-name:contains("${name}")`, rosterview).length, 500);
             expect(_converse.api.confirm).toHaveBeenCalled();
             expect(contact.removeFromRoster).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
@@ -665,7 +688,7 @@ describe("The Contacts Roster", function () {
 
         it("do not have a header if there aren't any",
             mock.initConverse(
-                ['VCardsInitialized'], {},
+                ['VCardsInitialized'], {'roster_groups': false},
                 async function (_converse) {
 
             await mock.openControlBox(_converse);
@@ -702,8 +725,8 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
         }));
 
-        it("is shown when a new private message is received",
-                mock.initConverse([], {}, async function (_converse) {
+        it("can be removed by the user",
+                mock.initConverse([], {'roster_groups': false}, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'all');
@@ -716,12 +739,11 @@ describe("The Contacts Roster", function () {
                 sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
             }
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
-            expect(rosterview.querySelectorAll('ul').length).toBe(5);
         }));
 
         it("can be added to the roster and they will be sorted alphabetically",
             mock.initConverse(
-                [], {},
+                [], {'roster_groups': false},
                 async function (_converse) {
 
             await mock.openControlBox(_converse);

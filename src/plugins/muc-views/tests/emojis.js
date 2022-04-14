@@ -4,7 +4,9 @@ const { $pres, sizzle } = converse.env;
 const u = converse.env.utils;
 
 describe("Emojis", function () {
+
     describe("The emoji picker", function () {
+
         it("is opened to autocomplete emojis in the textarea",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 

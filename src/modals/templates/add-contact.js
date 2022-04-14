@@ -36,8 +36,12 @@ export default (el) => {
 
                         <div class="form-group add-xmpp-contact__name">
                             <label class="clearfix" for="name">${i18n_nickname}:</label>
-                            <input type="text" name="name" value="${el.model.get('nickname') || ''}"
-                                class="form-control suggestion-box__input"/>
+                            <div class="suggestion-box suggestion-box__name">
+                                <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
+                                <input type="text" name="name" value="${el.model.get('nickname') || ''}"
+                                    class="form-control suggestion-box__input"/>
+                                <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>
+                            </div>
                         </div>
 
                         <div class="form-group add-xmpp-contact__group">

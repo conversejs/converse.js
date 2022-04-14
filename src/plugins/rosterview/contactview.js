@@ -1,12 +1,9 @@
 import log from "@converse/headless/log.js";
-import tpl_pending_contact from "./templates/pending_contact.js";
 import tpl_requesting_contact from "./templates/requesting_contact.js";
 import tpl_roster_item from "./templates/roster_item.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
-
-const u = converse.env.utils;
+import { _converse, api } from "@converse/headless/core";
 
 
 export default class RosterContact extends CustomElement {
@@ -25,32 +22,7 @@ export default class RosterContact extends CustomElement {
     }
 
     render () {
-        const ask = this.model.get('ask');
-        const requesting  = this.model.get('requesting');
-        const subscription = this.model.get('subscription');
-        const jid = this.model.get('jid');
-
-        if ((ask === 'subscribe') || (subscription === 'from')) {
-            /* ask === 'subscribe'
-             *      Means we have asked to subscribe to them.
-             *
-             * subscription === 'from'
-             *      They are subscribed to use, but not vice versa.
-             *      We assume that there is a pending subscription
-             *      from us to them (otherwise we're in a state not
-             *      supported by converse.js).
-             *
-             *  So in both cases the user is a "pending" contact.
-             */
-            const display_name = this.model.getDisplayName();
-            return tpl_pending_contact(Object.assign(
-                this.model.toJSON(), {
-                    display_name,
-                    'openChat': ev => this.openChat(ev),
-                    'removeContact':  ev => this.removeContact(ev)
-                }));
-
-        } else if (requesting === true) {
+        if (this.model.get('requesting') === true) {
             const display_name = this.model.getDisplayName();
             return tpl_requesting_contact(
                 Object.assign(this.model.toJSON(), {
@@ -60,16 +32,11 @@ export default class RosterContact extends CustomElement {
                     'declineRequest': ev => this.declineRequest(ev),
                     'desc_accept': __("Click to accept the contact request from %1$s", display_name),
                     'desc_decline': __("Click to decline the contact request from %1$s", display_name),
-                    'allow_chat_pending_contacts': api.settings.get('allow_chat_pending_contacts')
                 })
             );
-        } else if (subscription === 'both' || subscription === 'to' || u.isSameBareJID(jid, _converse.connection.jid)) {
-            return this.renderRosterItem(this.model);
+        } else {
+            return tpl_roster_item(this, this.model);
         }
-    }
-
-    renderRosterItem (item) {
-        return tpl_roster_item(this, item);
     }
 
     openChat (ev) {

@@ -150,13 +150,6 @@ This setting is only applicable if the ``converse-bookmarks`` plugin is loaded.
 
 See also: `allow_public_bookmarks`_
 
-allow_chat_pending_contacts
----------------------------
-
-* Default:  ``false``
-
-Allow the user to chat with pending contacts.
-
 allow_contact_removal
 ---------------------
 

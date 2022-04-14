@@ -233,13 +233,11 @@ describe("The 'Add Contact' widget", function () {
         );
     }));
 
-
     it("integrates with xhr_user_search_url to search for contacts",
             mock.initConverse([], { 'xhr_user_search_url': 'http://example.org/?' },
             async function (_converse) {
 
         await mock.waitForRoster(_converse, 'all', 0);
-
 
         class MockXHR extends XMLHttpRequest {
             open () {} // eslint-disable-line

@@ -3,6 +3,8 @@
 ## 10.0.0 (Unreleased)
 
 - Don't automatically convert OpenStreetMap URLs into `geo:` URIs in sent messages
+- Remove the `allow_chat_pending_contacts` config option.
+- Show roster contacts with `subscription` set to `none`
 
 ## 9.1.1 (2022-05-05)
 

@@ -18,7 +18,7 @@ describe("A Chat Message", function () {
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" src="https://conversejs.org/logo/conversejs-filled.svg">`+
+                `<img class="chat-image img-thumbnail" loading="lazy" src="https://conversejs.org/logo/conversejs-filled.svg">`+
             `</a>`);
 
         message += "?param1=val1&param2=val2";
@@ -28,7 +28,7 @@ describe("A Chat Message", function () {
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
             `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg?param1=val1&amp;param2=val2">`+
-                `<img class="chat-image img-thumbnail" src="${message.replace(/&/g, '&amp;')}">`+
+                `<img class="chat-image img-thumbnail" loading="lazy" src="${message.replace(/&/g, '&amp;')}">`+
             `</a>`);
 
         // Test now with two images in one message

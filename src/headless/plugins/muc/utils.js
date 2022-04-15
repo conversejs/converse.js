@@ -148,7 +148,8 @@ export function isInfoVisible (code) {
 }
 
 
-/* Automatically join groupchats, based on the
+/**
+ * Automatically join groupchats, based on the
  * "auto_join_rooms" configuration setting, which is an array
  * of strings (groupchat JIDs) or objects (with groupchat JID and other settings).
  */
@@ -180,9 +181,8 @@ export async function autoJoinRooms () {
 
 
 export function onAddClientFeatures () {
-    if (api.settings.get('allow_muc')) {
-        api.disco.own.features.add(Strophe.NS.MUC);
-    }
+    api.disco.own.features.add(Strophe.NS.MUC);
+
     if (api.settings.get('allow_muc_invitations')) {
         api.disco.own.features.add('jabber:x:conference'); // Invites
     }

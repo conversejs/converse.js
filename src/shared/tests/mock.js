@@ -50,12 +50,12 @@ async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, featu
     _converse.connection._dataRecv(createRequest(stanza));
 }
 
-function createRequest (iq) {
-    iq = typeof iq.tree == "function" ? iq.tree() : iq;
-    var req = new Strophe.Request(iq, function() {});
+function createRequest (stanza) {
+    stanza = typeof stanza.tree == "function" ? stanza.tree() : stanza;
+    const req = new Strophe.Request(stanza, () => {});
     req.getResponse = function () {
         var env = new Strophe.Builder('env', {type: 'mock'}).tree();
-        env.appendChild(iq);
+        env.appendChild(stanza);
         return env;
     };
     return req;

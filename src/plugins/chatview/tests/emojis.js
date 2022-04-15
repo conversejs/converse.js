@@ -133,7 +133,7 @@ describe("Emojis", function () {
             const view = _converse.chatboxviews.get(contact_jid);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '') ===
-                '<img class="emoji" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">');
+                '<img class="emoji" loading="lazy" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">');
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             let message = view.querySelector(last_msg_sel);
@@ -191,7 +191,7 @@ describe("Emojis", function () {
             const picker = await u.waitUntil(() => view.querySelector('converse-emoji-picker'), 1000);
             const custom_category = picker.querySelector('.pick-category[data-category="custom"]');
             expect(custom_category.innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
-                '<img class="emoji" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/images/custom_emojis/xmpp.png">');
+                '<img class="emoji" loading="lazy" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/images/custom_emojis/xmpp.png">');
 
             const textarea = view.querySelector('textarea.chat-textarea');
             textarea.value = 'Running tests for :converse:';
@@ -204,7 +204,7 @@ describe("Emojis", function () {
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             const body = view.querySelector('converse-chat-message-body');
             await u.waitUntil(() => body.innerHTML.replace(/<!-.*?->/g, '').trim() ===
-                'Running tests for <img class="emoji" draggable="false" title=":converse:" alt=":converse:" src="/dist/images/custom_emojis/converse.png">');
+                'Running tests for <img class="emoji" loading="lazy" draggable="false" title=":converse:" alt=":converse:" src="/dist/images/custom_emojis/converse.png">');
         }));
     });
 });

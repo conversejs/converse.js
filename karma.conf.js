@@ -69,6 +69,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/autocomplete.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/component.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/corrections.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/disco.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/emojis.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/hats.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/http-file-upload.js", type: 'module' },

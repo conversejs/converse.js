@@ -224,13 +224,6 @@ allow_message_styling
 
 Determines wehether support for XEP-0393 Message Styling hints are enabled or not.
 
-allow_muc
----------
-
-* Default:  ``true``
-
-Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
-the ``Chatrooms`` tab from the control box.
 
 allow_muc_invitations
 ---------------------
@@ -1718,11 +1711,12 @@ compile time.
 
 This configuration seting allows this value to be set at runtime as well.
 
+.. _persistent-store:
 
 persistent_store
 ----------------
 
-* Default: ``localStorage``
+* Default: ``IndexedDB``
 * Valid options: ``localStorage``, ``IndexedDB``, ``sessionStorage``, ``BrowserExtLocal``, ``BrowserExtSync``
 
 Determines which store is used for storing persistent data.
@@ -1833,7 +1827,7 @@ Setting it to an array of domains means that media will be rendered only for URL
 matching those domains.
 
 Media URLs are those URLs which appear to point to media files as well as URLs
-for which `Open Graph Protocol (OGP) <https://modules.prosody.im/mod_ogp.html`_
+for which `Open Graph Protocol (OGP) <https://modules.prosody.im/mod_ogp.html>`_
 data was received (for example via Prosody's `mod_ogp <https://modules.prosody.im/mod_ogp.html>`_).
 
 The OGP metadata must come from the MUC itself, metadata sent from participants
@@ -2173,7 +2167,7 @@ theme
 -----
 
 * Default: ``default``
-* Valid options: ``default``, ``concord``
+* Valid options: ``default``, ``concord``, ``dracula``
 
 Let's you set a color theme for Converse.
 

@@ -101,7 +101,7 @@ const MessageMixin = {
         try {
             this.destroy();
         } catch (e) {
-            log.error(e);
+            log.warn(`safeDestroy: ${e}`);
         }
     },
 

@@ -159,7 +159,6 @@ converse.plugins.add('converse-muc', {
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
         api.settings.extend({
-            'allow_muc': true,
             'allow_muc_invitations': true,
             'auto_join_on_invite': false,
             'auto_join_rooms': [],

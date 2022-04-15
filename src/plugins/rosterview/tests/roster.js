@@ -132,6 +132,59 @@ describe("The Contacts Roster", function () {
         expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
     }));
 
+    it("can be refreshed", mock.initConverse(
+        [], {}, async function (_converse) {
+
+        const sent_IQs = _converse.connection.IQ_stanzas;
+        let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+        _converse.connection._dataRecv(mock.createRequest($iq({
+            to: _converse.connection.jid,
+            type: 'result',
+            id: stanza.getAttribute('id')
+        }).c('query', {
+            xmlns: 'jabber:iq:roster',
+        }).c('item', {
+            jid: 'juliet@example.net',
+            name: 'Juliet',
+            subscription:'both'
+        }).c('group').t('Friends').up().up()
+        .c('item', {
+            jid: 'mercutio@example.net',
+            name: 'Mercutio',
+            subscription:'from'
+        }).c('group').t('Friends')));
+
+        while (sent_IQs.length) sent_IQs.pop();
+
+        await u.waitUntil(() => _converse.roster.length === 2);
+        expect(_converse.roster.pluck('jid')).toEqual(['juliet@example.net', 'mercutio@example.net']);
+
+        const rosterview = document.querySelector('converse-roster');
+        const sync_button = rosterview.querySelector('.sync-contacts');
+        sync_button.click();
+
+        stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+        _converse.connection._dataRecv(mock.createRequest($iq({
+            to: _converse.connection.jid,
+            type: 'result',
+            id: stanza.getAttribute('id')
+        }).c('query', {
+            xmlns: 'jabber:iq:roster',
+        }).c('item', {
+            jid: 'juliet@example.net',
+            name: 'Juliet',
+            subscription:'both'
+        }).c('group').t('Friends').up().up()
+        .c('item', {
+            jid: 'lord.capulet@example.net',
+            name: 'Lord Capulet',
+            subscription:'from'
+        }).c('group').t('Acquaintences')));
+
+        await u.waitUntil(() => _converse.roster.pluck('jid').includes('lord.capulet@example.net'));
+        expect(_converse.roster.pluck('jid')).toEqual(['juliet@example.net', 'lord.capulet@example.net']);
+    }));
+
     it("will also show contacts added afterwards", mock.initConverse([], {}, async function (_converse) {
         await mock.openControlBox(_converse);
         await mock.waitForRoster(_converse, 'current');
@@ -1175,6 +1228,7 @@ describe("The Contacts Roster", function () {
 
             const pres = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
             _converse.connection._dataRecv(mock.createRequest(pres));
+
             expect(_converse.roster.pluck('jid').length).toBe(1);
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('a:contains("Contact requests")', rosterview).length, 700);

@@ -4,15 +4,15 @@ import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
 import { api } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
+import { getEmojiMarkup } from './chat/utils.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import {
     convertASCII2Emoji,
     getCodePointReferences,
-    getEmojiMarkup,
     getShortnameReferences
-} from '@converse/headless/plugins/emoji/index.js';
+} from '@converse/headless/plugins/emoji/utils.js';
 import {
     filterQueryParamsFromURL,
     isAudioURL,
@@ -21,6 +21,7 @@ import {
     isVideoURL,
     shouldRenderMediaFromURL,
 } from '@converse/headless/utils/url.js';
+
 
 import { html } from 'lit';
 
@@ -134,7 +135,7 @@ export class RichText extends String {
                 template = tpl_gif(filtered_url, this.hide_media_urls);
             } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
                 template = tpl_image({
-                    'url': filtered_url,
+                    'src': filtered_url,
                     // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
                     'href': this.hide_media_urls ? null : filtered_url,
                     'onClick': this.onImgClick,

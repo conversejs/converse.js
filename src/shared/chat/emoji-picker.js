@@ -5,6 +5,7 @@ import debounce from 'lodash-es/debounce';
 import { CustomElement } from 'shared/components/element.js';
 import { KEYCODES } from '@converse/headless/shared/constants.js';
 import { _converse, api, converse } from "@converse/headless/core";
+import { getTonedEmojis } from './utils.js';
 import { tpl_emoji_picker } from "./templates/emoji-picker.js";
 
 import './styles/emoji.scss';
@@ -154,9 +155,10 @@ export default class EmojiPicker extends CustomElement {
         const ac_position = this.model.get('ac_position');
         this.model.set({'autocompleting': null, 'query': '', 'ac_position': null});
         this.disableArrowNavigation();
+        const jid = this.chatview.model.get('jid');
         const options = {
             'bubbles': true,
-            'detail': { value, autocompleting, ac_position }
+            'detail': { value, autocompleting, ac_position, jid }
         };
         this.dispatchEvent(new CustomEvent("emojiSelected", options));
     }
@@ -221,7 +223,7 @@ export default class EmojiPicker extends CustomElement {
     }
 
     getTonedShortname (shortname) {
-        if (converse.emojis.toned.includes(shortname) && this.current_skintone) {
+        if (getTonedEmojis().includes(shortname) && this.current_skintone) {
             return `${shortname.slice(0, shortname.length-1)}_${this.current_skintone}:`
         }
         return shortname;

@@ -24,10 +24,11 @@ function pong (ping) {
 }
 
 export function registerPongHandler () {
-    if (_converse.connection.disco !== undefined) {
+    const { connection } = _converse;
+    if (connection.disco) {
         api.disco.own.features.add(Strophe.NS.PING);
     }
-    return _converse.connection.addHandler(pong, Strophe.NS.PING, "iq", "get");
+    return connection.addHandler(pong, Strophe.NS.PING, "iq", "get");
 }
 
 export function registerPingHandler () {

@@ -2,27 +2,27 @@ import tpl_gif from 'templates/gif.js';
 import tpl_image from 'templates/image.js';
 import { CustomElement } from './element.js';
 import { api } from "@converse/headless/core";
-import { filterQueryParamsFromURL, isGIFURL } from '@converse/headless/utils/url.js';
+import { filterQueryParamsFromURL, isGIFURL, shouldRenderMediaFromURL } from '@converse/headless/utils/url.js';
 
 
 export default class Image extends CustomElement {
 
     static get properties () {
         return {
-            'href': { type: String },
+            'src': { type: String },
             'onImgLoad': { type: Function },
-            'text': { type: String },
+            // If specified, image is wrapped in a hyperlink that points to this URL.
+            'href': { type: String },
         }
     }
 
     render () {
-        const filtered_url = filterQueryParamsFromURL(this.href);
-        if (isGIFURL(this.text) && this.shouldRenderMedia(this.text, 'image')) {
-            return tpl_gif(filtered_url);
+        if (isGIFURL(this.src) && shouldRenderMediaFromURL(this.src, 'image')) {
+            return tpl_gif(filterQueryParamsFromURL(this.src), true);
         } else {
             return tpl_image({
-                'url': this.text,
-                'href': filtered_url,
+                'src': filterQueryParamsFromURL(this.src),
+                'href': this.href,
                 'onClick': this.onImgClick,
                 'onLoad': this.onImgLoad
             });

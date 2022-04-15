@@ -14,7 +14,7 @@ import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from '
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
-import { isUniView, getUniqueId } from '@converse/headless/utils/core.js';
+import { isUniView, getUniqueId, safeSave } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions';
 
@@ -169,7 +169,7 @@ const ChatRoomMixin = {
         await this.refreshDiscoInfo();
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
-            u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
+            safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
             if (api.settings.get('muc_show_logs_before_join')) {
                 await this.fetchMessages();
             }
@@ -206,17 +206,13 @@ const ChatRoomMixin = {
             stanza.cnode(Strophe.xmlElement('password', [], password));
         }
         stanza.up(); // Go one level up, out of the `x` element.
-
-        const status = _converse.xmppstatus.get('status');
-        if (['away', 'chat', 'dnd', 'xa'].includes(status)) {
-            stanza.c('show').t(status).up();
-        }
-        const status_message = _converse.xmppstatus.get('status_message');
-        if (status_message) {
-            stanza.c('status').t(status_message).up();
-        }
-
-        stanza = await api.hook('constructedMUCPresence', null, stanza);
+         /**
+          * *Hook* which allows plugins to update an outgoing MUC join presence stanza
+          * @event _converse#constructedMUCPresence
+          * @param { _converse.ChatRoom } - The MUC from which this message stanza is being sent.
+          * @param { XMLElement } stanza - The stanza which will be sent out
+          */
+        stanza = await api.hook('constructedMUCPresence', this, stanza);
         return stanza;
     },
 
@@ -329,12 +325,7 @@ const ChatRoomMixin = {
     async onRoomEntered () {
         await this.occupants.fetchMembers();
         if (api.settings.get('clear_messages_on_reconnection')) {
-            // Don't call this.clearMessages because we don't want to
-            // recreate promises, since that will cause some existing
-            // awaiters to never proceed.
-            await this.messages.clearStore();
-            // A bit hacky. No need to fetch messages after clearing
-            this.messages.fetched.resolve();
+            await this.clearMessages();
         } else {
             await this.fetchMessages();
         }
@@ -891,11 +882,11 @@ const ChatRoomMixin = {
                 'error': (_, e) => { log.error(e); resolve(); }
             }));
         }
-        u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
     },
 
     async close (ev) {
-        u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.CLOSING });
+        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.CLOSING });
         this.sendMarkerForLastMessage('received', true);
         await this.unregisterNickname();
         await this.leave();
@@ -1583,10 +1574,7 @@ const ChatRoomMixin = {
      */
     async getAndPersistNickname (nick) {
         nick = nick || this.get('nick') || (await this.getReservedNick()) || _converse.getDefaultMUCNickname();
-
-        if (nick) {
-            this.save({ nick }, { 'silent': true });
-        }
+        if (nick) safeSave(this, { nick }, { 'silent': true });
         return nick;
     },
 
@@ -1824,7 +1812,7 @@ const ChatRoomMixin = {
             // MUST NOT contain a <body/> element (or a <thread/> element).
             const subject = attrs.subject;
             const author = attrs.nick;
-            u.safeSave(this, { 'subject': { author, 'text': attrs.subject || '' } });
+            safeSave(this, { 'subject': { author, 'text': attrs.subject || '' } });
             if (!attrs.is_delayed && author) {
                 const message = subject ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
                 const prev_msg = this.messages.last();
@@ -2735,7 +2723,7 @@ const ChatRoomMixin = {
         if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0 || this.get('has_activity')) {
             this.sendMarkerForMessage(this.messages.last());
         }
-        u.safeSave(this, {
+        safeSave(this, {
             'has_activity': false,
             'num_unread': 0,
             'num_unread_general': 0

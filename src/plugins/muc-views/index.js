@@ -8,7 +8,9 @@ import 'plugins/modal/index.js';
 import './adhoc-commands.js';
 import MUCView from './muc.js';
 import { api, converse } from '@converse/headless/core';
-import { clearHistory, fetchAndSetMUCDomain, parseMessageForMUCCommands } from './utils.js';
+import { clearHistory, parseMessageForMUCCommands } from './utils.js';
+
+const { Strophe } = converse.env;
 
 import './styles/index.scss';
 
@@ -58,6 +60,22 @@ converse.plugins.add('converse-muc-views', {
 
         _converse.ChatRoomView = MUCView;
 
+        if (!api.settings.get('muc_domain')) {
+            // Use service discovery to get the default MUC domain
+            api.listen.on('serviceDiscovered', async (feature) => {
+                if (feature?.get('var') === Strophe.NS.MUC) {
+                    if (feature.entity.get('jid').includes('@')) {
+                        // Ignore full JIDs, we're only looking for a MUC service, not a room
+                        return;
+                    }
+                    const identity = await feature.entity.getIdentity('conference', 'text');
+                    if (identity) {
+                        api.settings.set('muc_domain', Strophe.getDomainFromJid(feature.get('from')));
+                    }
+                }
+            });
+        }
+
         api.listen.on('clearsession', () => {
             const view = _converse.chatboxviews.get('controlbox');
             if (view && view.roomspanel) {
@@ -65,14 +83,6 @@ converse.plugins.add('converse-muc-views', {
                 view.roomspanel.remove();
                 delete view.roomspanel;
             }
-        });
-
-        api.listen.on('controlBoxInitialized', view => {
-            if (!api.settings.get('allow_muc')) {
-                return;
-            }
-            fetchAndSetMUCDomain(view);
-            view.model.on('change:connected', () => fetchAndSetMUCDomain(view));
         });
 
         api.listen.on('chatBoxClosed', (model) => {

@@ -42,38 +42,52 @@ export function createStanza (type, jid, vcard_el) {
 }
 
 
+export function onOccupantAvatarChanged (occupant) {
+    const hash = occupant.get('image_hash');
+    const vcards = [];
+    if (occupant.get('jid')) {
+        vcards.push(_converse.vcards.get(occupant.get('jid')));
+    }
+    vcards.push(_converse.vcards.get(occupant.get('from')));
+    vcards.forEach(v => (hash && v?.get('image_hash') !== hash) && api.vcard.update(v, true));
+}
+
+
 export async function setVCardOnModel (model) {
     let jid;
     if (model instanceof _converse.Message) {
-        if (model.get('type') === 'error') {
+        if (['error', 'info'].includes(model.get('type'))) {
             return;
         }
         jid = model.get('from');
     } else {
         jid = model.get('jid');
     }
-    await api.waitUntil('VCardsInitialized');
-    model.vcard = _converse.vcards.findWhere({'jid': jid});
-    if (!model.vcard) {
-        model.vcard = _converse.vcards.create({'jid': jid});
+
+    if (!jid) {
+        log.warn(`Could not set VCard on model because no JID found!`);
+        return;
     }
+
+    await api.waitUntil('VCardsInitialized');
+    model.vcard = _converse.vcards.get(jid) || _converse.vcards.create({ jid });
     model.vcard.on('change', () => model.trigger('vcard:change'));
     model.trigger('vcard:add');
 }
 
 
-function getVCardForChatroomOccupant (message) {
-    const chatbox = message?.collection?.chatbox;
-    const nick = Strophe.getResourceFromJid(message.get('from'));
+function getVCardForOccupant (occupant) {
+    const muc = occupant?.collection?.chatroom;
+    const nick = occupant.get('nick');
 
-    if (chatbox && chatbox.get('nick') === nick) {
+    if (nick && muc?.get('nick') === nick) {
         return _converse.xmppstatus.vcard;
     } else {
-        const jid = message.occupant && message.occupant.get('jid') || message.get('from');
+        const jid = occupant.get('jid') || occupant.get('from');
         if (jid) {
-            return _converse.vcards.findWhere({jid}) || _converse.vcards.create({jid});
+            return _converse.vcards.get(jid) || _converse.vcards.create({ jid });
         } else {
-            log.error(`Could not assign VCard for message because no JID found! msgid: ${message.get('msgid')}`);
+            log.warn(`Could not get VCard for occupant because no JID found!`);
             return;
         }
     }
@@ -81,10 +95,28 @@ function getVCardForChatroomOccupant (message) {
 
 export async function setVCardOnOccupant (occupant) {
     await api.waitUntil('VCardsInitialized');
-    occupant.vcard = getVCardForChatroomOccupant(occupant);
+    occupant.vcard = getVCardForOccupant(occupant);
     if (occupant.vcard) {
         occupant.vcard.on('change', () => occupant.trigger('vcard:change'));
         occupant.trigger('vcard:add');
+    }
+}
+
+
+function getVCardForMUCMessage (message) {
+    const muc = message?.collection?.chatbox;
+    const nick = Strophe.getResourceFromJid(message.get('from'));
+
+    if (nick && muc?.get('nick') === nick) {
+        return _converse.xmppstatus.vcard;
+    } else {
+        const jid = message.occupant?.get('jid') || message.get('from');
+        if (jid) {
+            return _converse.vcards.get(jid) || _converse.vcards.create({ jid });
+        } else {
+            log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get('msgid')}`);
+            return;
+        }
     }
 }
 
@@ -93,7 +125,7 @@ export async function setVCardOnMUCMessage (message) {
         return;
     } else {
         await api.waitUntil('VCardsInitialized');
-        message.vcard = getVCardForChatroomOccupant(message);
+        message.vcard = getVCardForMUCMessage(message);
         if (message.vcard) {
             message.vcard.on('change', () => message.trigger('vcard:change'));
             message.trigger('vcard:add');
@@ -116,16 +148,16 @@ export async function initVCardCollection () {
     if (_converse.session) {
         const jid = _converse.session.get('bare_jid');
         const status = _converse.xmppstatus;
-        status.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+        status.vcard = vcards.get(jid) || vcards.create({'jid': jid});
         if (status.vcard) {
             status.vcard.on('change', () => status.trigger('vcard:change'));
             status.trigger('vcard:add');
         }
     }
     /**
-        * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
-        * @event _converse#VCardsInitialized
-        */
+     * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
+     * @event _converse#VCardsInitialized
+     */
     api.trigger('VCardsInitialized');
 }
 

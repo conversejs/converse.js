@@ -68,7 +68,7 @@ export default {
          *     If a `Model` instance is passed in, then it must have either a `jid`
          *     attribute or a `muc_jid` attribute.
          * @param {boolean} [force] A boolean indicating whether the vcard should be
-         *     fetched even if it's been fetched before.
+         *     fetched from the server even if it's been fetched before.
          * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
          *     a `Model` instance which represents an entity with a JID (such as a roster contact,
          *     chat or chatroom occupant).
@@ -119,13 +119,15 @@ export default {
          */
         async update (model, force) {
             const data = await this.get(model, force);
-            model = typeof model === 'string' ? _converse.vcards.findWhere({'jid': model}) : model;
+            model = typeof model === 'string' ? _converse.vcards.get(model) : model;
             if (!model) {
                 log.error(`Could not find a VCard model for ${model}`);
                 return;
             }
-            delete data['stanza']
-            model.save(data);
+            if (Object.keys(data).length) {
+                delete data['stanza']
+                model.save(data);
+            }
         }
     }
 }

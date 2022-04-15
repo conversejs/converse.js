@@ -23,7 +23,7 @@ const ChatRoomMessageMixin = {
         this.setTimerForEphemeralMessage();
         this.setOccupant();
         /**
-         * Triggered once a {@link _converse.ChatRoomMessageInitialized} has been created and initialized.
+         * Triggered once a { @link _converse.ChatRoomMessage } has been created and initialized.
          * @event _converse#chatRoomMessageInitialized
          * @type { _converse.ChatRoomMessages}
          * @example _converse.api.listen.on('chatRoomMessageInitialized', model => { ... });

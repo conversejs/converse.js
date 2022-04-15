@@ -10,6 +10,7 @@ import { _converse, api, converse } from "../../core.js";
 import {
     clearVCardsSession,
     initVCardCollection,
+    onOccupantAvatarChanged,
     setVCardOnMUCMessage,
     setVCardOnModel,
     setVCardOnOccupant,
@@ -74,13 +75,14 @@ converse.plugins.add('converse-vcard', {
         _converse.VCards = Collection.extend({
             model: _converse.VCard,
             initialize () {
-                this.on('add', vcard => (vcard.get('jid') && api.vcard.update(vcard)));
+                this.on('add', v => v.get('jid') && api.vcard.update(v));
             }
         });
 
         api.listen.on('chatRoomInitialized', m => {
             setVCardOnModel(m)
             m.occupants.forEach(setVCardOnOccupant);
+            m.occupants.on('change:image_hash', o => onOccupantAvatarChanged(o));
             m.listenTo(m.occupants, 'add', setVCardOnOccupant);
         });
         api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));

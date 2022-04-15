@@ -15,28 +15,6 @@ const ChatRoomOccupant = Model.extend({
         'states': []
     },
 
-    initialize (attributes) {
-        this.set(Object.assign({ 'id': u.getUniqueId() }, attributes));
-        this.on('change:image_hash', this.onAvatarChanged, this);
-    },
-
-    onAvatarChanged () {
-        const hash = this.get('image_hash');
-        const vcards = [];
-        if (this.get('jid')) {
-            vcards.push(_converse.vcards.findWhere({ 'jid': this.get('jid') }));
-        }
-        vcards.push(_converse.vcards.findWhere({ 'jid': this.get('from') }));
-
-        vcards
-            .filter(v => v)
-            .forEach(vcard => {
-                if (hash && vcard.get('image_hash') !== hash) {
-                    api.vcard.update(vcard, true);
-                }
-            });
-    },
-
     getDisplayName () {
         return this.get('nick') || this.get('jid');
     },

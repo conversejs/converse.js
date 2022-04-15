@@ -23,7 +23,7 @@ const OccupantModal = BaseModal.extend({
     toHTML () {
         const model = this.model ?? this.message;
         const jid = model?.get('jid');
-        const vcard = _converse.vcards.findWhere({ jid });
+        const vcard = _converse.vcards.get(jid);
         const display_name = model?.getDisplayName();
         const nick = model.get('nick');
         const occupant_id = model.get('occupant_id');

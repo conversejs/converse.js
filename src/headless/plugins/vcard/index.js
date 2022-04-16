@@ -82,8 +82,8 @@ converse.plugins.add('converse-vcard', {
         api.listen.on('chatRoomInitialized', m => {
             setVCardOnModel(m)
             m.occupants.forEach(setVCardOnOccupant);
-            m.occupants.on('change:image_hash', o => onOccupantAvatarChanged(o));
             m.listenTo(m.occupants, 'add', setVCardOnOccupant);
+            m.listenTo(m.occupants, 'change:image_hash', o => onOccupantAvatarChanged(o));
         });
         api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));
         api.listen.on('chatRoomMessageInitialized', m => setVCardOnMUCMessage(m));

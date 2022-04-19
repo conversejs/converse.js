@@ -33,7 +33,7 @@ export default class BookmarksView extends CustomElement {
     }
 
     render () {
-        return _converse.bookmarks ? tpl_bookmarks_list(this) : '';
+        return _converse.bookmarks && this.model ? tpl_bookmarks_list(this) : '';
     }
 
     toggleBookmarksList (ev) {

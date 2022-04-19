@@ -175,7 +175,9 @@ const Bookmarks = {
         }
     },
 
-    getUnopenedBookmarks () {
+    async getUnopenedBookmarks () {
+        await api.waitUntil('bookmarksInitialized')
+        await api.waitUntil('chatBoxesFetched')
         return this.filter(b => !_converse.chatboxes.get(b.get('jid')));
     }
 }

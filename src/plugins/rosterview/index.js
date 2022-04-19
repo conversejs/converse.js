@@ -8,7 +8,8 @@ import "@converse/headless/plugins/roster/index.js";
 import "modals/add-contact.js";
 import './rosterview.js';
 import RosterContactView from './contactview.js';
-import { RosterFilter, RosterFilterView } from './filterview.js';
+import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
+import { RosterFilterView } from './filterview.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { highlightRosterItem } from './utils.js';
 

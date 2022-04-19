@@ -1,24 +1,28 @@
 import log from "@converse/headless/log";
 import { Model } from '@converse/skeletor/src/model.js';
+import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
 
 const { $pres } = converse.env;
 
 
-async function initRoster () {
-    // Initialize the Bakcbone collections that represent the contats
-    // roster and the roster groups.
-    await api.waitUntil('VCardsInitialized');
-    _converse.roster = new _converse.RosterContacts();
+function initRoster () {
+    // Initialize the collections that represent the roster contacts and groups
+    const roster = _converse.roster = new _converse.RosterContacts();
     let id = `converse.contacts-${_converse.bare_jid}`;
-    initStorage(_converse.roster, id);
+    initStorage(roster, id);
 
-    _converse.roster.data = new Model();
+    const filter = _converse.roster_filter = new RosterFilter();
+    filter.id = `_converse.rosterfilter-${_converse.bare_jid}`;
+    initStorage(filter, filter.id);
+    filter.fetch();
+
     id = `converse-roster-model-${_converse.bare_jid}`;
-    _converse.roster.data.id = id;
-    initStorage(_converse.roster.data, id);
-    _converse.roster.data.fetch();
+    roster.data = new Model();
+    roster.data.id = id;
+    initStorage(roster.data, id);
+    roster.data.fetch();
     /**
      * Triggered once the `_converse.RosterContacts`
      * been created, but not yet populated with data.
@@ -102,7 +106,7 @@ export async function onClearSession () {
  * Roster specific event handler for the presencesInitialized event
  * @param { Boolean } reconnecting
  */
-export async function onPresencesInitialized (reconnecting) {
+export function onPresencesInitialized (reconnecting) {
     if (reconnecting) {
         /**
          * Similar to `rosterInitialized`, but instead pertaining to reconnection.
@@ -113,7 +117,7 @@ export async function onPresencesInitialized (reconnecting) {
          */
         api.trigger('rosterReadyAfterReconnection');
     } else {
-        await initRoster();
+        initRoster();
     }
     _converse.roster.onConnected();
     registerPresenceHandler();

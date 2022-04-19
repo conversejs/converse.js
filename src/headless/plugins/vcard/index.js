@@ -76,12 +76,13 @@ converse.plugins.add('converse-vcard', {
             }
         });
 
-        api.listen.on('chatRoomInitialized', m => {
+        api.listen.on('chatRoomInitialized', (m) => {
             setVCardOnModel(m)
             m.occupants.forEach(setVCardOnOccupant);
             m.listenTo(m.occupants, 'add', setVCardOnOccupant);
             m.listenTo(m.occupants, 'change:image_hash', o => onOccupantAvatarChanged(o));
         });
+
         api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));
         api.listen.on('chatRoomMessageInitialized', m => setVCardOnMUCMessage(m));
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.VCARD));

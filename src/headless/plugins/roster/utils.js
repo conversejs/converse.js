@@ -55,7 +55,7 @@ async function populateRoster (ignore_cache=false) {
 
 
 function updateUnreadCounter (chatbox) {
-    const contact = _converse.roster?.findWhere({'jid': chatbox.get('jid')});
+    const contact = _converse.roster?.get(chatbox.get('jid'));
     contact?.save({'num_unread': chatbox.get('num_unread')});
 }
 

@@ -1,6 +1,4 @@
-import u from '../../utils/form';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api } from '../../core.js';
 
 /**
  * Represents a participant in a MUC

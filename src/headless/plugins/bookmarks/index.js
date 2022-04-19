@@ -53,7 +53,7 @@ converse.plugins.add('converse-bookmarks', {
             getDisplayName () {
                 const { _converse } = this.__super__;
                 if (this.get('bookmarked') && _converse.bookmarks) {
-                    const bookmark = _converse.bookmarks.findWhere({'jid': this.get('jid')});
+                    const bookmark = _converse.bookmarks.get(this.get('jid'));
                     if (bookmark) {
                         return bookmark.get('name');
                     }

@@ -91,7 +91,7 @@ const Bookmarks = {
         api.alert(
             'error', __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
         );
-        this.findWhere({'jid': options.jid}).destroy();
+        this.get(options.jid)?.destroy();
     },
 
     fetchBookmarksFromServer (deferred) {

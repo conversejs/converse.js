@@ -488,8 +488,8 @@ describe("Bookmarks", function () {
         await u.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count());
         await _converse.api.waitUntil('bookmarksInitialized');
         expect(_converse.bookmarks.models.length).toBe(2);
-        expect(_converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
-        expect(_converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
+        expect(_converse.bookmarks.get('theplay@conference.shakespeare.lit').get('autojoin')).toBe(true);
+        expect(_converse.bookmarks.get('another@conference.shakespeare.lit').get('autojoin')).toBe(false);
     }));
 
     describe("The bookmarks list", function () {

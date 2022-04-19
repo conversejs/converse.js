@@ -19,7 +19,7 @@ const { Strophe } = converse.env;
 const DiscoEntity = Model.extend({
     idAttribute: 'jid',
 
-    initialize (attrs, options) {
+    initialize (_, options) {
         this.waitUntilFeaturesDiscovered = getOpenPromise();
 
         this.dataforms = new Collection();

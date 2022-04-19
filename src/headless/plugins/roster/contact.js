@@ -10,6 +10,8 @@ const { Strophe, $iq, $pres } = converse.env;
  * @namespace RosterContact
  */
 const RosterContact = Model.extend({
+    idAttribute: 'jid',
+
     defaults: {
         'chat_state': undefined,
         'groups': [],
@@ -23,13 +25,13 @@ const RosterContact = Model.extend({
         this.initialized = getOpenPromise();
         this.setPresence();
         const { jid } = attributes;
-        const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-        attributes.jid = bare_jid;
-        this.set(Object.assign({
-            'id': bare_jid,
-            'jid': bare_jid,
-            'user_id': Strophe.getNodeFromJid(jid)
-        }, attributes));
+        this.set({
+            ...attributes,
+            ...{
+                'jid': Strophe.getBareJidFromJid(jid).toLowerCase(),
+                'user_id': Strophe.getNodeFromJid(jid)
+            }
+        });
         /**
          * When a contact's presence status has changed.
          * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
@@ -50,7 +52,7 @@ const RosterContact = Model.extend({
 
     setPresence () {
         const jid = this.get('jid');
-        this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+        this.presence = _converse.presences.findWhere(jid) || _converse.presences.create({ jid });
     },
 
     openChat () {

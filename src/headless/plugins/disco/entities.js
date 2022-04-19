@@ -11,7 +11,7 @@ const DiscoEntities = Collection.extend({
             this.fetch({
                 add: true,
                 success: resolve,
-                error (m, e) {
+                error (_m, e) {
                     log.error(e);
                     reject (new Error("Could not fetch disco entities"));
                 }

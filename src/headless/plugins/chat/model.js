@@ -62,7 +62,7 @@ const ChatBox = ModelWithContact.extend({
         this.initMessages();
 
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-            this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+            this.presence = _converse.presences.get(jid) || _converse.presences.create({ jid });
             await this.setRosterContact(jid);
             this.presence.on('change:show', item => this.onPresenceChanged(item));
         }

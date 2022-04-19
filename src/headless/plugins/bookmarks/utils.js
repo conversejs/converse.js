@@ -28,14 +28,14 @@ export async function initBookmarks () {
 }
 
 /**
-  * Check if the user has a bookmark with a saved nickanme
-  * for this groupchat and return it.
-  */
+ * Check if the user has a bookmark with a saved nickanme
+ * for this groupchat and return it.
+ */
 export function getNicknameFromBookmark (jid) {
     if (!_converse.bookmarks || !api.settings.get('allow_bookmarks')) {
         return null;
     }
-    const bookmark = _converse.bookmarks.findWhere({'jid': jid});
+    const bookmark = _converse.bookmarks.get(jid);
     if (bookmark) {
         return bookmark.get('nick');
     }

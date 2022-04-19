@@ -53,7 +53,7 @@ const DeviceList = Model.extend({
             this._devices_promise = new Promise(resolve => {
                 this.devices.fetch({
                     'success': c => resolve(this.onDevicesFound(c)),
-                    'error': (m, e) => {
+                    'error': (_, e) => {
                         log.error(e);
                         resolve();
                     }
@@ -65,7 +65,7 @@ const DeviceList = Model.extend({
 
     async getOwnDeviceId () {
         let device_id = _converse.omemo_store.get('device_id');
-        if (!this.devices.findWhere({ 'id': device_id })) {
+        if (!this.devices.get(device_id)) {
             // Generate a new bundle if we cannot find our device
             await _converse.omemo_store.generateBundle();
             device_id = _converse.omemo_store.get('device_id');
@@ -124,7 +124,7 @@ const DeviceList = Model.extend({
         await Promise.all(device_ids.map(id => this.devices.get(id)).map(d =>
             new Promise(resolve => d.destroy({
                 'success': resolve,
-                'error': (m, e) => { log.error(e); resolve(); }
+                'error': (_, e) => { log.error(e); resolve(); }
             }))
         ));
         return this.publishDevices();

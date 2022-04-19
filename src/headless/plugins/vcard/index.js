@@ -65,9 +65,6 @@ converse.plugins.add('converse-vcard', {
     },
 
     initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
         api.promises.add('VCardsInitialized');
 
         _converse.VCard = VCard;

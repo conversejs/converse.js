@@ -38,7 +38,7 @@ const UserDetailsModal = BootstrapModal.extend({
          * Triggered once the UserDetailsModal has been initialized
          * @event _converse#userDetailsModalInitialized
          * @type { _converse.ChatBox }
-         * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
+         * @example _converse.api.listen.on('userDetailsModalInitialized', (chatbox) => { ... });
          */
         api.trigger('userDetailsModalInitialized', this.model);
     },

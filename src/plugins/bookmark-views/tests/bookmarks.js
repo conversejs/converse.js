@@ -662,11 +662,15 @@ describe("Bookmarks", function () {
 
             const bookmarks_el = chats_el.querySelector('converse-bookmarks');
             expect(bookmarks_el.model.get('toggle-state')).toBe(_converse.OPENED);
+
             sizzle('#chatrooms .bookmarks-toggle', chats_el).pop().click();
-            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop())).toBeTruthy();
+
+            await u.waitUntil(() => u.hasClass('hidden', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop()));
             expect(bookmarks_el.model.get('toggle-state')).toBe(_converse.CLOSED);
+
             sizzle('#chatrooms .bookmarks-toggle', chats_el).pop().click();
-            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop())).toBeFalsy();
+
+            await u.waitUntil(() => !u.hasClass('hidden', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop()));
             expect(sizzle(selector, chats_el).filter(u.isVisible).length).toBe(1);
             expect(bookmarks_el.model.get('toggle-state')).toBe(_converse.OPENED);
         }));

@@ -7,58 +7,31 @@
 import "@converse/headless/plugins/muc/index.js";
 import Bookmark from './model.js';
 import Bookmarks from './collection.js';
-import log from "@converse/headless/log.js";
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from "@converse/skeletor/src/collection.js";
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "@converse/headless/core";
-import { initBookmarks, getNicknameFromBookmark } from './utils.js';
+import { _converse, api, converse } from "@converse/headless/core.js";
+import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
 
-const { Strophe, sizzle } = converse.env;
+const { Strophe } = converse.env;
 
 Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
 
 
-function handleBookmarksPush (message) {
-    if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"] items[node="${Strophe.NS.BOOKMARKS}"]`, message).length) {
-        api.waitUntil('bookmarksInitialized')
-            .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
-            .catch(e => log.fatal(e));
-    }
-    return true;
-}
-
-
 converse.plugins.add('converse-bookmarks', {
 
-    /* Plugin dependencies are other plugins which might be
-     * overridden or relied upon, and therefore need to be loaded before
-     * this plugin.
-     *
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found. By default it's
-     * false, which means these plugins are only loaded opportunistically.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
-     */
     dependencies: ["converse-chatboxes", "converse-muc"],
 
     overrides: {
         // Overrides mentioned here will be picked up by converse.js's
         // plugin architecture they will replace existing methods on the
         // relevant objects or classes.
-        //
         // New functions which don't exist yet can also be added.
 
         ChatRoom: {
             getDisplayName () {
-                const { _converse } = this.__super__;
-                if (this.get('bookmarked') && _converse.bookmarks) {
-                    const bookmark = _converse.bookmarks.get(this.get('jid'));
-                    if (bookmark) {
-                        return bookmark.get('name');
-                    }
-                }
-                return this.__super__.getDisplayName.apply(this, arguments);
+                const { _converse, getDisplayName } = this.__super__;
+                const bookmark = this.get('bookmarked') ? _converse.bookmarks?.get(this.get('jid')) : null;
+                return bookmark?.get('name') || getDisplayName.apply(this, arguments);
             },
 
             getAndPersistNickname (nick) {
@@ -69,10 +42,6 @@ converse.plugins.add('converse-bookmarks', {
     },
 
     initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
-
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
@@ -101,7 +70,7 @@ converse.plugins.add('converse-bookmarks', {
         })
 
         api.listen.on('clearSession', () => {
-            if (_converse.bookmarks !== undefined) {
+            if (_converse.bookmarks) {
                 _converse.bookmarks.clearStore({'silent': true});
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
                 delete _converse.bookmarks;

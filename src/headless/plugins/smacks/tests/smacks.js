@@ -19,6 +19,7 @@ describe("XEP-0198 Stream Management", function () {
             async function (_converse) {
 
         await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
+
         const sent_stanzas = _converse.connection.sent_stanzas;
         let stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'enable'), 1000).pop());
 
@@ -32,30 +33,36 @@ describe("XEP-0198 Stream Management", function () {
         let IQ_stanzas = _converse.connection.IQ_stanzas;
         await u.waitUntil(() => IQ_stanzas.length === 5);
 
-        let iq = IQ_stanzas[IQ_stanzas.length-1];
-        expect(Strophe.serialize(iq)).toBe(
-            `<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
+        expect(Strophe.serialize(IQ_stanzas[0])).toBe(
+            `<iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[0].getAttribute('id')}" type="set" xmlns="jabber:client"><enable xmlns="urn:xmpp:carbons:2"/></iq>`);
+
+        const carbons_response = $iq({
+            'type': 'result',
+            'from': _converse.bare_jid,
+            'to': _converse.jid,
+            'id': IQ_stanzas[0].getAttribute('id')
+        });
+        _converse.connection._dataRecv(mock.createRequest(carbons_response));
+
+        const disco_iq = IQ_stanzas[1];
+        expect(Strophe.serialize(disco_iq)).toBe(
+            `<iq from="romeo@montague.lit/orchard" id="${disco_iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
+
+        expect(Strophe.serialize(IQ_stanzas[2])).toBe(
+            `<iq id="${IQ_stanzas[2].getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
         await mock.waitForRoster(_converse, 'current', 1);
-        IQ_stanzas.pop();
 
-        const expected_IQs = disco_iq => ([
-            `<iq from="romeo@montague.lit" id="${disco_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-            `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`,
+        expect(Strophe.serialize(IQ_stanzas[3])).toBe(
+            `<iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[3].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
-            `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`,
-
-            `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
-                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`]);
+        const omemo_iq = IQ_stanzas[4];
+        expect(Strophe.serialize(omemo_iq)).toBe(
+            `<iq from="romeo@montague.lit" id="${omemo_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+            `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
 
         await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'presence')).length);
-
-        const disco_iq = IQ_stanzas.pop();
-        expect(expected_IQs(disco_iq).includes(Strophe.serialize(disco_iq))).toBe(true);
-        iq = IQ_stanzas.pop();
-        expect(expected_IQs(disco_iq).includes(Strophe.serialize(disco_iq))).toBe(true);
-        iq = IQ_stanzas.pop();
-        expect(expected_IQs(disco_iq).includes(Strophe.serialize(disco_iq))).toBe(true);
 
         expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(3);
         expect(_converse.session.get('unacked_stanzas').length).toBe(6);
@@ -69,9 +76,9 @@ describe("XEP-0198 Stream Management", function () {
         let r = u.toStanza(`<r xmlns="urn:xmpp:sm:3"/>`);
         _converse.connection._dataRecv(mock.createRequest(r));
 
+        // "h" is 2 because we received two IQ responses, for carbons and the roster
         ack = await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a')).pop());
-        expect(Strophe.serialize(ack)).toBe('<a h="1" xmlns="urn:xmpp:sm:3"/>');
-
+        expect(Strophe.serialize(ack)).toBe('<a h="2" xmlns="urn:xmpp:sm:3"/>');
 
         const disco_result = $iq({
             'type': 'result',
@@ -91,10 +98,25 @@ describe("XEP-0198 Stream Management", function () {
         _converse.connection._dataRecv(mock.createRequest(ack));
         expect(_converse.session.get('unacked_stanzas').length).toBe(3);
 
+        expect(_converse.session.get('unacked_stanzas')[0]).toBe(
+            `<iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[3].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
+
+        expect(_converse.session.get('unacked_stanzas')[1]).toBe(
+            `<iq from="romeo@montague.lit" id="${omemo_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+                `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
+
+        expect(_converse.session.get('unacked_stanzas')[2]).toBe(
+            `<presence xmlns="jabber:client"><priority>0</priority>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
+            `</presence>`);
+
         r = u.toStanza(`<r xmlns="urn:xmpp:sm:3"/>`);
         _converse.connection._dataRecv(mock.createRequest(r));
-        ack = await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a' && s.getAttribute('h') === '1')).pop());
-        expect(Strophe.serialize(ack)).toBe('<a h="1" xmlns="urn:xmpp:sm:3"/>');
+
+        ack = await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a' && s.getAttribute('h') === '2')).pop());
+
+        expect(Strophe.serialize(ack)).toBe('<a h="2" xmlns="urn:xmpp:sm:3"/>');
         await _converse.api.waitUntil('rosterInitialized');
 
         // test session resumption
@@ -102,7 +124,7 @@ describe("XEP-0198 Stream Management", function () {
         IQ_stanzas = _converse.connection.IQ_stanzas;
         await _converse.api.connection.reconnect();
         stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop(), 1000);
-        expect(Strophe.serialize(stanza)).toEqual('<resume h="2" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
+        expect(Strophe.serialize(stanza)).toEqual('<resume h="3" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
 
         result = u.toStanza(`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`);
         _converse.connection._dataRecv(mock.createRequest(result));
@@ -112,16 +134,23 @@ describe("XEP-0198 Stream Management", function () {
         expect(_converse.session.get('smacks_enabled')).toBe(true);
 
         await new Promise(resolve => _converse.api.listen.once('reconnected', resolve));
-        await u.waitUntil(() => IQ_stanzas.length === 2);
+        await u.waitUntil(() => IQ_stanzas.length === 3);
 
         // Test that unacked stanzas get resent out
-        iq = IQ_stanzas.pop();
-        expect(Strophe.serialize(iq)).toBe(`<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
+        let iq = IQ_stanzas.pop();
+        expect(Strophe.serialize(iq)).toBe(
+            `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/disco#items"/></iq>`);
 
         iq = IQ_stanzas.pop();
         expect(Strophe.serialize(iq)).toBe(
             `<iq from="romeo@montague.lit" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
             `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
+
+        iq = IQ_stanzas.pop();
+        expect(Strophe.serialize(iq)).toBe(
+            `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
         expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);
     }));

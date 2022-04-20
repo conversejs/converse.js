@@ -3,7 +3,7 @@ import { IQError } from './errors.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { UNDECIDED } from './consts.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { parseBundle, handleMessageSendError } from './utils.js';
+import { parseBundle } from './utils.js';
 
 const { Strophe, sizzle, u, $iq } = converse.env;
 

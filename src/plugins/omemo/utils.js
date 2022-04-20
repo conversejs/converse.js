@@ -632,13 +632,13 @@ export async function restoreOMEMOSession () {
 }
 
 async function fetchDeviceLists () {
+    _converse.devicelists = new _converse.DeviceLists();
     const id = `converse.devicelists-${_converse.bare_jid}`;
-    _converse.devicelists = new _converse.DeviceLists({ id });
     initStorage(_converse.devicelists, id);
     await new Promise(resolve => {
         _converse.devicelists.fetch({
             'success': resolve,
-            'error': (m, e) => { log.error(e); resolve(); }
+            'error': (_m, e) => { log.error(e); resolve(); }
         })
     });
     // Call API method to wait for our own device list to be fetched from the

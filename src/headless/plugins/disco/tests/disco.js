@@ -138,7 +138,6 @@ describe("Service Discovery", function () {
                 .c('item', {
                     'jid': 'words.shakespeare.lit',
                     'name': 'Gateway to Marlowe IM'}).up()
-
                 .c('item', {
                     'jid': 'montague.lit',
                     'node': 'books',
@@ -151,16 +150,28 @@ describe("Service Discovery", function () {
                     'node': 'music',
                     'name': 'Music from the time of Shakespeare'
                 });
+
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => _converse.disco_entities);
             entities = _converse.disco_entities;
-            expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
-            expect(entities.get(_converse.domain).items.length).toBe(3);
-            expect(entities.get(_converse.domain).items.pluck('jid').includes('people.shakespeare.lit')).toBeTruthy();
-            expect(entities.get(_converse.domain).items.pluck('jid').includes('plays.shakespeare.lit')).toBeTruthy();
-            expect(entities.get(_converse.domain).items.pluck('jid').includes('words.shakespeare.lit')).toBeTruthy();
-            expect(entities.get(_converse.domain).identities.where({'category': 'conference'}).length).toBe(1);
-            expect(entities.get(_converse.domain).identities.where({'category': 'directory'}).length).toBe(1);
+            expect(entities.length).toBe(5);
+            expect(entities.map(e => e.get('jid'))).toEqual([
+                'montague.lit',
+                'romeo@montague.lit',
+                'people.shakespeare.lit',
+                'plays.shakespeare.lit',
+                'words.shakespeare.lit'
+            ]);
+            let entity = entities.get(_converse.domain);
+            expect(entity.items.length).toBe(3);
+            expect(entity.items.pluck('jid').includes('people.shakespeare.lit')).toBeTruthy();
+            expect(entity.items.pluck('jid').includes('plays.shakespeare.lit')).toBeTruthy();
+            expect(entity.items.pluck('jid').includes('words.shakespeare.lit')).toBeTruthy();
+            expect(entity.identities.where({'category': 'conference'}).length).toBe(1);
+            expect(entity.identities.where({'category': 'directory'}).length).toBe(1);
+
+            entity = entities.get('people.shakespeare.lit');
+            expect(entity.get('name')).toBe('Directory of Characters');
         }));
     });
 

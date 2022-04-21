@@ -19,7 +19,7 @@ const { Strophe } = converse.env;
 const DiscoEntity = Model.extend({
     idAttribute: 'jid',
 
-    initialize (_, options) {
+    async initialize (_, options) {
         this.waitUntilFeaturesDiscovered = getOpenPromise();
 
         this.dataforms = new Collection();
@@ -36,15 +36,15 @@ const DiscoEntity = Model.extend({
         this.fields.browserStorage = _converse.createStore(id, 'session');
         this.listenTo(this.fields, 'add', this.onFieldAdded)
 
+        this.items = new _converse.DiscoEntities();
+        id = `converse.disco-items-${this.get('jid')}`;
+        this.items.browserStorage = _converse.createStore(id, 'session');
+        await new Promise(f => this.items.fetch({'success': f, 'error': f}));
+
         this.identities = new Collection();
         id = `converse.identities-${this.get('jid')}`;
         this.identities.browserStorage = _converse.createStore(id, 'session');
         this.fetchFeatures(options);
-
-        this.items = new _converse.DiscoEntities();
-        id = `converse.disco-items-${this.get('jid')}`;
-        this.items.browserStorage = _converse.createStore(id, 'session');
-        this.items.fetch();
     },
 
     /**
@@ -142,12 +142,9 @@ const DiscoEntity = Model.extend({
             }
             const jid = item.getAttribute('jid');
             if (this.items.get(jid) === undefined) {
-                const entity = _converse.disco_entities.get(jid);
-                if (entity) {
-                    this.items.add(entity);
-                } else {
-                    this.items.create({'jid': jid});
-                }
+                const entities = _converse.disco_entities;
+                const entity = entities.get(jid) || entities.create({ jid, name: item.getAttribute('name') });
+                this.items.add(entity);
             }
         });
     },

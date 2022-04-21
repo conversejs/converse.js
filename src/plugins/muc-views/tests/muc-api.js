@@ -106,7 +106,6 @@ describe("Groupchats", function () {
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
             let jid = 'lounge@montague.lit';
-            let chatroomview, IQ_id;
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
             const rosterview = document.querySelector('converse-roster');
@@ -115,43 +114,39 @@ describe("Groupchats", function () {
             let room = await _converse.api.rooms.open(jid);
             // Test on groupchat that's not yet open
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid));
-            expect(chatroomview.is_chatroom).toBeTruthy();
-            await u.waitUntil(() => u.isVisible(chatroomview));
+            let mucview = await u.waitUntil(() => _converse.chatboxviews.get(jid));
+            expect(mucview.is_chatroom).toBeTruthy();
+            await u.waitUntil(() => u.isVisible(mucview));
 
             // Test again, now that the room exists.
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid));
-            expect(chatroomview.is_chatroom).toBeTruthy();
-            expect(u.isVisible(chatroomview)).toBeTruthy();
-            await chatroomview.close();
+            mucview = await u.waitUntil(() => _converse.chatboxviews.get(jid));
+            expect(mucview.is_chatroom).toBeTruthy();
+            expect(u.isVisible(mucview)).toBeTruthy();
+            await mucview.close();
 
             // Test with mixed case in JID
             jid = 'Leisure@montague.lit';
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
-            await u.waitUntil(() => u.isVisible(chatroomview));
+            mucview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
+            await u.waitUntil(() => u.isVisible(mucview));
 
             jid = 'leisure@montague.lit';
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
-            await u.waitUntil(() => u.isVisible(chatroomview));
+            mucview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
+            await u.waitUntil(() => u.isVisible(mucview));
 
             jid = 'leiSure@montague.lit';
             room = await _converse.api.rooms.open(jid);
             expect(room instanceof Model).toBeTruthy();
-            chatroomview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
-            await u.waitUntil(() => u.isVisible(chatroomview));
-            chatroomview.close();
+            mucview = await u.waitUntil(() => _converse.chatboxviews.get(jid.toLowerCase()));
+            await u.waitUntil(() => u.isVisible(mucview));
+            mucview.close();
 
             api.settings.set('muc_instant_rooms', false);
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
             // Test with configuration
             room = await _converse.api.rooms.open('room@conference.example.org', {
                 'nick': 'some1',
@@ -168,10 +163,14 @@ describe("Groupchats", function () {
             });
             expect(room instanceof Model).toBeTruthy();
 
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const selector = `iq[to="room@conference.example.org"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
+            const features_query = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).pop());
+
             // We pretend this is a new room, so no disco info is returned.
             const features_stanza = $iq({
                     from: 'room@conference.example.org',
-                    'id': IQ_id,
+                    'id': features_query.getAttribute('id'),
                     'to': 'romeo@montague.lit/desktop',
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
@@ -199,9 +198,7 @@ describe("Groupchats", function () {
                 .c('status', {code:'110'}).up()
                 .c('status', {code:'201'});
             _converse.connection._dataRecv(mock.createRequest(presence));
-            expect(_converse.connection.sendIQ).toHaveBeenCalled();
 
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
             const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop());
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">`+
@@ -245,10 +242,10 @@ describe("Groupchats", function () {
                 </query>
                 </iq>`);
 
-            chatroomview = _converse.chatboxviews.get('room@conference.example.org');
-            spyOn(chatroomview.model, 'sendConfiguration').and.callThrough();
+            mucview = _converse.chatboxviews.get('room@conference.example.org');
+            spyOn(mucview.model, 'sendConfiguration').and.callThrough();
             _converse.connection._dataRecv(mock.createRequest(node));
-            await u.waitUntil(() => chatroomview.model.sendConfiguration.calls.count() === 1);
+            await u.waitUntil(() => mucview.model.sendConfiguration.calls.count() === 1);
 
             const sent_stanza = IQ_stanzas.filter(s => s.getAttribute('type') === 'set').pop();
             expect(sizzle('field[var="muc#roomconfig_roomname"] value', sent_stanza).pop().textContent.trim()).toBe('Room');

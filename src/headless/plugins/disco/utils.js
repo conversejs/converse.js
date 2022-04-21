@@ -29,7 +29,7 @@ function onDiscoInfoRequest (stanza) {
         }
         iqresult.c('identity', attrs).up();
     });
-    _converse.disco._features.forEach(feature => iqresult.c('feature', {'var': feature}).up());
+    _converse.disco._features.forEach(f => iqresult.c('feature', {'var': f}).up());
     api.send(iqresult.tree());
     return true;
 }
@@ -67,10 +67,10 @@ export async function initializeDisco () {
     _converse.disco_entities = new _converse.DiscoEntities();
     const id = `converse.disco-entities-${_converse.bare_jid}`;
     _converse.disco_entities.browserStorage = _converse.createStore(id, 'session');
+
     const collection = await _converse.disco_entities.fetchEntities();
     if (collection.length === 0 || !collection.get(_converse.domain)) {
-        // If we don't have an entity for our own XMPP server,
-        // create one.
+        // If we don't have an entity for our own XMPP server, create one.
         _converse.disco_entities.create({'jid': _converse.domain});
     }
     /**

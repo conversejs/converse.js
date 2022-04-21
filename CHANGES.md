@@ -6,6 +6,7 @@
 - Improve how the `muc_domain` setting is populated via service discovery
 - Remove local (non-requesting) contacts not returned from a full roster response
 - Improve performance by looking up VCards via map instead of traversing an array
+- Fix infinite loop when receiving service discovery entities with a circular dependency
 - #2746: Always reply to all iqs, even those not understood
 - #2794: Some display problems with mobile view mode
 - #2868: Selected emoji is inserted into all open chat boxes

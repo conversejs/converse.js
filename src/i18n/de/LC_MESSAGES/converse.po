@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2021-12-06 09:50+0000\n"
+"PO-Revision-Date: 2022-04-23 09:13+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -236,12 +236,12 @@ msgstr "Einzelheiten finden Sie in der Entwicklerkonsole Ihres Browsers."
 #: dist/converse-no-dependencies.js:51772
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
-"Fehler: Konnte keinen Groupchat-Teilnehmer anhand ihrer Kriterien finden"
+"Fehler: Konnte keinen Gruppenchatteilnehmer anhand Ihrer Kriterien finden"
 
 #: dist/converse-no-dependencies.js:51759
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
-"Fehler: Mehrere Gruppenchat-Teilnehmer basierend auf ihren Kriterien gefunden"
+"Fehler: Mehrere Gruppenchatteilnehmer basierend auf Ihren Kriterien gefunden"
 
 #: dist/converse-no-dependencies.js:51787
 #, javascript-format
@@ -269,7 +269,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:52314
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Sie dürfen nicht diesem Gruppenchat beitreten."
+msgstr "Sie dürfen diesem Gruppenchat nicht beitreten."
 
 #: dist/converse-no-dependencies.js:52316
 msgid ""
@@ -283,8 +283,8 @@ msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
-"Registrierung fehlgeschlagen, dieser Raum unterstützt keine Registrierung "
-"von Spitznamen."
+"Ihr Spitzname kann in diesem Gruppenchat nicht registriert werden, er "
+"unterstützt keine Registrierung."
 
 #: dist/converse-no-dependencies.js:52362
 msgid ""
@@ -465,7 +465,7 @@ msgstr "Sie sind nicht auf der Mitgliederliste dieses Gruppenchats."
 
 #: dist/converse-no-dependencies.js:53745
 msgid "You are not allowed to create new groupchats."
-msgstr "Es ist Ihnen nicht erlaubt neue Räume anzulegen."
+msgstr "Sie dürfen keine neuen Gruppenchats erstellen."
 
 #: dist/converse-no-dependencies.js:53749
 msgid "Your nickname doesn't conform to this groupchat's policies."
@@ -484,14 +484,13 @@ msgid "Remote server not found"
 msgstr "Server wurde nicht gefunden"
 
 #: dist/converse-no-dependencies.js:53778
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr "Sie dürfen nicht diesem Gruppenchat beitreten."
+msgstr "Sie dürfen nicht diesem Gruppenchat beitreten"
 
 #: dist/converse-no-dependencies.js:53782
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr "Leider ist beim Speichern deiner Profildaten ein Fehler aufgetreten."
+msgstr ""
+"Beim Versuch, diesen Gruppenchat zu betreten, ist ein Fehler aufgetreten"
 
 #: dist/converse-no-dependencies.js:54944
 #, javascript-format
@@ -662,9 +661,9 @@ msgid "New messages"
 msgstr "Neue Nachrichten"
 
 #: dist/converse-no-dependencies.js:62978
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Lesezeichen"
+msgstr "Lesezeichen für \"%1$s\""
 
 #: dist/converse-no-dependencies.js:62980
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -672,7 +671,7 @@ msgstr "Beim Anmelden diesem Gruppenchat automatisch beitreten?"
 
 #: dist/converse-no-dependencies.js:62982
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
 
 #: dist/converse-no-dependencies.js:62984
 msgid "The name for this bookmark:"
@@ -684,7 +683,7 @@ msgstr "Welcher Spitzname soll für diesen Gruppenchat verwendet werden?"
 
 #: dist/converse-no-dependencies.js:62988
 msgid "Update"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: dist/converse-no-dependencies.js:62988
 #: dist/converse-no-dependencies.js:91564
@@ -1099,17 +1098,18 @@ msgid "This is a trusted device"
 msgstr "Diesem Gerät wird vertraut"
 
 #: dist/converse-no-dependencies.js:81979
-#, fuzzy
 msgid "Connection URL"
-msgstr "Verbindungsaufbau"
+msgstr "Verbindungs-URL"
 
 #: dist/converse-no-dependencies.js:81981
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
+"HTTP- oder Websocket-URL, die für die Verbindung zu Ihrem XMPP-Server "
+"verwendet wird"
 
 #: dist/converse-no-dependencies.js:81983
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "z.B. wss://beispiel.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:81991
 msgid "Password"
@@ -1333,7 +1333,7 @@ msgstr "Rolle geändert"
 
 #: dist/converse-no-dependencies.js:88436
 msgid "You're not allowed to make that change"
-msgstr "Du darfst diese Änderung nicht vornehmen"
+msgstr "Sie dürfen diese Änderung nicht vornehmen"
 
 #: dist/converse-no-dependencies.js:88438
 msgid "Sorry, something went wrong while trying to set the role"
@@ -1433,9 +1433,8 @@ msgstr ""
 "Informationen finden Sie in der Entwicklerkonsole"
 
 #: dist/converse-no-dependencies.js:90006
-#, fuzzy
 msgid "Change nickname"
-msgstr "Eigenen Spitznamen ändern"
+msgstr "Spitznamen ändern"
 
 #: dist/converse-no-dependencies.js:90006
 msgid "Enter groupchat"
@@ -1644,7 +1643,6 @@ msgid "Groupchat info for %1$s"
 msgstr "Gruppenchat-Benachrichtigung für %1$s"
 
 #: dist/converse-no-dependencies.js:92610
-#, fuzzy
 msgid "XMPP address"
 msgstr "XMPP-Adresse"
 
@@ -1782,11 +1780,11 @@ msgstr "Dieser Gruppenchat ist öffentlich auffindbar"
 #. harmony default export
 #: dist/converse-no-dependencies.js:93021
 msgid "Hide the groupchat topic"
-msgstr "Gruppen-Chatraum verbergen"
+msgstr "Thema des Gruppenchats ausblenden"
 
 #: dist/converse-no-dependencies.js:93023
 msgid "This groupchat is bookmarked"
-msgstr "Dieser Raum ist als Lesezechen gekennzeichnet"
+msgstr "Dieser Gruppenchat ist mit einem Lesezechen gekennzeichnet"
 
 #: dist/converse-no-dependencies.js:93419
 msgid "Show more information about this groupchat"
@@ -1801,9 +1799,8 @@ msgid "Configure this groupchat"
 msgstr "Diesen Gruppenchat konfigurieren"
 
 #: dist/converse-no-dependencies.js:93443
-#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr "Spitznamen für diesen Gruppenchat festlegen"
+msgstr "Ändern des Spitznamens, den Sie in diesem Gruppenchat verwenden"
 
 #: dist/converse-no-dependencies.js:93457
 msgid "Invite someone to join this groupchat"
@@ -2177,7 +2174,7 @@ msgstr "Ihr Profilbild"
 
 #: dist/converse-no-dependencies.js:98251
 msgid "Your Profile"
-msgstr "Dein Profil"
+msgstr "Ihr Profil"
 
 #: dist/converse-no-dependencies.js:98263
 msgid "Save and close"
@@ -2188,8 +2185,8 @@ msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
-"Benutze Kommas, um die Rollen zu separieren. Die Rollen erscheinen neben "
-"deinem Namen."
+"Benutzen Sie Kommas, um die Rollen zu separieren. Die Rollen erscheinen "
+"neben Ihrem Namen."
 
 #: dist/converse-no-dependencies.js:98269
 msgid "OMEMO"
@@ -2201,13 +2198,13 @@ msgstr "Profil"
 
 #: dist/converse-no-dependencies.js:98382
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "Leider ist beim Speichern deiner Profildaten ein Fehler aufgetreten."
+msgstr "Leider ist beim Speichern Ihrer Profildaten ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:98382
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
-"Schau in die Entwicklerkonsole des Browsers um mögliche Fehlerausgaben zu "
-"sehen."
+"Schauen Sie in die Entwicklerkonsole des Browsers, um mögliche "
+"Fehlerausgaben zu sehen."
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:100471
@@ -2378,7 +2375,7 @@ msgstr "Nicht anonym"
 
 #: dist/converse-no-dependencies.js:101869
 msgid "Permanent"
-msgstr "Dauerhafter Raum"
+msgstr "Dauerhaft"
 
 #: dist/converse-no-dependencies.js:101877
 msgid "Unmoderated"

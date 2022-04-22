@@ -1,4 +1,3 @@
-import log from '@converse/headless/log.js';
 import tpl_bookmarks_list from './templates/list.js';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless/core.js';
@@ -25,10 +24,7 @@ export default class BookmarksView extends CustomElement {
 
         this.model.fetch({
             'success': () => this.requestUpdate(),
-            'error': (_m, err) => {
-                log.error(err);
-                this.requestUpdate();
-            }
+            'error': () => this.requestUpdate(),
         });
     }
 

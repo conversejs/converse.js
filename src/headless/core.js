@@ -120,7 +120,7 @@ export const api = _converse.api = {
         /**
          * Terminates the connection.
          *
-         * @method _converse.api.connection.disconnectkjjjkk
+         * @method _converse.api.connection.disconnect
          * @memberOf _converse.api.connection
          */
         disconnect () {
@@ -139,10 +139,15 @@ export const api = _converse.api = {
          * @memberOf _converse.api.connection
          */
         reconnect () {
-            if (_converse.connection?.reconnecting) {
-                return _converse.connection.debouncedReconnect();
+            const { __, connection } = _converse;
+            connection.setConnectionStatus(
+                Strophe.Status.RECONNECTING,
+                __('The connection has dropped, attempting to reconnect.')
+            );
+            if (connection?.reconnecting) {
+                return connection.debouncedReconnect();
             } else {
-                return _converse.connection.reconnect();
+                return connection.reconnect();
             }
         },
 

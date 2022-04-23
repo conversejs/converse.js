@@ -9,6 +9,9 @@ import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '@converse/headless/utils/init.js';
 import { tearDown } from '@converse/headless/utils/core.js';
 
+const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
+Strophe.Status.RECONNECTING = i + 1;
+
 
 /**
  * The Connection class manages the connection to the XMPP server. It's
@@ -154,11 +157,6 @@ export class Connection extends Strophe.Connection {
             await setUserJID(api.settings.get("jid"));
         }
 
-        const { __ } = _converse;
-        this.setConnectionStatus(
-            Strophe.Status.RECONNECTING,
-            __('The connection has dropped, attempting to reconnect.')
-        );
         /**
          * Triggered when the connection has dropped, but Converse will attempt
          * to reconnect again.

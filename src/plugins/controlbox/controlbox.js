@@ -34,6 +34,7 @@ class ControlBox extends CustomElement {
 
     setModel () {
         this.model = _converse.chatboxes.get('controlbox');
+        this.listenTo(_converse.connfeedback, 'change:connection_status', () => this.requestUpdate());
         this.listenTo(this.model, 'change:active-form', () => this.requestUpdate());
         this.listenTo(this.model, 'change:connected', () => this.requestUpdate());
         this.listenTo(this.model, 'change:closed', () => !this.model.get('closed') && this.afterShown());
@@ -41,11 +42,7 @@ class ControlBox extends CustomElement {
     }
 
     render () {
-        return this.model ? tpl_controlbox({
-            'sticky_controlbox': api.settings.get('sticky_controlbox'),
-            ...this.model.toJSON(),
-            'close': ev => this.close(ev)
-        }) : '';
+        return this.model ? tpl_controlbox(this) : '';
     }
 
     close (ev) {

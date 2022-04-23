@@ -1,5 +1,5 @@
-import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { __ } from 'i18n/index.js';
+import { _converse, api, converse } from "@converse/headless/core.js";
 
 const { Strophe, u } = converse.env;
 

@@ -93,4 +93,4 @@ class LoginForm extends CustomElement {
     }
 }
 
-api.elements.define('converse-login-panel', LoginForm);
+api.elements.define('converse-login-form', LoginForm);

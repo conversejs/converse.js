@@ -5,6 +5,7 @@
 import URI from 'urijs';
 import _converse from '@converse/headless/shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import connection_api from '@converse/headless/shared/connection/api.js';
 import dayjs from 'dayjs';
 import i18n from '@converse/headless/shared/i18n';
 import invoke from 'lodash-es/invoke';
@@ -13,10 +14,10 @@ import log from '@converse/headless/log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import sizzle from 'sizzle';
 import u, { setUnloadEvent, replacePromise } from '@converse/headless/utils/core.js';
-import { Collection } from "@converse/skeletor/src/collection";
-import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
-import { Events } from '@converse/skeletor/src/events.js';
 import { CHAT_STATES, KEYCODES } from './shared/constants.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Connection, MockConnection } from '@converse/headless/shared/connection/index.js';
+import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '@converse/headless/shared/errors';
@@ -101,66 +102,9 @@ pluggable.enable(_converse, '_converse', 'pluggable');
  * @memberOf _converse
  */
 export const api = _converse.api = {
-    /**
-     * This grouping collects API functions related to the XMPP connection.
-     *
-     * @namespace _converse.api.connection
-     * @memberOf _converse.api
-     */
-    connection: {
-        /**
-         * @method _converse.api.connection.connected
-         * @memberOf _converse.api.connection
-         * @returns {boolean} Whether there is an established connection or not.
-         */
-        connected () {
-            return _converse?.connection?.connected && true;
-        },
 
-        /**
-         * Terminates the connection.
-         *
-         * @method _converse.api.connection.disconnect
-         * @memberOf _converse.api.connection
-         */
-        disconnect () {
-            if (_converse.connection) {
-                _converse.connection.disconnect();
-            }
-        },
-
-        /**
-         * Can be called once the XMPP connection has dropped and we want
-         * to attempt reconnection.
-         * Only needs to be called once, if reconnect fails Converse will
-         * attempt to reconnect every two seconds, alternating between BOSH and
-         * Websocket if URLs for both were provided.
-         * @method reconnect
-         * @memberOf _converse.api.connection
-         */
-        reconnect () {
-            const { __, connection } = _converse;
-            connection.setConnectionStatus(
-                Strophe.Status.RECONNECTING,
-                __('The connection has dropped, attempting to reconnect.')
-            );
-            if (connection?.reconnecting) {
-                return connection.debouncedReconnect();
-            } else {
-                return connection.reconnect();
-            }
-        },
-
-        /**
-         * Utility method to determine the type of connection we have
-         * @method isType
-         * @memberOf _converse.api.connection
-         * @returns {boolean}
-         */
-        isType (type) {
-            return _converse.connection.isType(type);
-        }
-    },
+    connection: connection_api,
+    settings: settings_api,
 
     /**
      * Lets you trigger events, which can be listened to via
@@ -317,9 +261,6 @@ export const api = _converse.api = {
             return promise;
         }
     },
-
-    settings: settings_api,
-
 
     /**
      * Converse and its plugins trigger various events which you can listen to via the

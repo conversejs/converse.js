@@ -177,9 +177,10 @@ export default class MUCHeading extends CustomElement {
             });
         }
 
-        const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
-        if (chatview) {
-            return _converse.api.hook('getHeadingButtons', chatview, buttons);
+        const el = _converse.chatboxviews.get(this.getAttribute('jid'));
+        if (el) {
+            // This hook is described in src/plugins/chatview/heading.js
+            return _converse.api.hook('getHeadingButtons', el, buttons);
         } else {
             return Promise.resolve(buttons); // Happens during tests
         }

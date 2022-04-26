@@ -1,10 +1,11 @@
 import ChatRoomOccupant from './occupant.js';
 import u from '../../utils/form';
-import { Collection } from '@converse/skeletor/src/collection';
+import { Collection } from '@converse/skeletor/src/collection.js';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
-import { Strophe } from 'strophe.js/src/strophe';
+import { Strophe } from 'strophe.js/src/strophe.js';
 import { _converse, api } from '../../core.js';
 import { getAffiliationList } from './affiliations/utils.js';
+import { getAutoFetchedAffiliationLists } from './utils.js';
 
 
 /**
@@ -13,10 +14,10 @@ import { getAffiliationList } from './affiliations/utils.js';
  * @namespace _converse.ChatRoomOccupants
  * @memberOf _converse
  */
-const ChatRoomOccupants = Collection.extend({
-    model: ChatRoomOccupant,
+class ChatRoomOccupants extends Collection {
+    model = ChatRoomOccupant;
 
-    comparator (occupant1, occupant2) {
+    comparator (occupant1, occupant2) { // eslint-disable-line class-methods-use-this
         const role1 = occupant1.get('role') || 'none';
         const role2 = occupant2.get('role') || 'none';
         if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
@@ -26,7 +27,7 @@ const ChatRoomOccupants = Collection.extend({
         } else {
             return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
         }
-    },
+    }
 
     /**
      * Get the {@link _converse.ChatRoomOccupant} instance which
@@ -36,19 +37,14 @@ const ChatRoomOccupants = Collection.extend({
      */
     getOwnOccupant () {
         return this.findWhere({ 'jid': _converse.bare_jid });
-    },
-
-    getAutoFetchedAffiliationLists () {
-        const affs = api.settings.get('muc_fetch_members');
-        return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
-    },
+    }
 
     async fetchMembers () {
         if (!['member', 'admin', 'owner'].includes(this.getOwnOccupant()?.get('affiliation'))) {
             // https://xmpp.org/extensions/xep-0045.html#affil-priv
             return;
         }
-        const affiliations = this.getAutoFetchedAffiliationLists();
+        const affiliations = getAutoFetchedAffiliationLists();
         if (affiliations.length === 0) {
             return;
         }
@@ -86,7 +82,7 @@ const ChatRoomOccupants = Collection.extend({
          * @example _converse.api.listen.on('membersFetched', () => { ... });
          */
         api.trigger('membersFetched');
-    },
+    }
 
     /**
      * @typedef { Object} OccupantData
@@ -110,7 +106,7 @@ const ChatRoomOccupants = Collection.extend({
             data.occupant_id && this.findWhere({ 'occupant_id': data.occupant_id }) ||
             data.nick && this.findWhere({ 'nick': data.nick });
     }
-});
+}
 
 
 export default ChatRoomOccupants;

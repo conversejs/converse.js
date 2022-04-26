@@ -1,10 +1,10 @@
-import log from '@converse/headless/log';
+import log from '@converse/headless/log.js';
 import tpl_moderator_tools from './templates/moderator-tools.js';
 import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/index.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
-import { getAssignableRoles } from '@converse/headless/plugins/muc/utils.js';
+import { _converse, api, converse } from '@converse/headless/core.js';
+import { getAssignableRoles, getAutoFetchedAffiliationLists } from '@converse/headless/plugins/muc/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import {
     getAffiliationList,
@@ -118,8 +118,7 @@ export default class ModeratorTools extends CustomElement {
         if (affiliation === 'none') {
             return false;
         }
-        const chatroom = this.muc;
-        const auto_fetched_affs = chatroom.occupants.getAutoFetchedAffiliationLists();
+        const auto_fetched_affs = getAutoFetchedAffiliationLists();
         if (auto_fetched_affs.includes(affiliation)) {
             return false;
         } else {

@@ -83,7 +83,7 @@
     "imports-loader": "^3.0.0",
     "install": "^0.13.0",
     "jsdoc": "^3.6.7",
-    "karma": "^6.3.4",
+    "karma": "^6.3.19",
     "karma-chrome-launcher": "^3.1.0",
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^4.0.1",
@@ -95,7 +95,7 @@
     "po-loader": "^0.5.0",
     "postcss-clean": "^1.2.2",
     "postcss-loader": "^6.1.1",
-    "prettierx": "^0.18.2",
+    "prettierx": "^0.19.0",
     "sass": "^1.50.1",
     "sass-loader": "^12.6.0",
     "style-loader": "^3.1.0",
@@ -112,6 +112,6 @@
     "dompurify": "^2.3.1",
     "favico.js-slevomat": "^0.3.11",
     "jed": "1.1.1",
-    "lit": "^2.0.0-rc.2"
+    "lit": "^2.2.2"
   }
 }

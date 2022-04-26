@@ -37,9 +37,6 @@ You might want to open `dev.html <https://github.com/conversejs/converse.js/blob
 how ``converse.initialize`` is called and to potentially change any of the
 settings.
 
-If you're running ``make devserver``, you need to open http://localhost:8080
-instead.
-
 Starting a web server with live reloading
 -----------------------------------------
 
@@ -49,3 +46,6 @@ can run ``make devserver`` (which will use `webpack-dev-server <https://github.c
 Instead of ``dev.html`` being used, `webpack.html <https://github.com/conversejs/converse.js/blob/master/webpack.html>`_
 is now being used as the HTML template, and you'll need to modify that file if
 you want to change the settings passed to ``converse.initialize``.
+
+If you're running ``make devserver``, you need to open http://localhost:8080.
+

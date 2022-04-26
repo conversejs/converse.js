@@ -436,6 +436,85 @@ Please refer to the `API documentation </docs/html/api/http://localhost:8008/doc
 for an overview of what's available to you. If you need new events or promises, then
 `please open an issue or make a pull request on Github <https://github.com/jcbrand/converse.js>`_
 
+
+Hooks
+-----
+
+Converse has the concept of ``hooks``, which are special events that allow you
+to modify it's behaviour at runtime.
+
+A hook is similar to an event, but it differs in two meaningful ways:
+
+1. Converse will wait for all handlers of a hook to finish before continuing inside the function from where the hook was triggered.
+2. Each hook contains a payload, which the handlers can modify or extend, before returning it (either to the function that triggered the hook or to subsequent handlers).
+
+These two properties of hooks makes it possible for 3rd party plugins to
+intercept and update data, allowing them to modify Converse without the need of
+resorting to `overrides`_.
+
+A hook is triggered in the following way:
+
+.. code-block:: javascript
+
+    async function hookTriggerExample () {
+        const payload = { foo: 'bar' };
+        const updated_payload = await api.hook('hookName', this, payload);
+        return updated_payload;
+    }
+
+The above could be shortened:
+
+.. code-block:: javascript
+
+    async function hookTriggerExample () {
+        return await api.hook('hookName', this, { foo: 'bar' });
+    }
+
+The ``async/await`` syntax could also be removed, but then it's less clear to
+the reader that this function returns a promise.
+
+Let's assume that in a plugin somewhere a listener is registered for this hook:
+
+.. code-block:: javascript
+
+    function hookListenerExample () {
+
+        api.listen.on('hookname', (context, payload) => {
+            return {...payload, 'baz': 'buzz'};
+        });
+    }
+
+The ``context`` parameter in our listener is usually the ``this`` of the function
+that triggered the hook (as is the case in ``hookTriggerExample``),
+but could also be a ``Model`` instance.
+
+The ``payload`` parameter is the same payload that was passed in in
+``hookTriggerExample``.
+
+The ``hookListenerExample`` function accepts the payload and returns a new one
+which contains the original payload together with a new key and value.
+
+The ``updated_payload`` that is now returned from ``hookTriggerExample`` looks
+as follows:
+
+::
+
+    { foo: 'bar', bazz: 'buzz' }
+
+Our plugin was able to add data to the payload without requiring any kind of
+knowledge from ``hookTriggerExample`` about ``hookListenerExample`` and
+without any kind of coupling betwee the code.
+
+A good example of a real-world hook in Converse, is the
+`getMessageActionButtons <https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons>`_
+which allows you to add, modify or delete the actions you can take on a message
+in a chat.
+
+The `Actions <https://github.com/conversejs/community-plugins/tree/master/packages/actions>`_
+3rd party community plugin makes use of this hook to add extra actions such as
+``like`` or ``dislike`` to chat messages.
+
+
 A full example plugin
 ---------------------
 

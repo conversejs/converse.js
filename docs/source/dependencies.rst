@@ -9,40 +9,47 @@ Starting up a dev environment
 Installing the 3rd party dependencies
 =====================================
 
-We use development tools which depend on Node.js and npm (the Node package manager).
-
-If you don't have Node.js installed, you can download and install the latest
-version `here <https://nodejs.org/download>`_.
-
-Alternatively you can `use your operating system's package manager to install
-Node.js <https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions>`_.
-
-Also make sure you have ``Git`` installed. `See here <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
-
-Now use ``git`` to check out the Converse repository:
+To develop and customize Converse, you'll first need to check out Converse's Git
+repository:
 
 ::
 
     git clone https://github.com/conversejs/converse.js.git
+    cd converse.js
 
-Now go into the repository checkout and run ``make dev`` in order to set up the
-development environment.
+
+We use development tools which depend on Node.js and NPM (the Node package manager).
+
+It's recommended that you use `NVM <https://github.com/nvm-sh/nvm>`_ (the Node version manager)
+to make sure you have the right version of Node.
+
+Refer to the `NVM Github page <https://github.com/nvm-sh/nvm#install--update-script>`_ for instructions on how to install it.
+
+Once NVM is installed, you can run the following inside your checkout of the Converse Git repository:
 
 ::
 
-    cd converse.js
+    nvm install
+
+.. note::
+    You will always have to first run ``nvm install`` in a new terminal session before working on Converse.
+
+
+To set up the Converse development environment, you now run ``make dev``.
+
+::
+
     make dev
 
-If you're using Windows, or don't have GNU Make installed, you can run the
+Alternatively, if you're using Windows, or don't have GNU Make installed, you can run the
 following:
 
 ::
 
-  cd converse.js
   npm install
   npm run lerna
 
-This will install the Node.js development tools and Converse's dependencies.
+This will install the Node development tools and Converse's dependencies.
 
 The front-end dependencies are those JavaScript files on which
 Converse directly depends and which will be loaded in the browser as part of
@@ -80,3 +87,4 @@ under the `GPLv3 <https://github.com/signalapp/libsignal-protocol-javascript/blo
 which requires all other dependent JavaScript code to also be open sourced under the same
 license. You might not be willing to adhere to those terms, which is why you
 need to decide for yourself whether you're going to load libsignal or not.
+

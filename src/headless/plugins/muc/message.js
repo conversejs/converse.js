@@ -87,6 +87,10 @@ const ChatRoomMessageMixin = {
         }
 
         this.occupant = occupant;
+        if (occupant.get('jid')) {
+            this.save('from_real_jid', occupant.get('jid'));
+        }
+
         this.trigger('occupantAdded');
         this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
         this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);

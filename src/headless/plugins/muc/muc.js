@@ -1704,6 +1704,7 @@ const ChatRoomMixin = {
         if (data.type === 'error' || (!data.jid && !data.nick && !data.occupant_id)) {
             return true;
         }
+
         const occupant = this.occupants.findOccupant(data);
         // Destroy an unavailable occupant if this isn't a nick change operation and if they're not affiliated
         if (
@@ -1717,11 +1718,14 @@ const ChatRoomMixin = {
             occupant.destroy();
             return;
         }
+
         const jid = data.jid || '';
-        const attributes = Object.assign(data, {
+        const attributes = {
+            ...data,
             'jid': Strophe.getBareJidFromJid(jid) || occupant?.attributes?.jid,
             'resource': Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource
-        });
+        }
+
         if (occupant) {
             occupant.save(attributes);
         } else {

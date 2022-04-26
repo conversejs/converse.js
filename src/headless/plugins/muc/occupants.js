@@ -2,10 +2,12 @@ import ChatRoomOccupant from './occupant.js';
 import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection.js';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
+import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { _converse, api } from '../../core.js';
 import { getAffiliationList } from './affiliations/utils.js';
 import { getAutoFetchedAffiliationLists } from './utils.js';
+import { getUniqueId } from '@converse/headless/utils/core.js';
 
 
 /**
@@ -27,6 +29,14 @@ class ChatRoomOccupants extends Collection {
         } else {
             return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
         }
+    }
+
+    create (attrs, options) {
+        if (attrs.id || attrs instanceof Model) {
+            return super.create(attrs, options);
+        }
+        attrs.id = attrs.occupant_id || getUniqueId();
+        return super.create(attrs, options);
     }
 
     /**
@@ -94,16 +104,23 @@ class ChatRoomOccupants extends Collection {
      * Try to find an existing occupant based on the passed in
      * data object.
      *
-     * If we have a JID, we use that as lookup variable,
-     * otherwise we use the nick. We don't always have both,
-     * but should have at least one or the other.
+     * Fetching the user by occupant_id is the quickest, O(1),
+     * since it's a dictionary lookup.
+     *
+     * Fetching by jid or nick is O(n), since it requires traversing an array.
+     *
+     * Lookup by occupant_id is done first, then jid, and then nick.
+     *
      * @method _converse.ChatRoomOccupants#findOccupant
      * @param { OccupantData } data
      */
     findOccupant (data) {
+        if (data.occupant_id && this.get(data.occupant_id)) {
+            return this.get(data.occupant_id);
+        }
+
         const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
         return jid && this.findWhere({ jid }) ||
-            data.occupant_id && this.findWhere({ 'occupant_id': data.occupant_id }) ||
             data.nick && this.findWhere({ 'nick': data.nick });
     }
 }

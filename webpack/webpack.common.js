@@ -114,7 +114,9 @@ module.exports = {
             "IPv6":                     path.resolve(__dirname, "../node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "../node_modules/urijs/src/SecondLevelDomains"),
             "formdata-polyfill":        path.resolve(__dirname, "../node_modules/formdata-polyfill/FormData"),
-            "punycode":                 path.resolve(__dirname, "../node_modules/urijs/src/punycode")
+            "punycode":                 path.resolve(__dirname, "../node_modules/urijs/src/punycode"),
+            "./shims":               path.resolve(__dirname, "../src/strophe-shims.js"),
         }
     }
+
 }

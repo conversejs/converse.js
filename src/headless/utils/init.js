@@ -5,7 +5,7 @@ import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '@converse/headless/log';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import { CORE_PLUGINS } from '@converse/headless/shared/constants.js';
-import { Connection } from '@converse/headless/shared/connection.js';
+import { Connection } from '@converse/headless/shared/connection/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe';
 import { createStore, initStorage } from '@converse/headless/utils/storage.js';

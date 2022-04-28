@@ -2,7 +2,7 @@ import { _converse, api } from "@converse/headless/core";
 
 
 export function highlightRosterItem (chatbox) {
-    _converse.roster?.findWhere({'jid': chatbox.get('jid')})?.trigger('highlight');
+    _converse.roster?.get(chatbox.get('jid'))?.trigger('highlight');
 }
 
 

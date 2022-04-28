@@ -55,7 +55,7 @@ describe("The Controlbox", function () {
                 ask: 'subscribe',
                 fullname: mock.pend_names[0]
             });
-            const rosterview = document.querySelector('converse-roster');
+            const rosterview = await u.waitUntil(() => document.querySelector('converse-roster'));
             await u.waitUntil(() => Array.from(rosterview.querySelectorAll('.roster-group li')).filter(u.isVisible).length, 700);
             // Checking that only one entry is created because both JID is same (Case sensitive check)
             expect(Array.from(rosterview.querySelectorAll('li')).filter(u.isVisible).length).toBe(1);

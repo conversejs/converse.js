@@ -14,7 +14,7 @@ class MUCBookmarkForm extends CustomElement {
     connectedCallback () {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.jid);
-        this.bookmark  = _converse.bookmarks.findWhere({ 'jid': this.model.get('jid') });
+        this.bookmark  = _converse.bookmarks.get(this.model.get('jid'));
     }
 
     render () {

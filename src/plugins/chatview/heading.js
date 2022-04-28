@@ -48,6 +48,19 @@ export default class ChatHeading extends CustomElement {
      */
     getHeadingButtons () {
         const buttons = [
+            /**
+             * @typedef { Object } HeadingButtonAttributes
+             * An object representing a chat heading button
+             * @property { Boolean } standalone
+             *      True if shown on its own, false if it must be in the dropdown menu.
+             * @property { Function } handler
+             *      A handler function to be called when the button is clicked.
+             * @property { String } a_class - HTML classes to show on the button
+             * @property { String } i18n_text - The user-visiible name of the button
+             * @property { String } i18n_title - The tooltip text for this button
+             * @property { String } icon_class - What kind of CSS class to use for the icon
+             * @property { String } name - The internal name of the button
+             */
             {
                 'a_class': 'show-user-details-modal',
                 'handler': ev => this.showUserDetailsModal(ev),
@@ -69,25 +82,34 @@ export default class ChatHeading extends CustomElement {
                 'standalone': api.settings.get('view_mode') === 'overlayed'
             });
         }
-        /**
-         * *Hook* which allows plugins to add more buttons to a chat's heading.
-         * @event _converse#getHeadingButtons
-         * @example
-         *  api.listen.on('getHeadingButtons', (view, buttons) => {
-         *      buttons.push({
-         *          'i18n_title': __('Foo'),
-         *          'i18n_text': __('Foo Bar'),
-         *          'handler': ev => alert('Foo!'),
-         *          'a_class': 'toggle-foo',
-         *          'icon_class': 'fa-foo',
-         *          'name': 'foo'
-         *      });
-         *      return buttons;
-         *  });
-         */
-        const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
-        if (chatview) {
-            return _converse.api.hook('getHeadingButtons', chatview, buttons);
+        const el = _converse.chatboxviews.get(this.getAttribute('jid'));
+        if (el) {
+            /**
+             * *Hook* which allows plugins to add more buttons to a chat's heading.
+             *
+             * Note: This hook is fired for both 1 on 1 chats and groupchats.
+             * If you only care about one, you need to add a check in your code.
+             *
+             * @event _converse#getHeadingButtons
+             * @param { HTMLElement } el
+             *      The `converse-chat` (or `converse-muc`) DOM element that represents the chat
+             * @param { Array.<HeadingButtonAttributes> }
+             *      An array of the existing buttons. New buttons may be added,
+             *      and existing ones removed or modified.
+             * @example
+             *  api.listen.on('getHeadingButtons', (el, buttons) => {
+             *      buttons.push({
+             *          'i18n_title': __('Foo'),
+             *          'i18n_text': __('Foo Bar'),
+             *          'handler': ev => alert('Foo!'),
+             *          'a_class': 'toggle-foo',
+             *          'icon_class': 'fa-foo',
+             *          'name': 'foo'
+             *      });
+             *      return buttons;
+             *  });
+             */
+            return _converse.api.hook('getHeadingButtons', el, buttons);
         } else {
             return buttons; // Happens during tests
         }

@@ -10,6 +10,7 @@ import { _converse, api, converse } from "../../core.js";
 import {
     clearVCardsSession,
     initVCardCollection,
+    onOccupantAvatarChanged,
     setVCardOnMUCMessage,
     setVCardOnModel,
     setVCardOnOccupant,
@@ -64,9 +65,6 @@ converse.plugins.add('converse-vcard', {
     },
 
     initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
         api.promises.add('VCardsInitialized');
 
         _converse.VCard = VCard;
@@ -74,15 +72,17 @@ converse.plugins.add('converse-vcard', {
         _converse.VCards = Collection.extend({
             model: _converse.VCard,
             initialize () {
-                this.on('add', vcard => (vcard.get('jid') && api.vcard.update(vcard)));
+                this.on('add', v => v.get('jid') && api.vcard.update(v));
             }
         });
 
-        api.listen.on('chatRoomInitialized', m => {
+        api.listen.on('chatRoomInitialized', (m) => {
             setVCardOnModel(m)
             m.occupants.forEach(setVCardOnOccupant);
             m.listenTo(m.occupants, 'add', setVCardOnOccupant);
+            m.listenTo(m.occupants, 'change:image_hash', o => onOccupantAvatarChanged(o));
         });
+
         api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));
         api.listen.on('chatRoomMessageInitialized', m => setVCardOnMUCMessage(m));
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.VCARD));

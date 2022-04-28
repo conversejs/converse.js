@@ -2,22 +2,28 @@ import bookmark_item from './item.js';
 import { __ } from 'i18n';
 import { _converse } from '@converse/headless/core.js';
 import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 
-export default (o) => {
-    const is_collapsed = _converse.bookmarks.getUnopenedBookmarks().length ? true : false;
+const list = (el, bookmarks) => {
     const desc_bookmarks = __('Click to toggle the bookmarks list');
     const label_bookmarks = __('Bookmarks');
+    const toggle_state = el.model.get('toggle-state');
     return html`
-        <div class="list-container list-container--bookmarks ${ !is_collapsed && 'hidden' || '' }">
+        <div class="list-container list-container--bookmarks ${ bookmarks.length ? 'fade-in' : 'hidden' }">
             <a class="list-toggle bookmarks-toggle controlbox-padded"
                title="${desc_bookmarks}"
-               @click=${o.toggleBookmarksList}>
+               @click=${() => el.toggleBookmarksList()}>
 
-                <span class="fa ${(o.toggle_state === _converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }">
+                <span class="fa ${(toggle_state === _converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }">
                 </span> ${label_bookmarks}</a>
-            <div class="items-list bookmarks rooms-list ${ (o.toggle_state !== _converse.OPENED) ? 'hidden' : '' }">
-            ${ _converse.bookmarks.map(bm => bookmark_item(Object.assign({bm}, o))) }
+            <div class="items-list bookmarks rooms-list ${ (toggle_state === _converse.OPENED) ? 'fade-in' : 'hidden fade-out' }">
+            ${ _converse.bookmarks.map(bm => bookmark_item(bm)) }
             </div>
         </div>
     `;
+}
+
+export default (el) => {
+    const bookmarks = _converse.bookmarks.getUnopenedBookmarks();
+    return until(bookmarks.then((bookmarks) => list(el, bookmarks)), '');
 }

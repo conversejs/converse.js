@@ -126,7 +126,7 @@ export default (el) => {
     let feedback_class, pretty_status;
     if (REPORTABLE_STATUSES.includes(connection_status)) {
         pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
-        feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
+        feedback_class = CONNECTION_STATUS_CSS_CLASS[connection_status];
     }
     const conn_feedback_message = _converse.connfeedback.get('message');
     return html`

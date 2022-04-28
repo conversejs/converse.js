@@ -6,6 +6,11 @@ import { safeSave } from '@converse/headless/utils/core.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
+export function getAutoFetchedAffiliationLists () {
+    const affs = api.settings.get('muc_fetch_members');
+    return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
+}
+
 /**
  * Given an occupant model, see which roles may be assigned to that user.
  * @param { Model } occupant

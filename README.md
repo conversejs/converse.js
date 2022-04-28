@@ -118,14 +118,20 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 
 ## Integration into other servers and frameworks
 
+### XMPP servers
+
+-   **[Openfire](https://www.igniterealtime.org/projects/openfire/index.jsp)**: [inverse.jar](https://www.igniterealtime.org/projects/openfire/plugins.jsp)
+-   **[Prosody](https://prosody.im/)**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
+-   **[Ejabberd](https://ejabberd.im/)**: [mod-conversejs](https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs)
+
+### Other
+
 -   **[Alfresco](https://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Django](https://www.djangoproject.com)**: [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
 -   **[Elgg](https://elgg.org)**: [plugin](https://elgg.org/plugins/2997196)
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
--   **[Openfire](https://www.igniterealtime.org/projects/openfire/index.jsp)**: [inverse.jar](https://www.igniterealtime.org/projects/openfire/plugins.jsp)
 -   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
 -   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
--   **[Prosody](https://prosody.im/)**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
 -   **[Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)**: [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)
 -   **[Roundcube](https://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin)
 -   **[Ruby on Rails](https://rubyonrails.org)**: [conversejs-rails](https://github.com/mikemarsian/conversejs-rails)

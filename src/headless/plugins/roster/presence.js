@@ -11,6 +11,8 @@ export const Resources = Collection.extend({'model': Resource});
 
 
 export const Presence = Model.extend({
+    idAttribute: 'jid',
+
     defaults: {
         'show': 'offline'
     },
@@ -33,21 +35,21 @@ export const Presence = Model.extend({
     },
 
     /**
-        * Return the resource with the highest priority.
-        * If multiple resources have the same priority, take the latest one.
-        * @private
-        */
+     * Return the resource with the highest priority.
+     * If multiple resources have the same priority, take the latest one.
+     * @private
+     */
     getHighestPriorityResource () {
         return this.resources.sortBy(r => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
     },
 
     /**
-        * Adds a new resource and it's associated attributes as taken
-        * from the passed in presence stanza.
-        * Also updates the presence if the resource has higher priority (and is newer).
-        * @private
-        * @param { XMLElement } presence: The presence stanza
-        */
+     * Adds a new resource and it's associated attributes as taken
+     * from the passed in presence stanza.
+     * Also updates the presence if the resource has higher priority (and is newer).
+     * @private
+     * @param { XMLElement } presence: The presence stanza
+     */
     addResource (presence) {
         const jid = presence.getAttribute('from'),
                 name = Strophe.getResourceFromJid(jid),
@@ -68,12 +70,12 @@ export const Presence = Model.extend({
     },
 
     /**
-        * Remove the passed in resource from the resources map.
-        * Also redetermines the presence given that there's one less
-        * resource.
-        * @private
-        * @param { string } name: The resource name
-        */
+     * Remove the passed in resource from the resources map.
+     * Also redetermines the presence given that there's one less
+     * resource.
+     * @private
+     * @param { string } name: The resource name
+     */
     removeResource (name) {
         const resource = this.resources.get(name);
         if (resource) {

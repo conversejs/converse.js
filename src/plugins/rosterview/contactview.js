@@ -1,4 +1,4 @@
-import log from "@converse/headless/log";
+import log from "@converse/headless/log.js";
 import tpl_pending_contact from "./templates/pending_contact.js";
 import tpl_requesting_contact from "./templates/requesting_contact.js";
 import tpl_roster_item from "./templates/roster_item.js";
@@ -17,11 +17,11 @@ export default class RosterContact extends CustomElement {
         }
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.listenTo(this.model, "change", this.requestUpdate);
-        this.listenTo(this.model, "highlight", this.requestUpdate);
-        this.listenTo(this.model, 'vcard:change', this.requestUpdate);
+    initialize () {
+        this.listenTo(this.model, "change", () => this.requestUpdate());
+        this.listenTo(this.model, "highlight", () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
     }
 
     render () {

@@ -13,7 +13,7 @@ const Bookmarks = {
     model: Bookmark,
     comparator: (item) => item.get('name').toLowerCase(),
 
-    initialize () {
+    async initialize () {
         this.on('add', bm => this.openBookmarkedRoom(bm)
             .then(bm => this.markRoomAsBookmarked(bm))
             .catch(e => log.fatal(e))
@@ -25,6 +25,17 @@ const Bookmarks = {
         const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
         this.fetched_flag = cache_key+'fetched';
         initStorage(this, cache_key);
+
+        await this.fetchBookmarks();
+
+        /**
+         * Triggered once the _converse.Bookmarks collection
+         * has been created and cached bookmarks have been fetched.
+         * @event _converse#bookmarksInitialized
+         * @type { _converse.Bookmarks }
+         * @example _converse.api.listen.on('bookmarksInitialized', (bookmarks) => { ... });
+         */
+        api.trigger('bookmarksInitialized', this);
     },
 
     async openBookmarkedRoom (bookmark) {
@@ -91,7 +102,7 @@ const Bookmarks = {
         api.alert(
             'error', __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
         );
-        this.findWhere({'jid': options.jid}).destroy();
+        this.get(options.jid)?.destroy();
     },
 
     fetchBookmarksFromServer (deferred) {
@@ -108,16 +119,12 @@ const Bookmarks = {
 
     markRoomAsBookmarked (bookmark) {
         const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
-        if (groupchat !== undefined) {
-            groupchat.save('bookmarked', true);
-        }
+        groupchat?.save('bookmarked', true);
     },
 
     markRoomAsUnbookmarked (bookmark) {
         const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
-        if (groupchat !== undefined) {
-            groupchat.save('bookmarked', false);
-        }
+        groupchat?.save('bookmarked', false);
     },
 
     createBookmarksFromStanza (stanza) {
@@ -168,7 +175,9 @@ const Bookmarks = {
         }
     },
 
-    getUnopenedBookmarks () {
+    async getUnopenedBookmarks () {
+        await api.waitUntil('bookmarksInitialized')
+        await api.waitUntil('chatBoxesFetched')
         return this.filter(b => !_converse.chatboxes.get(b.get('jid')));
     }
 }

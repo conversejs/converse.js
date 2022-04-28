@@ -1,57 +1,43 @@
-import log from '@converse/headless/log';
 import tpl_bookmarks_list from './templates/list.js';
-import { ElementView } from '@converse/skeletor/src/element.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { CustomElement } from 'shared/components/element.js';
+import { _converse, api } from '@converse/headless/core.js';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { render } from 'lit';
 
-const u = converse.env.utils;
 
-export default class BookmarksView extends ElementView {
+export default class BookmarksView extends CustomElement {
 
     async initialize () {
         await api.waitUntil('bookmarksInitialized');
+        const { bookmarks, chatboxes } = _converse;
 
-        this.listenTo(_converse.bookmarks, 'add', this.render);
-        this.listenTo(_converse.bookmarks, 'remove', this.render);
+        this.listenTo(bookmarks, 'add', () => this.requestUpdate());
+        this.listenTo(bookmarks, 'remove', () => this.requestUpdate());
 
-        this.listenTo(_converse.chatboxes, 'add', this.render);
-        this.listenTo(_converse.chatboxes, 'remove', this.render);
+        this.listenTo(chatboxes, 'add', () => this.requestUpdate());
+        this.listenTo(chatboxes, 'remove', () => this.requestUpdate());
 
         const id = `converse.bookmarks-list-model-${_converse.bare_jid}`;
         this.model = new _converse.BookmarksList({ id });
         initStorage(this.model, id);
 
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+
         this.model.fetch({
-            'success': () => this.render(),
-            'error': (model, err) => {
-                log.error(err);
-                this.render();
-            }
+            'success': () => this.requestUpdate(),
+            'error': () => this.requestUpdate(),
         });
     }
 
     render () {
-        render(tpl_bookmarks_list({
-            'toggleBookmarksList': ev => this.toggleBookmarksList(ev),
-            'toggle_state': this.model.get('toggle-state')
-        }), this);
+        return _converse.bookmarks && this.model ? tpl_bookmarks_list(this) : '';
     }
 
     toggleBookmarksList (ev) {
         ev?.preventDefault?.();
-        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
-        if (u.hasClass('fa-caret-down', icon_el)) {
-            u.slideIn(this.querySelector('.bookmarks'));
-            this.model.save({ 'toggle-state': _converse.CLOSED });
-            icon_el.classList.remove('fa-caret-down');
-            icon_el.classList.add('fa-caret-right');
-        } else {
-            icon_el.classList.remove('fa-caret-right');
-            icon_el.classList.add('fa-caret-down');
-            u.slideOut(this.querySelector('.bookmarks'));
-            this.model.save({ 'toggle-state': _converse.OPENED });
-        }
+        const { CLOSED, OPENED } = _converse;
+        this.model.save({
+            'toggle-state': this.model.get('toggle-state') === CLOSED ? OPENED : CLOSED
+        });
     }
 }
 

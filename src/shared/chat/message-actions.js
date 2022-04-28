@@ -1,4 +1,4 @@
-import log from '@converse/headless/log';
+import log from '@converse/headless/log.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core.js';

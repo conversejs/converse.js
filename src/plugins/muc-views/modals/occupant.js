@@ -20,10 +20,19 @@ const OccupantModal = BaseModal.extend({
         api.trigger('occupantModalInitialized', { 'model': this.model, 'message': this.message });
     },
 
+    getVcard () {
+        const model = this.model ?? this.message;
+        if (model.vcard) {
+            return model.vcard;
+        }
+        const jid = model?.get('jid') || model?.get('from');
+        return jid ? _converse.vcards.get(jid) : null;
+    },
+
     toHTML () {
         const model = this.model ?? this.message;
         const jid = model?.get('jid');
-        const vcard = _converse.vcards.findWhere({ jid });
+        const vcard = this.getVcard();
         const display_name = model?.getDisplayName();
         const nick = model.get('nick');
         const occupant_id = model.get('occupant_id');

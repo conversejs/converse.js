@@ -37,8 +37,7 @@ describe('The "Groupchats" Add modal', function () {
             roomspanel.querySelector('.show-add-muc-modal').click();
             label_name = modal.el.querySelector('label[for="chatroom"]');
             expect(label_name.textContent.trim()).toBe('Groupchat address:');
-            name_input = modal.el.querySelector('input[name="chatroom"]');
-            expect(name_input.placeholder).toBe('name@muc.example.org');
+            await u.waitUntil(() => modal.el.querySelector('input[name="chatroom"]')?.placeholder === 'name@muc.example.org');
         })
     );
 

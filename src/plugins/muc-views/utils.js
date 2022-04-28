@@ -127,10 +127,22 @@ export function getAutoCompleteListItem (text, input) {
     return element;
 }
 
+let fetched_room_jids = [];
+let timestamp = null;
+
+async function fetchListOfRooms () {
+    const response = await fetch('https://search.jabber.network/api/1.0/rooms');
+    const data = await response.json();
+    const popular_mucs = data.items.map(item => item.address);
+    fetched_room_jids = [...new Set(popular_mucs)];
+}
+
 export async function getAutoCompleteList () {
-    const models = [...(await api.rooms.get()), ...(await api.contacts.get())];
-    const jids = [...new Set(models.map(o => Strophe.getDomainFromJid(o.get('jid'))))];
-    return jids;
+    if (!timestamp || converse.env.dayjs().isAfter(timestamp, 'day')) {
+        await fetchListOfRooms();
+        timestamp = (new Date()).toISOString();
+    }
+    return fetched_room_jids;
 }
 
 export async function fetchCommandForm (command) {

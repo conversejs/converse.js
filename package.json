@@ -68,7 +68,7 @@
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.14.7",
     "@converse/headless": "file:src/headless",
-    "autoprefixer": "^9.8.6",
+    "autoprefixer": "^10.4.5",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.5",
     "bootstrap.native-loader": "2.0.0",

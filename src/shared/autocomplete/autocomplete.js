@@ -266,6 +266,9 @@ export class AutoComplete {
         }
 
         const list = typeof this._list === "function" ? await this._list() : this._list;
+        if (typeof (list) === 'undefined') {
+            return 0;
+        }
         if (list.length === 0) {
             return;
         }

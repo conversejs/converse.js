@@ -7,6 +7,7 @@
 - Remove local (non-requesting) contacts not returned from a full roster response
 - Improve performance by looking up VCards via map instead of traversing an array
 - Fix infinite loop when receiving service discovery entities with a circular dependency
+- #1130: Display the room’s vCard-temp avatar
 - #2746: Always reply to all iqs, even those not understood
 - #2794: Some display problems with mobile view mode
 - #2868: Selected emoji is inserted into all open chat boxes

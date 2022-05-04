@@ -37,15 +37,12 @@ module.exports = {
             ]
         }, {
             test: /webfonts[\\/].*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
-            use: [
-            {
-                loader: 'file-loader',
-                options: {
-                    name: '[name].[ext]',
-                    outputPath: 'webfonts/'
-                }
+            type: 'asset/resource',
+            generator: {
+                filename: '[name][ext]',
+                publicPath: 'webfonts/',
+                outputPath: 'webfonts/'
             }
-            ]
         }, {
             test: /\.scss$/,
             use: [

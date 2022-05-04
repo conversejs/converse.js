@@ -4,7 +4,7 @@ const prod = require("./webpack.prod.js");
 const { merge } = require("webpack-merge");
 
 module.exports = merge(prod, {
-    mode: "development",
+    mode: "production",
     output: {
         filename: 'converse.js',
     },

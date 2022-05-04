@@ -65,7 +65,6 @@ module.exports = merge(common, {
         'lodash.noconflict': 'lodash.noconflict',
         'sizzle': 'sizzle',
         'strophe.js': 'strophe',
-        'twemoji': 'twemoji',
         'urijs': 'urijs',
         'window': 'window',
     }]

@@ -37,15 +37,12 @@ module.exports = {
             ]
         }, {
             test: /webfonts[\\/].*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
-            use: [
-            {
-                loader: 'file-loader',
-                options: {
-                    name: '[name].[ext]',
-                    outputPath: 'webfonts/'
-                }
+            type: 'asset/resource',
+            generator: {
+                filename: '[name][ext]',
+                publicPath: 'webfonts/',
+                outputPath: 'webfonts/'
             }
-            ]
         }, {
             test: /\.scss$/,
             use: [
@@ -114,7 +111,9 @@ module.exports = {
             "IPv6":                     path.resolve(__dirname, "../node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "../node_modules/urijs/src/SecondLevelDomains"),
             "formdata-polyfill":        path.resolve(__dirname, "../node_modules/formdata-polyfill/FormData"),
-            "punycode":                 path.resolve(__dirname, "../node_modules/urijs/src/punycode")
+            "punycode":                 path.resolve(__dirname, "../node_modules/urijs/src/punycode"),
+            "./shims":               path.resolve(__dirname, "../src/strophe-shims.js"),
         }
     }
+
 }

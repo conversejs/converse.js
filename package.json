@@ -92,7 +92,7 @@
     "lerna": "^4.0.0",
     "mini-css-extract-plugin": "^2.6.0",
     "minimist": "^1.2.6",
-    "po-loader": "^0.5.0",
+    "po-loader": "conversejs/po-loader#ae72d170bdd0e4066fd8c2af56e1170c59999340",
     "postcss": "^8.4.12",
     "postcss-clean": "1.2.0",
     "postcss-loader": "^6.2.1",

@@ -575,7 +575,7 @@ const ChatRoomMixin = {
         try {
             attrs = await parseMUCMessage(stanza, this, _converse);
         } catch (e) {
-            return log.error(e.message);
+            return log.error(e);
         }
         const data = { stanza, attrs, 'chatbox': this };
         /**

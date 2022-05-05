@@ -9,6 +9,7 @@ const { merge }  = require("webpack-merge");
 
 const plugins = [
     new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
+    new MiniCssExtractPlugin({filename: '../dist/converse.css'}),
     new CopyWebpackPlugin({
         patterns: [
             {from: 'node_modules/strophe.js/src/shared-connection-worker.js', to: 'shared-connection-worker.js'},
@@ -30,12 +31,15 @@ const plugins = [
 
 module.exports = merge(common, {
     plugins,
+    entry: {
+        "converse": path.resolve(__dirname, "../src/entry.js"),
+        "converse.min": path.resolve(__dirname, "../src/entry.js"),
+    },
     output: {
         publicPath: ASSET_PATH,
-        filename: 'converse.min.js',
+        filename: "[name].js",
     },
     mode: "production",
-    devtool: "source-map",
     module: {
         rules: [{
             test: /\.scss$/,
@@ -54,7 +58,10 @@ module.exports = merge(common, {
                     loader: 'sass-loader',
                     options: {
                         sassOptions: {
-                            includePaths: [path.resolve(__dirname, '../node_modules/')]
+                            includePaths: [
+                                path.resolve(__dirname, '../node_modules/'),
+                                path.resolve(__dirname, '../src/')
+                            ]
                         },
                         sourceMap: true
                     }

@@ -1,4 +1,5 @@
 /* global __dirname, module, process */
+const TerserPlugin = require("terser-webpack-plugin");
 const path = require('path');
 
 let bootstrap_ignore_modules = ['carousel', 'scrollspy', 'tooltip', 'toast'];
@@ -14,7 +15,15 @@ module.exports = {
         path: path.resolve(__dirname, '../dist'), // Output path for generated bundles
         chunkFilename: '[name].js'
     },
-    entry: path.resolve(__dirname, '../src/entry.js'),
+    devtool: "source-map",
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                include: /\.min\.js$/
+            })
+        ],
+    },
     externals: [{
         "window": "window"
     }],
@@ -37,15 +46,12 @@ module.exports = {
             ]
         }, {
             test: /webfonts[\\/].*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
-            use: [
-            {
-                loader: 'file-loader',
-                options: {
-                    name: '[name].[ext]',
-                    outputPath: 'webfonts/'
-                }
+            type: 'asset/resource',
+            generator: {
+                filename: '[name][ext]',
+                publicPath: 'webfonts/',
+                outputPath: 'webfonts/'
             }
-            ]
         }, {
             test: /\.scss$/,
             use: [

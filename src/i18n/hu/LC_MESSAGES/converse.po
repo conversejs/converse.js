@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-02 16:32+0200\n"
+"POT-Creation-Date: 2022-05-05 21:00+0200\n"
 "PO-Revision-Date: 2020-11-18 18:47+0100\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
@@ -22,89 +22,80 @@ msgstr ""
 "lang: hu\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
-#: dist/converse-no-dependencies.js:34118
-msgid "The connection has dropped, attempting to reconnect."
-msgstr "A kapcsolat megszakadt, megpróbál újra csatlakozni."
-
-#: dist/converse-no-dependencies.js:34315
-#: dist/converse-no-dependencies.js:34379
+#: dist/converse-no-dependencies.js:27250
+#: dist/converse-no-dependencies.js:27315
 msgid "An error occurred while connecting to the chat server."
 msgstr "Hiba történt a csevegőkiszolgálóhoz kapcsolódáskor."
 
-#: dist/converse-no-dependencies.js:34386
+#: dist/converse-no-dependencies.js:27322
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr "Az XMPP-azonosítója vagy jelszava helytelen. Próbálja újra."
 
-#: dist/converse-no-dependencies.js:34398
-#, javascript-format
-msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
-"Sajnáljuk, nem tudtunk csatlakozni a domainhez tartozó XMPP gazdagéphez: %1$s"
-
-#: dist/converse-no-dependencies.js:34400
+#: dist/converse-no-dependencies.js:27336
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 "Az XMPP kiszolgáló nem ajánlott fel támogatott hitelesítési mechanizmust"
 
-#: dist/converse-no-dependencies.js:43531
-#: dist/converse-no-dependencies.js:53086
+#: dist/converse-no-dependencies.js:28977
+msgid "The connection has dropped, attempting to reconnect."
+msgstr "A kapcsolat megszakadt, megpróbál újra csatlakozni."
+
+#: dist/converse-no-dependencies.js:33760
 #, javascript-format
 msgid "%1$s is typing"
 msgstr "%1$s éppen ír"
 
-#: dist/converse-no-dependencies.js:43533
-#: dist/converse-no-dependencies.js:53088
+#: dist/converse-no-dependencies.js:33762
 #, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s abbahagyta a gépelést"
 
-#: dist/converse-no-dependencies.js:43535
-#: dist/converse-no-dependencies.js:43957
-#: dist/converse-no-dependencies.js:53090
+#: dist/converse-no-dependencies.js:33764
+#: dist/converse-no-dependencies.js:33989
 #, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s távol van"
 
-#: dist/converse-no-dependencies.js:43620
-#: dist/converse-no-dependencies.js:50559
+#: dist/converse-no-dependencies.js:33830
+#: dist/converse-no-dependencies.js:38068
 msgid "You're not allowed to retract your message."
 msgstr "Nem vonhatja vissza az üzenetét."
 
-#: dist/converse-no-dependencies.js:43622
-#: dist/converse-no-dependencies.js:50563
+#: dist/converse-no-dependencies.js:33832
+#: dist/converse-no-dependencies.js:38072
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "Sajnáljuk, hiba történt az üzenet visszavonásakor."
 
-#: dist/converse-no-dependencies.js:43627
+#: dist/converse-no-dependencies.js:33837
 msgid "You're not allowed to send a message."
 msgstr "Nem küldhet üzenetet."
 
-#: dist/converse-no-dependencies.js:43629
-#: dist/converse-no-dependencies.js:50572
+#: dist/converse-no-dependencies.js:33839
+#: dist/converse-no-dependencies.js:38081
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr "Sajnáljuk, hiba történt az üzenet elküldésekor."
 
-#: dist/converse-no-dependencies.js:43955
+#: dist/converse-no-dependencies.js:33987
 #, javascript-format
 msgid "%1$s has gone offline"
 msgstr "%1$s nem elérhetővé vált"
 
-#: dist/converse-no-dependencies.js:43959
+#: dist/converse-no-dependencies.js:33991
 #, javascript-format
 msgid "%1$s is busy"
 msgstr "%1$s elfoglalt"
 
-#: dist/converse-no-dependencies.js:43961
+#: dist/converse-no-dependencies.js:33993
 #, javascript-format
 msgid "%1$s is online"
 msgstr "%1$s elérhető"
 
-#: dist/converse-no-dependencies.js:44957
-#: dist/converse-no-dependencies.js:44980
+#: dist/converse-no-dependencies.js:34822
+#: dist/converse-no-dependencies.js:34840
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "Sajnáljuk, úgy tűnik, hogy a kiszolgálója a feltöltést nem támogatja."
 
-#: dist/converse-no-dependencies.js:45007
+#: dist/converse-no-dependencies.js:34861
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
@@ -112,19 +103,19 @@ msgid ""
 msgstr ""
 "A fájl mérete, %1$s, meghaladja a kiszolgáló által megengedettet, amely %2$s."
 
-#: dist/converse-no-dependencies.js:45396
+#: dist/converse-no-dependencies.js:35152
 msgid "Undecryptable OMEMO message"
 msgstr "Nem visszafejthető OMEMO üzenet"
 
-#: dist/converse-no-dependencies.js:45469
+#: dist/converse-no-dependencies.js:35209
 msgid "Sorry, could not determine upload URL."
 msgstr "Sajnáljuk, nem sikerült meghatározni a feltöltési URL-t."
 
-#: dist/converse-no-dependencies.js:45494
+#: dist/converse-no-dependencies.js:35225
 msgid "Sorry, could not determine file upload URL."
 msgstr "Sajnáljuk, nem sikerült meghatározni a fájl feltöltési URL-jét."
 
-#: dist/converse-no-dependencies.js:45573
+#: dist/converse-no-dependencies.js:35274
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
@@ -132,99 +123,99 @@ msgid ""
 msgstr ""
 "Sajnáljuk, a fájlt nem sikerült feltölteni. A kiszolgálója válasza: \"%1$s\""
 
-#: dist/converse-no-dependencies.js:45575
+#: dist/converse-no-dependencies.js:35276
 msgid "Sorry, could not succesfully upload your file."
 msgstr "Sajnáljuk, a fájlt nem sikerült feltölteni."
 
-#: dist/converse-no-dependencies.js:48244
+#: dist/converse-no-dependencies.js:36649
 msgid "Smileys and emotions"
 msgstr "Mosolyok és érzelmek"
 
-#: dist/converse-no-dependencies.js:48245
+#: dist/converse-no-dependencies.js:36650
 msgid "People"
 msgstr "Emberek"
 
-#: dist/converse-no-dependencies.js:48246
+#: dist/converse-no-dependencies.js:36651
 msgid "Activities"
 msgstr "Tevékenységek"
 
-#: dist/converse-no-dependencies.js:48247
+#: dist/converse-no-dependencies.js:36652
 msgid "Travel"
 msgstr "Utazás"
 
-#: dist/converse-no-dependencies.js:48248
+#: dist/converse-no-dependencies.js:36653
 msgid "Objects"
 msgstr "Tárgyak"
 
-#: dist/converse-no-dependencies.js:48249
+#: dist/converse-no-dependencies.js:36654
 msgid "Animals and nature"
 msgstr "Állatok és természet"
 
-#: dist/converse-no-dependencies.js:48250
+#: dist/converse-no-dependencies.js:36655
 msgid "Food and drink"
 msgstr "Étel és ital"
 
-#: dist/converse-no-dependencies.js:48251
+#: dist/converse-no-dependencies.js:36656
 msgid "Symbols"
 msgstr "Szimbólumok"
 
-#: dist/converse-no-dependencies.js:48252
+#: dist/converse-no-dependencies.js:36657
 msgid "Flags"
 msgstr "Zászlók"
 
-#: dist/converse-no-dependencies.js:48253
+#: dist/converse-no-dependencies.js:36658
 msgid "Stickers"
 msgstr "Matricák"
 
-#: dist/converse-no-dependencies.js:49457
+#: dist/converse-no-dependencies.js:37429
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49469
+#: dist/converse-no-dependencies.js:37437
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:50561
+#: dist/converse-no-dependencies.js:38070
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr "A visszavonása nem lett elküldve, mert nincs jelen a konferenciában."
 
-#: dist/converse-no-dependencies.js:50568
+#: dist/converse-no-dependencies.js:38077
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr "Az üzenete nem lett elküldve, mert nem volt hozzá jogosultsága."
 
-#: dist/converse-no-dependencies.js:50570
+#: dist/converse-no-dependencies.js:38079
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr "Az üzenete nem lett elküldve, mert nem volt jelen a konferenciában."
 
-#: dist/converse-no-dependencies.js:50946
+#: dist/converse-no-dependencies.js:38359
 msgid "A timeout happened while while trying to retract your message."
 msgstr "Időtúllépés történt, amikor megpróbálta visszavonni az üzenetet."
 
-#: dist/converse-no-dependencies.js:51724
+#: dist/converse-no-dependencies.js:38927
 msgid "Sorry, an error happened while running the command."
 msgstr "Sajnáljuk, valami hiba történt a parancs futtatásakor."
 
-#: dist/converse-no-dependencies.js:51724
-#: dist/converse-no-dependencies.js:91858
+#: dist/converse-no-dependencies.js:38927
+#: dist/converse-no-dependencies.js:61617
 msgid "Check your browser's developer console for details."
 msgstr "Részletekért nézze meg a böngésző fejlesztői konzolját."
 
-#: dist/converse-no-dependencies.js:51749
-#: dist/converse-no-dependencies.js:51772
+#: dist/converse-no-dependencies.js:38951
+#: dist/converse-no-dependencies.js:38974
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr "Hiba: nem található konferencia résztvevő az argumentumok alapján"
 
-#: dist/converse-no-dependencies.js:51759
+#: dist/converse-no-dependencies.js:38961
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
 "Hiba: több, az argumentumoknak megfelelő konferencia-résztvevő is található"
 
-#: dist/converse-no-dependencies.js:51787
+#: dist/converse-no-dependencies.js:38992
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
@@ -233,29 +224,20 @@ msgstr ""
 "Hiba: a „%1$s” parancs két argumentumot fogad, a felhasználó becenevét és "
 "adott esetben az okát."
 
-#: dist/converse-no-dependencies.js:51856
+#: dist/converse-no-dependencies.js:39063
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
 msgstr "Tilos: nincs meg a szükséges kapcsolata, hogy ezt megtehesse."
 
-#: dist/converse-no-dependencies.js:51891
+#: dist/converse-no-dependencies.js:39101
 msgid "Forbidden: you do not have the necessary role in order to do that."
 msgstr "Tilos: nincs meg a szükséges szerepköre, hogy ezt megtehesse."
 
-#: dist/converse-no-dependencies.js:51989
+#: dist/converse-no-dependencies.js:39166
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:52314
-msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Nem regisztrálhatod magad ebben a konferenciában."
-
-#: dist/converse-no-dependencies.js:52316
-msgid ""
-"You're not allowed to register in this groupchat because it's members-only."
-msgstr "Nem regisztrálhatod magad ebben a konferenciában, mert meghívás alapú."
-
-#: dist/converse-no-dependencies.js:52360
+#: dist/converse-no-dependencies.js:39397
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
@@ -263,169 +245,89 @@ msgstr ""
 "Nem lehet regisztrálni a becenevedet ebben a konferenciában, a regisztrációt "
 "nem támogatja."
 
-#: dist/converse-no-dependencies.js:52362
+#: dist/converse-no-dependencies.js:39399
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
 "Nem lehet regisztrálni a becenevedet ebben a konferenciában, érvénytelen az "
 "űrlap."
 
-#: dist/converse-no-dependencies.js:52634
+#: dist/converse-no-dependencies.js:39572
 #, javascript-format
 msgid "Topic set by %1$s"
 msgstr "Témát beállította: %1$s"
 
-#: dist/converse-no-dependencies.js:52634
+#: dist/converse-no-dependencies.js:39572
 #, javascript-format
 msgid "Topic cleared by %1$s"
 msgstr "A témát törölte: %1$s"
 
-#: dist/converse-no-dependencies.js:53092
-#, javascript-format
-msgid "%1$s has entered the groupchat"
-msgstr "%1$s belépett a konferenciába"
-
-#: dist/converse-no-dependencies.js:53094
-#, javascript-format
-msgid "%1$s has left the groupchat"
-msgstr "%1$s elhagyta a konferenciát"
-
-#: dist/converse-no-dependencies.js:53096
-#, javascript-format
-msgid "%1$s is now a moderator"
-msgstr "%1$s most már moderátor"
-
-#: dist/converse-no-dependencies.js:53098
-#, javascript-format
-msgid "%1$s is no longer a moderator"
-msgstr "%1$s többé már nem moderátor"
-
-#: dist/converse-no-dependencies.js:53100
-#, javascript-format
-msgid "%1$s has been given a voice"
-msgstr "%1$s hangot kapott"
-
-#: dist/converse-no-dependencies.js:53102
-#, javascript-format
-msgid "%1$s has been muted"
-msgstr "%1$s el lett némítva"
-
-#: dist/converse-no-dependencies.js:53111
-#, javascript-format
-msgid "%1$s and %2$s"
-msgstr "%1$s és %2$s"
-
-#: dist/converse-no-dependencies.js:53115
-#, javascript-format
-msgid "%1$s are typing"
-msgstr "%1$s gépel"
-
-#: dist/converse-no-dependencies.js:53117
-#, javascript-format
-msgid "%1$s have stopped typing"
-msgstr "%1$s abbahagyta a gépelést"
-
-#: dist/converse-no-dependencies.js:53119
-#, javascript-format
-msgid "%1$s have gone away"
-msgstr "%1$s távol van"
-
-#: dist/converse-no-dependencies.js:53121
-#, javascript-format
-msgid "%1$s have entered the groupchat"
-msgstr "%1$s belépett a konferenciába"
-
-#: dist/converse-no-dependencies.js:53123
-#, javascript-format
-msgid "%1$s have left the groupchat"
-msgstr "%1$s elhagyta a konferenciát"
-
-#: dist/converse-no-dependencies.js:53125
-#, javascript-format
-msgid "%1$s are now moderators"
-msgstr "%1$s most már moderátor"
-
-#: dist/converse-no-dependencies.js:53127
-#, javascript-format
-msgid "%1$s are no longer moderators"
-msgstr "%1$s többé már nem moderátor"
-
-#: dist/converse-no-dependencies.js:53129
-#, javascript-format
-msgid "%1$s have been given voices"
-msgstr "%1$s újra hangot kapott"
-
-#: dist/converse-no-dependencies.js:53131
-#, javascript-format
-msgid "%1$s have been muted"
-msgstr "%1$s el lett némítva"
-
-#: dist/converse-no-dependencies.js:53502
+#: dist/converse-no-dependencies.js:40129
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
 msgstr "%2$s kitiltotta: %1$s"
 
-#: dist/converse-no-dependencies.js:53502
+#: dist/converse-no-dependencies.js:40129
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s ki lett tiltva"
 
-#: dist/converse-no-dependencies.js:53504
+#: dist/converse-no-dependencies.js:40131
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$s beceneve módosult"
 
-#: dist/converse-no-dependencies.js:53506
+#: dist/converse-no-dependencies.js:40133
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
 msgstr "%2$s kidobta: %1$s"
 
-#: dist/converse-no-dependencies.js:53506
+#: dist/converse-no-dependencies.js:40133
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s ki lett dobva"
 
-#: dist/converse-no-dependencies.js:53508
+#: dist/converse-no-dependencies.js:40135
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s el lett távolítva, tagság változás miatt"
 
-#: dist/converse-no-dependencies.js:53510
+#: dist/converse-no-dependencies.js:40137
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s el lett távolítva, mert nem volt tag"
 
-#: dist/converse-no-dependencies.js:53531
+#: dist/converse-no-dependencies.js:40159
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "%1$s már nem admin ebben a konferenciában"
 
-#: dist/converse-no-dependencies.js:53536
+#: dist/converse-no-dependencies.js:40164
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "%1$s már nem tulajdonos ebben a konferenciában"
 
-#: dist/converse-no-dependencies.js:53541
+#: dist/converse-no-dependencies.js:40169
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "%1$s már nincs kitiltva ebből a konferenciából"
 
-#: dist/converse-no-dependencies.js:53548
+#: dist/converse-no-dependencies.js:40176
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
 msgstr "%1$s már nem tagja ennek a konferenciának"
 
-#: dist/converse-no-dependencies.js:53555
+#: dist/converse-no-dependencies.js:40183
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
 msgstr "%1$s már tagja ennek a konferenciának"
 
-#: dist/converse-no-dependencies.js:53561
+#: dist/converse-no-dependencies.js:40189
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
 msgstr "%1$s most már %2$s ebben a konferenciában"
 
-#: dist/converse-no-dependencies.js:53701
+#: dist/converse-no-dependencies.js:40325
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
@@ -433,125 +335,125 @@ msgstr ""
 "A kiválasztott becenév fenntartva vagy jelenleg használatban van, kérjük, "
 "válasszon másikat."
 
-#: dist/converse-no-dependencies.js:53729
+#: dist/converse-no-dependencies.js:40353
 msgid "Password incorrect"
 msgstr "A jelszó helytelen"
 
-#: dist/converse-no-dependencies.js:53737
+#: dist/converse-no-dependencies.js:40361
 msgid "You are not on the member list of this groupchat."
 msgstr "Nem vagy a konferencia taglistáján."
 
-#: dist/converse-no-dependencies.js:53745
+#: dist/converse-no-dependencies.js:40369
 msgid "You are not allowed to create new groupchats."
 msgstr "Nem hozhatsz létre új konferenciákat."
 
-#: dist/converse-no-dependencies.js:53749
+#: dist/converse-no-dependencies.js:40373
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "A beceneved nem felel meg a konferencia szabályzatának."
 
-#: dist/converse-no-dependencies.js:53766
+#: dist/converse-no-dependencies.js:40390
 msgid "This groupchat does not (yet) exist."
 msgstr "Ez a konferencia (még) nem létezik."
 
-#: dist/converse-no-dependencies.js:53770
+#: dist/converse-no-dependencies.js:40394
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "Ez a konferencia elérte a maximális jelenlévők számát."
 
-#: dist/converse-no-dependencies.js:53774
+#: dist/converse-no-dependencies.js:40398
 msgid "Remote server not found"
 msgstr "Távoli kiszolgáló nem található"
 
-#: dist/converse-no-dependencies.js:53778
+#: dist/converse-no-dependencies.js:40402
 #, fuzzy
 msgid "You're not allowed to enter this groupchat"
 msgstr "Nem regisztrálhatod magad ebben a konferenciában."
 
-#: dist/converse-no-dependencies.js:53782
+#: dist/converse-no-dependencies.js:40406
 #, fuzzy
 msgid "An error happened while trying to enter this groupchat"
 msgstr "Sajnáljuk, valami hiba történt a profiladatok mentése közben."
 
-#: dist/converse-no-dependencies.js:54944
+#: dist/converse-no-dependencies.js:40743
 #, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s meghívott a(z) %2$s nevű csevegőszobába"
 
-#: dist/converse-no-dependencies.js:54946
+#: dist/converse-no-dependencies.js:40745
 #, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr "%1$s meghívott a(z) %2$s nevű csevegőszobába. Indoka: \"%3$s\""
 
-#: dist/converse-no-dependencies.js:55353
+#: dist/converse-no-dependencies.js:41436
 msgid "This groupchat is not anonymous"
 msgstr "Ez a konferencia nem névtelen"
 
-#: dist/converse-no-dependencies.js:55354
+#: dist/converse-no-dependencies.js:41437
 msgid "This groupchat now shows unavailable members"
 msgstr "Ez a konferencia mostantól megjeleníti az elérhetetlen tagokat"
 
-#: dist/converse-no-dependencies.js:55355
+#: dist/converse-no-dependencies.js:41438
 msgid "This groupchat does not show unavailable members"
 msgstr "Ez a konferencia nem jeleníti meg az elérhetetlen tagokat"
 
-#: dist/converse-no-dependencies.js:55356
+#: dist/converse-no-dependencies.js:41439
 msgid "The groupchat configuration has changed"
 msgstr "A konferencia beállítása megváltozott"
 
-#: dist/converse-no-dependencies.js:55357
+#: dist/converse-no-dependencies.js:41440
 msgid "Groupchat logging is now enabled"
 msgstr "A konferencia naplózása mostantól bekapcsolt"
 
-#: dist/converse-no-dependencies.js:55358
+#: dist/converse-no-dependencies.js:41441
 msgid "Groupchat logging is now disabled"
 msgstr "A konferencia naplózása mostantól kikapcsolt"
 
-#: dist/converse-no-dependencies.js:55359
+#: dist/converse-no-dependencies.js:41442
 msgid "This groupchat is now no longer anonymous"
 msgstr "A konferencia most már nem névtelen"
 
-#: dist/converse-no-dependencies.js:55360
+#: dist/converse-no-dependencies.js:41443
 msgid "This groupchat is now semi-anonymous"
 msgstr "A konferencia most már félig névtelen"
 
-#: dist/converse-no-dependencies.js:55361
+#: dist/converse-no-dependencies.js:41444
 msgid "This groupchat is now fully-anonymous"
 msgstr "A konferencia most már teljesen névtelen"
 
-#: dist/converse-no-dependencies.js:55362
+#: dist/converse-no-dependencies.js:41445
 msgid "A new groupchat has been created"
 msgstr "Létrejött egy új konferencia"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:55366
+#: dist/converse-no-dependencies.js:41449
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "A beceneve automatikusan ez lett: %1$s"
 
-#: dist/converse-no-dependencies.js:55367
+#: dist/converse-no-dependencies.js:41450
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "A beceneve a következőre módosult: %1$s"
 
-#: dist/converse-no-dependencies.js:55370
+#: dist/converse-no-dependencies.js:41453
 msgid "You have been banned from this groupchat"
 msgstr "Ki lett tiltva ebből a konferenciából"
 
-#: dist/converse-no-dependencies.js:55371
+#: dist/converse-no-dependencies.js:41454
 msgid "You have exited this groupchat due to a technical problem"
 msgstr "Műszaki probléma miatt kilépett ebből a konferenciából"
 
-#: dist/converse-no-dependencies.js:55372
+#: dist/converse-no-dependencies.js:41455
 msgid "You have been kicked from this groupchat"
 msgstr "Ki lett rúgva ebből a konferenciából"
 
-#: dist/converse-no-dependencies.js:55373
+#: dist/converse-no-dependencies.js:41456
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "Taglista módosítás miatt ki lett léptetve ebből a konferenciából"
 
-#: dist/converse-no-dependencies.js:55374
+#: dist/converse-no-dependencies.js:41457
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
@@ -559,36 +461,36 @@ msgstr ""
 "Kiléptettük a konferenciából, mert mostantól csak a taglistán szereplők "
 "lehetnek jelen"
 
-#: dist/converse-no-dependencies.js:55375
+#: dist/converse-no-dependencies.js:41458
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr "Kiléptettük a konferenciából, mert a szolgáltatás leállításra került"
 
-#: dist/converse-no-dependencies.js:55595
-#: dist/converse-no-dependencies.js:67579
-#: dist/converse-no-dependencies.js:67583
-#: dist/converse-no-dependencies.js:67699
-#: dist/converse-no-dependencies.js:74399
-#: dist/converse-no-dependencies.js:80130
-#: dist/converse-no-dependencies.js:91859
-#: dist/converse-no-dependencies.js:95166
-#: dist/converse-no-dependencies.js:95168
-#: dist/converse-no-dependencies.js:96639
-#: dist/converse-no-dependencies.js:97548
-#: dist/converse-no-dependencies.js:104381
+#: dist/converse-no-dependencies.js:41626
+#: dist/converse-no-dependencies.js:48605
+#: dist/converse-no-dependencies.js:48610
+#: dist/converse-no-dependencies.js:48652
+#: dist/converse-no-dependencies.js:53212
+#: dist/converse-no-dependencies.js:55995
+#: dist/converse-no-dependencies.js:61619
+#: dist/converse-no-dependencies.js:63417
+#: dist/converse-no-dependencies.js:63419
+#: dist/converse-no-dependencies.js:64160
+#: dist/converse-no-dependencies.js:64552
+#: dist/converse-no-dependencies.js:68877
 msgid "Error"
 msgstr "Hiba"
 
-#: dist/converse-no-dependencies.js:55595
+#: dist/converse-no-dependencies.js:41626
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "Sajnáljuk, valami hiba történt a könyvjelző mentése közben."
 
-#: dist/converse-no-dependencies.js:55665
+#: dist/converse-no-dependencies.js:41688
 msgid "Timeout Error"
 msgstr "Időtúllépési hiba"
 
-#: dist/converse-no-dependencies.js:55665
+#: dist/converse-no-dependencies.js:41688
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
@@ -596,145 +498,145 @@ msgstr ""
 "A kiszolgáló nem adta vissza a könyvjelzőit a megengedett időn belül. "
 "Újratöltheti az oldalt, hogy újra lekérje őket."
 
-#: dist/converse-no-dependencies.js:57814
+#: dist/converse-no-dependencies.js:42938
 #, fuzzy
 msgid "Timeout while trying to fetch archived messages."
 msgstr "Sajnáljuk, de hiba történt az eszközök eltávolítása közben."
 
-#: dist/converse-no-dependencies.js:57829
+#: dist/converse-no-dependencies.js:42951
 #, fuzzy
 msgid "An error occurred while querying for archived messages."
 msgstr "Sajnáljuk, de hiba történt az eszközök eltávolítása közben."
 
-#: dist/converse-no-dependencies.js:60504
+#: dist/converse-no-dependencies.js:44801
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr "Sajnáljuk, hiba történt a(z) %1$s csevegőpartner hozzáadásakor."
 
-#: dist/converse-no-dependencies.js:60798
+#: dist/converse-no-dependencies.js:45036
 msgid "This client does not allow presence subscriptions"
 msgstr "Ez a kliens nem engedélyezi a jelenlét követését"
 
-#: dist/converse-no-dependencies.js:61195
+#: dist/converse-no-dependencies.js:45359
 msgid "My contacts"
 msgstr "Csevegőpartnerek"
 
-#: dist/converse-no-dependencies.js:61196
+#: dist/converse-no-dependencies.js:45360
 msgid "Pending contacts"
 msgstr "Függő csevegőpartnerek"
 
-#: dist/converse-no-dependencies.js:61197
+#: dist/converse-no-dependencies.js:45361
 msgid "Contact requests"
 msgstr "Partnerfelvételi kérések"
 
-#: dist/converse-no-dependencies.js:61198
+#: dist/converse-no-dependencies.js:45362
 msgid "Ungrouped"
 msgstr "Nem csoportosított"
 
-#: dist/converse-no-dependencies.js:61199
-#: dist/converse-no-dependencies.js:75051
+#: dist/converse-no-dependencies.js:45363
+#: dist/converse-no-dependencies.js:53538
 msgid "New messages"
 msgstr "Új üzenetek"
 
-#: dist/converse-no-dependencies.js:62978
+#: dist/converse-no-dependencies.js:46488
 #, fuzzy, javascript-format
 msgid "Bookmark for \"%1$s\""
 msgstr "Könyvjelzők"
 
-#: dist/converse-no-dependencies.js:62980
+#: dist/converse-no-dependencies.js:46490
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr ""
 "Szeretné ha induláskor automatikusan csatlakozna ehhez a konferenciához?"
 
-#: dist/converse-no-dependencies.js:62982
+#: dist/converse-no-dependencies.js:46492
 msgid "Remove"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:62984
+#: dist/converse-no-dependencies.js:46494
 msgid "The name for this bookmark:"
 msgstr "A könyvjelző neve legyen:"
 
-#: dist/converse-no-dependencies.js:62986
+#: dist/converse-no-dependencies.js:46496
 msgid "What should your nickname for this groupchat be?"
 msgstr "Mi legyen a beceneve ebben a konferenciában?"
 
-#: dist/converse-no-dependencies.js:62988
+#: dist/converse-no-dependencies.js:46498
 msgid "Update"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:62988
-#: dist/converse-no-dependencies.js:91564
-#: dist/converse-no-dependencies.js:97987
+#: dist/converse-no-dependencies.js:46498
+#: dist/converse-no-dependencies.js:61542
+#: dist/converse-no-dependencies.js:64875
 msgid "Save"
 msgstr "Mentés"
 
-#: dist/converse-no-dependencies.js:63672
-#: dist/converse-no-dependencies.js:63673
-#: dist/converse-no-dependencies.js:79599
-#: dist/converse-no-dependencies.js:84564
-#: dist/converse-no-dependencies.js:97983
+#. harmony default export
+#. CONCATENATED MODULE: ./src/plugins/modal/templates/buttons.js
+#: dist/converse-no-dependencies.js:46994
+#: dist/converse-no-dependencies.js:55499
+#: dist/converse-no-dependencies.js:58002
+#: dist/converse-no-dependencies.js:64871
 msgid "Close"
 msgstr "Bezárás"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:63693
-#: dist/converse-no-dependencies.js:63800
+#: dist/converse-no-dependencies.js:47001
+#: dist/converse-no-dependencies.js:47087
 msgid "Bookmark"
 msgstr "Könyvjelzőzés"
 
-#: dist/converse-no-dependencies.js:63799
-#: dist/converse-no-dependencies.js:63871
-#: dist/converse-no-dependencies.js:102102
+#: dist/converse-no-dependencies.js:47086
+#: dist/converse-no-dependencies.js:47140
+#: dist/converse-no-dependencies.js:67551
 msgid "Unbookmark this groupchat"
 msgstr "Konferencia könyvjelzőjének törlése"
 
-#: dist/converse-no-dependencies.js:63799
-#: dist/converse-no-dependencies.js:102100
+#: dist/converse-no-dependencies.js:47086
+#: dist/converse-no-dependencies.js:67549
 msgid "Bookmark this groupchat"
 msgstr "Konferencia megjelölése"
 
-#: dist/converse-no-dependencies.js:63800
+#: dist/converse-no-dependencies.js:47087
 msgid "Unbookmark"
 msgstr "Könyvjelző eltávolítása"
 
-#: dist/converse-no-dependencies.js:63825
+#: dist/converse-no-dependencies.js:47106
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Biztosan el szeretné távolítani a(z) \"%1$s\" könyvjelzőt?"
 
-#: dist/converse-no-dependencies.js:63873
-#: dist/converse-no-dependencies.js:101817
-#: dist/converse-no-dependencies.js:102123
+#: dist/converse-no-dependencies.js:47142
 msgid "Click to open this groupchat"
 msgstr "Belépés a konferenciába"
 
-#: dist/converse-no-dependencies.js:63899
+#: dist/converse-no-dependencies.js:47504
 msgid "Click to toggle the bookmarks list"
 msgstr "Kattintson a könyvjelzők listájára váltáshoz"
 
-#: dist/converse-no-dependencies.js:63901
+#: dist/converse-no-dependencies.js:47506
 msgid "Bookmarks"
 msgstr "Könyvjelzők"
 
-#: dist/converse-no-dependencies.js:65847
+#: dist/converse-no-dependencies.js:48162
 msgid "OK"
 msgstr "OK"
 
-#: dist/converse-no-dependencies.js:65847
-#: dist/converse-no-dependencies.js:91566
-#: dist/converse-no-dependencies.js:97982
-#: dist/converse-no-dependencies.js:100510
-msgid "Cancel"
-msgstr "Mégse"
+#: dist/converse-no-dependencies.js:48577
+#: dist/converse-no-dependencies.js:48620
+#: dist/converse-no-dependencies.js:48632
+#, fuzzy
+msgid "Are you sure you want to retract this message?"
+msgstr "Valóban visszavonja ezt az üzenetet?"
 
-#: dist/converse-no-dependencies.js:67492
-msgid ""
-"You have an unsent message which will be lost if you continue. Are you sure?"
-msgstr ""
-"Van egy el nem küldött üzenete, amely elvész ha folytatja. Biztos benne?"
+#: dist/converse-no-dependencies.js:48583
+#: dist/converse-no-dependencies.js:48626
+#: dist/converse-no-dependencies.js:48638
+#: dist/converse-no-dependencies.js:60190
+#: dist/converse-no-dependencies.js:62480
+msgid "Confirm"
+msgstr "Megerősítés"
 
-#: dist/converse-no-dependencies.js:67521
-#: dist/converse-no-dependencies.js:67612
+#: dist/converse-no-dependencies.js:48617
 #, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
@@ -744,318 +646,251 @@ msgstr ""
 "hogy nem támogatják a visszavonást, így lehet, hogy az üzenet nem lesz "
 "mindenhonnan eltávolítva."
 
-#: dist/converse-no-dependencies.js:67522
-#: dist/converse-no-dependencies.js:67619
-#: dist/converse-no-dependencies.js:67656
-#, fuzzy
-msgid "Are you sure you want to retract this message?"
-msgstr "Valóban visszavonja ezt az üzenetet?"
-
-#: dist/converse-no-dependencies.js:67529
-#: dist/converse-no-dependencies.js:67626
-#: dist/converse-no-dependencies.js:67663
-#: dist/converse-no-dependencies.js:88684
-#: dist/converse-no-dependencies.js:93528
-msgid "Confirm"
-msgstr "Megerősítés"
-
-#: dist/converse-no-dependencies.js:67578
-msgid "A timeout occurred while trying to retract the message"
-msgstr "Időtúllépés történt az üzenet visszavonásakor"
-
-#: dist/converse-no-dependencies.js:67582
-msgid "Sorry, you're not allowed to retract this message."
-msgstr "Nem vonhatja vissza ezt az üzenetet."
-
-#: dist/converse-no-dependencies.js:67680
+#: dist/converse-no-dependencies.js:48640
 #, fuzzy
 msgid "You are about to retract this message."
 msgstr "Az üzenet visszavonására készül."
 
-#: dist/converse-no-dependencies.js:67680
+#: dist/converse-no-dependencies.js:48640
 #, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr "Hozzáadhat egy üzenetet, amelyben leírhatja a visszavonás okát."
 
-#: dist/converse-no-dependencies.js:67687
+#: dist/converse-no-dependencies.js:48646
 #, fuzzy
 msgid "Message Retraction"
 msgstr "Üzenetverziók"
 
-#: dist/converse-no-dependencies.js:67687
+#: dist/converse-no-dependencies.js:48646
 msgid "Optional reason"
 msgstr "Nem kötelező ok"
 
-#: dist/converse-no-dependencies.js:67698
-#, fuzzy
-msgid "Sorry, you're not allowed to retract this message"
-msgstr "Nem vonhatja vissza ezt az üzenetet."
-
-#: dist/converse-no-dependencies.js:67829
+#: dist/converse-no-dependencies.js:48748
 #, fuzzy
 msgid "Show media"
 msgstr "Több megjelenítése"
 
-#: dist/converse-no-dependencies.js:67829
+#: dist/converse-no-dependencies.js:48748
 #, fuzzy
 msgid "Hide media"
 msgstr "Téma elrejtése"
 
-#: dist/converse-no-dependencies.js:67863
+#: dist/converse-no-dependencies.js:48771
 msgid "Cancel Editing"
 msgstr "Szerkesztés megszakítása"
 
-#: dist/converse-no-dependencies.js:67863
+#: dist/converse-no-dependencies.js:48771
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: dist/converse-no-dependencies.js:67892
+#: dist/converse-no-dependencies.js:48784
 msgid "Retract"
 msgstr "Visszavonás"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:67985
+#: dist/converse-no-dependencies.js:48830
 msgid "Image: "
 msgstr "Kép: "
 
+#. CONCATENATED MODULE: ./src/templates/file.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:69216
+#: dist/converse-no-dependencies.js:49834
 #, javascript-format
 msgid "Download file \"%1$s\""
 msgstr "„%1$s” fájl letöltése"
 
-#: dist/converse-no-dependencies.js:74012
+#: dist/converse-no-dependencies.js:52927
 msgid "Uploading file:"
 msgstr "Fájl feltöltése:"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:74209
+#: dist/converse-no-dependencies.js:52982
 msgid "Message versions"
 msgstr "Üzenetverziók"
 
-#: dist/converse-no-dependencies.js:74242
-#: dist/converse-no-dependencies.js:74332
-#: dist/converse-no-dependencies.js:90004
-#: dist/converse-no-dependencies.js:93442
-#: dist/converse-no-dependencies.js:98259
-#: dist/converse-no-dependencies.js:101637
-#: dist/converse-no-dependencies.js:103092
+#: dist/converse-no-dependencies.js:53030
+#: dist/converse-no-dependencies.js:53151
+#: dist/converse-no-dependencies.js:60832
+#: dist/converse-no-dependencies.js:62411
+#: dist/converse-no-dependencies.js:64987
+#: dist/converse-no-dependencies.js:67046
+#: dist/converse-no-dependencies.js:68177
 msgid "Nickname"
 msgstr "Becenév"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:74242
-#: dist/converse-no-dependencies.js:74326
-#: dist/converse-no-dependencies.js:82015
-#: dist/converse-no-dependencies.js:89178
-#: dist/converse-no-dependencies.js:92470
-#: dist/converse-no-dependencies.js:98257
-#: dist/converse-no-dependencies.js:103090
+#: dist/converse-no-dependencies.js:53033
+#: dist/converse-no-dependencies.js:53145
+#: dist/converse-no-dependencies.js:60534
+#: dist/converse-no-dependencies.js:61772
+#: dist/converse-no-dependencies.js:64985
+#: dist/converse-no-dependencies.js:68175
 msgid "XMPP Address"
 msgstr "XMPP-cím"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:74242
-#: dist/converse-no-dependencies.js:87849
+#: dist/converse-no-dependencies.js:53036
 msgid "Affiliation"
 msgstr "Szint"
 
-#: dist/converse-no-dependencies.js:74242
+#: dist/converse-no-dependencies.js:53039
 #, fuzzy
 msgid "Roles"
 msgstr "Szerepkör"
 
-#: dist/converse-no-dependencies.js:74242
+#: dist/converse-no-dependencies.js:53042
 msgid "Hats"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74242
+#: dist/converse-no-dependencies.js:53045
 msgid "Occupant Id"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74320
+#: dist/converse-no-dependencies.js:53130
 msgid "Remove as contact"
 msgstr "Eltávolítás a csevegőpartnerekből"
 
-#: dist/converse-no-dependencies.js:74328
-#: dist/converse-no-dependencies.js:98253
+#: dist/converse-no-dependencies.js:53147
+#: dist/converse-no-dependencies.js:64981
 msgid "Email"
 msgstr "E-mail"
 
-#: dist/converse-no-dependencies.js:74330
-#: dist/converse-no-dependencies.js:98255
+#: dist/converse-no-dependencies.js:53149
+#: dist/converse-no-dependencies.js:64983
 msgid "Full Name"
 msgstr "Teljes név"
 
-#: dist/converse-no-dependencies.js:74334
-#: dist/converse-no-dependencies.js:79332
+#: dist/converse-no-dependencies.js:53153
+#: dist/converse-no-dependencies.js:55356
 msgid "The User's Profile Image"
 msgstr "A felhasználó profilképe"
 
-#: dist/converse-no-dependencies.js:74336
+#: dist/converse-no-dependencies.js:53155
 msgid "Refresh"
 msgstr "Frissítés"
 
-#: dist/converse-no-dependencies.js:74338
-#: dist/converse-no-dependencies.js:87857
-#: dist/converse-no-dependencies.js:98261
+#: dist/converse-no-dependencies.js:53157
+#: dist/converse-no-dependencies.js:64989
 msgid "Role"
 msgstr "Szerepkör"
 
-#: dist/converse-no-dependencies.js:74340
-#: dist/converse-no-dependencies.js:98267
+#: dist/converse-no-dependencies.js:53159
+#: dist/converse-no-dependencies.js:64995
 msgid "URL"
 msgstr "URL"
 
-#: dist/converse-no-dependencies.js:74399
-#: dist/converse-no-dependencies.js:104381
+#: dist/converse-no-dependencies.js:53212
+#: dist/converse-no-dependencies.js:68877
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr "Sajnáljuk, hiba történt %1$s eltávolításakor a csevegőpartnerek közül."
 
-#: dist/converse-no-dependencies.js:74486
+#: dist/converse-no-dependencies.js:53277
 msgid "Sorry, something went wrong while trying to refresh"
 msgstr "Sajnáljuk, valami hiba történt frissítés közben"
 
-#: dist/converse-no-dependencies.js:74509
-#: dist/converse-no-dependencies.js:104367
+#: dist/converse-no-dependencies.js:53292
+#: dist/converse-no-dependencies.js:68863
 msgid "Are you sure you want to remove this contact?"
 msgstr "Valóban törölni szeretné ezt a csevegőpartnert?"
 
-#: dist/converse-no-dependencies.js:74546
+#: dist/converse-no-dependencies.js:53316
 msgid "Retry"
 msgstr "Újra"
 
-#: dist/converse-no-dependencies.js:75090
+#: dist/converse-no-dependencies.js:53610
 msgid "This message has been edited"
 msgstr "Ez az üzenet szerkesztve van"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:75096
-msgid "Show more"
-msgstr "Több megjelenítése"
-
-#: dist/converse-no-dependencies.js:75100
-msgid "Show less"
-msgstr "Kevesebb megjelenítése"
-
-#: dist/converse-no-dependencies.js:75853
-#: dist/converse-no-dependencies.js:75855
+#: dist/converse-no-dependencies.js:53917
+#: dist/converse-no-dependencies.js:53919
 #, javascript-format
 msgid "%1$s has removed this message"
 msgstr "%1$s eltávolította ezt az üzenetet"
 
-#: dist/converse-no-dependencies.js:76994
-msgid "Search results"
-msgstr "Keresés eredménye"
-
-#: dist/converse-no-dependencies.js:77025
-msgid "Search"
-msgstr "Keresés"
-
-#: dist/converse-no-dependencies.js:77602
-msgid "Insert emojis"
-msgstr "Emodzsik beszúrása"
-
+#. CONCATENATED MODULE: ./src/shared/chat/templates/message-limit.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:78279
+#: dist/converse-no-dependencies.js:54918
 msgid "Message characters remaining"
 msgstr "Hátralévő karakterek"
 
-#: dist/converse-no-dependencies.js:78499
+#: dist/converse-no-dependencies.js:54955
 msgid "Send the message"
 msgstr "Üzenet elküldése"
 
-#: dist/converse-no-dependencies.js:78767
-msgid "Start a call"
-msgstr "Hívás indítása"
-
-#: dist/converse-no-dependencies.js:78788
+#: dist/converse-no-dependencies.js:55097
 msgid "Hide participants"
 msgstr "Résztvevők elrejtése"
 
-#: dist/converse-no-dependencies.js:78790
+#: dist/converse-no-dependencies.js:55099
 msgid "Show participants"
 msgstr "Résztvevők megjelenítése"
 
-#: dist/converse-no-dependencies.js:78813
+#: dist/converse-no-dependencies.js:55129
 msgid "Choose a file to send"
 msgstr "Válasszon egy küldendő fájlt"
 
-#: dist/converse-no-dependencies.js:78835
-msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Kattintson normál (nem spoiler) üzenet írásához"
-
-#: dist/converse-no-dependencies.js:78837
-msgid "Click to write your message as a spoiler"
-msgstr "Kattintson spoiler üzenet írásához"
-
-#: dist/converse-no-dependencies.js:79076
-msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr ""
-"Valóban törölni szeretné az ebből a beszélgetésből származó üzeneteket?"
-
-#: dist/converse-no-dependencies.js:79586
-#: dist/converse-no-dependencies.js:93418
+#: dist/converse-no-dependencies.js:55488
+#: dist/converse-no-dependencies.js:62391
 msgid "Details"
 msgstr "Részletek"
 
-#: dist/converse-no-dependencies.js:79587
+#: dist/converse-no-dependencies.js:55489
 msgid "See more information about this person"
 msgstr "További információk erről a személyről"
 
-#: dist/converse-no-dependencies.js:79600
+#: dist/converse-no-dependencies.js:55500
 msgid "Close and end this conversation"
 msgstr "Bezárás és a beszélgetés befejezése"
 
+#. CONCATENATED MODULE: ./src/plugins/chatview/templates/message-form.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:79659
-#: dist/converse-no-dependencies.js:89649
+#. CONCATENATED MODULE: ./src/plugins/muc-views/templates/message-form.js
+#. harmony default export
+#: dist/converse-no-dependencies.js:55549
+#: dist/converse-no-dependencies.js:60720
 msgid "Hidden message"
 msgstr "Rejtett üzenet"
 
-#: dist/converse-no-dependencies.js:79659
-#: dist/converse-no-dependencies.js:89649
+#: dist/converse-no-dependencies.js:55549
+#: dist/converse-no-dependencies.js:60720
 msgid "Message"
 msgstr "Üzenet"
 
-#: dist/converse-no-dependencies.js:79661
-#: dist/converse-no-dependencies.js:89651
+#: dist/converse-no-dependencies.js:55551
+#: dist/converse-no-dependencies.js:60722
 msgid "Optional hint"
 msgstr "Választható tipp"
 
-#: dist/converse-no-dependencies.js:80129
+#: dist/converse-no-dependencies.js:55993
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr "Sajnáljuk, a kapcsolat elveszett, és az üzenet nem küldhető el"
 
+#. CONCATENATED MODULE: ./src/plugins/chatview/templates/bottom-panel.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:80248
-#: dist/converse-no-dependencies.js:90285
-#: dist/converse-no-dependencies.js:90299
+#: dist/converse-no-dependencies.js:56062
+#: dist/converse-no-dependencies.js:60947
 msgid "You have unread messages"
 msgstr "Olvasatlan üzenetei vannak"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:81310
+#: dist/converse-no-dependencies.js:56447
 msgid "Remove messages"
 msgstr "Üzenetek törlése"
 
-#: dist/converse-no-dependencies.js:81310
+#: dist/converse-no-dependencies.js:56447
 msgid "Close this chat"
 msgstr "Csevegőablak bezárása"
 
-#: dist/converse-no-dependencies.js:81310
+#: dist/converse-no-dependencies.js:56447
 msgid "Write in the third person"
 msgstr "Írjon egyes szám harmadik személyben"
 
-#: dist/converse-no-dependencies.js:81310
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:56447
+#: dist/converse-no-dependencies.js:61421
 msgid "Show this menu"
 msgstr "Mutasd a menüt"
 
-#: dist/converse-no-dependencies.js:81971
+#: dist/converse-no-dependencies.js:56671
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1070,120 +905,85 @@ msgstr ""
 "Kérjük, vegye figyelembe, ha nem megbízható eszközt használ, hogy az OMEMO "
 "titkosítás nem elérhető."
 
-#: dist/converse-no-dependencies.js:81973
+#: dist/converse-no-dependencies.js:56673
 msgid "This is a trusted device"
 msgstr "Ez egy megbízható eszköz"
 
-#: dist/converse-no-dependencies.js:81979
-#, fuzzy
-msgid "Connection URL"
-msgstr "Kapcsolódás"
-
-#: dist/converse-no-dependencies.js:81981
-msgid "HTTP or websocket URL that is used to connect to your XMPP server"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:81983
-msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:81991
+#: dist/converse-no-dependencies.js:56707
 msgid "Password"
 msgstr "Jelszó"
 
-#: dist/converse-no-dependencies.js:81997
-msgid "Create an account"
-msgstr "Fiók létrehozása"
-
-#: dist/converse-no-dependencies.js:81999
-msgid "Don't have a chat account?"
-msgstr "Nincs csevegőfiókja?"
-
-#: dist/converse-no-dependencies.js:82013
-msgid "Log in"
-msgstr "Bejelentkezés"
-
-#: dist/converse-no-dependencies.js:82020
-msgid "Username"
-msgstr "Felhasználónév"
-
-#: dist/converse-no-dependencies.js:82020
-msgid "user@domain"
-msgstr "felhasználó@tartomány"
-
-#: dist/converse-no-dependencies.js:82033
+#: dist/converse-no-dependencies.js:56785
 msgid "Disconnected"
 msgstr "Szétkapcsolva"
 
-#: dist/converse-no-dependencies.js:82035
+#: dist/converse-no-dependencies.js:56787
 msgid "Click here to log in anonymously"
 msgstr "Kattintson ide a névtelen bejelentkezéshez"
 
-#: dist/converse-no-dependencies.js:82168
-#: dist/converse-no-dependencies.js:92468
-#: dist/converse-no-dependencies.js:103086
+#: dist/converse-no-dependencies.js:56933
+#: dist/converse-no-dependencies.js:61770
+#: dist/converse-no-dependencies.js:68171
 msgid "Please enter a valid XMPP address"
 msgstr "Kérjük, adjon meg érvényes XMPP címet"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:82806
+#. CONCATENATED MODULE: ./src/plugins/controlbox/templates/toggle.js
+#. harmony default export
+#: dist/converse-no-dependencies.js:57139
 msgid "Chat Contacts"
 msgstr "Csevegőpartnerek"
 
-#: dist/converse-no-dependencies.js:82806
+#: dist/converse-no-dependencies.js:57139
 msgid "Toggle chat"
 msgstr "Csevegőablak"
 
-#: dist/converse-no-dependencies.js:84565
+#: dist/converse-no-dependencies.js:58003
 msgid "Close these announcements"
 msgstr "Ezen bejelentések bezárása"
 
-#: dist/converse-no-dependencies.js:85119
+#: dist/converse-no-dependencies.js:58164
 msgid "Announcements"
 msgstr "Bejelentések"
 
-#: dist/converse-no-dependencies.js:85123
+#: dist/converse-no-dependencies.js:58166
 msgid "Click to open this server message"
 msgstr "Kattintson a kiszolgálóüzenet megnyitásához"
 
-#: dist/converse-no-dependencies.js:85228
-#, fuzzy
-msgid "Click to load missing messages"
-msgstr "Kattintson a kiszolgálóüzenet megnyitásához"
-
-#. harmony default export
-#: dist/converse-no-dependencies.js:85682
+#: dist/converse-no-dependencies.js:58407
 msgid "Minimized"
 msgstr "Minimalizálva"
 
+#. CONCATENATED MODULE: ./src/plugins/minimize/templates/trimmed_chat.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:85997
+#: dist/converse-no-dependencies.js:58485
 msgid "Click to restore this chat"
 msgstr "A csevegés visszaállítása"
 
-#: dist/converse-no-dependencies.js:86171
-#: dist/converse-no-dependencies.js:86189
+#: dist/converse-no-dependencies.js:58625
+#: dist/converse-no-dependencies.js:58639
 msgid "Minimize"
 msgstr "Minimalizálás"
 
-#: dist/converse-no-dependencies.js:86172
+#: dist/converse-no-dependencies.js:58626
 msgid "Minimize this chat"
 msgstr "Csevegés minimalizálása"
 
-#: dist/converse-no-dependencies.js:86190
+#: dist/converse-no-dependencies.js:58640
 msgid "Minimize this groupchat"
 msgstr "Konferencia minimalizálása"
 
+#. CONCATENATED MODULE: ./src/plugins/muc-views/templates/ad-hoc-command-form.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:87731
+#: dist/converse-no-dependencies.js:59518
 msgid "Hide"
 msgstr "Elrejtés"
 
-#: dist/converse-no-dependencies.js:87733
+#: dist/converse-no-dependencies.js:59520
 msgid "Execute"
 msgstr "Végrehajtás"
 
-#: dist/converse-no-dependencies.js:87778
+#: dist/converse-no-dependencies.js:59563
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
@@ -1191,19 +991,19 @@ msgstr ""
 "A moderátorok olyan kiemelt felhasználók, akik módosíthatják más "
 "felhasználók szerepköreit (kivéve az admin vagy tulajdonosi szintűekét)."
 
-#: dist/converse-no-dependencies.js:87780
+#: dist/converse-no-dependencies.js:59565
 msgid "The default role, implies that you can read and write messages."
 msgstr ""
 "Az alapértelmezett szerepkör, azt jelenti, hogy üzeneteket olvashat és írhat."
 
-#: dist/converse-no-dependencies.js:87782
+#: dist/converse-no-dependencies.js:59567
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
 "A látogatók nem írhatnak üzeneteket moderált többfelhasználós "
 "csevegőszobákba."
 
-#: dist/converse-no-dependencies.js:87788
+#: dist/converse-no-dependencies.js:59573
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
@@ -1211,7 +1011,7 @@ msgstr ""
 "A tulajdonos a legmagasabb szintű. A tulajdonosok módosíthatják az összes "
 "felhasználó szintjét és szerepköreit."
 
-#: dist/converse-no-dependencies.js:87790
+#: dist/converse-no-dependencies.js:59575
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
@@ -1219,130 +1019,85 @@ msgstr ""
 "Az admin a második legmagasabb szint. Az adminok módosíthatják a többi "
 "felhasználó szintjét és szerepköreiket, kivéve a tulajdonosokét."
 
-#: dist/converse-no-dependencies.js:87792
+#: dist/converse-no-dependencies.js:59577
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr "A felhasználó kitiltásához állítsa be a „számkivetett” szintet."
 
-#: dist/converse-no-dependencies.js:87805
+#: dist/converse-no-dependencies.js:59594
 msgid "Change role"
 msgstr "Szerepkör módosítása"
 
-#: dist/converse-no-dependencies.js:87807
+#: dist/converse-no-dependencies.js:59596
 msgid "New Role"
 msgstr "Új szerepkör"
 
-#: dist/converse-no-dependencies.js:87809
-#: dist/converse-no-dependencies.js:87829
-#: dist/converse-no-dependencies.js:88676
+#: dist/converse-no-dependencies.js:59598
+#: dist/converse-no-dependencies.js:60180
 msgid "Reason"
 msgstr "Ok"
 
-#: dist/converse-no-dependencies.js:87825
-msgid "Change affiliation"
-msgstr "Szint módosítása"
-
-#: dist/converse-no-dependencies.js:87827
-msgid "New affiliation"
-msgstr "Új szint"
-
-#: dist/converse-no-dependencies.js:87851
-msgid "No users with that affiliation found."
-msgstr "Nem található szint nélküli felhasználó."
-
-#: dist/converse-no-dependencies.js:87853
-msgid "No users with that role found."
-msgstr "Nincs felhasználó azzal a szerepkörrel."
-
-#: dist/converse-no-dependencies.js:87855
-msgid "Type here to filter the search results"
-msgstr "Gépeljen ide a találatok szűréséhez"
-
-#: dist/converse-no-dependencies.js:87859
-msgid "Show users"
-msgstr "Felhasználók megjelenítése"
-
-#: dist/converse-no-dependencies.js:87861
-msgid ""
-"Roles are assigned to users to grant or deny them certain abilities in a "
-"multi-user chat. They're assigned either explicitly or implicitly as part of "
-"an affiliation. A role that's not due to an affiliation, is only valid for "
-"the duration of the user's session."
-msgstr ""
-"A szerepkörök a felhasználókhoz rendeltek, és különböző lehetőségeket "
-"engedélyeznek vagy tiltanak le a többfelhasználós csevegésekben. Kiosztásuk "
-"explicit, vagy szint alapján implicit. Azok a szerepkörök, melyek nem a "
-"szintből fakadnak, csak a felhasználó munkamenetének idejére érvényesek."
-
-#: dist/converse-no-dependencies.js:87863
-msgid ""
-"An affiliation is a long-lived entitlement which typically implies a certain "
-"role and which grants privileges and responsibilities. For example admins "
-"and owners automatically have the moderator role."
-msgstr ""
-"A szint egy hosszú életű jogosultság, amely általában bizonyos szerepkört "
-"takar, amely kiváltságokat és felelősségeket ad. Például az adminok és "
-"tulajdonosok automatikusan rendelkeznek a moderátor szerepkörrel."
-
-#: dist/converse-no-dependencies.js:88383
+#: dist/converse-no-dependencies.js:60050
 msgid "Timeout error while trying to set the affiliation"
 msgstr "Időtúllépési hiba történt a szint beállításakor"
 
-#: dist/converse-no-dependencies.js:88385
+#: dist/converse-no-dependencies.js:60052
 msgid "Sorry, you're not allowed to make that change"
 msgstr "Sajnáljuk, nem teheti meg ezt a módosítást"
 
-#: dist/converse-no-dependencies.js:88387
+#: dist/converse-no-dependencies.js:60054
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr "Sajnáljuk, hiba történt a szint beállításakor"
 
-#: dist/converse-no-dependencies.js:88400
+#: dist/converse-no-dependencies.js:60064
 msgid "Affiliation changed"
 msgstr "Szint megváltozott"
 
-#: dist/converse-no-dependencies.js:88430
+#: dist/converse-no-dependencies.js:60077
 msgid "Role changed"
 msgstr "Szerepkör megváltozott"
 
-#: dist/converse-no-dependencies.js:88436
+#: dist/converse-no-dependencies.js:60082
 msgid "You're not allowed to make that change"
 msgstr "Nem végezheti el ezt a módosítást"
 
-#: dist/converse-no-dependencies.js:88438
+#: dist/converse-no-dependencies.js:60084
 msgid "Sorry, something went wrong while trying to set the role"
 msgstr "Sajnáljuk, valami hiba történt a szerepkör beállításakor"
 
+#. CONCATENATED MODULE: ./src/plugins/muc-views/modals/templates/moderator-tools.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:88515
+#: dist/converse-no-dependencies.js:60100
 msgid "Moderator Tools"
 msgstr "Moderátori eszközök"
 
-#: dist/converse-no-dependencies.js:88666
+#: dist/converse-no-dependencies.js:60170
 msgid "Are you sure you want to destroy this groupchat?"
 msgstr "Valóban törölni akarja ezt a konferenciát?"
 
-#: dist/converse-no-dependencies.js:88669
+#: dist/converse-no-dependencies.js:60173
 msgid "Please enter the XMPP address of this groupchat to confirm"
 msgstr "A megerősítéshez adja meg a konferencia XMPP-címét"
 
+#. CONCATENATED MODULE: ./src/modals/templates/add-contact.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:88671
-#: dist/converse-no-dependencies.js:103082
+#: dist/converse-no-dependencies.js:60175
+#: dist/converse-no-dependencies.js:68167
 msgid "name@example.org"
 msgstr "felhasznalo@pelda.hu"
 
-#: dist/converse-no-dependencies.js:88675
+#: dist/converse-no-dependencies.js:60179
 msgid "Optional reason for destroying this groupchat"
 msgstr "Nem kötelező indok a konferencia megszüntetéséhez"
 
-#: dist/converse-no-dependencies.js:88679
+#: dist/converse-no-dependencies.js:60183
 msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr "Nem kötelező XMPP-cím az új konferenciához, amely leváltja ezt"
 
-#: dist/converse-no-dependencies.js:88680
+#: dist/converse-no-dependencies.js:60184
 msgid "replacement@example.org"
 msgstr "felhasznalo@example.org"
 
-#: dist/converse-no-dependencies.js:88983
+#: dist/converse-no-dependencies.js:60361
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
@@ -1351,21 +1106,22 @@ msgstr ""
 "konferenciát."
 
 #. e.g. Your nickname is "coolguy69"
-#: dist/converse-no-dependencies.js:89104
+#: dist/converse-no-dependencies.js:60474
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
 msgstr "A beceneve „%1$s”"
 
-#: dist/converse-no-dependencies.js:89124
+#: dist/converse-no-dependencies.js:60494
 msgid "Error: invalid number of arguments"
 msgstr "Hiba: érvénytelen számú paraméter"
 
+#. CONCATENATED MODULE: ./src/plugins/muc-views/templates/ad-hoc.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:89170
+#: dist/converse-no-dependencies.js:60526
 msgid "On which entity do you want to run commands?"
 msgstr "Melyik entitáson akarja futtatni a parancsokat?"
 
-#: dist/converse-no-dependencies.js:89172
+#: dist/converse-no-dependencies.js:60528
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
@@ -1373,27 +1129,27 @@ msgstr ""
 "Egyes XMPP-szolgáltatások és entitások megengedik, hogy az arra jogosult "
 "felhasználók alkalmi parancsokat futtassanak rajtuk."
 
-#: dist/converse-no-dependencies.js:89174
+#: dist/converse-no-dependencies.js:60530
 msgid "Commands found"
 msgstr "Talált parancsok"
 
-#: dist/converse-no-dependencies.js:89176
+#: dist/converse-no-dependencies.js:60532
 msgid "List available commands"
 msgstr "Elérhető parancsok felsorolása"
 
-#: dist/converse-no-dependencies.js:89180
+#: dist/converse-no-dependencies.js:60536
 msgid "No commands found"
 msgstr "Nem találhatók parancsok"
 
-#: dist/converse-no-dependencies.js:89446
+#: dist/converse-no-dependencies.js:60643
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr "Sajnáljuk, hiba történt az entitás parancsainak keresésekor."
 
-#: dist/converse-no-dependencies.js:89457
+#: dist/converse-no-dependencies.js:60650
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr "A megadott entitás nem támogatja az alkalmi parancsokat"
 
-#: dist/converse-no-dependencies.js:89572
+#: dist/converse-no-dependencies.js:60695
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
@@ -1401,462 +1157,295 @@ msgstr ""
 "Sajnáljuk, hiba történt a parancs végrehajtásakor. A részletekért nézze meg "
 "a böngésző fejlesztői konzolját."
 
-#: dist/converse-no-dependencies.js:90006
+#: dist/converse-no-dependencies.js:60834
 #, fuzzy
 msgid "Change nickname"
 msgstr "Becenév módosítása"
 
-#: dist/converse-no-dependencies.js:90006
+#: dist/converse-no-dependencies.js:60834
 msgid "Enter groupchat"
 msgstr "Belépés a konferenciába"
 
-#: dist/converse-no-dependencies.js:90007
+#: dist/converse-no-dependencies.js:60835
 msgid "Choose a nickname to enter"
 msgstr "Válasszon egy becenevet a belépéshez"
 
-#: dist/converse-no-dependencies.js:90007
+#: dist/converse-no-dependencies.js:60835
 msgid "Please choose your nickname"
 msgstr "Kérjük, válasszon becenevet"
 
-#: dist/converse-no-dependencies.js:90303
-msgid "You're not allowed to send messages in this room"
-msgstr "Nem küldhet üzeneteket ebben a szobában"
-
-#: dist/converse-no-dependencies.js:90692
+#. CONCATENATED MODULE: ./src/plugins/muc-views/templates/occupant.js
+#: dist/converse-no-dependencies.js:61103
 #, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "Kattintson, hogy megemlítse őt: %1$s."
 
-#: dist/converse-no-dependencies.js:90699
+#: dist/converse-no-dependencies.js:61109
 msgid "This user is a moderator."
 msgstr "Ez a felhasználó egy moderátor."
 
-#: dist/converse-no-dependencies.js:90701
+#: dist/converse-no-dependencies.js:61111
 msgid "This user can send messages in this groupchat."
 msgstr "Ez a felhasználó küldhet üzeneteket a konferenciában."
 
-#: dist/converse-no-dependencies.js:90703
+#: dist/converse-no-dependencies.js:61113
 msgid "This user can NOT send messages in this groupchat."
 msgstr "Ez a felhasználó NEM küldhet üzeneteket a konferenciában."
 
-#: dist/converse-no-dependencies.js:90724
+#: dist/converse-no-dependencies.js:61134
 msgid "Admin"
 msgstr "Adminisztrátor"
 
-#: dist/converse-no-dependencies.js:90726
+#: dist/converse-no-dependencies.js:61136
 msgid "Member"
 msgstr "Tag"
 
-#: dist/converse-no-dependencies.js:90728
+#: dist/converse-no-dependencies.js:61138
 msgid "Moderator"
 msgstr "Moderátor"
 
-#: dist/converse-no-dependencies.js:90730
+#: dist/converse-no-dependencies.js:61140
 msgid "Owner"
 msgstr "Tulajdonos"
 
-#: dist/converse-no-dependencies.js:90732
+#: dist/converse-no-dependencies.js:61142
 msgid "Visitor"
 msgstr "Látogató"
 
+#. CONCATENATED MODULE: ./src/plugins/muc-views/templates/muc-sidebar.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:90775
+#: dist/converse-no-dependencies.js:61195
+#, fuzzy
+msgid "Participant"
+msgstr "Résztvevők"
+
+#: dist/converse-no-dependencies.js:61195
 msgid "Participants"
 msgstr "Résztvevők"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Change user's affiliation to admin"
 msgstr "A felhasználó adminisztrátorrá tétele"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Ban user by changing their affiliation to outcast"
 msgstr "A felhasználó kitiltása a szintjének számkivetettre állításával"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Clear the chat area"
 msgstr "Csevegőterület törlése"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Close this groupchat"
 msgstr "Konferencia bezárása"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Change user role to participant"
 msgstr "A felhasználó szerepének változtatása résztvevőre"
 
-#: dist/converse-no-dependencies.js:91394
-#: dist/converse-no-dependencies.js:93503
+#: dist/converse-no-dependencies.js:61421
+#: dist/converse-no-dependencies.js:62464
 msgid "Remove this groupchat"
 msgstr "Konferencia eltávolítása"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Kick user from groupchat"
 msgstr "Felhasználó kirúgása a konferenciából"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Write in 3rd person"
 msgstr "Írjon egyes szám harmadik személyben"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Grant membership to a user"
 msgstr "Tagság megadása a felhasználónak"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Opens up the moderator tools GUI"
 msgstr "Megnyitja a moderátori eszközök felületét"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Remove user's ability to post messages"
 msgstr "A felhasználó ne küldhessen üzeneteket"
 
-#: dist/converse-no-dependencies.js:91394
-#: dist/converse-no-dependencies.js:92555
+#: dist/converse-no-dependencies.js:61421
+#: dist/converse-no-dependencies.js:61877
 msgid "Change your nickname"
 msgstr "Becenév módosítása"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Grant moderator role to user"
 msgstr "Moderátori jog adása a felhasználónak"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Grant ownership of this groupchat"
 msgstr "Konferencia tulajdonjogának megadása"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Register your nickname"
 msgstr "Becenév regisztrációja"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Revoke the user's current affiliation"
 msgstr "A felhasználó jelenlegi szintjének visszavonása"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Set groupchat subject"
 msgstr "Konferencia témájának beállítása"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Set groupchat subject (alias for /subject)"
 msgstr "Állítsa be a konferencia tárgyát (álnév a /tárgynak)"
 
-#: dist/converse-no-dependencies.js:91394
+#: dist/converse-no-dependencies.js:61421
 msgid "Allow muted user to post messages"
 msgstr "Elnémított felhasználók is küldhetnek üzeneteket"
 
-#: dist/converse-no-dependencies.js:91561
+#: dist/converse-no-dependencies.js:61539
 msgid "Loading configuration form"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:91858
+#: dist/converse-no-dependencies.js:61544
+#: dist/converse-no-dependencies.js:64870
+#: dist/converse-no-dependencies.js:66276
+msgid "Cancel"
+msgstr "Mégse"
+
+#: dist/converse-no-dependencies.js:61617
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "Sajnáljuk, hiba történt a beállítási űrlap elküldésekor."
 
-#: dist/converse-no-dependencies.js:91925
+#: dist/converse-no-dependencies.js:61642
 #, fuzzy
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
 msgstr "A beszélgetés elköltözött. Kattintson az alábbi gombra, hogy belépjen."
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:91933
-msgid "This groupchat no longer exists"
-msgstr "Ez a konferencia már nem létezik"
-
-#: dist/converse-no-dependencies.js:91935
-#, fuzzy, javascript-format
-msgid "The following reason was given: \"%1$s\""
-msgstr "Ennek ez az oka: \"%1$s\"."
-
-#: dist/converse-no-dependencies.js:92417
+#: dist/converse-no-dependencies.js:61744
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Ezt a műveletet végezte: %1$s."
 
-#: dist/converse-no-dependencies.js:92423
+#: dist/converse-no-dependencies.js:61750
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "Ennek ez az oka: \"%1$s\"."
 
+#. CONCATENATED MODULE: ./src/plugins/muc-views/modals/templates/muc-invite.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:92462
-#: dist/converse-no-dependencies.js:93456
+#: dist/converse-no-dependencies.js:61764
+#: dist/converse-no-dependencies.js:62423
 msgid "Invite"
 msgstr "Meghívás"
 
-#: dist/converse-no-dependencies.js:92464
+#: dist/converse-no-dependencies.js:61766
 msgid "Invite someone to this groupchat"
 msgstr "Valaki meghívása ebbe a konferenciába"
 
-#: dist/converse-no-dependencies.js:92466
+#: dist/converse-no-dependencies.js:61768
 msgid "user@example.org"
 msgstr "felhasznalo@example.org"
 
-#: dist/converse-no-dependencies.js:92472
+#: dist/converse-no-dependencies.js:61774
 msgid "Optional reason for the invitation"
 msgstr "Meghívás oka (nem kötelező)"
 
-#: dist/converse-no-dependencies.js:92592
+#: dist/converse-no-dependencies.js:61915
 msgid "Topic"
 msgstr "Témakör"
 
-#: dist/converse-no-dependencies.js:92594
+#: dist/converse-no-dependencies.js:61917
 msgid "Topic author"
 msgstr "Téma szerző"
 
-#: dist/converse-no-dependencies.js:92603
-#, javascript-format
-msgid "Groupchat info for %1$s"
-msgstr "Konferencia infó számára: %1$s"
-
-#: dist/converse-no-dependencies.js:92610
-#, fuzzy
-msgid "XMPP address"
-msgstr "XMPP-cím"
-
-#: dist/converse-no-dependencies.js:92612
-msgid "Message archiving"
-msgstr "Üzenetarchiválás"
-
-#: dist/converse-no-dependencies.js:92614
-msgid "Messages are archived on the server"
-msgstr "Üzenetek archiválva vannak a kiszolgálón"
-
-#: dist/converse-no-dependencies.js:92616
-msgid "Description"
-msgstr "Leírás"
-
-#: dist/converse-no-dependencies.js:92618
-msgid "Features"
-msgstr "Jellemzők"
-
-#: dist/converse-no-dependencies.js:92620
-#: dist/converse-no-dependencies.js:101859
-msgid "Hidden"
-msgstr "Rejtett"
-
-#: dist/converse-no-dependencies.js:92622
-msgid "This groupchat is not publicly searchable"
-msgstr "Ez a konferencia nyilvánosan nem kereshető"
-
-#: dist/converse-no-dependencies.js:92624
-msgid "This groupchat is restricted to members only"
-msgstr "Ez a konferencia kizárólag tagoknak szól"
-
-#: dist/converse-no-dependencies.js:92626
-msgid "Members only"
-msgstr "Csak tagoknak"
-
-#: dist/converse-no-dependencies.js:92628
-#: dist/converse-no-dependencies.js:101863
-msgid "Moderated"
-msgstr "Moderált"
-
-#: dist/converse-no-dependencies.js:92630
-msgid ""
-"Participants entering this groupchat need to request permission to write"
-msgstr "A belépő résztvevőknek engedélyt kell kérni, hogy írhassanak"
-
-#: dist/converse-no-dependencies.js:92632
-msgid "Name"
-msgstr "Név"
-
-#: dist/converse-no-dependencies.js:92634
-msgid "This groupchat does not require a password upon entry"
-msgstr "Ez a konferencia nem igényel jelszót belépéskor"
-
-#: dist/converse-no-dependencies.js:92636
-msgid "No password required"
-msgstr "Nem szükséges jelszó"
-
-#: dist/converse-no-dependencies.js:92638
-msgid "Not anonymous"
-msgstr "Nem névtelen"
-
-#: dist/converse-no-dependencies.js:92640
-msgid "All other groupchat participants can see your XMPP address"
-msgstr "Minden konferencia-résztvevő láthatja az XMPP felhasználónevét"
-
-#: dist/converse-no-dependencies.js:92642
-msgid "Not moderated"
-msgstr "Moderálatlan"
-
-#: dist/converse-no-dependencies.js:92644
-msgid "Participants entering this groupchat can write right away"
-msgstr "A belépő résztvevők egyből írhatnak is ide"
-
-#: dist/converse-no-dependencies.js:92646
-msgid "Online users"
-msgstr "Jelenlevők"
-
-#: dist/converse-no-dependencies.js:92648
-#: dist/converse-no-dependencies.js:101867
-msgid "Open"
-msgstr "Nyitott"
-
-#: dist/converse-no-dependencies.js:92650
-msgid "Anyone can join this groupchat"
-msgstr "Bárki csatlakozhat a konferenciához"
-
-#: dist/converse-no-dependencies.js:92652
-msgid "This groupchat requires a password before entry"
-msgstr "A konferenciába belépéshez jelszó szükséges"
-
-#: dist/converse-no-dependencies.js:92654
-msgid "Password protected"
-msgstr "Jelszóval védve"
-
-#: dist/converse-no-dependencies.js:92656
-msgid "Persistent"
-msgstr "Állandó"
-
-#: dist/converse-no-dependencies.js:92658
-msgid "This groupchat persists even if it's unoccupied"
-msgstr "Ez a konferencia akkor is fennmarad, ha üres"
-
-#: dist/converse-no-dependencies.js:92660
-#: dist/converse-no-dependencies.js:101871
-msgid "Public"
-msgstr "Nyilvános"
-
-#: dist/converse-no-dependencies.js:92662
-#: dist/converse-no-dependencies.js:101873
-msgid "Semi-anonymous"
-msgstr "Félig névtelen"
-
-#: dist/converse-no-dependencies.js:92664
-msgid "Only moderators can see your XMPP address"
-msgstr "Csak a moderátorok láthatják az Ön XMPP felhasználónevét"
-
-#: dist/converse-no-dependencies.js:92666
-#: dist/converse-no-dependencies.js:101875
-msgid "Temporary"
-msgstr "Ideiglenes"
-
-#: dist/converse-no-dependencies.js:92668
-msgid "This groupchat will disappear once the last person leaves"
-msgstr "Ez a konferencia eltűnik, amint az utolsó ember elhagyja"
-
-#: dist/converse-no-dependencies.js:92670
-msgid "This groupchat is publicly searchable"
-msgstr "Ez a konferencia nyilvánosan kereshető"
-
-#. harmony default export
-#: dist/converse-no-dependencies.js:93021
+#: dist/converse-no-dependencies.js:62237
 msgid "Hide the groupchat topic"
 msgstr "A konferencia témájának elrejtése"
 
-#: dist/converse-no-dependencies.js:93023
+#: dist/converse-no-dependencies.js:62239
 msgid "This groupchat is bookmarked"
 msgstr "Ez a konferencia könyvjelzőzött"
 
-#: dist/converse-no-dependencies.js:93419
+#: dist/converse-no-dependencies.js:62392
 msgid "Show more information about this groupchat"
 msgstr "További információk megjelenítése a konferenciáról"
 
-#: dist/converse-no-dependencies.js:93430
+#: dist/converse-no-dependencies.js:62401
 msgid "Configure"
 msgstr "Beállítás"
 
-#: dist/converse-no-dependencies.js:93431
+#: dist/converse-no-dependencies.js:62402
 msgid "Configure this groupchat"
 msgstr "Konferencia beállítása"
 
-#: dist/converse-no-dependencies.js:93443
+#: dist/converse-no-dependencies.js:62412
 #, fuzzy
 msgid "Change the nickname you're using in this groupchat"
 msgstr "Regisztrálj egy becenevet erre a szobára"
 
-#: dist/converse-no-dependencies.js:93457
+#: dist/converse-no-dependencies.js:62424
 msgid "Invite someone to join this groupchat"
 msgstr "Valaki meghívása ebbe a konferenciába"
 
-#: dist/converse-no-dependencies.js:93471
+#: dist/converse-no-dependencies.js:62436
 msgid "Show topic"
 msgstr "Téma megjelenítése"
 
-#: dist/converse-no-dependencies.js:93471
+#: dist/converse-no-dependencies.js:62436
 msgid "Hide topic"
 msgstr "Téma elrejtése"
 
-#: dist/converse-no-dependencies.js:93472
+#: dist/converse-no-dependencies.js:62437
 msgid "Show the topic message in the heading"
 msgstr "A témaüzenet megjelenítése a fejlécben"
 
-#: dist/converse-no-dependencies.js:93472
+#: dist/converse-no-dependencies.js:62437
 msgid "Hide the topic in the heading"
 msgstr "A téma elrejtése a fejlécben"
 
-#: dist/converse-no-dependencies.js:93489
+#: dist/converse-no-dependencies.js:62452
 msgid "Moderate"
 msgstr "Moderálás"
 
-#: dist/converse-no-dependencies.js:93490
+#: dist/converse-no-dependencies.js:62453
 msgid "Moderate this groupchat"
 msgstr "Konferencia moderálása"
 
-#: dist/converse-no-dependencies.js:93502
+#: dist/converse-no-dependencies.js:62463
 msgid "Destroy"
 msgstr "Törlés"
 
-#: dist/converse-no-dependencies.js:93516
+#: dist/converse-no-dependencies.js:62475
 msgid "Leave"
 msgstr "Kilépés"
 
-#: dist/converse-no-dependencies.js:93517
+#: dist/converse-no-dependencies.js:62476
 msgid "Leave and close this groupchat"
 msgstr "Kilépés és a konferencia bezárása"
 
-#: dist/converse-no-dependencies.js:93526
+#: dist/converse-no-dependencies.js:62479
 msgid "Are you sure you want to leave this groupchat?"
 msgstr "Valóban el akarja hagyni ezt a konferenciát?"
 
+#. CONCATENATED MODULE: ./src/plugins/muc-views/templates/muc-password-form.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:93643
+#: dist/converse-no-dependencies.js:62506
 msgid "This groupchat requires a password"
 msgstr "Ez a konferencia jelszót igényel"
 
-#: dist/converse-no-dependencies.js:93645
+#: dist/converse-no-dependencies.js:62508
 msgid "Password: "
 msgstr "Jelszó: "
 
-#: dist/converse-no-dependencies.js:93647
+#: dist/converse-no-dependencies.js:62510
 msgid "Submit"
 msgstr "Küldés"
 
-#: dist/converse-no-dependencies.js:94542
-msgid "has gone offline"
-msgstr "nem elérhetővé vált"
-
-#: dist/converse-no-dependencies.js:94544
-msgid "has gone away"
-msgstr "távol van"
-
-#: dist/converse-no-dependencies.js:94546
-msgid "is busy"
-msgstr "elfoglalt"
-
-#: dist/converse-no-dependencies.js:94548
-msgid "has come online"
-msgstr "elérhető lett"
-
-#. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:94590
-#: dist/converse-no-dependencies.js:94596
-#, javascript-format
-msgid "Notification from %1$s"
-msgstr "Értesítő üzenet innen: %1$s"
-
-#: dist/converse-no-dependencies.js:94598
-#: dist/converse-no-dependencies.js:94608
-#: dist/converse-no-dependencies.js:94611
-#, javascript-format
-msgid "%1$s says"
-msgstr "%1$s mondja"
-
-#: dist/converse-no-dependencies.js:94741
+#: dist/converse-no-dependencies.js:63125
 msgid "wants to be your contact"
 msgstr "szeretne a csevegőpartnere lenni"
 
-#: dist/converse-no-dependencies.js:95158
+#: dist/converse-no-dependencies.js:63409
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
@@ -1866,7 +1455,7 @@ msgstr ""
 "megköveteli, hogy iratkozzon fel a jelenlétére ahhoz, hogy lássa az OMEMO-"
 "információit"
 
-#: dist/converse-no-dependencies.js:95160
+#: dist/converse-no-dependencies.js:63411
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
@@ -1875,11 +1464,11 @@ msgstr ""
 "Sajnáljuk, de nem lehet elküldeni egy titkosított üzenetet, mert %1$s távoli "
 "kiszolgálója nem található"
 
-#: dist/converse-no-dependencies.js:95162
+#: dist/converse-no-dependencies.js:63413
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Nem lehet elküldeni egy titkosított üzenetet egy váratlan hiba miatt."
 
-#: dist/converse-no-dependencies.js:95177
+#: dist/converse-no-dependencies.js:63428
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -1887,7 +1476,7 @@ msgstr ""
 "Ez egy OMEMO kódolt üzenet, amelyet az ügyfele úgy tűnik, hogy nem "
 "támogatja. További információkat itt talál: https://conversations.im/omemo"
 
-#: dist/converse-no-dependencies.js:95699
+#: dist/converse-no-dependencies.js:63717
 #, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
@@ -1896,12 +1485,12 @@ msgstr ""
 "Sajnáljuk, nem lehet visszafejteni a kapott OMEMO üzenetet, mert nincs meg a "
 "JID ahhoz a felhasználóhoz."
 
-#: dist/converse-no-dependencies.js:95778
+#: dist/converse-no-dependencies.js:63758
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
 "Sajnáljuk, egy hiba miatt nem lehet visszafejteni a kapott OMEMO üzenetet."
 
-#: dist/converse-no-dependencies.js:96553
+#: dist/converse-no-dependencies.js:64118
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
@@ -1910,7 +1499,7 @@ msgstr ""
 "Úgy tűnik, hogy %1$s egyik kliense sem támogatja az OMEMO-t . Titkosított "
 "beszélgetés már nem lesz lehetséges ezen a konferencián."
 
-#: dist/converse-no-dependencies.js:96634
+#: dist/converse-no-dependencies.js:64155
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
@@ -1918,7 +1507,7 @@ msgstr ""
 "Nem használható végpontok közötti titkosítás ebben a konferenciában, vagy a "
 "konferencia vagy anonim, vagy nem minden résztvevő támogatja az OMEMO-t."
 
-#: dist/converse-no-dependencies.js:96636
+#: dist/converse-no-dependencies.js:64157
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
@@ -1927,15 +1516,15 @@ msgstr ""
 "Nem használható végpontok közötti titkosítás, mert %1$s olyan klienset "
 "használ, ami nem támogatja az OMEMO-t."
 
-#: dist/converse-no-dependencies.js:96655
+#: dist/converse-no-dependencies.js:64176
 msgid "Messages are being sent in plaintext"
 msgstr "Üzenetek küldése egyszerű szövegként"
 
-#: dist/converse-no-dependencies.js:96657
+#: dist/converse-no-dependencies.js:64178
 msgid "Messages are sent encrypted"
 msgstr "Az üzenetek titkosítva lesznek elküldve"
 
-#: dist/converse-no-dependencies.js:96661
+#: dist/converse-no-dependencies.js:64182
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
@@ -1943,76 +1532,39 @@ msgstr ""
 "Ennek a konferenciának csak a tagokat szabad engedélyeznie, és nem lehet "
 "anonim ahhoz, hogy támogassa az OMEMO-val titkosított üzeneteket"
 
-#: dist/converse-no-dependencies.js:96663
+#: dist/converse-no-dependencies.js:64184
 msgid "OMEMO encryption is not supported"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:96694
+#: dist/converse-no-dependencies.js:64213
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 "Sajnáljuk, nem található eszköz, amire OMEMO-val titkosított üzenetet lehet "
 "küldeni."
 
-#: dist/converse-no-dependencies.js:96924
+#: dist/converse-no-dependencies.js:64329
 msgid "Trusted"
 msgstr "Megbízható"
 
-#: dist/converse-no-dependencies.js:96926
+#: dist/converse-no-dependencies.js:64331
 msgid "Untrusted"
 msgstr "Megbízhatatlan"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:96936
+#: dist/converse-no-dependencies.js:64359
 msgid "OMEMO Fingerprints"
 msgstr "OMEMO ujjlenyomatok"
 
-#: dist/converse-no-dependencies.js:96938
+#: dist/converse-no-dependencies.js:64361
 msgid "No OMEMO-enabled devices found"
 msgstr "Nem található OMEMO-képes eszköz"
 
-#: dist/converse-no-dependencies.js:97200
-msgid "Checkbox for selecting the following fingerprint"
-msgstr "Jelölőnégyzet az alábbi ujjlenyomat kiválasztására"
-
-#: dist/converse-no-dependencies.js:97206
-msgid "Device without a fingerprint"
-msgstr "Eszköz ujjlenyomat nélkül"
-
-#: dist/converse-no-dependencies.js:97208
-msgid "Checkbox for selecting the following device"
-msgstr "Jelölőnégyzet a következő eszköz kiválasztására"
-
-#: dist/converse-no-dependencies.js:97220
-msgid "Other OMEMO-enabled devices"
-msgstr "Más OMEMO-engedélyezett eszközök"
-
-#: dist/converse-no-dependencies.js:97222
-msgid "Checkbox to select fingerprints of all other OMEMO devices"
-msgstr ""
-"Jelölőnégyzet az összes egyéb OMEMO eszköz ujjlenyomatának kijelöléséhez"
-
-#: dist/converse-no-dependencies.js:97224
-msgid "Remove checked devices and close"
-msgstr "Ellenőrzött eszközök eltávolítása és bezárás"
-
-#: dist/converse-no-dependencies.js:97226
-msgid "Select all"
-msgstr "Mindent kijelöl"
-
-#: dist/converse-no-dependencies.js:97238
-msgid "This device's OMEMO fingerprint"
-msgstr "Készülékének OMEMO ujjlenyomata"
-
-#: dist/converse-no-dependencies.js:97240
-msgid "Generate new keys and fingerprint"
-msgstr "Új kulcsok és ujjlenyomat létrehozása"
-
-#: dist/converse-no-dependencies.js:97548
+#: dist/converse-no-dependencies.js:64552
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Sajnáljuk, hiba történt az eszközök eltávolításakor."
 
-#: dist/converse-no-dependencies.js:97581
+#: dist/converse-no-dependencies.js:64562
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -2022,123 +1574,114 @@ msgstr ""
 "kulcsait, és minden korábbi titkosított üzenete visszafejthetetlenné válik "
 "ezen az eszközön."
 
-#: dist/converse-no-dependencies.js:97638
+#: dist/converse-no-dependencies.js:64580
 msgid "About"
 msgstr "Névjegy"
 
-#: dist/converse-no-dependencies.js:97640
+#: dist/converse-no-dependencies.js:64582
 msgid "Commands"
 msgstr "Parancsok"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:97646
-msgid "Settings"
-msgstr "Beállítások"
-
-#: dist/converse-no-dependencies.js:97648
-#, javascript-format
-msgid ""
-"%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
-msgstr ""
-"%1$s nyílt forráskódú %2$s XMPP csevegőkliens az %3$s Opkode %2$s jóvoltából"
-
-#: dist/converse-no-dependencies.js:97650
+#: dist/converse-no-dependencies.js:64601
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr "%1$s Fordítsa le %2$s a saját nyelvére"
 
-#: dist/converse-no-dependencies.js:97679
-#: dist/converse-no-dependencies.js:97689
+#: dist/converse-no-dependencies.js:64667
+#: dist/converse-no-dependencies.js:64677
 msgid "online"
 msgstr "elérhető"
 
-#: dist/converse-no-dependencies.js:97681
+#: dist/converse-no-dependencies.js:64669
 msgid "busy"
 msgstr "elfoglalt"
 
-#: dist/converse-no-dependencies.js:97683
+#: dist/converse-no-dependencies.js:64671
 msgid "away for long"
 msgstr "sokáig távol"
 
-#: dist/converse-no-dependencies.js:97685
+#: dist/converse-no-dependencies.js:64673
 msgid "away"
 msgstr "távol"
 
-#: dist/converse-no-dependencies.js:97687
+#: dist/converse-no-dependencies.js:64675
 msgid "offline"
 msgstr "nem elérhető"
 
-#: dist/converse-no-dependencies.js:97714
+#: dist/converse-no-dependencies.js:64688
 msgid "Log out"
 msgstr "Kijelentkezés"
 
-#: dist/converse-no-dependencies.js:97720
+#: dist/converse-no-dependencies.js:64696
 msgid "Show details about this chat client"
 msgstr "További információk a csevegő kliensről"
 
-#: dist/converse-no-dependencies.js:97731
+#: dist/converse-no-dependencies.js:64709
 #, javascript-format
 msgid "I am %1$s"
 msgstr "%1$s vagyok"
 
-#: dist/converse-no-dependencies.js:97733
+#: dist/converse-no-dependencies.js:64711
 msgid "Click to change your chat status"
 msgstr "Ide kattintva módosíthatja a csevegési állapotát"
 
-#: dist/converse-no-dependencies.js:97934
+#: dist/converse-no-dependencies.js:64791
 msgid "Are you sure you want to log out?"
 msgstr "Biztosan ki akar jelentkezni?"
 
-#: dist/converse-no-dependencies.js:97980
-#: dist/converse-no-dependencies.js:104482
+#: dist/converse-no-dependencies.js:64868
+#: dist/converse-no-dependencies.js:68927
 msgid "Away"
 msgstr "Távol"
 
-#: dist/converse-no-dependencies.js:97981
-#: dist/converse-no-dependencies.js:104480
+#: dist/converse-no-dependencies.js:64869
+#: dist/converse-no-dependencies.js:68925
 msgid "Busy"
 msgstr "Elfoglalt"
 
-#: dist/converse-no-dependencies.js:97984
+#: dist/converse-no-dependencies.js:64872
 msgid "Custom status"
 msgstr "Egyéni állapot"
 
-#: dist/converse-no-dependencies.js:97985
-#: dist/converse-no-dependencies.js:104486
+#: dist/converse-no-dependencies.js:64873
+#: dist/converse-no-dependencies.js:68931
 msgid "Offline"
 msgstr "Nem elérhető"
 
-#: dist/converse-no-dependencies.js:97986
-#: dist/converse-no-dependencies.js:104476
+#: dist/converse-no-dependencies.js:64874
+#: dist/converse-no-dependencies.js:68921
 msgid "Online"
 msgstr "Elérhető"
 
-#: dist/converse-no-dependencies.js:97988
+#: dist/converse-no-dependencies.js:64876
 msgid "Away for long"
 msgstr "Hosszú ideje távol"
 
-#: dist/converse-no-dependencies.js:97989
+#: dist/converse-no-dependencies.js:64877
 msgid "Change chat status"
 msgstr "Chat-állapot módosítása"
 
-#: dist/converse-no-dependencies.js:97990
+#: dist/converse-no-dependencies.js:64878
 msgid "Personal status message"
 msgstr "Személyes állapot üzenet"
 
-#: dist/converse-no-dependencies.js:98160
+#. harmony default export
+#. unused pure expression or super
+#. CONCATENATED MODULE: ./src/shared/components/image-picker.js
+#: dist/converse-no-dependencies.js:64917
 #, fuzzy
 msgid "Your profile picture"
 msgstr "Saját profil"
 
-#: dist/converse-no-dependencies.js:98251
+#: dist/converse-no-dependencies.js:64979
 msgid "Your Profile"
 msgstr "Profilod"
 
-#: dist/converse-no-dependencies.js:98263
+#: dist/converse-no-dependencies.js:64991
 msgid "Save and close"
 msgstr "Mentés és bezárás"
 
-#: dist/converse-no-dependencies.js:98265
+#: dist/converse-no-dependencies.js:64993
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -2146,75 +1689,60 @@ msgstr ""
 "Használjon vesszőket több szerep szétválasztásához. A szerepek a neved "
 "mellett jelennek meg a csevegési üzenetekben."
 
-#: dist/converse-no-dependencies.js:98269
+#: dist/converse-no-dependencies.js:64997
 msgid "OMEMO"
 msgstr "OMEMO"
 
-#: dist/converse-no-dependencies.js:98271
+#: dist/converse-no-dependencies.js:64999
 msgid "Profile"
 msgstr "Profil"
 
-#: dist/converse-no-dependencies.js:98382
+#: dist/converse-no-dependencies.js:65125
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Sajnáljuk, valami hiba történt a profiladatok mentése közben."
 
-#: dist/converse-no-dependencies.js:98382
+#: dist/converse-no-dependencies.js:65125
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 "Ellenőrizheti a böngésző fejlesztői konzolt bármilyen hiba kimenet esetén."
 
+#. CONCATENATED MODULE: ./src/plugins/register/templates/registration_form.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:100471
+#: dist/converse-no-dependencies.js:66226
 msgid "Choose a different provider"
 msgstr "Válasszon egy másik szolgáltatót"
 
-#: dist/converse-no-dependencies.js:100473
-#: dist/converse-no-dependencies.js:100531
+#: dist/converse-no-dependencies.js:66228
+#: dist/converse-no-dependencies.js:66311
 msgid "Already have a chat account?"
 msgstr "Már van csevegőfiókja?"
 
-#: dist/converse-no-dependencies.js:100475
+#: dist/converse-no-dependencies.js:66230
 msgid "Account Registration:"
 msgstr "Fiókregisztráció:"
 
-#: dist/converse-no-dependencies.js:100477
-#: dist/converse-no-dependencies.js:100533
+#: dist/converse-no-dependencies.js:66232
+#: dist/converse-no-dependencies.js:66313
 msgid "Log in here"
 msgstr "Bejelentkezés itt"
 
-#: dist/converse-no-dependencies.js:100479
+#: dist/converse-no-dependencies.js:66234
 msgid "Register"
 msgstr "Regisztráció"
 
-#: dist/converse-no-dependencies.js:100508
+#: dist/converse-no-dependencies.js:66274
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Tartson ki, most kérjük le a regisztrációs űrlapot…"
 
-#: dist/converse-no-dependencies.js:100520
-msgid "Tip: A list of public XMPP providers is available"
-msgstr "Tipp: A nyílvános XMPP szolgáltatókról egy lista elérhető"
-
-#: dist/converse-no-dependencies.js:100522
-msgid "here"
-msgstr "itt"
-
-#: dist/converse-no-dependencies.js:100529
+#: dist/converse-no-dependencies.js:66309
 msgid "Fetch registration form"
 msgstr "Regisztrációs űrlap"
 
-#: dist/converse-no-dependencies.js:100541
-msgid "Create your account"
-msgstr "Hozza létre fiókját"
-
-#: dist/converse-no-dependencies.js:100543
-msgid "Please enter the XMPP provider to register with:"
-msgstr "A regisztrációhoz adja meg az XMPP szolgáltatót:"
-
-#: dist/converse-no-dependencies.js:100927
+#: dist/converse-no-dependencies.js:66475
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Sajnáljuk, de nem tudunk csatlakozni a választott szolgáltatóhoz."
 
-#: dist/converse-no-dependencies.js:100943
+#: dist/converse-no-dependencies.js:66491
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -2222,7 +1750,7 @@ msgstr ""
 "A megadott szolgáltató nem támogatja a csevegőn keresztüli regisztrációt. "
 "Próbáljon meg egy másikat."
 
-#: dist/converse-no-dependencies.js:100971
+#: dist/converse-no-dependencies.js:66518
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -2231,15 +1759,15 @@ msgstr ""
 "Valami hiba történt a következőhöz kapcsolódás közben: \"%1$s\". Biztos "
 "benne, hogy létezik?"
 
-#: dist/converse-no-dependencies.js:101159
+#: dist/converse-no-dependencies.js:66672
 msgid "Now logging you in"
 msgstr "Most bejelentkezel"
 
-#: dist/converse-no-dependencies.js:101161
+#: dist/converse-no-dependencies.js:66674
 msgid "Registered successfully"
 msgstr "Sikeres regisztráció"
 
-#: dist/converse-no-dependencies.js:101273
+#: dist/converse-no-dependencies.js:66769
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -2247,261 +1775,602 @@ msgstr ""
 "A szolgáltató visszautasította a regisztrációs kérelmet. Kérem ellenőrízze a "
 "bevitt adatok pontosságát."
 
-#: dist/converse-no-dependencies.js:101545
+#: dist/converse-no-dependencies.js:66983
 msgid " e.g. conversejs.org"
 msgstr " pl.: conversejs.org"
 
-#: dist/converse-no-dependencies.js:101639
+#: dist/converse-no-dependencies.js:67048
 msgid "This field is required"
 msgstr "Ez a mező kötelező"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:101645
-msgid "Join"
-msgstr "Csatlakozás"
-
-#: dist/converse-no-dependencies.js:101647
-msgid "Enter a new Groupchat"
-msgstr "Adjon meg új Konferenciát"
-
-#: dist/converse-no-dependencies.js:101678
+#: dist/converse-no-dependencies.js:67118
 msgid "name@conference.example.org"
 msgstr "név@konferencia.példa.hu"
 
-#: dist/converse-no-dependencies.js:101683
+#: dist/converse-no-dependencies.js:67123
 msgid "Groupchat name"
 msgstr "Konferencia neve"
 
-#: dist/converse-no-dependencies.js:101683
+#: dist/converse-no-dependencies.js:67123
 msgid "Groupchat address"
 msgstr "Konferencia címe"
 
-#: dist/converse-no-dependencies.js:101754
+#: dist/converse-no-dependencies.js:67196
 msgid "Groupchat id is invalid."
 msgstr "A konferenciaazonosító érvénytelen."
 
-#: dist/converse-no-dependencies.js:101807
+#: dist/converse-no-dependencies.js:67236
 msgid "Show groupchats"
 msgstr "Konferenciák mutatása"
 
-#: dist/converse-no-dependencies.js:101809
+#: dist/converse-no-dependencies.js:67238
 msgid "Server address"
 msgstr "Kiszolgáló címe"
 
-#: dist/converse-no-dependencies.js:101815
-#: dist/converse-no-dependencies.js:102123
-msgid "Show more information on this groupchat"
-msgstr "További információk a konferenciáról"
-
 #. harmony default export
-#: dist/converse-no-dependencies.js:101823
-msgid "Query for Groupchats"
-msgstr "Konferenciák lekérdezése"
-
-#. harmony default export
-#: dist/converse-no-dependencies.js:101849
+#: dist/converse-no-dependencies.js:67310
 msgid "Description:"
 msgstr "Leírás:"
 
-#: dist/converse-no-dependencies.js:101851
+#: dist/converse-no-dependencies.js:67312
 #, fuzzy
 msgid "Groupchat XMPP Address:"
 msgstr "Konferencia címe"
 
-#: dist/converse-no-dependencies.js:101853
+#: dist/converse-no-dependencies.js:67314
 msgid "Participants:"
 msgstr "Résztvevők:"
 
-#: dist/converse-no-dependencies.js:101855
+#: dist/converse-no-dependencies.js:67316
 msgid "Features:"
 msgstr "Jellemzők:"
 
-#: dist/converse-no-dependencies.js:101857
+#: dist/converse-no-dependencies.js:67318
 msgid "Requires authentication"
 msgstr "Azonosítás szükséges"
 
-#: dist/converse-no-dependencies.js:101861
+#: dist/converse-no-dependencies.js:67320
+msgid "Hidden"
+msgstr "Rejtett"
+
+#: dist/converse-no-dependencies.js:67322
 msgid "Requires an invitation"
 msgstr "Meghívás szükséges"
 
-#: dist/converse-no-dependencies.js:101865
+#: dist/converse-no-dependencies.js:67324
+msgid "Moderated"
+msgstr "Moderált"
+
+#: dist/converse-no-dependencies.js:67326
 msgid "Non-anonymous"
 msgstr "NEM névtelen"
 
-#: dist/converse-no-dependencies.js:101869
+#: dist/converse-no-dependencies.js:67328
+msgid "Open"
+msgstr "Nyitott"
+
+#: dist/converse-no-dependencies.js:67330
 msgid "Permanent"
 msgstr "Állandó"
 
-#: dist/converse-no-dependencies.js:101877
+#: dist/converse-no-dependencies.js:67332
+msgid "Public"
+msgstr "Nyilvános"
+
+#: dist/converse-no-dependencies.js:67334
+msgid "Semi-anonymous"
+msgstr "Félig névtelen"
+
+#: dist/converse-no-dependencies.js:67336
+msgid "Temporary"
+msgstr "Ideiglenes"
+
+#: dist/converse-no-dependencies.js:67338
 msgid "Unmoderated"
 msgstr "Moderálatlan"
 
-#: dist/converse-no-dependencies.js:101974
+#: dist/converse-no-dependencies.js:67445
 msgid "conference.example.org"
 msgstr "konferencia@pelda.hu"
 
-#: dist/converse-no-dependencies.js:102022
+#: dist/converse-no-dependencies.js:67487
 msgid "Groupchats found"
 msgstr "Konferenciák találhatók"
 
-#: dist/converse-no-dependencies.js:102030
+#: dist/converse-no-dependencies.js:67495
 msgid "No groupchats found"
 msgstr "Nem találhatók szobák"
 
-#: dist/converse-no-dependencies.js:102120
+#: dist/converse-no-dependencies.js:67575
 msgid "Leave this groupchat"
 msgstr "Konferencia elhagyása"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:102127
+#: dist/converse-no-dependencies.js:67605
 msgid "Click to toggle the list of open groupchats"
 msgstr "Kattintsunk a konferenciák listájára váltáshoz"
 
-#: dist/converse-no-dependencies.js:102129
+#: dist/converse-no-dependencies.js:67607
 msgid "Groupchats"
 msgstr "Konferenciák"
 
-#: dist/converse-no-dependencies.js:102131
+#: dist/converse-no-dependencies.js:67609
 msgid "Query for groupchats"
 msgstr "Konferenciák lekérdezése"
 
-#: dist/converse-no-dependencies.js:102133
+#: dist/converse-no-dependencies.js:67611
 msgid "Add a new groupchat"
 msgstr "Új konferencia létrehozása"
 
-#: dist/converse-no-dependencies.js:102143
-msgid "Open Groupchats"
-msgstr "Használatban"
-
-#: dist/converse-no-dependencies.js:102454
+#: dist/converse-no-dependencies.js:67728
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Biztosan el akarja hagyni a konferenciát: %1$s?"
 
-#: dist/converse-no-dependencies.js:103084
+#: dist/converse-no-dependencies.js:68169
 msgid "Add"
 msgstr "Hozzáadás"
 
-#: dist/converse-no-dependencies.js:103088
+#: dist/converse-no-dependencies.js:68173
 msgid "Add a Contact"
 msgstr "Új csevegőpartner hozzáadása"
 
-#: dist/converse-no-dependencies.js:103151
+#: dist/converse-no-dependencies.js:68244
 msgid "Contact name"
 msgstr "Partner neve"
 
-#: dist/converse-no-dependencies.js:103151
+#: dist/converse-no-dependencies.js:68244
 msgid "Optional nickname"
 msgstr "Választható becenév"
 
-#: dist/converse-no-dependencies.js:103243
+#: dist/converse-no-dependencies.js:68324
 msgid "Sorry, could not find a contact with that name"
 msgstr "Sajnáljuk, nem található csevegőpartnert ezzel a névvel"
 
-#: dist/converse-no-dependencies.js:103268
+#: dist/converse-no-dependencies.js:68348
 msgid "This contact has already been added"
 msgstr "Ez a csevegőpartner már hozzá lett adva"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:103483
+#: dist/converse-no-dependencies.js:68518
 msgid "Click to hide these contacts"
 msgstr "Kattintson ide a csevegőpartnerek elrejtéséhez"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:103631
+#: dist/converse-no-dependencies.js:68572
 msgid "Contacts"
 msgstr "Kapcsolatok"
 
-#: dist/converse-no-dependencies.js:103633
+#: dist/converse-no-dependencies.js:68574
 msgid "Add a contact"
 msgstr "Új névjegy felvétele"
 
-#: dist/converse-no-dependencies.js:103635
+#: dist/converse-no-dependencies.js:68576
 msgid "Re-sync your contacts"
 msgstr "Újra szinkronizálni a névjegyeket"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:103979
-#: dist/converse-no-dependencies.js:104041
+#: dist/converse-no-dependencies.js:68712
+msgid "This contact is busy"
+msgstr "Ez a csevegőpartner elfoglalt"
+
+#: dist/converse-no-dependencies.js:68713
+msgid "This contact is online"
+msgstr "Ez az ismerős elérhető"
+
+#: dist/converse-no-dependencies.js:68714
+msgid "This contact is offline"
+msgstr "Ez az ismerős nem elérhető"
+
+#: dist/converse-no-dependencies.js:68715
+msgid "This contact is unavailable"
+msgstr "Ez az ismerős elérhetetlen"
+
+#: dist/converse-no-dependencies.js:68716
+msgid "This contact is away for an extended period"
+msgstr "Ez az ismerős hosszú ideje távol van"
+
+#: dist/converse-no-dependencies.js:68717
+msgid "This contact is away"
+msgstr "Ez az ismerős távol van"
+
+#: dist/converse-no-dependencies.js:68728
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Kattintson %1$s nevű ismerősének eltávolításához"
 
-#: dist/converse-no-dependencies.js:104011
-msgid "This contact is busy"
-msgstr "Ez a csevegőpartner elfoglalt"
-
-#: dist/converse-no-dependencies.js:104012
-msgid "This contact is online"
-msgstr "Ez az ismerős elérhető"
-
-#: dist/converse-no-dependencies.js:104013
-msgid "This contact is offline"
-msgstr "Ez az ismerős nem elérhető"
-
-#: dist/converse-no-dependencies.js:104014
-msgid "This contact is unavailable"
-msgstr "Ez az ismerős elérhetetlen"
-
-#: dist/converse-no-dependencies.js:104015
-msgid "This contact is away for an extended period"
-msgstr "Ez az ismerős hosszú ideje távol van"
-
-#: dist/converse-no-dependencies.js:104016
-msgid "This contact is away"
-msgstr "Ez az ismerős távol van"
-
-#: dist/converse-no-dependencies.js:104070
+#: dist/converse-no-dependencies.js:68757
 #, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "Kattintson a csevegéshez a következővel: %1$s (XMPP-cím: %2$s)"
 
-#: dist/converse-no-dependencies.js:104335
+#: dist/converse-no-dependencies.js:68834
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Kattintson %1$s kapcsolatkérésének elfogadásához"
 
-#: dist/converse-no-dependencies.js:104336
+#: dist/converse-no-dependencies.js:68835
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Kattintson %1$s kapcsolatkérésének elutasításához"
 
-#: dist/converse-no-dependencies.js:104422
+#: dist/converse-no-dependencies.js:68894
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Valóban elutasítja ezt a partnerkérelmet?"
 
+#. CONCATENATED MODULE: ./src/plugins/rosterview/templates/roster_filter.js
 #. harmony default export
-#: dist/converse-no-dependencies.js:104464
+#: dist/converse-no-dependencies.js:68909
 msgid "Filter"
 msgstr "Szűrő"
 
-#: dist/converse-no-dependencies.js:104466
+#: dist/converse-no-dependencies.js:68911
 msgid "Filter by contact name"
 msgstr "Szűrés névjegy szerint"
 
-#: dist/converse-no-dependencies.js:104468
+#: dist/converse-no-dependencies.js:68913
 msgid "Filter by group name"
 msgstr "Szűrés csoport szerint"
 
-#: dist/converse-no-dependencies.js:104470
+#: dist/converse-no-dependencies.js:68915
 msgid "Filter by status"
 msgstr "Szűrés állapot szerint"
 
-#: dist/converse-no-dependencies.js:104472
+#: dist/converse-no-dependencies.js:68917
 msgid "Any"
 msgstr "Bármi"
 
-#: dist/converse-no-dependencies.js:104474
+#: dist/converse-no-dependencies.js:68919
 msgid "Unread"
 msgstr "Olvasatlan"
 
-#: dist/converse-no-dependencies.js:104478
+#: dist/converse-no-dependencies.js:68923
 msgid "Chatty"
 msgstr "Beszédes"
 
-#: dist/converse-no-dependencies.js:104484
+#: dist/converse-no-dependencies.js:68929
 msgid "Extended Away"
 msgstr "Hosszú távollét"
+
+#: dist/converse-no-dependencies.js:27334
+#, javascript-format
+msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+msgstr ""
+"Sajnáljuk, nem tudtunk csatlakozni a domainhez tartozó XMPP gazdagéphez: %1$s"
+
+#~ msgid "You're not allowed to register yourself in this groupchat."
+#~ msgstr "Nem regisztrálhatod magad ebben a konferenciában."
+
+#~ msgid ""
+#~ "You're not allowed to register in this groupchat because it's members-"
+#~ "only."
+#~ msgstr ""
+#~ "Nem regisztrálhatod magad ebben a konferenciában, mert meghívás alapú."
+
+#~ msgid "%1$s has entered the groupchat"
+#~ msgstr "%1$s belépett a konferenciába"
+
+#~ msgid "%1$s has left the groupchat"
+#~ msgstr "%1$s elhagyta a konferenciát"
+
+#~ msgid "%1$s is now a moderator"
+#~ msgstr "%1$s most már moderátor"
+
+#~ msgid "%1$s is no longer a moderator"
+#~ msgstr "%1$s többé már nem moderátor"
+
+#~ msgid "%1$s has been given a voice"
+#~ msgstr "%1$s hangot kapott"
+
+#~ msgid "%1$s has been muted"
+#~ msgstr "%1$s el lett némítva"
+
+#~ msgid "%1$s and %2$s"
+#~ msgstr "%1$s és %2$s"
+
+#~ msgid "%1$s are typing"
+#~ msgstr "%1$s gépel"
+
+#~ msgid "%1$s have stopped typing"
+#~ msgstr "%1$s abbahagyta a gépelést"
+
+#~ msgid "%1$s have gone away"
+#~ msgstr "%1$s távol van"
+
+#~ msgid "%1$s have entered the groupchat"
+#~ msgstr "%1$s belépett a konferenciába"
+
+#~ msgid "%1$s have left the groupchat"
+#~ msgstr "%1$s elhagyta a konferenciát"
+
+#~ msgid "%1$s are now moderators"
+#~ msgstr "%1$s most már moderátor"
+
+#~ msgid "%1$s are no longer moderators"
+#~ msgstr "%1$s többé már nem moderátor"
+
+#~ msgid "%1$s have been given voices"
+#~ msgstr "%1$s újra hangot kapott"
+
+#~ msgid "%1$s have been muted"
+#~ msgstr "%1$s el lett némítva"
+
+#~ msgid ""
+#~ "You have an unsent message which will be lost if you continue. Are you "
+#~ "sure?"
+#~ msgstr ""
+#~ "Van egy el nem küldött üzenete, amely elvész ha folytatja. Biztos benne?"
+
+#~ msgid "A timeout occurred while trying to retract the message"
+#~ msgstr "Időtúllépés történt az üzenet visszavonásakor"
+
+#~ msgid "Sorry, you're not allowed to retract this message."
+#~ msgstr "Nem vonhatja vissza ezt az üzenetet."
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to retract this message"
+#~ msgstr "Nem vonhatja vissza ezt az üzenetet."
+
+#~ msgid "Show more"
+#~ msgstr "Több megjelenítése"
+
+#~ msgid "Show less"
+#~ msgstr "Kevesebb megjelenítése"
+
+#~ msgid "Search results"
+#~ msgstr "Keresés eredménye"
+
+#~ msgid "Search"
+#~ msgstr "Keresés"
+
+#~ msgid "Insert emojis"
+#~ msgstr "Emodzsik beszúrása"
+
+#~ msgid "Start a call"
+#~ msgstr "Hívás indítása"
+
+#~ msgid "Click to write as a normal (non-spoiler) message"
+#~ msgstr "Kattintson normál (nem spoiler) üzenet írásához"
+
+#~ msgid "Click to write your message as a spoiler"
+#~ msgstr "Kattintson spoiler üzenet írásához"
+
+#~ msgid "Are you sure you want to clear the messages from this conversation?"
+#~ msgstr ""
+#~ "Valóban törölni szeretné az ebből a beszélgetésből származó üzeneteket?"
+
+#, fuzzy
+#~ msgid "Connection URL"
+#~ msgstr "Kapcsolódás"
+
+#~ msgid "Create an account"
+#~ msgstr "Fiók létrehozása"
+
+#~ msgid "Don't have a chat account?"
+#~ msgstr "Nincs csevegőfiókja?"
+
+#~ msgid "Log in"
+#~ msgstr "Bejelentkezés"
+
+#~ msgid "Username"
+#~ msgstr "Felhasználónév"
+
+#~ msgid "user@domain"
+#~ msgstr "felhasználó@tartomány"
+
+#, fuzzy
+#~ msgid "Click to load missing messages"
+#~ msgstr "Kattintson a kiszolgálóüzenet megnyitásához"
+
+#~ msgid "Change affiliation"
+#~ msgstr "Szint módosítása"
+
+#~ msgid "New affiliation"
+#~ msgstr "Új szint"
+
+#~ msgid "No users with that affiliation found."
+#~ msgstr "Nem található szint nélküli felhasználó."
+
+#~ msgid "No users with that role found."
+#~ msgstr "Nincs felhasználó azzal a szerepkörrel."
+
+#~ msgid "Type here to filter the search results"
+#~ msgstr "Gépeljen ide a találatok szűréséhez"
+
+#~ msgid "Show users"
+#~ msgstr "Felhasználók megjelenítése"
+
+#~ msgid ""
+#~ "Roles are assigned to users to grant or deny them certain abilities in a "
+#~ "multi-user chat. They're assigned either explicitly or implicitly as part "
+#~ "of an affiliation. A role that's not due to an affiliation, is only valid "
+#~ "for the duration of the user's session."
+#~ msgstr ""
+#~ "A szerepkörök a felhasználókhoz rendeltek, és különböző lehetőségeket "
+#~ "engedélyeznek vagy tiltanak le a többfelhasználós csevegésekben. "
+#~ "Kiosztásuk explicit, vagy szint alapján implicit. Azok a szerepkörök, "
+#~ "melyek nem a szintből fakadnak, csak a felhasználó munkamenetének idejére "
+#~ "érvényesek."
+
+#~ msgid ""
+#~ "An affiliation is a long-lived entitlement which typically implies a "
+#~ "certain role and which grants privileges and responsibilities. For "
+#~ "example admins and owners automatically have the moderator role."
+#~ msgstr ""
+#~ "A szint egy hosszú életű jogosultság, amely általában bizonyos szerepkört "
+#~ "takar, amely kiváltságokat és felelősségeket ad. Például az adminok és "
+#~ "tulajdonosok automatikusan rendelkeznek a moderátor szerepkörrel."
+
+#~ msgid "You're not allowed to send messages in this room"
+#~ msgstr "Nem küldhet üzeneteket ebben a szobában"
+
+#~ msgid "This groupchat no longer exists"
+#~ msgstr "Ez a konferencia már nem létezik"
+
+#, fuzzy
+#~ msgid "The following reason was given: \"%1$s\""
+#~ msgstr "Ennek ez az oka: \"%1$s\"."
+
+#~ msgid "Groupchat info for %1$s"
+#~ msgstr "Konferencia infó számára: %1$s"
+
+#, fuzzy
+#~ msgid "XMPP address"
+#~ msgstr "XMPP-cím"
+
+#~ msgid "Message archiving"
+#~ msgstr "Üzenetarchiválás"
+
+#~ msgid "Messages are archived on the server"
+#~ msgstr "Üzenetek archiválva vannak a kiszolgálón"
+
+#~ msgid "Description"
+#~ msgstr "Leírás"
+
+#~ msgid "Features"
+#~ msgstr "Jellemzők"
+
+#~ msgid "This groupchat is not publicly searchable"
+#~ msgstr "Ez a konferencia nyilvánosan nem kereshető"
+
+#~ msgid "This groupchat is restricted to members only"
+#~ msgstr "Ez a konferencia kizárólag tagoknak szól"
+
+#~ msgid "Members only"
+#~ msgstr "Csak tagoknak"
+
+#~ msgid ""
+#~ "Participants entering this groupchat need to request permission to write"
+#~ msgstr "A belépő résztvevőknek engedélyt kell kérni, hogy írhassanak"
+
+#~ msgid "Name"
+#~ msgstr "Név"
+
+#~ msgid "This groupchat does not require a password upon entry"
+#~ msgstr "Ez a konferencia nem igényel jelszót belépéskor"
+
+#~ msgid "No password required"
+#~ msgstr "Nem szükséges jelszó"
+
+#~ msgid "Not anonymous"
+#~ msgstr "Nem névtelen"
+
+#~ msgid "All other groupchat participants can see your XMPP address"
+#~ msgstr "Minden konferencia-résztvevő láthatja az XMPP felhasználónevét"
+
+#~ msgid "Not moderated"
+#~ msgstr "Moderálatlan"
+
+#~ msgid "Participants entering this groupchat can write right away"
+#~ msgstr "A belépő résztvevők egyből írhatnak is ide"
+
+#~ msgid "Online users"
+#~ msgstr "Jelenlevők"
+
+#~ msgid "Anyone can join this groupchat"
+#~ msgstr "Bárki csatlakozhat a konferenciához"
+
+#~ msgid "This groupchat requires a password before entry"
+#~ msgstr "A konferenciába belépéshez jelszó szükséges"
+
+#~ msgid "Password protected"
+#~ msgstr "Jelszóval védve"
+
+#~ msgid "Persistent"
+#~ msgstr "Állandó"
+
+#~ msgid "This groupchat persists even if it's unoccupied"
+#~ msgstr "Ez a konferencia akkor is fennmarad, ha üres"
+
+#~ msgid "Only moderators can see your XMPP address"
+#~ msgstr "Csak a moderátorok láthatják az Ön XMPP felhasználónevét"
+
+#~ msgid "This groupchat will disappear once the last person leaves"
+#~ msgstr "Ez a konferencia eltűnik, amint az utolsó ember elhagyja"
+
+#~ msgid "This groupchat is publicly searchable"
+#~ msgstr "Ez a konferencia nyilvánosan kereshető"
+
+#~ msgid "has gone offline"
+#~ msgstr "nem elérhetővé vált"
+
+#~ msgid "has gone away"
+#~ msgstr "távol van"
+
+#~ msgid "is busy"
+#~ msgstr "elfoglalt"
+
+#~ msgid "has come online"
+#~ msgstr "elérhető lett"
+
+#~ msgid "Notification from %1$s"
+#~ msgstr "Értesítő üzenet innen: %1$s"
+
+#~ msgid "%1$s says"
+#~ msgstr "%1$s mondja"
+
+#~ msgid "Checkbox for selecting the following fingerprint"
+#~ msgstr "Jelölőnégyzet az alábbi ujjlenyomat kiválasztására"
+
+#~ msgid "Device without a fingerprint"
+#~ msgstr "Eszköz ujjlenyomat nélkül"
+
+#~ msgid "Checkbox for selecting the following device"
+#~ msgstr "Jelölőnégyzet a következő eszköz kiválasztására"
+
+#~ msgid "Other OMEMO-enabled devices"
+#~ msgstr "Más OMEMO-engedélyezett eszközök"
+
+#~ msgid "Checkbox to select fingerprints of all other OMEMO devices"
+#~ msgstr ""
+#~ "Jelölőnégyzet az összes egyéb OMEMO eszköz ujjlenyomatának kijelöléséhez"
+
+#~ msgid "Remove checked devices and close"
+#~ msgstr "Ellenőrzött eszközök eltávolítása és bezárás"
+
+#~ msgid "Select all"
+#~ msgstr "Mindent kijelöl"
+
+#~ msgid "This device's OMEMO fingerprint"
+#~ msgstr "Készülékének OMEMO ujjlenyomata"
+
+#~ msgid "Generate new keys and fingerprint"
+#~ msgstr "Új kulcsok és ujjlenyomat létrehozása"
+
+#~ msgid "Settings"
+#~ msgstr "Beállítások"
+
+#~ msgid ""
+#~ "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
+#~ msgstr ""
+#~ "%1$s nyílt forráskódú %2$s XMPP csevegőkliens az %3$s Opkode %2$s "
+#~ "jóvoltából"
+
+#~ msgid "Tip: A list of public XMPP providers is available"
+#~ msgstr "Tipp: A nyílvános XMPP szolgáltatókról egy lista elérhető"
+
+#~ msgid "here"
+#~ msgstr "itt"
+
+#~ msgid "Create your account"
+#~ msgstr "Hozza létre fiókját"
+
+#~ msgid "Please enter the XMPP provider to register with:"
+#~ msgstr "A regisztrációhoz adja meg az XMPP szolgáltatót:"
+
+#~ msgid "Join"
+#~ msgstr "Csatlakozás"
+
+#~ msgid "Enter a new Groupchat"
+#~ msgstr "Adjon meg új Konferenciát"
+
+#~ msgid "Show more information on this groupchat"
+#~ msgstr "További információk a konferenciáról"
+
+#~ msgid "Query for Groupchats"
+#~ msgstr "Konferenciák lekérdezése"
+
+#~ msgid "Open Groupchats"
+#~ msgstr "Használatban"
 
 #~ msgid "The explanation given is: \"%1$s\"."
 #~ msgstr "A kapott magyarázat: \"%1$s\"."

@@ -1,6 +1,6 @@
 # Changelog
 
-## 9.1.1 (Unreleased)
+## 9.1.1 (2022-05-05)
 
 - GIFs don't render inside unfurls and cause a TypeError
 - Improve how the `muc_domain` setting is populated via service discovery

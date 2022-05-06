@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-05 21:00+0200\n"
-"PO-Revision-Date: 2022-05-06 13:09+0200\n"
+"PO-Revision-Date: 2022-05-07 12:11+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -1107,9 +1107,8 @@ msgid "This is a trusted device"
 msgstr "Ceci est un appareil de confiance"
 
 #: dist/converse-no-dependencies.js:81979
-#, fuzzy
 msgid "Connection URL"
-msgstr "Connexion"
+msgstr "URL de connexion"
 
 #: dist/converse-no-dependencies.js:81981
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
@@ -1117,7 +1116,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:81983
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "par ex. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:81991
 msgid "Password"
@@ -1647,7 +1646,6 @@ msgid "Groupchat info for %1$s"
 msgstr "Informations sur le salon %1$s"
 
 #: dist/converse-no-dependencies.js:92610
-#, fuzzy
 msgid "XMPP address"
 msgstr "Adresse XMPP"
 

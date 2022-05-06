@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2022-01-21 18:56+0000\n"
-"Last-Translator: translator <kvb@tuta.io>\n"
+"POT-Creation-Date: 2022-05-05 21:00+0200\n"
+"PO-Revision-Date: 2022-05-06 13:09+0200\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12.1\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -487,16 +487,13 @@ msgstr "Ce salon a atteint sa limite maximale d’occupants."
 msgid "Remote server not found"
 msgstr "Serveur distant introuvable"
 
-#: dist/converse-no-dependencies.js:53778
-#, fuzzy
+#: dist/converse-no-dependencies.js:40402
 msgid "You're not allowed to enter this groupchat"
-msgstr "Vous n’êtes pas autorisé à vous enregistrer vous-mêmes dans ce salon."
+msgstr "Vous n’êtes pas autorisé(e) à entrer dans ce salon"
 
-#: dist/converse-no-dependencies.js:53782
-#, fuzzy
+#: dist/converse-no-dependencies.js:40406
 msgid "An error happened while trying to enter this groupchat"
-msgstr ""
-"Désolé, quelque chose s’est mal passé pendant la sauvegarde de votre profil."
+msgstr "Une erreur s’est produite en entrant dans ce salon"
 
 #: dist/converse-no-dependencies.js:54944
 #, javascript-format
@@ -671,10 +668,10 @@ msgstr "Sans groupe"
 msgid "New messages"
 msgstr "Nouveaux messages"
 
-#: dist/converse-no-dependencies.js:62978
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:46488
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Marques-page"
+msgstr "Marque-page pour « %1$s »"
 
 #: dist/converse-no-dependencies.js:62980
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -682,7 +679,7 @@ msgstr "Voulez-vous que ce salon soit automatiquement rejoint au démarrage ?"
 
 #: dist/converse-no-dependencies.js:62982
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: dist/converse-no-dependencies.js:62984
 msgid "The name for this bookmark:"
@@ -694,7 +691,7 @@ msgstr "Que devrait être votre pseudo sur ce salon ?"
 
 #: dist/converse-no-dependencies.js:62988
 msgid "Update"
-msgstr ""
+msgstr "Mettre à jour"
 
 #: dist/converse-no-dependencies.js:62988
 #: dist/converse-no-dependencies.js:91564
@@ -1438,8 +1435,7 @@ msgstr ""
 "Désolé, une erreur s’est produite lors de l’exécution de la commande. "
 "Vérifiez la console de développement de votre navigateur pour plus de détails"
 
-#: dist/converse-no-dependencies.js:90006
-#, fuzzy
+#: dist/converse-no-dependencies.js:60834
 msgid "Change nickname"
 msgstr "Changer votre pseudo"
 
@@ -1497,7 +1493,11 @@ msgid "Visitor"
 msgstr "Visiteur"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:90775
+#: dist/converse-no-dependencies.js:61195
+msgid "Participant"
+msgstr "Participant"
+
+#: dist/converse-no-dependencies.js:61195
 msgid "Participants"
 msgstr "Participants"
 
@@ -1801,10 +1801,9 @@ msgstr "Configurer"
 msgid "Configure this groupchat"
 msgstr "Configurer ce salon"
 
-#: dist/converse-no-dependencies.js:93443
-#, fuzzy
+#: dist/converse-no-dependencies.js:62412
 msgid "Change the nickname you're using in this groupchat"
-msgstr "Enregistrer un pseudo pour ce salon"
+msgstr "Changer le pseudo que vous utilisez dans ce salon"
 
 #: dist/converse-no-dependencies.js:93457
 msgid "Invite someone to join this groupchat"

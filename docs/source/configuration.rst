@@ -760,6 +760,8 @@ loglevel
 
 You can also set this value by changing a URL fragment `#converse?loglevel=debug`
 
+.. _`dark_theme`:
+
 dark_theme
 ----------
 
@@ -2162,6 +2164,8 @@ If set to ``true``, Converse will synchronize with all other clients you are log
 If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, Converse will synchronize only with a client that has that particular resource assigned to it.
+
+.. _`theme`:
 
 theme
 -----

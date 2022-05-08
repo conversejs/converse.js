@@ -131,8 +131,11 @@
     --muc-toolbar-btn-color: var(--redder-orange);
     --muc-toolbar-btn-disabled-color: gray;
 
-    --headline-head-color: var(--orange);
+    --headlines-color: var(--orange);
+    --headline-head-text-color: var(--white);
+    --headline-head-bg-color: var(--headlines-color);
     --headline-message-color: #D2842B;
+    --headline-separator-border-bottom: 2px solid var(--headlines-color);
 
     --chatbox-button-size: 14px;
     --fullpage-chatbox-button-size: 16px;

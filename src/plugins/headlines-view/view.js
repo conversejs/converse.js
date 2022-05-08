@@ -3,7 +3,7 @@ import tpl_headlines from './templates/headlines.js';
 import { _converse, api } from '@converse/headless/core';
 
 
-class HeadlinesView extends BaseChatView {
+class HeadlinesFeedView extends BaseChatView {
 
     async initialize() {
         _converse.chatboxviews.add(this.jid, this);
@@ -20,9 +20,9 @@ class HeadlinesView extends BaseChatView {
         await this.model.messages.fetched;
         this.model.maybeShow();
         /**
-         * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
+         * Triggered once the { @link _converse.HeadlinesFeedView } has been initialized
          * @event _converse#headlinesBoxViewInitialized
-         * @type { _converse.HeadlinesBoxView }
+         * @type { _converse.HeadlinesFeedView }
          * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
          */
         api.trigger('headlinesBoxViewInitialized', this);
@@ -52,4 +52,4 @@ class HeadlinesView extends BaseChatView {
     }
 }
 
-api.elements.define('converse-headlines', HeadlinesView);
+api.elements.define('converse-headlines', HeadlinesFeedView);

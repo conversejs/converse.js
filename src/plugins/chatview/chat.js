@@ -26,7 +26,7 @@ export default class ChatView extends BaseChatView {
         /**
          * Triggered once the {@link _converse.ChatBoxView} has been initialized
          * @event _converse#chatBoxViewInitialized
-         * @type { _converse.HeadlinesBoxView }
+         * @type { _converse.ChatBoxView }
          * @example _converse.api.listen.on('chatBoxViewInitialized', view => { ... });
          */
         api.trigger('chatBoxViewInitialized', this);

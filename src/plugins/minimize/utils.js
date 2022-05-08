@@ -58,7 +58,7 @@ function getBoxesWidth (newchat) {
  * to create space.
  * @private
  * @method _converse.ChatBoxViews#trimChats
- * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
+ * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesFeedView } [newchat]
  */
 export function trimChats (newchat) {
     if (_converse.isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {

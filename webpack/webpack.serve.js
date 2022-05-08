@@ -6,6 +6,9 @@ const path = require("path");
 
 module.exports = merge(common, {
     mode: "development",
+    entry: {
+        "converse": path.resolve(__dirname, "../src/entry.js"),
+    },
     devtool: "inline-source-map",
     devServer: {
         static: [ path.resolve(__dirname, '../') ],

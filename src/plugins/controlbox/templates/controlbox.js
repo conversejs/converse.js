@@ -15,7 +15,7 @@ function whenNotConnected (o) {
     if (o['active-form'] === 'register') {
         return html`<converse-register-panel></converse-register-panel>`;
     }
-    return html`<converse-login-form id="converse-login-panel" class="controlbox-pane fade-in row no-gutters"></converse-login-form>}`;
+    return html`<converse-login-form id="converse-login-panel" class="controlbox-pane fade-in row no-gutters"></converse-login-form>`;
 }
 
 

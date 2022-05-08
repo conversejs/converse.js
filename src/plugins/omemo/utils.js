@@ -1,18 +1,18 @@
 /* global libsignal */
+import concat from 'lodash-es/concat';
 import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
 import tpl_audio from 'templates/audio.js';
 import tpl_file from 'templates/file.js';
 import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
-import { MIMETYPES_MAP } from 'utils/file.js';
 import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
+import { MIMETYPES_MAP } from 'utils/file.js';
 import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
-import concat from 'lodash-es/concat';
 import { until } from 'lit/directives/until.js';
 import {
     appendArrayBuffer,

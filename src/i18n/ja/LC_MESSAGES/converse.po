@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2022-05-09 12:23+0000\n"
+"PO-Revision-Date: 2022-05-09 15:06+0000\n"
 "Last-Translator: HAMANO Tsukasa <code@cuspy.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -265,12 +265,12 @@ msgstr "データの形が正しくないため、このグループチャット
 #: dist/converse-no-dependencies.js:52634
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr "%1$s が題を設定しました"
+msgstr "%1$s がトピックを設定しました"
 
 #: dist/converse-no-dependencies.js:52634
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "%1$s が題を消去しました"
+msgstr "%1$s がトピックを消しました"
 
 #: dist/converse-no-dependencies.js:53092
 #, javascript-format
@@ -596,7 +596,7 @@ msgstr "アーカイブメッセージの取得中にエラーが発生しまし
 #: dist/converse-no-dependencies.js:60504
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "%1$s を相手先として追加しようとする際にエラーが起こりました。"
+msgstr "%1$s を連絡先として追加しようとする際にエラーが起こりました。"
 
 #: dist/converse-no-dependencies.js:60798
 msgid "This client does not allow presence subscriptions"
@@ -604,11 +604,11 @@ msgstr "このクライアントは在席ステータスの通知を許可して
 
 #: dist/converse-no-dependencies.js:61195
 msgid "My contacts"
-msgstr "相手先一覧"
+msgstr "連絡先一覧"
 
 #: dist/converse-no-dependencies.js:61196
 msgid "Pending contacts"
-msgstr "保留中の相手先"
+msgstr "保留中の連絡先"
 
 #: dist/converse-no-dependencies.js:61197
 msgid "Contact requests"
@@ -888,7 +888,7 @@ msgstr "URL"
 #: dist/converse-no-dependencies.js:104381
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "%1$s を相手先から削除しようとする際にエラーが起こりました。"
+msgstr "%1$s を連絡先から削除しようとする際にエラーが起こりました。"
 
 #: dist/converse-no-dependencies.js:74486
 msgid "Sorry, something went wrong while trying to refresh"
@@ -897,7 +897,7 @@ msgstr "復元に失敗したようです"
 #: dist/converse-no-dependencies.js:74509
 #: dist/converse-no-dependencies.js:104367
 msgid "Are you sure you want to remove this contact?"
-msgstr "ほんとうにこの相手先を削除しますか ?"
+msgstr "本当にこの連絡先を削除しますか ?"
 
 #: dist/converse-no-dependencies.js:74546
 msgid "Retry"
@@ -1099,7 +1099,7 @@ msgstr "正しい XMPP アドレスを入力してください"
 #. harmony default export
 #: dist/converse-no-dependencies.js:82806
 msgid "Chat Contacts"
-msgstr "相手先"
+msgstr "連絡先"
 
 #: dist/converse-no-dependencies.js:82806
 msgid "Toggle chat"
@@ -1557,11 +1557,11 @@ msgstr "招待の理由(任意)"
 
 #: dist/converse-no-dependencies.js:92592
 msgid "Topic"
-msgstr "題"
+msgstr "トピック"
 
 #: dist/converse-no-dependencies.js:92594
 msgid "Topic author"
-msgstr "題の設定者"
+msgstr "トピックの設定者"
 
 #: dist/converse-no-dependencies.js:92603
 #, javascript-format
@@ -1702,7 +1702,7 @@ msgstr "このグループチャットは公に検索されます"
 #. harmony default export
 #: dist/converse-no-dependencies.js:93021
 msgid "Hide the groupchat topic"
-msgstr "グループチャットの題を非表示"
+msgstr "グループチャットのトピックを非表示"
 
 #: dist/converse-no-dependencies.js:93023
 msgid "This groupchat is bookmarked"
@@ -1730,19 +1730,19 @@ msgstr "誰かをこのグループチャットに招待します"
 
 #: dist/converse-no-dependencies.js:93471
 msgid "Show topic"
-msgstr "題を表示"
+msgstr "トピックを表示"
 
 #: dist/converse-no-dependencies.js:93471
 msgid "Hide topic"
-msgstr "題を非表示"
+msgstr "トピックを隠す"
 
 #: dist/converse-no-dependencies.js:93472
 msgid "Show the topic message in the heading"
-msgstr "題をヘッダーに表示します"
+msgstr "トピックをヘッダーに表示"
 
 #: dist/converse-no-dependencies.js:93472
 msgid "Hide the topic in the heading"
-msgstr "題をヘッダーに表示しません"
+msgstr "トピックをヘッダーに表示しない"
 
 #: dist/converse-no-dependencies.js:93489
 msgid "Moderate"
@@ -1813,7 +1813,7 @@ msgstr "%1$s 曰く"
 
 #: dist/converse-no-dependencies.js:94741
 msgid "wants to be your contact"
-msgstr "はあなたの相手先になりたがっています"
+msgstr "は連絡先登録を要求しています"
 
 #: dist/converse-no-dependencies.js:95158
 #, javascript-format
@@ -2326,7 +2326,7 @@ msgstr "追加"
 
 #: dist/converse-no-dependencies.js:103088
 msgid "Add a Contact"
-msgstr "相手先を追加"
+msgstr "連絡先を追加"
 
 #: dist/converse-no-dependencies.js:103151
 msgid "Contact name"
@@ -2338,60 +2338,60 @@ msgstr "ニックネーム(任意)"
 
 #: dist/converse-no-dependencies.js:103243
 msgid "Sorry, could not find a contact with that name"
-msgstr "その名前の相手先は見つかりませんでした"
+msgstr "その名前の連絡先は見つかりませんでした"
 
 #: dist/converse-no-dependencies.js:103268
 msgid "This contact has already been added"
-msgstr "この相手先は既に追加済みです"
+msgstr "この連絡先は既に追加済みです"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:103483
 msgid "Click to hide these contacts"
-msgstr "クリックしてこれらの相手先を隠す"
+msgstr "クリックしてこれらの連絡先を隠す"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:103631
 msgid "Contacts"
-msgstr "相手先"
+msgstr "連絡先"
 
 #: dist/converse-no-dependencies.js:103633
 msgid "Add a contact"
-msgstr "相手先を追加"
+msgstr "連絡先を追加"
 
 #: dist/converse-no-dependencies.js:103635
 msgid "Re-sync your contacts"
-msgstr "相手先を再同期"
+msgstr "連絡先を再同期"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:103979
 #: dist/converse-no-dependencies.js:104041
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "クリックして %1$s を相手先から削除"
+msgstr "クリックして %1$s を連絡先から削除"
 
 #: dist/converse-no-dependencies.js:104011
 msgid "This contact is busy"
-msgstr "この相手先は取り込み中です"
+msgstr "この連絡先は取り込み中です"
 
 #: dist/converse-no-dependencies.js:104012
 msgid "This contact is online"
-msgstr "この相手先は在席しています"
+msgstr "この連絡先は在席しています"
 
 #: dist/converse-no-dependencies.js:104013
 msgid "This contact is offline"
-msgstr "この相手先はオフラインです"
+msgstr "この連絡先はオフラインです"
 
 #: dist/converse-no-dependencies.js:104014
 msgid "This contact is unavailable"
-msgstr "この相手先は不通です"
+msgstr "この連絡先は不通です"
 
 #: dist/converse-no-dependencies.js:104015
 msgid "This contact is away for an extended period"
-msgstr "この相手先は不在です"
+msgstr "この連絡先は不在です"
 
 #: dist/converse-no-dependencies.js:104016
 msgid "This contact is away"
-msgstr "この相手先は離席中です"
+msgstr "この連絡先は離席中です"
 
 #: dist/converse-no-dependencies.js:104070
 #, javascript-format
@@ -2419,7 +2419,7 @@ msgstr "絞り込み"
 
 #: dist/converse-no-dependencies.js:104466
 msgid "Filter by contact name"
-msgstr "相手先名で絞り込み"
+msgstr "連絡先名で絞り込み"
 
 #: dist/converse-no-dependencies.js:104468
 msgid "Filter by group name"

@@ -39,7 +39,7 @@ module.exports = {
             {
                 loader: 'po-loader',
                 options: {
-                    'format': 'jed',
+                    'format': 'jed1.x',
                     'domain': 'converse'
                 }
             }

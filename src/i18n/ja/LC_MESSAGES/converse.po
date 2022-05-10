@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2022-05-09 15:06+0000\n"
+"PO-Revision-Date: 2022-05-10 02:29+0000\n"
 "Last-Translator: HAMANO Tsukasa <code@cuspy.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -165,7 +165,7 @@ msgstr "シンボル"
 
 #: dist/converse-no-dependencies.js:48252
 msgid "Flags"
-msgstr "旗"
+msgstr "フラグ"
 
 #: dist/converse-no-dependencies.js:48253
 msgid "Stickers"
@@ -686,7 +686,7 @@ msgstr "ブックマーク解除"
 #: dist/converse-no-dependencies.js:63825
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "ほんとうにこのブックマーク \"%1$s\" を削除してもいいですか ?"
+msgstr "本当にこのブックマーク \"%1$s\" を削除してもいいですか ?"
 
 #: dist/converse-no-dependencies.js:63873
 #: dist/converse-no-dependencies.js:101817
@@ -731,7 +731,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:67619
 #: dist/converse-no-dependencies.js:67656
 msgid "Are you sure you want to retract this message?"
-msgstr "ほんとうにこのメッセージを撤回しますか ?"
+msgstr "本当にこのメッセージを撤回しますか ?"
 
 #: dist/converse-no-dependencies.js:67529
 #: dist/converse-no-dependencies.js:67626
@@ -969,7 +969,7 @@ msgstr "クリックして、ネタバレとしてメッセージを書き込む
 
 #: dist/converse-no-dependencies.js:79076
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "ほんとうにこのチャット欄のメッセージを消去しますか ?"
+msgstr "本当にこの会話からメッセージを消去しますか ?"
 
 #: dist/converse-no-dependencies.js:79586
 #: dist/converse-no-dependencies.js:93418
@@ -1283,7 +1283,7 @@ msgstr "司会者ツール"
 
 #: dist/converse-no-dependencies.js:88666
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "ほんとうにこのグループチャットを閉鎖しますか ?"
+msgstr "本当にこのグループチャットを閉鎖しますか ?"
 
 #: dist/converse-no-dependencies.js:88669
 msgid "Please enter the XMPP address of this groupchat to confirm"
@@ -1746,11 +1746,11 @@ msgstr "トピックをヘッダーに表示しない"
 
 #: dist/converse-no-dependencies.js:93489
 msgid "Moderate"
-msgstr "調節"
+msgstr "管理"
 
 #: dist/converse-no-dependencies.js:93490
 msgid "Moderate this groupchat"
-msgstr "このグループチャットを調節します"
+msgstr "このグループチャットを管理します"
 
 #: dist/converse-no-dependencies.js:93502
 msgid "Destroy"
@@ -1766,7 +1766,7 @@ msgstr "グループチャットから退出して閉じる"
 
 #: dist/converse-no-dependencies.js:93526
 msgid "Are you sure you want to leave this groupchat?"
-msgstr "ほんとうにこのグループチャットから退出しますか ?"
+msgstr "本当にこのグループチャットから退出しますか ?"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:93643
@@ -2034,7 +2034,7 @@ msgstr "クリックしてステータスを変更"
 
 #: dist/converse-no-dependencies.js:97934
 msgid "Are you sure you want to log out?"
-msgstr "ほんとうにログアウトしますか ?"
+msgstr "本当にログアウトしますか ?"
 
 #: dist/converse-no-dependencies.js:97980
 #: dist/converse-no-dependencies.js:104482
@@ -2172,9 +2172,8 @@ msgstr ""
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
-msgstr ""
-"\"%1$s\" との接続確立の際にエラーが起こりました。ほんとうにそれは存在していま"
-"すか ?"
+msgstr "\"%1$s\" との接続確立の際にエラーが起こりました。"
+"本当にそれは存在していますか ?"
 
 #: dist/converse-no-dependencies.js:101159
 msgid "Now logging you in"
@@ -2318,7 +2317,7 @@ msgstr "グループチャットを開く"
 #: dist/converse-no-dependencies.js:102454
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr "ほんとうにこのグループチャット \"%1$s\" から退出しますか ?"
+msgstr "本当にこのグループチャット \"%1$s\" から退出しますか ?"
 
 #: dist/converse-no-dependencies.js:103084
 msgid "Add"
@@ -2410,7 +2409,7 @@ msgstr "クリックして %1$s からの申込を拒否"
 
 #: dist/converse-no-dependencies.js:104422
 msgid "Are you sure you want to decline this contact request?"
-msgstr "ほんとうにこの申込を拒否しますか ?"
+msgstr "本当にこのリクエストを拒否しますか ?"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104464

@@ -1,13 +1,13 @@
 import 'shared/avatar/avatar.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
-import { getPrettyStatus } from '../utils.js';
+import { getPrettyStatus, logOut } from '../utils.js';
 import { html } from "lit";
 
 
-function tpl_signout (o) {
+function tpl_signout () {
     const i18n_logout = __('Log out');
-    return html`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${o.logout}>
+    return html`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${logOut}>
         <converse-icon class="fa fa-sign-out-alt" size="1em"></converse-icon>
     </a>`
 }
@@ -46,7 +46,7 @@ export default (el) => {
                 </a>
                 <span class="username w-100 align-self-center">${fullname}</span>
                 ${show_settings_button  ? tpl_user_settings_button(el) : ''}
-                ${api.settings.get('allow_logout') ? tpl_signout(el) : ''}
+                ${api.settings.get('allow_logout') ? tpl_signout() : ''}
             </div>
             <div class="d-flex xmpp-status">
                 <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${el.showStatusChangeModal}>

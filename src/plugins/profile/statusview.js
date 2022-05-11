@@ -1,7 +1,6 @@
 import UserSettingsModal from 'modals/user-settings';
 import tpl_profile from './templates/profile.js';
 import { CustomElement } from 'shared/components/element.js';
-import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless/core';
 
 class Profile extends CustomElement {
@@ -30,14 +29,6 @@ class Profile extends CustomElement {
     showUserSettingsModal(ev) {
         ev?.preventDefault();
         api.modal.show(UserSettingsModal, {model: this.model, _converse}, ev);
-    }
-
-    logout (ev) { // eslint-disable-line class-methods-use-this
-        ev?.preventDefault();
-        const result = confirm(__("Are you sure you want to log out?"));
-        if (result === true) {
-            api.user.logout();
-        }
     }
 }
 

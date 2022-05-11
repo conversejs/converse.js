@@ -1,8 +1,6 @@
 /*global mock, converse */
 
-const  $msg = converse.env.$msg;
-const u = converse.env.utils;
-const sizzle = converse.env.sizzle;
+const { $msg, u } = converse.env;
 
 
 describe("A chat message", function () {
@@ -205,24 +203,6 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         const unread_count = minimized_chats.querySelector('#toggle-minimized-chats .unread-message-count');
         expect(u.isVisible(unread_count)).toBeTruthy();
         expect(unread_count.innerHTML.replace(/<!-.*?->/g, '')).toBe('1');
-    }));
-
-    it("will render Openstreetmap-URL from geo-URI",
-            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
-        await mock.waitForRoster(_converse, 'current', 1);
-        const message = "geo:37.786971,-122.399677";
-        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await mock.openChatBoxFor(_converse, contact_jid);
-        const view = _converse.chatboxviews.get(contact_jid);
-        spyOn(view.model, 'sendMessage').and.callThrough();
-        await mock.sendMessage(view, message);
-        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
-        expect(view.model.sendMessage).toHaveBeenCalled();
-        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
-        await u.waitUntil(() => msg.innerHTML.replace(/\<!-.*?-\>/g, '') ===
-            '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
-            'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
     }));
 });
 

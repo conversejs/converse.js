@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.0 (Unreleased)
+
+- Don't automatically convert OpenStreetMap URLs into `geo:` URIs in sent messages
+
 ## 9.1.1 (2022-05-05)
 
 - GIFs don't render inside unfurls and cause a TypeError

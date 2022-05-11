@@ -459,11 +459,6 @@ export function getUniqueId (suffix) {
     }
 }
 
-u.httpToGeoUri = function(text) {
-    const replacement = 'geo:$1,$2';
-    return text.replace(settings_api.get("geouri_regex"), replacement);
-};
-
 
 /**
  * Clears the specified timeout and interval.

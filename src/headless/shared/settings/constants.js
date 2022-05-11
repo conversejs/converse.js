@@ -13,7 +13,7 @@
  * @property { String } [credentials_url] - URL from where login credentials can be fetched
  * @property { Boolean } [discover_connection_methods=true]
  * @property { RegExp } [geouri_regex]
- * @property { RegExp } [geouri_replacement='https - //www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2']
+ * @property { RegExp } [geouri_replacement='https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2']
  * @property { String } [i18n]
  * @property { String } [jid]
  * @property { Boolean } [keepalive=true]

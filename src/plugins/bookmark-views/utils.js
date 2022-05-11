@@ -25,11 +25,12 @@ export function getHeadingButtons (view, buttons) {
     return buttons;
 }
 
-export function removeBookmarkViaEvent (ev) {
+export async function removeBookmarkViaEvent (ev) {
     ev.preventDefault();
     const name = ev.target.getAttribute('data-bookmark-name');
     const jid = ev.target.getAttribute('data-room-jid');
-    if (confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name))) {
+    const result = await api.confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name));
+    if (result) {
         invokeMap(_converse.bookmarks.where({ jid }), Model.prototype.destroy);
     }
 }

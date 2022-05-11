@@ -1385,7 +1385,7 @@ describe("Groupchats", function () {
             const from_jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => _converse.roster.get(from_jid).vcard.get('fullname'));
 
-            spyOn(window, 'confirm').and.callFake(() => true);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             await view.close(); // Hack, otherwise we have to mock stanzas.
@@ -1402,7 +1402,7 @@ describe("Groupchats", function () {
                 </message>`);
             await _converse.onDirectMUCInvitation(stanza);
 
-            expect(window.confirm).toHaveBeenCalledWith(
+            expect(_converse.api.confirm).toHaveBeenCalledWith(
                 name + ' has invited you to join a groupchat: '+ muc_jid +
                 ', and left the following reason: "'+reason+'"');
             expect(_converse.chatboxes.models.length).toBe(2);
@@ -2461,15 +2461,15 @@ describe("Groupchats", function () {
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/clear';
-            spyOn(window, 'confirm').and.callFake(() => false);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(false));
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await u.waitUntil(() => window.confirm.calls.count() === 1);
-            expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
+            await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
+            expect(_converse.api.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
         }));
 
         it("takes /owner to make a user an owner", mock.initConverse([], {}, async function (_converse) {

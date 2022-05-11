@@ -83,11 +83,11 @@ const UserDetailsModal = BootstrapModal.extend({
         u.removeClass('fa-spin', refresh_icon);
     },
 
-    removeContact (ev) {
+    async removeContact (ev) {
         ev?.preventDefault?.();
         if (!api.settings.get('allow_contact_removal')) { return; }
-        const result = confirm(__("Are you sure you want to remove this contact?"));
-        if (result === true) {
+        const result = await api.confirm(__("Are you sure you want to remove this contact?"));
+        if (result) {
             // XXX: The `dismissHandler` in bootstrap.native tries to
             // reference the remove button after it's been cleared from
             // the DOM, so we delay removing the contact to give it time.

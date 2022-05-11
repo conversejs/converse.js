@@ -77,10 +77,12 @@ export default class RosterContact extends CustomElement {
         this.model.openChat();
     }
 
-    removeContact (ev) {
+    async removeContact (ev) {
         ev?.preventDefault?.();
         if (!api.settings.get('allow_contact_removal')) { return; }
-        if (!confirm(__("Are you sure you want to remove this contact?"))) { return; }
+
+        const result = await api.confirm(__("Are you sure you want to remove this contact?"));
+        if (!result)  return;
 
         try {
             this.model.removeFromRoster();
@@ -108,10 +110,10 @@ export default class RosterContact extends CustomElement {
         this.model.authorize().subscribe();
     }
 
-    declineRequest (ev) {
+    async declineRequest (ev) {
         if (ev && ev.preventDefault) { ev.preventDefault(); }
-        const result = confirm(__("Are you sure you want to decline this contact request?"));
-        if (result === true) {
+        const result = await api.confirm(__("Are you sure you want to decline this contact request?"));
+        if (result) {
             this.model.unauthorize().destroy();
         }
         return this;

@@ -642,7 +642,7 @@ describe("The Contacts Roster", function () {
             const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
             var sent_IQ;
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
             spyOn(contact, 'removeFromRoster').and.callThrough();
             const rosterview = document.querySelector('converse-roster');
@@ -653,7 +653,7 @@ describe("The Contacts Roster", function () {
             });
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
             await u.waitUntil(() => (sizzle(".pending-contact-name:contains('"+name+"')", rosterview).length === 0), 1000);
-            expect(window.confirm).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
             expect(contact.removeFromRoster).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq type="set" xmlns="jabber:client">`+
@@ -684,18 +684,19 @@ describe("The Contacts Roster", function () {
             }, 700)
 
             const remove_el = await u.waitUntil(() => sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop());
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             remove_el.click();
-            expect(window.confirm).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
 
-            const iq = _converse.connection.IQ_stanzas.pop();
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+            const iq_stanzas = _converse.connection.IQ_stanzas;
+            await u.waitUntil(() => Strophe.serialize(iq_stanzas.at(-1)) ===
+                `<iq id="${iq_stanzas.at(-1).getAttribute('id')}" type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
                         `<item jid="lord.capulet@montague.lit" subscription="remove"/>`+
                     `</query>`+
                 `</iq>`);
 
+            const iq = iq_stanzas.at(-1);
             const stanza = u.toStanza(`<iq id="${iq.getAttribute('id')}" to="romeo@montague.lit/orchard" type="result"/>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
@@ -709,7 +710,7 @@ describe("The Contacts Roster", function () {
             await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
             await u.waitUntil(() => _converse.roster.at(0).vcard.get('fullname'))
             const rosterview = document.querySelector('converse-roster');
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             for (let i=0; i<mock.pend_names.length; i++) {
                 const name = mock.pend_names[i];
                 sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
@@ -824,16 +825,18 @@ describe("The Contacts Roster", function () {
             const name = mock.cur_names[0];
             const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'removeFromRoster').and.callThrough();
 
             let sent_IQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
+            spyOn(_converse.connection, 'sendIQ').and.callFake((iq, callback) => {
                 sent_IQ = iq;
                 callback();
             });
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
-            expect(window.confirm).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
+            await u.waitUntil(() => sent_IQ);
+
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster"><item jid="mercutio@montague.lit" subscription="remove"/></query>`+
@@ -858,15 +861,13 @@ describe("The Contacts Roster", function () {
             });
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'removeFromRoster').and.callThrough();
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
-                if (typeof callback === "function") { return callback(); }
-            });
+            spyOn(_converse.connection, 'sendIQ').and.callFake((iq, callback) => callback?.());
             expect(u.isVisible(rosterview.querySelector('.roster-group'))).toBe(true);
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
-            expect(window.confirm).toHaveBeenCalled();
-            expect(_converse.connection.sendIQ).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
+            await u.waitUntil(() => _converse.connection.sendIQ.calls.count());
             expect(contact.removeFromRoster).toHaveBeenCalled();
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length === 0);
         }));
@@ -1126,7 +1127,7 @@ describe("The Contacts Roster", function () {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, "current", 0);
             const name = mock.req_names[0];
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             _converse.roster.create({
                 'jid': name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 'subscription': 'none',
@@ -1139,7 +1140,7 @@ describe("The Contacts Roster", function () {
             expect(u.isVisible(rosterview.querySelector(`ul[data-group="Contact requests"]`))).toEqual(true);
             expect(sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li')).length).toBe(1);
             sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li .decline-xmpp-request'))[0].click();
-            expect(window.confirm).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Contact requests"]`) === null);
         }));
 
@@ -1191,12 +1192,12 @@ describe("The Contacts Roster", function () {
             const name = mock.req_names.sort()[1];
             const jid =  name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
             const req_contact = await u.waitUntil(() => sizzle(".req-contact-name:contains('"+name+"')", rosterview).pop());
             req_contact.parentElement.parentElement.querySelector('.decline-xmpp-request').click();
-            expect(window.confirm).toHaveBeenCalled();
-            expect(contact.unauthorize).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
+            await u.waitUntil(() => contact.unauthorize.calls.count());
             // There should now be one less contact
             expect(_converse.roster.length).toEqual(mock.req_names.length-1);
         }));

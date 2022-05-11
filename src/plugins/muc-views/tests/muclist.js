@@ -313,7 +313,7 @@ describe("A groupchat shown in the groupchats list", function () {
             async function (_converse) {
 
         const u = converse.env.utils;
-        spyOn(window, 'confirm').and.callFake(() => true);
+        spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
         expect(_converse.chatboxes.length).toBe(1);
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC');
@@ -328,7 +328,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const rooms_list = document.querySelector('converse-rooms-list');
         const close_el = rooms_list.querySelector(".close-room");
         close_el.click();
-        expect(window.confirm).toHaveBeenCalledWith(
+        expect(_converse.api.confirm).toHaveBeenCalledWith(
             'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
 
         await u.waitUntil(() => rooms_list.querySelectorAll(".open-room").length === 0);

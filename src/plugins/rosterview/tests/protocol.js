@@ -447,7 +447,7 @@ describe("The Protocol", function () {
             const jid = 'abram@montague.lit';
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             // We now have a contact we want to remove
             expect(_converse.roster.get(jid) instanceof _converse.RosterContact).toBeTruthy();
 
@@ -457,7 +457,7 @@ describe("The Protocol", function () {
 
             // remove the first user
             header.parentElement.querySelector('li .remove-xmpp-contact').click();
-            expect(window.confirm).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
 
             /* Section 8.6 Removing a Roster Item and Cancelling All
              * Subscriptions
@@ -478,14 +478,14 @@ describe("The Protocol", function () {
              *   </query>
              * </iq>
              */
-            const sent_iq = _converse.connection.IQ_stanzas.pop();
-
-            expect(Strophe.serialize(sent_iq)).toBe(
-                `<iq id="${sent_iq.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+            const iq_stanzas = _converse.connection.IQ_stanzas;
+            await u.waitUntil(() => Strophe.serialize(iq_stanzas.at(-1)) ===
+                `<iq id="${iq_stanzas.at(-1).getAttribute('id')}" type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
                         `<item jid="abram@montague.lit" subscription="remove"/>`+
                     `</query>`+
                 `</iq>`);
+            const sent_iq = iq_stanzas.at(-1);
 
             // Receive confirmation from the contact's server
             // <iq type='result' id='remove1'/>

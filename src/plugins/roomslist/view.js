@@ -74,7 +74,8 @@ export class RoomsList extends CustomElement {
     async closeRoom (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         const name = ev.target.getAttribute('data-room-name');
-        if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
+        const result = await api.confirm(__("Are you sure you want to leave the groupchat %1$s?", name));
+        if (result) {
             const jid = ev.target.getAttribute('data-room-jid');
             const room = await api.rooms.get(jid);
             room.close();

@@ -12,6 +12,7 @@ module.exports = function(config) {
       { pattern: 'dist/*.css.map', included: false },
       { pattern: "dist/icons.js", served: true },
       { pattern: "dist/emojis.js", served: true },
+      "src/shared/tests/tests.css",
       "node_modules/lodash/lodash.min.js",
       "dist/converse.js",
       "dist/converse.css",

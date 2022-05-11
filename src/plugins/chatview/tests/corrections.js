@@ -268,23 +268,26 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
 
         // Test confirmation dialog
-        spyOn(window, 'confirm').and.returnValue(true);
+        spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
         action = view.querySelector('.chat-msg .chat-msg__action');
         action.style.opacity = 1;
         action.click();
-        expect(window.confirm).toHaveBeenCalledWith(
+
+        await u.waitUntil(() => _converse.api.confirm.calls.count());
+        expect(_converse.api.confirm).toHaveBeenCalledWith(
             'You have an unsent message which will be lost if you continue. Are you sure?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?'
         action.click();
+
+        await u.waitUntil(() => _converse.api.confirm.calls.count() === 2);
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
-        expect(window.confirm.calls.count()).toBe(2);
-        expect(window.confirm.calls.argsFor(0)).toEqual(
+        expect(_converse.api.confirm.calls.argsFor(0)).toEqual(
             ['You have an unsent message which will be lost if you continue. Are you sure?']);
-        expect(window.confirm.calls.argsFor(1)).toEqual(
+        expect(_converse.api.confirm.calls.argsFor(1)).toEqual(
             ['You have an unsent message which will be lost if you continue. Are you sure?']);
     }));
 

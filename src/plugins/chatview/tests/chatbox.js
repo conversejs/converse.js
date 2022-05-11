@@ -49,7 +49,7 @@ describe("Chatboxes", function () {
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
 
             for (const i of Array(10).keys()) {
                 mock.sendMessage(view, `Message ${i}`);
@@ -64,7 +64,7 @@ describe("Chatboxes", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await u.waitUntil(() => window.confirm.calls.count() === 1);
+            await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
             await u.waitUntil(() => sizzle('converse-chat-message', view).length === 0);
             expect(true).toBe(true);
         }));
@@ -916,15 +916,15 @@ describe("Chatboxes", function () {
 
             message = '/clear';
             const message_form = view.querySelector('converse-message-form');
-            spyOn(window, 'confirm').and.callFake(() => true);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             view.querySelector('.chat-textarea').value = message;
             message_form.onKeyDown({
                 target: view.querySelector('textarea.chat-textarea'),
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await u.waitUntil(() => window.confirm.calls.count() === 1);
-            expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
+            await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
+            expect(_converse.api.confirm).toHaveBeenCalledWith('Are you sure you want to clear the messages from this conversation?');
             await u.waitUntil(() => view.model.messages.length === 0);
             await u.waitUntil(() => !view.querySelectorAll('.chat-msg__body').length);
         }));

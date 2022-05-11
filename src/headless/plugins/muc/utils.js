@@ -102,9 +102,9 @@ export async function onDirectMUCInvitation (message) {
         let contact = _converse.roster.get(from);
         contact = contact ? contact.getDisplayName() : from;
         if (!reason) {
-            result = confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, room_jid));
+            result = await api.confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, room_jid));
         } else {
-            result = confirm(
+            result = await api.confirm(
                 __(
                     '%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"',
                     contact,
@@ -114,7 +114,7 @@ export async function onDirectMUCInvitation (message) {
             );
         }
     }
-    if (result === true) {
+    if (result) {
         const chatroom = await openChatRoom(room_jid, { 'password': x_el.getAttribute('password') });
         if (chatroom.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
             _converse.chatboxes.get(room_jid).rejoin();

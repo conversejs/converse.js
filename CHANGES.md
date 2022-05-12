@@ -1,7 +1,14 @@
 # Changelog
 
-## 9.1.1 (2022-05-05)
+## 9.1.2 (2022-05-10)
 
+- Added fixes for Issue #1850: 
+  - Added `u.httpToGeoUriWithOriginalString()` method to `src/headless/utils/core.js` file
+  - Changed `u.httpToGeoUri(u.shortnamesToUnicode(text), _converse)` to `u.httpToGeoUriWithOriginalString(u.shortnamesToUnicode(text), _converse)` in `src/headless/plugins/muc/muc.js` file
+  - Added integration test for the above changes in the `src/headless/plugins/muc/tests/muc.js` file(`Original URL is displayed alongside the Geo Coordinates...`)
+
+## 9.1.1 (2022-05-05)
+ 
 - GIFs don't render inside unfurls and cause a TypeError
 - Improve how the `muc_domain` setting is populated via service discovery
 - Remove local (non-requesting) contacts not returned from a full roster response

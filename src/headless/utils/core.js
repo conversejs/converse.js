@@ -464,6 +464,14 @@ u.httpToGeoUri = function(text) {
     return text.replace(settings_api.get("geouri_regex"), replacement);
 };
 
+u.httpToGeoUriWithOriginalString = function(text){
+    const replacement = 'geo:$1,$2';
+    if(text.replace(settings_api.get('geouri_regex'), replacement) === text){
+        return text.replace(settings_api.get('geouri_regex'), replacement) 
+    }else{
+        return text.replace(settings_api.get('geouri_regex'), replacement) + '\n' + text;
+    }
+}
 
 /**
  * Clears the specified timeout and interval.

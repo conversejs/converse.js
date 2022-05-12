@@ -142,5 +142,28 @@ describe("Groupchats", function () {
                     `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
         }));
+
+        it("Original URL is displayed alongside the Geo Coordinates when sending a OpenStreetMap url as a chat message",
+            mock.initConverse([], {}, async function (_converse) {
+            const muc_jid = 'coven@chat.shakespeare.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const model = _converse.chatboxes.get(muc_jid);
+            expect(model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+            model.sendMessage({'body': 'https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=43.00556%2C-81.21649%3B43.00422%2C-81.22377#map=17/43.00509/-81.22035'});
+
+            const stanza = u.toStanza(`
+                <message xmlns='jabber:client'
+                        from='${muc_jid}'
+                        type='error'
+                        to='${_converse.bare_jid}'>
+                    <error type='cancel'>
+                        <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                    </error>
+                </message>`);
+            _converse.connection._dataRecv(mock.createRequest(stanza));
+
+            await u.waitUntil(() => model.messages.last()?.get('body'));
+            expect(model.messages.last().get('message')).toBe('geo:43.00509,-81.22035\nhttps://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=43.00556%2C-81.21649%3B43.00422%2C-81.22377#map=17/43.00509/-81.22035')
+        }));
     });
 });

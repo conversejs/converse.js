@@ -42,9 +42,7 @@ function addClientFeatures () {
     api.disco.own.features.add(Strophe.NS.CHATSTATES);
     api.disco.own.features.add(Strophe.NS.DISCO_INFO);
     api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support
-    if (api.settings.get("message_carbons")) {
-        api.disco.own.features.add(Strophe.NS.CARBONS);
-    }
+    api.disco.own.features.add(Strophe.NS.CARBONS);
     /**
      * Triggered in converse-disco once the core disco features of
      * Converse have been added.

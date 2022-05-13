@@ -1202,22 +1202,6 @@ from the XMPP server.
 
 Used in conjunction with ``message_archiving`` and in context of `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_.
 
-message_carbons
----------------
-
-* Default:  ``true``
-
-Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
-
-In order to keep all IM clients for a user engaged in a conversation,
-outbound messages are carbon-copied to all interested resources.
-
-This is especially important with Converse, where each browser
-tab serves as a separate IM client.
-
-XEP-0280 requires server support, so make sure that message carbons are enabled
-on your server.
-
 
 message_limit
 -------------

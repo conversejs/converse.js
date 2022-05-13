@@ -6,24 +6,18 @@ import ChatBox from './model.js';
 import MessageMixin from './message.js';
 import ModelWithContact from './model-with-contact.js';
 import chat_api from './api.js';
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from '@converse/skeletor/src/collection';
 import { _converse, api, converse } from '../../core.js';
-import { autoJoinChats, handleMessageStanza, onClearSession, openChat, registerMessageHandlers } from './utils.js';
-
+import {
+    autoJoinChats,
+    enableCarbons,
+    handleMessageStanza,
+    onClearSession,
+    openChat,
+    registerMessageHandlers,
+} from './utils.js';
 
 converse.plugins.add('converse-chat', {
-    /* Optional dependencies are other plugins which might be
-     * overridden or relied upon, and therefore need to be loaded before
-     * this plugin. They are called "optional" because they might not be
-     * available, in which case any overrides applicable to them will be
-     * ignored.
-     *
-     * It's possible however to make optional dependencies non-optional.
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
-     */
     dependencies: ['converse-chatboxes', 'converse-disco'],
 
     initialize () {
@@ -40,14 +34,14 @@ converse.plugins.add('converse-chat', {
             'filter_by_resource': false,
             'prune_messages_above': undefined,
             'pruning_behavior': 'unscrolled',
-            'send_chat_markers': ["received", "displayed", "acknowledged"],
+            'send_chat_markers': ['received', 'displayed', 'acknowledged'],
             'send_chat_state_notifications': true,
         });
 
         _converse.Message = ModelWithContact.extend(MessageMixin);
         _converse.Messages = Collection.extend({
             model: _converse.Message,
-            comparator: 'time'
+            comparator: 'time',
         });
 
         Object.assign(_converse, { ChatBox, handleMessageStanza });
@@ -58,5 +52,8 @@ converse.plugins.add('converse-chat', {
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);
         api.listen.on('clearSession', onClearSession);
-    }
+
+        api.listen.on('connected', () => enableCarbons());
+        api.listen.on('reconnected', () => enableCarbons(true));
+    },
 });

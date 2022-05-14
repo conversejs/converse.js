@@ -17,9 +17,12 @@ const trust_checkbox = (checked) => {
         <div class="form-group form-check login-trusted">
             <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ?checked=${checked}>
             <label for="converse-login-trusted" class="form-check-label login-trusted__desc">${i18n_trusted}</label>
-            <i class="fa fa-info-circle" data-toggle="popover"
+
+            <converse-icon class="fa fa-info-circle" data-toggle="popover"
                 data-title="Trusted device?"
-                data-content="${i18n_hint_trusted}"></i>
+                data-content="${i18n_hint_trusted}"
+                size="1.2em"
+                title="${i18n_hint_trusted}"></converse-icon>
         </div>
     `;
 }

@@ -457,6 +457,9 @@
                     .chatbox-btn {
                         color: var(--controlbox-head-color);
                         margin: 0;
+                        converse-icon {
+                            color: var(--controlbox-head-color);
+                        }
                     }
                 }
 

@@ -44,6 +44,7 @@ module.exports = function(config) {
       { pattern: "src/headless/tests/eventemitter.js", type: 'module' },
       { pattern: "src/modals/tests/user-details-modal.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
+      { pattern: "src/plugins/bookmark-views/tests/bookmarks-list.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/emojis.js", type: 'module' },

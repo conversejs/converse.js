@@ -251,6 +251,13 @@ export class RichText extends String {
         references.forEach(ref => this.addTemplateResult(ref.begin, ref.end, ref.template));
     }
 
+    checkIfHttpsUrl (text) {
+        if(text.slice(0, 8) === "https://"){
+            return true;
+        }
+        return false;
+    }
+
     trimMeMessage () {
         if (this.offset === 0) {
             // Subtract `/me ` from 3rd person messages
@@ -300,7 +307,15 @@ export class RichText extends String {
          */
         await api.trigger('beforeMessageBodyTransformed', this, { 'Synchronous': true });
 
-        this.render_styling && this.addStyling();
+        var text = this.toString();
+
+        if(!this.checkIfHttpsUrl(text)){
+            this.render_styling && this.addStyling();
+        }else{
+            this.render_styling;
+        }
+
+        // this.render_styling && this.addStyling();
         this.addAnnotations(this.addMentions);
         this.addAnnotations(this.addHyperlinks);
         this.addAnnotations(this.addMapURLs);
@@ -341,6 +356,8 @@ export class RichText extends String {
     addTemplateResult (begin, end, template) {
         this.references.push({ begin, end, template });
     }
+
+ 
 
     isMeCommand () {
         const text = this.toString();

@@ -28,7 +28,7 @@ describe('The "Groupchats" Add modal', function () {
 
             expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
-            modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.montague.lit';
+            modal.el.querySelector('input[name="chatroom"]').value = 'lounge@muc.montague.lit';
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);

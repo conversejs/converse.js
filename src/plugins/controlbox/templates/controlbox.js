@@ -15,7 +15,7 @@ function whenNotConnected (o) {
     if (o['active-form'] === 'register') {
         return html`<converse-register-panel></converse-register-panel>`;
     }
-    return html`<converse-login-form id="converse-login-panel" class="controlbox-pane fade-in row no-gutters"></converse-login-form>}`;
+    return html`<converse-login-form id="converse-login-panel" class="controlbox-pane fade-in row no-gutters"></converse-login-form>`;
 }
 
 
@@ -38,7 +38,7 @@ export default (el) => {
                     ${o.connected
                         ? html`
                             <converse-user-profile></converse-user-profile>
-                            <converse-headlines-panel class="controlbox-section"></converse-headlines-panel>
+                            <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
                             <div id="chatrooms" class="controlbox-section">
                                 <converse-rooms-list></converse-rooms-list>
                                 <converse-bookmarks></converse-bookmarks>

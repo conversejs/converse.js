@@ -4,34 +4,7 @@ import { _converse, api } from "@converse/headless/core";
 import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
 import { html } from "lit";
 import { repeat } from 'lit/directives/repeat.js';
-import { shouldShowContact, shouldShowGroup } from '../utils.js';
-
-
-function populateContactsMap (contacts_map, contact) {
-    if (contact.get('ask') === 'subscribe') {
-        const name = _converse.HEADER_PENDING_CONTACTS;
-        contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
-    } else if (contact.get('requesting')) {
-        const name = _converse.HEADER_REQUESTING_CONTACTS;
-        contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
-    } else {
-        let contact_groups;
-        if (api.settings.get('roster_groups')) {
-            contact_groups = contact.get('groups');
-            contact_groups = (contact_groups.length === 0) ? [_converse.HEADER_UNGROUPED] : contact_groups;
-        } else {
-            contact_groups = [_converse.HEADER_CURRENT_CONTACTS];
-        }
-        for (const name of contact_groups) {
-            contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
-        }
-    }
-    if (contact.get('num_unread')) {
-        const name = _converse.HEADER_UNREAD;
-        contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
-    }
-    return contacts_map;
-}
+import { shouldShowContact, shouldShowGroup, populateContactsMap } from '../utils.js';
 
 
 export default (el) => {

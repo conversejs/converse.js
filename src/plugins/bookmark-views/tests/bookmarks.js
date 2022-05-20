@@ -557,9 +557,9 @@ describe("Bookmarks", function () {
             expect(els[3].textContent).toBe("noname@conference.shakespeare.lit");
             expect(els[4].textContent).toBe("The Play's the Thing");
 
-            spyOn(window, 'confirm').and.returnValue(true);
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             document.querySelector('#chatrooms .bookmarks.rooms-list .room-item:nth-child(2) a:nth-child(2)').click();
-            expect(window.confirm).toHaveBeenCalled();
+            expect(_converse.api.confirm).toHaveBeenCalled();
             await u.waitUntil(() => document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length === 4)
             els = document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item a.list-item-link');
             expect(els[0].textContent).toBe("1st Bookmark");

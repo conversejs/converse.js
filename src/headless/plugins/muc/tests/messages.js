@@ -111,7 +111,7 @@ describe("A MUC message", function () {
         spyOn(converse.env.log, 'error').and.callThrough();
         _converse.connection._dataRecv(mock.createRequest(received_stanza));
         await u.waitUntil(() => converse.env.log.error.calls.count() === 1);
-        expect(converse.env.log.error).toHaveBeenCalledWith(
+        expect(converse.env.log.error.calls.argsFor(0)[0]?.message).toBe(
             `Ignoring unencapsulated forwarded message from ${muc_jid}/mallory`
         );
         const model = _converse.chatboxes.get(muc_jid);

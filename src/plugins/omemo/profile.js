@@ -60,10 +60,13 @@ export class Profile extends CustomElement {
 
     async generateOMEMODeviceBundle (ev) {
         ev.preventDefault();
-        if (confirm(__(
+
+        const result = await api.confirm(__(
             'Are you sure you want to generate new OMEMO keys? ' +
-            'This will remove your old keys and all previously encrypted messages will no longer be decryptable on this device.'
-        ))) {
+            'This will remove your old keys and all previously ' +
+            'encrypted messages will no longer be decryptable on this device.'));
+
+        if (result) {
             await api.omemo.bundle.generate();
             await this.setAttributes();
             this.requestUpdate();

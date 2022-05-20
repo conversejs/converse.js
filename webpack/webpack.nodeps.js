@@ -6,11 +6,8 @@ const { merge}  = require("webpack-merge");
 
 module.exports = merge(common, {
     mode: "production",
-    output: {
-        filename: 'converse-no-dependencies.js'
-    },
-    optimization: {
-        minimizer: []
+    entry: {
+        "converse-no-dependencies": path.resolve(__dirname, "../src/entry.js"),
     },
     plugins: [
         new MiniCssExtractPlugin({filename: 'tmp.css'})

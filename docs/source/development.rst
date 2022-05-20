@@ -23,11 +23,10 @@ to fix a bug or to add new functionality.
 .. toctree::
    :maxdepth: 2
 
-   dependencies
-   style_guide
-   webserver
+   setup_dev_environment 
    plugin_development
    api/index
    testing
    other_frameworks
    builds
+   style_guide

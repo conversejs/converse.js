@@ -150,13 +150,6 @@ This setting is only applicable if the ``converse-bookmarks`` plugin is loaded.
 
 See also: `allow_public_bookmarks`_
 
-allow_chat_pending_contacts
----------------------------
-
-* Default:  ``false``
-
-Allow the user to chat with pending contacts.
-
 allow_contact_removal
 ---------------------
 
@@ -760,6 +753,8 @@ loglevel
 
 You can also set this value by changing a URL fragment `#converse?loglevel=debug`
 
+.. _`dark_theme`:
+
 dark_theme
 ----------
 
@@ -1206,22 +1201,6 @@ The amount of time (in milliseconds) to wait when requesting archived messages
 from the XMPP server.
 
 Used in conjunction with ``message_archiving`` and in context of `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_.
-
-message_carbons
----------------
-
-* Default:  ``true``
-
-Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
-
-In order to keep all IM clients for a user engaged in a conversation,
-outbound messages are carbon-copied to all interested resources.
-
-This is especially important with Converse, where each browser
-tab serves as a separate IM client.
-
-XEP-0280 requires server support, so make sure that message carbons are enabled
-on your server.
 
 
 message_limit
@@ -2162,6 +2141,8 @@ If set to ``true``, Converse will synchronize with all other clients you are log
 If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, Converse will synchronize only with a client that has that particular resource assigned to it.
+
+.. _`theme`:
 
 theme
 -----

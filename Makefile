@@ -67,7 +67,7 @@ serve_bg: node_modules
 dist/converse-no-dependencies.js: src webpack/webpack.common.js webpack/webpack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
-GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=9.1.0 dist/converse-no-dependencies.js -c
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=9.1.1 dist/converse-no-dependencies.js -c
 
 src/i18n/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
@@ -148,10 +148,10 @@ devserver: node_modules
 ## Builds
 
 dist/converse.js:: node_modules
-	npm run dev
+	npm run build
 
 dist/converse.css:: node_modules
-	npm run dev
+	npm run build
 
 dist/website.css:: node_modules src/shared/styles/website.scss
 	$(SASS) --load-path=$(BOOTSTRAP) src/shared/styles/website.scss $@
@@ -191,8 +191,9 @@ src/headless/dist/converse-headless.js: src webpack/webpack.common.js node_modul
 src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_modules @converse/headless
 	npm run headless
 
-dist:: node_modules src/* | dist/converse.js dist/converse.css dist/website.css dist/website.min.css src/headless/dist/converse-headless.min.js src/headless/dist/converse-headless.js
-	npm run prod
+dist:: node_modules src/* | dist/website.css dist/website.min.css
+	npm run headless
+	npm run build
 
 .PHONY: install
 install:: dist

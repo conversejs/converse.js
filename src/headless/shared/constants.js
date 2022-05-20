@@ -23,7 +23,6 @@ export const CORE_PLUGINS = [
     'converse-bookmarks',
     'converse-bosh',
     'converse-caps',
-    'converse-carbons',
     'converse-chat',
     'converse-chatboxes',
     'converse-disco',

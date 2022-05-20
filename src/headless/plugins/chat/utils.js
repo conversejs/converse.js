@@ -106,7 +106,6 @@ export function registerMessageHandlers () {
 
 /**
  * Handler method for all incoming single-user chat "message" stanzas.
- * @private
  * @param { MessageAttributes } attrs - The message attributes
  */
 export async function handleMessageStanza (stanza) {
@@ -145,4 +144,40 @@ export async function handleMessageStanza (stanza) {
      * @property { module:converse-chat~MessageData } data
      */
     api.trigger('message', data);
+}
+
+/**
+ * Ask the XMPP server to enable Message Carbons
+ * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)
+ * @param { Boolean } reconnecting
+ */
+export async function enableCarbons (reconnecting) {
+    if (reconnecting && _converse.session.get('carbons_enabled')) {
+        if (_converse.session.get('smacks_enabled')) {
+            // No need to re-enable carbons when resuming a XEP-0198 stream
+            return;
+        }
+        _converse.session.set({'carbons_enabled': false})
+    }
+
+    if (_converse.session?.get('carbons_enabled')) {
+        return;
+    }
+
+    const iq = new Strophe.Builder('iq', {
+        'from': _converse.connection.jid,
+        'type': 'set'
+      }).c('enable', {xmlns: Strophe.NS.CARBONS});
+
+    const result = await api.sendIQ(iq, null, false);
+    if (result === null) {
+        log.warn(`A timeout occurred while trying to enable carbons`);
+    } else if (u.isErrorStanza(result)) {
+        log.warn('An error occurred while trying to enable message carbons.');
+        log.error(result);
+    } else {
+        _converse.session.set({'carbons_enabled': true});
+        log.debug('Message carbons have been enabled.');
+    }
+    _converse.session.save(); // Gather multiple sets into one save
 }

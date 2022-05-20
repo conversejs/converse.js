@@ -1,4 +1,5 @@
 import { __ } from 'i18n';
+import { api } from '@converse/headless/core';
 
 export function getPrettyStatus (stat) {
     if (stat === 'chat') {
@@ -13,5 +14,13 @@ export function getPrettyStatus (stat) {
         return __('offline');
     } else {
         return __(stat) || __('online');
+    }
+}
+
+export async function logOut (ev) {
+    ev?.preventDefault();
+    const result = await api.confirm(__("Are you sure you want to log out?"));
+    if (result) {
+        api.user.logout();
     }
 }

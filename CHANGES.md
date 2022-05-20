@@ -1,6 +1,14 @@
 # Changelog
 
-## 9.1.1 (Unreleased)
+## 10.0.0 (Unreleased)
+
+- Don't automatically convert OpenStreetMap URLs into `geo:` URIs in sent messages
+- Remove the `allow_chat_pending_contacts` config option.
+- Show roster contacts with `subscription` set to `none`
+- Remove the `converse-carbons` plugin and make carbons part of the `converse-chat` plugin.
+- Remove the `message_carbons` configuration setting. Carbons are now always enabled.
+
+## 9.1.1 (2022-05-05)
 
 - GIFs don't render inside unfurls and cause a TypeError
 - Improve how the `muc_domain` setting is populated via service discovery

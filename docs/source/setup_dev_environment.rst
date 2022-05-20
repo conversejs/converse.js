@@ -2,7 +2,7 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
 
-.. _`development`:
+.. _`setup_dev_environment`:
 
 ============================
 Setting up a dev environment
@@ -34,7 +34,8 @@ Once NVM is installed, you can run the following inside your checkout of the Con
     nvm install
 
 .. note::
-    You will always have to first run ``nvm install`` in a new terminal session before working on Converse.
+    You will always have to first run ``nvm install`` in a new terminal session in order to use the
+    recommended version of Node before working on Converse.
 
 
 To set up the Converse development environment, you now run ``make dev``.

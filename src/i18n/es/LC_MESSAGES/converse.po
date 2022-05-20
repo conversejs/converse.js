@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2022-02-10 13:22+0000\n"
-"Last-Translator: JC Brand <jc@opkode.com>\n"
+"PO-Revision-Date: 2022-05-04 06:13+0000\n"
+"Last-Translator: Yoandry González Castro <yoandry.gonzalezc@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.12.1\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: es\n"
 "Language-Code: es\n"
@@ -190,11 +190,12 @@ msgstr "Stickers"
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
 msgstr ""
+"Error: tiempo de espera agotado mientras se buscaban %1s lista para MUC %2s"
 
 #: dist/converse-no-dependencies.js:49469
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Error: no está permitido buscar %1s lista para MUC %2s"
 
 #: dist/converse-no-dependencies.js:50561
 #, fuzzy
@@ -263,6 +264,8 @@ msgstr "Prohibido: no tienes el rol necesario para hacer eso."
 #: dist/converse-no-dependencies.js:51989
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Error: no se pudo registrar nuevo sobrenombre en sala que sólo es para "
+"miembros"
 
 #: dist/converse-no-dependencies.js:52314
 msgid "You're not allowed to register yourself in this groupchat."
@@ -685,7 +688,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62982
 msgid "Remove"
-msgstr ""
+msgstr "Quitar"
 
 #: dist/converse-no-dependencies.js:62984
 msgid "The name for this bookmark:"
@@ -697,7 +700,7 @@ msgstr "¿Cual debería ser su apodo para esta conversación en grupo?"
 
 #: dist/converse-no-dependencies.js:62988
 msgid "Update"
-msgstr ""
+msgstr "Actualizar"
 
 #: dist/converse-no-dependencies.js:62988
 #: dist/converse-no-dependencies.js:91564
@@ -910,11 +913,11 @@ msgstr "Rol"
 
 #: dist/converse-no-dependencies.js:74242
 msgid "Hats"
-msgstr ""
+msgstr "Sombreros"
 
 #: dist/converse-no-dependencies.js:74242
 msgid "Occupant Id"
-msgstr ""
+msgstr "ID Ocupante"
 
 #: dist/converse-no-dependencies.js:74320
 msgid "Remove as contact"
@@ -1128,11 +1131,11 @@ msgstr "Conectando"
 
 #: dist/converse-no-dependencies.js:81981
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
-msgstr ""
+msgstr "URL HTTP o websocket usada para conectarse a su servidor XMPP"
 
 #: dist/converse-no-dependencies.js:81983
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "e.j. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:81991
 msgid "Password"
@@ -1605,7 +1608,7 @@ msgstr "Permitir a usuario silenciado publicar mensajes"
 
 #: dist/converse-no-dependencies.js:91561
 msgid "Loading configuration form"
-msgstr ""
+msgstr "Cargando formulario de configuración"
 
 #: dist/converse-no-dependencies.js:91858
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -2018,7 +2021,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:96663
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "El cifrado OMEMO no está implementado"
 
 #: dist/converse-no-dependencies.js:96694
 msgid ""

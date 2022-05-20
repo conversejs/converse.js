@@ -121,7 +121,7 @@ const OMEMOStore = Model.extend({
             'pubKey': u.arrayBufferToBase64(spk.keyPair.pubKey),
             // XXX: The InMemorySignalProtocolStore does not pass
             // in or store the signature, but we need it when we
-            // publish out bundle and this method isn't called from
+            // publish our bundle and this method isn't called from
             // within libsignal code, so we modify it to also store
             // the signature.
             'signature': u.arrayBufferToBase64(spk.signature)
@@ -206,22 +206,50 @@ const OMEMOStore = Model.extend({
     },
 
     /**
-     * Generate the data used by the X3DH key agreement protocol
-     * that can be used to build a session with a device.
+     * Generates, stores and then returns pre-keys.
+     *
+     * Pre-keys are one half of a X3DH key exchange and are published as part
+     * of the device bundle.
+     *
+     * For a new contact or device to establish an encrypted session, it needs
+     * to use a pre-key, which it chooses randomly from the list of available
+     * ones.
+     */
+    async generatePreKeys () {
+        const amount = _converse.NUM_PREKEYS;
+        const { KeyHelper } = libsignal;
+        const keys = await Promise.all(
+            range(0, amount).map(id => KeyHelper.generatePreKey(id))
+        );
+
+        keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
+
+        return keys.map(k => ({
+            'id': k.keyId,
+            'key': u.arrayBufferToBase64(k.keyPair.pubKey)
+        }));
+    },
+
+    /**
+     * Generate the cryptographic data used by the X3DH key agreement protocol
+     * in order to build a session with other devices.
+     *
+     * By generating a bundle, and publishing it via PubSub, we allow other
+     * clients to download it and start asynchronous encrypted sessions with us,
+     * even if we're offline at that time.
      */
     async generateBundle () {
         // The first thing that needs to happen if a client wants to
         // start using OMEMO is they need to generate an IdentityKey
-        // and a Device ID. The IdentityKey is a Curve25519 [6]
-        // public/private Key pair. The Device ID is a randomly
-        // generated integer between 1 and 2^31 - 1.
+        // and a Device ID.
+
+        // The IdentityKey is a Curve25519 public/private Key pair.
         const identity_keypair = await libsignal.KeyHelper.generateIdentityKeyPair();
-        const bundle = {};
         const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
+
+        // The Device ID is a randomly generated integer between 1 and 2^31 - 1.
         const device_id = await generateDeviceID();
 
-        bundle['identity_key'] = identity_key;
-        bundle['device_id'] = device_id;
         this.save({
             'device_id': device_id,
             'identity_keypair': {
@@ -230,28 +258,24 @@ const OMEMOStore = Model.extend({
             },
             'identity_key': identity_key
         });
-        const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
 
+        const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
         this.storeSignedPreKey(signed_prekey);
+
+        const prekeys = await this.generatePreKeys();
+
+        const bundle = { identity_key, device_id, prekeys };
         bundle['signed_prekey'] = {
             'id': signed_prekey.keyId,
             'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
             'signature': u.arrayBufferToBase64(signed_prekey.signature)
         };
-        const keys = await Promise.all(
-            range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id))
-        );
-        keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
+
         const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
         const device = await devicelist.devices.create(
             { 'id': bundle.device_id, 'jid': _converse.bare_jid },
             { 'promise': true }
         );
-        const marshalled_keys = keys.map(k => ({
-            'id': k.keyId,
-            'key': u.arrayBufferToBase64(k.keyPair.pubKey)
-        }));
-        bundle['prekeys'] = marshalled_keys;
         device.save('bundle', bundle);
     },
 

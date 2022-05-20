@@ -58,7 +58,6 @@ const RosterContacts = Collection.extend({
     /**
      * Fetches the roster contacts, first by trying the browser cache,
      * and if that's empty, then by querying the XMPP server.
-     * @private
      * @returns {promise} Promise which resolves once the contacts have been fetched.
      */
     async fetchRosterContacts () {
@@ -111,7 +110,6 @@ const RosterContacts = Collection.extend({
     /**
      * Add a roster contact and then once we have confirmation from
      * the XMPP server we subscribe to that contact's presence updates.
-     * @private
      * @method _converse.RosterContacts#addAndSubscribe
      * @param { String } jid - The Jabber ID of the user being added and subscribed to.
      * @param { String } name - The name of that user
@@ -128,7 +126,6 @@ const RosterContacts = Collection.extend({
 
     /**
      * Send an IQ stanza to the XMPP server to add a new roster contact.
-     * @private
      * @method _converse.RosterContacts#sendContactAddIQ
      * @param { String } jid - The Jabber ID of the user being added
      * @param { String } name - The name of that user
@@ -149,7 +146,6 @@ const RosterContacts = Collection.extend({
      * Adds a RosterContact instance to _converse.roster and
      * registers the contact on the XMPP server.
      * Returns a promise which is resolved once the XMPP server has responded.
-     * @private
      * @method _converse.RosterContacts#addContactToRoster
      * @param { String } jid - The Jabber ID of the user being added and subscribed to.
      * @param { String } name - The name of that user
@@ -199,7 +195,6 @@ const RosterContacts = Collection.extend({
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-     * @private
      * @method _converse.RosterContacts#onRosterPush
      * @param { XMLElement } IQ - The IQ stanza received from the XMPP server.
      */
@@ -250,7 +245,6 @@ const RosterContacts = Collection.extend({
 
     /**
      * Fetch the roster from the XMPP server
-     * @private
      * @emits _converse#roster
      * @returns {promise}
      */
@@ -269,11 +263,11 @@ const RosterContacts = Collection.extend({
             const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
             if (query) {
                 const items = sizzle(`item`, query);
-                if (!this.data.get('version')) {
+                if (!this.data.get('version') && this.models.length) {
                     // We're getting the full roster, so remove all cached
                     // contacts that aren't included in it.
                     const jids = items.map(item => item.getAttribute('jid'));
-                    this.models.forEach(m => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
+                    this.forEach(m => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
                 }
                 items.forEach(item => this.updateContact(item));
                 this.data.save('version', query.getAttribute('ver'));
@@ -298,43 +292,30 @@ const RosterContacts = Collection.extend({
         api.trigger('roster', iq);
     },
 
-    /* Update or create RosterContact models based on the given `item` XML
+    /**
+     * Update or create RosterContact models based on the given `item` XML
      * node received in the resulting IQ stanza from the server.
-     * @private
      * @param { XMLElement } item
      */
     updateContact (item) {
         const jid = item.getAttribute('jid');
         const contact = this.get(jid);
         const subscription = item.getAttribute("subscription");
+        if (subscription === "remove") {
+            return contact?.destroy();
+        }
+
         const ask = item.getAttribute("ask");
+        const nickname = item.getAttribute('name');
         const groups = [...new Set(sizzle('group', item).map(e => e.textContent))];
-        if (!contact) {
-            if ((subscription === "none" && ask === null) || (subscription === "remove")) {
-                return; // We're lazy when adding contacts.
-            }
-            this.create({
-                'ask': ask,
-                'nickname': item.getAttribute("name"),
-                'groups': groups,
-                'jid': jid,
-                'subscription': subscription
-            }, {sort: false});
-        } else {
-            if (subscription === "remove") {
-                return contact.destroy();
-            }
+
+        if (contact) {
             // We only find out about requesting contacts via the
             // presence handler, so if we receive a contact
             // here, we know they aren't requesting anymore.
-            // see docs/DEVELOPER.rst
-            contact.save({
-                'subscription': subscription,
-                'ask': ask,
-                'nickname': item.getAttribute("name"),
-                'requesting': null,
-                'groups': groups
-            });
+            contact.save({ subscription, ask, nickname, groups, 'requesting': null });
+        } else {
+            this.create({ nickname, ask, groups, jid, subscription }, {sort: false});
         }
     },
 
@@ -429,10 +410,10 @@ const RosterContacts = Collection.extend({
 
     presenceHandler (presence) {
         const presence_type = presence.getAttribute('type');
-        if (presence_type === 'error') { return true; }
+        if (presence_type === 'error') return true;
 
-        const jid = presence.getAttribute('from'),
-              bare_jid = Strophe.getBareJidFromJid(jid);
+        const jid = presence.getAttribute('from');
+        const bare_jid = Strophe.getBareJidFromJid(jid);
         if (this.isSelf(bare_jid)) {
             return this.handleOwnPresence(presence);
         } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {

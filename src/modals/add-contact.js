@@ -12,9 +12,6 @@ const u = converse.env.utils;
 
 const AddContactModal = BootstrapModal.extend({
     id: "add-contact-modal",
-    events: {
-        'submit form': 'addContactFromForm'
-    },
 
     initialize () {
         BootstrapModal.prototype.initialize.apply(this, arguments);
@@ -22,8 +19,7 @@ const AddContactModal = BootstrapModal.extend({
     },
 
     toHTML () {
-        const label_nickname = api.settings.get('xhr_user_search_url') ? __('Contact name') : __('Optional nickname');
-        return tpl_add_contact_modal(Object.assign(this.model.toJSON(), { _converse, label_nickname }));
+        return tpl_add_contact_modal(this);
     },
 
     afterRender () {
@@ -36,7 +32,24 @@ const AddContactModal = BootstrapModal.extend({
         this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
     },
 
+    getGroupsAutoCompleteList () {
+        return ['apple', 'pear', 'banana'];
+        // return [...new Set(_converse.roster.map(i => i.get('gruop')).filter(i => i))];
+    },
+
     initJIDAutoComplete () {
+        if (!api.settings.get('autocomplete_add_contact')) {
+            return;
+        }
+        const el = this.el.querySelector('.suggestion-box__jid').parentElement;
+        this.jid_auto_complete = new _converse.AutoComplete(el, {
+            'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
+            'filter': _converse.FILTER_STARTSWITH,
+            'list': [...new Set(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))]
+        });
+    },
+
+    initGroupAutoComplete () {
         if (!api.settings.get('autocomplete_add_contact')) {
             return;
         }
@@ -94,7 +107,7 @@ const AddContactModal = BootstrapModal.extend({
                 const jid = list[0].value;
                 if (this.validateSubmission(jid)) {
                     const form = this.el.querySelector('form');
-                        const name = list[0].label;
+                    const name = list[0].label;
                     this.afterSubmission(form, jid, name);
                 }
             }
@@ -116,16 +129,19 @@ const AddContactModal = BootstrapModal.extend({
         return true;
     },
 
-    afterSubmission (form, jid, name) {
-        _converse.roster.addAndSubscribe(jid, name);
+    afterSubmission (form, jid, name, group) {
+        if (group && !Array.isArray(group)) {
+            group = [group];
+        }
+        _converse.roster.addAndSubscribe(jid, name, group);
         this.model.clear();
         this.modal.hide();
     },
 
     addContactFromForm (ev) {
         ev.preventDefault();
-        const data = new FormData(ev.target),
-                jid = (data.get('jid') || '').trim();
+        const data = new FormData(ev.target);
+        const jid = (data.get('jid') || '').trim();
 
         if (!jid && typeof api.settings.get('xhr_user_search_url') === 'string') {
             const input_el = this.el.querySelector('input[name="name"]');
@@ -134,7 +150,7 @@ const AddContactModal = BootstrapModal.extend({
             return;
         }
         if (this.validateSubmission(jid)) {
-            this.afterSubmission(ev.target, jid, data.get('name'));
+            this.afterSubmission(ev.target, jid, data.get('name'), data.get('group'));
         }
     }
 });

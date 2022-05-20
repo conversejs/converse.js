@@ -1,23 +1,50 @@
 .conversejs {
-    .chat-head-headline {
-        background-color: var(--headline-head-color);
-    }
+    .chatbox {
+        converse-headlines-heading {
+            &.chat-head {
+                .chatbox-title__text {
+                    color: var(--headline-head-text-color) !important;
+                    background-color: var(--headline-head-bg-color);
+                }
 
-    .chatbox.headlines {
-        .chat-head {
-            &.chat-head-chatbox {
-                background-color: var(--headline-head-color);
+                a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+                    &.chatbox-btn {
+                        &.fa,
+                        &.fas,
+                        &.far {
+                            color: var(--headline-head-text-color);
+                            &.button-on:before {
+                                padding: 0.2em;
+                                background-color: var(--headline-head-text-color);
+                                color: var(--headline-head-bg-color);
+                            }
+                        }
+                    }
+                }
             }
         }
-        .chat-body {
-            background-color: var(--headline-head-color);
-            .chat-message {
-                color: var(--headline-message-color);
+
+        &.headlines {
+            .chat-head {
+                &.chat-head-chatbox {
+                    background-color: var(--headline-head-bg-color);
+                    border-bottom: var(--headline-head-border-bottom);
+                }
+            }
+            .chat-body {
+                background-color: var(--background);
+                .chat-message {
+                    color: var(--headline-message-color);
+                }
+                hr {
+                    border-bottom: var(--headline-separator-border-bottom);
+                }
+            }
+            .chat-content {
+                height: 100%;
             }
         }
-        .chat-content {
-            height: 100%;
-        }
+
     }
 
     .message {
@@ -29,22 +56,29 @@
             }
         }
     }
-}
 
-.conversejs {
+    #controlbox {
+        .controlbox-section {
+            .controlbox-heading--headline {
+                color: var(--headline-head-text-color);
+            }
+        }
+    }
+
+
     converse-chats {
         &.converse-fullscreen {
             .chatbox.headlines {
                 .box-flyout {
-                    background-color: var(--headline-head-color);
+                    background-color: var(--headline-head-text-color);
                 }
                 .chat-head {
                     &.chat-head-chatbox {
-                        background-color: var(--headline-head-color);
+                        background-color: var(--headline-head-text-color);
                     }
                 }
                 .flyout {
-                    border-color: var(--headline-head-color);
+                    border-color: var(--headline-head-text-color);
                 }
             }
         }

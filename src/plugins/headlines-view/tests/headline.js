@@ -68,7 +68,12 @@ describe("A headlines box", function () {
     it("will show headline messages in the controlbox", mock.initConverse(
             [], {}, async function (_converse) {
 
-        await mock.waitForRoster(_converse, 'current', 0);
+        await mock.waitForRoster(_converse, 'current', 1);
+        await mock.openControlBox(_converse);
+
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, sender_jid);
+
         const { u, $msg} = converse.env;
         /* <message from='notify.example.com'
          *          to='romeo@im.example.com'

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2022-05-05 17:12+0000\n"
-"Last-Translator: Иван Иванович <ivan1987_07@protonmail.com>\n"
+"PO-Revision-Date: 2022-05-24 10:18+0000\n"
+"Last-Translator: CreeperXP <creeperxp@disroot.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #: dist/converse-no-dependencies.js:34118
 msgid "The connection has dropped, attempting to reconnect."
@@ -654,7 +654,7 @@ msgstr "Включить автоматический вход в эту ком�
 
 #: dist/converse-no-dependencies.js:62982
 msgid "Remove"
-msgstr ""
+msgstr "Удалить"
 
 #: dist/converse-no-dependencies.js:62984
 msgid "The name for this bookmark:"
@@ -666,7 +666,7 @@ msgstr "Какой должен быть псевдоним для этой ко
 
 #: dist/converse-no-dependencies.js:62988
 msgid "Update"
-msgstr ""
+msgstr "Обновить"
 
 #: dist/converse-no-dependencies.js:62988
 #: dist/converse-no-dependencies.js:91564
@@ -868,11 +868,11 @@ msgstr "Роли"
 
 #: dist/converse-no-dependencies.js:74242
 msgid "Hats"
-msgstr ""
+msgstr "Шапки"
 
 #: dist/converse-no-dependencies.js:74242
 msgid "Occupant Id"
-msgstr ""
+msgstr "Входящий ID"
 
 #: dist/converse-no-dependencies.js:74320
 msgid "Remove as contact"
@@ -1081,10 +1081,11 @@ msgstr "Соединение"
 #: dist/converse-no-dependencies.js:81981
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
+"URL-адрес HTTP или websocket, используемый для подключения к XMPP-серверу"
 
 #: dist/converse-no-dependencies.js:81983
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "например, wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:81991
 msgid "Password"

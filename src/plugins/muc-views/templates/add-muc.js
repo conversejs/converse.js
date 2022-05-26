@@ -35,10 +35,8 @@ export default (o) => {
                         <div class="form-group">
                             <label for="chatroom">${o.label_room_address}:</label>
                             ${ (o.muc_roomid_policy_error_msg) ? html`<label class="roomid-policy-error">${o.muc_roomid_policy_error_msg}</label>` : '' }
-                            <converse-autocomplete
-                                .getAutoCompleteList="${getAutoCompleteList}"
-                                placeholder="${o.chatroom_placeholder}"
-                                name="chatroom"/>
+                            ${ (!api.settings.get('locked_muc_domain')) ? html`<converse-autocomplete .getAutoCompleteList="${getAutoCompleteList}"  placeholder="${o.chatroom_placeholder}" 
+                            name="chatroom"/>` : html`<input type="text" required="required" name="chatroom"  class="form-control roomjid-input" placeholder="${o.chatroom_placeholder}"/>` }
                         </div>
                         ${ o.muc_roomid_policy_hint ?  html`<div class="form-group">${unsafeHTML(DOMPurify.sanitize(o.muc_roomid_policy_hint, {'ALLOWED_TAGS': ['b', 'br', 'em']}))}</div>` : '' }
                         ${ !api.settings.get('locked_muc_nickname') ? nickname_input(o) : '' }

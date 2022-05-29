@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2021-08-14 22:33+0000\n"
-"Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
+"PO-Revision-Date: 2022-05-30 18:18+0000\n"
+"Last-Translator: WofWca <wofwca@protonmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
 "Language: uk\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.13-dev\n"
 "domain: converse\n"
 "lang: uk\n"
 
@@ -47,22 +47,22 @@ msgstr "Сервер XMPP не пропонує підтримуваний ме�
 
 #: dist/converse-no-dependencies.js:43531
 #: dist/converse-no-dependencies.js:53086
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is typing"
-msgstr "друкує"
+msgstr "%1$s друкує"
 
 #: dist/converse-no-dependencies.js:43533
 #: dist/converse-no-dependencies.js:53088
 #, fuzzy, javascript-format
 msgid "%1$s has stopped typing"
-msgstr "припинив друкувати"
+msgstr "%1$s припинив друкувати"
 
 #: dist/converse-no-dependencies.js:43535
 #: dist/converse-no-dependencies.js:43957
 #: dist/converse-no-dependencies.js:53090
 #, fuzzy, javascript-format
 msgid "%1$s has gone away"
-msgstr "пішов геть"
+msgstr "%1$s пішов геть"
 
 #: dist/converse-no-dependencies.js:43620
 #: dist/converse-no-dependencies.js:50559
@@ -75,30 +75,28 @@ msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "На жаль, сталася помилка під час спроби відкликати ваше повідомлення."
 
 #: dist/converse-no-dependencies.js:43627
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "Вам не дозволяється надсилати повідомлення в цій кімнаті"
+msgstr "Вам не дозволяється надсилати повідомлення в цій кімнаті."
 
 #: dist/converse-no-dependencies.js:43629
 #: dist/converse-no-dependencies.js:50572
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Трапилася помилка при спробі зберегти форму."
+msgstr "Трапилася помилка при спробі вiдправити ваше повiдомлення."
 
 #: dist/converse-no-dependencies.js:43955
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone offline"
-msgstr "тепер поза мережею"
+msgstr "%1$s вiдключився"
 
 #: dist/converse-no-dependencies.js:43959
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is busy"
-msgstr "зайнятий"
+msgstr "%1$s зайнятий"
 
 #: dist/converse-no-dependencies.js:43961
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is online"
-msgstr "на зв'язку"
+msgstr "%1$s на зв'язку"
 
 #: dist/converse-no-dependencies.js:44957
 #: dist/converse-no-dependencies.js:44980
@@ -212,24 +210,22 @@ msgstr ""
 "бесіді."
 
 #: dist/converse-no-dependencies.js:50946
-#, fuzzy
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Трапилася помилка при спробі зберегти форму."
+msgstr "Трапилася помилка при спробі змiнити ваше повiдомлення."
 
 #: dist/converse-no-dependencies.js:51724
-#, fuzzy
 msgid "Sorry, an error happened while running the command."
-msgstr "Клацніть, щоб видалити цей контакт"
+msgstr "Вибачте, потрапилась помилка коли виповнювалась комманда"
 
 #: dist/converse-no-dependencies.js:51724
 #: dist/converse-no-dependencies.js:91858
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "Вiдкрийте консоль розоробiтника в вашому браузерi для деталiв."
 
 #: dist/converse-no-dependencies.js:51749
 #: dist/converse-no-dependencies.js:51772
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
+msgstr "Помилка: людини в гуртовому чатi з вашими аргументами не найдено"
 
 #: dist/converse-no-dependencies.js:51759
 msgid "Error: found multiple groupchat participant based on your arguments"

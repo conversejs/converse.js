@@ -28,7 +28,7 @@ describe('The "Groupchats" Add modal', function () {
 
             expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
-            modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.montague.lit';
+            modal.el.querySelector('input[name="chatroom"]').value = 'lounge@muc.montague.lit';
             modal.el.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
             await u.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
@@ -37,8 +37,7 @@ describe('The "Groupchats" Add modal', function () {
             roomspanel.querySelector('.show-add-muc-modal').click();
             label_name = modal.el.querySelector('label[for="chatroom"]');
             expect(label_name.textContent.trim()).toBe('Groupchat address:');
-            name_input = modal.el.querySelector('input[name="chatroom"]');
-            expect(name_input.placeholder).toBe('name@muc.example.org');
+            await u.waitUntil(() => modal.el.querySelector('input[name="chatroom"]')?.placeholder === 'name@muc.example.org');
         })
     );
 

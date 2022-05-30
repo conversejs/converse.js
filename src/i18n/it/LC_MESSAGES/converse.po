@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2021-12-10 09:53+0000\n"
+"PO-Revision-Date: 2022-05-30 18:18+0000\n"
 "Last-Translator: random r <epsilin@yopmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.13-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -484,16 +484,14 @@ msgid "Remote server not found"
 msgstr "Server remoto non trovato"
 
 #: dist/converse-no-dependencies.js:53778
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr "Non ti è permesso registrarti in questa conversazione di gruppo."
+msgstr "Non ti è permesso entrare in questa conversazione di gruppo"
 
 #: dist/converse-no-dependencies.js:53782
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
 msgstr ""
-"Scusa, si è verificato un errore durante il salvataggio dei dati del tuo "
-"profilo."
+"Si è verificato un errore tentando di entrare in questa conversazione di "
+"gruppo"
 
 #: dist/converse-no-dependencies.js:54944
 #, javascript-format
@@ -668,9 +666,9 @@ msgid "New messages"
 msgstr "Nuovi messaggi"
 
 #: dist/converse-no-dependencies.js:62978
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Segnalibri"
+msgstr "Segnalibro per \"%1$s\""
 
 #: dist/converse-no-dependencies.js:62980
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -680,7 +678,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62982
 msgid "Remove"
-msgstr ""
+msgstr "Rimuovi"
 
 #: dist/converse-no-dependencies.js:62984
 msgid "The name for this bookmark:"
@@ -693,7 +691,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62988
 msgid "Update"
-msgstr ""
+msgstr "Aggiorna"
 
 #: dist/converse-no-dependencies.js:62988
 #: dist/converse-no-dependencies.js:91564
@@ -1102,17 +1100,16 @@ msgid "This is a trusted device"
 msgstr "Questo è un dispositivo fidato"
 
 #: dist/converse-no-dependencies.js:81979
-#, fuzzy
 msgid "Connection URL"
-msgstr "Connessione in corso"
+msgstr "URL di connessione"
 
 #: dist/converse-no-dependencies.js:81981
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
-msgstr ""
+msgstr "URL HTTP o websocket usato per connettere al tuo server XMPP"
 
 #: dist/converse-no-dependencies.js:81983
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "es. wss://esempio.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:81991
 msgid "Password"
@@ -1433,9 +1430,8 @@ msgstr ""
 "Controlla la console del browser per i dettagli"
 
 #: dist/converse-no-dependencies.js:90006
-#, fuzzy
 msgid "Change nickname"
-msgstr "Cambia il tuo soprannome"
+msgstr "Cambia soprannome"
 
 #: dist/converse-no-dependencies.js:90006
 msgid "Enter groupchat"
@@ -1643,7 +1639,6 @@ msgid "Groupchat info for %1$s"
 msgstr "Informazioni della conversazione di gruppo per %1$s"
 
 #: dist/converse-no-dependencies.js:92610
-#, fuzzy
 msgid "XMPP address"
 msgstr "Indirizzo XMPP"
 
@@ -1802,9 +1797,8 @@ msgid "Configure this groupchat"
 msgstr "Configura questa conversazione di gruppo"
 
 #: dist/converse-no-dependencies.js:93443
-#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr "Nome per questo bookmark:"
+msgstr "Cambia il soprannome che usi in questa conversazione di gruppo"
 
 #: dist/converse-no-dependencies.js:93457
 msgid "Invite someone to join this groupchat"

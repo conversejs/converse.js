@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import log from "@converse/headless/log";
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
+=======
+import { _converse, api, converse } from "@converse/headless/core";
+>>>>>>> a8e66ff20 (commit to be deleted)
 
 export function removeContact (contact) {
     contact.removeFromRoster(
@@ -111,4 +115,30 @@ export function populateContactsMap (contacts_map, contact) {
         contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
     }
     return contacts_map;
+}
+
+let final_list = [];
+let timestamp = null;
+
+async function getServerList() {
+    const responseA = await fetch('https://data.xmpp.net/providers/v1/providers-A.json');
+    const dataA = await responseA.json();
+    const popular_mucsA = dataA.items.map(item => item.jid);
+    const responseB = await fetch('https://data.xmpp.net/providers/v1/providers-B.json');
+    const dataB = await responseB.json();
+    const popular_mucsB = dataB.items.map(item => item.jid);
+    const responseC = await fetch('https://data.xmpp.net/providers/v1/providers-C.json');
+    const dataC = await responseC.json();
+    const popular_mucsC = dataC.items.map(item => item.jid);
+    const response = [...popular_mucsA, ...popular_mucsB, ...popular_mucsC];
+    console.log(response)
+    final_list = [...new Set(response)];
+}
+
+export async function getXMPPList() {
+    if (!timestamp || converse.env.dayjs().isAfter(timestamp, 'day')) {
+        await getServerList();
+        timestamp = (new Date()).toISOString();
+    }
+    return final_list;
 }

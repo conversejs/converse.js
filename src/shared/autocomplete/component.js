@@ -7,6 +7,7 @@ import { html } from 'lit';
 export default class AutoCompleteComponent extends CustomElement {
     static get properties () {
         return {
+            'autofocus': { type: Boolean },
             'getAutoCompleteList': { type: Function },
             'auto_evaluate': { type: Boolean },
             'auto_first': { type: Boolean }, // Should the first element be automatically selected?
@@ -36,6 +37,7 @@ export default class AutoCompleteComponent extends CustomElement {
             <div class="suggestion-box suggestion-box__name">
                 <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
                 <input
+                    ?autofocus=${this.autofocus}
                     type="text"
                     name="${this.name}"
                     autocomplete="off"

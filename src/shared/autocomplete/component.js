@@ -4,11 +4,12 @@ import { FILTER_CONTAINS, FILTER_STARTSWITH } from './utils.js';
 import { api } from '@converse/headless/core';
 import { html } from 'lit';
 
-
 /**
  * A custom element that can be used to add auto-completion suggestions to a form input.
  * @class AutoCompleteComponent
  *
+ * @property { "above" | "below" } [position="above"]
+ *  Should the autocomplete list show above or below the input element?
  * @property { Boolean } [autofocus=false]
  *  Should the `focus` attribute be set on the input element?
  * @property { Function } getAutoCompleteList
@@ -40,6 +41,7 @@ import { html } from 'lit';
 export default class AutoCompleteComponent extends CustomElement {
     static get properties () {
         return {
+            'position': { type: String },
             'autofocus': { type: Boolean },
             'getAutoCompleteList': { type: Function },
             'auto_evaluate': { type: Boolean },
@@ -49,13 +51,13 @@ export default class AutoCompleteComponent extends CustomElement {
             'min_chars': { type: Number },
             'name': { type: String },
             'placeholder': { type: String },
-            'triggers': { type: String }
+            'triggers': { type: String },
         };
     }
 
     constructor () {
         super();
-        this.position = "above";
+        this.position = 'above';
         this.auto_evaluate = true;
         this.auto_first = false;
         this.filter = 'contains';
@@ -67,9 +69,10 @@ export default class AutoCompleteComponent extends CustomElement {
     }
 
     render () {
+        const position_class = `suggestion-box__results--${this.position}`;
         return html`
             <div class="suggestion-box suggestion-box__name">
-                <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
+                <ul class="suggestion-box__results ${position_class}" hidden=""></ul>
                 <input
                     ?autofocus=${this.autofocus}
                     type="text"
@@ -100,12 +103,9 @@ export default class AutoCompleteComponent extends CustomElement {
             'list': () => this.getAutoCompleteList(),
             'match_current_word': true,
             'max_items': this.max_items,
-            'min_chars': this.min_chars
+            'min_chars': this.min_chars,
         });
-        this.auto_complete.on(
-            'suggestion-box-selectcomplete',
-            () => (this.auto_completing = false)
-        );
+        this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
     }
 
     onKeyDown (ev) {

@@ -3,6 +3,8 @@ import BootstrapModal from "plugins/modal/base.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 
+import '../styles/add-muc-modal.scss';
+
 const u = converse.env.utils;
 const { Strophe } = converse.env;
 

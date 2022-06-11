@@ -37,8 +37,12 @@ export default (o) => {
                             ${ (o.muc_roomid_policy_error_msg) ? html`<label class="roomid-policy-error">${o.muc_roomid_policy_error_msg}</label>` : '' }
                             <converse-autocomplete
                                 .getAutoCompleteList="${getAutoCompleteList}"
+                                ?autofocus=${true}
+                                position="below"
                                 placeholder="${o.chatroom_placeholder}"
-                                name="chatroom"></converse-autocomplete>
+                                class="add-muc-autocomplete"
+                                name="chatroom">
+                            </converse-autocomplete>
                         </div>
                         ${ o.muc_roomid_policy_hint ?  html`<div class="form-group">${unsafeHTML(DOMPurify.sanitize(o.muc_roomid_policy_hint, {'ALLOWED_TAGS': ['b', 'br', 'em']}))}</div>` : '' }
                         ${ !api.settings.get('locked_muc_nickname') ? nickname_input(o) : '' }

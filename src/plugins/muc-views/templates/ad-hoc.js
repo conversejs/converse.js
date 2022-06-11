@@ -22,7 +22,7 @@ export default (o) => {
                     <converse-autocomplete
                         .getAutoCompleteList="${getAutoCompleteList}"
                         placeholder="${i18n_jid_placeholder}"
-                        name="jid"/>
+                        name="jid"></converse-autocomplete>
                 </label>
             </fieldset>
             <fieldset class="form-group">

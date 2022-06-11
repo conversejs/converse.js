@@ -38,7 +38,7 @@ export default (o) => {
                             <converse-autocomplete
                                 .getAutoCompleteList="${getAutoCompleteList}"
                                 placeholder="${o.chatroom_placeholder}"
-                                name="chatroom"/>
+                                name="chatroom"></converse-autocomplete>
                         </div>
                         ${ o.muc_roomid_policy_hint ?  html`<div class="form-group">${unsafeHTML(DOMPurify.sanitize(o.muc_roomid_policy_hint, {'ALLOWED_TAGS': ['b', 'br', 'em']}))}</div>` : '' }
                         ${ !api.settings.get('locked_muc_nickname') ? nickname_input(o) : '' }

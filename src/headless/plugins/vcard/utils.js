@@ -5,7 +5,7 @@ import { initStorage } from '@converse/headless/utils/storage.js';
 const { Strophe, $iq, u } = converse.env;
 
 
-async function onVCardData (jid, iq) {
+async function onVCardData(jid, iq) {
     const vcard = iq.querySelector('vCard');
     let result = {};
     if (vcard !== null) {
@@ -22,7 +22,7 @@ async function onVCardData (jid, iq) {
             'vcard_error': undefined
         };
     }
-    if (result.image) {
+    if (result.image && result.image !== 'undefined') {
         const buffer = u.base64ToArrayBuffer(result['image']);
         const ab = await crypto.subtle.digest('SHA-1', buffer);
         result['image_hash'] = u.arrayBufferToHex(ab);
@@ -31,10 +31,10 @@ async function onVCardData (jid, iq) {
 }
 
 
-export function createStanza (type, jid, vcard_el) {
-    const iq = $iq(jid ? {'type': type, 'to': jid} : {'type': type});
+export function createStanza(type, jid, vcard_el) {
+    const iq = $iq(jid ? { 'type': type, 'to': jid } : { 'type': type });
     if (!vcard_el) {
-        iq.c("vCard", {'xmlns': Strophe.NS.VCARD});
+        iq.c("vCard", { 'xmlns': Strophe.NS.VCARD });
     } else {
         iq.cnode(vcard_el);
     }
@@ -42,7 +42,7 @@ export function createStanza (type, jid, vcard_el) {
 }
 
 
-export function onOccupantAvatarChanged (occupant) {
+export function onOccupantAvatarChanged(occupant) {
     const hash = occupant.get('image_hash');
     const vcards = [];
     if (occupant.get('jid')) {
@@ -53,7 +53,7 @@ export function onOccupantAvatarChanged (occupant) {
 }
 
 
-export async function setVCardOnModel (model) {
+export async function setVCardOnModel(model) {
     let jid;
     if (model instanceof _converse.Message) {
         if (['error', 'info'].includes(model.get('type'))) {
@@ -76,7 +76,7 @@ export async function setVCardOnModel (model) {
 }
 
 
-function getVCardForOccupant (occupant) {
+function getVCardForOccupant(occupant) {
     const muc = occupant?.collection?.chatroom;
     const nick = occupant.get('nick');
 
@@ -93,7 +93,7 @@ function getVCardForOccupant (occupant) {
     }
 }
 
-export async function setVCardOnOccupant (occupant) {
+export async function setVCardOnOccupant(occupant) {
     await api.waitUntil('VCardsInitialized');
     occupant.vcard = getVCardForOccupant(occupant);
     if (occupant.vcard) {
@@ -103,7 +103,7 @@ export async function setVCardOnOccupant (occupant) {
 }
 
 
-function getVCardForMUCMessage (message) {
+function getVCardForMUCMessage(message) {
     const muc = message?.collection?.chatbox;
     const nick = Strophe.getResourceFromJid(message.get('from'));
 
@@ -120,7 +120,7 @@ function getVCardForMUCMessage (message) {
     }
 }
 
-export async function setVCardOnMUCMessage (message) {
+export async function setVCardOnMUCMessage(message) {
     if (['error', 'info'].includes(message.get('type'))) {
         return;
     } else {
@@ -134,7 +134,7 @@ export async function setVCardOnMUCMessage (message) {
 }
 
 
-export async function initVCardCollection () {
+export async function initVCardCollection() {
     _converse.vcards = new _converse.VCards();
     const id = `${_converse.bare_jid}-converse.vcards`;
     initStorage(_converse.vcards, id);
@@ -142,13 +142,13 @@ export async function initVCardCollection () {
         _converse.vcards.fetch({
             'success': resolve,
             'error': resolve
-        }, {'silent': true});
+        }, { 'silent': true });
     });
     const vcards = _converse.vcards;
     if (_converse.session) {
         const jid = _converse.session.get('bare_jid');
         const status = _converse.xmppstatus;
-        status.vcard = vcards.get(jid) || vcards.create({'jid': jid});
+        status.vcard = vcards.get(jid) || vcards.create({ 'jid': jid });
         if (status.vcard) {
             status.vcard.on('change', () => status.trigger('vcard:change'));
             status.trigger('vcard:add');
@@ -162,7 +162,7 @@ export async function initVCardCollection () {
 }
 
 
-export function clearVCardsSession () {
+export function clearVCardsSession() {
     if (_converse.shouldClearCache()) {
         api.promises.add('VCardsInitialized');
         if (_converse.vcards) {
@@ -172,7 +172,7 @@ export function clearVCardsSession () {
     }
 }
 
-export async function getVCard (jid) {
+export async function getVCard(jid) {
     const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
     let iq;
     try {

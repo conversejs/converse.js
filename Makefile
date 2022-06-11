@@ -226,13 +226,10 @@ test:
 ./bin/activate:
 	python3 -m venv .
 
-.installed.cfg: requirements.txt buildout.cfg
-	./bin/pip install -r requirements.txt
+.PHONY: docsdev
+docsdev: ./bin/activate requirements.txt
 	./bin/pip install --upgrade pip==21.3.1
-	./bin/pip install --upgrade setuptools==51.3.3
-	./bin/buildout -v
-
-docsdev: ./bin/activate .installed.cfg
+	./bin/pip install -r requirements.txt
 
 .PHONY: html
 html: doc

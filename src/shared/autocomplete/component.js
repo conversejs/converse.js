@@ -100,7 +100,7 @@ export default class AutoCompleteComponent extends CustomElement {
             'auto_first': this.auto_first,
             'filter': this.filter == 'contains' ? FILTER_CONTAINS : FILTER_STARTSWITH,
             'include_triggers': [],
-            'list': () => this.getAutoCompleteList(),
+            'list': (q) => this.getAutoCompleteList(q),
             'match_current_word': true,
             'max_items': this.max_items,
             'min_chars': this.min_chars,

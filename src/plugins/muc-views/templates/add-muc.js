@@ -4,7 +4,7 @@ import { api } from '@converse/headless/core.js';
 import { html } from "lit";
 import { modal_header_close_button } from "plugins/modal/templates/buttons.js"
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { getAutoCompleteList } from "../utils.js";
+import { getAutoCompleteList } from "../search.js";
 
 
 const nickname_input = (o) => {
@@ -38,6 +38,7 @@ export default (o) => {
                             <converse-autocomplete
                                 .getAutoCompleteList="${getAutoCompleteList}"
                                 ?autofocus=${true}
+                                min_chars="3"
                                 position="below"
                                 placeholder="${o.chatroom_placeholder}"
                                 class="add-muc-autocomplete"

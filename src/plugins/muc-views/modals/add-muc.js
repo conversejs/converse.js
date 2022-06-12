@@ -32,7 +32,6 @@ export default BootstrapModal.extend({
             placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
         }
         return tpl_add_muc(Object.assign(this.model.toJSON(), {
-            '_converse': _converse,
             'label_room_address': api.settings.get('muc_domain') ? __('Groupchat name') :  __('Groupchat address'),
             'chatroom_placeholder': placeholder,
             'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,

@@ -59,7 +59,6 @@ export class AutoComplete {
     }
 
     bindEvents () {
-        // Bind events
         const input = {
             "blur": () => this.close({'reason': 'blur'})
         }

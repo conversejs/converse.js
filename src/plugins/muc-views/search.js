@@ -41,7 +41,13 @@ async function searchRooms (query) {
         return [];
     }
     const s = `result[xmlns="${Strophe.NS.MUCSEARCH}"] item`;
-    return sizzle(s, iq_result).map(i => `${i.querySelector('name')?.textContent} (${i.getAttribute('address')})`);
+    return sizzle(s, iq_result).map(i => {
+        const jid = i.getAttribute('address');
+        return {
+            'label': `${i.querySelector('name')?.textContent} (${jid})`,
+            'value': jid
+        }
+    });
 }
 
 export function getAutoCompleteList (query) {
@@ -50,4 +56,3 @@ export function getAutoCompleteList (query) {
     }
     return rooms_cache[query];
 }
-

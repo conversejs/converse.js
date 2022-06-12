@@ -36,7 +36,7 @@ export default (o) => {
                             <label for="chatroom">${o.label_room_address}:</label>
                             ${ (o.muc_roomid_policy_error_msg) ? html`<label class="roomid-policy-error">${o.muc_roomid_policy_error_msg}</label>` : '' }
                             <converse-autocomplete
-                                .getAutoCompleteList="${getAutoCompleteList}"
+                                .getAutoCompleteList=${getAutoCompleteList}
                                 ?autofocus=${true}
                                 min_chars="3"
                                 position="below"

@@ -123,6 +123,9 @@
 
             &:hover {
                 background-color: var(--controlbox-pane-bg-hover-color);
+                .list-item-action {
+                    opacity: 1;
+                }
                 .fa, .far, .fas {
                     opacity: 1;
                 }

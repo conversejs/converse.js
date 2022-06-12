@@ -1,0 +1,8 @@
+#add-chatroom-modal {
+    converse-autocomplete {
+        .suggestion-box__results--below {
+            height: 10em;
+            overflow: auto;
+        }
+    }
+}

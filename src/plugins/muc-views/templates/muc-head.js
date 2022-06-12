@@ -28,7 +28,13 @@ export default (el) => {
             <div class="chatbox-title--row">
                 ${ (!_converse.api.settings.get("singleton")) ?  html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>` : '' }
                 <div class="chatbox-title__text" title="${ (api.settings.get('locked_muc_domain') !== 'hidden') ? o.jid : '' }">${ el.model.getDisplayName() }
-                    ${ (o.bookmarked) ? html`<i class="fa fa-bookmark chatbox-title__text--bookmarked" title="${i18n_bookmarked}"></i>` : '' }
+                ${ (o.bookmarked) ?
+                    html`<converse-icon
+                            class="fa fa-bookmark chatbox-title__text--bookmarked"
+                            size="1em"
+                            color="var(--chatroom-head-color)"
+                            title="${i18n_bookmarked}">
+                        </converse-icon>` : '' }
                 </div>
             </div>
             <div class="chatbox-title__buttons row no-gutters">

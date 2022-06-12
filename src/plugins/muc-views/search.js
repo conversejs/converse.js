@@ -8,20 +8,7 @@ Strophe.addNamespace('MUCSEARCH', 'https://xmlns.zombofant.net/muclumbus/search/
 const rooms_cache = {};
 
 async function searchRooms (query) {
-    let iq = $iq({
-        'type': 'get',
-        'from': _converse.bare_jid,
-        'to': 'api@search.jabber.network'
-    }).c('search', { 'xmlns': Strophe.NS.MUCSEARCH })
-
-    try {
-        await api.sendIQ(iq);
-    } catch (e) {
-        log.error(e);
-        return [];
-    }
-
-    iq = $iq({
+    const iq = $iq({
         'type': 'get',
         'from': _converse.bare_jid,
         'to': 'api@search.jabber.network'

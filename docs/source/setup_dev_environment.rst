@@ -1,6 +1,6 @@
 .. raw:: html
 
-    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/setup_dev_environment.rst">Edit me on GitHub</a></div>
 
 .. _`setup_dev_environment`:
 

@@ -46,7 +46,7 @@ export default (el) => {
 
                         <div class="form-group add-xmpp-contact__group">
                             <label class="clearfix" for="name">${i18n_group}:</label>
-                            <converse-autocomplete .getAutoCompleteList="${() => el.getGroupsAutoCompleteList()}" name="group"/>
+                            <converse-autocomplete .getAutoCompleteList="${() => el.getGroupsAutoCompleteList()}" name="group"></converse-autocomplete>
                         </div>
 
                         <div class="form-group"><div class="invalid-feedback">${i18n_error_message}</div></div>

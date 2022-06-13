@@ -59,12 +59,11 @@ export class AutoComplete {
     }
 
     bindEvents () {
-        // Bind events
         const input = {
             "blur": () => this.close({'reason': 'blur'})
         }
         if (this.auto_evaluate) {
-            input["input"] = () => this.evaluate();
+            input["input"] = (e) => this.evaluate(e);
         }
 
         this._events = {
@@ -265,25 +264,27 @@ export class AutoComplete {
             return;
         }
 
-        const list = typeof this._list === "function" ? await this._list() : this._list;
-        if (list.length === 0) {
-            return;
-        }
-
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
+
         const contains_trigger = helpers.isMention(value, this.ac_triggers);
-        if (contains_trigger) {
-            this.auto_completing = true;
-            if (!this.include_triggers.includes(ev.key)) {
-                value = u.isMentionBoundary(value[0])
-                    ? value.slice('2')
-                    : value.slice('1');
-            }
+        if (contains_trigger && !this.include_triggers.includes(ev.key)) {
+            value = u.isMentionBoundary(value[0])
+                ? value.slice('2')
+                : value.slice('1');
         }
 
-        if ((contains_trigger || value.length) && value.length >= this.min_chars) {
+        const is_long_enough = value.length && value.length >= this.min_chars;
+
+        if (contains_trigger || is_long_enough) {
+            this.auto_completing = true;
+
+            const list = typeof this._list === "function" ? await this._list(value) : this._list;
+            if (list.length === 0 || !this.auto_completing) {
+                this.close({'reason': 'nomatches'});
+                return;
+            }
+
             this.index = -1;
-            // Populate list with options that match
             this.ul.innerHTML = "";
 
             this.suggestions = list

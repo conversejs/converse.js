@@ -40,7 +40,7 @@
                 z-index: -1;
             }
             border-radius: .3em;
-            border: 1px solid rgba(0,0,0,.3);
+            border: 1px solid var(--focus-color);
             box-shadow: .05em .2em .6em rgba(0,0,0,.1);
             box-sizing: border-box;
             left: 0;
@@ -65,7 +65,7 @@
             }
         }
         .suggestion-box__results--below {
-            top: 2em;
+            top: 3em;
         }
         .suggestion-box__results--above {
             bottom: 4.5em;

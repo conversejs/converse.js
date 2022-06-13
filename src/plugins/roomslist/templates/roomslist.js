@@ -10,18 +10,24 @@ const bookmark = (o) => {
     const i18n_remove_bookmark = __('Unbookmark this groupchat');
     if (o.bookmarked) {
         return html`
-            <a class="list-item-action fa fa-bookmark remove-bookmark button-on"
+            <a class="list-item-action remove-bookmark button-on"
                data-room-jid="${o.room.get('jid')}"
                data-bookmark-name="${o.room.getDisplayName()}"
                @click=${o.removeBookmark}
-               title="${ o.bookmarked ? i18n_remove_bookmark : i18n_add_bookmark }"></a>`;
+               title="${ o.bookmarked ? i18n_remove_bookmark : i18n_add_bookmark }">
+
+                <converse-icon class="fa fa-bookmark" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+            </a>`;
     } else {
         return html`
-            <a class="list-item-action fa fa-bookmark add-bookmark"
+            <a class="list-item-action add-bookmark"
                data-room-jid="${o.room.get('jid')}"
                data-bookmark-name="${o.room.getDisplayName()}"
                @click=${o.addBookmark}
-               title="${ o.bookmarked ? i18n_remove_bookmark : i18n_add_bookmark }"></a>`;
+               title="${ o.bookmarked ? i18n_remove_bookmark : i18n_add_bookmark }">
+
+                <converse-icon class="fa fa-bookmark" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+            </a>`;
     }
 }
 
@@ -46,16 +52,22 @@ const room_item = (o) => {
 
             ${ api.settings.get('allow_bookmarks') ? bookmark(o) : '' }
 
-            <a class="list-item-action room-info fa fa-info-circle"
+            <a class="list-item-action room-info"
                 data-room-jid="${o.room.get('jid')}"
                 title="${__('Show more information on this groupchat')}"
-                @click=${o.showRoomDetailsModal}></a>
+                @click=${o.showRoomDetailsModal}>
 
-            <a class="list-item-action fa fa-sign-out-alt close-room"
+                <converse-icon class="fa fa-info-circle" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+            </a>
+
+            <a class="list-item-action close-room"
                 data-room-jid="${o.room.get('jid')}"
                 data-room-name="${o.room.getDisplayName()}"
                 title="${i18n_leave_room}"
-                @click=${o.closeRoom}></a>
+                @click=${o.closeRoom}>
+
+                <converse-icon class="fa fa-sign-out-alt" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+            </a>
         </div>`;
 }
 
@@ -70,12 +82,12 @@ export default (o) => {
             <a class="controlbox-heading__btn show-list-muc-modal"
                 @click=${(ev) => api.modal.show(MUCListModal, { 'model': o.model }, ev)}
                 title="${i18n_title_list_rooms}" data-toggle="modal" data-target="#muc-list-modal">
-                    <converse-icon class="fa fa-list-ul right" path-prefix="/dist" size="1em"></converse-icon>
+                    <converse-icon class="fa fa-list-ul right" size="1em"></converse-icon>
             </a>
             <a class="controlbox-heading__btn show-add-muc-modal"
                 @click=${(ev) => api.modal.show(AddMUCModal, { 'model': o.model }, ev)}
                 title="${i18n_title_new_room}" data-toggle="modal" data-target="#add-chatrooms-modal">
-                    <converse-icon class="fa fa-plus right" path-prefix="/dist" size="1em"></converse-icon>
+                    <converse-icon class="fa fa-plus right" size="1em"></converse-icon>
             </a>
         </div>
 

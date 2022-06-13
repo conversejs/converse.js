@@ -8,6 +8,10 @@
 - Remove the `converse-carbons` plugin and make carbons part of the `converse-chat` plugin.
 - Remove the `message_carbons` configuration setting. Carbons are now always enabled.
 
+## 9.1.2 (2022-05-15)
+- Added fixes for Issue #2857. The fix is regarding Converse.js incorrectly applying text styling effects to HTTP URLs that contain special characters(`_`, `\``, `\`\`\``, `~`, `*`). With the fixes applied, the hyperlinks encompass the entire HTTP URL instead of only part of it
+- Added integration test for the fixes above to the following file: `/src/plugins/chatview/tests/chatbox.js/`
+
 ## 9.1.1 (2022-05-05)
 
 - GIFs don't render inside unfurls and cause a TypeError

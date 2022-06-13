@@ -439,35 +439,8 @@ export class RichText extends String {
      * @param { Object } template - The lit TemplateResult instance
      */
     addTemplateResult (begin, end, template) {
-        // if(this.references.findIndex(item => item.begin == begin && item.end == end) == -1){
-            // duplicate reference not found 
             this.references.push({ begin, end, template });
-        // }
-        // else{
-        //     // duplicate reference found
-        // }
-
     }
-
-    // addHttpTemplateResult(begin, end, template){
-    //     const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
-    //     const media_urls = getMediaURLs(urls_meta, text, full_offset);
-    //     media_urls.forEach(media_url => 
-    //         this.httpsReferences.push({ begin, end, template });            
-            
-    //     );
-    // }
-
-
-    // addHttpReferences(text, local_offset){
-    //     const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
-    //     const media_urls = getMediaURLs(urls_meta, text, full_offset);
-    //     media_urls.forEach(media_url => {
-    //         console.log(media_url);
-    //         this.addHttpTemplateResult(media_url.start, media_url.end, template)           
-            
-    //     });
-    // }
 
     isMeCommand () {
         const text = this.toString();

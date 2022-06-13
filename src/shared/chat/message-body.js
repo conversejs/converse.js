@@ -1,4 +1,4 @@
-import 'shared/registry.js';
+import 'shared/registry.js'; 
 import ImageModal from 'modals/image.js';
 import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -41,6 +41,8 @@ export default class MessageBody extends CustomElement {
     render () {
         const callback = () => this.model.collection?.trigger('rendered', this.model);
         const offset = 0;
+        // console.log("THIS.MODEL");
+        // console.log(this.model);
         const options = {
             'media_urls': this.model.get('media_urls'),
             'mentions': this.model.get('references'),

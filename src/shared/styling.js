@@ -10,7 +10,7 @@ import { renderStylingDirectiveBody } from 'shared/directives/styling.js';
 
 const bracketing_directives = ['*', '_', '~', '`'];
 const styling_directives = [...bracketing_directives, '```', '>'];
-const styling_map = {
+export const styling_map = {
     '*': {'name': 'strong', 'type': 'span'},
     '_': {'name': 'emphasis', 'type': 'span'},
     '~': {'name': 'strike', 'type': 'span'},
@@ -18,6 +18,7 @@ const styling_map = {
     '```': {'name': 'preformatted_block', 'type': 'block'},
     '>': {'name': 'quote', 'type': 'block'}
 };
+const https_directives = ['https'];
 
 const dont_escape = ['_', '>', '`', '~'];
 
@@ -140,15 +141,18 @@ export function getDirectiveAndLength (text, i) {
 
 export const isQuoteDirective = (d) => ['>', '&gt;'].includes(d);
 
+export const isHTTPDirective = (d) => ['https'].includes(d);
 
 export function getDirectiveTemplate (d, text, offset, options) {
     const template = styling_templates[styling_map[d].name];
+
     if (isQuoteDirective(d)) {
         const newtext = text
             .replace(/\n>/g, '\n') // Don't show the directive itself
             .replace(/\n$/, ''); // Trim line-break at the end
         return template(newtext, offset, options);
-    } else {
+    } 
+    else {
         return template(text, offset, options);
     }
 }
@@ -157,6 +161,14 @@ export function getDirectiveTemplate (d, text, offset, options) {
 export function containsDirectives (text) {
     for (let i=0; i<styling_directives.length; i++) {
         if (text.includes(styling_directives[i])) {
+            return true;
+        }
+    }
+}
+
+export function containsHTTPUrl (text) {
+    for (let i=0; i<https_directives.length; i++) {
+        if (text.includes(https_directives[i])) {
             return true;
         }
     }

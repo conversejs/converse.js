@@ -3,7 +3,7 @@ import tpl_gif from 'templates/gif.js';
 import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
 import { api } from '@converse/headless/core';
-import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
+import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective, styling_map } from './styling.js';
 import { getEmojiMarkup } from './chat/utils.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
@@ -95,6 +95,7 @@ export class RichText extends String {
         this.options = options;
         this.payload = [];
         this.references = [];
+        this.httpsReferences = [];
         this.render_styling = options?.render_styling;
         this.show_images = options?.show_images;
         this.hide_media_urls = options?.hide_media_urls;
@@ -123,9 +124,12 @@ export class RichText extends String {
      *  offset from the start of the original message stanza's body text).
      */
     addHyperlinks (text, local_offset) {
+        // this.addAnnotations(this.addHttpReferences);
+
         const full_offset = local_offset + this.offset;
         const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
         const media_urls = getMediaURLs(urls_meta, text, full_offset);
+        
 
         media_urls.filter(o => !o.is_encrypted).forEach(url_obj => {
             const url_text = url_obj.url;
@@ -209,15 +213,85 @@ export class RichText extends String {
     }
 
     /**
+     * Check for whether a number is within multiple ranges of begin/end references. 
+     * For example: given @param { Array } references array of [{ begin: 23, end: 30, ... }, { begin: 80, end: 100, ... }], function will return false if @param { Integer } search_range = `50`. If @param { Integer } search_range = `90`, function will return true
+     * @param { Array } references - An array containing reference objects({begin: 1, end: 2, template: {...} }) with ranges of numbers representing begin and end portions of outgoing Chat messages
+     * @param { Integer } search_range - This value will be compared to all the ranges contained in @param { Array } references in order to determine whether it lying inside any of those ranges
+     */
+    checkNumInRange(references, search_range){
+        let v = [];
+
+        let map = new Map();
+
+        for(var i = 0; i < references.length; i++){
+            v.push(references[i].start);
+            map.set(references[i].start, 1);
+            v.push(references[i].end);
+            map.set(references[i].end, 2);
+        }
+
+        v.sort(function(a, b){ return a - b; });
+        let index = this.lowerBound(v, search_range);
+
+        if(index >= 0 && v[index] == search_range){
+            return true;
+        }else{
+            if(index >= 0 && map.get(v[index]) == 2){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    }
+    /**
+     * Used to obtain the nearest lower bound value for a given @param { Integer } value
+     * For example: given @param { Array } array contaiing [23, 30, 80, 100], a @param { Integer } value = 90 would return 80
+     * @param { Array } array - An array containing a series a integers which are derived from @param { Array } references in `checkNumInRange(references, search_range)`
+     * @param { Integer } value - This is the search term which a lower bound value nearest to it will be returned by the function
+     */
+    lowerBound(array, value){
+        let low = 0;
+        let high = array.length;
+        while(low < high){
+            let mid = Math.floor((low + high) / 2);
+            if(value <= array[mid]){
+                high = mid;
+            }else{
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+
+
+    /**
      * Look for XEP-0393 styling directives and add templates for rendering
      * them.
      */
     addStyling () {
         const references = [];
+        var filtered_refs = [];
+        var urls_coords = [];
+
+        this.addAnnotations(this.addHyperlinks);
+
+        for(var i = 0; i < this.references.length; i++){
+            var ending_string = this.references[i].template.strings.length;
+            if(this.references[i].template.strings[ending_string - 1] == "</a>"){
+              
+                var new_coords = { 
+                    start: this.references[i].begin,
+                    end: this.references[i].end
+                };
+                urls_coords.push(new_coords);
+            } 
+        }
         if (containsDirectives(this, this.mentions)) {
             const mention_ranges = this.mentions.map(m =>
                 Array.from({ 'length': Number(m.end) }, (v, i) => Number(m.begin) + i)
             );
+
             let i = 0;
             while (i < this.length) {
                 if (mention_ranges.filter(r => r.includes(i)).length) { // eslint-disable-line no-loop-func
@@ -226,18 +300,22 @@ export class RichText extends String {
                     i++;
                     continue;
                 }
+
                 const { d, length } = getDirectiveAndLength(this, i);
                 if (d && length) {
                     const is_quote = isQuoteDirective(d);
                     const end = i + length;
                     const slice_end = is_quote ? end : end - d.length;
                     let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
+
+
                     if (is_quote && this[slice_begin] === ' ') {
                         // Trim leading space inside codeblock
                         slice_begin += 1;
                     }
                     const offset = slice_begin;
                     const text = this.slice(slice_begin, slice_end);
+
                     references.push({
                         'begin': i,
                         'template': getDirectiveTemplate(d, text, offset, this.options),
@@ -247,10 +325,31 @@ export class RichText extends String {
                 }
                 i++;
             }
+
+            if(urls_coords.length > 0){
+                for(var k = 0; k < references.length; k++){
+                    try{
+                        var start_range = this.checkNumInRange(urls_coords, references[k].begin);
+                        var end_range = this.checkNumInRange(urls_coords, references[k].end);
+
+                        if(!start_range && !end_range){
+                            filtered_refs.push(references[k]);
+                        }
+                    }catch(err){
+                        console.log(err);
+                    }
+                }
+              
+            }else{
+                filtered_refs = references;
+            }
+            const begin_end_coords = filtered_refs.map(ref => ref.begin);
+            filtered_refs = filtered_refs.filter(({begin}, index) => !begin_end_coords.includes(begin, index + 1));
         }
-        references.forEach(ref => this.addTemplateResult(ref.begin, ref.end, ref.template));
+        filtered_refs.forEach(ref => this.addTemplateResult(ref.begin, ref.end, ref.template));
     }
 
+    
     trimMeMessage () {
         if (this.offset === 0) {
             // Subtract `/me ` from 3rd person messages
@@ -300,6 +399,7 @@ export class RichText extends String {
          */
         await api.trigger('beforeMessageBodyTransformed', this, { 'Synchronous': true });
 
+
         this.render_styling && this.addStyling();
         this.addAnnotations(this.addMentions);
         this.addAnnotations(this.addHyperlinks);
@@ -339,8 +439,35 @@ export class RichText extends String {
      * @param { Object } template - The lit TemplateResult instance
      */
     addTemplateResult (begin, end, template) {
-        this.references.push({ begin, end, template });
+        // if(this.references.findIndex(item => item.begin == begin && item.end == end) == -1){
+            // duplicate reference not found 
+            this.references.push({ begin, end, template });
+        // }
+        // else{
+        //     // duplicate reference found
+        // }
+
     }
+
+    // addHttpTemplateResult(begin, end, template){
+    //     const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
+    //     const media_urls = getMediaURLs(urls_meta, text, full_offset);
+    //     media_urls.forEach(media_url => 
+    //         this.httpsReferences.push({ begin, end, template });            
+            
+    //     );
+    // }
+
+
+    // addHttpReferences(text, local_offset){
+    //     const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
+    //     const media_urls = getMediaURLs(urls_meta, text, full_offset);
+    //     media_urls.forEach(media_url => {
+    //         console.log(media_url);
+    //         this.addHttpTemplateResult(media_url.start, media_url.end, template)           
+            
+    //     });
+    // }
 
     isMeCommand () {
         const text = this.toString();

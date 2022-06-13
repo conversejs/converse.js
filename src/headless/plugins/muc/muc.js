@@ -2699,6 +2699,8 @@ const ChatRoomMixin = {
      */
     isUserMentioned (message) {
         const nick = this.get('nick');
+        console.log("isUserMentioned(): ");
+        console.log(message);
         if (message.get('references').length) {
             const mentions = message
                 .get('references')

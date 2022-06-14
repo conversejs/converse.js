@@ -64,8 +64,6 @@ export default class RichText extends CustomElement {
     }
 
     render () {
-        // console.log("components/rich-text.js this.mentions: ");
-        // console.log(this.mentions);
         const options = {
             embed_audio: this.embed_audio,
             embed_videos: this.embed_videos,

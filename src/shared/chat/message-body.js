@@ -41,8 +41,6 @@ export default class MessageBody extends CustomElement {
     render () {
         const callback = () => this.model.collection?.trigger('rendered', this.model);
         const offset = 0;
-        // console.log("THIS.MODEL");
-        // console.log(this.model);
         const options = {
             'media_urls': this.model.get('media_urls'),
             'mentions': this.model.get('references'),

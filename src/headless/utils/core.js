@@ -108,8 +108,6 @@ u.getLongestSubstring = function (string, candidates) {
  */
 export function prefixMentions (message) {
     let text = message.getMessageText();
-    console.log('prefixMentions(): ');
-    console.log(text);
     (message.get('references') || [])
         .sort((a, b) => b.begin - a.begin)
         .forEach(ref => {

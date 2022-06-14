@@ -3,7 +3,7 @@ import tpl_gif from 'templates/gif.js';
 import tpl_image from 'templates/image.js';
 import tpl_video from 'templates/video.js';
 import { api } from '@converse/headless/core';
-import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective, styling_map } from './styling.js';
+import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import { getEmojiMarkup } from './chat/utils.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
@@ -95,7 +95,6 @@ export class RichText extends String {
         this.options = options;
         this.payload = [];
         this.references = [];
-        this.httpsReferences = [];
         this.render_styling = options?.render_styling;
         this.show_images = options?.show_images;
         this.hide_media_urls = options?.hide_media_urls;
@@ -270,16 +269,15 @@ export class RichText extends String {
      * them.
      */
     addStyling () {
+        this.addAnnotations(this.addHyperlinks);
+
         const references = [];
         var filtered_refs = [];
         var urls_coords = [];
 
-        this.addAnnotations(this.addHyperlinks);
-
         for(var i = 0; i < this.references.length; i++){
             var ending_string = this.references[i].template.strings.length;
             if(this.references[i].template.strings[ending_string - 1] == "</a>"){
-              
                 var new_coords = { 
                     start: this.references[i].begin,
                     end: this.references[i].end
@@ -291,7 +289,6 @@ export class RichText extends String {
             const mention_ranges = this.mentions.map(m =>
                 Array.from({ 'length': Number(m.end) }, (v, i) => Number(m.begin) + i)
             );
-
             let i = 0;
             while (i < this.length) {
                 if (mention_ranges.filter(r => r.includes(i)).length) { // eslint-disable-line no-loop-func
@@ -300,22 +297,18 @@ export class RichText extends String {
                     i++;
                     continue;
                 }
-
                 const { d, length } = getDirectiveAndLength(this, i);
                 if (d && length) {
                     const is_quote = isQuoteDirective(d);
                     const end = i + length;
                     const slice_end = is_quote ? end : end - d.length;
                     let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
-
-
                     if (is_quote && this[slice_begin] === ' ') {
                         // Trim leading space inside codeblock
                         slice_begin += 1;
                     }
                     const offset = slice_begin;
                     const text = this.slice(slice_begin, slice_end);
-
                     references.push({
                         'begin': i,
                         'template': getDirectiveTemplate(d, text, offset, this.options),
@@ -325,21 +318,15 @@ export class RichText extends String {
                 }
                 i++;
             }
-
             if(urls_coords.length > 0){
                 for(var k = 0; k < references.length; k++){
-                    try{
-                        var start_range = this.checkNumInRange(urls_coords, references[k].begin);
-                        var end_range = this.checkNumInRange(urls_coords, references[k].end);
+                    var start_range = this.checkNumInRange(urls_coords, references[k].begin);
+                    var end_range = this.checkNumInRange(urls_coords, references[k].end);
 
-                        if(!start_range && !end_range){
-                            filtered_refs.push(references[k]);
-                        }
-                    }catch(err){
-                        console.log(err);
+                    if(!start_range && !end_range){
+                        filtered_refs.push(references[k]);
                     }
                 }
-              
             }else{
                 filtered_refs = references;
             }

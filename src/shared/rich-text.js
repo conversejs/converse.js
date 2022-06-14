@@ -123,8 +123,6 @@ export class RichText extends String {
      *  offset from the start of the original message stanza's body text).
      */
     addHyperlinks (text, local_offset) {
-        // this.addAnnotations(this.addHttpReferences);
-
         const full_offset = local_offset + this.offset;
         const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
         const media_urls = getMediaURLs(urls_meta, text, full_offset);

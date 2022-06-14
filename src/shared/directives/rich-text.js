@@ -14,10 +14,6 @@ class RichTextRenderer {
     }
 
     async transform () {
-        // console.log("RichTextRenderer transform()");
-        // console.log(this.text);
-        // console.log(this.offset);
-        // console.log(this.options);
         const text = new RichText(this.text, this.offset, this.options);
         try {
             await text.addTemplates();

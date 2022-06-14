@@ -1,4 +1,4 @@
-import 'shared/registry.js'; 
+import 'shared/registry.js';
 import ImageModal from 'modals/image.js';
 import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';

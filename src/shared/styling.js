@@ -140,9 +140,9 @@ export function getDirectiveAndLength (text, i) {
 
 export const isQuoteDirective = (d) => ['>', '&gt;'].includes(d);
 
+
 export function getDirectiveTemplate (d, text, offset, options) {
     const template = styling_templates[styling_map[d].name];
-
     if (isQuoteDirective(d)) {
         const newtext = text
             .replace(/\n>/g, '\n') // Don't show the directive itself

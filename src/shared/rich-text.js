@@ -424,7 +424,7 @@ export class RichText extends String {
      * @param { Object } template - The lit TemplateResult instance
      */
     addTemplateResult (begin, end, template) {
-            this.references.push({ begin, end, template });
+        this.references.push({ begin, end, template });
     }
 
     isMeCommand () {

@@ -245,7 +245,7 @@ export class RichText extends String {
      * Used to obtain the nearest lower bound value for a given @param { Integer } value
      * For example: given @param { Array } array contaiing [23, 30, 80, 100], a @param { Integer } value = 90 would return 80
      * @param { Array } array - An array containing a series a integers which are derived from @param { Array } references in `checkNumInRange(references, search_range)`
-     * @param { Integer } value - This is the search term which a lower bound value nearest to it will be returned by the function
+     * @param { Integer } value - This is the search term from which a lower bound value nearest to it will be returned by the function
      */
     lowerBound(array, value){
         let low = 0;

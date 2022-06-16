@@ -91,6 +91,7 @@
     "mini-css-extract-plugin": "^2.6.0",
     "minimist": "^1.2.6",
     "po-loader": "0.6.1",
+    "po2json": "^1.0.0-beta-3",
     "postcss": "^8.4.12",
     "postcss-clean": "1.2.0",
     "postcss-loader": "^6.2.1",

@@ -23,6 +23,7 @@ import "./plugins/controlbox/index.js";     // The control box
 import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen/index.js";
 import "./plugins/headlines-view/index.js";
+import "./plugins/jingle/index.js"          // Implements the jingle protocol
 import "./plugins/mam-views/index.js";
 import "./plugins/minimize/index.js";       // Allows chat boxes to be minimized
 import "./plugins/muc-views/index.js";      // Views related to MUC

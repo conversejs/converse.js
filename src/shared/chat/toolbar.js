@@ -200,4 +200,4 @@ export class ChatToolbar extends CustomElement {
     }
 }
 
-window.customElements.define('converse-chat-toolbar', ChatToolbar);
+api.elements.define('converse-chat-toolbar', ChatToolbar);

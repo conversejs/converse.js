@@ -1,36 +1,31 @@
 import tpl_chat_head from './templates/chat-head.js';
-import { ElementView } from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless/core";
-import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
-import { render } from 'lit';
+import { _converse, api } from "@converse/headless/core.js";
 
 
-export default class HeadlinesHeading extends ElementView {
+export default class HeadlinesHeading extends CustomElement {
 
-    async connectedCallback () {
-        super.connectedCallback();
-        this.model = _converse.chatboxes.get(this.getAttribute('jid'));
+    static get properties () {
+        return {
+            'jid': { type: String },
+        }
+    }
+
+    async initialize () {
+        this.model = _converse.chatboxes.get(this.jid);
         await this.model.initialized;
-        this.render();
+        this.requestUpdate();
     }
 
-    async render () {
-        const tpl = await this.generateHeadingTemplate();
-        render(tpl, this);
-    }
-
-    async generateHeadingTemplate () {
-        const heading_btns = await this.getHeadingButtons();
-        const standalone_btns = heading_btns.filter(b => b.standalone);
-        const dropdown_btns = heading_btns.filter(b => !b.standalone);
-        return tpl_chat_head(
-            Object.assign(this.model.toJSON(), {
+    render () {
+        return tpl_chat_head({
+            ...this.model.toJSON(),
+            ...{
                 'display_name': this.model.getDisplayName(),
-                'dropdown_btns': dropdown_btns.map(b => getHeadingDropdownItem(b)),
-                'standalone_btns': standalone_btns.map(b => getHeadingStandaloneButton(b))
-            })
-        );
+                'heading_buttons_promise': this.getHeadingButtons()
+            }
+        });
     }
 
     /**

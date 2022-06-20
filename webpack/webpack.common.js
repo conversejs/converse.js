@@ -121,7 +121,7 @@ module.exports = {
             "SecondLevelDomains":       path.resolve(__dirname, "../node_modules/urijs/src/SecondLevelDomains"),
             "formdata-polyfill":        path.resolve(__dirname, "../node_modules/formdata-polyfill/FormData"),
             "punycode":                 path.resolve(__dirname, "../node_modules/urijs/src/punycode"),
-            "./shims":               path.resolve(__dirname, "../src/strophe-shims.js"),
+            "./shims":                  path.resolve(__dirname, "../src/strophe-shims.js"),
         }
     }
 

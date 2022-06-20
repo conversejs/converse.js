@@ -902,7 +902,7 @@ The app servers are specified with the `push_app_servers`_ option.
 enable_smacks
 -------------
 
-* Default: ``false``
+* Default: ``true``
 
 Determines whether `XEP-0198 Stream Management <https://xmpp.org/extensions/xep-0198.html>`_
 support is turned on or not.

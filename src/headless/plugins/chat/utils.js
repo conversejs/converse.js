@@ -164,10 +164,18 @@ export async function enableCarbons (reconnecting) {
         return;
     }
 
+    const domain = Strophe.getDomainFromJid(_converse.bare_jid);
+    const supported = await api.disco.supports(Strophe.NS.CARBONS, domain);
+
+    if (!supported) {
+        log.warn("Not enabling carbons because it's not supported!");
+        return;
+    }
+
     const iq = new Strophe.Builder('iq', {
         'from': _converse.connection.jid,
         'type': 'set'
-      }).c('enable', {xmlns: Strophe.NS.CARBONS});
+    }).c('enable', {xmlns: Strophe.NS.CARBONS});
 
     const result = await api.sendIQ(iq, null, false);
     if (result === null) {

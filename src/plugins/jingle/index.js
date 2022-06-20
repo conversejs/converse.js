@@ -9,6 +9,7 @@ import 'plugins/modal/index.js';
 import { __ } from 'i18n';
 import { html } from "lit";
 
+
 converse.plugins.add('converse-jingle', {
     /* Plugin dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before

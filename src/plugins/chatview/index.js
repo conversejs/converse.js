@@ -51,7 +51,7 @@ converse.plugins.add('converse-chatview', {
             'time_format': 'HH:mm',
             'use_system_emojis': true,
             'visible_toolbar_buttons': {
-                'call': true,
+                'call': false,
                 'clear': true,
                 'emoji': true,
                 'spoiler': true

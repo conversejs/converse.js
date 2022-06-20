@@ -54,6 +54,16 @@ export class ChatToolbar extends CustomElement {
             buttons.push(html`<converse-emoji-dropdown .chatview=${chatview}></converse-emoji-dropdown>`);
         }
 
+        if (this.show_call_button) {
+            const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
+            const i18n_start_call = __('Start a call');
+            buttons.push(html`
+                <button class="toggle-call" @click=${this.toggleCall} title="${i18n_start_call}">
+                    <converse-icon color="var(${color})" class="fa fa-phone" size="1em"></converse-icon>
+                </button>`
+            );
+        }
+
         const message_limit = api.settings.get('message_limit');
         if (message_limit) {
             buttons.push(html`

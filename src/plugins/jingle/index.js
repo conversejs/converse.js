@@ -4,10 +4,11 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import { _converse, converse } from '@converse/headless/core';
+import { _converse, converse, api } from '@converse/headless/core';
 import 'plugins/modal/index.js';
 import { __ } from 'i18n';
 import { html } from "lit";
+import AddJingleModal from "./modal/jingle-call-modal.js"
 
 
 converse.plugins.add('converse-jingle', {
@@ -23,16 +24,16 @@ converse.plugins.add('converse-jingle', {
      */
     dependencies: ['converse-chatview'],
 
-    initialize: function () {
+    initialize: function (o) {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        _converse.api.listen.on('getToolbarButtons', (toolbar_el, buttons) => {
+        _converse.api.listen.on('getToolbarButtons', (buttons) => {
             if (!this.is_groupchat) {
                 const color = '--chat-toolbar-btn-color';
                 const i18n_start_call = __('Start a call');
                 buttons.push(html`
-                    <button class="toggle-call" @click=${this.toggleCall} title="${i18n_start_call}">
+                    <button class="toggle-call" @click=${(ev) => api.modal.show(AddJingleModal, { 'model': o.model }, ev)} title="${i18n_start_call}">
                         <converse-icon color="var(${color})" class="fa fa-phone" size="1em"></converse-icon>
                     </button>`
                 );

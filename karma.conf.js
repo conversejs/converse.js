@@ -10,7 +10,6 @@ module.exports = function(config) {
     files: [
       { pattern: 'dist/*.js.map', included: false },
       { pattern: 'dist/*.css.map', included: false },
-      { pattern: "dist/icons.js", served: true },
       { pattern: "dist/emojis.js", served: true },
       "src/shared/tests/tests.css",
       "node_modules/lodash/lodash.min.js",

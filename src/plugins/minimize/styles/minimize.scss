@@ -75,6 +75,13 @@
                             color: var(--chatroom-head-color);
                         }
                     }
+                    .chat-head-headline {
+                        background-color: var(--headline-head-bg-color);
+                        a.restore-chat {
+                            color: var(--headline-head-text-color);
+                        }
+                    }
+
                     &.minimized {
                         height: auto;
                     }

@@ -98,7 +98,7 @@ class ChatRoomOccupants extends Collection {
      * @typedef { Object} OccupantData
      * @property { String } [jid]
      * @property { String } [nick]
-     * @property { String } [occupant_id]
+     * @property { String } [occupant_id] - The XEP-0421 unique occupant id
      */
     /**
      * Try to find an existing occupant based on the passed in
@@ -115,7 +115,7 @@ class ChatRoomOccupants extends Collection {
      * @param { OccupantData } data
      */
     findOccupant (data) {
-        if (data.occupant_id && this.get(data.occupant_id)) {
+        if (data.occupant_id) {
             return this.get(data.occupant_id);
         }
 

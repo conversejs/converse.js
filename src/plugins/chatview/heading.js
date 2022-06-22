@@ -58,9 +58,9 @@ export default class ChatHeading extends CustomElement {
              * @typedef { Object } HeadingButtonAttributes
              * An object representing a chat heading button
              * @property { Boolean } standalone
-             *      True if shown on its own, false if it must be in the dropdown menu.
+             *  True if shown on its own, false if it must be in the dropdown menu.
              * @property { Function } handler
-             *      A handler function to be called when the button is clicked.
+             *  A handler function to be called when the button is clicked.
              * @property { String } a_class - HTML classes to show on the button
              * @property { String } i18n_text - The user-visiible name of the button
              * @property { String } i18n_title - The tooltip text for this button

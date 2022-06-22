@@ -113,5 +113,8 @@
     "favico.js-slevomat": "^0.3.11",
     "jed": "1.1.1",
     "lit": "^2.2.6"
+  },
+  "resolutions": {
+    "autoprefixer": "10.4.5"
   }
 }

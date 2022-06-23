@@ -17,6 +17,7 @@ export default class ChatHeading extends CustomElement {
 
     initialize () {
         this.model = _converse.chatboxes.get(this.jid);
+        this.listenTo(this.model, 'change:jingle_status', this.requestUpdate);
         this.listenTo(this.model, 'change:status', this.requestUpdate);
         this.listenTo(this.model, 'vcard:add', this.requestUpdate);
         this.listenTo(this.model, 'vcard:change', this.requestUpdate);

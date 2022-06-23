@@ -3,6 +3,7 @@ import { _converse } from '@converse/headless/core';
 import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
+import { JINGLE_CALL_STATUS } from "../../jingle/constants.js";
 
 
 async function getStandaloneButtons (promise) {
@@ -41,6 +42,9 @@ export default (o) => {
                 <div class="chatbox-title__text" title="${o.jid}">
                     ${ (o.type !== _converse.HEADLINES_TYPE) ? html`<a class="user show-msg-author-modal" @click=${o.showUserDetailsModal}>${ display_name }</a>` : display_name }
                 </div>
+            </div>
+            <div>
+                ${(o.model.get('jingle_status') === JINGLE_CALL_STATUS.PENDING) ? html`<button type="button" class="btn btn-success">Calling...</button>` : ''}
             </div>
             <div class="chatbox-title__buttons row no-gutters">
                 ${ until(tpl_dropdown_btns(), '') }

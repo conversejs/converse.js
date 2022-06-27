@@ -4,11 +4,10 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import { _converse, converse } from '@converse/headless/core';
+import { _converse, converse } from '@converse/headless/core.js';
 import 'plugins/modal/index.js';
-import { __ } from 'i18n';
+import './toolbar-button.js';
 import { html } from "lit";
-import { startJingleCall } from "./utils.js";
 
 
 converse.plugins.add('converse-jingle', {
@@ -30,13 +29,10 @@ converse.plugins.add('converse-jingle', {
          */
         _converse.api.listen.on('getToolbarButtons', (toolbar_el, buttons) => {
             if (!this.is_groupchat) {
-                const color = '--chat-toolbar-btn-color';
-                const i18n_start_call = __('Start a call');
                 buttons.push(html`
-                    <button class="toggle-call" @click=${startJingleCall(toolbar_el.model.get('jid'))} title="${i18n_start_call}">
-                        <converse-icon color="var(${color})" class="fa fa-phone" size="1em"></converse-icon>
-                    </button>`
-                );
+                  <converse-jingle-toolbar-button jid=${toolbar_el.model.get('jid')}>
+                  </converse-jingle-toolbar-button>
+                `);
             }
 
            return buttons;

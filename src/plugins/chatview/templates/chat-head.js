@@ -3,7 +3,6 @@ import { _converse } from '@converse/headless/core';
 import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
-import { JINGLE_CALL_STATUS } from "../../jingle/constants.js";
 
 
 async function getStandaloneButtons (promise) {
@@ -44,7 +43,7 @@ export default (o) => {
                 </div>
             </div>
             <div>
-                ${(o.model.get('jingle_status') === JINGLE_CALL_STATUS.PENDING) ? html`<button type="button" class="btn btn-success">Calling...</button>` : ''}
+              <converse-chat-header-call-notification></converse-chat-header-call-notification>
             </div>
             <div class="chatbox-title__buttons row no-gutters">
                 ${ until(tpl_dropdown_btns(), '') }

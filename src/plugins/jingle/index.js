@@ -6,6 +6,7 @@
 
 import { _converse, converse } from '@converse/headless/core.js';
 import 'plugins/modal/index.js';
+import "./chat-header-notification.js";
 import './toolbar-button.js';
 import { html } from "lit";
 

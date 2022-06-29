@@ -64,6 +64,10 @@
                 flex-wrap: nowrap;
                 padding: 0;
             }
+            
+            .chatbox-call-status {
+                width: 80%;
+            }
 
             a, a:visited, a:hover, a:not([href]):not([tabindex]) {
                 &.chatbox-btn {

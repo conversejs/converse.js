@@ -8,6 +8,7 @@ import { _converse, converse } from '@converse/headless/core.js';
 import 'plugins/modal/index.js';
 import "./chat-header-notification.js";
 import './toolbar-button.js';
+import { JINGLE_CALL_STATUS } from './constants.js';
 import { html } from "lit";
 
 
@@ -28,6 +29,7 @@ converse.plugins.add('converse-jingle', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
+        _converse.JINGLE_CALL_STATUS = JINGLE_CALL_STATUS;
         _converse.api.listen.on('getToolbarButtons', (toolbar_el, buttons) => {
             if (!this.is_groupchat) {
                 buttons.push(html`

@@ -296,8 +296,8 @@ describe("Chatboxes", function () {
             }));
 
 
-            it("can contain a button for starting a call",
-                    mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+            fit("can contain a button for starting a call",
+                    mock.initConverse(['chatBoxesFetched'], { blacklisted_plugins: ['converse-jingle']}, async function (_converse) {
 
                 const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current');

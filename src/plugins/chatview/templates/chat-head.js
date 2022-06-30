@@ -41,7 +41,7 @@ export default (o) => {
                 <div class="chatbox-title__text" title="${o.jid}">
                     ${ (o.type !== _converse.HEADLINES_TYPE) ? html`<a class="user show-msg-author-modal" @click=${o.showUserDetailsModal}>${ display_name }</a>` : display_name }
                 </div>
-                <converse-call-notification class="d-flex flex-row-reverse justify-content-center chatbox-call-status" jid=${o.model.get('jid')}></converse-call-notification>
+                <converse-call-notification class="d-flex flex-row-reverse justify-content-center chatbox-call-status chatbox-title__text" jid=${o.model.get('jid')}></converse-call-notification>
             </div>
             <div class="chatbox-title__buttons row no-gutters">
                 ${ until(tpl_dropdown_btns(), '') }

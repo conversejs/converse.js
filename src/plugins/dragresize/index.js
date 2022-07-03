@@ -18,8 +18,6 @@ converse.plugins.add('converse-dragresize', {
      * If the setting "strict_plugin_dependencies" is set to true,
      * an error will be raised if the plugin is not found. By default it's
      * false, which means these plugins are only loaded opportunistically.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
      */
     dependencies: ['converse-chatview', 'converse-headlines-view', 'converse-muc-views'],
 
@@ -27,10 +25,10 @@ converse.plugins.add('converse-dragresize', {
         return _converse.api.settings.get('view_mode') == 'overlayed';
     },
 
+    // Overrides mentioned here will be picked up by converse.js's
+    // plugin architecture they will replace existing methods on the
+    // relevant objects or classes.
     overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
         ChatBox: {
             initialize () {
                 const result = this.__super__.initialize.apply(this, arguments);

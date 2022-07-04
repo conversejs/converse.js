@@ -12,6 +12,7 @@
 - Update `nick` attribute on ChatRoom when user nickname changes
 - Restrict editing of MUC messages to ones with the same XEP-0421 occupant ID
 - #2936: Fix documentation about enable_smacks option, which is true by default.
+- #2925: Fix missing disco-items in browser storage.
 
 ## 9.1.1 (2022-05-05)
 

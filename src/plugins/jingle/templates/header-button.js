@@ -6,7 +6,7 @@ const tpl_active_call = (o) => {
     const button = __('Call Inititated');
     return html`
         <div>
-            <span><a class="button-color" @click=${ o.endCall }>${ button }</a></span>
+            <a class="jingle-call-initiated-button" @click=${ o.endCall }>${ button }</a>
         </div>
     `;
 }

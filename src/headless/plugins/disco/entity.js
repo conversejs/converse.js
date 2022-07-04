@@ -142,9 +142,11 @@ const DiscoEntity = Model.extend({
             }
             const jid = item.getAttribute('jid');
             if (this.items.get(jid) === undefined) {
+                const name = item.getAttribute('name');
                 const entities = _converse.disco_entities;
-                const entity = entities.get(jid) || entities.create({ jid, name: item.getAttribute('name') });
-                this.items.add(entity);
+                if (!entities.get(jid))
+                    entities.create({ jid, name });
+                this.items.create({ jid, name });
             }
         });
     },

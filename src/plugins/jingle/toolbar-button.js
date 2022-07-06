@@ -24,12 +24,12 @@ export default class JingleToolbarButton extends CustomElement {
 
     toggleJingleCallStatus() {
         const jingle_status = this.model.get('jingle_status');
-        if ( jingle_status === JINGLE_CALL_STATUS.PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
+        if ( jingle_status === JINGLE_CALL_STATUS.OUTGOING_PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
             api.send(
                 $msg({
-                    'from': this.get('jid'),
-                    'to': this.get('jid'),
+                    'from': _converse.bare_jid,
+                    'to': this.jid,
                     'type': 'chat'
                 }).c('propose', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
                 .c('description', {'xmlns': Strophe.NS.JINGLERTP, 'media': 'audio'}).up().up()
@@ -38,7 +38,7 @@ export default class JingleToolbarButton extends CustomElement {
             return;
         }
         if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {
-            this.model.save('jingle_status', JINGLE_CALL_STATUS.PENDING);
+            this.model.save('jingle_status', JINGLE_CALL_STATUS.OUTGOING_PENDING);
             return;
         }
     }

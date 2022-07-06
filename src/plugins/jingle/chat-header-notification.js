@@ -26,12 +26,12 @@ export default class CallNotification extends CustomElement {
 
     endCall() {
         const jingle_status = this.model.get('jingle_status');
-        if ( jingle_status === JINGLE_CALL_STATUS.PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
+        if ( jingle_status === JINGLE_CALL_STATUS.OUTGOING_PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
             api.send(
                 $msg({
-                    'from': this.get('jid'),
-                    'to': this.get('jid'),
+                    'from': _converse.bare_jid,
+                    'to': this.jid,
                     'type': 'chat'
                 }).c('retract', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
                 .c('reason', {'xmlns': Strophe.NS.JINGLE})

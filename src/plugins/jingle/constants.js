@@ -1,5 +1,6 @@
 export const JINGLE_CALL_STATUS = {
-    PENDING:      0,
-    ACTIVE:       1,
-    ENDED:        2
+    INCOMING_PENDING:      0,
+    OUTGOING_PENDING:      1,
+    ACTIVE:       2,
+    ENDED:        3
 };

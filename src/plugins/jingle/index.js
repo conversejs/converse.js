@@ -11,6 +11,11 @@ import './toolbar-button.js';
 import { JINGLE_CALL_STATUS } from './constants.js';
 import { html } from "lit";
 
+const { Strophe } = converse.env;
+
+Strophe.addNamespace('JINGLE', 'urn:xmpp:jingle:1');
+Strophe.addNamespace('JINGLEMESSAGE', 'urn:xmpp:jingle-message:1');
+Strophe.addNamespace('JINGLERTP', 'urn:xmpp:jingle:apps:rtp:1');
 
 converse.plugins.add('converse-jingle', {
     /* Plugin dependencies are other plugins which might be

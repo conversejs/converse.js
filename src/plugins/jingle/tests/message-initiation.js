@@ -16,20 +16,20 @@ describe("A Jingle Message Initiation Request", function () {
     const call_button = view.querySelector('converse-jingle-toolbar-button button');
     call_button.click();
     const sent_stanzas = _converse.connection.sent_stanzas;
-    const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`propose`, s).length).pop());
+    const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`propose[xmlns='${Strophe.NS.JINGLEMESSAGE}']`, s).length).pop());
     expect(Strophe.serialize(stanza)).toBe(
         `<message from='${_converse.jid}'
             to='${contact_jid}'
             type='chat'>`+
-            `<propose xmlns='${Strophe.NS.JINGLEMESSAGE}' id='${stanza.getAttribute('id')}'>`+
-            `<description xmlns='${Strophe.NS.JINGLERTP}' media='audio'/>`+
-            `</propose>`+
-            `<store xmlns="${Strophe.NS.HINTS}"/>`+
+                `<propose xmlns='${Strophe.NS.JINGLEMESSAGE}' id='${stanza.getAttribute('id')}'>`+
+                    `<description xmlns='${Strophe.NS.JINGLERTP}' media='audio'/>`+
+                `</propose>`+
+            `<store xmlns='${Strophe.NS.HINTS}'/>`+
         `</message>`);
     }));
 
 
-    it("is ended when the user clicks the toolbar call button again or the chat header end call button", mock.initConverse(
+    fit("is ended when the user clicks the toolbar call button again or the chat header end call button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
@@ -51,7 +51,7 @@ describe("A Jingle Message Initiation Request", function () {
                         `<text>Retracted</text>`+
                     `</reason>`+
             `   </retract>`+
-            `<store xmlns="${Strophe.NS.HINTS}"/>`+
+            `<store xmlns='${Strophe.NS.HINTS}'/>`+
         `</message>`
     );
     }));

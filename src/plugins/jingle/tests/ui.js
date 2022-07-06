@@ -19,7 +19,7 @@ describe("A Jingle Status", function () {
         // toggleJingleCallStatus
         const chatbox = view.model;
         call_button.click();
-        expect(chatbox.get('jingle_status')).toBe(_converse.JINGLE_CALL_STATUS.PENDING);
+        expect(chatbox.get('jingle_status')).toBe(_converse.JINGLE_CALL_STATUS.OUTGOING_PENDING);
         }));
 
     fit("has been shown in the chat-header",
@@ -33,7 +33,7 @@ describe("A Jingle Status", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         const chat_head = view.querySelector('.chatbox-title--row');
         const chatbox = view.model;
-        chatbox.save('jingle_status', _converse.JINGLE_CALL_STATUS.PENDING);
+        chatbox.save('jingle_status', _converse.JINGLE_CALL_STATUS.OUTGOING_PENDING);
         const header_notification = chat_head.querySelector('converse-call-notification');
         const call_intialized = await u.waitUntil(() => header_notification.querySelector('.jingle-call-initiated-button'));
         call_intialized.click();

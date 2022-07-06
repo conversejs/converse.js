@@ -4,9 +4,9 @@ Thanks for contributing to [Converse.js](https://conversejs.org)
 
 ## Support questions
 
-The Github issue tracker is used for bugs reports and feature requests, not for general tech support.
+The Github issue tracker is used for bug reports and feature requests, not for general tech support.
 
-For support, you can join your [XMPP webchat](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org).
+For support, you can join our [XMPP webchat](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org).
 Instead of the webchat, you can also open the room in your XMPP client, [click here](xmpp://discuss@conference.conversejs.org?join).
 
 You can also ask questions on [StackOverflow](https://stackoverflow.com/questions/tagged/converse.js)
@@ -23,6 +23,6 @@ Please read the [style guide](https://conversejs.org/docs/html/style_guide.html)
 
 Add a test for any bug fixed or feature added.
 
-Tests are can be find in various `./test` folders in the Converse source code.
+Tests can be find in various `./tests` folders in the Converse source code.
 
 To run the tests, you can run `make check` on Linux and Mac, or `./node_modules/bin/karma start karma.conf` on Windows.

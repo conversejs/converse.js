@@ -1,9 +1,11 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core";
 import tpl_header_button from "./templates/header-button.js";
 import { JINGLE_CALL_STATUS } from "./constants.js";
 
 import './styles/jingle.scss';
+
+const { Strophe, $msg } = converse.env;
 
 export default class CallNotification extends CustomElement {
     
@@ -26,6 +28,17 @@ export default class CallNotification extends CustomElement {
         const jingle_status = this.model.get('jingle_status');
         if ( jingle_status === JINGLE_CALL_STATUS.PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
+            api.send(
+                $msg({
+                    'from': this.get('jid'),
+                    'to': this.get('jid'),
+                    'type': 'chat'
+                }).c('retract', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
+                .c('reason', {'xmlns': Strophe.NS.JINGLE})
+                    .c('cancel', {}).up()
+                    .t('Retracted').up().up()
+                    .c('store', {'xmlns': Strophe.NS.HINTS})
+            );
             return;
         }
     }

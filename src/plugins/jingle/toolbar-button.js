@@ -1,7 +1,9 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from "@converse/headless/core";
+import { converse, _converse, api } from "@converse/headless/core";
 import { JINGLE_CALL_STATUS } from "./constants.js";
 import tpl_toolbar_button from "./templates/toolbar-button.js";
+
+const { Strophe, $msg } = converse.env;
 
 export default class JingleToolbarButton extends CustomElement {
 
@@ -24,6 +26,15 @@ export default class JingleToolbarButton extends CustomElement {
         const jingle_status = this.model.get('jingle_status');
         if ( jingle_status === JINGLE_CALL_STATUS.PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
+            api.send(
+                $msg({
+                    'from': this.get('jid'),
+                    'to': this.get('jid'),
+                    'type': 'chat'
+                }).c('propose', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
+                .c('description', {'xmlns': Strophe.NS.JINGLERTP, 'media': 'audio'}).up().up()
+                .c('store', {'xmlns': Strophe.NS.HINTS})
+            );
             return;
         }
         if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {

@@ -145,7 +145,7 @@ export function getDirectiveTemplate (d, text, offset, options) {
     const template = styling_templates[styling_map[d].name];
     if (isQuoteDirective(d)) {
         const newtext = text
-            .replace(/\n>/g, '\n') // Don't show the directive itself
+            .replace(/\n>/g, ' \n') // Don't show the directive itself
             .replace(/\n$/, ''); // Trim line-break at the end
         return template(newtext, offset, options);
     } else {

@@ -26,6 +26,10 @@ export default class JingleToolbarButton extends CustomElement {
         const jingle_status = this.model.get('jingle_status');
         if ( jingle_status === JINGLE_CALL_STATUS.OUTGOING_PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
+            return;
+        }
+        if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {
+            this.model.save('jingle_status', JINGLE_CALL_STATUS.OUTGOING_PENDING);
             api.send(
                 $msg({
                     'from': _converse.bare_jid,
@@ -35,10 +39,6 @@ export default class JingleToolbarButton extends CustomElement {
                 .c('description', {'xmlns': Strophe.NS.JINGLERTP, 'media': 'audio'}).up().up()
                 .c('store', {'xmlns': Strophe.NS.HINTS})
             );
-            return;
-        }
-        if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {
-            this.model.save('jingle_status', JINGLE_CALL_STATUS.OUTGOING_PENDING);
             return;
         }
     }

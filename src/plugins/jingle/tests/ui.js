@@ -22,7 +22,7 @@ describe("A Jingle Status", function () {
         expect(chatbox.get('jingle_status')).toBe(_converse.JINGLE_CALL_STATUS.OUTGOING_PENDING);
         }));
 
-    fit("has been shown in the chat-header",
+    it("has been shown in the chat-header",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');

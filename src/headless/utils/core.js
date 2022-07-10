@@ -24,7 +24,7 @@ export function isEmptyMessage (attrs) {
     return !attrs['oob_url'] &&
         !attrs['file'] &&
         !(attrs['is_encrypted'] && attrs['plaintext']) &&
-        !attrs['message'];
+        !attrs['message'] && !attrs['jingle_propose'];
 }
 
 /* We distinguish between UniView and MultiView instances.

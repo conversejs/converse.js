@@ -4,7 +4,7 @@ const sizzle = converse.env.sizzle;
 
 const { Strophe } = converse.env;
 
-describe("A Jingle Message Initiation Request", function () {
+fdescribe("A Jingle Message Initiation Request", function () {
 
     it("is sent when the user clicks the call button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
@@ -29,7 +29,7 @@ describe("A Jingle Message Initiation Request", function () {
     }));
 
 
-    fit("is ended when the user clicks the toolbar call button again or the chat header end call button", mock.initConverse(
+    it("is ended when the user clicks the toolbar call button again or the chat header end call button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);

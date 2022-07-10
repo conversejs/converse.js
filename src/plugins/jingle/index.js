@@ -4,12 +4,13 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import { _converse, converse } from '@converse/headless/core.js';
+import { _converse, converse, api } from '@converse/headless/core.js';
 import 'plugins/modal/index.js';
 import "./chat-header-notification.js";
 import './toolbar-button.js';
 import { JINGLE_CALL_STATUS } from './constants.js';
 import { html } from "lit";
+import { parseJingleMessage } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -45,5 +46,6 @@ converse.plugins.add('converse-jingle', {
 
            return buttons;
         });
+        api.listen.on('parseMessage', parseJingleMessage);
     },
 });

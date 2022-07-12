@@ -539,6 +539,7 @@ The core, and by default whitelisted, plugins are::
     converse-dragresize
     converse-fullscreen
     converse-headline
+    converse-jingle
     converse-mam
     converse-minimize
     converse-muc

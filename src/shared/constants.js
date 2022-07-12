@@ -11,6 +11,7 @@ export const VIEW_PLUGINS = [
     'converse-dragresize',
     'converse-fullscreen',
     'converse-headlines-view',
+    'converse-jingle',
     'converse-mam-views',
     'converse-minimize',
     'converse-modal',

@@ -60,6 +60,7 @@ Below is an example code that wraps converse.js as an angular.js service.
             "converse-vcard",        // XEP-0054 VCard-temp
             "converse-register",     // XEP-0077 In-band registration
             "converse-ping",         // XEP-0199 XMPP Ping
+            "converse-jingle",       // XEP-0166 Support for the Jingle Protocol
             "converse-notification", // HTML5 Notifications
             "converse-minimize",     // Allows chatboxes to be minimized
             "converse-dragresize",   // Allows chatboxes to be resized by dragging them

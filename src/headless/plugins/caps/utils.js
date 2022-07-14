@@ -41,5 +41,6 @@ async function createCapsNode () {
  */
 export async function addCapsNode (stanza) {
     const caps_el = await createCapsNode();
-    return stanza.root().cnode(caps_el).up() && stanza;
+    stanza.root().cnode(caps_el).up();
+    return stanza;
 }

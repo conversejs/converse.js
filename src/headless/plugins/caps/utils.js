@@ -1,5 +1,5 @@
 import { _converse, converse } from '@converse/headless/core.js';
-import { arrayBufferToBase64 } from '@converse/headless/utils/arraybuffer.js';
+import { arrayBufferToBase64, stringToArrayBuffer  } from '@converse/headless/utils/arraybuffer.js';
 
 const { Strophe, $build } = converse.env;
 
@@ -21,7 +21,7 @@ async function generateVerificationString () {
     features.sort();
     S = features.reduce((result, feature) => `${result}${feature}<`, S);
 
-    const ab = await crypto.subtle.digest('SHA-1', S);
+    const ab = await crypto.subtle.digest('SHA-1', stringToArrayBuffer(S));
     return arrayBufferToBase64(ab);
 }
 

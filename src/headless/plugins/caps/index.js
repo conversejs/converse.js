@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { api, converse } from '@converse/headless/core';
-import { createCapsNode } from './utils.js';
+import { addCapsNode } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -15,7 +15,7 @@ converse.plugins.add('converse-caps', {
     dependencies: ['converse-status'],
 
     initialize () {
-        api.listen.on('constructedPresence', (_, p) => (p.root().cnode(createCapsNode()).up() && p));
-        api.listen.on('constructedMUCPresence', (_, p) => (p.root().cnode(createCapsNode()).up() && p));
+        api.listen.on('constructedPresence', (_, p) => addCapsNode(p));
+        api.listen.on('constructedMUCPresence', (_, p) => addCapsNode(p));
     }
 });

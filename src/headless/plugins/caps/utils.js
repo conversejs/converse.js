@@ -1,5 +1,5 @@
-import SHA1 from 'strophe.js/src/sha1';
-import { _converse, converse } from '@converse/headless/core';
+import { _converse, converse } from '@converse/headless/core.js';
+import { arrayBufferToBase64 } from '@converse/headless/utils/arraybuffer.js';
 
 const { Strophe, $build } = converse.env;
 
@@ -7,7 +7,7 @@ function propertySort (array, property) {
     return array.sort((a, b) => { return a[property] > b[property] ? -1 : 1 });
 }
 
-function generateVerificationString () {
+async function generateVerificationString () {
     const identities = _converse.api.disco.own.identities.get();
     const features = _converse.api.disco.own.features.get();
 
@@ -20,14 +20,26 @@ function generateVerificationString () {
     let S = identities.reduce((result, id) => `${result}${id.category}/${id.type}/${id?.lang ?? ''}/${id.name}<`, "");
     features.sort();
     S = features.reduce((result, feature) => `${result}${feature}<`, S);
-    return SHA1.b64_sha1(S);
+
+    const ab = await crypto.subtle.digest('SHA-1', S);
+    return arrayBufferToBase64(ab);
 }
 
-export function createCapsNode () {
+async function createCapsNode () {
     return $build("c", {
         'xmlns': Strophe.NS.CAPS,
         'hash': "sha-1",
         'node': "https://conversejs.org",
-        'ver': generateVerificationString()
+        'ver': await generateVerificationString()
     }).nodeTree;
+}
+
+
+/**
+ * Given a stanza, adds a XEP-0115 CAPS element
+ * @param { XMLElement } stanza
+ */
+export async function addCapsNode (stanza) {
+    const caps_el = await createCapsNode();
+    return stanza.root().cnode(caps_el).up() && stanza;
 }

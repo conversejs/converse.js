@@ -14,7 +14,7 @@ import { _converse, api } from '@converse/headless/core';
 export default class ChatView extends BaseChatView {
     length = 200
 
-    async initialize() {
+    async initialize () {
         _converse.chatboxviews.add(this.jid, this);
         this.model = _converse.chatboxes.get(this.jid);
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
@@ -47,11 +47,6 @@ export default class ChatView extends BaseChatView {
             `<strong>/me</strong>: ${__('Write in the third person')}`,
             `<strong>/help</strong>: ${__('Show this menu')}`
         ];
-    }
-
-    showControlBox () { // eslint-disable-line class-methods-use-this
-        // Used in mobile view, to navigate back to the controlbox
-        _converse.chatboxviews.get('controlbox')?.show();
     }
 
     afterShown () {

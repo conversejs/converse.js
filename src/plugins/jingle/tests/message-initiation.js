@@ -20,6 +20,7 @@ fdescribe("A Jingle Message Initiation Request", function () {
     expect(Strophe.serialize(stanza)).toBe(
         `<message from='${_converse.jid}'
             to='${contact_jid}'
+            id='${u.getUniqueId()}'
             type='chat'>`+
                 `<propose xmlns='${Strophe.NS.JINGLEMESSAGE}' id='${stanza.getAttribute('id')}'>`+
                     `<description xmlns='${Strophe.NS.JINGLERTP}' media='audio'/>`+
@@ -29,20 +30,20 @@ fdescribe("A Jingle Message Initiation Request", function () {
     }));
 
 
-    it("is ended when the user clicks the toolbar call button again or the chat header end call button", mock.initConverse(
+    it("is ended when the initiator clicks the toolbar call button again or the chat header end call button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
     await mock.openChatBoxFor(_converse, contact_jid);
-    const view = _converse.chatboxviews.get(contact_jid);
-    const call_button = view.querySelector('converse-jingle-toolbar-button button');
+            const view = _converse.chatboxviews.get(contact_jid);
+            const call_button = view.querySelector('converse-jingle-toolbar-button button');
     call_button.click();
     call_button.click();
     const sent_stanzas = _converse.connection.sent_stanzas;
     const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`reason`, s).length).pop());
     expect(Strophe.serialize(stanza)).toBe(
-        `<message from='${_converse.jid}'
+        `<message from='${_converse.bare_jid}'
             to='${contact_jid}'
             type='chat'>`+
                 `<retract xmlns='${Strophe.NS.JINGLEMESSAGE}' id='${stanza.getAttribute('id')}'>`+

@@ -4,6 +4,7 @@ import { JINGLE_CALL_STATUS } from "./constants.js";
 import tpl_toolbar_button from "./templates/toolbar-button.js";
 
 const { Strophe, $msg } = converse.env;
+const u = converse.env.utils;
 
 export default class JingleToolbarButton extends CustomElement {
 
@@ -30,15 +31,25 @@ export default class JingleToolbarButton extends CustomElement {
         }
         if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.OUTGOING_PENDING);
+            const propose_id = u.getUniqueId();
             api.send(
                 $msg({
                     'from': _converse.bare_jid,
                     'to': this.jid,
-                    'type': 'chat'
-                }).c('propose', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
+                    'type': 'chat',
+                    'id': propose_id,
+                }).c('propose', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': propose_id })
                 .c('description', {'xmlns': Strophe.NS.JINGLERTP, 'media': 'audio'}).up().up()
-                .c('store', {'xmlns': Strophe.NS.HINTS})
+                .c('store', { 'xmlns': Strophe.NS.HINTS })
             );
+            const attrs = {
+                'from': _converse.bare_jid,
+                'to': this.jid,
+                'type': 'chat',
+                'id': propose_id,
+                'media': 'audio'
+            }
+            this.model.messages.create(attrs);
             return;
         }
     }

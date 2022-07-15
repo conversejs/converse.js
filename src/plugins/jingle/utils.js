@@ -1,4 +1,4 @@
-import { converse, api } from '@converse/headless/core';
+import { converse } from '@converse/headless/core';
 import  JingleCallModal from "./modal/jingle-incoming-call-modal.js";
 
 const { Strophe, sizzle } = converse.env;
@@ -12,8 +12,6 @@ function getJingleProposeType(stanza){
     return el?.getAttribute('media');
 }
 
-export function jingleCallInitialized(el) {
-    el.listenTo(el.model, 'change:omemo_active', () => {
-        el.querySelector('converse-chat-toolbar').requestUpdate();
-    });
+export function jingleCallInitialized() {
+    JingleCallModal;
 }

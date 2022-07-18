@@ -6,7 +6,9 @@ const { Strophe } = converse.env;
 
 describe("A Jingle Message Initiation Request", function () {
 
-    fit("is sent out when the user clicks the call button", mock.initConverse(
+    describe("from the initiator's perspective", function () {
+
+    fit("is sent out when one clicks the call button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
@@ -61,4 +63,61 @@ describe("A Jingle Message Initiation Request", function () {
     );
     expect(view.model.messages.length).toEqual(1);
     }));
+    });
+    
+    describe("from the reciever's perspective", function () {
+
+        fit("is recieved when the initiator clicks the call button", mock.initConverse(
+            ['chatBoxesFetched'], {}, async function (_converse) {
+    
+        await mock.waitForRoster(_converse, 'current', 1);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        const call_button = view.querySelector('converse-jingle-toolbar-button button');
+        call_button.click();
+        const sent_stanzas = _converse.connection.sent_stanzas;
+        const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`propose[xmlns='${Strophe.NS.JINGLEMESSAGE}']`, s).length).pop());
+        const propose_id = stanza.querySelector('propose');
+        const initiator_stanza = u.toStanza(`
+        <message xmlns='jabber:client'
+                from='${_converse.bare_jid}'
+                to='${contact_jid}'
+                type='chat'>
+                <propose id="${propose_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">
+                    <description media="audio" xmlns="${Strophe.NS.JINGLERTP}"/>
+                </propose>
+            <store xmlns='${Strophe.NS.HINTS}'/>
+        </message>`);
+        _converse.connection._dataRecv(mock.createRequest(initiator_stanza));
+        expect(view.model.messages.length).toEqual(1);
+        }));
+
+        fit("is recieved when the initiator clicks the call button", mock.initConverse(
+            ['chatBoxesFetched'], {}, async function (_converse) {
+    
+        await mock.waitForRoster(_converse, 'current', 1);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        const call_button = view.querySelector('converse-jingle-toolbar-button button');
+        call_button.click();
+        const sent_stanzas = _converse.connection.sent_stanzas;
+        const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`propose[xmlns='${Strophe.NS.JINGLEMESSAGE}']`, s).length).pop());
+        const propose_id = stanza.querySelector('propose');
+        expect(Strophe.serialize(stanza)).toBe(
+            `<message from="${_converse.bare_jid}" `+
+                `id="${stanza.getAttribute('id')}" `+
+                `to="${contact_jid}" `+
+                `type="chat" `+
+                `xmlns="jabber:client">`+
+            `<propose id="${propose_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">`+
+                        `<description media="audio" xmlns="${Strophe.NS.JINGLERTP}"/>`+
+                    `</propose>`+
+                `<store xmlns="${Strophe.NS.HINTS}"/>`+
+            `</message>`);
+            expect(view.model.messages.length).toEqual(1);
+        }));
+
+    });
 });

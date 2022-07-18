@@ -938,6 +938,13 @@ const ChatRoomMixin = {
         return this.occupants.findOccupant({ nick });
     },
 
+    getReferenceURIFromNickname (nickname) {
+        const muc_jid = this.get('jid');
+        const occupant = this.getOccupant(nickname);
+        const uri = (this.features.get('nonanonymous') && occupant?.get('jid')) || `${muc_jid}/${nickname}`;
+        return encodeURI(`xmpp:${uri}`);
+    },
+
     /**
      * Given a text message, look for `@` mentions and turn them into
      * XEP-0372 references
@@ -951,13 +958,6 @@ const ChatRoomMixin = {
 
         const getMatchingNickname = p.findFirstMatchInArray(this.getAllKnownNicknames());
 
-        const uriFromNickname = nickname => {
-            const jid = this.get('jid');
-            const occupant = this.getOccupant(nickname) || this.getOccupant(jid);
-            const uri = (this.features.get('nonanonymous') && occupant?.get('jid')) || `${jid}/${nickname}`;
-            return encodeURI(`xmpp:${uri}`);
-        };
-
         const matchToReference = match => {
             let at_sign_index = match[0].indexOf('@');
             if (match[0][at_sign_index + 1] === '@') {
@@ -968,7 +968,7 @@ const ChatRoomMixin = {
             const end = begin + match[0].length - at_sign_index;
             const value = getMatchingNickname(match[1]);
             const type = 'mention';
-            const uri = uriFromNickname(value);
+            const uri = this.getReferenceURIFromNickname(value);
             return { begin, end, value, type, uri };
         };
 

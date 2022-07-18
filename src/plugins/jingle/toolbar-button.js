@@ -32,12 +32,13 @@ export default class JingleToolbarButton extends CustomElement {
         if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.OUTGOING_PENDING);
             const propose_id = u.getUniqueId();
+            const message_id = u.getUniqueId();
             api.send(
                 $msg({
                     'from': _converse.bare_jid,
                     'to': this.jid,
                     'type': 'chat',
-                    'id': propose_id,
+                    'id': message_id,
                 }).c('propose', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': propose_id })
                 .c('description', {'xmlns': Strophe.NS.JINGLERTP, 'media': 'audio'}).up().up()
                 .c('store', { 'xmlns': Strophe.NS.HINTS })
@@ -46,7 +47,8 @@ export default class JingleToolbarButton extends CustomElement {
                 'from': _converse.bare_jid,
                 'to': this.jid,
                 'type': 'chat',
-                'id': propose_id,
+                'msg_id': message_id, 
+                'propose_id': propose_id,
                 'media': 'audio'
             }
             this.model.messages.create(attrs);

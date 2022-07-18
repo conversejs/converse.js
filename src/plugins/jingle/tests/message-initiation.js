@@ -4,9 +4,9 @@ const sizzle = converse.env.sizzle;
 
 const { Strophe } = converse.env;
 
-fdescribe("A Jingle Message Initiation Request", function () {
+describe("A Jingle Message Initiation Request", function () {
 
-    it("is sent when the user clicks the call button", mock.initConverse(
+    fit("is sent out when the user clicks the call button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
@@ -17,20 +17,23 @@ fdescribe("A Jingle Message Initiation Request", function () {
     call_button.click();
     const sent_stanzas = _converse.connection.sent_stanzas;
     const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`propose[xmlns='${Strophe.NS.JINGLEMESSAGE}']`, s).length).pop());
+    const propose_id = stanza.querySelector('propose');
     expect(Strophe.serialize(stanza)).toBe(
-        `<message from='${_converse.jid}'
-            to='${contact_jid}'
-            id='${u.getUniqueId()}'
-            type='chat'>`+
-                `<propose xmlns='${Strophe.NS.JINGLEMESSAGE}' id='${stanza.getAttribute('id')}'>`+
-                    `<description xmlns='${Strophe.NS.JINGLERTP}' media='audio'/>`+
+        `<message from="${_converse.bare_jid}" `+
+            `id="${stanza.getAttribute('id')}" `+
+            `to="${contact_jid}" `+
+            `type="chat" `+
+            `xmlns="jabber:client">`+
+        `<propose id="${propose_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">`+
+                    `<description media="audio" xmlns="${Strophe.NS.JINGLERTP}"/>`+
                 `</propose>`+
-            `<store xmlns='${Strophe.NS.HINTS}'/>`+
+            `<store xmlns="${Strophe.NS.HINTS}"/>`+
         `</message>`);
+        expect(view.model.messages.length).toEqual(1);
     }));
 
 
-    it("is ended when the initiator clicks the toolbar call button again or the chat header end call button", mock.initConverse(
+    it("is ended when the initiator clicks the call button again", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
@@ -38,6 +41,7 @@ fdescribe("A Jingle Message Initiation Request", function () {
     await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             const call_button = view.querySelector('converse-jingle-toolbar-button button');
+    // the first click starts the call, and the other one ends it
     call_button.click();
     call_button.click();
     const sent_stanzas = _converse.connection.sent_stanzas;
@@ -55,5 +59,6 @@ fdescribe("A Jingle Message Initiation Request", function () {
             `<store xmlns='${Strophe.NS.HINTS}'/>`+
         `</message>`
     );
+    expect(view.model.messages.length).toEqual(1);
     }));
 });

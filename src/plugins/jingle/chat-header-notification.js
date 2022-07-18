@@ -40,20 +40,20 @@ export default class CallNotification extends CustomElement {
             api.send(stanza);
             return;
         }
-        // if ( jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
-        //     this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
-        //     const stanza = $msg({
-        //         'from': _converse.bare_jid,
-        //         'to': this.jid,
-        //         'type': 'chat'
-        //     }).c('finish', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
-        //     .c('reason', {'xmlns': Strophe.NS.JINGLE})  
-        //         .c('success', {}).up()
-        //         .t('Success').up().up()
-        //         .c('store', {'xmlns': Strophe.NS.HINTS})
-        //     api.send(stanza);
-        //     return;
-        // }
+        if ( jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
+            this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
+            const stanza = $msg({
+                'from': _converse.bare_jid,
+                'to': this.jid,
+                'type': 'chat'
+            }).c('finish', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
+            .c('reason', {'xmlns': Strophe.NS.JINGLE})  
+                .c('success', {}).up()
+                .t('Success').up().up()
+                .c('store', {'xmlns': Strophe.NS.HINTS})
+            api.send(stanza);
+            return;
+        }
     }
 }
 

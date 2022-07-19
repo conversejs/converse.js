@@ -8,7 +8,7 @@ describe("A Jingle Message Initiation Request", function () {
 
     describe("from the initiator's perspective", function () {
 
-    fit("is sent out when one clicks the call button", mock.initConverse(
+    it("is sent out when one clicks the call button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
@@ -35,7 +35,7 @@ describe("A Jingle Message Initiation Request", function () {
     }));
 
 
-    it("is ended when the initiator clicks the call button again", mock.initConverse(
+    fit("is ended when the initiator clicks the call button again", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
@@ -47,12 +47,14 @@ describe("A Jingle Message Initiation Request", function () {
     call_button.click();
     call_button.click();
     const sent_stanzas = _converse.connection.sent_stanzas;
-    const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`reason`, s).length).pop());
+    const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`reason[xmlns="${Strophe.NS.JINGLE}"]`, s).length).pop());
+    const propose_id = stanza.querySelector('propose');
     expect(Strophe.serialize(stanza)).toBe(
-        `<message from='${_converse.bare_jid}'
-            to='${contact_jid}'
-            type='chat'>`+
-                `<retract xmlns='${Strophe.NS.JINGLEMESSAGE}' id='${stanza.getAttribute('id')}'>`+
+        `<message from="${_converse.bare_jid}" `+
+            `id="${stanza.getAttribute('id')}" `+
+            `to='${contact_jid}' `+
+            `type='chat'> `+
+                `<retract xmlns='${Strophe.NS.JINGLEMESSAGE}' id='${propose_id.getAttribute('id')}'>`+
                     `<reason xmlns="${Strophe.NS.JINGLE}">`+
                         `<cancel/>`+
                         `<text>Retracted</text>`+
@@ -62,12 +64,12 @@ describe("A Jingle Message Initiation Request", function () {
         `</message>`
     );
     expect(view.model.messages.length).toEqual(1);
-    }));
+    })); 
     });
     
     describe("from the reciever's perspective", function () {
 
-        fit("is recieved when the initiator clicks the call button", mock.initConverse(
+        it("is recieved when the initiator clicks the call button", mock.initConverse(
             ['chatBoxesFetched'], {}, async function (_converse) {
     
         await mock.waitForRoster(_converse, 'current', 1);
@@ -93,7 +95,7 @@ describe("A Jingle Message Initiation Request", function () {
         expect(view.model.messages.length).toEqual(1);
         }));
 
-        fit("is recieved when the initiator clicks the call button", mock.initConverse(
+        it("is recieved when the initiator clicks the call button", mock.initConverse(
             ['chatBoxesFetched'], {}, async function (_converse) {
     
         await mock.waitForRoster(_converse, 'current', 1);

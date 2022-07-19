@@ -28,11 +28,12 @@ export default class CallNotification extends CustomElement {
         if ( jingle_status === JINGLE_CALL_STATUS.OUTGOING_PENDING ) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
             const initiator_stanza = this.model.messages.findWhere({ 'media': 'audio' });
+            const initiator_id = initiator_stanza.attributes.propose_id;
             const stanza = $msg({
                 'from': _converse.bare_jid,
                 'to': this.jid,
                 'type': 'chat'
-            }).c('retract', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': initiator_stanza.id})
+            }).c('retract', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': initiator_id})
             .c('reason', {'xmlns': Strophe.NS.JINGLE})
                 .c('cancel', {}).up()
                 .t('Retracted').up().up()

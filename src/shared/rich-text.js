@@ -31,8 +31,8 @@ const isString = s => typeof s === 'string';
 // the zero-width whitespace character
 const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${'\u200B'.repeat(m.length - 2)}\n`);
 
-const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info">${o.mention}</span>`;
-const tpl_mention = o => html`<span class="mention">${o.mention}</span>`;
+const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
+const tpl_mention = o => html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
 
 /**
  * @class RichText
@@ -201,9 +201,9 @@ export class RichText extends String {
             const end = Number(ref.end) - full_offset;
             const mention = text.slice(begin, end);
             if (mention === this.nick) {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({ mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({...ref, mention }));
             } else {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({ mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({...ref, mention }));
             }
         });
     }

@@ -364,7 +364,8 @@ describe("An incoming chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 12);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            `<blockquote>What do you think of it <span class="mention">romeo</span>?</blockquote>\n Did you see this <span class="mention">romeo</span>?`);
+            `<blockquote>What do you think of it <span class="mention" data-uri="romeo@montague.lit">romeo</span>?</blockquote>\n `+
+            `Did you see this <span class="mention" data-uri="romeo@montague.lit">romeo</span>?`);
 
         expect(true).toBe(true);
     }));

@@ -1284,7 +1284,7 @@ const ChatRoomMixin = {
         if (!args.startsWith('@')) {
             args = '@' + args;
         }
-        const [text, references] = this.parseTextForReferences(args); // eslint-disable-line no-unused-vars
+        const [_text, references] = this.parseTextForReferences(args); // eslint-disable-line no-unused-vars
         if (!references.length) {
             const message = __("Error: couldn't find a groupchat participant based on your arguments");
             this.createMessage({ message, 'type': 'error' });

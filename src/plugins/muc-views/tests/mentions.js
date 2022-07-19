@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, $msg, $pres } = converse.env;
+const { Strophe, $msg, $pres, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -58,10 +58,10 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!-.*?->/g, '') ===
-            'hello <span class="mention">z3r0</span> '+
-            '<span class="mention mention--self badge badge-info">tom</span> '+
-            '<span class="mention">mr.robot</span>, how are you?');
-        let message = view.querySelector('.chat-msg__text')
+            'hello <span class="mention" data-uri="xmpp:z3r0@montague.lit">z3r0</span> '+
+            '<span class="mention mention--self badge badge-info" data-uri="xmpp:romeo@montague.lit">tom</span> '+
+            '<span class="mention" data-uri="xmpp:mr.robot@montague.lit">mr.robot</span>, how are you?');
+        let message = view.querySelector('.chat-msg__text');
         expect(message.classList.length).toEqual(1);
 
         msg = $msg({
@@ -69,15 +69,15 @@ describe("An incoming groupchat message", function () {
                 id: u.getUniqueId(),
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
-            }).c('body').t('https://conversejs.org/@gibson').up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'23', 'end':'29', 'type':'mention', 'uri':'xmpp:gibson@montague.lit'}).nodeTree;
+            }).c('body').t('@gibson').up()
+                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'1', 'end':'7', 'type':'mention', 'uri':'xmpp:gibson@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
-        message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
+
+        message = sizzle('converse-chat-message:last .chat-msg__text', view).pop();
         expect(message.classList.length).toEqual(1);
-        expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe(
-            'hello <span class="mention">z3r0</span> '+
-            '<span class="mention mention--self badge badge-info">tom</span> '+
-            '<span class="mention">mr.robot</span>, how are you?');
+        expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe('@<span class="mention" data-uri="xmpp:gibson@montague.lit">gibson</span>');
     }));
 
     it("properly renders mentions that contain the pipe character",
@@ -125,7 +125,7 @@ describe("An incoming groupchat message", function () {
                     `</message>`);
 
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
-        expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe('hello <span class="mention">ThUnD3r|Gr33n</span>');
+        expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe('hello <span class="mention" data-uri="xmpp:lounge@montague.lit/ThUnD3r%7CGr33n">ThUnD3r|Gr33n</span>');
     }));
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
@@ -160,7 +160,9 @@ describe("An incoming groupchat message", function () {
 
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!-.*?->/g, '') ===
-            '<blockquote>hello <span class="mention">z3r0</span> <span class="mention mention--self badge badge-info">tom</span> <span class="mention">mr.robot</span>, how are you?</blockquote>');
+            '<blockquote>hello <span class="mention" data-uri="xmpp:z3r0@montague.lit">z3r0</span> '+
+            '<span class="mention mention--self badge badge-info" data-uri="xmpp:romeo@montague.lit">tom</span> '+
+            '<span class="mention" data-uri="xmpp:mr.robot@montague.lit">mr.robot</span>, how are you?</blockquote>');
         const message = view.querySelector('.chat-msg__text');
         expect(message.classList.length).toEqual(1);
     }));
@@ -423,7 +425,9 @@ describe("A sent groupchat message", function () {
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() =>
                 view.querySelector(last_msg_sel).innerHTML.replace(/<!-.*?->/g, '') ===
-                    'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
+                'hello <span class="mention" data-uri="xmpp:z3r0@montague.lit">z3r0</span> '+
+                '<span class="mention" data-uri="xmpp:gibson@montague.lit">gibson</span> '+
+                '<span class="mention" data-uri="xmpp:mr.robot@montague.lit">mr.robot</span>, how are you?'
             );
 
             const sent_stanzas = _converse.connection.sent_stanzas;
@@ -537,7 +541,7 @@ describe("A sent groupchat message", function () {
         message_form.onKeyDown(enter_event);
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.innerHTML.replace(/<!-.*?->/g, '')).toEqual(
-            `Welcome <span class="mention">gibson</span> <span title=":poop:">💩</span> `+
+            `Welcome <span class="mention" data-uri="xmpp:${muc_jid}/gibson">gibson</span> <span title=":poop:">💩</span> `+
             `We have a guide on how to do that here: `+
             `<a target="_blank" rel="noopener" href="https://conversejs.org/docs/html/index.html">https://conversejs.org/docs/html/index.html</a>`);
     }));

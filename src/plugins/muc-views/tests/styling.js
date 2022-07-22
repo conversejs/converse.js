@@ -26,7 +26,9 @@ describe("An incoming groupchat Message", function () {
         const msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            'This <span class="styling-directive">*</span><b>message mentions <span class="mention mention--self badge badge-info">romeo</span></b><span class="styling-directive">*</span>');
+            'This <span class="styling-directive">*</span>'+
+            '<b>message mentions <span class="mention mention--self badge badge-info" data-uri="xmpp:romeo@montague.lit">romeo</span></b>'+
+            '<span class="styling-directive">*</span>');
     }));
 
     it("will not have styling applied to mentioned nicknames themselves",
@@ -51,6 +53,6 @@ describe("An incoming groupchat Message", function () {
         const msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            '<span class="mention">x_y_z_</span> hello');
+            '<span class="mention" data-uri="xmpp:xyz@montague.lit">x_y_z_</span> hello');
     }));
 });

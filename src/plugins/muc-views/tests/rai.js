@@ -186,21 +186,21 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const view = _converse.chatboxviews.get(muc_jid);
-        expect(view.model.get('hidden')).toBe(false);
+        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        expect(model.get('hidden')).toBe(false);
         const sent_stanzas = [];
         spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-        view.model.save({'hidden': true});
+        model.save({'hidden': true});
         await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').length === 2);
 
-        expect(Strophe.serialize(sent_stanzas[0])).toBe(
+        const sent_presences = sent_stanzas.filter(s => s.nodeName === 'presence');
+        expect(Strophe.serialize(sent_presences[0])).toBe(
             `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
                 `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
-        expect(Strophe.serialize(sent_stanzas[1])).toBe(
+        expect(Strophe.serialize(sent_presences[1])).toBe(
             `<presence to="montague.lit" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
                 `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
@@ -215,7 +215,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         `);
         _converse.connection._dataRecv(mock.createRequest(activity_stanza));
 
-        await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+        await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
     }));
 
 });

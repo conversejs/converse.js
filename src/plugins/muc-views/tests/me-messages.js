@@ -51,6 +51,6 @@ describe("A Groupchat Message", function () {
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
         await u.waitUntil(() => sizzle('.chat-msg__text:last', view).pop().innerHTML.replace(/<!-.*?->/g, '') ===
-            'mentions <span class="mention mention--self badge badge-info">romeo</span>');
+            'mentions <span class="mention mention--self badge badge-info" data-uri="xmpp:romeo@montague.lit">romeo</span>');
     }));
 });

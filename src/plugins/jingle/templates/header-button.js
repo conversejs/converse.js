@@ -3,10 +3,10 @@ import { __ } from 'i18n';
 import { JINGLE_CALL_STATUS } from '../constants';
 
 const tpl_active_call = (o) => {
-    const button = __('Call Inititated');
+    const button = __('End Call');
     return html`
         <div>
-            <a class="jingle-call-initiated-button" @click=${ o.endCall }>${ button }</a>
+            <a class="jingle-call-initiated-button" @click=${o.endCall}>${ button }</a>
         </div>
     `;
 }

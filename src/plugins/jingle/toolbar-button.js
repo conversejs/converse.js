@@ -27,6 +27,29 @@ export default class JingleToolbarButton extends CustomElement {
         const jingle_status = this.model.get('jingle_status');
         if ( jingle_status === JINGLE_CALL_STATUS.OUTGOING_PENDING || jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
+            const initiator_stanza = this.model.messages.findWhere({ 'media': 'audio' });
+            const propose_id = initiator_stanza.attributes.propose_id;
+            const message_id = u.getUniqueId();
+            api.send(
+                $msg({
+                'from': _converse.bare_jid,
+                'to': this.jid,
+                'type': 'chat',
+                id: message_id
+                }).c('retract', { 'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': propose_id })
+                .c('reason', { 'xmlns': Strophe.NS.JINGLE })
+                .c('cancel', {}).up()
+                .t('Retracted').up().up()
+                .c('store', { 'xmlns': Strophe.NS.HINTS })
+            );
+            const attrs = {
+                'from': _converse.bare_jid,
+                'to': this.jid,
+                'type': 'chat',
+                'retract_id': propose_id, 
+                'msg_id': message_id
+            }
+            this.model.messages.create(attrs);
             return;
         }
         if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {

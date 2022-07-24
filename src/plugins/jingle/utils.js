@@ -4,6 +4,7 @@ import  JingleCallModal from "./modal/jingle-incoming-call-modal.js";
 const { Strophe, sizzle } = converse.env;
 
 export function parseJingleMessage(stanza, attrs) {
+    // editable: false, retracted_id: {if there is a retractions set it to the id}, retracted(timestamp)
     return { ...attrs, ...{ 'jingle_propose': getJingleProposeType(stanza) }}
 }
 

@@ -136,6 +136,7 @@ function saveJIDtoSession (_converse, jid) {
         // We use the `active` flag to determine whether we should use the values from sessionStorage.
         // When "cloning" a tab (e.g. via middle-click), the `active` flag will be set and we'll create
         // a new empty user session, otherwise it'll be false and we can re-use the user session.
+        // When the tab is reloaded, the `active` flag is set to `false`.
        'active': true
     });
     // Set JID on the connection object so that when we call `connection.bind`
@@ -184,6 +185,10 @@ export async function initSession (_converse, jid) {
             _converse.session.save({id});
         }
         saveJIDtoSession(_converse, jid);
+
+        // Set `active` flag to false when the tab gets reloaded
+        window.addEventListener(_converse.unloadevent, () => _converse.session?.save('active', false));
+
         /**
          * Triggered once the user's session has been initialized. The session is a
          * cache which stores information about the user's current session.

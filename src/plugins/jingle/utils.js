@@ -16,3 +16,7 @@ function getJingleProposeType(stanza){
 export function jingleCallInitialized() {
     JingleCallModal;
 }
+
+export function handleRetraction(context, retracted) {
+    
+}

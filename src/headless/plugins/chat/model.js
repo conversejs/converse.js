@@ -228,6 +228,7 @@ const ChatBox = ModelWithContact.extend({
                 !this.handleChatMarker(attrs) &&
                 !(await this.handleRetraction(attrs))
         ) {
+            const message_retraction = await api.hook('onMessage', this, { retract: false });
             this.setEditable(attrs, attrs.time);
 
             if (attrs['chat_state'] && attrs.sender === 'them') {

@@ -23,6 +23,6 @@ Please read the [style guide](https://conversejs.org/docs/html/style_guide.html)
 
 Add a test for any bug fixed or feature added.
 
-Tests can be find in various `./tests` folders in the Converse source code.
+Tests can be found in various `./tests` folders in the Converse source code.
 
 To run the tests, you can run `make check` on Linux and Mac, or `./node_modules/bin/karma start karma.conf` on Windows.

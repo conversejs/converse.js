@@ -207,10 +207,7 @@ cdn:: node_modules
 
 .PHONY: eslint
 eslint: node_modules
-	$(ESLINT) src/*.js
-	$(ESLINT) src/utils/*.js
-	$(ESLINT) src/headless/*.js
-	$(ESLINT) src/headless/utils/*.js
+	$(ESLINT) src/**/*.js
 
 .PHONY: check
 check: eslint | dist/converse.js dist/converse.css

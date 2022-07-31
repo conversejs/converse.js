@@ -242,6 +242,14 @@ describe("An incoming chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.chatboxviews.get(contact_jid);
 
+        msg_text = `> https://conversejs.org\n> https://conversejs.org`;
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
+        msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<blockquote><a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a> \n <a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a></blockquote>');
+
         msg_text = `> This is quoted text\n>This is also quoted\nThis is not quoted`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);

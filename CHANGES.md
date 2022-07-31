@@ -8,6 +8,7 @@
 - Remove the `converse-carbons` plugin and make carbons part of the `converse-chat` plugin.
 - Remove the `message_carbons` configuration setting. Carbons are now always enabled.
 - #2936: Fix documentation about enable_smacks option, which is true by default.
+- #2870: Fix for multiple URLs to be linkified when sent together in chat and adds a test for this.
 
 ## 9.1.1 (2022-05-05)
 

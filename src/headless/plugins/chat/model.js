@@ -228,7 +228,11 @@ const ChatBox = ModelWithContact.extend({
                 !this.handleChatMarker(attrs) &&
                 !(await this.handleRetraction(attrs))
         ) {
-            const message_retraction = await api.hook('onMessage', this, { retract: false });
+            debugger
+            const { handled } = await api.hook('onMessage', this, { handled: false, attrs });
+            console.log(handled)
+            if (handled) return;
+
             this.setEditable(attrs, attrs.time);
 
             if (attrs['chat_state'] && attrs.sender === 'them') {
@@ -584,7 +588,7 @@ const ChatBox = ModelWithContact.extend({
             if (attrs.is_tombstone) {
                 return false;
             }
-            const message = this.messages.findWhere({'origin_id': attrs.retracted_id, 'from': attrs.from});
+            const message = this.messages.findWhere({ 'origin_id': attrs.retracted_id, 'from': attrs.from });
             if (!message) {
                 attrs['dangling_retraction'] = true;
                 await this.createMessage(attrs);

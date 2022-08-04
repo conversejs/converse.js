@@ -4,7 +4,7 @@ const sizzle = converse.env.sizzle;
 
 const { Strophe } = converse.env;
 
-describe("A Jingle Message Initiation Request", function () {
+fdescribe("A Jingle Message Initiation Request", function () {
 
     describe("from the initiator's perspective", function () {
 
@@ -48,14 +48,14 @@ describe("A Jingle Message Initiation Request", function () {
     call_button.click();
     const sent_stanzas = _converse.connection.sent_stanzas;
     const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`retract[xmlns='${Strophe.NS.JINGLEMESSAGE}']`, s).length).pop());
-    const retract_id = stanza.querySelector('retract');
+    const jingle_retraction_id = stanza.querySelector('retract');
     expect(Strophe.serialize(stanza)).toBe(
         `<message from="${_converse.bare_jid}" `+
             `id="${stanza.getAttribute('id')}" `+
             `to="${contact_jid}" `+
             `type="chat" `+
             `xmlns="jabber:client">`+
-                `<retract id="${retract_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">`+
+                `<retract id="${jingle_retraction_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">`+
                     `<reason xmlns="${Strophe.NS.JINGLE}">`+
                         `<cancel/>`+
                         `Retracted`+
@@ -67,7 +67,7 @@ describe("A Jingle Message Initiation Request", function () {
     expect(view.model.messages.length).toEqual(1);
     }));
 
-    fit("is ended when the initiator clicks the end call header button", mock.initConverse(
+    it("is ended when the initiator clicks the end call header button", mock.initConverse(
         ['chatBoxesFetched'], {}, async function (_converse) {
 
     await mock.waitForRoster(_converse, 'current', 1);
@@ -81,14 +81,14 @@ describe("A Jingle Message Initiation Request", function () {
     header_end_call_button.click();
     const sent_stanzas = _converse.connection.sent_stanzas;
     const stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`retract[xmlns='${Strophe.NS.JINGLEMESSAGE}']`, s).length).pop());
-    const retract_id = stanza.querySelector('retract');
+    const jingle_retraction_id = stanza.querySelector('retract');
     expect(Strophe.serialize(stanza)).toBe(
         `<message from="${_converse.bare_jid}" `+
             `id="${stanza.getAttribute('id')}" `+
             `to="${contact_jid}" `+
             `type="chat" `+
             `xmlns="jabber:client">`+
-                `<retract id="${retract_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">`+
+                `<retract id="${jingle_retraction_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">`+
                     `<reason xmlns="${Strophe.NS.JINGLE}">`+
                         `<cancel/>`+
                         `Retracted`+
@@ -103,7 +103,7 @@ describe("A Jingle Message Initiation Request", function () {
     
     describe("from the receiver's perspective", function () {
 
-        fit("is received when the initiator clicks the call button", mock.initConverse(
+        it("is received when the initiator clicks the call button", mock.initConverse(
             ['chatBoxesFetched'], { allow_non_roster_messaging: true }, async function (_converse) {
     
         await mock.waitForRoster(_converse, 'current', 1);

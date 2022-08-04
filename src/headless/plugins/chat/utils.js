@@ -106,7 +106,7 @@ export function registerMessageHandlers () {
 
 /**
  * Handler method for all incoming single-user chat "message" stanzas.
- * @param { MessageAttributes } attrs - The message attributes
+ * @param { XMLElement } stanza - The message stanza
  */
 export async function handleMessageStanza (stanza) {
     if (isServerMessage(stanza)) {

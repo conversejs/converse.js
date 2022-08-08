@@ -1,12 +1,11 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
 import tpl_header_button from "./templates/header-button.js";
 import { JINGLE_CALL_STATUS } from "./constants.js";
-import { retractCall } from './utils.js';
+import { retractCall, finishCall } from './utils.js';
 
 
 import './styles/jingle.scss';
-const { Strophe, $msg } = converse.env;
 
 export default class CallNotification extends CustomElement {
     
@@ -34,16 +33,7 @@ export default class CallNotification extends CustomElement {
         }
         if ( jingle_status === JINGLE_CALL_STATUS.ACTIVE) {
             this.model.save('jingle_status', JINGLE_CALL_STATUS.ENDED);
-            const stanza = $msg({
-                'from': _converse.bare_jid,
-                'to': this.jid,
-                'type': 'chat'
-            }).c('finish', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': this.getAttribute('id')})
-            .c('reason', {'xmlns': Strophe.NS.JINGLE})  
-                .c('success', {}).up()
-                .t('Success').up().up()
-                .c('store', {'xmlns': Strophe.NS.HINTS})
-            api.send(stanza);
+            finishCall(this);
             return;
         }
     }

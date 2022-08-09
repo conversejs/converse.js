@@ -7,6 +7,7 @@
 - Show roster contacts with `subscription` set to `none`
 - Remove the `converse-carbons` plugin and make carbons part of the `converse-chat` plugin.
 - Remove the `message_carbons` configuration setting. Carbons are now always enabled.
+- Move the `converse-oauth` plugin to the [community-plugins](https://github.com/conversejs/community-plugins)
 - #2936: Fix documentation about enable_smacks option, which is true by default.
 
 ## 9.1.1 (2022-05-05)

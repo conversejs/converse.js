@@ -11,12 +11,13 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
+import { handleCorrection } from '@converse/headless/shared/chat/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
+import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { isUniView, getUniqueId, safeSave } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
-import { sendMarker } from '@converse/headless/shared/actions';
+import { sendMarker } from '@converse/headless/shared/actions.js';
 
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
@@ -2267,7 +2268,7 @@ const ChatRoomMixin = {
             this.updateNotifications(attrs.nick, attrs.chat_state);
         }
         if (u.shouldCreateGroupchatMessage(attrs)) {
-            const msg = this.handleCorrection(attrs) || (await this.createMessage(attrs));
+            const msg = handleCorrection(this, attrs) || (await this.createMessage(attrs));
             this.removeNotification(attrs.nick, ['composing', 'paused']);
             this.handleUnreadMessage(msg);
         }

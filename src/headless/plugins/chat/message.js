@@ -143,12 +143,11 @@ const MessageMixin = {
         }
         const date = dayjs(this.get('time'));
         return this.get('from') === prev_model.get('from') &&
-            !this.isMeCommand() &&
-            !prev_model.isMeCommand() &&
-            this.get('type') !== 'info' &&
-            prev_model.get('type') !== 'info' &&
+            !this.isMeCommand() && !prev_model.isMeCommand() &&
+            !!this.get('is_encrypted') === !!prev_model.get('is_encrypted') &&
+            this.get('type') === prev_model.get('type') && this.get('type') !== 'info' &&
             date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
-            !!this.get('is_encrypted') === !!prev_model.get('is_encrypted');
+            (this.get('type') === 'groupchat' ? this.get('occupant_id') === prev_model.get('occupant_id') : true);
     },
 
     getDisplayName () {

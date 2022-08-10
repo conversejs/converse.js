@@ -58,4 +58,55 @@ export function getMediaURLs (arr, text, offset=0) {
     }).filter(o => o);
 }
 
+
+/**
+ * Determines whether the passed in message attributes represent a
+ * message which corrects a previously received message, or an
+ * older message which has already been corrected.
+ * In both cases, update the corrected message accordingly.
+ * @private
+ * @method _converse.ChatBox#handleCorrection
+ * @param { _converse.ChatBox | _converse.ChatRoom }
+ * @param { object } attrs - Attributes representing a received
+ *  message, as returned by {@link parseMessage}
+ * @returns { _converse.Message|undefined } Returns the corrected
+ *  message or `undefined` if not applicable.
+ */
+export function handleCorrection (model, attrs) {
+    if (!attrs.replace_id || !attrs.from) {
+        return;
+    }
+
+    const query = (attrs.type === 'groupchat' && attrs.occupant_id)
+        ? ({ attributes: m }) => m.msgid === attrs.replace_id && m.occupant_id == attrs.occupant_id
+        // eslint-disable-next-line no-eq-null
+        : ({ attributes: m }) => m.msgid === attrs.replace_id && m.from === attrs.from && m.occupant_id == null
+
+    const message = model.messages.models.find(query);
+    if (!message) {
+        return;
+    }
+
+    const older_versions = message.get('older_versions') || {};
+    if ((attrs.time < message.get('time')) && message.get('edited')) {
+        // This is an older message which has been corrected afterwards
+        older_versions[attrs.time] = attrs['message'];
+        message.save({'older_versions': older_versions});
+    } else {
+        // This is a correction of an earlier message we already received
+        if (Object.keys(older_versions).length) {
+            older_versions[message.get('edited')] = message.getMessageText();
+        } else {
+            older_versions[message.get('time')] = message.getMessageText();
+        }
+        attrs = Object.assign(attrs, { older_versions });
+        delete attrs['msgid']; // We want to keep the msgid of the original message
+        delete attrs['id']; // Delete id, otherwise a new cache entry gets created
+        attrs['time'] = message.get('time');
+        message.save(attrs);
+    }
+    return message;
+}
+
+
 export const debouncedPruneHistory = debounce(pruneHistory, 500);

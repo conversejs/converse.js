@@ -6,7 +6,7 @@ import log from '@converse/headless/log';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
-import { debouncedPruneHistory } from '@converse/headless/shared/chat/utils.js';
+import { debouncedPruneHistory, handleCorrection } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
@@ -234,7 +234,7 @@ const ChatBox = ModelWithContact.extend({
                 this.notifications.set('chat_state', attrs.chat_state);
             }
             if (u.shouldCreateMessage(attrs)) {
-                const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
+                const msg = handleCorrection(this, attrs) || await this.createMessage(attrs);
                 this.notifications.set({'chat_state': null});
                 this.handleUnreadMessage(msg);
             }
@@ -603,47 +603,6 @@ const ChatBox = ModelWithContact.extend({
             }
         }
         return false;
-    },
-
-    /**
-     * Determines whether the passed in message attributes represent a
-     * message which corrects a previously received message, or an
-     * older message which has already been corrected.
-     * In both cases, update the corrected message accordingly.
-     * @private
-     * @method _converse.ChatBox#handleCorrection
-     * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link parseMessage}
-     * @returns { _converse.Message|undefined } Returns the corrected
-     *  message or `undefined` if not applicable.
-     */
-    handleCorrection (attrs) {
-        if (!attrs.replace_id || !attrs.from) {
-            return;
-        }
-        const message = this.messages.findWhere({'msgid': attrs.replace_id, 'from': attrs.from});
-        if (!message) {
-            return;
-        }
-        const older_versions = message.get('older_versions') || {};
-        if ((attrs.time < message.get('time')) && message.get('edited')) {
-            // This is an older message which has been corrected afterwards
-            older_versions[attrs.time] = attrs['message'];
-            message.save({'older_versions': older_versions});
-        } else {
-            // This is a correction of an earlier message we already received
-            if (Object.keys(older_versions).length) {
-                older_versions[message.get('edited')] = message.getMessageText();
-            } else {
-                older_versions[message.get('time')] = message.getMessageText();
-            }
-            attrs = Object.assign(attrs, { older_versions });
-            delete attrs['msgid']; // We want to keep the msgid of the original message
-            delete attrs['id']; // Delete id, otherwise a new cache entry gets created
-            attrs['time'] = message.get('time');
-            message.save(attrs);
-        }
-        return message;
     },
 
     /**

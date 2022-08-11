@@ -10,7 +10,7 @@ import { debouncedPruneHistory, handleCorrection } from '@converse/headless/shar
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isUniView } from '@converse/headless/utils/core.js';
+import { isUniView, isEmptyMessage } from '../../utils/core.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions.js';
 
@@ -257,7 +257,7 @@ const ChatBox = ModelWithContact.extend({
     onMessageAdded (message) {
         if (api.settings.get('prune_messages_above') &&
             (api.settings.get('pruning_behavior') === 'scrolled' || !this.ui.get('scrolled')) &&
-            !u.isEmptyMessage(message)
+            !isEmptyMessage(message)
         ) {
             debouncedPruneHistory(this);
         }
@@ -891,17 +891,14 @@ const ChatBox = ModelWithContact.extend({
      * @param { String } send_time - time when the message was sent
      */
     setEditable (attrs, send_time) {
-        if (attrs.is_headline || u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
+        if (attrs.is_headline || isEmptyMessage(attrs) || attrs.sender !== 'me') {
             return;
         }
         if (api.settings.get('allow_message_corrections') === 'all') {
             attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
         } else if ((api.settings.get('allow_message_corrections') === 'last') && (send_time > this.get('time_sent'))) {
             this.set({'time_sent': send_time});
-            const msg = this.messages.findWhere({'editable': true});
-            if (msg) {
-                msg.save({'editable': false});
-            }
+            this.messages.findWhere({'editable': true})?.save({'editable': false});
             attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
         }
     },

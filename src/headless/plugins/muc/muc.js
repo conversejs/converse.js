@@ -2649,9 +2649,14 @@ const ChatRoomMixin = {
      */
     async onOwnPresence (stanza) {
         await this.occupants.fetched;
+
+        if (stanza.getAttribute('type') === 'unavailable') {
+            this.handleDisconnection(stanza);
+            return;
+        }
+
         const old_status = this.session.get('connection_status');
-        if (stanza.getAttribute('type') !== 'unavailable' &&
-            old_status !== converse.ROOMSTATUS.ENTERED &&
+        if (old_status !== converse.ROOMSTATUS.ENTERED &&
             old_status !== converse.ROOMSTATUS.CLOSING
         ) {
             // Set connection_status before creating the occupant, but
@@ -2664,32 +2669,15 @@ const ChatRoomMixin = {
             this.updateOccupantsOnPresence(stanza);
         }
 
-        if (stanza.getAttribute('type') === 'unavailable') {
-            this.handleDisconnection(stanza);
-            return;
-        } else {
-            const locked_room = stanza.querySelector("status[code='201']");
-            if (locked_room) {
-                if (this.get('auto_configure')) {
-                    this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                } else if (api.settings.get('muc_instant_rooms')) {
-                    // Accept default configuration
-                    this.sendConfiguration().then(() => this.refreshDiscoInfo());
-                } else {
-                    this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
-                    return;
-                }
-            } else if (!this.features.get('fetched')) {
-                // The features for this groupchat weren't fetched.
-                // That must mean it's a new groupchat without locking
-                // (in which case Prosody doesn't send a 201 status),
-                // otherwise the features would have been fetched in
-                // the "initialize" method already.
-                if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
-                    this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                } else {
-                    this.getDiscoInfo();
-                }
+        const locked_room = stanza.querySelector("status[code='201']");
+        if (locked_room) {
+            if (this.get('auto_configure')) {
+                await this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
+            } else if (api.settings.get('muc_instant_rooms')) {
+                // Accept default configuration
+                await this.sendConfiguration().then(() => this.refreshDiscoInfo());
+            } else {
+                this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
             }
         }
     },

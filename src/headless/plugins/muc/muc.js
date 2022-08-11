@@ -1726,8 +1726,17 @@ const ChatRoomMixin = {
             'resource': Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource
         }
 
-        if (data.is_me && data.states.includes(converse.MUC_NICK_CHANGED_CODE)) {
-            this.save('nick', data.nick);
+        if (data.is_me) {
+            let modified = false;
+            if (data.states.includes(converse.MUC_NICK_CHANGED_CODE)) {
+                modified = true;
+                this.set('nick', data.nick);
+            }
+            if (this.features.get(Strophe.NS.OCCUPANTID) && this.get('occupant-id') !== data.occupant_id) {
+                modified = true;
+                this.set('occupant_id', data.occupant_id);
+            }
+            modified && this.save();
         }
 
         if (occupant) {

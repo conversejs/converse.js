@@ -762,7 +762,7 @@ Object.assign(converse, {
         log,
         sizzle,
         sprintf,
-        stanza: u.stanza,
+        stx: u.stx,
         u,
     }
 });

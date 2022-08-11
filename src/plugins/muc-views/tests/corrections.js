@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $msg, $pres, Strophe, u, stanza } = converse.env;
+const { $msg, $pres, Strophe, u, stx } = converse.env;
 
 describe("A Groupchat Message", function () {
 
@@ -274,7 +274,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
 
             const msg_id = u.getUniqueId();
             await model.handleMessageStanza(
-                stanza`
+                stx`
                 <message
                     from="lounge@montague.lit/newguy"
                     to="_converse.connection.jid"
@@ -291,7 +291,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             expect(model.messages.at(0).get('body')).toBe('But soft, what light through yonder airlock breaks?');
 
             await model.handleMessageStanza(
-                stanza`
+                stx`
                 <message
                     from="lounge@montague.lit/newguy"
                     to="_converse.connection.jid"
@@ -312,7 +312,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             expect(model.messages.at(1).get('edited')).toBeFalsy();
 
             await model.handleMessageStanza(
-                stanza`
+                stx`
                 <message
                     from="lounge@montague.lit/newguy"
                     to="_converse.connection.jid"

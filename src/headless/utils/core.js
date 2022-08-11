@@ -16,7 +16,7 @@ import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '@converse/headless/utils/init.js';
 import { settings_api } from '@converse/headless/shared/settings/api.js';
-import { stanza, toStanza } from './stanza.js';
+import { stx , toStanza } from './stanza.js';
 
 export function isEmptyMessage (attrs) {
     if (attrs instanceof Model) {
@@ -577,5 +577,5 @@ export default Object.assign({
     isEmptyMessage,
     getUniqueId,
     toStanza,
-    stanza,
+    stx,
 }, u);

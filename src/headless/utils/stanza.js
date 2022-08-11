@@ -11,7 +11,13 @@ export function toStanza (string) {
 }
 
 
-export function stanza (strings, ...values) {
+/**
+ * Tagged template literal function which can be used to generate XML stanzas.
+ * Similar to the `html` function, from Lit.
+ *
+ * @example stx`<presence type="${type}"><show>${show}</show></presence>`
+ */
+export function stx (strings, ...values) {
     return toStanza(
         strings.reduce((acc, str) => {
             const idx = strings.indexOf(str);

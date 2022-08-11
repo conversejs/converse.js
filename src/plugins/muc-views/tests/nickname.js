@@ -1,13 +1,12 @@
 /*global mock, converse */
 
-const { $pres, $iq, Strophe, sizzle, u } = converse.env;
+const { $pres, $iq, Strophe, sizzle, u, stx } = converse.env;
 
 describe("A MUC", function () {
 
     it("allows you to change your nickname via a modal",
             mock.initConverse([], {'view_mode': 'fullscreen'}, async function (_converse) {
 
-        const { stanza } = converse.env;
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
@@ -39,7 +38,7 @@ describe("A MUC", function () {
 
         // Two presence stanzas are received from the MUC service
         _converse.connection._dataRecv(mock.createRequest(
-            stanza`
+            stx`
             <presence
                 from='${muc_jid}/${nick}'
                 id='DC352437-C019-40EC-B590-AF29E879AF98'
@@ -59,7 +58,7 @@ describe("A MUC", function () {
         expect(model.get('nick')).toBe(newnick);
 
         _converse.connection._dataRecv(mock.createRequest(
-            stanza`
+            stx`
             <presence
                 from='${muc_jid}/${newnick}'
                 id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'

@@ -981,6 +981,7 @@ const ChatRoomMixin = {
     },
 
     async getOutgoingMessageAttributes (attrs) {
+        await api.emojis.initialize();
         const is_spoiler = this.get('composing_spoiler');
         let text = '', references;
         if (attrs?.body) {

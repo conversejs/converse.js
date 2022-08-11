@@ -845,6 +845,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     async getOutgoingMessageAttributes (attrs) {
+        await api.emojis.initialize();
         const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
         const text = attrs?.body;

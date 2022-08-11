@@ -343,6 +343,7 @@ export function parseMUCPresence (stanza, chatbox) {
     const from = stanza.getAttribute('from');
     const type = stanza.getAttribute('type');
     const data = {
+        'is_me': !!stanza.querySelector("status[code='110']"),
         'from': from,
         'occupant_id': getOccupantID(stanza, chatbox),
         'nick': Strophe.getResourceFromJid(from),
@@ -351,6 +352,7 @@ export function parseMUCPresence (stanza, chatbox) {
         'hats': [],
         'show': type !== 'unavailable' ? 'online' : 'offline'
     };
+
     Array.from(stanza.children).forEach(child => {
         if (child.matches('status')) {
             data.status = child.textContent || null;

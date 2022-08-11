@@ -1727,6 +1727,10 @@ const ChatRoomMixin = {
             'resource': Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource
         }
 
+        if (data.is_me && data.states.includes(converse.MUC_NICK_CHANGED_CODE)) {
+            this.save('nick', data.nick);
+        }
+
         if (occupant) {
             occupant.save(attributes);
         } else {

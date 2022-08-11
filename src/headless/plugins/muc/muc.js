@@ -6,7 +6,6 @@ import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import u from '../../utils/form';
-import zipObject from 'lodash-es/zipObject';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
@@ -381,10 +380,10 @@ const ChatRoomMixin = {
         this.features = new Model(
             Object.assign(
                 { id },
-                zipObject(
-                    converse.ROOM_FEATURES,
-                    converse.ROOM_FEATURES.map(() => false)
-                )
+                converse.ROOM_FEATURES.reduce((acc, feature) => {
+                    acc[feature] = false;
+                    return acc;
+                }, {})
             )
         );
         this.features.browserStorage = _converse.createStore(id, 'session');
@@ -1168,13 +1167,12 @@ const ChatRoomMixin = {
      */
     async getDiscoInfoFeatures () {
         const features = await api.disco.getFeatures(this.get('jid'));
-        const attrs = Object.assign(
-            zipObject(
-                converse.ROOM_FEATURES,
-                converse.ROOM_FEATURES.map(() => false)
-            ),
-            { 'fetched': new Date().toISOString() }
-        );
+
+        const attrs = converse.ROOM_FEATURES.reduce((acc, feature) => {
+            acc[feature] = false;
+            return acc;
+        }, { 'fetched': new Date().toISOString() });
+
         features.each(feature => {
             const fieldname = feature.get('var');
             if (!fieldname.startsWith('muc_')) {

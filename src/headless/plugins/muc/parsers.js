@@ -245,12 +245,15 @@ export async function parseMUCMessage (stanza, chatbox) {
     const from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza, attrs) ||
         chatbox.occupants.findOccupant(attrs)?.get('jid');
 
+    const own_occupant_id = chatbox.get('occupant_id');
+    const is_me = attrs.occupant_id && own_occupant_id ? own_occupant_id === attrs.occupant_id : attrs.nick === chatbox.get('nick');
+
     attrs = Object.assign( {
         from_real_jid,
         'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
         'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
-        'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
-        'sender': attrs.nick === chatbox.get('nick') ? 'me' : 'them',
+        'message': attrs.body || attrs.error, // TODO: Should only be used for error and info messages
+        'sender': is_me ? 'me' : 'them',
     }, attrs);
 
     if (attrs.is_archived && original_stanza.getAttribute('from') !== attrs.from_muc) {

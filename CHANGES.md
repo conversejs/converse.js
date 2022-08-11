@@ -10,6 +10,7 @@
 - Move the `converse-oauth` plugin to the [community-plugins](https://github.com/conversejs/community-plugins)
 - Don't apply message corrections when the MUC occupant-id doesn't match.
 - Update `nick` attribute on ChatRoom when user nickname changes
+- Restrict editing of MUC messages to ones with the same XEP-0421 occupant ID
 - #2936: Fix documentation about enable_smacks option, which is true by default.
 
 ## 9.1.1 (2022-05-05)

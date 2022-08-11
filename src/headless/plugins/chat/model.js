@@ -234,7 +234,7 @@ const ChatBox = ModelWithContact.extend({
                 this.notifications.set('chat_state', attrs.chat_state);
             }
             if (u.shouldCreateMessage(attrs)) {
-                const msg = handleCorrection(this, attrs) || await this.createMessage(attrs);
+                const msg = await handleCorrection(this, attrs) || await this.createMessage(attrs);
                 this.notifications.set({'chat_state': null});
                 this.handleUnreadMessage(msg);
             }

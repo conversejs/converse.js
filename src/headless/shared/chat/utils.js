@@ -72,7 +72,7 @@ export function getMediaURLs (arr, text, offset=0) {
  * @returns { _converse.Message|undefined } Returns the corrected
  *  message or `undefined` if not applicable.
  */
-export function handleCorrection (model, attrs) {
+export async function handleCorrection (model, attrs) {
     if (!attrs.replace_id || !attrs.from) {
         return;
     }
@@ -84,7 +84,8 @@ export function handleCorrection (model, attrs) {
 
     const message = model.messages.models.find(query);
     if (!message) {
-        return;
+        attrs['older_versions'] = [];
+        return await model.createMessage(attrs); // eslint-disable-line no-return-await
     }
 
     const older_versions = message.get('older_versions') || {};

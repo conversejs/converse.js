@@ -13,6 +13,7 @@
 - Restrict editing of MUC messages to ones with the same XEP-0421 occupant ID
 - #2936: Fix documentation about enable_smacks option, which is true by default.
 - #2925: Fix missing disco-items in browser storage.
+- Fix MUC messages with a fallback body not rendering.
 
 ## 9.1.1 (2022-05-05)
 

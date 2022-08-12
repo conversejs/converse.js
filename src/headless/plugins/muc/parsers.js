@@ -224,7 +224,7 @@ export async function parseMUCMessage (stanza, chatbox) {
         {
             from,
             'activities': getMEPActivities(stanza),
-            'body': stanza.querySelector('body')?.textContent?.trim(),
+            'body': stanza.querySelector(':scope > body')?.textContent?.trim(),
             'chat_state': getChatState(stanza),
             'from_muc': Strophe.getBareJidFromJid(from),
             'is_archived': isArchived(original_stanza),

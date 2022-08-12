@@ -39,16 +39,6 @@ class ChatRoomOccupants extends Collection {
         return super.create(attrs, options);
     }
 
-    /**
-     * Get the {@link _converse.ChatRoomOccupant} instance which
-     * represents the current user.
-     * @method _converse.ChatRoomOccupants#getOwnOccupant
-     * @returns { _converse.ChatRoomOccupant }
-     */
-    getOwnOccupant () {
-        return this.findWhere({ 'jid': _converse.bare_jid });
-    }
-
     async fetchMembers () {
         if (!['member', 'admin', 'owner'].includes(this.getOwnOccupant()?.get('affiliation'))) {
             // https://xmpp.org/extensions/xep-0045.html#affil-priv
@@ -101,10 +91,10 @@ class ChatRoomOccupants extends Collection {
      * @property { String } [occupant_id] - The XEP-0421 unique occupant id
      */
     /**
-     * Try to find an existing occupant based on the passed in
-     * data object.
+     * Try to find an existing occupant based on the provided
+     * @link { OccupantData } object.
      *
-     * Fetching the user by occupant_id is the quickest, O(1),
+     * Fetching the user by `occupant_id` is the quickest, O(1),
      * since it's a dictionary lookup.
      *
      * Fetching by jid or nick is O(n), since it requires traversing an array.
@@ -122,6 +112,19 @@ class ChatRoomOccupants extends Collection {
         const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
         return jid && this.findWhere({ jid }) ||
             data.nick && this.findWhere({ 'nick': data.nick });
+    }
+
+    /**
+     * Get the {@link _converse.ChatRoomOccupant} instance which
+     * represents the current user.
+     * @method _converse.ChatRoomOccupants#getOwnOccupant
+     * @returns { _converse.ChatRoomOccupant }
+     */
+    getOwnOccupant () {
+        return this.findOccupant({
+            'jid': _converse.bare_jid,
+            'occupant_id': this.chatroom.get('occupant_id')
+        });
     }
 }
 

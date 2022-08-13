@@ -87,17 +87,7 @@ module.exports = {
                 /node_modules\/@converse/,
             ],
             use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: [
-                        ["@babel/preset-env", {
-                            "targets": {
-                                "browsers": [">1%", "not ie 11", "not op_mini all", "not dead"]
-                            }
-                        }]
-                    ],
-                    plugins: []
-                }
+                loader: 'babel-loader'
             }
         }, {
             test: /bootstrap\.native/,

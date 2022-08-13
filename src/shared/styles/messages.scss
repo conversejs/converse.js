@@ -3,12 +3,6 @@
         color: var(--subdued-color);
     }
 
-    .older-msg {
-        time {
-            font-weight: bold;
-        }
-    }
-
     .message {
         .show-msg-author-modal {
             align-self: flex-start; // Don't expand height to that of largest sibling

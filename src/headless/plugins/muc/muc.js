@@ -6,17 +6,17 @@ import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import u from '../../utils/form';
-import zipObject from 'lodash-es/zipObject';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
+import { handleCorrection } from '@converse/headless/shared/chat/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
+import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { isUniView, getUniqueId, safeSave } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
-import { sendMarker } from '@converse/headless/shared/actions';
+import { sendMarker } from '@converse/headless/shared/actions.js';
 
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
@@ -380,10 +380,10 @@ const ChatRoomMixin = {
         this.features = new Model(
             Object.assign(
                 { id },
-                zipObject(
-                    converse.ROOM_FEATURES,
-                    converse.ROOM_FEATURES.map(() => false)
-                )
+                converse.ROOM_FEATURES.reduce((acc, feature) => {
+                    acc[feature] = false;
+                    return acc;
+                }, {})
             )
         );
         this.features.browserStorage = _converse.createStore(id, 'session');
@@ -981,6 +981,7 @@ const ChatRoomMixin = {
     },
 
     async getOutgoingMessageAttributes (attrs) {
+        await api.emojis.initialize();
         const is_spoiler = this.get('composing_spoiler');
         let text = '', references;
         if (attrs?.body) {
@@ -1167,13 +1168,12 @@ const ChatRoomMixin = {
      */
     async getDiscoInfoFeatures () {
         const features = await api.disco.getFeatures(this.get('jid'));
-        const attrs = Object.assign(
-            zipObject(
-                converse.ROOM_FEATURES,
-                converse.ROOM_FEATURES.map(() => false)
-            ),
-            { 'fetched': new Date().toISOString() }
-        );
+
+        const attrs = converse.ROOM_FEATURES.reduce((acc, feature) => {
+            acc[feature] = false;
+            return acc;
+        }, { 'fetched': new Date().toISOString() });
+
         features.each(feature => {
             const fieldname = feature.get('var');
             if (!fieldname.startsWith('muc_')) {
@@ -1726,6 +1726,19 @@ const ChatRoomMixin = {
             'resource': Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource
         }
 
+        if (data.is_me) {
+            let modified = false;
+            if (data.states.includes(converse.MUC_NICK_CHANGED_CODE)) {
+                modified = true;
+                this.set('nick', data.nick);
+            }
+            if (this.features.get(Strophe.NS.OCCUPANTID) && this.get('occupant-id') !== data.occupant_id) {
+                modified = true;
+                this.set('occupant_id', data.occupant_id);
+            }
+            modified && this.save();
+        }
+
         if (occupant) {
             occupant.save(attributes);
         } else {
@@ -2267,7 +2280,7 @@ const ChatRoomMixin = {
             this.updateNotifications(attrs.nick, attrs.chat_state);
         }
         if (u.shouldCreateGroupchatMessage(attrs)) {
-            const msg = this.handleCorrection(attrs) || (await this.createMessage(attrs));
+            const msg = await handleCorrection(this, attrs) || (await this.createMessage(attrs));
             this.removeNotification(attrs.nick, ['composing', 'paused']);
             this.handleUnreadMessage(msg);
         }
@@ -2645,9 +2658,14 @@ const ChatRoomMixin = {
      */
     async onOwnPresence (stanza) {
         await this.occupants.fetched;
+
+        if (stanza.getAttribute('type') === 'unavailable') {
+            this.handleDisconnection(stanza);
+            return;
+        }
+
         const old_status = this.session.get('connection_status');
-        if (stanza.getAttribute('type') !== 'unavailable' &&
-            old_status !== converse.ROOMSTATUS.ENTERED &&
+        if (old_status !== converse.ROOMSTATUS.ENTERED &&
             old_status !== converse.ROOMSTATUS.CLOSING
         ) {
             // Set connection_status before creating the occupant, but
@@ -2660,32 +2678,15 @@ const ChatRoomMixin = {
             this.updateOccupantsOnPresence(stanza);
         }
 
-        if (stanza.getAttribute('type') === 'unavailable') {
-            this.handleDisconnection(stanza);
-            return;
-        } else {
-            const locked_room = stanza.querySelector("status[code='201']");
-            if (locked_room) {
-                if (this.get('auto_configure')) {
-                    this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                } else if (api.settings.get('muc_instant_rooms')) {
-                    // Accept default configuration
-                    this.sendConfiguration().then(() => this.refreshDiscoInfo());
-                } else {
-                    this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
-                    return;
-                }
-            } else if (!this.features.get('fetched')) {
-                // The features for this groupchat weren't fetched.
-                // That must mean it's a new groupchat without locking
-                // (in which case Prosody doesn't send a 201 status),
-                // otherwise the features would have been fetched in
-                // the "initialize" method already.
-                if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
-                    this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                } else {
-                    this.getDiscoInfo();
-                }
+        const locked_room = stanza.querySelector("status[code='201']");
+        if (locked_room) {
+            if (this.get('auto_configure')) {
+                await this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
+            } else if (api.settings.get('muc_instant_rooms')) {
+                // Accept default configuration
+                await this.sendConfiguration().then(() => this.refreshDiscoInfo());
+            } else {
+                this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
             }
         }
     },

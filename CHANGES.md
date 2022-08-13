@@ -7,7 +7,13 @@
 - Show roster contacts with `subscription` set to `none`
 - Remove the `converse-carbons` plugin and make carbons part of the `converse-chat` plugin.
 - Remove the `message_carbons` configuration setting. Carbons are now always enabled.
+- Move the `converse-oauth` plugin to the [community-plugins](https://github.com/conversejs/community-plugins)
+- Don't apply message corrections when the MUC occupant-id doesn't match.
+- Update `nick` attribute on ChatRoom when user nickname changes
+- Restrict editing of MUC messages to ones with the same XEP-0421 occupant ID
 - #2936: Fix documentation about enable_smacks option, which is true by default.
+- #2925: Fix missing disco-items in browser storage.
+- Fix MUC messages with a fallback body not rendering.
 
 ## 9.1.1 (2022-05-05)
 

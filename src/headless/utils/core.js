@@ -16,6 +16,7 @@ import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '@converse/headless/utils/init.js';
 import { settings_api } from '@converse/headless/shared/settings/api.js';
+import { stx , toStanza } from './stanza.js';
 
 export function isEmptyMessage (attrs) {
     if (attrs instanceof Model) {
@@ -50,13 +51,27 @@ export async function tearDown () {
     return _converse;
 }
 
+/**
+ * Given a message object, return its text with @ chars
+ * inserted before the mentioned nicknames.
+ */
+export function prefixMentions (message) {
+    let text = message.getMessageText();
+    (message.get('references') || [])
+        .sort((a, b) => b.begin - a.begin)
+        .forEach(ref => {
+            text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`
+        });
+    return text;
+}
+
+
 
 /**
  * The utils object
  * @namespace u
  */
 const u = {};
-
 
 u.isTagEqual = function (stanza, name) {
     if (stanza.nodeTree) {
@@ -70,22 +85,11 @@ u.isTagEqual = function (stanza, name) {
     }
 }
 
-const parser = new DOMParser();
-const parserErrorNS = parser.parseFromString('invalid', 'text/xml')
-                            .getElementsByTagName("parsererror")[0].namespaceURI;
 
 u.getJIDFromURI = function (jid) {
     return jid.startsWith('xmpp:') && jid.endsWith('?join')
         ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '')
         : jid;
-}
-
-u.toStanza = function (string) {
-    const node = parser.parseFromString(string, "text/xml");
-    if (node.getElementsByTagNameNS(parserErrorNS, 'parsererror').length) {
-        throw new Error(`Parser Error: ${string}`);
-    }
-    return node.firstElementChild;
 }
 
 u.getLongestSubstring = function (string, candidates) {
@@ -101,20 +105,6 @@ u.getLongestSubstring = function (string, candidates) {
         }
     }
     return candidates.reduce(reducer, '');
-}
-
-/**
- * Given a message object, return its text with @ chars
- * inserted before the mentioned nicknames.
- */
-export function prefixMentions (message) {
-    let text = message.getMessageText();
-    (message.get('references') || [])
-        .sort((a, b) => b.begin - a.begin)
-        .forEach(ref => {
-            text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`
-        });
-    return text;
 }
 
 u.isValidJID = function (jid) {
@@ -585,5 +575,7 @@ export function decodeHTMLEntities (str) {
 export default Object.assign({
     prefixMentions,
     isEmptyMessage,
-    getUniqueId
+    getUniqueId,
+    toStanza,
+    stx,
 }, u);

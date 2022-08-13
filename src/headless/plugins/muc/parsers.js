@@ -118,6 +118,27 @@ function getOccupantID (stanza, chatbox) {
 }
 
 /**
+ * Determines whether the sender of this MUC message is the current user or
+ * someone else.
+ * @param { MUCMessageAttributes } attrs
+ * @param { _converse.ChatRoom } chatbox
+ * @returns { 'me'|'them' }
+ */
+function getSender (attrs, chatbox) {
+    let is_me;
+    const own_occupant_id = chatbox.get('occupant_id');
+
+    if (own_occupant_id) {
+        is_me = attrs.occupant_id === own_occupant_id;
+    } else if (attrs.from_real_jid) {
+        is_me = Strophe.getBareJidFromJid(attrs.from_real_jid) === _converse.bare_jid;
+    } else {
+        is_me = attrs.nick === chatbox.get('nick')
+    }
+    return is_me ? 'me' : 'them';
+}
+
+/**
  * Parses a passed in message stanza and returns an object of attributes.
  * @param { XMLElement } stanza - The message stanza
  * @param { XMLElement } original_stanza - The original stanza, that contains the
@@ -141,10 +162,8 @@ export async function parseMUCMessage (stanza, chatbox) {
     }
     const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
     const from = stanza.getAttribute('from');
-    const from_muc = Strophe.getBareJidFromJid(from);
-    const nick = Strophe.unescapeNode(Strophe.getResourceFromJid(from));
     const marker = getChatMarker(stanza);
-    const now = new Date().toISOString();
+
     /**
      * @typedef { Object } MUCMessageAttributes
      * The object which {@link parseMUCMessage} returns
@@ -204,28 +223,28 @@ export async function parseMUCMessage (stanza, chatbox) {
     let attrs = Object.assign(
         {
             from,
-            from_muc,
-            nick,
-            'is_forwarded': !!stanza.querySelector('forwarded'),
             'activities': getMEPActivities(stanza),
-            'body': stanza.querySelector('body')?.textContent?.trim(),
+            'body': stanza.querySelector(':scope > body')?.textContent?.trim(),
             'chat_state': getChatState(stanza),
+            'from_muc': Strophe.getBareJidFromJid(from),
             'is_archived': isArchived(original_stanza),
             'is_carbon': isCarbon(original_stanza),
             'is_delayed': !!delay,
+            'is_forwarded': !!stanza.querySelector('forwarded'),
             'is_headline': isHeadline(stanza),
             'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
             'is_marker': !!marker,
             'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
             'marker_id': marker && marker.getAttribute('id'),
             'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
+            'nick': Strophe.unescapeNode(Strophe.getResourceFromJid(from)),
             'occupant_id': getOccupantID(stanza, chatbox),
             'receipt_id': getReceiptId(stanza),
             'received': new Date().toISOString(),
             'references': getReferences(stanza),
             'subject': stanza.querySelector('subject')?.textContent,
             'thread': stanza.querySelector('thread')?.textContent,
-            'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : now,
+            'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString(),
             'to': stanza.getAttribute('to'),
             'type': stanza.getAttribute('type')
         },
@@ -242,15 +261,14 @@ export async function parseMUCMessage (stanza, chatbox) {
 
     await api.emojis.initialize();
 
-    const from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza, attrs) ||
+    attrs.from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza) ||
         chatbox.occupants.findOccupant(attrs)?.get('jid');
 
     attrs = Object.assign( {
-        from_real_jid,
         'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
         'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
-        'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
-        'sender': attrs.nick === chatbox.get('nick') ? 'me' : 'them',
+        'message': attrs.body || attrs.error, // TODO: Should only be used for error and info messages
+        'sender': getSender(attrs, chatbox),
     }, attrs);
 
     if (attrs.is_archived && original_stanza.getAttribute('from') !== attrs.from_muc) {
@@ -343,6 +361,7 @@ export function parseMUCPresence (stanza, chatbox) {
     const from = stanza.getAttribute('from');
     const type = stanza.getAttribute('type');
     const data = {
+        'is_me': !!stanza.querySelector("status[code='110']"),
         'from': from,
         'occupant_id': getOccupantID(stanza, chatbox),
         'nick': Strophe.getResourceFromJid(from),
@@ -351,6 +370,7 @@ export function parseMUCPresence (stanza, chatbox) {
         'hats': [],
         'show': type !== 'unavailable' ? 'online' : 'offline'
     };
+
     Array.from(stanza.children).forEach(child => {
         if (child.matches('status')) {
             data.status = child.textContent || null;

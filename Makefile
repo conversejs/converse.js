@@ -1,5 +1,4 @@
 # You can set these variables from the command line.
-BABEL			?= node_modules/.bin/babel
 BOOTSTRAP		= ./node_modules/
 BUILDDIR		= ./docs
 KARMA			?= ./node_modules/.bin/karma

@@ -6,6 +6,7 @@
  * @property { String } [assets_path='/dist']
  * @property { ('login'|'prebind'|'anonymous'|'external') } [authentication='login']
  * @property { Boolean } [auto_login=false] - Currently only used in connection with anonymous login
+ * @property { Boolean } [save_scram_keys=false] - Save SCRAM keys after login to allow for future auto login
  * @property { Boolean } [auto_reconnect=true]
  * @property { Array<String>} [blacklisted_plugins]
  * @property { Boolean } [clear_cache_on_logout=false]
@@ -37,6 +38,7 @@ export const DEFAULT_SETTINGS = {
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
     auto_login: false, // Currently only used in connection with anonymous login
+    save_scram_keys: false,
     auto_reconnect: true,
     blacklisted_plugins: [],
     clear_cache_on_logout: false,

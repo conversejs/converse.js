@@ -87,6 +87,17 @@ export async function initSessionStorage (_converse) {
     };
 }
 
+export async function initScramStorage (_converse) {
+    _converse.storage = {
+        ..._converse.storage,
+        'scramStorage': Storage.localForage.createInstance({
+            'name': 'converse-scram',
+            'description': 'SCRAM storage driver',
+            'driver': Storage.localForage.INDEXEDDB
+        })
+    };
+}
+
 function initPersistentStorage (_converse, store_name) {
     if (_converse.api.settings.get('persistent_store') === 'sessionStorage') {
         return;
@@ -355,6 +366,33 @@ function connect (credentials) {
             _converse.connection.reset();
             _converse.connection.service = getConnectionServiceURL();
         }
-        _converse.connection.connect(_converse.jid, password);
+
+        let callback;
+
+        if (api.settings.get("save_scram_keys") && !password.ck) {
+            // Don't save the SCRAM data if we already logged in with SCRAM
+            const login_info = await _converse.api.savedLoginInfo();
+
+            callback = async (status) => {
+                // Store scram keys in scram storage
+                if (!_converse?.storage?.scramStorage) {
+                    await initScramStorage(_converse);
+                }
+
+                const newScramKeys = _converse.connection.scramKeys;
+                if (newScramKeys) {
+                    try {
+                        const new_users_info = login_info.users ?? { };
+                        new_users_info[_converse.connection.authzid] = newScramKeys;
+                        login_info.save({'users': new_users_info });
+                    } catch (e) { // Could not find local storage }
+                        log.error("No storage method found: ", e);
+                    }
+                }
+                _converse.connection.onConnectStatusChanged(status);
+            };
+        }
+
+        _converse.connection.connect(_converse.jid, password, callback);
     }
 }

@@ -14,6 +14,7 @@ import log from '@converse/headless/log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import sizzle from 'sizzle';
 import u, { setUnloadEvent, replacePromise } from '@converse/headless/utils/core.js';
+import { initStorage } from './utils/storage.js';
 import { CHAT_STATES, KEYCODES } from './shared/constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection/index.js';
@@ -37,6 +38,7 @@ import {
     initClientConfig,
     initPlugins,
     initSessionStorage,
+    initScramStorage,
     registerGlobalEventHandlers,
     setUserJID,
 } from './utils/init.js';
@@ -471,7 +473,23 @@ export const api = _converse.api = {
         }
         api.trigger('send', stanza);
         return promise;
-    }
+    },
+
+    /**
+     * Fetch previously used login information, username and SCRAM keys if available
+     * @method _converse.api.savedLoginInfo
+     * @returns {Promise} A promise which resolves (or potentially rejects) once we
+     *  fetch the previously used login keys.
+     */
+    async savedLoginInfo () {
+        const id = "converse.savedLoginInfo";
+        const login_info = new Model({id});
+        initStorage(login_info, id, 'scramStorage');
+        await new Promise(f => login_info.fetch({'success': f, 'error': f}));
+
+        return login_info;
+    },
+
 };
 
 
@@ -673,6 +691,38 @@ Object.assign(converse, {
         if (_converse.isTestEnv()) {
             return _converse;
         }
+    },
+
+    /**
+     * Fetch previously used login information, username and SCRAM keys if available
+     * @method _converse.api.getSavedLoginInfo
+     * @returns {Promise} A promise which resolves (or potentially rejects) once
+     *  we fetch the previously used login keys. The object returned on success
+     *  has an attributes object of the following form:
+     *  { 'id': 'converse.savedLoginInfo',
+     *    'users': Usermap Object
+     *  }
+     *  Where the Usermap Object has keys corresponding to users and values
+     *  which are valid login credentials (which can be passed in as the
+     *  password field on login), like so:
+     *  { 'user1@xmpp.org': Credentials,
+     *    'user2@opkode.com': Credentials,
+     *    ...
+     *  }
+     *  It should be noted that these Credentials will *NEVER* store the user's
+     *  plaintext password, nor any material from which the user's plaintext
+     *  password could be recovered. It uses SASL SCRAM internally, which
+     *  secures the user's login information and ensures* the authenticating
+     *  server is the server which was supplied the credentials initially.
+     *
+     *  *With some caveats, we don't yet actively protect against active MITM
+     *  attacks.
+     */
+    savedLoginInfo: async () => {
+            if (!_converse.storage) {
+                await initScramStorage(_converse);
+            }
+            return _converse.api.savedLoginInfo()
     },
 
     /**

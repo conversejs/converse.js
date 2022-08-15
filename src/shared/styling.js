@@ -70,15 +70,18 @@ function isValidDirective (d, text, i, opening) {
 }
 
 /**
- * Given a specific index "i" of "text", return the directive it matches or
- * null otherwise.
+ * Given a specific index "i" of "text", return the directive it matches or null otherwise.
  * @param { String } text - The text in which  the directive appears
  * @param { Number } i - The directive index
  * @param { Boolean } opening - Whether we're looking for an opening or closing directive
  */
 function getDirective (text, i, opening=true) {
     let d;
-    if ((/(^```\s*\n|^```\s*$)/).test(text.slice(i)) && (i === 0 || text[i-1] === '\n' || text[i-1] === '>')) {
+
+    if (
+        (/(^```[\s,\u200B]*\n)|(^```[\s,\u200B]*$)/).test(text.slice(i)) &&
+        (i === 0 || text[i-1] === '>' || (/\n\u200B{0,2}$/).test(text.slice(0, i)))
+    ) {
         d = text.slice(i, i+3);
     } else if (styling_directives.includes(text.slice(i, i+1))) {
         d = text.slice(i, i+1);
@@ -98,7 +101,8 @@ function getDirective (text, i, opening=true) {
  * @param { String } text -The text in which the directive appears
  */
 function getDirectiveLength (d, text, i) {
-    if (!d) { return 0; }
+    if (!d) return 0;
+
     const begin = i;
     i += d.length;
     if (isQuoteDirective(d)) {
@@ -145,7 +149,9 @@ export function getDirectiveTemplate (d, text, offset, options) {
     const template = styling_templates[styling_map[d].name];
     if (isQuoteDirective(d)) {
         const newtext = text
-            .replace(/\n>/g, ' \n') // Don't show the directive itself
+            // Don't show the directive itself
+            .replace(/\n>\s/g, '\n\u200B\u200B')
+            .replace(/\n>/g, '\n\u200B')
             .replace(/\n$/, ''); // Trim line-break at the end
         return template(newtext, offset, options);
     } else {

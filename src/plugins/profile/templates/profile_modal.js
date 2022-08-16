@@ -4,6 +4,13 @@ import { _converse } from  "@converse/headless/core";
 import { html } from "lit";
 import { modal_header_close_button } from "plugins/modal/templates/buttons.js";
 
+
+const passwordreset_page = () => html`
+    <div class="tab-pane" id="passwordreset-tabpanel" role="tabpanel" aria-labelledby="passwordreset-tab">
+	<converse-changepassword-profile></converse-changepassword-profile>
+    </div>`;
+
+
 const omemo_page = () => html`
     <div class="tab-pane" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
         <converse-omemo-profile></converse-omemo-profile>
@@ -23,15 +30,26 @@ export default (o) => {
     const i18n_omemo = __('OMEMO');
     const i18n_profile = __('Profile');
 
-    const navigation =
-        html`<ul class="nav nav-pills justify-content-center">
-            <li role="presentation" class="nav-item">
-                <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">${i18n_profile}</a>
-            </li>
-            <li role="presentation" class="nav-item">
-                <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">${i18n_omemo}</a>
-            </li>
-        </ul>`;
+    let navigation_tabs = [ html`<li role="presentation" class="nav-item">
+        <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">${i18n_profile}</a>
+    </li>`
+    ];
+
+    if (_converse.pluggable.plugins['converse-passwordreset']?.enabled(_converse)) {
+        navigation_tabs.push(html`<li role="presentation" class="nav-item">
+	<a class="nav-link" id="passwordreset-tab" href="#passwordreset-tabpanel" aria-controls="passwordreset-tabpanel" role="tab" data-toggle="tab">Reset Password</a>
+    </li>`);
+    }
+
+    if (_converse.pluggable.plugins['converse-omemo']?.enabled(_converse)) {
+        navigation_tabs.push(html`<li role="presentation" class="nav-item">
+        <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">${i18n_omemo}</a>
+    </li>`);
+    }
+
+    const navigation = ((navigation_tabs.length == 1) ? html`` : html`<ul class="nav nav-pills justify-content-center">${navigation_tabs}</ul>`);
+    // Don't display any navigation tabs if only the profile tab is available
+
 
     return html`
         <div class="modal-dialog" role="document">
@@ -42,7 +60,7 @@ export default (o) => {
                 </div>
                 <div class="modal-body">
                     <span class="modal-alert"></span>
-                    ${_converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? navigation : ''}
+                    ${navigation}
                     <div class="tab-content">
                         <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                             <form class="converse-form converse-form--modal profile-form" action="#">
@@ -84,6 +102,7 @@ export default (o) => {
                                 </div>
                             </form>
                         </div>
+                        ${ _converse.pluggable.plugins['converse-passwordreset']?.enabled(_converse) ? passwordreset_page() : '' }
                         ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? omemo_page() : '' }
                     </div>
                 </div>

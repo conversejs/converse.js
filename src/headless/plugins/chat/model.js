@@ -91,17 +91,6 @@ const ChatBox = ModelWithContact.extend({
     initMessages () {
         this.messages = this.getMessagesCollection();
         this.messages.fetched = getOpenPromise();
-        this.messages.fetched.then(() => {
-            this.pruneHistoryWhenScrolledDown();
-            /**
-             * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
-             * has fetched its messages from the local cache.
-             * @event _converse#afterMessagesFetched
-             * @type { _converse.ChatBox| _converse.ChatRoom }
-             * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
-             */
-            api.trigger('afterMessagesFetched', this);
-        });
         this.messages.chatbox = this;
         initStorage(this.messages, this.getMessagesCacheKey());
 
@@ -131,12 +120,13 @@ const ChatBox = ModelWithContact.extend({
     },
 
     afterMessagesFetched () {
+        this.pruneHistoryWhenScrolledDown();
         /**
-         * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
-         * `sessionStorage` but **NOT** from the server.
+         * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
+         * has fetched its messages from the local cache.
          * @event _converse#afterMessagesFetched
-         * @type {_converse.ChatBox | _converse.ChatRoom}
-         * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+         * @type { _converse.ChatBox| _converse.ChatRoom }
+         * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
          */
         api.trigger('afterMessagesFetched', this);
     },

@@ -886,8 +886,11 @@ const ChatRoomMixin = {
     },
 
     async close (ev) {
-        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.CLOSING });
-        this.sendMarkerForLastMessage('received', true);
+        const { ENTERED, CLOSING } = converse.ROOMSTATUS;
+        const was_entered = this.session.get('connection_status') === ENTERED;
+
+        safeSave(this.session, { 'connection_status': CLOSING });
+        was_entered && this.sendMarkerForLastMessage('received', true);
         await this.unregisterNickname();
         await this.leave();
 

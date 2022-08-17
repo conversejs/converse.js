@@ -17,6 +17,7 @@ import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/pars
 import { isUniView, getUniqueId, safeSave } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions.js';
+import { ROOMSTATUS } from './constants.js';
 
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
@@ -47,7 +48,7 @@ const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 const MUCSession = Model.extend({
     defaults () {
         return {
-            'connection_status': converse.ROOMSTATUS.DISCONNECTED
+            'connection_status': ROOMSTATUS.DISCONNECTED
         };
     }
 });
@@ -125,7 +126,7 @@ const ChatRoomMixin = {
     },
 
     isEntered () {
-        return this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+        return this.session.get('connection_status') === ROOMSTATUS.ENTERED;
     },
 
     /**
@@ -143,7 +144,7 @@ const ChatRoomMixin = {
             await this.fetchMessages().catch(e => log.error(e));
             return true;
         } else {
-            this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+            this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
             this.clearOccupantsCache();
             return false;
         }
@@ -165,11 +166,11 @@ const ChatRoomMixin = {
             return this;
         }
         // Set this early, so we don't rejoin in onHiddenChange
-        this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
+        this.session.save('connection_status', ROOMSTATUS.CONNECTING);
         await this.refreshDiscoInfo();
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
-            safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
+            safeSave(this.session, { 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });
             if (api.settings.get('muc_show_logs_before_join')) {
                 await this.fetchMessages();
             }
@@ -185,7 +186,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#rejoin
      */
     rejoin () {
-        this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+        this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
         this.registerHandlers();
         this.clearOccupantsCache();
         return this.join();
@@ -272,7 +273,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#onHiddenChange
      */
     async onHiddenChange () {
-        const roomstatus = converse.ROOMSTATUS;
+        const roomstatus = ROOMSTATUS;
         const conn_status = this.session.get('connection_status');
         if (this.get('hidden')) {
             if (conn_status === roomstatus.ENTERED &&
@@ -294,7 +295,7 @@ const ChatRoomMixin = {
     onOccupantAdded (occupant) {
         if (
             _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED) &&
-            this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
+            this.session.get('connection_status') === ROOMSTATUS.ENTERED &&
             occupant.get('show') === 'online'
         ) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
@@ -882,11 +883,11 @@ const ChatRoomMixin = {
                 'error': (_, e) => { log.error(e); resolve(); }
             }));
         }
-        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+        safeSave(this.session, { 'connection_status': ROOMSTATUS.DISCONNECTED });
     },
 
     async close (ev) {
-        const { ENTERED, CLOSING } = converse.ROOMSTATUS;
+        const { ENTERED, CLOSING } = ROOMSTATUS;
         const was_entered = this.session.get('connection_status') === ENTERED;
 
         safeSave(this.session, { 'connection_status': CLOSING });
@@ -1952,7 +1953,7 @@ const ChatRoomMixin = {
      *  Nodes(s) to be added as child nodes of the `presence` XML element.
      */
     async sendStatusPresence (type, status, child_nodes) {
-        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+        if (this.session.get('connection_status') === ROOMSTATUS.ENTERED) {
             const presence = await _converse.xmppstatus.constructPresence(type, this.getRoomJIDAndNick(), status);
             child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             api.send(presence);
@@ -2292,7 +2293,7 @@ const ChatRoomMixin = {
     handleModifyError (pres) {
         const text = pres.querySelector('error text')?.textContent;
         if (text) {
-            if (this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+            if (this.session.get('connection_status') === ROOMSTATUS.CONNECTING) {
                 this.setDisconnectionState(text);
             } else {
                 const attrs = {
@@ -2331,7 +2332,7 @@ const ChatRoomMixin = {
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
         const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
         const message = _converse.muc.disconnect_messages[codes[0]];
-        const status = codes.includes('301') ? converse.ROOMSTATUS.BANNED : converse.ROOMSTATUS.DISCONNECTED;
+        const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);
     },
 
@@ -2503,9 +2504,9 @@ const ChatRoomMixin = {
      *  implied by) the server.
      * @param { String } reason - The reason provided for the disconnection
      * @param { String } actor - The person (if any) responsible for this disconnection
-     * @param { Integer } status - The status code (see `converse.ROOMSTATUS`)
+     * @param { Integer } status - The status code (see `ROOMSTATUS`)
      */
-    setDisconnectionState (message, reason, actor, status=converse.ROOMSTATUS.DISCONNECTED) {
+    setDisconnectionState (message, reason, actor, status=ROOMSTATUS.DISCONNECTED) {
         this.session.save({
             'connection_status': status,
             'disconnection_actor': actor,
@@ -2531,7 +2532,7 @@ const ChatRoomMixin = {
                     'The nickname you chose is reserved or ' + 'currently in use, please choose a different one.'
                 )
             });
-            this.session.save({ 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
+            this.session.save({ 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });
         }
     },
 
@@ -2553,7 +2554,7 @@ const ChatRoomMixin = {
         } else if (error_type === 'auth') {
             if (sizzle(`not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
                 this.save({ 'password_validation_message': reason || __('Password incorrect') });
-                this.session.save({ 'connection_status': converse.ROOMSTATUS.PASSWORD_REQUIRED });
+                this.session.save({ 'connection_status': ROOMSTATUS.PASSWORD_REQUIRED });
             }
             if (error.querySelector('registration-required')) {
                 const message = __('You are not on the member list of this groupchat.');
@@ -2563,7 +2564,7 @@ const ChatRoomMixin = {
                     _converse.muc.disconnect_messages[301],
                     reason,
                     null,
-                    converse.ROOMSTATUS.BANNED
+                    ROOMSTATUS.BANNED
                 );
             }
         } else if (error_type === 'cancel') {
@@ -2579,7 +2580,7 @@ const ChatRoomMixin = {
                     ?.textContent.replace(/^xmpp:/, '')
                     .replace(/\?join$/, '');
                 this.save({ moved_jid, 'destroyed_reason': reason });
-                this.session.save({ 'connection_status': converse.ROOMSTATUS.DESTROYED });
+                this.session.save({ 'connection_status': ROOMSTATUS.DESTROYED });
             } else if (error.querySelector('conflict')) {
                 this.onNicknameClash(stanza);
             } else if (error.querySelector('item-not-found')) {
@@ -2613,7 +2614,7 @@ const ChatRoomMixin = {
             if (error?.getAttribute('type') === 'wait' && error?.querySelector('resource-constraint')) {
                 // If we get a <resource-constraint> error, we assume it's in context of XEP-0437 RAI.
                 // We remove this MUC's host from the list of enabled domains and rejoin the MUC.
-                if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+                if (this.session.get('connection_status') === ROOMSTATUS.DISCONNECTED) {
                     this.rejoin();
                 }
             }
@@ -2635,9 +2636,9 @@ const ChatRoomMixin = {
             this.onOwnPresence(stanza);
             if (
                 this.getOwnRole() !== 'none' &&
-                this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING
+                this.session.get('connection_status') === ROOMSTATUS.CONNECTING
             ) {
-                this.session.save('connection_status', converse.ROOMSTATUS.CONNECTED);
+                this.session.save('connection_status', ROOMSTATUS.CONNECTED);
             }
         } else {
             this.updateOccupantsOnPresence(stanza);
@@ -2668,13 +2669,13 @@ const ChatRoomMixin = {
         }
 
         const old_status = this.session.get('connection_status');
-        if (old_status !== converse.ROOMSTATUS.ENTERED &&
-            old_status !== converse.ROOMSTATUS.CLOSING
+        if (old_status !== ROOMSTATUS.ENTERED &&
+            old_status !== ROOMSTATUS.CLOSING
         ) {
             // Set connection_status before creating the occupant, but
             // only trigger afterwards, so that plugins can access the
             // occupant in their event handlers.
-            this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, { 'silent': true });
+            this.session.save('connection_status', ROOMSTATUS.ENTERED, { 'silent': true });
             this.updateOccupantsOnPresence(stanza);
             this.session.trigger('change:connection_status', this.session, old_status);
         } else {

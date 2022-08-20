@@ -418,3 +418,100 @@ describe("An incoming chat Message", function () {
         expect(true).toBe(true);
     }));
 });
+
+
+describe("An XEP-0393 styled message ", function () {
+
+    it("can be replaced with a correction and will still render properly",
+        mock.initConverse(['chatBoxesFetched'], {},
+            async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+
+        const msg_text = `https://conversejs.org\nhttps://opkode.com`;
+        const msg_id = u.getUniqueId();
+        _converse.handleMessageStanza($msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                'id': msg_id,
+            }).c('body').t(msg_text).tree());
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelector('.chat-msg__text').textContent)
+            .toBe('https://conversejs.org\nhttps://opkode.com');
+
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
+        const msg_el = view.querySelector('converse-chat-message-body');
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+        );
+
+        _converse.handleMessageStanza($msg({
+                'from': contact_jid,
+                'to': _converse.connection.jid,
+                'type': 'chat',
+                'id': u.getUniqueId(),
+            }).c('body').t(`A\nhttps://conversejs.org\n\nhttps://opkode.com`).up()
+            .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+        expect(view.querySelectorAll('.chat-msg__text').length).toBe(1);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+        );
+    }));
+
+    it("can be sent as a correction by using the up arrow",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        await mock.openControlBox(_converse);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid)
+        const view = _converse.chatboxviews.get(contact_jid);
+        const textarea = view.querySelector('textarea.chat-textarea');
+        const message_form = view.querySelector('converse-message-form');
+
+        textarea.value = `https://conversejs.org\nhttps://opkode.com`;
+        message_form.onKeyDown({
+            target: textarea,
+            preventDefault: function preventDefault () {},
+            keyCode: 13 // Enter
+        });
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        const msg_el = view.querySelector('converse-chat-message-body');
+        expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
+            '<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+        );
+
+        expect(textarea.value).toBe('');
+        message_form.onKeyDown({
+            target: textarea,
+            keyCode: 38 // Up arrow
+        });
+
+        textarea.value = `A\nhttps://conversejs.org\n\nhttps://opkode.com`;
+        message_form.onKeyDown({
+            target: textarea,
+            preventDefault: function preventDefault () {},
+            keyCode: 13 // Enter
+        });
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+        expect(view.querySelectorAll('.chat-msg__text').length).toBe(1);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+        );
+    }));
+
+});

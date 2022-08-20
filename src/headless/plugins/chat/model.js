@@ -927,19 +927,18 @@ const ChatBox = ModelWithContact.extend({
             const older_versions = message.get('older_versions') || {};
             const edited_time = message.get('edited') || message.get('time');
             older_versions[edited_time] = message.getMessageText();
-            const plaintext = attrs.is_encrypted ? attrs.message : undefined;
 
             message.save({
-                'body': attrs.body,
-                'message': attrs.body,
-                'correcting': false,
-                'edited': (new Date()).toISOString(),
-                'is_only_emojis':  attrs.is_only_emojis,
-                'origin_id': u.getUniqueId(),
-                'received': undefined,
-                'references': attrs.references,
-                older_versions,
-                plaintext,
+                ...pick(attrs, ['body', 'is_only_emojis', 'media_urls', 'references', 'is_encrypted']),
+                ...{
+                    'correcting': false,
+                    'edited': (new Date()).toISOString(),
+                    'message': attrs.body,
+                    'origin_id': u.getUniqueId(),
+                    'received': undefined,
+                    older_versions,
+                    plaintext: attrs.is_encrypted ? attrs.message : undefined,
+                }
             });
         } else {
             this.setEditable(attrs, (new Date()).toISOString());

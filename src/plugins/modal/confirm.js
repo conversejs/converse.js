@@ -1,35 +1,32 @@
-import BootstrapModal from './base.js';
+import BaseModal from "plugins/modal/modal.js";
 import tpl_prompt from "./templates/prompt.js";
 import { getOpenPromise } from '@converse/openpromise';
+import { api } from "@converse/headless/core";
 
+export default class Confirm extends BaseModal {
 
-const Confirm = BootstrapModal.extend({
-    id: 'confirm-modal',
-    events: {
-        'submit .confirm': 'onConfimation'
-    },
+    constructor (options) {
+        super(options);
+        this.confirmation = getOpenPromise();
+    }
 
     initialize () {
-        this.confirmation = getOpenPromise();
-        BootstrapModal.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change', this.render)
-        this.el.addEventListener('closed.bs.modal', () => this.confirmation.reject(), false);
-    },
+        super.initialize();
+        this.listenTo(this.model, 'change', () => this.render())
+        this.addEventListener('hide.bs.modal', () => {
+            if (!this.confirmation.isResolved) {
+                this.confirmation.reject()
+            }
+        }, false);
+    }
 
-    toHTML () {
-        return tpl_prompt(this.model.toJSON());
-    },
+    renderModal () {
+        return tpl_prompt(this);
+    }
 
-    afterRender () {
-        if (!this.close_handler_registered) {
-            this.el.addEventListener('closed.bs.modal', () => {
-                if (!this.confirmation.isResolved) {
-                    this.confirmation.reject()
-                }
-            }, false);
-            this.close_handler_registered = true;
-        }
-    },
+    getModalTitle () {
+        this.model.get('title');
+    }
 
     onConfimation (ev) {
         ev.preventDefault();
@@ -53,6 +50,6 @@ const Confirm = BootstrapModal.extend({
         this.confirmation.resolve(fields);
         this.modal.hide();
     }
-});
+}
 
-export default Confirm;
+api.elements.define('converse-confirm-modal', Confirm);

@@ -31,8 +31,8 @@ describe("A chat room", function () {
         expect(toggle.title).toBe('Bookmark this groupchat');
         toggle.click();
 
-        const modal = _converse.api.modal.get('converse-bookmark-modal');
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const modal = _converse.api.modal.get('converse-bookmark-form-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
 
         /* Client uploads data:
          * --------------------
@@ -66,13 +66,13 @@ describe("A chat room", function () {
          *  </iq>
          */
         expect(view.model.get('bookmarked')).toBeFalsy();
-        const form = await u.waitUntil(() => modal.el.querySelector('.chatroom-form'));
+        const form = await u.waitUntil(() => modal.querySelector('.chatroom-form'));
         form.querySelector('input[name="name"]').value = 'Play&apos;s the Thing';
         form.querySelector('input[name="autojoin"]').checked = 'checked';
         form.querySelector('input[name="nick"]').value = 'JC';
 
         const IQ_stanzas = _converse.connection.IQ_stanzas;
-        modal.el.querySelector('converse-muc-bookmark-form .btn-primary').click();
+        modal.querySelector('converse-muc-bookmark-form .btn-primary').click();
 
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('iq publish[node="storage:bookmarks"]', s).length).pop());
@@ -250,16 +250,16 @@ describe("A chat room", function () {
             bookmark_icon.click();
             expect(view.showBookmarkModal).toHaveBeenCalled();
 
-            const modal = _converse.api.modal.get('converse-bookmark-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000);
-            const form = await u.waitUntil(() => modal.el.querySelector('.chatroom-form'));
+            const modal = _converse.api.modal.get('converse-bookmark-form-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
+            const form = await u.waitUntil(() => modal.querySelector('.chatroom-form'));
 
             expect(form.querySelector('input[name="name"]').value).toBe('The Play');
             expect(form.querySelector('input[name="autojoin"]').checked).toBeFalsy();
             expect(form.querySelector('input[name="nick"]').value).toBe('Othello');
 
             // Remove the bookmark
-            modal.el.querySelector('.button-remove').click();
+            modal.querySelector('.button-remove').click();
 
             await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') === null);
             expect(_converse.bookmarks.length).toBe(0);

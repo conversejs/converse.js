@@ -55,6 +55,7 @@ export default class AutoCompleteComponent extends CustomElement {
             'name': { type: String },
             'placeholder': { type: String },
             'triggers': { type: String },
+            'required': { type: Boolean },
         };
     }
 
@@ -78,6 +79,7 @@ export default class AutoCompleteComponent extends CustomElement {
                 <ul class="suggestion-box__results ${position_class}" hidden=""></ul>
                 <input
                     ?autofocus=${this.autofocus}
+                    ?required=${this.required}
                     type="text"
                     name="${this.name}"
                     autocomplete="off"

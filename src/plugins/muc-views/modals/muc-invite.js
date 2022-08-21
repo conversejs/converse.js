@@ -1,45 +1,35 @@
 import 'shared/autocomplete/index.js';
-import BaseModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/modal.js";
 import tpl_muc_invite_modal from "./templates/muc-invite.js";
-import { _converse, converse } from "@converse/headless/core";
+import { __ } from 'i18n';
+import { _converse, api, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 
-
-export default BaseModal.extend({
-    id: "muc-invite-modal",
+export default class MUCInviteModal extends BaseModal {
 
     initialize () {
-        BaseModal.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change', this.render);
-        this.initInviteWidget();
-    },
+        super.initialize();
+        this.listenTo(this.model, 'change', () => this.render());
+    }
 
-    toHTML () {
-        return tpl_muc_invite_modal(Object.assign(
-            this.model.toJSON(), {
-                'submitInviteForm': ev => this.submitInviteForm(ev)
-            })
-        );
-    },
+    renderModal () {
+        return tpl_muc_invite_modal(this);
+    }
 
-    initInviteWidget () {
-        if (this.invite_auto_complete) {
-            this.invite_auto_complete.destroy();
-        }
-        const list = _converse.roster.map(i => ({'label': i.getDisplayName(), 'value': i.get('jid')}));
-        const el = this.el.querySelector('.suggestion-box').parentElement;
-        this.invite_auto_complete = new _converse.AutoComplete(el, {
-            'min_chars': 1,
-            'list': list
-        });
-    },
+    getModalTitle () { // eslint-disable-line class-methods-use-this
+        return __('Invite someone to this groupchat');
+    }
+
+    getAutoCompleteList () { // eslint-disable-line class-methods-use-this
+        return _converse.roster.map(i => ({'label': i.getDisplayName(), 'value': i.get('jid')}));
+    }
 
     submitInviteForm (ev) {
         ev.preventDefault();
         // TODO: Add support for sending an invite to multiple JIDs
         const data = new FormData(ev.target);
-        const jid = data.get('invitee_jids');
+        const jid = data.get('invitee_jids')?.trim();
         const reason = data.get('reason');
         if (u.isValidJID(jid)) {
             // TODO: Create and use API here
@@ -49,4 +39,6 @@ export default BaseModal.extend({
             this.model.set({'invalid_invite_jid': true});
         }
     }
-});
+}
+
+api.elements.define('converse-muc-invite-modal', MUCInviteModal);

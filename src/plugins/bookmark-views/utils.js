@@ -1,4 +1,4 @@
-import MUCBookmarkFormModal from './modal.js';
+import './modal.js';
 import invokeMap from 'lodash-es/invokeMap';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
@@ -38,7 +38,7 @@ export async function removeBookmarkViaEvent (ev) {
 export function addBookmarkViaEvent (ev) {
     ev.preventDefault();
     const jid = ev.currentTarget.getAttribute('data-room-jid');
-    api.modal.show(MUCBookmarkFormModal, { jid }, ev);
+    api.modal.show('converse-bookmark-form-modal', { jid }, ev);
 }
 
 

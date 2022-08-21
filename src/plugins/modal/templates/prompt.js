@@ -15,29 +15,16 @@ const tpl_field = (f) => html`
     </div>
 `;
 
-
-export default (o) => html`
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header ${o.level || ''}">
-          <h5 class="modal-title">${o.title}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <span class="modal-alert"></span>
-            <form class="converse-form converse-form--modal confirm" action="#">
-              <div class="form-group">
-                  ${ o.messages.map(message => html`<p>${message}</p>`) }
-              </div>
-              ${ o.fields.map(f => tpl_field(f)) }
-              <div class="form-group">
-                  <button type="submit" class="btn btn-primary">${__('OK')}</button>
-                  <input type="button" class="btn btn-secondary" data-dismiss="modal" value="${__('Cancel')}"/>
-              </div>
-          </form>
-        </div>
-      </div>
-    </div>
-`;
+export default (el) => {
+    return html`
+        <form class="converse-form converse-form--modal confirm" action="#" @submit=${ev => el.onConfimation(ev)}>
+            <div class="form-group">
+                ${ el.model.get('messages')?.map(message => html`<p>${message}</p>`) }
+            </div>
+            ${ el.model.get('fields')?.map(f => tpl_field(f)) }
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">${__('OK')}</button>
+                <input type="button" class="btn btn-secondary" data-dismiss="modal" value="${__('Cancel')}"/>
+            </div>
+        </form>`;
+}

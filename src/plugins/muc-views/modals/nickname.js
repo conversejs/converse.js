@@ -1,15 +1,17 @@
-import tpl_nickname from "./templates/nickname.js";
-import BaseModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/modal.js";
+import { __ } from 'i18n';
+import { api } from "@converse/headless/core.js";
+import { html } from 'lit';
 
-export default BaseModal.extend({
-    id: 'change-nickname-modal',
+export default class MUCNicknameModal extends BaseModal {
 
-    initialize (attrs) {
-        this.model = attrs.model;
-        BaseModal.prototype.initialize.apply(this, arguments);
-    },
+    renderModal () {
+        return html`<converse-muc-nickname-form jid="${this.model.get('jid')}"></converse-muc-nickname-form>`;
+    }
 
-    toHTML () {
-        return tpl_nickname(this);
-    },
-});
+    getModalTitle () { // eslint-disable-line class-methods-use-this
+        return __('Change your nickname');
+    }
+}
+
+api.elements.define('converse-muc-nickname-modal', MUCNicknameModal);

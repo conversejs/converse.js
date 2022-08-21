@@ -55,19 +55,12 @@
                         }
                     }
                 }
-
                 &.fit-content {
                     box-sizing: content-box;
 
                     img {
                         max-width: 90vw;
                     }
-                }
-            }
-            .modal-body--image {
-                .chat-image {
-                    max-height: 99%;
-                    max-width: 100%;
                 }
             }
             .modal-footer {
@@ -102,44 +95,6 @@
 
         .btn {
             font-weight: normal;
-        }
-
-        #user-profile-modal {
-            .profile-form {
-                label {
-                    font-weight: bold;
-                }
-            }
-            .fingerprint-removal {
-                label {
-                    display: flex;
-                    padding: 0.75rem 1.25rem;
-                }
-            }
-
-            .list-group-item {
-                display: flex;
-                justify-content: left;
-                font-size: 95%;
-
-                input[type="checkbox"] {
-                    margin-right: 1em;
-                }
-            }
-        }
-
-        .fingerprints {
-            width: 100%;
-            margin-bottom: 1em;
-        }
-
-        .fingerprint-trust {
-            display: flex;
-            justify-content: space-between;
-            font-size: 95%;
-            .fingerprint {
-                margin-left: 1em;
-            }
         }
     }
 }

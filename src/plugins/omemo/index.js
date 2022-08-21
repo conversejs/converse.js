@@ -4,7 +4,7 @@
  */
 import './fingerprints.js';
 import './profile.js';
-import 'modals/user-details.js';
+import 'shared/modals/user-details.js';
 import 'plugins/profile/index.js';
 import ConverseMixins from './mixins/converse.js';
 import Device from './device.js';

@@ -13,13 +13,14 @@ export default class RosterView extends CustomElement {
 
     async initialize () {
         await api.waitUntil('rosterInitialized')
+        const { presences, roster } = _converse;
         this.listenTo(_converse, 'rosterContactsFetched', () => this.requestUpdate());
-        this.listenTo(_converse.presences, 'change:show', () => this.requestUpdate());
-        this.listenTo(_converse.roster, 'add', () => this.requestUpdate());
-        this.listenTo(_converse.roster, 'destroy', () => this.requestUpdate());
-        this.listenTo(_converse.roster, 'remove', () => this.requestUpdate());
-        this.listenTo(_converse.roster, 'change', () => this.requestUpdate());
-        this.listenTo(_converse.roster.state, 'change', () => this.requestUpdate());
+        this.listenTo(presences, 'change:show', () => this.requestUpdate());
+        this.listenTo(roster, 'add', () => this.requestUpdate());
+        this.listenTo(roster, 'destroy', () => this.requestUpdate());
+        this.listenTo(roster, 'remove', () => this.requestUpdate());
+        this.listenTo(roster, 'change', () => this.requestUpdate());
+        this.listenTo(roster.state, 'change', () => this.requestUpdate());
         /**
          * Triggered once the _converse.RosterView instance has been created and initialized.
          * @event _converse#rosterViewInitialized
@@ -42,7 +43,7 @@ export default class RosterView extends CustomElement {
     }
 
     showAddContactModal (ev) { // eslint-disable-line class-methods-use-this
-        api.modal.show(_converse.AddContactModal, {'model': new Model()}, ev);
+        api.modal.show('converse-add-contact-modal', {'model': new Model()}, ev);
     }
 
     async syncContacts (ev) { // eslint-disable-line class-methods-use-this

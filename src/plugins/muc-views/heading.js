@@ -1,6 +1,6 @@
-import MUCInviteModal from './modals/muc-invite.js';
-import NicknameModal from './modals/nickname.js';
-import RoomDetailsModal from './modals/muc-details.js';
+import './modals/muc-details.js';
+import './modals/muc-invite.js';
+import './modals/nickname.js';
 import tpl_muc_head from './templates/muc-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
@@ -48,12 +48,12 @@ export default class MUCHeading extends CustomElement {
 
     showRoomDetailsModal (ev) {
         ev.preventDefault();
-        api.modal.show(RoomDetailsModal, { 'model': this.model }, ev);
+        api.modal.show('converse-muc-details-modal', { 'model': this.model }, ev);
     }
 
     showInviteModal (ev) {
         ev.preventDefault();
-        api.modal.show(MUCInviteModal, { 'model': new Model(), 'chatroomview': this }, ev);
+        api.modal.show('converse-muc-invite-modal', { 'model': new Model(), 'chatroomview': this }, ev);
     }
 
     toggleTopic (ev) {
@@ -104,7 +104,7 @@ export default class MUCHeading extends CustomElement {
         buttons.push({
             'i18n_text': __('Nickname'),
             'i18n_title': __("Change the nickname you're using in this groupchat"),
-            'handler': ev => api.modal.show(NicknameModal, { 'model': this.model }, ev),
+            'handler': ev => api.modal.show('converse-muc-nickname-modal', { 'model': this.model }, ev),
             'a_class': 'open-nickname-modal',
             'icon_class': 'fa-smile',
             'name': 'nickname'

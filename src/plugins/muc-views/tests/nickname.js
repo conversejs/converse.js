@@ -19,17 +19,17 @@ describe("A MUC", function () {
         const dropdown_item = view.querySelector(".open-nickname-modal");
         dropdown_item.click();
 
-        const modal = _converse.api.modal.get('change-nickname-modal');
-        await u.waitUntil(() => u.isVisible(modal.el));
+        const modal = _converse.api.modal.get('converse-muc-nickname-modal');
+        await u.waitUntil(() => u.isVisible(modal));
 
-        const input = modal.el.querySelector('input[name="nick"]');
+        const input = modal.querySelector('input[name="nick"]');
         expect(input.value).toBe(nick);
 
         const newnick = 'loverboy';
         input.value = newnick;
-        modal.el.querySelector('input[type="submit"]')?.click();
+        modal.querySelector('input[type="submit"]')?.click();
 
-        await u.waitUntil(() => !u.isVisible(modal.el));
+        await u.waitUntil(() => !u.isVisible(modal));
 
         const { sent_stanzas } = _converse.connection;
         const sent_stanza = sent_stanzas.pop()
@@ -422,13 +422,13 @@ describe("A MUC", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('add-chatroom-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000)
-            const name_input = modal.el.querySelector('input[name="chatroom"]');
+            const modal = _converse.api.modal.get('converse-add-muc-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000)
+            const name_input = modal.querySelector('input[name="chatroom"]');
             name_input.value = 'lounge@montague.lit';
-            expect(modal.el.querySelector('label[for="nickname"]')).toBe(null);
-            expect(modal.el.querySelector('input[name="nickname"]')).toBe(null);
-            modal.el.querySelector('form input[type="submit"]').click();
+            expect(modal.querySelector('label[for="nickname"]')).toBe(null);
+            expect(modal.querySelector('input[name="nickname"]')).toBe(null);
+            modal.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length > 1);
             const chatroom = _converse.chatboxes.get('lounge@montague.lit');
             expect(chatroom.get('nick')).toBe('romeo');
@@ -442,11 +442,11 @@ describe("A MUC", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('add-chatroom-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000)
-            const label_nick = modal.el.querySelector('label[for="nickname"]');
+            const modal = _converse.api.modal.get('converse-add-muc-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000)
+            const label_nick = modal.querySelector('label[for="nickname"]');
             expect(label_nick.textContent.trim()).toBe('Nickname:');
-            const nick_input = modal.el.querySelector('input[name="nickname"]');
+            const nick_input = modal.querySelector('input[name="nickname"]');
             expect(nick_input.value).toBe('romeo');
         }));
 
@@ -458,11 +458,11 @@ describe("A MUC", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('add-chatroom-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000)
-            const label_nick = modal.el.querySelector('label[for="nickname"]');
+            const modal = _converse.api.modal.get('converse-add-muc-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000)
+            const label_nick = modal.querySelector('label[for="nickname"]');
             expect(label_nick.textContent.trim()).toBe('Nickname:');
-            const nick_input = modal.el.querySelector('input[name="nickname"]');
+            const nick_input = modal.querySelector('input[name="nickname"]');
             expect(nick_input.value).toBe('st.nick');
         }));
     });

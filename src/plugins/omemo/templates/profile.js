@@ -11,7 +11,7 @@ const fingerprint = (el) => html`
 const device_with_fingerprint = (el) => {
     const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
     return html`
-        <li class="fingerprint-removal-item list-group-item nopadding">
+        <li class="fingerprint-removal-item list-group-item">
             <label>
             <input type="checkbox" value="${el.device.get('id')}"
                 aria-label="${i18n_fingerprint_checkbox_label}"/>
@@ -26,7 +26,7 @@ const device_without_fingerprint = (el) => {
     const i18n_device_without_fingerprint = __('Device without a fingerprint');
     const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following device');
     return html`
-        <li class="fingerprint-removal-item list-group-item nopadding">
+        <li class="fingerprint-removal-item list-group-item">
             <label>
             <input type="checkbox" value="${el.device.get('id')}"
                 aria-label="${i18n_fingerprint_checkbox_label}"/>
@@ -49,7 +49,7 @@ const device_list = (el) => {
     const i18n_select_all = __('Select all');
     return html`
         <ul class="list-group fingerprints">
-            <li class="list-group-item nopadding active">
+            <li class="list-group-item active">
                 <label>
                     <input type="checkbox" class="select-all" @change=${el.selectAll} title="${i18n_select_all}" aria-label="${i18n_other_devices_label}"/>
                     ${i18n_other_devices}

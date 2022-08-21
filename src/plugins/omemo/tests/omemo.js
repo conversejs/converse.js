@@ -1047,8 +1047,8 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get(contact_jid);
         const show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        const modal = _converse.api.modal.get('user-details-modal');
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const modal = _converse.api.modal.get('converse-user-details-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
 
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(
@@ -1068,7 +1068,7 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '555'})
         ));
 
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        await u.waitUntil(() => u.isVisible(modal), 1000);
 
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
         expect(Strophe.serialize(iq_stanza)).toBe(
@@ -1097,21 +1097,21 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'))
         ));
 
-        await u.waitUntil(() => modal.el.querySelectorAll('.fingerprints .fingerprint').length);
-        expect(modal.el.querySelectorAll('.fingerprints .fingerprint').length).toBe(1);
-        const el = modal.el.querySelector('.fingerprints .fingerprint');
+        await u.waitUntil(() => modal.querySelectorAll('.fingerprints .fingerprint').length);
+        expect(modal.querySelectorAll('.fingerprints .fingerprint').length).toBe(1);
+        const el = modal.querySelector('.fingerprints .fingerprint');
         expect(el.textContent.trim()).toBe(
             omemo.formatFingerprint(u.arrayBufferToHex(u.base64ToArrayBuffer('BQmHEOHjsYm3w5M8VqxAtqJmLCi7CaxxsdZz6G0YpuMI')))
         );
-        expect(modal.el.querySelectorAll('input[type="radio"]').length).toBe(2);
+        expect(modal.querySelectorAll('input[type="radio"]').length).toBe(2);
 
         const devicelist = _converse.devicelists.get(contact_jid);
         expect(devicelist.devices.get('555').get('trusted')).toBe(0);
 
-        let trusted_radio = modal.el.querySelector('input[type="radio"][name="555"][value="1"]');
+        let trusted_radio = modal.querySelector('input[type="radio"][name="555"][value="1"]');
         expect(trusted_radio.checked).toBe(true);
 
-        let untrusted_radio = modal.el.querySelector('input[type="radio"][name="555"][value="-1"]');
+        let untrusted_radio = modal.querySelector('input[type="radio"][name="555"][value="-1"]');
         expect(untrusted_radio.checked).toBe(false);
 
         // Test that the device can be set to untrusted

@@ -1904,8 +1904,10 @@ const ChatRoomMixin = {
     },
 
     getUpdatedMessageAttributes (message, attrs) {
-        const new_attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs);
-        new_attrs['from_muc'] = attrs['from_muc'];
+        const new_attrs = {
+            ..._converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs),
+            ...pick(attrs, ['from_muc', 'occupant_id']),
+        }
 
         if (this.isOwnMessage(attrs)) {
             const stanza_id_keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id'));

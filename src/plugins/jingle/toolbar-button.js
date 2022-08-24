@@ -56,7 +56,7 @@ export default class JingleToolbarButton extends CustomElement {
                 'msg_id': message_id, 
                 'propose_id': propose_id,
                 'media': 'audio',
-                'template_hook': 'getJingleTemplate'
+                'template_hook': 'getJingleTemplate',
             }
             this.model.messages.create(attrs);
             return;

@@ -66,6 +66,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/headlines-view/tests/headline.js", type: 'module' },
       { pattern: "src/plugins/jingle/tests/ui.js", type: 'module' },
       { pattern: "src/plugins/jingle/tests/message-initiation.js", type: 'module' },
+      { pattern: "src/plugins/jingle/tests/jingle-chat-history.js", type: 'module' },
       { pattern: "src/plugins/mam-views/tests/mam.js", type: 'module' },
       { pattern: "src/plugins/mam-views/tests/placeholder.js", type: 'module' },
       { pattern: "src/plugins/minimize/tests/minchats.js", type: 'module' },

@@ -46,8 +46,8 @@ converse.plugins.add('converse-jingle', {
 
            return buttons;
         });
-        api.listen.on('parseMessage', parseJingleMessage);
         api.listen.on('onMessage', handleRetraction);
+        api.listen.on('parseMessage', parseJingleMessage);
         api.listen.on('getJingleTemplate', getJingleTemplate);
     },
 });

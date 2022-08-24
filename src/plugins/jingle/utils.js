@@ -5,7 +5,6 @@ import tpl_jingle_chat_history from "./templates/jingle_chat_history.js";
 const { Strophe, sizzle, $msg } = converse.env;
 const u = converse.env.utils;
 
-
 /**
  * This function merges the incoming attributes and the jingle propose attribute into one.
  * It also determines the type of the media i.e. audio or video
@@ -13,9 +12,39 @@ const u = converse.env.utils;
  * @param { Object } attrs
  */
 export function parseJingleMessage(stanza, attrs) {
+    if(isAJingleMessage(stanza) === true) {
     const jingle_propose_type = getJingleProposeType(stanza);
-    // To do editable: false, retracted_id: {if there is a retractions set it to the id}, retracted(timestamp)
-    return { ...attrs, ...{ 'jingle_propose': jingle_propose_type, 'jingle_retraction_id': getJingleRetractionID(stanza), 'template_hook': (attrs['template_hook']) ? 'getJingleTemplate' : undefined, 'jingle_status': attrs['jingle_status'] }}
+        return {
+            ...attrs, ...{
+                'jingle_propose': jingle_propose_type,
+                'jingle_retraction_id': getJingleRetractionID(stanza),
+                'template_hook': 'getJingleTemplate',
+                'jingle_status': jingleStatus(stanza)
+            }
+        }
+    }
+}
+
+function isAJingleMessage(stanza) {
+    if (jingleStatus(stanza) === 'incoming_call' || jingleStatus(stanza) === 'retracted' || jingleStatus(stanza) === 'call_ended') {
+        return true;
+    }
+    else false;
+}
+
+function jingleStatus(stanza) {
+    const el_propose = sizzle(`propose[xmlns="${Strophe.NS.JINGLEMESSAGE}"]`, stanza).pop();
+    const el_retract = sizzle(`retract[xmlns="${Strophe.NS.JINGLEMESSAGE}"]`, stanza).pop();
+    const el_finish = sizzle(`finish[xmlns="${Strophe.NS.JINGLEMESSAGE}"]`, stanza).pop();
+    if (el_propose) {
+        return 'incoming_call';
+    }
+    else if (el_retract) {
+        return 'retracted';
+    }
+    else if (el_finish) {
+        return 'call_ended';
+    }
 }
 
 function getJingleProposeType(stanza){
@@ -40,8 +69,8 @@ export function jingleCallInitialized() {
  * This function simply sends the retraction stanza and modifies the attributes
  */
 export function retractCall(context) {
-    const initiator_message = context.model.messages.findWhere({ 'media': 'audio' });
-    const propose_id = initiator_message.attributes.propose_id;
+    const initiator_message = context.model.messages.where({ template_hook: 'getJingleTemplate', media: 'audio' });
+    const propose_id = initiator_message;
     const message_id = u.getUniqueId();
         api.send(
             $msg({
@@ -49,7 +78,8 @@ export function retractCall(context) {
             'to': context.jid,
             'type': 'chat',
             id: message_id
-            }).c('retract', { 'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': propose_id })
+            }).c('retract', {
+            'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': propose_id })
             .c('reason', { 'xmlns': Strophe.NS.JINGLE })
             .c('cancel', {}).up()
             .t('Retracted').up().up()
@@ -61,7 +91,6 @@ export function retractCall(context) {
             'type': 'chat',
             'jingle_retraction_id': propose_id, 
             'msg_id': message_id,
-            'jingle_status': context.model.get('jingle_status'),
             'template_hook': 'getJingleTemplate'
         }
         context.model.messages.create(attrs);
@@ -93,27 +122,26 @@ export function finishCall(context) {
     api.send(stanza);
 }
 
-
 /*
  * This is the handler for the 'onMessage' hook
- * It inspects the incoming message attributes and checks whether we have is a jingle retraction message
+ * It inspects the incoming message attributes and checks whether we have a jingle retraction message
  * if it is, then we find the jingle propose message and update it.
  * @param { _converse.ChatBox } model
  * @param {  } data
  */
-export async function handleRetraction(model, data) {
+export function handleRetraction(model, data) {
     const jingle_retraction_id = data.attrs['jingle_retraction_id'];
     if (jingle_retraction_id) {
         //finding the propose message with the same id as the retraction id
-        const message = model.messages.findWhere({ 'jingle_propose': 'audio' });
+        const message = model.messages.where({ jingle_propose: 'audio' });
         if (message) {
-            message.save(data.attrs, { 'propose_id': jingle_retraction_id });
+            message.save(data.attrs, { has_been_retracted: 'true' });
             data.handled = true;
         }
-        else {
-            // It is a dangling retraction; we are waiting for the correct propose message
-            await _converse.ChatBox.createMessage(data.attrs);
-        }
+    }
+    else {
+        // It is a dangling retraction; we are waiting for the correct propose message
+        model.createMessage(data.attrs);
     }
     return data;
 }

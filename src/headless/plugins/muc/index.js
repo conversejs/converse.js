@@ -29,38 +29,34 @@ import {
     routeToRoom,
 } from './utils.js';
 import { computeAffiliationsDelta } from './affiliations/utils.js';
+import {
+    AFFILIATION_CHANGES,
+    AFFILIATION_CHANGES_LIST,
+    INFO_CODES,
+    MUC_NICK_CHANGED_CODE,
+    MUC_ROLE_CHANGES,
+    MUC_ROLE_CHANGES_LIST,
+    MUC_TRAFFIC_STATES,
+    MUC_TRAFFIC_STATES_LIST,
+    ROOMSTATUS,
+    ROOM_FEATURES,
+} from './constants.js';
 
 export const ROLES = ['moderator', 'participant', 'visitor'];
 export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 
-converse.AFFILIATION_CHANGES = {
-    OWNER: 'owner',
-    ADMIN: 'admin',
-    MEMBER: 'member',
-    EXADMIN: 'exadmin',
-    EXOWNER: 'exowner',
-    EXOUTCAST: 'exoutcast',
-    EXMEMBER: 'exmember',
-};
-converse.AFFILIATION_CHANGES_LIST = Object.values(converse.AFFILIATION_CHANGES);
-converse.MUC_TRAFFIC_STATES = { ENTERED: 'entered', EXITED: 'exited' };
-converse.MUC_TRAFFIC_STATES_LIST = Object.values(converse.MUC_TRAFFIC_STATES);
-converse.MUC_ROLE_CHANGES = { OP: 'op', DEOP: 'deop', VOICE: 'voice', MUTE: 'mute' };
-converse.MUC_ROLE_CHANGES_LIST = Object.values(converse.MUC_ROLE_CHANGES);
+converse.AFFILIATION_CHANGES = AFFILIATION_CHANGES;
+converse.AFFILIATION_CHANGES_LIST = AFFILIATION_CHANGES_LIST;
+converse.MUC_TRAFFIC_STATES =  MUC_TRAFFIC_STATES;
+converse.MUC_TRAFFIC_STATES_LIST = MUC_TRAFFIC_STATES_LIST;
+converse.MUC_ROLE_CHANGES = MUC_ROLE_CHANGES;
+converse.MUC_ROLE_CHANGES_LIST = MUC_ROLE_CHANGES_LIST;
 
-converse.MUC = {};
+converse.MUC = { INFO_CODES };
 
-converse.MUC.INFO_CODES = {
-    'visibility_changes': ['100', '102', '103', '172', '173', '174'],
-    'self': ['110'],
-    'non_privacy_changes': ['104', '201'],
-    'muc_logging_changes': ['170', '171'],
-    'nickname_changes': ['210', '303'],
-    'disconnected': ['301', '307', '321', '322', '332', '333'],
-    'affiliation_changes': [...converse.AFFILIATION_CHANGES_LIST],
-    'join_leave_events': [...converse.MUC_TRAFFIC_STATES_LIST],
-    'role_changes': [...converse.MUC_ROLE_CHANGES_LIST],
-};
+converse.MUC_NICK_CHANGED_CODE = MUC_NICK_CHANGED_CODE;
+converse.ROOM_FEATURES = ROOM_FEATURES;
+converse.ROOMSTATUS = ROOMSTATUS;
 
 const { Strophe } = converse.env;
 
@@ -73,52 +69,6 @@ Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + '#user');
 Strophe.addNamespace('MUC_HATS', 'xmpp:prosody.im/protocol/hats:1');
 Strophe.addNamespace('CONFINFO', 'urn:ietf:params:xml:ns:conference-info');
 
-converse.MUC_NICK_CHANGED_CODE = '303';
-
-converse.ROOM_FEATURES = [
-    'passwordprotected',
-    'unsecured',
-    'hidden',
-    'publicroom',
-    'membersonly',
-    'open',
-    'persistent',
-    'temporary',
-    'nonanonymous',
-    'semianonymous',
-    'moderated',
-    'unmoderated',
-    'mam_enabled',
-];
-
-// No longer used in code, but useful as reference.
-//
-// const ROOM_FEATURES_MAP = {
-//     'passwordprotected': 'unsecured',
-//     'unsecured': 'passwordprotected',
-//     'hidden': 'publicroom',
-//     'publicroom': 'hidden',
-//     'membersonly': 'open',
-//     'open': 'membersonly',
-//     'persistent': 'temporary',
-//     'temporary': 'persistent',
-//     'nonanonymous': 'semianonymous',
-//     'semianonymous': 'nonanonymous',
-//     'moderated': 'unmoderated',
-//     'unmoderated': 'moderated'
-// };
-
-converse.ROOMSTATUS = {
-    CONNECTED: 0,
-    CONNECTING: 1,
-    NICKNAME_REQUIRED: 2,
-    PASSWORD_REQUIRED: 3,
-    DISCONNECTED: 4,
-    ENTERED: 5,
-    DESTROYED: 6,
-    BANNED: 7,
-    CLOSING: 8
-};
 
 converse.plugins.add('converse-muc', {
     dependencies: ['converse-chatboxes', 'converse-chat', 'converse-disco'],

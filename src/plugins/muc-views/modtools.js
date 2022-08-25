@@ -1,6 +1,6 @@
 import log from '@converse/headless/log.js';
 import tpl_moderator_tools from './templates/moderator-tools.js';
-import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/index.js';
+import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core.js';

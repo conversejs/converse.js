@@ -91,17 +91,6 @@ const ChatBox = ModelWithContact.extend({
     initMessages () {
         this.messages = this.getMessagesCollection();
         this.messages.fetched = getOpenPromise();
-        this.messages.fetched.then(() => {
-            this.pruneHistoryWhenScrolledDown();
-            /**
-             * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
-             * has fetched its messages from the local cache.
-             * @event _converse#afterMessagesFetched
-             * @type { _converse.ChatBox| _converse.ChatRoom }
-             * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
-             */
-            api.trigger('afterMessagesFetched', this);
-        });
         this.messages.chatbox = this;
         initStorage(this.messages, this.getMessagesCacheKey());
 
@@ -131,12 +120,13 @@ const ChatBox = ModelWithContact.extend({
     },
 
     afterMessagesFetched () {
+        this.pruneHistoryWhenScrolledDown();
         /**
-         * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
-         * `sessionStorage` but **NOT** from the server.
+         * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
+         * has fetched its messages from the local cache.
          * @event _converse#afterMessagesFetched
-         * @type {_converse.ChatBox | _converse.ChatRoom}
-         * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+         * @type { _converse.ChatBox| _converse.ChatRoom }
+         * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
          */
         api.trigger('afterMessagesFetched', this);
     },
@@ -937,19 +927,18 @@ const ChatBox = ModelWithContact.extend({
             const older_versions = message.get('older_versions') || {};
             const edited_time = message.get('edited') || message.get('time');
             older_versions[edited_time] = message.getMessageText();
-            const plaintext = attrs.is_encrypted ? attrs.message : undefined;
 
             message.save({
-                'body': attrs.body,
-                'message': attrs.body,
-                'correcting': false,
-                'edited': (new Date()).toISOString(),
-                'is_only_emojis':  attrs.is_only_emojis,
-                'origin_id': u.getUniqueId(),
-                'received': undefined,
-                'references': attrs.references,
-                older_versions,
-                plaintext,
+                ...pick(attrs, ['body', 'is_only_emojis', 'media_urls', 'references', 'is_encrypted']),
+                ...{
+                    'correcting': false,
+                    'edited': (new Date()).toISOString(),
+                    'message': attrs.body,
+                    'origin_id': u.getUniqueId(),
+                    'received': undefined,
+                    older_versions,
+                    plaintext: attrs.is_encrypted ? attrs.message : undefined,
+                }
             });
         } else {
             this.setEditable(attrs, (new Date()).toISOString());

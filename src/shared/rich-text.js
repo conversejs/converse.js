@@ -209,44 +209,45 @@ export class RichText extends String {
     }
 
     /**
-     * Look for XEP-0393 styling directives and add templates for rendering
-     * them.
+     * Look for XEP-0393 styling directives and add templates for rendering them.
      */
     addStyling () {
+        if (!containsDirectives(this, this.mentions)) {
+            return;
+        }
+
         const references = [];
-        if (containsDirectives(this, this.mentions)) {
-            const mention_ranges = this.mentions.map(m =>
-                Array.from({ 'length': Number(m.end) }, (v, i) => Number(m.begin) + i)
-            );
-            let i = 0;
-            while (i < this.length) {
-                if (mention_ranges.filter(r => r.includes(i)).length) { // eslint-disable-line no-loop-func
-                    // Don't treat potential directives if they fall within a
-                    // declared XEP-0372 reference
-                    i++;
-                    continue;
-                }
-                const { d, length } = getDirectiveAndLength(this, i);
-                if (d && length) {
-                    const is_quote = isQuoteDirective(d);
-                    const end = i + length;
-                    const slice_end = is_quote ? end : end - d.length;
-                    let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
-                    if (is_quote && this[slice_begin] === ' ') {
-                        // Trim leading space inside codeblock
-                        slice_begin += 1;
-                    }
-                    const offset = slice_begin;
-                    const text = this.slice(slice_begin, slice_end);
-                    references.push({
-                        'begin': i,
-                        'template': getDirectiveTemplate(d, text, offset, this.options),
-                        end
-                    });
-                    i = end;
-                }
+        const mention_ranges = this.mentions.map(m =>
+            Array.from({ 'length': Number(m.end) }, (_, i) => Number(m.begin) + i)
+        );
+        let i = 0;
+        while (i < this.length) {
+            if (mention_ranges.filter(r => r.includes(i)).length) { // eslint-disable-line no-loop-func
+                // Don't treat potential directives if they fall within a
+                // declared XEP-0372 reference
                 i++;
+                continue;
             }
+            const { d, length } = getDirectiveAndLength(this, i);
+            if (d && length) {
+                const is_quote = isQuoteDirective(d);
+                const end = i + length;
+                const slice_end = is_quote ? end : end - d.length;
+                let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
+                if (is_quote && this[slice_begin] === ' ') {
+                    // Trim leading space inside codeblock
+                    slice_begin += 1;
+                }
+                const offset = slice_begin;
+                const text = this.slice(slice_begin, slice_end);
+                references.push({
+                    'begin': i,
+                    'template': getDirectiveTemplate(d, text, offset, this.options),
+                    end
+                });
+                i = end;
+            }
+            i++;
         }
         references.forEach(ref => this.addTemplateResult(ref.begin, ref.end, ref.template));
     }

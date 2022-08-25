@@ -60,10 +60,8 @@ export function getMediaURLs (arr, text, offset=0) {
 
 
 /**
- * Determines whether the passed in message attributes represent a
- * message which corrects a previously received message, or an
- * older message which has already been corrected.
- * In both cases, update the corrected message accordingly.
+ * Determines whether the given attributes of an incoming message
+ * represent a XEP-0308 correction and, if so, handles it appropriately.
  * @private
  * @method _converse.ChatBox#handleCorrection
  * @param { _converse.ChatBox | _converse.ChatRoom }
@@ -84,7 +82,7 @@ export async function handleCorrection (model, attrs) {
 
     const message = model.messages.models.find(query);
     if (!message) {
-        attrs['older_versions'] = [];
+        attrs['older_versions'] = {};
         return await model.createMessage(attrs); // eslint-disable-line no-return-await
     }
 

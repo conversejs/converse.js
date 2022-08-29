@@ -68,18 +68,17 @@ export function jingleCallInitialized() {
 /**
  * This function simply sends the retraction stanza and modifies the attributes
  */
-export function retractCall(context) {
-    const initiator_message = context.model.messages.where({ template_hook: 'getJingleTemplate', media: 'audio' });
-    const propose_id = initiator_message;
+export function retractCall(el) {
+    const jingle_propose_id = el.model.get('jingle_propose_id');
     const message_id = u.getUniqueId();
         api.send(
             $msg({
             'from': _converse.bare_jid,
-            'to': context.jid,
+            'to': el.jid,
             'type': 'chat',
             id: message_id
             }).c('retract', {
-            'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': propose_id })
+            'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': jingle_propose_id })
             .c('reason', { 'xmlns': Strophe.NS.JINGLE })
             .c('cancel', {}).up()
             .t('Retracted').up().up()
@@ -87,39 +86,45 @@ export function retractCall(context) {
         );
         const attrs = {
             'from': _converse.bare_jid,
-            'to': context.jid,
+            'to': el.jid,
             'type': 'chat',
-            'jingle_retraction_id': propose_id, 
+            'jingle_retraction_id': jingle_propose_id, 
             'msg_id': message_id,
             'template_hook': 'getJingleTemplate'
         }
-        context.model.messages.create(attrs);
+        el.model.messages.create(attrs);
 }
 
 /**
  * This function simply sends the stanza that ends the call
  */
-export function finishCall(context) {
+export function finishCall(el) {
     const message_id = u.getUniqueId();
+    const finish_id = u.getUniqueId();
     const stanza = $msg({
         'from': _converse.bare_jid,
-        'to': context.jid,
+        'to': el.jid,
         'type': 'chat'
-    }).c('finish', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': context.getAttribute('id')})
+    }).c('finish', {'xmlns': Strophe.NS.JINGLEMESSAGE, 'id': finish_id})
     .c('reason', {'xmlns': Strophe.NS.JINGLE})  
         .c('success', {}).up()
         .t('Success').up().up()
         .c('store', { 'xmlns': Strophe.NS.HINTS })
         const attrs = {
             'from': _converse.bare_jid,
-            'to': context.jid,
+            'to': el.jid,
             'type': 'chat',
             'msg_id': message_id,
-            'jingle_status': context.model.get('jingle_status'),
+            'jingle_status': el.model.get('jingle_status'),
             'template_hook': 'getJingleTemplate'
         }
-        context.model.messages.create(attrs);
+        el.model.messages.create(attrs);
     api.send(stanza);
+}
+
+var _propose_id;
+export function handleAttrs(attrs) {
+    _propose_id = attrs.jingle_propose_id;
 }
 
 /*
@@ -129,11 +134,11 @@ export function finishCall(context) {
  * @param { _converse.ChatBox } model
  * @param {  } data
  */
-export function handleRetraction(model, data) {
+export async function handleRetraction(model, data) {
     const jingle_retraction_id = data.attrs['jingle_retraction_id'];
     if (jingle_retraction_id) {
         //finding the propose message with the same id as the retraction id
-        const message = model.messages.where({ jingle_propose: 'audio' });
+        const message = await model.messages.findWhere({ jingle_retraction_id: _propose_id });
         if (message) {
             message.save(data.attrs, { has_been_retracted: 'true' });
             data.handled = true;

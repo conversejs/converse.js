@@ -36,9 +36,9 @@ export default class JingleToolbarButton extends CustomElement {
             return;
         }
         if (!jingle_status || jingle_status === JINGLE_CALL_STATUS.ENDED) {
-            this.model.save('jingle_status', JINGLE_CALL_STATUS.OUTGOING_PENDING);
             const propose_id = u.getUniqueId();
             const message_id = u.getUniqueId();
+            this.model.save({ 'jingle_propose_id': propose_id, 'jingle_status': JINGLE_CALL_STATUS.OUTGOING_PENDING });
             api.send(
                 $msg({
                     'from': _converse.bare_jid,
@@ -54,11 +54,12 @@ export default class JingleToolbarButton extends CustomElement {
                 'to': this.jid,
                 'type': 'chat',
                 'msg_id': message_id, 
-                'propose_id': propose_id,
+                'jingle_propose_id': propose_id,
                 'media': 'audio',
                 'template_hook': 'getJingleTemplate',
             }
             this.model.messages.create(attrs);
+            api.hook('passingAttrs', attrs);
             return;
         }
     }

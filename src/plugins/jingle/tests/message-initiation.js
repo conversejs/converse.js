@@ -4,7 +4,7 @@ const sizzle = converse.env.sizzle;
 
 const { Strophe } = converse.env;
 
-fdescribe("A Jingle Message Initiation Request", function () {
+describe("A Jingle Message Initiation Request", function () {
 
     describe("from the initiator's perspective", function () {
 
@@ -101,7 +101,7 @@ fdescribe("A Jingle Message Initiation Request", function () {
     }));
     });
     
-    describe("from the receiver's perspective", function () {
+    fdescribe("from the receiver's perspective", function () {
 
         it("is received when the initiator clicks the call button", mock.initConverse(
             ['chatBoxesFetched'], { allow_non_roster_messaging: true }, async function (_converse) {

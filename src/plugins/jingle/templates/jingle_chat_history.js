@@ -1,3 +1,4 @@
+import '../../../shared/avatar/avatar.js';
 import { __ } from 'i18n';
 import { html } from "lit";
 
@@ -5,8 +6,21 @@ const ended_call = __('Call Ended');
 const pending_call = __('Initiated a call');
 const finished_call = __('Finished call');
 
-function calling(o) {
-    return html`<div class="message separator"><hr class="separator"><span class="separator-text">${ pending_call } at ${o.time}</span></div>`
+function calling(el) {
+    return html`
+    <div class="message separator">
+    <div>
+            <a class="show-msg-author-modal">
+            <converse-avatar
+            class="avatar align-self-center"
+            height="40" width="40">
+            </converse-avatar>
+        </a>
+    </div>
+    <span class="separator-text">${ pending_call} at ${el.get('time')}</span>
+    <hr class="separator">
+    <span class="separator-text">End Call</span>
+    </div>`
 }
 
 function finishedCall(o) {

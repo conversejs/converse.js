@@ -10,7 +10,7 @@ import "./chat-header-notification.js";
 import './toolbar-button.js';
 import { JINGLE_CALL_STATUS } from './constants.js';
 import { html } from "lit";
-import { parseJingleMessage, handleRetraction, getJingleTemplate } from './utils.js';
+import { parseJingleMessage, handleRetraction, getJingleTemplate, handleAttrs } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -47,6 +47,7 @@ converse.plugins.add('converse-jingle', {
            return buttons;
         });
         api.listen.on('onMessage', handleRetraction);
+        api.hook('passingAttrs', handleAttrs);
         api.listen.on('parseMessage', parseJingleMessage);
         api.listen.on('getJingleTemplate', getJingleTemplate);
     },

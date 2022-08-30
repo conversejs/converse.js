@@ -17,7 +17,7 @@ export function parseJingleMessage(stanza, attrs) {
         return {
             ...attrs, ...{
                 'jingle_propose': jingle_propose_type,
-                'jingle_retraction_id': getJingleRetractionID(stanza),
+                'jingle_retraction_id': getJingleRetractionId(stanza),
                 'template_hook': 'getJingleTemplate',
                 'jingle_status': jingleStatus(stanza)
             }
@@ -52,8 +52,8 @@ function getJingleProposeType(stanza){
     return el?.getAttribute('media');
 }
 
-function getJingleRetractionID(stanza){
-    const el = sizzle(`propose[xmlns="${Strophe.NS.JINGLEMESSAGE}"]`, stanza).pop();
+function getJingleRetractionId(stanza){
+    const el = sizzle(`retract[xmlns="${Strophe.NS.JINGLEMESSAGE}"]`, stanza).pop();
     return el?.getAttribute('id');
 }
 
@@ -122,11 +122,6 @@ export function finishCall(el) {
     api.send(stanza);
 }
 
-var _propose_id;
-export function handleAttrs(attrs) {
-    _propose_id = attrs.jingle_propose_id;
-}
-
 /*
  * This is the handler for the 'onMessage' hook
  * It inspects the incoming message attributes and checks whether we have a jingle retraction message
@@ -137,8 +132,7 @@ export function handleAttrs(attrs) {
 export async function handleRetraction(model, data) {
     const jingle_retraction_id = data.attrs['jingle_retraction_id'];
     if (jingle_retraction_id) {
-        //finding the propose message with the same id as the retraction id
-        const message = await model.messages.findWhere({ jingle_retraction_id: _propose_id });
+        const message = await model.messages.findWhere({ jingle_propose_id: jingle_retraction_id });
         if (message) {
             message.save(data.attrs, { has_been_retracted: 'true' });
             data.handled = true;

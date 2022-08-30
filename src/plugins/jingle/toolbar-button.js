@@ -59,7 +59,6 @@ export default class JingleToolbarButton extends CustomElement {
                 'template_hook': 'getJingleTemplate',
             }
             this.model.messages.create(attrs);
-            api.hook('passingAttrs', attrs);
             return;
         }
     }

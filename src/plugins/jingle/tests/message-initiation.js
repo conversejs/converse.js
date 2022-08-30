@@ -111,8 +111,8 @@ describe("A Jingle Message Initiation Request", function () {
         const propose_id = u.getUniqueId();
         const initiator_stanza = u.toStanza(`
         <message xmlns='jabber:client'
-                from='${_converse.bare_jid}'
-                to='${contact_jid}'
+                from='${contact_jid}'
+                to='${_converse.bare_jid}'
                 type='chat'>
                 <propose id="${propose_id}" xmlns="${Strophe.NS.JINGLEMESSAGE}">
                     <description media="audio" xmlns="${Strophe.NS.JINGLERTP}"/>
@@ -139,8 +139,8 @@ describe("A Jingle Message Initiation Request", function () {
             const propose_id = stanza.querySelector('propose');
             const initiator_stanza = u.toStanza(`
             <message xmlns='jabber:client'
-                    from='${_converse.bare_jid}'
-                    to='${contact_jid}'
+                    from='${contact_jid}'
+                    to='${_converse.bare_jid}'
                     type='chat'>
                     <retract id="${propose_id.getAttribute('id')}" xmlns="${Strophe.NS.JINGLEMESSAGE}">
                             <reason xmlns="${Strophe.NS.JINGLE}">

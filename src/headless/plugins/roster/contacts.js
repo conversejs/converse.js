@@ -187,11 +187,6 @@ const RosterContacts = Collection.extend({
         }
     },
 
-    getNumOnlineContacts () {
-        const ignored = ['offline', 'unavailable'];
-        return sum(this.models.filter(m => !ignored.includes(m.presence.get('show'))));
-    },
-
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push

@@ -4,5 +4,9 @@
             height: 10em;
             overflow: auto;
         }
+
+        .suggestion-box ul li {
+            display: block;
+        }
     }
 }

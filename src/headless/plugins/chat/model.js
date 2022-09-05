@@ -229,6 +229,7 @@ const ChatBox = ModelWithContact.extend({
                 !(await this.handleRetraction(attrs))
         ) {
             const { handled } = await api.hook('onMessage', this, { handled: false, attrs });
+            debugger
             if (handled) return;
 
             this.setEditable(attrs, attrs.time);

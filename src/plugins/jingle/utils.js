@@ -1,6 +1,6 @@
 import { converse, api, _converse } from '@converse/headless/core';
 import JingleCallModal from "./modal/jingle-incoming-call-modal.js";
-import tpl_jingle_chat_history from "./templates/jingle_chat_history.js";
+import { html } from 'lit';
 
 const { Strophe, sizzle, $msg } = converse.env;
 const u = converse.env.utils;
@@ -12,8 +12,8 @@ const u = converse.env.utils;
  * @param { Object } attrs
  */
 export function parseJingleMessage(stanza, attrs) {
-    if(isAJingleMessage(stanza) === true) {
-    const jingle_propose_type = getJingleProposeType(stanza);
+    if (isAJingleMessage(stanza) === true) {
+        const jingle_propose_type = getJingleProposeType(stanza);
         return {
             ...attrs, ...{
                 'jingle_propose': jingle_propose_type,
@@ -58,7 +58,7 @@ function getJingleRetractionId(stanza){
 }
 
 export function getJingleTemplate(model) {
-    return tpl_jingle_chat_history(model);
+    return html`<converse-jingle-message jid='${model.get('jingle_status')}'></converse-jingle-message>`;
 }
 
 export function jingleCallInitialized() {
@@ -84,15 +84,6 @@ export function retractCall(el) {
             .t('Retracted').up().up()
             .c('store', { 'xmlns': Strophe.NS.HINTS })
         );
-        const attrs = {
-            'from': _converse.bare_jid,
-            'to': el.jid,
-            'type': 'chat',
-            'jingle_retraction_id': jingle_propose_id, 
-            'msg_id': message_id,
-            'template_hook': 'getJingleTemplate'
-        }
-        el.model.messages.create(attrs);
 }
 
 /**

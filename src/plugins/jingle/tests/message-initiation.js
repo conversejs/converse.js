@@ -101,7 +101,7 @@ describe("A Jingle Message Initiation Request", function () {
     }));
     });
     
-    fdescribe("from the receiver's perspective", function () {
+    describe("from the receiver's perspective", function () {
 
         it("is received when the initiator clicks the call button", mock.initConverse(
             ['chatBoxesFetched'], { allow_non_roster_messaging: true }, async function (_converse) {

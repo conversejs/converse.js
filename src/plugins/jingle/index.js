@@ -1,5 +1,5 @@
 /**
- * @description Converse.js plugin which adds XEP-0166 Jingle
+ * @description Converse.js plugin which uses XEP-0353, XEP-0166 & XEP-0167
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
@@ -11,6 +11,7 @@ import './toolbar-button.js';
 import { JINGLE_CALL_STATUS } from './constants.js';
 import { html } from "lit";
 import { parseJingleMessage, handleRetraction, getJingleTemplate } from './utils.js';
+import './jingle-message-history.js';
 
 const { Strophe } = converse.env;
 

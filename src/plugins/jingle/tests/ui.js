@@ -38,5 +38,6 @@ describe("A Jingle Status", function () {
         const call_intialized = await u.waitUntil(() => header_notification.querySelector('.jingle-call-initiated-button'));
         call_intialized.click();
         expect(chatbox.get('jingle_status') === _converse.JINGLE_CALL_STATUS.ENDED);
-    }));
+        }));
+    
 });

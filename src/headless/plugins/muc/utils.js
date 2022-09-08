@@ -1,6 +1,6 @@
 import isObject from 'lodash-es/isObject';
 import log from "@converse/headless/log.js";
-import { ROLES } from '@converse/headless/plugins/muc/index.js';
+import { ROLES } from './constants.js';
 import { _converse, api, converse } from '@converse/headless/core.js';
 import { safeSave } from '@converse/headless/utils/core.js';
 

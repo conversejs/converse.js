@@ -26,7 +26,9 @@ describe("A headlines box", function () {
             .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
             .c('body').t('SORRY FOR THIS ADVERT');
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        expect(_converse.api.headlines.get().length === 0);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const headlines = await _converse.api.headlines.get();
+        expect(headlines.length).toBe(0);
     }));
 
     it("will open and display headline messages", mock.initConverse(
@@ -71,8 +73,8 @@ describe("A headlines box", function () {
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);
 
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            await mock.openChatBoxFor(_converse, sender_jid);
+        const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, sender_jid);
 
         const { u, $msg} = converse.env;
         /* <message from='notify.example.com'

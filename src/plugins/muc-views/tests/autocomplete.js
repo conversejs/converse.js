@@ -258,7 +258,7 @@ describe("The nickname autocomplete feature", function () {
             'preventDefault': function preventDefault () {},
             'keyCode': 8
         }
-        for (var i=0; i<3; i++) {
+        for (let i=0; i<3; i++) {
             // Press backspace 3 times to remove "som"
             message_form.onKeyDown(backspace_event);
             textarea.value = textarea.value.slice(0, textarea.value.length-1)

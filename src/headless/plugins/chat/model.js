@@ -6,11 +6,11 @@ import log from '@converse/headless/log';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
-import { debouncedPruneHistory } from '@converse/headless/shared/chat/utils.js';
+import { debouncedPruneHistory, handleCorrection } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isUniView } from '@converse/headless/utils/core.js';
+import { isUniView, isEmptyMessage } from '../../utils/core.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '@converse/headless/shared/actions.js';
 
@@ -91,17 +91,6 @@ const ChatBox = ModelWithContact.extend({
     initMessages () {
         this.messages = this.getMessagesCollection();
         this.messages.fetched = getOpenPromise();
-        this.messages.fetched.then(() => {
-            this.pruneHistoryWhenScrolledDown();
-            /**
-             * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
-             * has fetched its messages from the local cache.
-             * @event _converse#afterMessagesFetched
-             * @type { _converse.ChatBox| _converse.ChatRoom }
-             * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
-             */
-            api.trigger('afterMessagesFetched', this);
-        });
         this.messages.chatbox = this;
         initStorage(this.messages, this.getMessagesCacheKey());
 
@@ -131,12 +120,13 @@ const ChatBox = ModelWithContact.extend({
     },
 
     afterMessagesFetched () {
+        this.pruneHistoryWhenScrolledDown();
         /**
-         * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
-         * `sessionStorage` but **NOT** from the server.
+         * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
+         * has fetched its messages from the local cache.
          * @event _converse#afterMessagesFetched
-         * @type {_converse.ChatBox | _converse.ChatRoom}
-         * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+         * @type { _converse.ChatBox| _converse.ChatRoom }
+         * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
          */
         api.trigger('afterMessagesFetched', this);
     },
@@ -234,7 +224,7 @@ const ChatBox = ModelWithContact.extend({
                 this.notifications.set('chat_state', attrs.chat_state);
             }
             if (u.shouldCreateMessage(attrs)) {
-                const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
+                const msg = await handleCorrection(this, attrs) || await this.createMessage(attrs);
                 this.notifications.set({'chat_state': null});
                 this.handleUnreadMessage(msg);
             }
@@ -257,7 +247,7 @@ const ChatBox = ModelWithContact.extend({
     onMessageAdded (message) {
         if (api.settings.get('prune_messages_above') &&
             (api.settings.get('pruning_behavior') === 'scrolled' || !this.ui.get('scrolled')) &&
-            !u.isEmptyMessage(message)
+            !isEmptyMessage(message)
         ) {
             debouncedPruneHistory(this);
         }
@@ -606,47 +596,6 @@ const ChatBox = ModelWithContact.extend({
     },
 
     /**
-     * Determines whether the passed in message attributes represent a
-     * message which corrects a previously received message, or an
-     * older message which has already been corrected.
-     * In both cases, update the corrected message accordingly.
-     * @private
-     * @method _converse.ChatBox#handleCorrection
-     * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link parseMessage}
-     * @returns { _converse.Message|undefined } Returns the corrected
-     *  message or `undefined` if not applicable.
-     */
-    handleCorrection (attrs) {
-        if (!attrs.replace_id || !attrs.from) {
-            return;
-        }
-        const message = this.messages.findWhere({'msgid': attrs.replace_id, 'from': attrs.from});
-        if (!message) {
-            return;
-        }
-        const older_versions = message.get('older_versions') || {};
-        if ((attrs.time < message.get('time')) && message.get('edited')) {
-            // This is an older message which has been corrected afterwards
-            older_versions[attrs.time] = attrs['message'];
-            message.save({'older_versions': older_versions});
-        } else {
-            // This is a correction of an earlier message we already received
-            if (Object.keys(older_versions).length) {
-                older_versions[message.get('edited')] = message.getMessageText();
-            } else {
-                older_versions[message.get('time')] = message.getMessageText();
-            }
-            attrs = Object.assign(attrs, { older_versions });
-            delete attrs['msgid']; // We want to keep the msgid of the original message
-            delete attrs['id']; // Delete id, otherwise a new cache entry gets created
-            attrs['time'] = message.get('time');
-            message.save(attrs);
-        }
-        return message;
-    },
-
-    /**
      * Returns an already cached message (if it exists) based on the
      * passed in attributes map.
      * @private
@@ -886,6 +835,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     async getOutgoingMessageAttributes (attrs) {
+        await api.emojis.initialize();
         const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
         const text = attrs?.body;
@@ -932,17 +882,14 @@ const ChatBox = ModelWithContact.extend({
      * @param { String } send_time - time when the message was sent
      */
     setEditable (attrs, send_time) {
-        if (attrs.is_headline || u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
+        if (attrs.is_headline || isEmptyMessage(attrs) || attrs.sender !== 'me') {
             return;
         }
         if (api.settings.get('allow_message_corrections') === 'all') {
             attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
         } else if ((api.settings.get('allow_message_corrections') === 'last') && (send_time > this.get('time_sent'))) {
             this.set({'time_sent': send_time});
-            const msg = this.messages.findWhere({'editable': true});
-            if (msg) {
-                msg.save({'editable': false});
-            }
+            this.messages.findWhere({'editable': true})?.save({'editable': false});
             attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
         }
     },
@@ -980,19 +927,18 @@ const ChatBox = ModelWithContact.extend({
             const older_versions = message.get('older_versions') || {};
             const edited_time = message.get('edited') || message.get('time');
             older_versions[edited_time] = message.getMessageText();
-            const plaintext = attrs.is_encrypted ? attrs.message : undefined;
 
             message.save({
-                'body': attrs.body,
-                'message': attrs.body,
-                'correcting': false,
-                'edited': (new Date()).toISOString(),
-                'is_only_emojis':  attrs.is_only_emojis,
-                'origin_id': u.getUniqueId(),
-                'received': undefined,
-                'references': attrs.references,
-                older_versions,
-                plaintext,
+                ...pick(attrs, ['body', 'is_only_emojis', 'media_urls', 'references', 'is_encrypted']),
+                ...{
+                    'correcting': false,
+                    'edited': (new Date()).toISOString(),
+                    'message': attrs.body,
+                    'origin_id': u.getUniqueId(),
+                    'received': undefined,
+                    older_versions,
+                    plaintext: attrs.is_encrypted ? attrs.message : undefined,
+                }
             });
         } else {
             this.setEditable(attrs, (new Date()).toISOString());

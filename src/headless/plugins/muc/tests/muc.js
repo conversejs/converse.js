@@ -63,7 +63,8 @@ describe("Groupchats", function () {
             while (sent_stanzas.length) sent_stanzas.pop();
 
             _converse.xmppstatus.set('status', 'xa');
-            pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
+            pres = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence' && s.getAttribute('to') === `${muc_jid}/romeo`).pop());
+
             expect(Strophe.serialize(pres)).toBe(
                 `<presence to="${muc_jid}/romeo" xmlns="jabber:client">`+
                     `<show>xa</show>`+

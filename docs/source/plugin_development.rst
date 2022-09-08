@@ -1,6 +1,6 @@
 .. raw:: html
 
-    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/plugin_development.rst">Edit me on GitHub</a></div>
 
 .. _`writing-a-plugin`:
 
@@ -16,7 +16,7 @@ and is itself composed out of plugins.
 There are only a few files that are included in the default build of Converse
 which aren't plugins.
 
-An important one is `converse-core.js <https://github.com/conversejs/converse.js/blob/master/src/headless/converse-core.js>`_,
+An important one is `core.js <https://github.com/conversejs/.js/blob/master/src/headless/core.js>`_,
 which is responsible for bootstrapping the plugin architecture,
 setting up and maintaining the connection to the XMPP
 server and declaring the public (`window.converse </docs/html/api/converse.html>`_) and protected (`_converse.api </docs/html/api/-_converse.api.html>`_) APIs.
@@ -180,11 +180,59 @@ The code for it could look something like this:
 These dependencies are closured so that they don't pollute the global
 namespace, that's why you need to access them in such a way inside the module.
 
-Overrides
----------
+Overriding templates
+--------------------
+
+Converse uses `lit-html <https://lit-html.polymer-project.org/guide>`_
+templates and templates are imported as separate files.
+
+It's possible to configure your module bundler (e.g. Webpack) in such as way that a
+different file is loaded when a template is imported.
+
+This allows you to create your own templates that are used instead of the ones
+that would have originally been imported.
+
+With Webpack (which Converse uses internally), you can specify an
+``alias`` for the template you want to override. This alias then points to your
+own custom template.
+
+For example, in your webpack config file, you could add the following to the
+``config`` object that gets exported:
+
+.. code-block:: javascript
+
+    resolve: {
+        extensions: ['.js'],
+        modules: [
+            path.join(__dirname, 'node_modules'),
+            path.join(__dirname, 'node_modules/converse.js/src')
+        ],
+        alias: {
+            'plugins/profile/templates/profile.js$': path.resolve(__dirname, 'templates/custom-profile.js')
+        }
+    }
+
+This will override the template that gets imported at the path ``plugins/profile/templates/profile.js``
+with your own template at the path ``templates/custom-profile.js`` (relative to your webpack config file).
+
+
+Object and class Overrides
+--------------------------
+
+.. note:: Using the `overrides` feature from pluggable.js is discouraged. It's
+    much better to use events, promises and `hooks`_ to modify the behaviour of
+    Converse.
+
+    The pluggable.js `overrides` will only work on objects and classes that are
+    set as attributes on the `_converse` object, which doesn't apply to many
+    newer classes and objects, such as the web components. For these clasess,
+    overrides won't work at all.
+
+    This section is left here for completeness, because in some special cases
+    overrides are still used.
 
 Plugins can override core code or code from other plugins. You can specify
-overrides in the object passed to  ``converse.plugins.add``.
+overrides in the object passed to ``converse.plugins.add``.
 
 In an override you can still call the overridden function, by calling
 ``this.__super__.methodName.apply(this, arguments);`` where ``methodName`` is
@@ -242,7 +290,7 @@ monkey patching which pollutes the call stack and can make your code fragile
 and prone to bugs when Converse gets updated. Too much use of ``overrides``
 is therefore a "code smell" which should ideally be avoided.
 
-A better approach is to listen to the events emitted by Converse, and to add
+A better approach is to use the events and `hooks`_ emitted by Converse, and to add
 your code in event handlers. This is however not always possible, in which case
 the overrides are a powerful tool.
 
@@ -259,40 +307,6 @@ For example:
         }
         Object.assign(_converse.ChatBoxView.prototype, { doSomething });
 
-
-Overriding a template
-~~~~~~~~~~~~~~~~~~~~~
-
-Converse uses `lit-html <https://lit-html.polymer-project.org/guide>`_
-templates.
-
-It's not possible to override a template with the plugin's ``overrides``
-feature, instead you should configure a new path to your own template via your
-module bundler.
-
-For example, with Webpack (which Converse uses internall), you can specify an
-``alias`` for the template you want to override. This alias then points to your
-own custom template.
-
-For example, in your webpack config file, you could add the following to the
-``config`` object that gets exported:
-
-.. code-block:: javascript
-
-    resolve: {
-        extensions: ['.js'],
-        modules: [
-            path.join(__dirname, 'node_modules'),
-            path.join(__dirname, 'node_modules/converse.js/src')
-        ],
-        alias: {
-            'plugins/profile/templates/profile.js$': path.resolve(__dirname, 'templates/custom-profile.js')
-        }
-    }
-
-This will override the template that gets imported at the path ``plugins/profile/templates/profile.js``
-with your own template at the path ``templates/custom-profile.js`` (relative to
-your webpack config file).
 
 
 .. _`dependencies`:
@@ -515,8 +529,8 @@ The `Actions <https://github.com/conversejs/community-plugins/tree/master/packag
 ``like`` or ``dislike`` to chat messages.
 
 
-A full example plugin
----------------------
+An example plugin
+-----------------
 
 Below follows a documented example of a plugin. This is the same code that gets
 generated by `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_.
@@ -590,8 +604,8 @@ generated by `generator-conversejs <https://github.com/jcbrand/generator-convers
              *      _converse.api.promises.add('myPromise');
              *
              * Your plugin should then, when appropriate, resolve the
-             * promise by calling `_converse.api.emit`, which will also
-             * emit an event with the same name as the promise.
+             * promise by calling `_converse.api.trigger`, which will also
+             * trigger an event with the same name as the promise.
              * For example:
              *
              *      _converse.api.trigger('operationCompleted');
@@ -605,53 +619,22 @@ generated by `generator-conversejs <https://github.com/jcbrand/generator-convers
              *
              *      _converse.api.waitUntil('operationCompleted', function { ... });
              */
-        },
 
-        /* If you want to override some function or a model or
-         * view defined elsewhere in Converse, then you do that under
-         * the "overrides" namespace.
-         */
-        overrides: {
-            /* For example, the private *_converse* object has a
-             * method "onConnected". You can override that method as follows:
+
+            /* In your plugin, you can also listen for hooks.
+             * Hooks allow you to add or modify data and properties used by
+             * Converse.
+             *
+             * For example, the getToolbarButtons hook allows you to add new buttons to the chat toolbar.
+             * https://conversejs.org/docs/html/api/-_converse.html#event:getToolbarButtons
              */
-            onConnected: function () {
-                // Overrides the onConnected method in Converse
-
-                // Top-level functions in "overrides" are bound to the
-                // inner "_converse" object.
-                const _converse = this;
-
-                // Your custom code can come here ...
-
-                // You can access the original function being overridden
-                // via the __super__ attribute.
-                // Make sure to pass on the arguments supplied to this
-                // function and also to apply the proper "this" object.
-                _converse.__super__.onConnected.apply(this, arguments);
-
-                // Your custom code can come here ...
-            },
-
-            /* Override Converse's XMPPStatus model so that we can override the
-             * function that sends out the presence stanza.
-             */
-            XMPPStatus: {
-                sendPresence: function (type, status_message, jid) {
-                    // The "_converse" object is available via the __super__
-                    // attribute.
-                    const _converse = this.__super__._converse;
-
-                    // Custom code can come here ...
-
-                    // You can call the original overridden method, by
-                    // accessing it via the __super__ attribute.
-                    // When calling it, you need to apply the proper
-                    // context as reference by the "this" variable.
-                    this.__super__.sendPresence.apply(this, arguments);
-
-                    // Custom code can come here ...
-                }
-            }
+             api.listen.on('getToolbarButtons', (toolbar_el, buttons) => {
+                buttons.push(html`
+                    <button class="my-button" @click=${alert('hello world!')}>
+                        <converse-icon class="fa fa-eye" size="1em" color="blue"></converse-icon>
+                    </button>
+                `);
+                return buttons;
+            });
         }
     });

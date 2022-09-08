@@ -4,7 +4,7 @@ import { api } from '@converse/headless/core.js';
 import { html } from "lit";
 import { modal_header_close_button } from "plugins/modal/templates/buttons.js"
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { getAutoCompleteList } from "../utils.js";
+import { getAutoCompleteList } from "../search.js";
 
 
 const nickname_input = (o) => {
@@ -36,9 +36,14 @@ export default (o) => {
                             <label for="chatroom">${o.label_room_address}:</label>
                             ${ (o.muc_roomid_policy_error_msg) ? html`<label class="roomid-policy-error">${o.muc_roomid_policy_error_msg}</label>` : '' }
                             <converse-autocomplete
-                                .getAutoCompleteList="${getAutoCompleteList}"
+                                .getAutoCompleteList=${getAutoCompleteList}
+                                ?autofocus=${true}
+                                min_chars="3"
+                                position="below"
                                 placeholder="${o.chatroom_placeholder}"
-                                name="chatroom"/>
+                                class="add-muc-autocomplete"
+                                name="chatroom">
+                            </converse-autocomplete>
                         </div>
                         ${ o.muc_roomid_policy_hint ?  html`<div class="form-group">${unsafeHTML(DOMPurify.sanitize(o.muc_roomid_policy_hint, {'ALLOWED_TAGS': ['b', 'br', 'em']}))}</div>` : '' }
                         ${ !api.settings.get('locked_muc_nickname') ? nickname_input(o) : '' }

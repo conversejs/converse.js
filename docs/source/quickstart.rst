@@ -21,8 +21,9 @@ Let your XMPP server serve Converse for you
 If you run your own XMPP server, you might first want to check whether it has
 a plugin or module for hosting Converse.
 
-* OpenFire has the `inverse <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_ plugin.
-* Prosody has `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_.
+*  `Openfire <http://www.igniterealtime.org/projects/openfire/>`_ has the `inverse <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_ plugin.
+*  `Prosody <https://prosody.im/>`_ has `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_.
+*  `ejabberd <http://www.ejabberd.im/>`_ has `mod_conversejs <https://docs.ejabberd.im/admin/configuration/modules/#mod-conversejs>`_.
 
 
 Serving Converse yourself

@@ -1,10 +1,26 @@
 import { _converse } from '@converse/headless/core';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
+import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
 
 
 export default (o) => {
-    const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b, ''));
+    const standalone_btns_promise = o.heading_buttons_promise.then(
+        btns => btns
+            .filter(b => b.standalone)
+            .map(b => getHeadingStandaloneButton(b))
+            .reverse()
+            .map(b => until(b, '')));
+
+    const dropdown_btns_promise = o.heading_buttons_promise.then(
+        btns => {
+            const dropdown_btns = btns
+                .filter(b => !b.standalone)
+                .map(b => getHeadingDropdownItem(b));
+            return dropdown_btns.length ? html`<converse-dropdown class="dropleft" .items=${dropdown_btns}></converse-dropdown>` : '';
+        }
+    );
+
     return html`
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">
@@ -12,8 +28,8 @@ export default (o) => {
                 <div class="chatbox-title__text" title="${o.jid}">${ o.display_name }</div>
             </div>
             <div class="chatbox-title__buttons row no-gutters">
-                ${ o.dropdown_btns.length ? html`<converse-dropdown class="dropleft" .items=${o.dropdown_btns}></converse-dropdown>` : '' }
-                ${ o.standalone_btns.length ? tpl_standalone_btns(o) : '' }
+                ${ until(dropdown_btns_promise, '') }
+                ${ until(standalone_btns_promise, '') }
             </div>
         </div>
         ${ o.status ? html`<p class="chat-head__desc">${ o.status }</p>` : '' }

@@ -3,6 +3,8 @@ import BootstrapModal from "plugins/modal/base.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 
+import '../styles/add-muc-modal.scss';
+
 const u = converse.env.utils;
 const { Strophe } = converse.env;
 
@@ -30,7 +32,6 @@ export default BootstrapModal.extend({
             placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
         }
         return tpl_add_muc(Object.assign(this.model.toJSON(), {
-            '_converse': _converse,
             'label_room_address': api.settings.get('muc_domain') ? __('Groupchat name') :  __('Groupchat address'),
             'chatroom_placeholder': placeholder,
             'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,
@@ -46,7 +47,7 @@ export default BootstrapModal.extend({
 
     parseRoomDataFromEvent (form) {
         const data = new FormData(form);
-        const jid = data.get('chatroom');
+        const jid = data.get('chatroom')?.trim();
         let nick;
         if (api.settings.get('locked_muc_nickname')) {
             nick = _converse.getDefaultMUCNickname();

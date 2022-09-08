@@ -238,6 +238,11 @@ export function getErrorAttributes (stanza) {
     return {};
 }
 
+/**
+ * Given a message stanza, find and return any XEP-0372 references
+ * @param { XMLElement } stana - The message stanza
+ * @returns { Reference }
+ */
 export function getReferences (stanza) {
     return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
         const anchor = ref.getAttribute('anchor');
@@ -248,9 +253,17 @@ export function getReferences (stanza) {
         }
         const begin = ref.getAttribute('begin');
         const end = ref.getAttribute('end');
+        /**
+         * @typedef { Object } Reference
+         * An object representing XEP-0372 reference data
+         * @property { string } begin
+         * @property { string } end
+         * @property { string } type
+         * @property { String } value
+         * @property { String } uri
+         */
         return {
-            'begin': begin,
-            'end': end,
+            begin, end,
             'type': ref.getAttribute('type'),
             'value': text.slice(begin, end),
             'uri': ref.getAttribute('uri')

@@ -42,7 +42,8 @@ describe("The <converse-muc> component", function () {
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
 
-        const muc_creation_promise = await api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
+
+        const muc_creation_promise = api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
         await mock.getRoomFeatures(_converse, muc_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await muc_creation_promise;
@@ -59,6 +60,7 @@ describe("The <converse-muc> component", function () {
         span_el.classList.add('conversejs');
         span_el.classList.add('converse-embedded');
 
+
         const muc_el = document.createElement('converse-muc');
         muc_el.classList.add('chatbox');
         muc_el.classList.add('chatroom');
@@ -73,8 +75,10 @@ describe("The <converse-muc> component", function () {
         const message = await u.waitUntil(() => muc_el.querySelector('converse-chat-message'));
         expect(message.model.get('body')).toBe('hello from the lounge!');
 
+        _converse.connection.sent_stanzas = [];
+
         const muc2_jid = 'bar@montague.lit';
-        const muc2_creation_promise = await api.rooms.open(muc2_jid, {nick, 'hidden': true}, false);
+        const muc2_creation_promise = api.rooms.open(muc2_jid, {nick, 'hidden': true}, false);
         await mock.getRoomFeatures(_converse, muc2_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc2_jid, nick);
         await muc2_creation_promise;

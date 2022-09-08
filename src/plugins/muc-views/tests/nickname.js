@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $pres, $iq, Strophe, sizzle, u }  = converse.env;
+const { $pres, $iq, Strophe, sizzle, u, stx } = converse.env;
 
 describe("A MUC", function () {
 
@@ -9,7 +9,11 @@ describe("A MUC", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+
+        expect(model.get('nick')).toBe(nick);
+        expect(model.occupants.length).toBe(1);
+        expect(model.occupants.at(0).get('nick')).toBe(nick);
 
         const view = _converse.chatboxviews.get(muc_jid);
         const dropdown_item = view.querySelector(".open-nickname-modal");
@@ -31,6 +35,45 @@ describe("A MUC", function () {
         const sent_stanza = sent_stanzas.pop()
         expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
             `<presence from="${_converse.jid}" id="${sent_stanza.getAttribute('id')}" to="${muc_jid}/${newnick}" xmlns="jabber:client"/>`);
+
+        // Two presence stanzas are received from the MUC service
+        _converse.connection._dataRecv(mock.createRequest(
+            stx`
+            <presence
+                from='${muc_jid}/${nick}'
+                id='DC352437-C019-40EC-B590-AF29E879AF98'
+                to='${_converse.jid}'
+                type='unavailable'>
+            <x xmlns='http://jabber.org/protocol/muc#user'>
+                <item affiliation='member'
+                    jid='${_converse.jid}'
+                    nick='${newnick}'
+                    role='participant'/>
+                <status code='303'/>
+                <status code='110'/>
+            </x>
+            </presence>`
+        ));
+
+        expect(model.get('nick')).toBe(newnick);
+
+        _converse.connection._dataRecv(mock.createRequest(
+            stx`
+            <presence
+                from='${muc_jid}/${newnick}'
+                id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
+                to='${_converse.jid}'>
+            <x xmlns='http://jabber.org/protocol/muc#user'>
+                <item affiliation='member'
+                    jid='${_converse.jid}'
+                    role='participant'/>
+                <status code='110'/>
+            </x>
+            </presence>`
+        ));
+
+        await u.waitUntil(() => model.occupants.at(0).get('nick') === newnick);
+        expect(model.occupants.length).toBe(1);
     }));
 
     it("informs users if their nicknames have been changed.",
@@ -71,7 +114,7 @@ describe("A MUC", function () {
          *  </x>
          *  </presence>
          */
-        const __ = _converse.__;
+        const { __ } = _converse;
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'oldnick');
 
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -130,8 +173,9 @@ describe("A MUC", function () {
             __(_converse.muc.new_nickname_messages["303"], "newnick")
         );
         occupants = view.querySelector('.occupant-list');
-        expect(occupants.childElementCount).toBe(1);
-        expect(sizzle('.occupant-nick:first', occupants).pop().textContent.trim()).toBe("newnick");
+        await u.waitUntil(() => sizzle('.occupant-nick:first', occupants).pop().textContent.trim() === "newnick");
+        expect(view.model.occupants.length).toBe(1);
+        expect(view.model.get('nick')).toBe("newnick");
     }));
 
     describe("when being entered", function () {
@@ -423,4 +467,3 @@ describe("A MUC", function () {
         }));
     });
 });
-

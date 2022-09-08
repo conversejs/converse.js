@@ -1,7 +1,6 @@
 /*global mock, converse */
 
-const { Promise, $msg, $pres, sizzle } = converse.env;
-const u = converse.env.utils;
+const { Promise, Strophe, $msg, $pres, sizzle,u } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("A Groupchat Message", function () {
@@ -275,8 +274,10 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');
+        const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'But soft, what light through yonder airlock breaks?';
@@ -299,6 +300,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0"
                            id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                            by="lounge@montague.lit"/>
+                <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
                 <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
             </message>`);
         await view.model.handleMessageStanza(stanza);
@@ -310,6 +312,7 @@ describe("A Groupchat Message", function () {
         const message = view.model.messages.at(0);
         expect(message.get('stanza_id lounge@montague.lit')).toBe('5f3dbc5e-e1d3-4077-a492-693f3769c7ad');
         expect(message.get('origin_id')).toBe(msg_obj.get('origin_id'));
+        expect(message.get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');
     }));
 
     it("can cause a delivery receipt to be returned",

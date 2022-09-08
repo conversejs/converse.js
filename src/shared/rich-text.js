@@ -31,8 +31,8 @@ const isString = s => typeof s === 'string';
 // the zero-width whitespace character
 const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${'\u200B'.repeat(m.length - 2)}\n`);
 
-const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info">${o.mention}</span>`;
-const tpl_mention = o => html`<span class="mention">${o.mention}</span>`;
+const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
+const tpl_mention = o => html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
 
 /**
  * @class RichText
@@ -201,52 +201,53 @@ export class RichText extends String {
             const end = Number(ref.end) - full_offset;
             const mention = text.slice(begin, end);
             if (mention === this.nick) {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({ mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({...ref, mention }));
             } else {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({ mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({...ref, mention }));
             }
         });
     }
 
     /**
-     * Look for XEP-0393 styling directives and add templates for rendering
-     * them.
+     * Look for XEP-0393 styling directives and add templates for rendering them.
      */
     addStyling () {
+        if (!containsDirectives(this, this.mentions)) {
+            return;
+        }
+
         const references = [];
-        if (containsDirectives(this, this.mentions)) {
-            const mention_ranges = this.mentions.map(m =>
-                Array.from({ 'length': Number(m.end) }, (v, i) => Number(m.begin) + i)
-            );
-            let i = 0;
-            while (i < this.length) {
-                if (mention_ranges.filter(r => r.includes(i)).length) { // eslint-disable-line no-loop-func
-                    // Don't treat potential directives if they fall within a
-                    // declared XEP-0372 reference
-                    i++;
-                    continue;
-                }
-                const { d, length } = getDirectiveAndLength(this, i);
-                if (d && length) {
-                    const is_quote = isQuoteDirective(d);
-                    const end = i + length;
-                    const slice_end = is_quote ? end : end - d.length;
-                    let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
-                    if (is_quote && this[slice_begin] === ' ') {
-                        // Trim leading space inside codeblock
-                        slice_begin += 1;
-                    }
-                    const offset = slice_begin;
-                    const text = this.slice(slice_begin, slice_end);
-                    references.push({
-                        'begin': i,
-                        'template': getDirectiveTemplate(d, text, offset, this.options),
-                        end
-                    });
-                    i = end;
-                }
+        const mention_ranges = this.mentions.map(m =>
+            Array.from({ 'length': Number(m.end) }, (_, i) => Number(m.begin) + i)
+        );
+        let i = 0;
+        while (i < this.length) {
+            if (mention_ranges.filter(r => r.includes(i)).length) { // eslint-disable-line no-loop-func
+                // Don't treat potential directives if they fall within a
+                // declared XEP-0372 reference
                 i++;
+                continue;
             }
+            const { d, length } = getDirectiveAndLength(this, i);
+            if (d && length) {
+                const is_quote = isQuoteDirective(d);
+                const end = i + length;
+                const slice_end = is_quote ? end : end - d.length;
+                let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
+                if (is_quote && this[slice_begin] === ' ') {
+                    // Trim leading space inside codeblock
+                    slice_begin += 1;
+                }
+                const offset = slice_begin;
+                const text = this.slice(slice_begin, slice_end);
+                references.push({
+                    'begin': i,
+                    'template': getDirectiveTemplate(d, text, offset, this.options),
+                    end
+                });
+                i = end;
+            }
+            i++;
         }
         references.forEach(ref => this.addTemplateResult(ref.begin, ref.end, ref.template));
     }

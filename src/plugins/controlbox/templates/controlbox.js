@@ -28,7 +28,9 @@ export default (el) => {
                 ${sticky_controlbox
                     ? ''
                     : html`
-                        <a class="chatbox-btn close-chatbox-button fa fa-times" @click=${(ev) => el.close(ev)}></a>
+                        <a class="chatbox-btn close-chatbox-button" @click=${(ev) => el.close(ev)}>
+                            <converse-icon class="fa fa-times" size="1em"></converse-icon>
+                        </a>
                     `}
             </div>
             <div class="controlbox-panes">

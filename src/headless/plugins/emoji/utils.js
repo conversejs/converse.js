@@ -94,7 +94,7 @@ export function getShortnameReferences (text) {
     if (!converse.emojis.initialized) {
         throw new Error(
             'getShortnameReferences called before emojis are initialized. '+
-            'To avoid this problem, first await the converse.emojis.initilaized_promise.'
+            'To avoid this problem, first await the converse.emojis.initialized_promise'
         );
     }
     const references = [...text.matchAll(converse.emojis.shortnames_regex)].filter(ref => ref[0].length > 0);
@@ -207,4 +207,3 @@ Object.assign(u, {
     isOnlyEmojis,
     shortnamesToUnicode,
 });
-

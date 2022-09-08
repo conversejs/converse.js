@@ -25,8 +25,6 @@ converse.plugins.add('converse-controlbox', {
      * If the setting "strict_plugin_dependencies" is set to true,
      * an error will be raised if the plugin is not found. By default it's
      * false, which means these plugins are only loaded opportunistically.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
      */
     dependencies: ['converse-modal', 'converse-chatboxes', 'converse-chat', 'converse-rosterview', 'converse-chatview'],
 
@@ -34,13 +32,11 @@ converse.plugins.add('converse-controlbox', {
         return !_converse.api.settings.get('singleton');
     },
 
+    // Overrides mentioned here will be picked up by converse.js's
+    // plugin architecture they will replace existing methods on the
+    // relevant objects or classes.
+    // New functions which don't exist yet can also be added.
     overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
-
         ChatBoxes: {
             model (attrs, options) {
                 if (attrs && attrs.id == 'controlbox') {

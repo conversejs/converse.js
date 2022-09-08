@@ -63,22 +63,22 @@
     "browser": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.14.5",
-    "@babel/core": "^7.17.9",
-    "@babel/preset-env": "^7.14.7",
+    "@babel/cli": "^7.17.10",
+    "@babel/core": "^7.18.5",
+    "@babel/eslint-parser": "^7.18.9",
+    "@babel/preset-env": "^7.18.2",
     "@converse/headless": "file:src/headless",
     "autoprefixer": "^10.4.5",
-    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.5",
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^5.6.0",
-    "copy-webpack-plugin": "^10.2.4",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
-    "eslint": "^7.32.0",
+    "eslint": "^8.21.0",
     "fast-text-encoding": "^1.0.3",
     "html-webpack-plugin": "^5.3.2",
     "http-server": "^14.1.0",
-    "imports-loader": "^3.0.0",
+    "imports-loader": "^4.0.0",
     "install": "^0.13.0",
     "jsdoc": "^3.6.7",
     "karma": "^6.3.19",
@@ -87,13 +87,14 @@
     "karma-jasmine": "^5.0.0",
     "karma-jasmine-html-reporter": "^1.7.0",
     "karma-webpack": "^5.0.0",
-    "lerna": "^4.0.0",
+    "lerna": "^5.1.8",
     "mini-css-extract-plugin": "^2.6.0",
     "minimist": "^1.2.6",
     "po-loader": "0.6.1",
-    "postcss": "^8.4.12",
+    "po2json": "^1.0.0-beta-3",
+    "postcss": "^8.4.14",
     "postcss-clean": "1.2.0",
-    "postcss-loader": "^6.2.1",
+    "postcss-loader": "^7.0.1",
     "prettierx": "^0.19.0",
     "sass": "^1.51.0",
     "sass-loader": "^12.6.0",
@@ -111,6 +112,9 @@
     "dompurify": "^2.3.1",
     "favico.js-slevomat": "^0.3.11",
     "jed": "1.1.1",
-    "lit": "^2.2.2"
+    "lit": "^2.2.6"
+  },
+  "resolutions": {
+    "autoprefixer": "10.4.5"
   }
 }

@@ -48,22 +48,17 @@ converse.plugins.add('converse-mam', {
         api.listen.on('enteredNewRoom', muc => muc.features.get('mam_enabled') && fetchNewestMessages(muc));
 
         api.listen.on('chatReconnected', chat => {
-            // XXX: For MUCs, we listen to enteredNewRoom instead
             if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 fetchNewestMessages(chat);
             }
         });
 
         api.listen.on('afterMessagesFetched', chat => {
-            // XXX: We don't want to query MAM every time this is triggered
-            // since it's not necessary when the chat is restored from cache.
-            // (given that BOSH or SMACKS will ensure that you get messages
-            // sent during the reload).
-            // With MUCs we can listen for `enteredNewRoom`.
-            if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-                if (api.settings.get('clear_messages_on_reconnection') === true || !_converse.connection.restored) {
-                    fetchNewestMessages(chat);
-                }
+            if (
+                chat.get('type') === _converse.PRIVATE_CHAT_TYPE &&
+                (api.settings.get('clear_messages_on_reconnection') === true || !_converse.connection.restored)
+            ) {
+                fetchNewestMessages(chat);
             }
         });
     }

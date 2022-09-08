@@ -59,12 +59,11 @@ export class AutoComplete {
     }
 
     bindEvents () {
-        // Bind events
         const input = {
             "blur": () => this.close({'reason': 'blur'})
         }
         if (this.auto_evaluate) {
-            input["input"] = () => this.evaluate();
+            input["input"] = (e) => this.evaluate(e);
         }
 
         this._events = {
@@ -163,7 +162,7 @@ export class AutoComplete {
         this.goto(this.selected && pos !== -1 ? pos : count - 1);
     }
 
-    goto (i) {
+    goto (i, scroll=true) {
         // Should not be used directly, highlights specific item without any checks!
         const list = this.ul.children;
         if (this.selected) {
@@ -175,8 +174,11 @@ export class AutoComplete {
             list[i].setAttribute("aria-selected", "true");
             list[i].focus();
             this.status.textContent = list[i].textContent;
-            // scroll to highlighted element in case parent's height is fixed
-            this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
+
+            if (scroll) {
+                // scroll to highlighted element in case parent's height is fixed
+                this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
+            }
             this.trigger("suggestion-box-highlight", {'text': this.suggestions[this.index]});
         }
     }
@@ -199,7 +201,8 @@ export class AutoComplete {
     onMouseOver (ev) {
         const li = u.ancestor(ev.target, 'li');
         if (li) {
-            this.goto(Array.prototype.slice.call(this.ul.children).indexOf(li))
+            const index = Array.prototype.slice.call(this.ul.children).indexOf(li);
+            this.goto(index, false);
         }
     }
 
@@ -265,25 +268,27 @@ export class AutoComplete {
             return;
         }
 
-        const list = typeof this._list === "function" ? await this._list() : this._list;
-        if (list.length === 0) {
-            return;
-        }
-
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
+
         const contains_trigger = helpers.isMention(value, this.ac_triggers);
-        if (contains_trigger) {
-            this.auto_completing = true;
-            if (!this.include_triggers.includes(ev.key)) {
-                value = u.isMentionBoundary(value[0])
-                    ? value.slice('2')
-                    : value.slice('1');
-            }
+        if (contains_trigger && !this.include_triggers.includes(ev.key)) {
+            value = u.isMentionBoundary(value[0])
+                ? value.slice('2')
+                : value.slice('1');
         }
 
-        if ((contains_trigger || value.length) && value.length >= this.min_chars) {
+        const is_long_enough = value.length && value.length >= this.min_chars;
+
+        if (contains_trigger || is_long_enough) {
+            this.auto_completing = true;
+
+            const list = typeof this._list === "function" ? await this._list(value) : this._list;
+            if (list.length === 0 || !this.auto_completing) {
+                this.close({'reason': 'nomatches'});
+                return;
+            }
+
             this.index = -1;
-            // Populate list with options that match
             this.ul.innerHTML = "";
 
             this.suggestions = list

@@ -5,27 +5,6 @@
 @import "shared/styles/_mixins.scss";
 
 .conversejs {
-    .oauth-providers {
-        text-align: center;
-        .oauth-provider {
-            margin: 1em 0;
-
-            .oauth-login {
-                margin-left: 0;
-                color: var(--link-color);
-                font-size: var(--font-size-large);
-                &:hover {
-                    color: var(--link-hover-color);
-                }
-                i {
-                    color: var(--link-color);
-                    font-size: var(--font-size-huge);
-                    margin-right: 0.5em;
-                }
-            }
-        }
-    }
-
     .set-xmpp-status,
     .xmpp-status {
         .chat-status--online {
@@ -457,6 +436,9 @@
                     .chatbox-btn {
                         color: var(--controlbox-head-color);
                         margin: 0;
+                        converse-icon {
+                            color: var(--controlbox-head-color);
+                        }
                     }
                 }
 

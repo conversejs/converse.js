@@ -283,9 +283,10 @@ async function returnMemberLists (_converse, muc_jid, members=[], affiliations=[
     return new Promise(resolve => _converse.api.listen.on('membersFetched', resolve));
 }
 
-async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='owner', role='moderator') {
+async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='owner', role='moderator', features=[]) {
     const sent_stanzas = _converse.connection.sent_stanzas;
     await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
+
     const presence = $pres({
             to: _converse.connection.jid,
             from: `${muc_jid}/${nick}`,
@@ -294,12 +295,15 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
         .c('item').attrs({ affiliation, role, 'jid': _converse.bare_jid }).up()
         .c('status').attrs({code:'110'}).up().up()
 
+    if (features.includes(Strophe.NS.OCCUPANTID)) {
+        presence.c('occupant-id', {'xmlns': Strophe.NS.OCCUPANTID, 'id': u.getUniqueId() });
+    }
+
     if (_converse.xmppstatus.get('status')) {
        presence.c('show').t(_converse.xmppstatus.get('status'));
     }
     _converse.connection._dataRecv(createRequest(presence));
 }
-
 
 async function openAndEnterChatRoom (
         _converse,
@@ -320,7 +324,7 @@ async function openAndEnterChatRoom (
     // The user has just entered the room (because join was called)
     // and receives their own presence from the server.
     // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
-    await receiveOwnMUCPresence(_converse, muc_jid, nick, own_affiliation, own_role);
+    await receiveOwnMUCPresence(_converse, muc_jid, nick, own_affiliation, own_role, features);
 
     await room_creation_promise;
     const model = _converse.chatboxes.get(muc_jid);

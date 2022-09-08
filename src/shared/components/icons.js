@@ -6,8 +6,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import { html } from 'lit';
 import { CustomElement } from './element.js';
+import { api } from '@converse/headless/core.js';
+import { html } from 'lit';
 
 import './styles/icon.scss';
 
@@ -51,4 +52,4 @@ class ConverseIcon extends CustomElement {
     }
 }
 
-customElements.define("converse-icon", ConverseIcon);
+api.elements.define("converse-icon", ConverseIcon);

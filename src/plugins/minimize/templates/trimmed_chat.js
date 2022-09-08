@@ -4,7 +4,15 @@ import { __ } from 'i18n';
 
 export default (o) => {
     const i18n_tooltip = __('Click to restore this chat');
-    const close_color = o.type === 'chatroom' ? "var(--chatroom-head-color)" : "var(--chat-head-text-color)";
+    let close_color;
+    if (o.type === 'chatroom') {
+        close_color = "var(--chatroom-head-color)";
+    } else if (o.type === 'headline') {
+        close_color = "var(--headline-head-text-color)";
+    } else {
+        close_color = "var(--chat-head-text-color)";
+    }
+
     return html`
     <div class="chat-head-${o.type} chat-head row no-gutters">
         <a class="restore-chat w-100 align-self-center" title="${i18n_tooltip}" @click=${o.restore}>

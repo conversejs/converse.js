@@ -1,4 +1,4 @@
-import UserSettingsModal from 'modals/user-settings';
+import UserSettingsModal from './modals/user-settings';
 import tpl_profile from './templates/profile.js';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless/core';

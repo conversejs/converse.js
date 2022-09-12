@@ -182,7 +182,6 @@ export function onRosterContactsFetched () {
     });
 }
 
-
 /**
  * Reject or cancel another user's subscription to our presence updates.
  * @function rejectPresenceSubscription
@@ -195,7 +194,6 @@ export function rejectPresenceSubscription (jid, message) {
     api.send(pres);
 }
 
-
 export function contactsComparator (contact1, contact2) {
     const status1 = contact1.presence.get('show') || 'offline';
     const status2 = contact2.presence.get('show') || 'offline';
@@ -207,7 +205,6 @@ export function contactsComparator (contact1, contact2) {
         return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
     }
 }
-
 
 export function groupsComparator (a, b) {
     const HEADER_WEIGHTS = {};
@@ -232,4 +229,10 @@ export function groupsComparator (a, b) {
         const b_header = _converse.HEADER_CURRENT_CONTACTS;
         return WEIGHTS[a] < WEIGHTS[b_header] ? -1 : (WEIGHTS[a] > WEIGHTS[b_header] ? 1 : 0);
     }
+}
+
+export function getGroupsAutoCompleteList () {
+    const { roster } = _converse;
+    const groups = roster.reduce((groups, contact) => groups.concat(contact.get('groups')), []);
+    return [...new Set(groups.filter(i => i))];
 }

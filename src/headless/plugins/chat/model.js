@@ -934,6 +934,7 @@ const ChatBox = ModelWithContact.extend({
                     'correcting': false,
                     'edited': (new Date()).toISOString(),
                     'message': attrs.body,
+                    'ogp_metadata': [],
                     'origin_id': u.getUniqueId(),
                     'received': undefined,
                     older_versions,

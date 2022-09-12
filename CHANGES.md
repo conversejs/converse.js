@@ -11,6 +11,7 @@
 - Don't apply message corrections when the MUC occupant-id doesn't match.
 - Update `nick` attribute on ChatRoom when user nickname changes
 - Restrict editing of MUC messages to ones with the same XEP-0421 occupant ID
+- Remove unfurls for links removed in a subsequent message correction
 - #2870: Fix for multiple URLs to be linkified when sent together in chat and adds a test for this.
 - #2879: Quotes, lines not aligned to the first line
 - #2925: Fix missing disco-items in browser storage.

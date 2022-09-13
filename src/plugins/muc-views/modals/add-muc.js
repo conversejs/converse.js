@@ -47,7 +47,7 @@ export default BootstrapModal.extend({
 
     parseRoomDataFromEvent (form) {
         const data = new FormData(form);
-        const jid = data.get('chatroom');
+        const jid = data.get('chatroom')?.trim();
         let nick;
         if (api.settings.get('locked_muc_nickname')) {
             nick = _converse.getDefaultMUCNickname();

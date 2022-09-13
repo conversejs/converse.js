@@ -32,11 +32,6 @@ const AddContactModal = BootstrapModal.extend({
         this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
     },
 
-    getGroupsAutoCompleteList () {
-        return ['apple', 'pear', 'banana'];
-        // return [...new Set(_converse.roster.map(i => i.get('gruop')).filter(i => i))];
-    },
-
     initJIDAutoComplete () {
         if (!api.settings.get('autocomplete_add_contact')) {
             return;

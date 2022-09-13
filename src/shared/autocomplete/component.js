@@ -14,6 +14,8 @@ import { html } from 'lit';
  *  Should the `focus` attribute be set on the input element?
  * @property { Function } getAutoCompleteList
  *  A function that returns the list of autocomplete suggestions
+ * @property { Array } list
+ *  An array of suggestions, to be used instead of the `getAutoCompleteList` *  function
  * @property { Boolean } [auto_evaluate=true]
  *  Should evaluation happen automatically without any particular key as trigger?
  * @property { Boolean } [auto_first=false]
@@ -44,6 +46,7 @@ export default class AutoCompleteComponent extends CustomElement {
             'position': { type: String },
             'autofocus': { type: Boolean },
             'getAutoCompleteList': { type: Function },
+            'list': { type: Array },
             'auto_evaluate': { type: Boolean },
             'auto_first': { type: Boolean },
             'filter': { type: String },
@@ -100,7 +103,7 @@ export default class AutoCompleteComponent extends CustomElement {
             'auto_first': this.auto_first,
             'filter': this.filter == 'contains' ? FILTER_CONTAINS : FILTER_STARTSWITH,
             'include_triggers': [],
-            'list': (q) => this.getAutoCompleteList(q),
+            'list': this.list ?? ((q) => this.getAutoCompleteList(q)),
             'match_current_word': true,
             'max_items': this.max_items,
             'min_chars': this.min_chars,

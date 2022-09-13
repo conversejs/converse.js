@@ -5,7 +5,7 @@
 import "../modal";
 import "@converse/headless/plugins/chatboxes/index.js";
 import "@converse/headless/plugins/roster/index.js";
-import "modals/add-contact.js";
+import "./modals/add-contact.js";
 import './rosterview.js';
 import RosterContactView from './contactview.js';
 import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';

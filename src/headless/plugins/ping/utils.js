@@ -5,9 +5,7 @@ const { Strophe, $iq } = converse.env;
 let lastStanzaDate;
 
 export function onWindowStateChanged (data) {
-    if (data.state === 'visible' && api.connection.connected()) {
-        api.ping(null, 5000);
-    }
+    data.state === 'visible' && api.ping(null, 5000);
 }
 
 export function setLastStanzaDate (date) {
@@ -42,22 +40,28 @@ export function registerPingHandler () {
     });
 }
 
-export function onConnected () {
+let intervalId;
+
+export function registerHandlers () {
     // Wrapper so that we can spy on registerPingHandler in tests
     registerPongHandler();
     registerPingHandler();
+    clearInterval(intervalId);
+    intervalId = setInterval(onEverySecond, 1000);
+}
+
+export function unregisterIntervalHandler () {
+    clearInterval(intervalId);
 }
 
 export function onEverySecond () {
-    if (_converse.isTestEnv() || !api.connection.connected()) {
+    if (_converse.isTestEnv() || !api.connection.authenticated()) {
         return;
     }
     const ping_interval = api.settings.get('ping_interval');
     if (ping_interval > 0) {
         const now = new Date();
-        if (!lastStanzaDate) {
-            lastStanzaDate = now;
-        }
+        lastStanzaDate = lastStanzaDate ?? now;
         if ((now - lastStanzaDate)/1000 > ping_interval) {
             api.ping();
         }

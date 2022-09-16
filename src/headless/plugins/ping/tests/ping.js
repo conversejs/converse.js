@@ -32,7 +32,7 @@ describe("XMPP Ping", function () {
 
         it("is not sent out if we're not connected", mock.initConverse(async (_converse) => {
             spyOn(_converse.connection, 'send');
-            expect(await _converse.api.ping()).toBe(false);
+            expect(await _converse.api.ping()).toBe(null);
             expect(_converse.connection.send.calls.count()).toBe(0);
         }));
     });

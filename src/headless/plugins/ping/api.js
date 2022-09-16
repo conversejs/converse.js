@@ -7,18 +7,19 @@ const { Strophe, $iq, u } = converse.env;
 export default {
     /**
      * Pings the entity represented by the passed in JID by sending an IQ stanza to it.
-     * If we already know we're not connected, no ping is sent out and `false` is returned.
-     * If the ping is sent out to the user's bare JID and no response is received it will attempt to reconnect.
      * @method api.ping
      * @param { String } [jid] - The JID of the service to ping
+     *  If the ping is sent out to the user's bare JID and no response is received it will attempt to reconnect.
      * @param { Integer } [timeout] - The amount of time in
      *  milliseconds to wait for a response. The default is 10000;
-     * @returns { Boolean } Whether the pinged entity responded with a non-error IQ stanza.
+     * @returns { Boolean | null }
+     *  Whether the pinged entity responded with a non-error IQ stanza.
+     *  If we already know we're not connected, no ping is sent out and `null` is returned.
      */
     async ping (jid, timeout) {
-        if (!api.connection.connected()) {
-            log.warn("Not pinging when we know we're not connected");
-            return false;
+        if (!api.connection.authenticated()) {
+            log.warn("Not pinging when we know we're not authenticated");
+            return null;
         }
 
         // XXX: We could first check here if the server advertised that it supports PING.

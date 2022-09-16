@@ -7,7 +7,7 @@
  */
 import ping_api from './api.js';
 import { api, converse } from "@converse/headless/core.js";
-import { onEverySecond, onWindowStateChanged, onConnected } from './utils.js';
+import { onWindowStateChanged, registerHandlers, unregisterIntervalHandler } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -24,10 +24,9 @@ converse.plugins.add('converse-ping', {
 
         Object.assign(api, ping_api);
 
-        setInterval(onEverySecond, 1000);
-
-        api.listen.on('connected', onConnected);
-        api.listen.on('reconnected', onConnected);
+        api.listen.on('connected', registerHandlers);
+        api.listen.on('reconnected', registerHandlers);
+        api.listen.on('disconnected', unregisterIntervalHandler);
         api.listen.on('windowStateChanged', onWindowStateChanged);
     }
 });

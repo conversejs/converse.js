@@ -12,7 +12,7 @@ export default class MessageLimitIndicator extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.listenTo(this.model, 'change:draft', this.requestUpdate);
+        this.listenTo(this.model, 'change:draft', () => this.requestUpdate());
     }
 
     render () {

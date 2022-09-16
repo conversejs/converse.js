@@ -23,18 +23,18 @@ export default class ChatContent extends CustomElement {
 
     async initialize () {
         await this.setModels();
-        this.listenTo(this.model, 'change:hidden_occupants', this.requestUpdate);
-        this.listenTo(this.model.messages, 'add', this.requestUpdate);
-        this.listenTo(this.model.messages, 'change', this.requestUpdate);
-        this.listenTo(this.model.messages, 'remove', this.requestUpdate);
-        this.listenTo(this.model.messages, 'rendered', this.requestUpdate);
-        this.listenTo(this.model.messages, 'reset', this.requestUpdate);
-        this.listenTo(this.model.notifications, 'change', this.requestUpdate);
-        this.listenTo(this.model.ui, 'change', this.requestUpdate);
+        this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
+        this.listenTo(this.model.messages, 'add', () => this.requestUpdate());
+        this.listenTo(this.model.messages, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.messages, 'remove', () => this.requestUpdate());
+        this.listenTo(this.model.messages, 'rendered', () => this.requestUpdate());
+        this.listenTo(this.model.messages, 'reset', () => this.requestUpdate());
+        this.listenTo(this.model.notifications, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.ui, 'change', () => this.requestUpdate());
         this.listenTo(this.model.ui, 'change:scrolled', this.scrollDown);
 
         if (this.model.occupants) {
-            this.listenTo(this.model.occupants, 'change', this.requestUpdate);
+            this.listenTo(this.model.occupants, 'change', () => this.requestUpdate());
         }
         this.addEventListener('scroll', markScrolled);
     }

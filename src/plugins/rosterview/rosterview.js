@@ -13,13 +13,13 @@ export default class RosterView extends CustomElement {
 
     async initialize () {
         await api.waitUntil('rosterInitialized')
-        this.listenTo(_converse, 'rosterContactsFetched', this.requestUpdate);
-        this.listenTo(_converse.presences, 'change:show', this.requestUpdate);
-        this.listenTo(_converse.roster, 'add', this.requestUpdate);
-        this.listenTo(_converse.roster, 'destroy', this.requestUpdate);
-        this.listenTo(_converse.roster, 'remove', this.requestUpdate);
-        this.listenTo(_converse.roster, 'change', this.requestUpdate);
-        this.listenTo(_converse.roster.state, 'change', this.requestUpdate);
+        this.listenTo(_converse, 'rosterContactsFetched', () => this.requestUpdate());
+        this.listenTo(_converse.presences, 'change:show', () => this.requestUpdate());
+        this.listenTo(_converse.roster, 'add', () => this.requestUpdate());
+        this.listenTo(_converse.roster, 'destroy', () => this.requestUpdate());
+        this.listenTo(_converse.roster, 'remove', () => this.requestUpdate());
+        this.listenTo(_converse.roster, 'change', () => this.requestUpdate());
+        this.listenTo(_converse.roster.state, 'change', () => this.requestUpdate());
         /**
          * Triggered once the _converse.RosterView instance has been created and initialized.
          * @event _converse#rosterViewInitialized

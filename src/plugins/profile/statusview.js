@@ -7,9 +7,9 @@ class Profile extends CustomElement {
 
     initialize () {
         this.model = _converse.xmppstatus;
-        this.listenTo(this.model, "change", this.requestUpdate);
-        this.listenTo(this.model, "vcard:add", this.requestUpdate);
-        this.listenTo(this.model, "vcard:change", this.requestUpdate);
+        this.listenTo(this.model, "change", () => this.requestUpdate());
+        this.listenTo(this.model, "vcard:add", () => this.requestUpdate());
+        this.listenTo(this.model, "vcard:change", () => this.requestUpdate());
     }
 
     render () {

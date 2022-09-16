@@ -1928,22 +1928,10 @@ const ChatRoomMixin = {
      * @returns {Promise<boolean>}
      */
     async isJoined () {
-        const jid = this.get('jid');
-        const ping = $iq({
-            'to': `${jid}/${this.get('nick')}`,
-            'type': 'get'
-        }).c('ping', { 'xmlns': Strophe.NS.PING });
-        try {
-            await api.sendIQ(ping);
-        } catch (e) {
-            if (e === null) {
-                log.warn(`isJoined: Timeout error while checking whether we're joined to MUC: ${jid}`);
-            } else {
-                log.warn(`isJoined: Apparently we're no longer connected to MUC: ${jid}`);
-            }
-            return false;
+        if (!api.connection.connected()) {
+            await new Promise(resolve => api.listen.once('reconnected', resolve));
         }
-        return true;
+        return api.ping(`${this.get('jid')}/${this.get('nick')}`)
     },
 
     /**

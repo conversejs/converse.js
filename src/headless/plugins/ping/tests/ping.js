@@ -21,13 +21,19 @@ describe("XMPP Ping", function () {
                 `<iq id="s2c1" to="${_converse.domain}" type="result" xmlns="jabber:client"/>`);
         }));
 
-        it("is sent out when converse.js pings a server", mock.initConverse((_converse) => {
+        it("is sent out when converse.js pings a server", mock.initConverse(['statusInitialized'], {}, (_converse) => {
             _converse.api.ping();
             const sent_stanza = _converse.connection.IQ_stanzas.pop();
             expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${sent_stanza.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
                     `<ping xmlns="urn:xmpp:ping"/>`+
                 `</iq>`);
+        }));
+
+        it("is not sent out if we're not connected", mock.initConverse(async (_converse) => {
+            spyOn(_converse.connection, 'send');
+            expect(await _converse.api.ping()).toBe(false);
+            expect(_converse.connection.send.calls.count()).toBe(0);
         }));
     });
 });

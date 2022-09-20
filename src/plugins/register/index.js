@@ -7,7 +7,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import './panel.js';
-import '../controlbox/index.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 

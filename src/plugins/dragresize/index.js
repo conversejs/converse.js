@@ -4,8 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import './components/dragresize.js';
-import 'plugins/chatview/index.js';
-import 'plugins/controlbox/index.js';
 import { applyDragResistance, onMouseUp, onMouseMove } from './utils.js';
 import DragResizableMixin from './mixin.js';
 import { _converse, api, converse } from '@converse/headless/core';

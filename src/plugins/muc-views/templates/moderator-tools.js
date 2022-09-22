@@ -146,13 +146,25 @@ const affiliation_list_item = (o) => html`
 `;
 
 
-const tpl_navigation = () => html`
+const tpl_navigation = (o) => html`
     <ul class="nav nav-pills justify-content-center">
         <li role="presentation" class="nav-item">
-            <a class="nav-link active" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab">Affiliations</a>
+            <a class="nav-link ${o.tab === "affiliations" ? "active" : ""}"
+               id="affiliations-tab"
+               href="#affiliations-tabpanel"
+               aria-controls="affiliations-tabpanel"
+               role="tab"
+               data-name="affiliations"
+               @click=${o.switchTab}>Affiliations</a>
         </li>
         <li role="presentation" class="nav-item">
-            <a class="nav-link" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab">Roles</a>
+            <a class="nav-link ${o.tab === "roles" ? "active" : ""}"
+               id="roles-tab"
+               href="#roles-tabpanel"
+               aria-controls="roles-tabpanel"
+               role="tab"
+               data-name="roles"
+               @click=${o.switchTab}>Roles</a>
         </li>
     </ul>
 `;
@@ -178,12 +190,12 @@ export default (o) => {
     const show_both_tabs = o.queryable_roles.length && o.queryable_affiliations.length;
     return html`
         ${o.alert_message ? html`<div class="alert alert-${o.alert_type}" role="alert">${o.alert_message}</div>` : '' }
-        ${ show_both_tabs ? tpl_navigation() : '' }
+        ${ show_both_tabs ? tpl_navigation(o) : '' }
 
         <div class="tab-content">
 
             ${ o.queryable_affiliations.length ? html`
-            <div class="tab-pane tab-pane--columns ${ o.queryable_affiliations.length ? 'active' : ''}" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
+            <div class="tab-pane tab-pane--columns ${ o.tab === 'affiliations' ? 'active' : ''}" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
                 <form class="converse-form query-affiliation" @submit=${o.queryAffiliation}>
                     <p class="helptext pb-3">${i18n_helptext_affiliation}</p>
                     <div class="form-group">
@@ -225,7 +237,7 @@ export default (o) => {
             </div>` : '' }
 
             ${ o.queryable_roles.length ? html`
-            <div class="tab-pane tab-pane--columns ${ !show_both_tabs && o.queryable_roles.length ? 'active' : ''}" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
+            <div class="tab-pane tab-pane--columns ${ o.tab === 'roles' ? 'active' : ''}" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
                 <form class="converse-form query-role" @submit=${o.queryRole}>
                     <p class="helptext pb-3">${i18n_helptext_role}</p>
                     <div class="form-group">

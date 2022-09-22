@@ -1,4 +1,4 @@
-import RoomDetailsModal from 'plugins/muc-views/modals/muc-details.js';
+import 'plugins/muc-views/modals/muc-details.js';
 import RoomsListModel from './model.js';
 import tpl_roomslist from "./templates/roomslist.js";
 import { CustomElement } from 'shared/components/element.js';
@@ -58,7 +58,7 @@ export class RoomsList extends CustomElement {
         const jid = ev.currentTarget.getAttribute('data-room-jid');
         const room = _converse.chatboxes.get(jid);
         ev.preventDefault();
-        api.modal.show(RoomDetailsModal, {'model': room}, ev);
+        api.modal.show('converse-muc-details-modal', {'model': room}, ev);
     }
 
     async openRoom (ev) { // eslint-disable-line class-methods-use-this

@@ -55,12 +55,12 @@ describe("The Protocol", function () {
             spyOn(_converse.api.vcard, "get").and.callThrough();
 
             cbview.querySelector('.add-contact').click()
-            const modal = _converse.api.modal.get('add-contact-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000);
+            const modal = _converse.api.modal.get('converse-add-contact-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
             modal.delegateEvents();
 
             // Fill in the form and submit
-            const form = modal.el.querySelector('form.add-xmpp-contact');
+            const form = modal.querySelector('form.add-xmpp-contact');
             form.querySelector('input[name="jid"]').value = 'contact@example.org';
             form.querySelector('input[name="name"]').value = 'Chris Contact';
             form.querySelector('input[name="group"]').value = 'My Buddies';

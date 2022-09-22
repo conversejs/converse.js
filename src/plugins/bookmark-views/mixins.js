@@ -1,4 +1,4 @@
-import MUCBookmarkFormModal from './modal.js';
+import './modal.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 const { u } = converse.env;
@@ -34,6 +34,6 @@ export const bookmarkableChatRoomView = {
     showBookmarkModal(ev) {
         ev?.preventDefault();
         const jid = this.model.get('jid');
-        api.modal.show(MUCBookmarkFormModal, { jid }, ev);
+        api.modal.show('converse-bookmark-form-modal', { jid }, ev);
     }
 };

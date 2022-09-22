@@ -1,20 +1,24 @@
 import '../modtools.js';
-import BaseModal from "plugins/modal/base.js";
-import tpl_moderator_tools from './templates/moderator-tools.js';
+import BaseModal from "plugins/modal/modal.js";
+import { __ } from 'i18n';
+import { api } from "@converse/headless/core";
+import { html } from 'lit';
 
-const ModeratorToolsModal = BaseModal.extend({
-    id: "converse-modtools-modal",
-    persistent: true,
+export default class ModeratorToolsModal extends BaseModal {
 
-    initialize (attrs) {
-        this.jid = attrs.jid;
-        this.affiliation = attrs.affiliation;
-        BaseModal.prototype.initialize.apply(this, arguments);
-    },
-
-    toHTML () {
-        return tpl_moderator_tools(this);
+    constructor (options) {
+        super(options);
+        this.id = "converse-modtools-modal";
     }
-});
 
-export default ModeratorToolsModal;
+    renderModal () {
+        return html`<converse-modtools jid=${this.jid} affiliation=${this.affiliation}></converse-modtools>`;
+    }
+
+    getModalTitle () { // eslint-disable-line class-methods-use-this
+        return __('Moderator Tools');
+    }
+
+}
+
+api.elements.define('converse-modtools-modal', ModeratorToolsModal);

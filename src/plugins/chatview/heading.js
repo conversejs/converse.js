@@ -1,4 +1,4 @@
-import UserDetailsModal from 'modals/user-details.js';
+import 'shared/modals/user-details.js';
 import tpl_chatbox_head from './templates/chat-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
@@ -17,14 +17,14 @@ export default class ChatHeading extends CustomElement {
 
     initialize () {
         this.model = _converse.chatboxes.get(this.jid);
-        this.listenTo(this.model, 'change:status', this.requestUpdate);
-        this.listenTo(this.model, 'vcard:add', this.requestUpdate);
-        this.listenTo(this.model, 'vcard:change', this.requestUpdate);
+        this.listenTo(this.model, 'change:status', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         if (this.model.contact) {
-            this.listenTo(this.model.contact, 'destroy', this.requestUpdate);
+            this.listenTo(this.model.contact, 'destroy', () => this.requestUpdate());
         }
         this.model.rosterContactAdded?.then(() => {
-            this.listenTo(this.model.contact, 'change:nickname', this.requestUpdate);
+            this.listenTo(this.model.contact, 'change:nickname', () => this.requestUpdate());
             this.requestUpdate();
         });
     }
@@ -39,7 +39,7 @@ export default class ChatHeading extends CustomElement {
 
     showUserDetailsModal (ev) {
         ev.preventDefault();
-        api.modal.show(UserDetailsModal, { model: this.model }, ev);
+        api.modal.show('converse-user-details-modal', { model: this.model }, ev);
     }
 
     close (ev) {

@@ -1,12 +1,14 @@
-#add-chatroom-modal {
-    converse-autocomplete {
-        .suggestion-box__results--below {
-            height: 10em;
-            overflow: auto;
-        }
+converse-add-muc-modal {
+    .add-chatroom {
+        converse-autocomplete {
+            .suggestion-box__results--below {
+                height: 10em;
+                overflow: auto;
+            }
 
-        .suggestion-box ul li {
-            display: block;
+            .suggestion-box ul li {
+                display: block;
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ export default class MUCView extends BaseChatView {
         this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdateMessageForm);
         this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
-        this.listenTo(this.model.session, 'change:view', this.requestUpdate);
+        this.listenTo(this.model.session, 'change:view', () => this.requestUpdate());
 
         this.onConnectionStatusChanged();
         this.model.maybeShow();

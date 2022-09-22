@@ -1,6 +1,12 @@
-#muc-details-modal {
+converse-muc-details-modal {
     .features-list {
         margin-left: 1em;
+    }
+
+    .room-info {
+        strong {
+            color: var(--muc-color);
+        }
     }
 
     .chatroom-features {
@@ -13,9 +19,8 @@
                 padding-right: 0;
                 font-size: 1em;
                 cursor: help;
-                .fa {
+                converse-icon {
                     margin-right: 0.5em;
-                    color: var(--text-color);
                 }
             }
         }

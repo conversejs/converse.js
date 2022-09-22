@@ -5,7 +5,6 @@
  */
 import './view.js';
 import './components/minimized-chat.js';
-import 'plugins/chatview/index.js';
 import debounce from 'lodash-es/debounce';
 import MinimizedChatsToggle from './toggle.js';
 import { _converse, api, converse } from '@converse/headless/core';

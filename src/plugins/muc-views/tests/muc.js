@@ -1332,21 +1332,21 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelector('.open-invite-modal'));
 
             view.querySelector('.open-invite-modal').click();
-            const modal = _converse.api.modal.get('muc-invite-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000)
+            const modal = _converse.api.modal.get('converse-muc-invite-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000)
 
-            expect(modal.el.querySelectorAll('#invitee_jids').length).toBe(1);
-            expect(modal.el.querySelectorAll('textarea').length).toBe(1);
+            expect(modal.querySelectorAll('#invitee_jids').length).toBe(1);
+            expect(modal.querySelectorAll('textarea').length).toBe(1);
 
             spyOn(view.model, 'directInvite').and.callThrough();
 
-            const input = modal.el.querySelector('#invitee_jids');
+            const input = modal.querySelector('#invitee_jids input');
             input.value = "Balt";
-            modal.el.querySelector('button[type="submit"]').click();
+            modal.querySelector('input[type="submit"]').click();
 
-            await u.waitUntil(() => modal.el.querySelector('.error'));
+            await u.waitUntil(() => modal.querySelector('.error'));
 
-            const error = modal.el.querySelector('.error');
+            const error = modal.querySelector('.error');
             expect(error.textContent).toBe('Please enter a valid XMPP address');
 
             let evt = new Event('input');
@@ -1354,7 +1354,7 @@ describe("Groupchats", function () {
 
             let sent_stanza;
             spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
-            const hint = await u.waitUntil(() => modal.el.querySelector('.suggestion-box__results li'));
+            const hint = await u.waitUntil(() => modal.querySelector('.suggestion-box__results li'));
             expect(input.value).toBe('Balt');
             expect(hint.textContent.trim()).toBe('Balthasar');
 
@@ -1362,9 +1362,9 @@ describe("Groupchats", function () {
             evt.button = 0;
             hint.dispatchEvent(evt);
 
-            const textarea = modal.el.querySelector('textarea');
+            const textarea = modal.querySelector('textarea');
             textarea.value = "Please join!";
-            modal.el.querySelector('button[type="submit"]').click();
+            modal.querySelector('input[type="submit"]').click();
 
             expect(view.model.directInvite).toHaveBeenCalled();
             expect(Strophe.serialize(sent_stanza)).toBe(
@@ -1634,10 +1634,10 @@ describe("Groupchats", function () {
 
             const info_el = view.querySelector(".show-muc-details-modal");
             info_el.click();
-            let modal = _converse.api.modal.get('muc-details-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000);
+            let modal = _converse.api.modal.get('converse-muc-details-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
 
-            let features_list = modal.el.querySelector('.features-list');
+            let features_list = modal.querySelector('.features-list');
             let features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
 
             expect(features_shown.join(' ')).toBe(
@@ -1661,7 +1661,7 @@ describe("Groupchats", function () {
             expect(view.model.features.get('unsecured')).toBe(false);
             await u.waitUntil(() => view.querySelector('.chatbox-title__text').textContent.trim() === 'Room');
 
-            modal.el.querySelector('.close').click();
+            modal.querySelector('.close').click();
             view.querySelector('.configure-chatroom-button').click();
 
             const IQs = _converse.connection.IQ_stanzas;
@@ -1792,10 +1792,10 @@ describe("Groupchats", function () {
             await u.waitUntil(() => new Promise(success => view.model.features.on('change', success)));
 
             info_el.click();
-            modal = _converse.api.modal.get('muc-details-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000);
+            modal = _converse.api.modal.get('converse-muc-details-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
 
-            features_list = modal.el.querySelector('.features-list');
+            features_list = modal.querySelector('.features-list');
             features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
             expect(features_shown.join(' ')).toBe(
                 'Password protected - This groupchat requires a password before entry '+

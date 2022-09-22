@@ -255,9 +255,9 @@ describe("A groupchat shown in the groupchats list", function () {
         const info_el = rooms_list.querySelector(".room-info");
         info_el.click();
 
-        const modal = _converse.api.modal.get('muc-details-modal');
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
-        let els = modal.el.querySelectorAll('p.room-info');
+        const modal = _converse.api.modal.get('converse-muc-details-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
+        let els = modal.querySelectorAll('p.room-info');
         expect(els[0].textContent).toBe("Name: A Dark Cave")
 
         expect(els[1].querySelector('strong').textContent).toBe("XMPP address");
@@ -266,7 +266,7 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(els[2].querySelector('converse-rich-text').textContent).toBe("This is the description");
 
         expect(els[3].textContent).toBe("Online users: 1")
-        const features_list = modal.el.querySelector('.features-list');
+        const features_list = modal.querySelector('.features-list');
         expect(features_list.textContent.replace(/(\n|\s{2,})/g, '')).toBe(
             'Password protected - This groupchat requires a password before entry'+
             'Hidden - This groupchat is not publicly searchable'+
@@ -287,11 +287,11 @@ describe("A groupchat shown in the groupchats list", function () {
             });
         _converse.connection._dataRecv(mock.createRequest(presence));
 
-        els = modal.el.querySelectorAll('p.room-info');
+        els = modal.querySelectorAll('p.room-info');
         expect(els[3].textContent).toBe("Online users: 2")
 
         view.model.set({'subject': {'author': 'someone', 'text': 'Hatching dark plots'}});
-        els = modal.el.querySelectorAll('p.room-info');
+        els = modal.querySelectorAll('p.room-info');
         expect(els[0].textContent).toBe("Name: A Dark Cave")
 
         expect(els[1].querySelector('strong').textContent).toBe("XMPP address");

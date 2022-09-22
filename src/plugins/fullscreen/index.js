@@ -3,10 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  * @copyright 2022, the Converse.js contributors
  */
-import "@converse/headless/plugins/muc/index.js";
-import "plugins/chatview/index.js";
-import "plugins/controlbox/index.js";
-import "plugins/singleton/index.js";
 import { api, converse } from "@converse/headless/core";
 import { isUniView } from '@converse/headless/utils/core.js';
 

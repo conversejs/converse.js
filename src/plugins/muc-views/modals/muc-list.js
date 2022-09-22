@@ -1,8 +1,8 @@
-import BootstrapModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/modal.js";
 import head from "lodash-es/head";
 import log from "@converse/headless/log";
-import tpl_muc_list from "../templates/muc-list.js";
 import tpl_muc_description from "../templates/muc-description.js";
+import tpl_muc_list from "../templates/muc-list.js";
 import tpl_spinner from "templates/spinner.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -65,28 +65,25 @@ function toggleRoomInfo (ev) {
 }
 
 
-export default BootstrapModal.extend({
-    id: "muc-list-modal",
-    persistent: true,
+export default class MUCListModal extends BaseModal {
 
-    initialize () {
+    constructor (options) {
+        super(options);
         this.items = [];
         this.loading_items = false;
+    }
 
-        BootstrapModal.prototype.initialize.apply(this, arguments);
+    initialize () {
+        super.initialize();
         this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
         this.listenTo(this.model, 'change:feedback_text', () => this.render());
 
-
-        this.el.addEventListener('shown.bs.modal', () => api.settings.get('locked_muc_domain')
-          ? this.updateRoomsList()
-          : this.el.querySelector('input[name="server"]').focus()
-        );
+        this.addEventListener('shown.bs.modal', () => api.settings.get('locked_muc_domain') && this.updateRoomsList());
 
         this.model.save('feedback_text', '');
-    },
+    }
 
-    toHTML () {
+    renderModal () {
         return tpl_muc_list(
             Object.assign(this.model.toJSON(), {
                 'show_form': !api.settings.get('locked_muc_domain'),
@@ -98,7 +95,11 @@ export default BootstrapModal.extend({
                 'submitForm': ev => this.showRooms(ev),
                 'toggleRoomInfo': ev => this.toggleRoomInfo(ev)
             }));
-    },
+    }
+
+    getModalTitle () { // eslint-disable-line class-methods-use-this
+        return __('Query for Groupchats');
+    }
 
     openRoom (ev) {
         ev.preventDefault();
@@ -106,16 +107,16 @@ export default BootstrapModal.extend({
         const name = ev.target.getAttribute('data-room-name');
         this.modal.hide();
         api.rooms.open(jid, {'name': name}, true);
-    },
+    }
 
-    toggleRoomInfo (ev) {
+    toggleRoomInfo (ev) { // eslint-disable-line
         ev.preventDefault();
         toggleRoomInfo(ev);
-    },
+    }
 
     onDomainChange () {
         api.settings.get('auto_list_rooms') && this.updateRoomsList();
-    },
+    }
 
     /**
      * Handle the IQ stanza returned from the server, containing
@@ -136,7 +137,7 @@ export default BootstrapModal.extend({
         }
         this.render();
         return true;
-    },
+    }
 
     /**
      * Send an IQ stanza to the server asking for all groupchats
@@ -152,7 +153,7 @@ export default BootstrapModal.extend({
         api.sendIQ(iq)
             .then(iq => this.onRoomsFound(iq))
             .catch(() => this.onRoomsFound())
-    },
+    }
 
     showRooms (ev) {
         ev.preventDefault();
@@ -162,13 +163,15 @@ export default BootstrapModal.extend({
         const data = new FormData(ev.target);
         this.model.setDomain(data.get('server'));
         this.updateRoomsList();
-    },
+    }
 
     setDomainFromEvent (ev) {
         this.model.setDomain(ev.target.value);
-    },
+    }
 
     setNick (ev) {
         this.model.save({nick: ev.target.value});
     }
-});
+}
+
+api.elements.define('converse-muc-list-modal', MUCListModal);

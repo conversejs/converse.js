@@ -17,19 +17,19 @@ describe("The User Details Modal", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         let show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        const modal = _converse.api.modal.get('user-details-modal');
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const modal = _converse.api.modal.get('converse-user-details-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
         spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
 
         spyOn(view.model.contact, 'removeFromRoster').and.callFake(callback => callback());
-        let remove_contact_button = modal.el.querySelector('button.remove-contact');
+        let remove_contact_button = modal.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
         remove_contact_button.click();
-        await u.waitUntil(() => modal.el.getAttribute('aria-hidden'), 1000);
-        await u.waitUntil(() => !u.isVisible(modal.el));
+        await u.waitUntil(() => modal.getAttribute('aria-hidden'), 1000);
+        await u.waitUntil(() => !u.isVisible(modal));
         show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        remove_contact_button = modal.el.querySelector('button.remove-contact');
+        remove_contact_button = modal.querySelector('button.remove-contact');
         expect(remove_contact_button === null).toBeTruthy();
     }));
 
@@ -44,15 +44,15 @@ describe("The User Details Modal", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         let show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        let modal = _converse.api.modal.get('user-details-modal');
-        await u.waitUntil(() => u.isVisible(modal.el), 2000);
+        let modal = _converse.api.modal.get('converse-user-details-modal');
+        await u.waitUntil(() => u.isVisible(modal), 2000);
         spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
 
         spyOn(view.model.contact, 'removeFromRoster').and.callFake((callback, errback) => errback());
-        let remove_contact_button = modal.el.querySelector('button.remove-contact');
+        let remove_contact_button = modal.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
         remove_contact_button.click();
-        await u.waitUntil(() => !u.isVisible(modal.el))
+        await u.waitUntil(() => !u.isVisible(modal))
         await u.waitUntil(() => u.isVisible(document.querySelector('.alert-danger')), 2000);
 
         const header = document.querySelector('.alert-danger .modal-title');
@@ -62,14 +62,14 @@ describe("The User Details Modal", function () {
         document.querySelector('.alert-danger  button.close').click();
         show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        modal = _converse.api.modal.get('user-details-modal');
-        await u.waitUntil(() => u.isVisible(modal.el), 2000)
+        modal = _converse.api.modal.get('converse-user-details-modal');
+        await u.waitUntil(() => u.isVisible(modal), 2000)
 
         show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        await u.waitUntil(() => u.isVisible(modal.el), 2000)
+        await u.waitUntil(() => u.isVisible(modal), 2000)
 
-        remove_contact_button = modal.el.querySelector('button.remove-contact');
+        remove_contact_button = modal.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
     }));
 });

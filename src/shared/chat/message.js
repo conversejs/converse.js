@@ -1,11 +1,11 @@
 import './message-actions.js';
 import './message-body.js';
 import 'shared/components/dropdown.js';
+import 'shared/modals/message-versions.js';
+import 'shared/modals/user-details.js';
 import 'shared/registry';
+import 'plugins/muc-views/modals/occupant.js';
 import tpl_file_progress from './templates/file-progress.js';
-import MessageVersionsModal from 'modals/message-versions.js';
-import OccupantModal from 'plugins/muc-views/modals/occupant.js';
-import UserDetailsModal from 'modals/user-details.js';
 import log from '@converse/headless/log';
 import tpl_info_message from './templates/info-message.js';
 import tpl_mep_message from 'plugins/muc-views/templates/mep-message.js';
@@ -214,20 +214,20 @@ export default class Message extends CustomElement {
 
     showUserModal (ev) {
         if (this.model.get('sender') === 'me') {
-            api.modal.show(_converse.ProfileModal, {model: this.model}, ev);
+            api.modal.show('converse-profile-modal', {model: this.model}, ev);
         } else if (this.model.get('type') === 'groupchat') {
             ev.preventDefault();
-            api.modal.show(OccupantModal, { 'model': this.model.occupant, 'message': this.model }, ev);
+            api.modal.show('converse-muc-occupant-modal', { 'model': this.model.occupant, 'message': this.model }, ev);
         } else {
             ev.preventDefault();
             const chatbox = this.model.collection.chatbox;
-            api.modal.show(UserDetailsModal, { model: chatbox }, ev);
+            api.modal.show('converse-user-details-modal', { model: chatbox }, ev);
         }
     }
 
     showMessageVersionsModal (ev) {
         ev.preventDefault();
-        api.modal.show(MessageVersionsModal, {'model': this.model}, ev);
+        api.modal.show('converse-message-versions-modal', {'model': this.model}, ev);
     }
 
     toggleSpoilerMessage (ev) {

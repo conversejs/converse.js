@@ -17,11 +17,11 @@ describe("A sent presence stanza", function () {
         const cbview = _converse.chatboxviews.get('controlbox');
         const change_status_el = await u.waitUntil(() => cbview.querySelector('.change-status'));
         change_status_el.click()
-        let modal = _converse.api.modal.get('modal-status-change');
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        let modal = _converse.api.modal.get('converse-chat-status-modal');
+        await u.waitUntil(() => u.isVisible(modal), 1000);
         const msg = 'My custom status';
-        modal.el.querySelector('input[name="status_message"]').value = msg;
-        modal.el.querySelector('[type="submit"]').click();
+        modal.querySelector('input[name="status_message"]').value = msg;
+        modal.querySelector('[type="submit"]').click();
 
         const sent_stanzas = _converse.connection.sent_stanzas;
         let sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
@@ -31,14 +31,15 @@ describe("A sent presence stanza", function () {
                     `<priority>0</priority>`+
                     `<c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>`+
                     `</presence>`)
-        await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
-        await u.waitUntil(() => !u.isVisible(modal.el));
+        await u.waitUntil(() => modal.getAttribute('aria-hidden') === "true");
+        await u.waitUntil(() => !u.isVisible(modal));
 
         cbview.querySelector('.change-status').click()
-        modal = _converse.api.modal.get('modal-status-change');
-        await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
-        modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
-        modal.el.querySelector('[type="submit"]').click();
+        modal = _converse.api.modal.get('converse-chat-status-modal');
+        await u.waitUntil(() => modal.getAttribute('aria-hidden') === "false", 1000);
+        modal.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
+        modal.querySelector('[type="submit"]').click();
+
         await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).length === 2);
         sent_presence = sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop();
         expect(Strophe.serialize(sent_presence))

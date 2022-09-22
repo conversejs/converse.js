@@ -12,9 +12,9 @@ export default (el) => {
     const validation_message = el.model?.get('nickname_validation_message');
 
     return html`
-        <div class="chatroom-form-container muc-nickname-form"
-                @submit=${ev => el.submitNickname(ev)}>
-            <form class="converse-form chatroom-form converse-centered-form">
+        <div class="chatroom-form-container muc-nickname-form">
+                <form class="converse-form chatroom-form converse-centered-form"
+                        @submit=${ev => el.submitNickname(ev)}>
                 <fieldset class="form-group">
                     <label>${i18n_heading}</label>
                     <p class="validation-message">${validation_message}</p>
@@ -26,7 +26,10 @@ export default (el) => {
                         placeholder="${i18n_nickname}"/>
                 </fieldset>
                 <fieldset class="form-group">
-                    <input type="submit" class="btn btn-primary" name="join" value="${i18n_join}"/>
+                    <input type="submit"
+                        class="btn btn-primary"
+                        name="join"
+                        value="${i18n_join}"/>
                 </fieldset>
             </form>
         </div>`;

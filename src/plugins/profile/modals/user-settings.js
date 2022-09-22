@@ -1,23 +1,31 @@
-import BootstrapModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/modal.js";
 import tpl_user_settings_modal from "./templates/user-settings.js";
+import { __ } from 'i18n';
+import { api } from "@converse/headless/core";
 
-let _converse;
+export default class UserSettingsModal extends BaseModal {
 
-export default BootstrapModal.extend({
-    id: "converse-client-info-modal",
+    constructor (options) {
+        super(options);
 
-    initialize (settings) {
-        _converse  = settings._converse;
-        BootstrapModal.prototype.initialize.apply(this, arguments);
-    },
+        const show_client_info = api.settings.get('show_client_info');
+        const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
+        const show_both_tabs = show_client_info && allow_adhoc_commands;
 
-    toHTML () {
-        return tpl_user_settings_modal(
-            Object.assign(
-                this.model.toJSON(),
-                this.model.vcard.toJSON(),
-                { 'version_name': _converse.VERSION_NAME }
-            )
-        );
+        if (show_both_tabs || show_client_info) {
+            this.tab = 'about';
+        } else if (allow_adhoc_commands) {
+            this.tab = 'commands';
+        }
     }
-});
+
+    renderModal () {
+        return tpl_user_settings_modal(this);
+    }
+
+    getModalTitle () { // eslint-disable-line class-methods-use-this
+        return __('Settings');
+    }
+}
+
+api.elements.define('converse-user-settings-modal', UserSettingsModal);

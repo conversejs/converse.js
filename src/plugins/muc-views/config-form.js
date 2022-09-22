@@ -19,8 +19,8 @@ class MUCConfigForm extends CustomElement {
     connectedCallback () {
         super.connectedCallback();
         this.model = _converse.chatboxes.get(this.jid);
-        this.listenTo(this.model.features, 'change:passwordprotected', this.requestUpdate);
-        this.listenTo(this.model.session, 'change:config_stanza', this.requestUpdate);
+        this.listenTo(this.model.features, 'change:passwordprotected', () => this.requestUpdate());
+        this.listenTo(this.model.session, 'change:config_stanza', () => this.requestUpdate());
         this.getConfig();
     }
 

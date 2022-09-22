@@ -140,13 +140,13 @@ async function openChatRoomViaModal (_converse, jid, nick='') {
     await openControlBox(_converse);
     document.querySelector('converse-rooms-list .show-add-muc-modal').click();
     closeControlBox(_converse);
-    const modal = _converse.api.modal.get('add-chatroom-modal');
-    await u.waitUntil(() => u.isVisible(modal.el), 1500)
-    modal.el.querySelector('input[name="chatroom"]').value = jid;
+    const modal = _converse.api.modal.get('converse-add-muc-modal');
+    await u.waitUntil(() => u.isVisible(modal), 1500)
+    modal.querySelector('input[name="chatroom"]').value = jid;
     if (nick) {
-        modal.el.querySelector('input[name="nickname"]').value = nick;
+        modal.querySelector('input[name="nickname"]').value = nick;
     }
-    modal.el.querySelector('form input[type="submit"]').click();
+    modal.querySelector('form input[type="submit"]').click();
     await u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
     return _converse.chatboxviews.get(jid);
 }

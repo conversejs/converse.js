@@ -23,6 +23,10 @@ converse.plugins.add('converse-vcard', {
 
     dependencies: ["converse-status", "converse-roster"],
 
+    // Overrides mentioned here will be picked up by converse.js's
+    // plugin architecture they will replace existing methods on the
+    // relevant objects or classes.
+    // New functions which don't exist yet can also be added.
     overrides: {
         XMPPStatus: {
             getNickname () {

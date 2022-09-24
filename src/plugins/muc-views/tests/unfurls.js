@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { u } = converse.env;
+const { Strophe, u } = converse.env;
 
 describe("A Groupchat Message", function () {
 
@@ -105,7 +105,6 @@ describe("A Groupchat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe(unfurl_url);
-
 
         const metadata_stanza = u.toStanza(`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
@@ -401,5 +400,90 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.querySelector('converse-message-unfurl .chat-image') === null);
         api.settings.set('allowed_image_domains', undefined);
         await u.waitUntil(() => view.querySelector('converse-message-unfurl .chat-image') !== null);
+    }));
+
+    it("will not render an unfurl that has been removed in a subsequent correction", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        const nick = 'romeo';
+        const muc_jid = 'lounge@muc.montague.lit';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const view = _converse.chatboxviews.get(muc_jid);
+
+        const unfurl_image_src = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg";
+        const unfurl_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+
+        spyOn(_converse.connection, 'send').and.callThrough();
+
+        const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
+        const message_form = view.querySelector('converse-muc-message-form');
+        textarea.value = unfurl_url;
+        const enter_event = {
+            'target': textarea,
+            'preventDefault': function preventDefault () {},
+            'stopPropagation': function stopPropagation () {},
+            'keyCode': 13 // Enter
+        }
+        message_form.onKeyDown(enter_event);
+
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
+        expect(view.querySelector('.chat-msg__text').textContent)
+            .toBe(unfurl_url);
+
+        let msg = _converse.connection.send.calls.all()[0].args[0];
+        expect(Strophe.serialize(msg))
+        .toBe(
+            `<message from="${_converse.jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
+                `<body>${unfurl_url}</body>`+
+                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                `<origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
+            `</message>`);
+
+        const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(el.textContent).toBe(unfurl_url);
+
+        const metadata_stanza = u.toStanza(`
+            <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
+                <apply-to xmlns="urn:xmpp:fasten:0" id="${msg.getAttribute('id')}">
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="${unfurl_url}" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:title" content="Rick Astley - Never Gonna Give You Up (Video)" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="${unfurl_image_src}" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:width" content="1280" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="720" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:type" content="video.other" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:url" content="https://www.youtube.com/embed/dQw4w9WgXcQ" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:secure_url" content="https://www.youtube.com/embed/dQw4w9WgXcQ" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:type" content="text/html" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:width" content="1280" />
+                    <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
+                </apply-to>
+            </message>`);
+        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+
+        const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
+        expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);
+        expect(unfurl.querySelector('.card-img-top').getAttribute('href')).toBe(unfurl_url);
+
+        // Modify the message to use a different URL
+        expect(textarea.value).toBe('');
+        message_form.onKeyDown({
+            target: textarea,
+            keyCode: 38 // Up arrow
+        });
+        expect(textarea.value).toBe(unfurl_url);
+        textarea.value = "never mind";
+        message_form.onKeyDown(enter_event);
+
+        const getSentMessages = () => _converse.connection.send.calls.all().map(c => c.args[0]).filter(s => s.nodeName === 'message');
+        await u.waitUntil(() => getSentMessages().length == 2);
+        msg = getSentMessages().pop();
+        expect(Strophe.serialize(msg))
+        .toBe(
+            `<message from="${_converse.jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
+                `<body>never mind</body>`+
+                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                `<replace id="${msg.querySelector('replace')?.getAttribute('id')}" xmlns="urn:xmpp:message-correct:0"/>`+
+                `<origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
+            `</message>`);
     }));
 });

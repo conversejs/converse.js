@@ -1,36 +1,17 @@
-import BootstrapModal from "plugins/modal/base.js";
+import BaseModal from "plugins/modal/modal.js";
 import log from "@converse/headless/log";
-import tpl_user_details_modal from "./templates/user-details.js";
+import { tpl_user_details_modal, tpl_footer } from "./templates/user-details.js";
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { api, converse } from "@converse/headless/core";
+import { removeContact } from 'plugins/rosterview/utils.js';
 
 const u = converse.env.utils;
 
 
-function removeContact (contact) {
-    contact.removeFromRoster(
-        () => contact.destroy(),
-        (e) => {
-            e && log.error(e);
-            api.alert('error', __('Error'), [
-                __('Sorry, there was an error while trying to remove %1$s as a contact.',
-                contact.getDisplayName())
-            ]);
-        }
-    );
-}
-
-
-const UserDetailsModal = BootstrapModal.extend({
-    id: 'user-details-modal',
-    persistent: true,
-
-    events: {
-        'click button.refresh-contact': 'refreshContact',
-    },
+export default class UserDetailsModal extends BaseModal {
 
     initialize () {
-        BootstrapModal.prototype.initialize.apply(this, arguments);
+        super.initialize();
         this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
         this.listenTo(this.model, 'change', this.render);
         this.registerContactEventHandlers();
@@ -41,23 +22,19 @@ const UserDetailsModal = BootstrapModal.extend({
          * @example _converse.api.listen.on('userDetailsModalInitialized', (chatbox) => { ... });
          */
         api.trigger('userDetailsModalInitialized', this.model);
-    },
+    }
 
-    toHTML () {
-        const vcard = this.model?.vcard;
-        const vcard_json = vcard ? vcard.toJSON() : {};
-        return tpl_user_details_modal(Object.assign(
-            this.model.toJSON(),
-            vcard_json, {
-            '_converse': _converse,
-            'allow_contact_removal': api.settings.get('allow_contact_removal'),
-            'display_name': this.model.getDisplayName(),
-            'is_roster_contact': this.model.contact !== undefined,
-            'removeContact': ev => this.removeContact(ev),
-            'view': this,
-            'utils': u
-        }));
-    },
+    renderModal () {
+        return tpl_user_details_modal(this);
+    }
+
+    renderModalFooter () {
+        return tpl_footer(this);
+    }
+
+    getModalTitle () {
+        return this.model.getDisplayName();
+    }
 
     registerContactEventHandlers () {
         if (this.model.contact !== undefined) {
@@ -68,7 +45,7 @@ const UserDetailsModal = BootstrapModal.extend({
                 this.render();
             });
         }
-    },
+    }
 
     async refreshContact (ev) {
         if (ev && ev.preventDefault) { ev.preventDefault(); }
@@ -81,7 +58,7 @@ const UserDetailsModal = BootstrapModal.extend({
             this.alert(__('Sorry, something went wrong while trying to refresh'), 'danger');
         }
         u.removeClass('fa-spin', refresh_icon);
-    },
+    }
 
     async removeContact (ev) {
         ev?.preventDefault?.();
@@ -94,9 +71,7 @@ const UserDetailsModal = BootstrapModal.extend({
             setTimeout(() => removeContact(this.model.contact), 1);
             this.modal.hide();
         }
-    },
-});
+    }
+}
 
-_converse.UserDetailsModal = UserDetailsModal;
-
-export default UserDetailsModal;
+api.elements.define('converse-user-details-modal', UserDetailsModal);

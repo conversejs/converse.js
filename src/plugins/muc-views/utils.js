@@ -1,5 +1,5 @@
-import ModeratorToolsModal from './modals/moderator-tools.js';
-import OccupantModal from './modals/occupant.js';
+import './modals/occupant.js';
+import './modals/moderator-tools.js';
 import log from "@converse/headless/log";
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
@@ -234,19 +234,19 @@ export function showModeratorToolsModal (muc, affiliation) {
     if (!muc.verifyRoles(['moderator'])) {
         return;
     }
-    let modal = api.modal.get(ModeratorToolsModal.id);
+    let modal = api.modal.get('converse-modtools-modal');
     if (modal) {
         modal.affiliation = affiliation;
         modal.render();
     } else {
-        modal = api.modal.create(ModeratorToolsModal, { affiliation, 'jid': muc.get('jid') });
+        modal = api.modal.create('converse-modtools-modal', { affiliation, 'jid': muc.get('jid') });
     }
     modal.show();
 }
 
 
 export function showOccupantModal (ev, occupant) {
-    api.modal.show(OccupantModal, { 'model': occupant }, ev);
+    api.modal.show('converse-muc-occupant-modal', { 'model': occupant }, ev);
 }
 
 

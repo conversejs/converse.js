@@ -5,7 +5,6 @@
  */
 import './view.js';
 import './components/minimized-chat.js';
-import 'plugins/chatview/index.js';
 import debounce from 'lodash-es/debounce';
 import MinimizedChatsToggle from './toggle.js';
 import { _converse, api, converse } from '@converse/headless/core';
@@ -32,8 +31,6 @@ converse.plugins.add('converse-minimize', {
      * It's possible however to make optional dependencies non-optional.
      * If the setting "strict_plugin_dependencies" is set to true,
      * an error will be raised if the plugin is not found.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
      */
     dependencies: [
         "converse-chatview",
@@ -47,13 +44,11 @@ converse.plugins.add('converse-minimize', {
         return _converse.api.settings.get("view_mode") === 'overlayed';
     },
 
+    // Overrides mentioned here will be picked up by converse.js's
+    // plugin architecture they will replace existing methods on the
+    // relevant objects or classes.
+    // New functions which don't exist yet can also be added.
     overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
-
         ChatBox: {
             maybeShow (force) {
                 if (!force && this.get('minimized')) {

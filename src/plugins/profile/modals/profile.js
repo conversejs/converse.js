@@ -1,52 +1,43 @@
-import BootstrapModal from "plugins/modal/base.js";
-import bootstrap from "bootstrap.native";
+import BaseModal from "plugins/modal/modal.js";
 import log from "@converse/headless/log";
 import tpl_profile_modal from "../templates/profile_modal.js";
 import Compress from 'client-compress';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
 
-const { sizzle } = converse.env;
+const compress = new Compress({
+    targetSize: 0.1,
+    quality: 0.75,
+    maxWidth: 256,
+    maxHeight: 256
+});
 
-const options = {
-  targetSize: 0.1,
-  quality: 0.75,
-  maxWidth: 256,
-  maxHeight: 256
-}
+export default class ProfileModal extends BaseModal {
 
-const compress = new Compress(options)
-
-
-const ProfileModal = BootstrapModal.extend({
-    id: "user-profile-modal",
-    events: {
-        'submit .profile-form': 'onFormSubmitted'
-    },
+    constructor (options) {
+        super(options);
+        this.tab = 'profile';
+    }
 
     initialize () {
+        super.initialize();
         this.listenTo(this.model, 'change', this.render);
-        BootstrapModal.prototype.initialize.apply(this, arguments);
         /**
-            * Triggered when the _converse.ProfileModal has been created and initialized.
-            * @event _converse#profileModalInitialized
-            * @type { _converse.XMPPStatus }
-            * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
-            */
+         * Triggered when the _converse.ProfileModal has been created and initialized.
+         * @event _converse#profileModalInitialized
+         * @type { _converse.XMPPStatus }
+         * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
+         */
         api.trigger('profileModalInitialized', this.model);
-    },
+    }
 
-    toHTML () {
-        return tpl_profile_modal(Object.assign(
-            this.model.toJSON(),
-            this.model.vcard.toJSON(),
-            { 'view': this }
-        ));
-    },
+    renderModal () {
+        return tpl_profile_modal(this);
+    }
 
-    afterRender () {
-        this.tabs = sizzle('.nav-item .nav-link', this.el).map(e => new bootstrap.Tab(e));
-    },
+    getModalTitle () { // eslint-disable-line class-methods-use-this
+        return __('Your Profile');
+    }
 
     async setVCard (data) {
         try {
@@ -60,7 +51,7 @@ const ProfileModal = BootstrapModal.extend({
             return;
         }
         this.modal.hide();
-    },
+    }
 
     onFormSubmitted (ev) {
         ev.preventDefault();
@@ -95,8 +86,6 @@ const ProfileModal = BootstrapModal.extend({
             });
         }
     }
-});
+}
 
-_converse.ProfileModal = ProfileModal;
-
-export default ProfileModal;
+api.elements.define('converse-profile-modal', ProfileModal);

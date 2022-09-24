@@ -1,5 +1,6 @@
-import { CustomElement } from './element.js';
 import tpl_icons from '../templates/icons.js';
+import { CustomElement } from './element.js';
+import { api } from '@converse/headless/core.js';
 
 export class FontAwesome extends CustomElement {
     render () {  // eslint-disable-line class-methods-use-this
@@ -7,4 +8,4 @@ export class FontAwesome extends CustomElement {
     }
 }
 
-window.customElements.define('converse-fontawesome', FontAwesome);
+api.elements.define('converse-fontawesome', FontAwesome);

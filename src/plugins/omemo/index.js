@@ -4,8 +4,7 @@
  */
 import './fingerprints.js';
 import './profile.js';
-import 'modals/user-details.js';
-import 'plugins/profile/index.js';
+import 'shared/modals/user-details.js';
 import ConverseMixins from './mixins/converse.js';
 import Device from './device.js';
 import DeviceList from './devicelist.js';
@@ -51,7 +50,7 @@ converse.plugins.add('converse-omemo', {
         );
     },
 
-    dependencies: ['converse-chatview', 'converse-pubsub'],
+    dependencies: ['converse-chatview', 'converse-pubsub', 'converse-profile'],
 
     initialize () {
         api.settings.extend({ 'omemo_default': false });

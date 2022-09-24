@@ -1,4 +1,4 @@
-import UserDetailsModal from 'modals/user-details.js';
+import 'shared/modals/user-details.js';
 import tpl_chatbox_head from './templates/chat-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
@@ -9,16 +9,22 @@ import './styles/chat-head.scss';
 
 export default class ChatHeading extends CustomElement {
 
+    static get properties () {
+        return {
+            'jid': { type: String },
+        }
+    }
+
     initialize () {
-        this.model = _converse.chatboxes.get(this.getAttribute('jid'));
-        this.listenTo(this.model, 'change:status', this.requestUpdate);
-        this.listenTo(this.model, 'vcard:add', this.requestUpdate);
-        this.listenTo(this.model, 'vcard:change', this.requestUpdate);
+        this.model = _converse.chatboxes.get(this.jid);
+        this.listenTo(this.model, 'change:status', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         if (this.model.contact) {
-            this.listenTo(this.model.contact, 'destroy', this.requestUpdate);
+            this.listenTo(this.model.contact, 'destroy', () => this.requestUpdate());
         }
         this.model.rosterContactAdded?.then(() => {
-            this.listenTo(this.model.contact, 'change:nickname', this.requestUpdate);
+            this.listenTo(this.model.contact, 'change:nickname', () => this.requestUpdate());
             this.requestUpdate();
         });
     }
@@ -33,7 +39,7 @@ export default class ChatHeading extends CustomElement {
 
     showUserDetailsModal (ev) {
         ev.preventDefault();
-        api.modal.show(UserDetailsModal, { model: this.model }, ev);
+        api.modal.show('converse-user-details-modal', { model: this.model }, ev);
     }
 
     close (ev) {
@@ -52,9 +58,9 @@ export default class ChatHeading extends CustomElement {
              * @typedef { Object } HeadingButtonAttributes
              * An object representing a chat heading button
              * @property { Boolean } standalone
-             *      True if shown on its own, false if it must be in the dropdown menu.
+             *  True if shown on its own, false if it must be in the dropdown menu.
              * @property { Function } handler
-             *      A handler function to be called when the button is clicked.
+             *  A handler function to be called when the button is clicked.
              * @property { String } a_class - HTML classes to show on the button
              * @property { String } i18n_text - The user-visiible name of the button
              * @property { String } i18n_title - The tooltip text for this button

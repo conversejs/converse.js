@@ -26,12 +26,6 @@ module.exports = merge(common, {
                                 "browsers": ["ie 11"]
                             }
                         }]
-                    ],
-                    plugins: [
-                        '@babel/plugin-proposal-class-properties',
-                        '@babel/plugin-proposal-nullish-coalescing-operator',
-                        '@babel/plugin-proposal-optional-chaining',
-                        '@babel/plugin-syntax-dynamic-import'
                     ]
                 }
             }
@@ -53,13 +47,15 @@ module.exports = merge(common, {
         }]
     },
     externals: [{
-        'pluggable.js': 'pluggable',
         '@converse/skeletor': 'skeletor',
-        'localforage': 'localforage',
         'filesize': 'filesize',
         'jed': 'jed',
+        'lit': 'lit',
+        'lit-html': 'lit-html',
+        'localforage': 'localforage',
         'lodash': 'lodash',
         'lodash.noconflict': 'lodash.noconflict',
+        'pluggable.js': 'pluggable',
         'sizzle': 'sizzle',
         'strophe.js': 'strophe',
         'urijs': 'urijs',

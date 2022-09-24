@@ -1,5 +1,5 @@
 import 'shared/registry.js';
-import ImageModal from 'modals/image.js';
+import ImageModal from 'shared/modals/image.js';
 import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
@@ -31,7 +31,7 @@ export default class MessageBody extends CustomElement {
 
     onImgClick (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
-        api.modal.create(ImageModal, {'src': ev.target.src}, ev).show(ev);
+        api.modal.show('converse-image-modal', {'src': ev.target.src}, ev);
     }
 
     onImgLoad () {

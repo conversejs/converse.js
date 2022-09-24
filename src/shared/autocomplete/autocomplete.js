@@ -162,7 +162,7 @@ export class AutoComplete {
         this.goto(this.selected && pos !== -1 ? pos : count - 1);
     }
 
-    goto (i) {
+    goto (i, scroll=true) {
         // Should not be used directly, highlights specific item without any checks!
         const list = this.ul.children;
         if (this.selected) {
@@ -174,8 +174,11 @@ export class AutoComplete {
             list[i].setAttribute("aria-selected", "true");
             list[i].focus();
             this.status.textContent = list[i].textContent;
-            // scroll to highlighted element in case parent's height is fixed
-            this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
+
+            if (scroll) {
+                // scroll to highlighted element in case parent's height is fixed
+                this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
+            }
             this.trigger("suggestion-box-highlight", {'text': this.suggestions[this.index]});
         }
     }
@@ -198,7 +201,8 @@ export class AutoComplete {
     onMouseOver (ev) {
         const li = u.ancestor(ev.target, 'li');
         if (li) {
-            this.goto(Array.prototype.slice.call(this.ul.children).indexOf(li))
+            const index = Array.prototype.slice.call(this.ul.children).indexOf(li);
+            this.goto(index, false);
         }
     }
 

@@ -10,18 +10,18 @@ export default class MinimizedChats extends CustomElement {
     async initialize () {
         this.model = _converse.chatboxes;
         await this.initToggle();
-        this.listenTo(this.minchats, 'change:collapsed', this.requestUpdate)
-        this.listenTo(this.model, 'add', this.requestUpdate)
-        this.listenTo(this.model, 'change:fullname', this.requestUpdate)
-        this.listenTo(this.model, 'change:jid', this.requestUpdate)
-        this.listenTo(this.model, 'change:minimized', this.requestUpdate)
-        this.listenTo(this.model, 'change:name', this.requestUpdate)
-        this.listenTo(this.model, 'change:num_unread', this.requestUpdate)
-        this.listenTo(this.model, 'remove', this.requestUpdate)
+        this.listenTo(this.minchats, 'change:collapsed', () => this.requestUpdate())
+        this.listenTo(this.model, 'add', () => this.requestUpdate())
+        this.listenTo(this.model, 'change:fullname', () => this.requestUpdate())
+        this.listenTo(this.model, 'change:jid', () => this.requestUpdate())
+        this.listenTo(this.model, 'change:minimized', () => this.requestUpdate())
+        this.listenTo(this.model, 'change:name', () => this.requestUpdate())
+        this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate())
+        this.listenTo(this.model, 'remove', () => this.requestUpdate())
 
-        this.listenTo(_converse, 'connected', this.requestUpdate);
-        this.listenTo(_converse, 'reconnected', this.requestUpdate);
-        this.listenTo(_converse, 'disconnected', this.requestUpdate);
+        this.listenTo(_converse, 'connected', () => this.requestUpdate());
+        this.listenTo(_converse, 'reconnected', () => this.requestUpdate());
+        this.listenTo(_converse, 'disconnected', () => this.requestUpdate());
     }
 
     render () {

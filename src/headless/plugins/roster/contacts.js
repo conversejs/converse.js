@@ -1,6 +1,5 @@
 import RosterContact from './contact.js';
 import log from "@converse/headless/log";
-import sum from 'lodash-es/sum';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from "@converse/skeletor/src/model";
 import { _converse, api, converse } from "@converse/headless/core";
@@ -185,11 +184,6 @@ const RosterContacts = Collection.extend({
                 contact.authorize().subscribe();
             }
         }
-    },
-
-    getNumOnlineContacts () {
-        const ignored = ['offline', 'unavailable'];
-        return sum(this.models.filter(m => !ignored.includes(m.presence.get('show'))));
     },
 
     /**

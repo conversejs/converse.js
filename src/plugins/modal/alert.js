@@ -1,19 +1,23 @@
-import BootstrapModal from "./base.js";
+import BaseModal from "plugins/modal/modal.js";
 import tpl_alert_modal from "./templates/alert.js";
-import { __ } from 'i18n';
+import { api } from "@converse/headless/core";
 
 
-const Alert = BootstrapModal.extend({
-    id: 'alert-modal',
+export default class Alert extends BaseModal {
 
     initialize () {
-        BootstrapModal.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change', this.render)
-    },
-
-    toHTML () {
-        return tpl_alert_modal(Object.assign({__}, this.model.toJSON()));
+        super.initialize();
+        this.listenTo(this.model, 'change', () => this.render())
+        this.addEventListener('hide.bs.modal', () => this.remove(), false);
     }
-});
 
-export default Alert;
+    renderModal () {
+        return tpl_alert_modal(this.model.toJSON());
+    }
+
+    getModalTitle () {
+        return this.model.get('title');
+    }
+}
+
+api.elements.define('converse-alert-modal', Alert);

@@ -1,9 +1,9 @@
-import Alert from './alert.js';
+import './alert.js';
 import Confirm from './confirm.js';
 import { Model } from '@converse/skeletor/src/model.js';
 
 let modals = [];
-
+let modals_map = {};
 
 const modal_api = {
     /**
@@ -17,13 +17,20 @@ const modal_api = {
          * Will create a new instance of that class if an existing one isn't
          * found.
          * @param { Class } ModalClass
-         * @param { Object } [properties] - Optional properties that will be
-         *  set on a newly created modal instance (if no pre-existing modal was
-         *  found).
+         * @param { Object } [properties] - Optional properties that will be set on a newly created modal instance.
          * @param { Event } [event] - The DOM event that causes the modal to be shown.
          */
-        show (ModalClass, properties, ev) {
-            const modal = this.get(ModalClass.id) || this.create(ModalClass, properties);
+        show (name, properties, ev) {
+            let modal;
+            if (typeof name === 'string') {
+                modal = this.get(name) ?? this.create(name, properties);
+                Object.assign(modal, properties);
+            } else {
+                // Legacy...
+                const ModalClass = name;
+                const id = ModalClass.id ?? properties.id;
+                modal = this.get(id) ?? this.create(ModalClass, properties);
+            }
             modal.show(ev);
             return modal;
         },
@@ -33,28 +40,44 @@ const modal_api = {
          * @param { String } id
          */
         get (id) {
-            return modals.filter(m => m.id == id).pop();
+            return modals_map[id] ?? modals.filter(m => m.id == id).pop();
         },
 
         /**
          * Create a modal of the passed-in type.
-         * @param { Class } ModalClass
+         * @param { String } name
          * @param { Object } [properties] - Optional properties that will be
          *  set on the modal instance.
          */
-        create (ModalClass, properties) {
-            const modal = new ModalClass(properties);
-            modals.push(modal);
+        create (name, properties) {
+            let modal;
+            if (typeof name === 'string') {
+                const ModalClass = customElements.get(name);
+                modal = modals_map[name] = new ModalClass(properties);
+            } else {
+                // Legacy...
+                const ModalClass = name;
+                modal = new ModalClass(properties);
+                modals.push(modal);
+            }
             return modal;
         },
 
         /**
          * Remove a particular modal
-         * @param { View } modal
+         * @param { String } name
          */
-        remove (modal) {
-            modals = modals.filter(m => m !== modal);
-            modal.remove();
+        remove (name) {
+            let modal;
+            if (typeof name === 'string') {
+                modal = modals_map[name];
+                delete modals_map[name];
+            } else {
+                // Legacy...
+                modal = name;
+                modals = modals.filter(m => m !== modal);
+            }
+            modal?.remove();
         },
 
         /**
@@ -63,6 +86,7 @@ const modal_api = {
         removeAll () {
             modals.forEach(m => m.remove());
             modals = [];
+            modals_map = {};
         }
     },
 
@@ -157,7 +181,7 @@ const modal_api = {
             'level': level,
             'type': 'alert'
         })
-        modal_api.modal.show(Alert, {model});
+        modal_api.modal.show('converse-alert-modal', { model });
     }
 }
 

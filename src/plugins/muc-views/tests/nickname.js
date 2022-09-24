@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $pres, $iq, Strophe, sizzle, u }  = converse.env;
+const { $pres, $iq, Strophe, sizzle, u, stx } = converse.env;
 
 describe("A MUC", function () {
 
@@ -9,28 +9,71 @@ describe("A MUC", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+
+        expect(model.get('nick')).toBe(nick);
+        expect(model.occupants.length).toBe(1);
+        expect(model.occupants.at(0).get('nick')).toBe(nick);
 
         const view = _converse.chatboxviews.get(muc_jid);
         const dropdown_item = view.querySelector(".open-nickname-modal");
         dropdown_item.click();
 
-        const modal = _converse.api.modal.get('change-nickname-modal');
-        await u.waitUntil(() => u.isVisible(modal.el));
+        const modal = _converse.api.modal.get('converse-muc-nickname-modal');
+        await u.waitUntil(() => u.isVisible(modal));
 
-        const input = modal.el.querySelector('input[name="nick"]');
+        const input = modal.querySelector('input[name="nick"]');
         expect(input.value).toBe(nick);
 
         const newnick = 'loverboy';
         input.value = newnick;
-        modal.el.querySelector('input[type="submit"]')?.click();
+        modal.querySelector('input[type="submit"]')?.click();
 
-        await u.waitUntil(() => !u.isVisible(modal.el));
+        await u.waitUntil(() => !u.isVisible(modal));
 
         const { sent_stanzas } = _converse.connection;
         const sent_stanza = sent_stanzas.pop()
         expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
             `<presence from="${_converse.jid}" id="${sent_stanza.getAttribute('id')}" to="${muc_jid}/${newnick}" xmlns="jabber:client"/>`);
+
+        // Two presence stanzas are received from the MUC service
+        _converse.connection._dataRecv(mock.createRequest(
+            stx`
+            <presence
+                from='${muc_jid}/${nick}'
+                id='DC352437-C019-40EC-B590-AF29E879AF98'
+                to='${_converse.jid}'
+                type='unavailable'>
+            <x xmlns='http://jabber.org/protocol/muc#user'>
+                <item affiliation='member'
+                    jid='${_converse.jid}'
+                    nick='${newnick}'
+                    role='participant'/>
+                <status code='303'/>
+                <status code='110'/>
+            </x>
+            </presence>`
+        ));
+
+        expect(model.get('nick')).toBe(newnick);
+
+        _converse.connection._dataRecv(mock.createRequest(
+            stx`
+            <presence
+                from='${muc_jid}/${newnick}'
+                id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
+                to='${_converse.jid}'>
+            <x xmlns='http://jabber.org/protocol/muc#user'>
+                <item affiliation='member'
+                    jid='${_converse.jid}'
+                    role='participant'/>
+                <status code='110'/>
+            </x>
+            </presence>`
+        ));
+
+        await u.waitUntil(() => model.occupants.at(0).get('nick') === newnick);
+        expect(model.occupants.length).toBe(1);
     }));
 
     it("informs users if their nicknames have been changed.",
@@ -71,7 +114,7 @@ describe("A MUC", function () {
          *  </x>
          *  </presence>
          */
-        const __ = _converse.__;
+        const { __ } = _converse;
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'oldnick');
 
         const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -130,8 +173,9 @@ describe("A MUC", function () {
             __(_converse.muc.new_nickname_messages["303"], "newnick")
         );
         occupants = view.querySelector('.occupant-list');
-        expect(occupants.childElementCount).toBe(1);
-        expect(sizzle('.occupant-nick:first', occupants).pop().textContent.trim()).toBe("newnick");
+        await u.waitUntil(() => sizzle('.occupant-nick:first', occupants).pop().textContent.trim() === "newnick");
+        expect(view.model.occupants.length).toBe(1);
+        expect(view.model.get('nick')).toBe("newnick");
     }));
 
     describe("when being entered", function () {
@@ -378,13 +422,13 @@ describe("A MUC", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('add-chatroom-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000)
-            const name_input = modal.el.querySelector('input[name="chatroom"]');
+            const modal = _converse.api.modal.get('converse-add-muc-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000)
+            const name_input = modal.querySelector('input[name="chatroom"]');
             name_input.value = 'lounge@montague.lit';
-            expect(modal.el.querySelector('label[for="nickname"]')).toBe(null);
-            expect(modal.el.querySelector('input[name="nickname"]')).toBe(null);
-            modal.el.querySelector('form input[type="submit"]').click();
+            expect(modal.querySelector('label[for="nickname"]')).toBe(null);
+            expect(modal.querySelector('input[name="nickname"]')).toBe(null);
+            modal.querySelector('form input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length > 1);
             const chatroom = _converse.chatboxes.get('lounge@montague.lit');
             expect(chatroom.get('nick')).toBe('romeo');
@@ -398,11 +442,11 @@ describe("A MUC", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('add-chatroom-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000)
-            const label_nick = modal.el.querySelector('label[for="nickname"]');
+            const modal = _converse.api.modal.get('converse-add-muc-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000)
+            const label_nick = modal.querySelector('label[for="nickname"]');
             expect(label_nick.textContent.trim()).toBe('Nickname:');
-            const nick_input = modal.el.querySelector('input[name="nickname"]');
+            const nick_input = modal.querySelector('input[name="nickname"]');
             expect(nick_input.value).toBe('romeo');
         }));
 
@@ -414,13 +458,12 @@ describe("A MUC", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('add-chatroom-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000)
-            const label_nick = modal.el.querySelector('label[for="nickname"]');
+            const modal = _converse.api.modal.get('converse-add-muc-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000)
+            const label_nick = modal.querySelector('label[for="nickname"]');
             expect(label_nick.textContent.trim()).toBe('Nickname:');
-            const nick_input = modal.el.querySelector('input[name="nickname"]');
+            const nick_input = modal.querySelector('input[name="nickname"]');
             expect(nick_input.value).toBe('st.nick');
         }));
     });
 });
-

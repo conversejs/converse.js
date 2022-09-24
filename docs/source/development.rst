@@ -23,7 +23,7 @@ to fix a bug or to add new functionality.
 .. toctree::
    :maxdepth: 2
 
-   setup_dev_environment 
+   setup_dev_environment
    plugin_development
    api/index
    testing

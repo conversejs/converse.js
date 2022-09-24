@@ -28,7 +28,7 @@ async function handleErrorMessage (stanza) {
         return;
     }
     const chatbox = await api.chatboxes.get(from_jid);
-    if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+    if (chatbox?.get('type') === _converse.PRIVATE_CHAT_TYPE) {
         chatbox?.handleErrorMessageStanza(stanza);
     }
 }
@@ -47,13 +47,13 @@ export function autoJoinChats () {
         }
     });
     /**
-        * Triggered once any private chats have been automatically joined as
-        * specified by the `auto_join_private_chats` setting.
-        * See: https://conversejs.org/docs/html/configuration.html#auto-join-private-chats
-        * @event _converse#privateChatsAutoJoined
-        * @example _converse.api.listen.on('privateChatsAutoJoined', () => { ... });
-        * @example _converse.api.waitUntil('privateChatsAutoJoined').then(() => { ... });
-        */
+     * Triggered once any private chats have been automatically joined as
+     * specified by the `auto_join_private_chats` setting.
+     * See: https://conversejs.org/docs/html/configuration.html#auto-join-private-chats
+     * @event _converse#privateChatsAutoJoined
+     * @example _converse.api.listen.on('privateChatsAutoJoined', () => { ... });
+     * @example _converse.api.waitUntil('privateChatsAutoJoined').then(() => { ... });
+     */
     api.trigger('privateChatsAutoJoined');
 }
 
@@ -164,10 +164,18 @@ export async function enableCarbons (reconnecting) {
         return;
     }
 
+    const domain = Strophe.getDomainFromJid(_converse.bare_jid);
+    const supported = await api.disco.supports(Strophe.NS.CARBONS, domain);
+
+    if (!supported) {
+        log.warn("Not enabling carbons because it's not supported!");
+        return;
+    }
+
     const iq = new Strophe.Builder('iq', {
         'from': _converse.connection.jid,
         'type': 'set'
-      }).c('enable', {xmlns: Strophe.NS.CARBONS});
+    }).c('enable', {xmlns: Strophe.NS.CARBONS});
 
     const result = await api.sendIQ(iq, null, false);
     if (result === null) {

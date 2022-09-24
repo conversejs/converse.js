@@ -1,5 +1,4 @@
 # You can set these variables from the command line.
-BABEL			?= node_modules/.bin/babel
 BOOTSTRAP		= ./node_modules/
 BUILDDIR		= ./docs
 KARMA			?= ./node_modules/.bin/karma
@@ -207,10 +206,7 @@ cdn:: node_modules
 
 .PHONY: eslint
 eslint: node_modules
-	$(ESLINT) src/*.js
-	$(ESLINT) src/utils/*.js
-	$(ESLINT) src/headless/*.js
-	$(ESLINT) src/headless/utils/*.js
+	$(ESLINT) src/**/*.js
 
 .PHONY: check
 check: eslint | dist/converse.js dist/converse.css

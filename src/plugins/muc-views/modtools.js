@@ -1,6 +1,6 @@
 import log from '@converse/headless/log.js';
 import tpl_moderator_tools from './templates/moderator-tools.js';
-import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/index.js';
+import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core.js';
@@ -25,6 +25,7 @@ export default class ModeratorTools extends CustomElement {
             muc: { type: Object, attribute: false },
             role: { type: String },
             roles_filter: { type: String, attribute: false },
+            tab: { type: String },
             users_with_affiliation: { type: Array, attribute: false },
             users_with_role: { type: Array, attribute: false },
         };
@@ -32,6 +33,7 @@ export default class ModeratorTools extends CustomElement {
 
     constructor () {
         super();
+        this.tab = 'affiliations';
         this.affiliation = '';
         this.affiliations_filter = '';
         this.role = '';
@@ -72,6 +74,7 @@ export default class ModeratorTools extends CustomElement {
                 'queryable_roles': ROLES.filter(a => !api.settings.get('modtools_disable_query').includes(a)),
                 'roles_filter': this.roles_filter,
                 'switchTab': ev => this.switchTab(ev),
+                'tab': this.tab,
                 'toggleForm': ev => this.toggleForm(ev),
                 'users_with_affiliation': this.users_with_affiliation,
                 'users_with_role': this.users_with_role,
@@ -79,6 +82,13 @@ export default class ModeratorTools extends CustomElement {
         } else {
             return '';
         }
+    }
+
+    switchTab (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        this.tab = ev.target.getAttribute('data-name');
+        this.requestUpdate();
     }
 
     async onSearchAffiliationChange () {

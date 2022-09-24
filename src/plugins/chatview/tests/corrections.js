@@ -343,9 +343,9 @@ describe("A Chat Message", function () {
             expect(view.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
             view.querySelector('.chat-msg__content .fa-edit').click();
 
-            const modal = _converse.api.modal.get('message-versions-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000);
-            const older_msgs = modal.el.querySelectorAll('.older-msg');
+            const modal = _converse.api.modal.get('converse-message-versions-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
+            const older_msgs = modal.querySelectorAll('.older-msg');
             expect(older_msgs.length).toBe(2);
             expect(older_msgs[0].textContent.includes('But soft, what light through yonder airlock breaks?')).toBe(true);
             expect(view.model.messages.models.length).toBe(1);

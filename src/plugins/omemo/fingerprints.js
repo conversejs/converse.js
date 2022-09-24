@@ -12,11 +12,11 @@ export class Fingerprints extends CustomElement {
 
     async initialize () {
         this.devicelist = await api.omemo.devicelists.get(this.jid, true);
-        this.listenTo(this.devicelist.devices, 'change:bundle', this.requestUpdate);
-        this.listenTo(this.devicelist.devices, 'change:trusted', this.requestUpdate);
-        this.listenTo(this.devicelist.devices, 'remove', this.requestUpdate);
-        this.listenTo(this.devicelist.devices, 'add', this.requestUpdate);
-        this.listenTo(this.devicelist.devices, 'reset', this.requestUpdate);
+        this.listenTo(this.devicelist.devices, 'change:bundle', () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, 'change:trusted', () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, 'remove', () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, 'add', () => this.requestUpdate());
+        this.listenTo(this.devicelist.devices, 'reset', () => this.requestUpdate());
         this.requestUpdate();
     }
 

@@ -14,7 +14,7 @@ async function openModtools (_converse, view) {
     const message_form = view.querySelector('converse-muc-message-form');
     message_form.onKeyDown(enter);
     const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
-    await u.waitUntil(() => u.isVisible(modal.el), 1000);
+    await u.waitUntil(() => u.isVisible(modal), 1000);
     return modal;
 }
 
@@ -37,18 +37,18 @@ describe("The groupchat moderator tool", function () {
         await u.waitUntil(() => (view.model.occupants.length === 5), 1000);
 
         const modal = await openModtools(_converse, view);
-        let tab = modal.el.querySelector('#affiliations-tab');
+        let tab = modal.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
         tab.click();
-        let select = modal.el.querySelector('.select-affiliation');
+        let select = modal.querySelector('.select-affiliation');
         expect(select.value).toBe('owner');
         select.value = 'admin';
-        let button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+        let button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length);
-        let user_els = modal.el.querySelectorAll('.list-group--users > li');
+        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length);
+        let user_els = modal.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
         expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: wiccarocks@shakespeare.lit');
         expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: wiccan');
@@ -58,8 +58,8 @@ describe("The groupchat moderator tool", function () {
         select.value = 'owner';
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 2);
-        user_els = modal.el.querySelectorAll('.list-group--users > li');
+        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 2);
+        user_els = modal.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(2);
         expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: romeo@montague.lit');
         expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: romeo');
@@ -112,25 +112,25 @@ describe("The groupchat moderator tool", function () {
         ];
         await mock.returnMemberLists(_converse, muc_jid, members);
         await u.waitUntil(() => view.model.occupants.pluck('affiliation').filter(o => o === 'owner').length === 1);
-        const alert = modal.el.querySelector('.alert-primary');
+        const alert = modal.querySelector('.alert-primary');
         expect(alert.textContent.trim()).toBe('Affiliation changed');
 
-        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 1);
-        user_els = modal.el.querySelectorAll('.list-group--users > li');
+        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
+        user_els = modal.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
         expect(user_els[0].querySelector('.list-group-item.active').textContent.trim()).toBe('JID: romeo@montague.lit');
         expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: romeo');
         expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe('Affiliation: owner');
 
-        tab = modal.el.querySelector('#roles-tab');
-        tab.click();
-        select = modal.el.querySelector('.select-role');
-        expect(u.isVisible(select)).toBe(true);
+        modal.querySelector('#roles-tab').click();
+        select = modal.querySelector('.select-role');
+        await u.waitUntil(() => u.isVisible(select));
+
         expect(select.value).toBe('moderator');
-        button = modal.el.querySelector('.btn-primary[name="users_with_role"]');
+        button = modal.querySelector('.btn-primary[name="users_with_role"]');
         button.click();
 
-        const roles_panel = modal.el.querySelector('#roles-tabpanel');
+        const roles_panel = modal.querySelector('#roles-tabpanel');
         await u.waitUntil(() => roles_panel.querySelectorAll('.list-group--users > li').length === 1);
         select.value = 'participant';
         button.click();
@@ -158,35 +158,35 @@ describe("The groupchat moderator tool", function () {
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
         const modal = await openModtools(_converse, view);
-        const select = modal.el.querySelector('.select-affiliation');
+        const select = modal.querySelector('.select-affiliation');
         expect(select.value).toBe('owner');
         select.value = 'member';
-        const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 6);
+        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 6);
 
-        const nicks = Array.from(modal.el.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
+        const nicks = Array.from(modal.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
         expect(nicks.join(' ')).toBe('gower juliet romeo thirdwitch wiccan witch');
 
-        const filter = modal.el.querySelector('[name="filter"]');
+        const filter = modal.querySelector('[name="filter"]');
         expect(filter).not.toBe(null);
 
         filter.value = 'romeo';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
 
         filter.value = 'r';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 3));
+        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 3));
 
         filter.value = 'gower';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
 
         filter.value = 'RoMeO';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
 
     }));
 
@@ -259,40 +259,40 @@ describe("The groupchat moderator tool", function () {
         message_form.onKeyDown(enter);
 
         const modal = await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        await u.waitUntil(() => u.isVisible(modal), 1000);
 
-        const tab = modal.el.querySelector('#roles-tab');
+        const tab = modal.querySelector('#roles-tab');
         tab.click();
 
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
 
-        const select = modal.el.querySelector('.select-role');
+        const select = modal.querySelector('.select-role');
         expect(select.value).toBe('moderator');
         select.value = 'participant';
 
-        const button = modal.el.querySelector('.btn-primary[name="users_with_role"]');
+        const button = modal.querySelector('.btn-primary[name="users_with_role"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_role);
-        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 6);
+        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 6);
 
-        const nicks = Array.from(modal.el.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
+        const nicks = Array.from(modal.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
         expect(nicks.join(' ')).toBe('crone newb nomorenicks oldhag some1 tux');
 
-        const filter = modal.el.querySelector('[name="filter"]');
+        const filter = modal.querySelector('[name="filter"]');
         expect(filter).not.toBe(null);
 
         filter.value = 'tux';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
 
         filter.value = 'r';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 2));
+        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 2));
 
         filter.value = 'crone';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
-        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+        await u.waitUntil(() => ( modal.querySelectorAll('.list-group--users > li').length === 1));
     }));
 
     it("shows an error message if a particular affiliation list may not be retrieved",
@@ -310,14 +310,14 @@ describe("The groupchat moderator tool", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 5));
         const modal = await openModtools(_converse, view);
-        const tab = modal.el.querySelector('#affiliations-tab');
+        const tab = modal.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         tab.click();
-        const select = modal.el.querySelector('.select-affiliation');
+        const select = modal.querySelector('.select-affiliation');
         select.value = 'outcast';
-        const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
 
         const iq_query = await u.waitUntil(() => _.filter(
@@ -338,10 +338,10 @@ describe("The groupchat moderator tool", function () {
         _converse.connection._dataRecv(mock.createRequest(error));
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
 
-        const alert = await u.waitUntil(() => modal.el.querySelector('.alert'));
+        const alert = await u.waitUntil(() => modal.querySelector('.alert'));
         expect(alert.textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
 
-        const user_els = modal.el.querySelectorAll('.list-group--users > li');
+        const user_els = modal.querySelectorAll('.list-group--users > li');
         expect(user_els.length).toBe(1);
         expect(user_els[0].textContent.trim()).toBe('No users with that affiliation found.');
     }));
@@ -361,16 +361,16 @@ describe("The groupchat moderator tool", function () {
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
 
-        const tab = modal.el.querySelector('#affiliations-tab');
+        const tab = modal.querySelector('#affiliations-tab');
         tab.click();
-        const select = modal.el.querySelector('.select-affiliation');
+        const select = modal.querySelector('.select-affiliation');
         select.value = 'member';
-        const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 1);
+        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 1);
 
-        const user_els = modal.el.querySelectorAll('.list-group--users > li');
+        const user_els = modal.querySelectorAll('.list-group--users > li');
         const toggle = user_els[0].querySelector('.list-group-item:nth-child(3n) .toggle-form');
         const form = user_els[0].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
         expect(u.hasClass('hidden', form)).toBeTruthy();
@@ -422,19 +422,19 @@ describe("The groupchat moderator tool", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 3));
         const modal = await openModtools(_converse, view);
-        const tab = modal.el.querySelector('#affiliations-tab');
+        const tab = modal.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
         tab.click();
-        const show_affiliation_dropdown = modal.el.querySelector('.select-affiliation');
+        const show_affiliation_dropdown = modal.querySelector('.select-affiliation');
         show_affiliation_dropdown.value = 'member';
-        const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+        const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
 
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
-        await u.waitUntil(() => modal.el.querySelectorAll('.list-group--users > li').length === 2);
+        await u.waitUntil(() => modal.querySelectorAll('.list-group--users > li').length === 2);
 
-        const user_els = modal.el.querySelectorAll('.list-group--users > li');
+        const user_els = modal.querySelectorAll('.list-group--users > li');
         let change_affiliation_dropdown = user_els[0].querySelector('.select-affiliation');
         expect(Array.from(change_affiliation_dropdown.options).map(o => o.value)).toEqual(['member', 'outcast', 'none']);
 

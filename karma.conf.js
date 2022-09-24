@@ -10,7 +10,6 @@ module.exports = function(config) {
     files: [
       { pattern: 'dist/*.js.map', included: false },
       { pattern: 'dist/*.css.map', included: false },
-      { pattern: "dist/icons.js", served: true },
       { pattern: "dist/emojis.js", served: true },
       "src/shared/tests/tests.css",
       "node_modules/lodash/lodash.min.js",
@@ -107,6 +106,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/register/tests/register.js", type: 'module' },
       { pattern: "src/plugins/roomslist/tests/roomslist.js", type: 'module' },
       { pattern: "src/plugins/rootview/tests/root.js", type: 'module' },
+      { pattern: "src/plugins/rosterview/tests/add-contact-modal.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },

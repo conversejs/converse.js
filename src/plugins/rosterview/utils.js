@@ -1,5 +1,19 @@
+import log from "@converse/headless/log";
+import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 
+export function removeContact (contact) {
+    contact.removeFromRoster(
+        () => contact.destroy(),
+        (e) => {
+            e && log.error(e);
+            api.alert('error', __('Error'), [
+                __('Sorry, there was an error while trying to remove %1$s as a contact.',
+                contact.getDisplayName())
+            ]);
+        }
+    );
+}
 
 export function highlightRosterItem (chatbox) {
     _converse.roster?.get(chatbox.get('jid'))?.trigger('highlight');

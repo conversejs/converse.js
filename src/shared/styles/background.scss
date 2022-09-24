@@ -115,3 +115,11 @@
         }
     }
 }
+
+@include media-breakpoint-down(m) {
+    #conversejs-bg {
+        .converse-brand {
+            display: none;
+        }
+    }
+}

@@ -7,6 +7,18 @@
 - Show roster contacts with `subscription` set to `none`
 - Remove the `converse-carbons` plugin and make carbons part of the `converse-chat` plugin.
 - Remove the `message_carbons` configuration setting. Carbons are now always enabled.
+- Move the `converse-oauth` plugin to the [community-plugins](https://github.com/conversejs/community-plugins)
+- Don't apply message corrections when the MUC occupant-id doesn't match.
+- Update `nick` attribute on ChatRoom when user nickname changes
+- Restrict editing of MUC messages to ones with the same XEP-0421 occupant ID
+- Remove unfurls for links removed in a subsequent message correction
+- #2870: Fix for multiple URLs to be linkified when sent together in chat and adds a test for this.
+- #2879: Quotes, lines not aligned to the first line
+- #2925: Fix missing disco-items in browser storage.
+- #2936: Fix documentation about enable_smacks option, which is true by default.
+- #3005: Fix MUC messages with a fallback body not rendering.
+- #3007: Fix links becoming text when a message is edited
+- #3018: Fix MUC icons not functioning.
 
 ## 9.1.2 (2022-05-15)
 - Added fixes for Issue #2857. The fix is regarding Converse.js incorrectly applying text styling effects to HTTP URLs that contain special characters(`_`, `\``, `\`\`\``, `~`, `*`). With the fixes applied, the hyperlinks encompass the entire HTTP URL instead of only part of it
@@ -286,7 +298,7 @@ Soon we'll deprecate the latter, so prepare now.
 
 ## 6.0.0 (2020-01-09)
 
-- [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is not set to `true` by default.
+- [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is now set to `true` by default.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 - It's now possible to navigate the emoji-picker via the keyboard arrow keys.
 

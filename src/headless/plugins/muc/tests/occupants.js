@@ -33,6 +33,10 @@ describe("A MUC occupant", function () {
         const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
 
+        expect(model.occupants.length).toBe(1);
+        expect(model.get('occupant_id')).not.toBeFalsy();
+        expect(model.get('occupant_id')).toBe(model.occupants.at(0).get('occupant_id'));
+
         for (let i=0; i<mock.chatroom_names.length; i++) {
             // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
             const id = u.getUniqueId();
@@ -58,6 +62,11 @@ describe("A MUC occupant", function () {
         const nick = 'romeo';
         const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+
+        expect(model.occupants.length).toBe(1);
+        expect(model.get('occupant_id')).not.toBeFalsy();
+        expect(model.get('occupant_id')).toBe(model.occupants.at(0).get('occupant_id'));
+
         const occupant_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
         const stanza = u.toStanza(`

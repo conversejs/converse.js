@@ -87,7 +87,6 @@ describe("The OMEMO module", function() {
             keyCode: 13 // Enter
         });
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
-        console.log("Bundle fetched 4e30f35051b7b8b42abe083742187228");
         stanza = $iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -108,7 +107,6 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'), 1000);
-        console.log("Bundle fetched 482886413b977930064a5888b92134fe");
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),

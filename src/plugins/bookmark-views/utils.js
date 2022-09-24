@@ -1,4 +1,4 @@
-import MUCBookmarkFormModal from './modal.js';
+import './modal.js';
 import invokeMap from 'lodash-es/invokeMap';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
@@ -27,8 +27,8 @@ export function getHeadingButtons (view, buttons) {
 
 export async function removeBookmarkViaEvent (ev) {
     ev.preventDefault();
-    const name = ev.target.getAttribute('data-bookmark-name');
-    const jid = ev.target.getAttribute('data-room-jid');
+    const name = ev.currentTarget.getAttribute('data-bookmark-name');
+    const jid = ev.currentTarget.getAttribute('data-room-jid');
     const result = await api.confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name));
     if (result) {
         invokeMap(_converse.bookmarks.where({ jid }), Model.prototype.destroy);
@@ -37,8 +37,8 @@ export async function removeBookmarkViaEvent (ev) {
 
 export function addBookmarkViaEvent (ev) {
     ev.preventDefault();
-    const jid = ev.target.getAttribute('data-room-jid');
-    api.modal.show(MUCBookmarkFormModal, { jid }, ev);
+    const jid = ev.currentTarget.getAttribute('data-room-jid');
+    api.modal.show('converse-bookmark-form-modal', { jid }, ev);
 }
 
 

@@ -8,6 +8,16 @@ import { Strophe } from 'strophe.js/src/strophe.js';
  * @memberOf _converse.api
  */
 export default {
+
+    /**
+     * @method _converse.api.connection.authenticated
+     * @memberOf _converse.api.connection
+     * @returns {boolean} Whether we're authenticated to the XMPP server or not
+     */
+    authenticated () {
+        return _converse?.connection?.authenticated && true;
+    },
+
     /**
      * @method _converse.api.connection.connected
      * @memberOf _converse.api.connection

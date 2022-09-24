@@ -31,8 +31,8 @@ const isString = s => typeof s === 'string';
 // the zero-width whitespace character
 const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${'\u200B'.repeat(m.length - 2)}\n`);
 
-const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info">${o.mention}</span>`;
-const tpl_mention = o => html`<span class="mention">${o.mention}</span>`;
+const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
+const tpl_mention = o => html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
 
 /**
  * @class RichText
@@ -202,14 +202,15 @@ export class RichText extends String {
             const end = Number(ref.end) - full_offset;
             const mention = text.slice(begin, end);
             if (mention === this.nick) {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({ mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({...ref, mention }));
             } else {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({ mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({...ref, mention }));
             }
         });
     }
 
     /**
+
      * Check for whether a number is within multiple ranges of begin/end references. 
      * For example: given @param { Array } references array of [{ begin: 23, end: 30, ... }, { begin: 80, end: 100, ... }], function will return false if @param { Integer } search_range = `50`. If @param { Integer } search_range = `90`, function will return true
      * @param { Array } references - An array containing reference objects({begin: 1, end: 2, template: {...} }) with ranges of numbers representing begin and end portions of outgoing Chat messages
@@ -314,8 +315,30 @@ export class RichText extends String {
                     });
                     i = end;
                 }
+
                 i++;
+                continue;
             }
+            const { d, length } = getDirectiveAndLength(this, i);
+            if (d && length) {
+                const is_quote = isQuoteDirective(d);
+                const end = i + length;
+                const slice_end = is_quote ? end : end - d.length;
+                let slice_begin = d === '```' ? i + d.length + 1 : i + d.length;
+                if (is_quote && this[slice_begin] === ' ') {
+                    // Trim leading space inside codeblock
+                    slice_begin += 1;
+                }
+                const offset = slice_begin;
+                const text = this.slice(slice_begin, slice_end);
+                references.push({
+                    'begin': i,
+                    'template': getDirectiveTemplate(d, text, offset, this.options),
+                    end
+                });
+                i = end;
+            }
+
             if(urls_coords.length > 0){
                 for(var k = 0; k < references.length; k++){
                     var start_range = this.checkNumInRange(urls_coords, references[k].begin);
@@ -330,6 +353,7 @@ export class RichText extends String {
             }
             const begin_end_coords = filtered_refs.map(ref => ref.begin);
             filtered_refs = filtered_refs.filter(({begin}, index) => !begin_end_coords.includes(begin, index + 1));
+
         }
         filtered_refs.forEach(ref => this.addTemplateResult(ref.begin, ref.end, ref.template));
     }

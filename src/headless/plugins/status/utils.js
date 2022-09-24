@@ -101,10 +101,11 @@ export function sendCSI (stat) {
     _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
 }
 
+/**
+ * Set an interval of one second and register a handler for it.
+ * Required for the auto_away, auto_xa and csi_waiting_time features.
+ */
 export function registerIntervalHandler () {
-    /* Set an interval of one second and register a handler for it.
-     * Required for the auto_away, auto_xa and csi_waiting_time features.
-     */
     if (
         api.settings.get("auto_away") < 1 &&
         api.settings.get("auto_xa") < 1 &&
@@ -123,7 +124,6 @@ export function registerIntervalHandler () {
     window.addEventListener('keypress', _converse.onUserActivity);
     window.addEventListener('mousemove', _converse.onUserActivity);
     window.addEventListener(unloadevent, _converse.onUserActivity, {'once': true, 'passive': true});
-    window.addEventListener(unloadevent, () => _converse.session?.save('active', false));
     _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
 }
 

@@ -6,17 +6,18 @@ import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import u from '../../utils/form';
-import zipObject from 'lodash-es/zipObject';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
+import { handleCorrection } from '@converse/headless/shared/chat/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers';
+import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import { isUniView, getUniqueId, safeSave } from '@converse/headless/utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
-import { sendMarker } from '@converse/headless/shared/actions';
+import { sendMarker } from '@converse/headless/shared/actions.js';
+import { ROOMSTATUS } from './constants.js';
 
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
@@ -47,7 +48,7 @@ const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 const MUCSession = Model.extend({
     defaults () {
         return {
-            'connection_status': converse.ROOMSTATUS.DISCONNECTED
+            'connection_status': ROOMSTATUS.DISCONNECTED
         };
     }
 });
@@ -125,7 +126,7 @@ const ChatRoomMixin = {
     },
 
     isEntered () {
-        return this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+        return this.session.get('connection_status') === ROOMSTATUS.ENTERED;
     },
 
     /**
@@ -143,7 +144,7 @@ const ChatRoomMixin = {
             await this.fetchMessages().catch(e => log.error(e));
             return true;
         } else {
-            this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+            this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
             this.clearOccupantsCache();
             return false;
         }
@@ -165,11 +166,11 @@ const ChatRoomMixin = {
             return this;
         }
         // Set this early, so we don't rejoin in onHiddenChange
-        this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
+        this.session.save('connection_status', ROOMSTATUS.CONNECTING);
         await this.refreshDiscoInfo();
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
-            safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
+            safeSave(this.session, { 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });
             if (api.settings.get('muc_show_logs_before_join')) {
                 await this.fetchMessages();
             }
@@ -185,7 +186,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#rejoin
      */
     rejoin () {
-        this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+        this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
         this.registerHandlers();
         this.clearOccupantsCache();
         return this.join();
@@ -272,7 +273,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#onHiddenChange
      */
     async onHiddenChange () {
-        const roomstatus = converse.ROOMSTATUS;
+        const roomstatus = ROOMSTATUS;
         const conn_status = this.session.get('connection_status');
         if (this.get('hidden')) {
             if (conn_status === roomstatus.ENTERED &&
@@ -294,7 +295,7 @@ const ChatRoomMixin = {
     onOccupantAdded (occupant) {
         if (
             _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED) &&
-            this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
+            this.session.get('connection_status') === ROOMSTATUS.ENTERED &&
             occupant.get('show') === 'online'
         ) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
@@ -380,10 +381,10 @@ const ChatRoomMixin = {
         this.features = new Model(
             Object.assign(
                 { id },
-                zipObject(
-                    converse.ROOM_FEATURES,
-                    converse.ROOM_FEATURES.map(() => false)
-                )
+                converse.ROOM_FEATURES.reduce((acc, feature) => {
+                    acc[feature] = false;
+                    return acc;
+                }, {})
             )
         );
         this.features.browserStorage = _converse.createStore(id, 'session');
@@ -882,12 +883,15 @@ const ChatRoomMixin = {
                 'error': (_, e) => { log.error(e); resolve(); }
             }));
         }
-        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+        safeSave(this.session, { 'connection_status': ROOMSTATUS.DISCONNECTED });
     },
 
     async close (ev) {
-        safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.CLOSING });
-        this.sendMarkerForLastMessage('received', true);
+        const { ENTERED, CLOSING } = ROOMSTATUS;
+        const was_entered = this.session.get('connection_status') === ENTERED;
+
+        safeSave(this.session, { 'connection_status': CLOSING });
+        was_entered && this.sendMarkerForLastMessage('received', true);
         await this.unregisterNickname();
         await this.leave();
 
@@ -938,6 +942,13 @@ const ChatRoomMixin = {
         return this.occupants.findOccupant({ nick });
     },
 
+    getReferenceURIFromNickname (nickname) {
+        const muc_jid = this.get('jid');
+        const occupant = this.getOccupant(nickname);
+        const uri = (this.features.get('nonanonymous') && occupant?.get('jid')) || `${muc_jid}/${nickname}`;
+        return encodeURI(`xmpp:${uri}`);
+    },
+
     /**
      * Given a text message, look for `@` mentions and turn them into
      * XEP-0372 references
@@ -951,13 +962,6 @@ const ChatRoomMixin = {
 
         const getMatchingNickname = p.findFirstMatchInArray(this.getAllKnownNicknames());
 
-        const uriFromNickname = nickname => {
-            const jid = this.get('jid');
-            const occupant = this.getOccupant(nickname) || this.getOccupant(jid);
-            const uri = (this.features.get('nonanonymous') && occupant?.get('jid')) || `${jid}/${nickname}`;
-            return encodeURI(`xmpp:${uri}`);
-        };
-
         const matchToReference = match => {
             let at_sign_index = match[0].indexOf('@');
             if (match[0][at_sign_index + 1] === '@') {
@@ -968,7 +972,7 @@ const ChatRoomMixin = {
             const end = begin + match[0].length - at_sign_index;
             const value = getMatchingNickname(match[1]);
             const type = 'mention';
-            const uri = uriFromNickname(value);
+            const uri = this.getReferenceURIFromNickname(value);
             return { begin, end, value, type, uri };
         };
 
@@ -981,6 +985,7 @@ const ChatRoomMixin = {
     },
 
     async getOutgoingMessageAttributes (attrs) {
+        await api.emojis.initialize();
         const is_spoiler = this.get('composing_spoiler');
         let text = '', references;
         if (attrs?.body) {
@@ -1167,13 +1172,12 @@ const ChatRoomMixin = {
      */
     async getDiscoInfoFeatures () {
         const features = await api.disco.getFeatures(this.get('jid'));
-        const attrs = Object.assign(
-            zipObject(
-                converse.ROOM_FEATURES,
-                converse.ROOM_FEATURES.map(() => false)
-            ),
-            { 'fetched': new Date().toISOString() }
-        );
+
+        const attrs = converse.ROOM_FEATURES.reduce((acc, feature) => {
+            acc[feature] = false;
+            return acc;
+        }, { 'fetched': new Date().toISOString() });
+
         features.each(feature => {
             const fieldname = feature.get('var');
             if (!fieldname.startsWith('muc_')) {
@@ -1284,7 +1288,7 @@ const ChatRoomMixin = {
         if (!args.startsWith('@')) {
             args = '@' + args;
         }
-        const [text, references] = this.parseTextForReferences(args); // eslint-disable-line no-unused-vars
+        const [_text, references] = this.parseTextForReferences(args); // eslint-disable-line no-unused-vars
         if (!references.length) {
             const message = __("Error: couldn't find a groupchat participant based on your arguments");
             this.createMessage({ message, 'type': 'error' });
@@ -1726,6 +1730,19 @@ const ChatRoomMixin = {
             'resource': Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource
         }
 
+        if (data.is_me) {
+            let modified = false;
+            if (data.states.includes(converse.MUC_NICK_CHANGED_CODE)) {
+                modified = true;
+                this.set('nick', data.nick);
+            }
+            if (this.features.get(Strophe.NS.OCCUPANTID) && this.get('occupant-id') !== data.occupant_id) {
+                modified = true;
+                this.set('occupant_id', data.occupant_id);
+            }
+            modified && this.save();
+        }
+
         if (occupant) {
             occupant.save(attributes);
         } else {
@@ -1887,8 +1904,10 @@ const ChatRoomMixin = {
     },
 
     getUpdatedMessageAttributes (message, attrs) {
-        const new_attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs);
-        new_attrs['from_muc'] = attrs['from_muc'];
+        const new_attrs = {
+            ..._converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs),
+            ...pick(attrs, ['from_muc', 'occupant_id']),
+        }
 
         if (this.isOwnMessage(attrs)) {
             const stanza_id_keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id'));
@@ -1909,22 +1928,10 @@ const ChatRoomMixin = {
      * @returns {Promise<boolean>}
      */
     async isJoined () {
-        const jid = this.get('jid');
-        const ping = $iq({
-            'to': `${jid}/${this.get('nick')}`,
-            'type': 'get'
-        }).c('ping', { 'xmlns': Strophe.NS.PING });
-        try {
-            await api.sendIQ(ping);
-        } catch (e) {
-            if (e === null) {
-                log.warn(`isJoined: Timeout error while checking whether we're joined to MUC: ${jid}`);
-            } else {
-                log.warn(`isJoined: Apparently we're no longer connected to MUC: ${jid}`);
-            }
-            return false;
+        if (!api.connection.connected()) {
+            await new Promise(resolve => api.listen.once('reconnected', resolve));
         }
-        return true;
+        return api.ping(`${this.get('jid')}/${this.get('nick')}`)
     },
 
     /**
@@ -1936,7 +1943,7 @@ const ChatRoomMixin = {
      *  Nodes(s) to be added as child nodes of the `presence` XML element.
      */
     async sendStatusPresence (type, status, child_nodes) {
-        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+        if (this.session.get('connection_status') === ROOMSTATUS.ENTERED) {
             const presence = await _converse.xmppstatus.constructPresence(type, this.getRoomJIDAndNick(), status);
             child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             api.send(presence);
@@ -2267,7 +2274,7 @@ const ChatRoomMixin = {
             this.updateNotifications(attrs.nick, attrs.chat_state);
         }
         if (u.shouldCreateGroupchatMessage(attrs)) {
-            const msg = this.handleCorrection(attrs) || (await this.createMessage(attrs));
+            const msg = await handleCorrection(this, attrs) || (await this.createMessage(attrs));
             this.removeNotification(attrs.nick, ['composing', 'paused']);
             this.handleUnreadMessage(msg);
         }
@@ -2276,7 +2283,7 @@ const ChatRoomMixin = {
     handleModifyError (pres) {
         const text = pres.querySelector('error text')?.textContent;
         if (text) {
-            if (this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+            if (this.session.get('connection_status') === ROOMSTATUS.CONNECTING) {
                 this.setDisconnectionState(text);
             } else {
                 const attrs = {
@@ -2315,7 +2322,7 @@ const ChatRoomMixin = {
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
         const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
         const message = _converse.muc.disconnect_messages[codes[0]];
-        const status = codes.includes('301') ? converse.ROOMSTATUS.BANNED : converse.ROOMSTATUS.DISCONNECTED;
+        const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);
     },
 
@@ -2487,9 +2494,9 @@ const ChatRoomMixin = {
      *  implied by) the server.
      * @param { String } reason - The reason provided for the disconnection
      * @param { String } actor - The person (if any) responsible for this disconnection
-     * @param { Integer } status - The status code (see `converse.ROOMSTATUS`)
+     * @param { Integer } status - The status code (see `ROOMSTATUS`)
      */
-    setDisconnectionState (message, reason, actor, status=converse.ROOMSTATUS.DISCONNECTED) {
+    setDisconnectionState (message, reason, actor, status=ROOMSTATUS.DISCONNECTED) {
         this.session.save({
             'connection_status': status,
             'disconnection_actor': actor,
@@ -2515,7 +2522,7 @@ const ChatRoomMixin = {
                     'The nickname you chose is reserved or ' + 'currently in use, please choose a different one.'
                 )
             });
-            this.session.save({ 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
+            this.session.save({ 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });
         }
     },
 
@@ -2537,7 +2544,7 @@ const ChatRoomMixin = {
         } else if (error_type === 'auth') {
             if (sizzle(`not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
                 this.save({ 'password_validation_message': reason || __('Password incorrect') });
-                this.session.save({ 'connection_status': converse.ROOMSTATUS.PASSWORD_REQUIRED });
+                this.session.save({ 'connection_status': ROOMSTATUS.PASSWORD_REQUIRED });
             }
             if (error.querySelector('registration-required')) {
                 const message = __('You are not on the member list of this groupchat.');
@@ -2547,7 +2554,7 @@ const ChatRoomMixin = {
                     _converse.muc.disconnect_messages[301],
                     reason,
                     null,
-                    converse.ROOMSTATUS.BANNED
+                    ROOMSTATUS.BANNED
                 );
             }
         } else if (error_type === 'cancel') {
@@ -2563,7 +2570,7 @@ const ChatRoomMixin = {
                     ?.textContent.replace(/^xmpp:/, '')
                     .replace(/\?join$/, '');
                 this.save({ moved_jid, 'destroyed_reason': reason });
-                this.session.save({ 'connection_status': converse.ROOMSTATUS.DESTROYED });
+                this.session.save({ 'connection_status': ROOMSTATUS.DESTROYED });
             } else if (error.querySelector('conflict')) {
                 this.onNicknameClash(stanza);
             } else if (error.querySelector('item-not-found')) {
@@ -2597,7 +2604,7 @@ const ChatRoomMixin = {
             if (error?.getAttribute('type') === 'wait' && error?.querySelector('resource-constraint')) {
                 // If we get a <resource-constraint> error, we assume it's in context of XEP-0437 RAI.
                 // We remove this MUC's host from the list of enabled domains and rejoin the MUC.
-                if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+                if (this.session.get('connection_status') === ROOMSTATUS.DISCONNECTED) {
                     this.rejoin();
                 }
             }
@@ -2619,9 +2626,9 @@ const ChatRoomMixin = {
             this.onOwnPresence(stanza);
             if (
                 this.getOwnRole() !== 'none' &&
-                this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING
+                this.session.get('connection_status') === ROOMSTATUS.CONNECTING
             ) {
-                this.session.save('connection_status', converse.ROOMSTATUS.CONNECTED);
+                this.session.save('connection_status', ROOMSTATUS.CONNECTED);
             }
         } else {
             this.updateOccupantsOnPresence(stanza);
@@ -2645,47 +2652,35 @@ const ChatRoomMixin = {
      */
     async onOwnPresence (stanza) {
         await this.occupants.fetched;
+
+        if (stanza.getAttribute('type') === 'unavailable') {
+            this.handleDisconnection(stanza);
+            return;
+        }
+
         const old_status = this.session.get('connection_status');
-        if (stanza.getAttribute('type') !== 'unavailable' &&
-            old_status !== converse.ROOMSTATUS.ENTERED &&
-            old_status !== converse.ROOMSTATUS.CLOSING
+        if (old_status !== ROOMSTATUS.ENTERED &&
+            old_status !== ROOMSTATUS.CLOSING
         ) {
             // Set connection_status before creating the occupant, but
             // only trigger afterwards, so that plugins can access the
             // occupant in their event handlers.
-            this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, { 'silent': true });
+            this.session.save('connection_status', ROOMSTATUS.ENTERED, { 'silent': true });
             this.updateOccupantsOnPresence(stanza);
             this.session.trigger('change:connection_status', this.session, old_status);
         } else {
             this.updateOccupantsOnPresence(stanza);
         }
 
-        if (stanza.getAttribute('type') === 'unavailable') {
-            this.handleDisconnection(stanza);
-            return;
-        } else {
-            const locked_room = stanza.querySelector("status[code='201']");
-            if (locked_room) {
-                if (this.get('auto_configure')) {
-                    this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                } else if (api.settings.get('muc_instant_rooms')) {
-                    // Accept default configuration
-                    this.sendConfiguration().then(() => this.refreshDiscoInfo());
-                } else {
-                    this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
-                    return;
-                }
-            } else if (!this.features.get('fetched')) {
-                // The features for this groupchat weren't fetched.
-                // That must mean it's a new groupchat without locking
-                // (in which case Prosody doesn't send a 201 status),
-                // otherwise the features would have been fetched in
-                // the "initialize" method already.
-                if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
-                    this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                } else {
-                    this.getDiscoInfo();
-                }
+        const locked_room = stanza.querySelector("status[code='201']");
+        if (locked_room) {
+            if (this.get('auto_configure')) {
+                await this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
+            } else if (api.settings.get('muc_instant_rooms')) {
+                // Accept default configuration
+                await this.sendConfiguration().then(() => this.refreshDiscoInfo());
+            } else {
+                this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
             }
         }
     },

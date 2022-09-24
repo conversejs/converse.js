@@ -10,17 +10,17 @@ describe('The "Groupchats" List modal', function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('muc-list-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000);
+            const modal = _converse.api.modal.get('converse-muc-list-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
             // See: https://xmpp.org/extensions/xep-0045.html#disco-rooms
-            expect(modal.el.querySelectorAll('.available-chatrooms li').length).toBe(0);
+            expect(modal.querySelectorAll('.available-chatrooms li').length).toBe(0);
 
-            const server_input = modal.el.querySelector('input[name="server"]');
+            const server_input = modal.querySelector('input[name="server"]');
             expect(server_input.placeholder).toBe('conference.example.org');
             server_input.value = 'chat.shakespeare.lit';
-            modal.el.querySelector('input[type="submit"]').click();
+            modal.querySelector('input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -55,8 +55,8 @@ describe('The "Groupchats" List modal', function () {
                 .c('item', { jid: 'street@chat.shakespeare.lit', name: 'A street' }).nodeTree;
             _converse.connection._dataRecv(mock.createRequest(iq));
 
-            await u.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 11);
-            const rooms = modal.el.querySelectorAll('.available-chatrooms li');
+            await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 11);
+            const rooms = modal.querySelectorAll('.available-chatrooms li');
             expect(rooms[0].textContent.trim()).toBe('Groupchats found');
             expect(rooms[1].textContent.trim()).toBe('A Lonely Heath');
             expect(rooms[2].textContent.trim()).toBe('A Dark Cave');
@@ -83,9 +83,9 @@ describe('The "Groupchats" List modal', function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('muc-list-modal');
-            await u.waitUntil(() => u.isVisible(modal.el), 1000);
-            const server_input = modal.el.querySelector('input[name="server"]');
+            const modal = _converse.api.modal.get('converse-muc-list-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
+            const server_input = modal.querySelector('input[name="server"]');
             expect(server_input.value).toBe('muc.example.org');
         })
     );
@@ -99,12 +99,12 @@ describe('The "Groupchats" List modal', function () {
                 const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
                 roomspanel.querySelector('.show-list-muc-modal').click();
                 mock.closeControlBox(_converse);
-                const modal = _converse.api.modal.get('muc-list-modal');
-                await u.waitUntil(() => u.isVisible(modal.el), 1000);
+                const modal = _converse.api.modal.get('converse-muc-list-modal');
+                await u.waitUntil(() => u.isVisible(modal), 1000);
                 spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
-                expect(modal.el.querySelector('input[name="server"]')).toBe(null);
-                expect(modal.el.querySelector('input[type="submit"]')).toBe(null);
+                expect(modal.querySelector('input[name="server"]')).toBe(null);
+                expect(modal.querySelector('input[type="submit"]')).toBe(null);
                 await u.waitUntil(() => _converse.chatboxes.length);
                 const sent_stanza = await u.waitUntil(() =>
                     _converse.connection.sent_stanzas
@@ -129,8 +129,8 @@ describe('The "Groupchats" List modal', function () {
                     .c('item', { jid: 'forres@chat.shakespeare.lit', name: 'The Palace' }).up();
                 _converse.connection._dataRecv(mock.createRequest(iq));
 
-                await u.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 4);
-                const rooms = modal.el.querySelectorAll('.available-chatrooms li');
+                await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 4);
+                const rooms = modal.querySelectorAll('.available-chatrooms li');
                 expect(rooms[0].textContent.trim()).toBe('Groupchats found');
                 expect(rooms[1].textContent.trim()).toBe('A Lonely Heath');
                 expect(rooms[2].textContent.trim()).toBe('A Dark Cave');

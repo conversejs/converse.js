@@ -74,7 +74,8 @@ function slideOutWrapup (el) {
     el.style.height = '';
 }
 
-function getFileName (uri) {
+export function getFileName (url) {
+    const uri = getURI(url);
     try {
         return decodeURI(uri.filename());
     } catch (error) {

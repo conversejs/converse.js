@@ -5,11 +5,27 @@
 .conversejs {
     @import "bootstrap/scss/card";
 
-    converse-chats {
+    converse-message-unfurl {
         .card--unfurl {
             background-color: var(--chat-content-background-color);
+            .card-body {
+                padding: 0.75rem;
+                .vcard-title {
+                    font-size: 90%;
+                }
+            }
+            .card-text {
+                converse-rich-text {
+                    font-size: 80%;
+                }
+            }
+            .card-img-top {
+                margin-top: 0.75rem;
+            }
         }
+    }
 
+    converse-chats {
         &.converse-embedded,
         &.converse-fullscreen {
             .message {
@@ -22,10 +38,10 @@
                         max-width: 75%;
                     }
                     @include media-breakpoint-up(lg) {
-                        max-width: 66%;
+                        max-width: 60%;
                     }
                     @include media-breakpoint-up(xl) {
-                        max-width: 50%;
+                        max-width: 30%;
                     }
                 }
             }

@@ -30,7 +30,7 @@ export default (el) => {
     return html`
         ${ el.model.get('is_spoiler') ? tpl_spoiler_hint : '' }
         ${ el.model.get('subject') ? html`<div class="chat-msg__subject">${el.model.get('subject')}</div>` : '' }
-        <span>
+        <span class="chat-msg__body--wrapper">
             <converse-chat-message-body
                 class="chat-msg__text ${el.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                 .model="${el.model}"

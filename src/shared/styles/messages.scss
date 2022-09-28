@@ -156,7 +156,7 @@
             }
 
             converse-chat-message-body {
-                display: inline;
+                overflow-y: hidden; // Hide zalgo text that overflows vertically
             }
 
             .chat-msg__message {
@@ -165,8 +165,8 @@
                 flex-direction: column;
                 width: 100%;
                 overflow-wrap: break-word;
-                span {
-                    overflow-y: hidden;
+                .chat-msg__body--wrapper {
+                    display: flex;
                 }
             }
 

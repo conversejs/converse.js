@@ -1,0 +1,25 @@
+@font-face {
+  font-family: 'Baumans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Baumans Regular'), local('Baumans-Regular'), url('webfonts/baumans.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Muli Regular'), local('Muli-Regular'), url('webfonts/muli.ttf') format('truetype');
+}
+
+.conversejs, .converse-website {
+  /* Apparent font-awesome bug? The circle has some kind of bottom margin */
+
+  converse-icon:before {
+    content: none !important;
+  }
+
+  .fa-info-circle {
+      height: 1em;
+  }
+}

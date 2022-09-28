@@ -165,6 +165,9 @@
                 flex-direction: column;
                 width: 100%;
                 overflow-wrap: break-word;
+                span {
+                    overflow-y: hidden;
+                }
             }
 
             .chat-msg__edit-modal {
@@ -183,7 +186,6 @@
                 white-space: pre-wrap;
                 word-wrap: break-word;
                 word-break: break-word;
-                overflow-y: hidden;
                 a {
                     word-wrap: break-word;
                     word-break: break-all;

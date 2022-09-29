@@ -36,6 +36,18 @@
 
     #converse-modals {
         .modal {
+            .nav-item {
+                margin: 0.25em;
+                &:hover {
+                    .nav-link {
+                        background-color: var(--primary-color-light);
+                        &.active {
+                            background-color: var(--primary-color);
+                        }
+                    }
+                }
+            }
+
             .modal-content {
                 box-shadow: var(--raised-el-shadow);
             }

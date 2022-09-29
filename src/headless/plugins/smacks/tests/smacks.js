@@ -231,7 +231,6 @@ describe("XEP-0198 Stream Management", function () {
                 "unacked_stanzas": [],
                 "smacks_stream_id": "some-long-sm-id",
                 "push_enabled": ["romeo@montague.lit"],
-                "carbons_enabled": true,
                 "roster_cached": true
             })
         );

@@ -1,4 +1,3 @@
-import './modal.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 const { u } = converse.env;

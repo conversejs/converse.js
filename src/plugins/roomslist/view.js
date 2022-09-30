@@ -92,7 +92,8 @@ export class RoomsList extends CustomElement {
 
     toggleRoomsList (ev) {
         ev?.preventDefault?.();
-        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
+        const target = ev.currentTarget;
+        const icon_el = target.matches('.fa') ? target : target.querySelector('.fa');
         if (icon_el.classList.contains("fa-caret-down")) {
             u.slideIn(this.querySelector('.open-rooms-list')).then(() => {
                 this.model.save({'toggle-state': _converse.CLOSED});

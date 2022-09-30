@@ -1,7 +1,8 @@
 import avatar from 'shared/avatar/templates/avatar.js';
 import { __ } from 'i18n';
-import { html } from 'lit';
 import { api } from "@converse/headless/core";
+import { html } from 'lit';
+import { modal_close_button } from "plugins/modal/templates/buttons.js";
 
 const remove_button = (el) => {
     const i18n_remove_contact = __('Remove as contact');
@@ -22,14 +23,17 @@ export const tpl_footer = (el) => {
     const i18n_refresh = __('Refresh');
     const allow_contact_removal = api.settings.get('allow_contact_removal');
     return html`
-        <button type="button" class="btn btn-info refresh-contact" @click=${ev => el.refreshContact(ev)}>
-            <converse-icon
-                class="fa fa-refresh"
-                color="var(--text-color-lighten-15-percent)"
-                size="1em"
-            ></converse-icon>
-            ${i18n_refresh}</button>
-        ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }
+        <div class="modal-footer">
+            ${ modal_close_button }
+            <button type="button" class="btn btn-info refresh-contact" @click=${ev => el.refreshContact(ev)}>
+                <converse-icon
+                    class="fa fa-refresh"
+                    color="var(--text-color-lighten-15-percent)"
+                    size="1em"
+                ></converse-icon>
+                ${i18n_refresh}</button>
+            ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }
+        </div>
     `;
 }
 

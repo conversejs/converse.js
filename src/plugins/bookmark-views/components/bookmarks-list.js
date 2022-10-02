@@ -2,6 +2,7 @@ import debounce from "lodash-es/debounce";
 import tpl_bookmarks_list from './templates/list.js';
 import tpl_spinner from "templates/spinner.js";
 import { CustomElement } from 'shared/components/element.js';
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from '@converse/headless/core.js';
 import { initStorage } from '@converse/headless/utils/storage.js';
 
@@ -23,7 +24,7 @@ export default class BookmarksView extends CustomElement {
         this.listenTo(chatboxes, 'remove', () => this.requestUpdate());
 
         const id = `converse.bookmarks-list-model-${_converse.bare_jid}`;
-        this.model = new _converse.BookmarksList({ id });
+        this.model = new Model({ id });
         initStorage(this.model, id);
 
         this.listenTo(this.model, 'change', () => this.requestUpdate());

@@ -17,10 +17,11 @@ export class RoomsList extends CustomElement {
         initStorage(this.model, id);
         this.model.fetch();
 
-        this.listenTo(_converse.chatboxes, 'add', this.renderIfChatRoom)
-        this.listenTo(_converse.chatboxes, 'remove', this.renderIfChatRoom)
-        this.listenTo(_converse.chatboxes, 'destroy', this.renderIfChatRoom)
-        this.listenTo(_converse.chatboxes, 'change', this.renderIfRelevantChange)
+        this.listenTo(_converse.chatboxes, 'add', this.renderIfChatRoom);
+        this.listenTo(_converse.chatboxes, 'remove', this.renderIfChatRoom);
+        this.listenTo(_converse.chatboxes, 'destroy', this.renderIfChatRoom);
+        this.listenTo(_converse.chatboxes, 'change', this.renderIfRelevantChange);
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
 
         this.requestUpdate();
     }
@@ -42,15 +43,13 @@ export class RoomsList extends CustomElement {
             'addBookmark': ev => this.addBookmark(ev),
             'allow_bookmarks': api.settings.get('allow_bookmarks') && _converse.bookmarks,
             'closeRoom': ev => this.closeRoom(ev),
-            'collapsed': this.model.get('toggle-state') !== _converse.OPENED,
             'currently_open': room => isUniView() && !room.get('hidden'),
             'model': this.model,
             'openRoom': ev => this.openRoom(ev),
             'removeBookmark': ev => this.removeBookmark(ev),
             'rooms': _converse.chatboxes.filter(m => m.get('type') === _converse.CHATROOMS_TYPE),
             'showRoomDetailsModal': ev => this.showRoomDetailsModal(ev),
-            'toggleRoomsList': ev => this.toggleRoomsList(ev),
-            'toggle_state': this.model.get('toggle-state')
+            'toggleRoomsList': ev => this.toggleRoomsList(ev)
         });
     }
 
@@ -92,20 +91,11 @@ export class RoomsList extends CustomElement {
 
     toggleRoomsList (ev) {
         ev?.preventDefault?.();
-        const target = ev.currentTarget;
-        const icon_el = target.matches('.fa') ? target : target.querySelector('.fa');
-        if (icon_el.classList.contains("fa-caret-down")) {
-            u.slideIn(this.querySelector('.open-rooms-list')).then(() => {
-                this.model.save({'toggle-state': _converse.CLOSED});
-                icon_el.classList.remove("fa-caret-down");
-                icon_el.classList.add("fa-caret-right");
-            });
+        const list_el = this.querySelector('.open-rooms-list');
+        if (this.model.get('toggle_state') === _converse.CLOSED) {
+            u.slideOut(list_el).then(() => this.model.save({'toggle_state': _converse.OPENED}));
         } else {
-            u.slideOut(this.querySelector('.open-rooms-list')).then(() => {
-                this.model.save({'toggle-state': _converse.OPENED});
-                icon_el.classList.remove("fa-caret-right");
-                icon_el.classList.add("fa-caret-down");
-            });
+            u.slideIn(list_el).then(() => this.model.save({'toggle_state': _converse.CLOSED}));
         }
     }
 }

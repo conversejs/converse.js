@@ -13,5 +13,16 @@
                 padding: 0;
             }
         }
+
+        .open-rooms-toggle, .open-rooms-toggle .fa {
+            color: var(--groupchats-header-color) !important;
+            &:hover {
+                color: var(--chatroom-head-bg-color-dark) !important;
+            }
+        }
+
+        .open-rooms-toggle {
+            white-space: nowrap;
+        }
     }
 }

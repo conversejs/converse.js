@@ -155,10 +155,6 @@
                 margin-left: 0;
             }
 
-            converse-chat-message-body {
-                overflow-y: hidden; // Hide zalgo text that overflows vertically
-            }
-
             .chat-msg__message {
                 line-height: 1.65em;
                 display: inline-flex;

@@ -3,6 +3,9 @@
 @import "shared/styles/_mixins.scss";
 
 converse-chat-message-body {
+    margin-right: 0.5em;
+    overflow-y: hidden; // Hide zalgo text that overflows vertically
+
     audio {
         display: block;
         @include media-breakpoint-down(sm) {

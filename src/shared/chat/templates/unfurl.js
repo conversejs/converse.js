@@ -17,14 +17,14 @@ const tpl_url_wrapper = (o, wrapped_template) =>
         : wrapped_template(o);
 
 const tpl_image = o =>
-    html`<converse-image class="card-img-top" href="${o.url}" src="${o.image}" .onImgLoad=${o.onload}></converse-image>`;
+    html`<converse-image class="card-img-top hor_centered" href="${o.url}" src="${o.image}" .onImgLoad=${o.onload}></converse-image>`;
 
 export default o => {
     const show_image = isValidImage(o.image);
     const has_body_info = o.title || o.description || o.url;
     if (show_image || has_body_info) {
         return html`<div class="card card--unfurl">
-            ${show_image ? tpl_url_wrapper(o, tpl_image) : ''}
+            ${show_image ? tpl_image(o) : ''}
             ${has_body_info
                 ? html` <div class="card-body">
                       ${o.title ? tpl_url_wrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}

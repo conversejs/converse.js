@@ -54,6 +54,6 @@ converse.plugins.add('converse-chat', {
         api.listen.on('clearSession', onClearSession);
 
         api.listen.on('connected', () => enableCarbons());
-        api.listen.on('reconnected', () => enableCarbons(true));
+        api.listen.on('reconnected', () => enableCarbons());
     },
 });

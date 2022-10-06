@@ -14,8 +14,11 @@ const list = (el, bookmarks) => {
                title="${desc_bookmarks}"
                @click=${() => el.toggleBookmarksList()}>
 
-                <span class="fa ${(toggle_state === _converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }">
-                </span> ${label_bookmarks}</a>
+               <converse-icon
+                   class="fa ${(toggle_state === _converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }"
+                   size="1em"
+                   color="var(--muc-color)">
+                </converse-icon> ${label_bookmarks}</a>
             <div class="items-list bookmarks rooms-list ${ (toggle_state === _converse.OPENED) ? 'fade-in' : 'hidden fade-out' }">
             ${ _converse.bookmarks.map(bm => bookmark_item(bm)) }
             </div>

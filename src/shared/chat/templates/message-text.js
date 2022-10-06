@@ -7,6 +7,10 @@ const tpl_edited_icon = (el) => {
     return html`<converse-icon title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${el.showMessageVersionsModal} size="1em"></converse-icon>`;
 }
 
+const tpl_checkmark = () => {
+    return html`<converse-icon size="1em" color="var(--chat-color)" class="fa fa-check chat-msg__receipt"></converse-icon>`
+}
+
 
 export default (el) => {
     const i18n_show = __('Show more');
@@ -30,14 +34,14 @@ export default (el) => {
     return html`
         ${ el.model.get('is_spoiler') ? tpl_spoiler_hint : '' }
         ${ el.model.get('subject') ? html`<div class="chat-msg__subject">${el.model.get('subject')}</div>` : '' }
-        <span>
+        <span class="chat-msg__body--wrapper">
             <converse-chat-message-body
                 class="chat-msg__text ${el.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                 .model="${el.model}"
                 hide_url_previews=${el.model.get('hide_url_previews')}
                 ?is_me_message=${el.model.isMeCommand()}
                 text="${text}"></converse-chat-message-body>
-            ${ (el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
+            ${ (el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message) ? tpl_checkmark() : '' }
             ${ (el.model.get('edited')) ? tpl_edited_icon(el) : '' }
         </span>
         ${ show_oob ? html`<div class="chat-msg__media">${getOOBURLMarkup(el.model.get('oob_url'))}</div>` : '' }

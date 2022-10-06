@@ -1,13 +1,13 @@
 import debounce from 'lodash-es/debounce';
 import isElement from 'lodash-es/isElement';
-import log from "@converse/headless/log.js";
+import log from "../../log.js";
 import sizzle from 'sizzle';
-import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
+import { BOSH_WAIT } from '../../shared/constants.js';
 import { Strophe } from 'strophe.js/src/core.js';
-import { _converse, api, clearSession } from "@converse/headless/core.js";
+import { _converse, api } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';
-import { setUserJID, } from '@converse/headless/utils/init.js';
-import { tearDown } from '@converse/headless/utils/core.js';
+import { clearSession, tearDown } from "../../utils/core.js";
+import { setUserJID, } from '../../utils/init.js';
 
 const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
 Strophe.Status.RECONNECTING = i + 1;

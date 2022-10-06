@@ -25,7 +25,7 @@ export default class Confirm extends BaseModal {
     }
 
     getModalTitle () {
-        this.model.get('title');
+        return this.model.get('title');
     }
 
     onConfimation (ev) {
@@ -49,6 +49,10 @@ export default class Confirm extends BaseModal {
         }
         this.confirmation.resolve(fields);
         this.modal.hide();
+    }
+
+    renderModalFooter () { // eslint-disable-line class-methods-use-this
+        return '';
     }
 }
 

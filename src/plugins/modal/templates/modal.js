@@ -19,10 +19,7 @@ export default (el) => {
                     </span>
                     ${ el.renderModal?.() ?? '' }
                 </div>
-                <div class="modal-footer">
-                    ${ modal_close_button }
-                    ${ el.renderModalFooter?.() ?? '' }
-                </div>
+                ${ el.renderModalFooter?.() ?? html`<div class="modal-footer">${ modal_close_button }</div>` }
             </div>
         </div>
     `;

@@ -151,19 +151,7 @@ export async function handleMessageStanza (stanza) {
  * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)
  * @param { Boolean } reconnecting
  */
-export async function enableCarbons (reconnecting) {
-    if (reconnecting && _converse.session.get('carbons_enabled')) {
-        if (_converse.session.get('smacks_enabled')) {
-            // No need to re-enable carbons when resuming a XEP-0198 stream
-            return;
-        }
-        _converse.session.set({'carbons_enabled': false})
-    }
-
-    if (_converse.session?.get('carbons_enabled')) {
-        return;
-    }
-
+export async function enableCarbons () {
     const domain = Strophe.getDomainFromJid(_converse.bare_jid);
     const supported = await api.disco.supports(Strophe.NS.CARBONS, domain);
 
@@ -184,8 +172,6 @@ export async function enableCarbons (reconnecting) {
         log.warn('An error occurred while trying to enable message carbons.');
         log.error(result);
     } else {
-        _converse.session.set({'carbons_enabled': true});
         log.debug('Message carbons have been enabled.');
     }
-    _converse.session.save(); // Gather multiple sets into one save
 }

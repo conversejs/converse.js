@@ -12,6 +12,8 @@
 - Update `nick` attribute on ChatRoom when user nickname changes
 - Restrict editing of MUC messages to ones with the same XEP-0421 occupant ID
 - Remove unfurls for links removed in a subsequent message correction
+- #1004: Stop using fonts to render icons and use SVG instead
+- #2797: Weird unicode characters rendering outside of line-height
 - #2870: Fix for multiple URLs to be linkified when sent together in chat and adds a test for this.
 - #2879: Quotes, lines not aligned to the first line
 - #2925: Fix missing disco-items in browser storage.

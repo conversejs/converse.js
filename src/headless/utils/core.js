@@ -38,7 +38,6 @@ export function isUniView () {
     return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
 }
 
-
 export async function tearDown () {
     await _converse.api.trigger('beforeTearDown', {'synchronous': true});
     window.removeEventListener('click', _converse.onUserActivity);
@@ -50,6 +49,21 @@ export async function tearDown () {
     _converse.api.trigger('afterTearDown');
     return _converse;
 }
+
+
+export function clearSession () {
+    _converse.session?.destroy();
+    delete _converse.session;
+    _converse.shouldClearCache() && _converse.api.user.settings.clear();
+    /**
+     * Synchronouse event triggered once the user session has been cleared,
+     * for example when the user has logged out or when Converse has
+     * disconnected for some other reason.
+     * @event _converse#clearSession
+     */
+    return _converse.api.trigger('clearSession', {'synchronous': true});
+}
+
 
 /**
  * Given a message object, return its text with @ chars

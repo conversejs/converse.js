@@ -482,20 +482,6 @@ _converse.shouldClearCache = () => (
 );
 
 
-export function clearSession () {
-    _converse.session?.destroy();
-    delete _converse.session;
-    _converse.shouldClearCache() && _converse.api.user.settings.clear();
-    /**
-     * Synchronouse event triggered once the user session has been cleared,
-     * for example when the user has logged out or when Converse has
-     * disconnected for some other reason.
-     * @event _converse#clearSession
-     */
-    return _converse.api.trigger('clearSession', {'synchronous': true});
-}
-
-
 _converse.initConnection = function () {
     const api = _converse.api;
 

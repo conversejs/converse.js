@@ -962,22 +962,6 @@ hide_offline_users
 
 If set to ``true``, then offline users aren't shown in the roster.
 
-hide_open_bookmarks
--------------------
-
-* Default:  ``false`` (``true`` when the `view_mode`_ is set to ``fullscreen``).
-
-This setting applies to the ``converse-bookmarks`` plugin and specfically the
-list of bookmarks shown in the ``Rooms`` tab of the control box.
-
-By default all bookmarks are shown in that list, if this setting is set to
-``true``, then only bookmarks for rooms not currently open (i.e. that the
-current user hasn't joined), are shown.
-
-Makes sense to set this to ``true`` when also using the non-core
-``converse-roomslist`` plugin, which shows a list of currently open (i.e.
-"joined") rooms.
-
 .. _`i18n`:
 
 i18n

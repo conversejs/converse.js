@@ -1,7 +1,12 @@
+import debounce from "lodash-es/debounce";
 import tpl_bookmarks_list from './templates/list.js';
+import tpl_spinner from "templates/spinner.js";
 import { CustomElement } from 'shared/components/element.js';
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from '@converse/headless/core.js';
 import { initStorage } from '@converse/headless/utils/storage.js';
+
+import '../styles/bookmarks.scss';
 
 
 export default class BookmarksView extends CustomElement {
@@ -10,6 +15,8 @@ export default class BookmarksView extends CustomElement {
         await api.waitUntil('bookmarksInitialized');
         const { bookmarks, chatboxes } = _converse;
 
+        this.liveFilter = debounce((ev) => this.model.set({'filter_text': ev.target.value}), 100);
+
         this.listenTo(bookmarks, 'add', () => this.requestUpdate());
         this.listenTo(bookmarks, 'remove', () => this.requestUpdate());
 
@@ -17,7 +24,7 @@ export default class BookmarksView extends CustomElement {
         this.listenTo(chatboxes, 'remove', () => this.requestUpdate());
 
         const id = `converse.bookmarks-list-model-${_converse.bare_jid}`;
-        this.model = new _converse.BookmarksList({ id });
+        this.model = new Model({ id });
         initStorage(this.model, id);
 
         this.listenTo(this.model, 'change', () => this.requestUpdate());
@@ -29,15 +36,12 @@ export default class BookmarksView extends CustomElement {
     }
 
     render () {
-        return _converse.bookmarks && this.model ? tpl_bookmarks_list(this) : '';
+        return _converse.bookmarks && this.model ? tpl_bookmarks_list(this) : tpl_spinner();
     }
 
-    toggleBookmarksList (ev) {
-        ev?.preventDefault?.();
-        const { CLOSED, OPENED } = _converse;
-        this.model.save({
-            'toggle-state': this.model.get('toggle-state') === CLOSED ? OPENED : CLOSED
-        });
+    clearFilter (ev) {
+        ev?.stopPropagation?.();
+        this.model.set('filter_text', '');
     }
 }
 

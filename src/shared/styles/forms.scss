@@ -50,13 +50,15 @@
             margin-top: 0.5em;
         }
 
-        .clear-input {
-            margin-top: 0.5em;
-            margin-bottom : 0.5em;
-            position: absolute;
-            right: 0.2em;
-            cursor: pointer;
-            font-size: var(--font-size);
+        .btn-group {
+            .clear-input {
+                margin-top: 0.5em;
+                margin-bottom : 0.5em;
+                position: absolute;
+                right: 0.2em;
+                cursor: pointer;
+                font-size: var(--font-size);
+            }
         }
 
         &#converse-register,

@@ -1,174 +1,191 @@
-.conversejs #converse-roster {
-    text-align: left;
-    width: 100%;
-    position: relative;
-    margin: 0;
-    height: var(--roster-height);
-    padding: 0;
-    overflow: hidden;
-    // XXX: FIXME
-    height: calc(100% - 70px);
+.conversejs {
 
-
-    /* Custom addition for CSP */
-    #online-count {
-        display: none;
-    }
-
-    .search-xmpp {
-        ul {
-            li.chat-info {
-                padding-left: 10px;
+    #controlbox {
+        .open-contacts-toggle, .open-contacts-toggle .fa {
+            color: var(--chat-color) !important;
+            &:hover {
+                color: var(--chat-color) !important;
             }
         }
+
+        .open-contacts-toggle {
+            white-space: nowrap;
+        }
+
     }
 
-    .roster-filter-form {
+    #converse-roster {
+        text-align: left;
         width: 100%;
-
-        .button-group {
-            padding: 0.2em;
-        }
-
-        converse-icon {
-            padding: 0.25em;
-        }
-
-        .roster-filter {
-            width: 100%;
-            margin: 0.2em;
-            font-size: calc(var(--font-size) - 2px);
-        }
-
-        .state-type {
-            font-size: calc(var(--font-size) - 2px);
-            width: 100%;
-        }
-    }
-
-    .roster-contacts {
+        position: relative;
+        margin: 0;
+        height: var(--roster-height);
         padding: 0;
-        margin: 0 0 0.2em 0;
-        height: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
-        color: var(--text-color);
+        overflow: hidden;
+        // XXX: FIXME
+        height: calc(100% - 70px);
 
-        .roster-group-contacts {
-            .list-item {
+
+        /* Custom addition for CSP */
+        #online-count {
+            display: none;
+        }
+
+        .search-xmpp {
+            ul {
+                li.chat-info {
+                    padding-left: 10px;
+                }
+            }
+        }
+
+        .roster-filter-form {
+            width: 100%;
+
+            .button-group {
+                padding: 0.2em;
+            }
+
+            converse-icon {
+                padding: 0.25em;
+            }
+
+            .roster-filter {
+                width: 100%;
+                margin: 0.2em;
+                font-size: calc(var(--font-size) - 2px);
+            }
+
+            .state-type {
+                font-size: calc(var(--font-size) - 2px);
+                width: 100%;
+            }
+        }
+
+        .roster-contacts {
+            padding: 0;
+            margin: 0 0 0.2em 0;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            color: var(--text-color);
+
+            .roster-group-contacts {
+                .list-item {
+                    &:hover {
+                        .list-item-action {
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+
+            converse-roster-contact {
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                display: flex;
+                justify-content: space-between;
+
+                .list-item-action {
+                    line-height: 2em;
+                }
+
                 &:hover {
                     .list-item-action {
                         opacity: 1;
                     }
                 }
             }
-        }
 
-        converse-roster-contact {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            display: flex;
-            justify-content: space-between;
-
-            .list-item-action {
-                line-height: 2em;
+            .group-toggle {
+                font-family: var(--heading-font);
+                display: block;
+                width: 100%;
+                margin: 0.75em 0 0.25em 0;
             }
 
-            &:hover {
-                .list-item-action {
-                    opacity: 1;
-                }
-            }
-        }
-
-        .group-toggle {
-            font-family: var(--heading-font);
-            display: block;
-            width: 100%;
-            margin: 0.75em 0 0.25em 0;
-        }
-
-        .group-toggle, .group-toggle .fa {
-            color: var(--chat-head-color-dark) !important;
-            &:hover {
-                color: var(--chat-head-color-darker) !important;
-            }
-        }
-
-        .current-xmpp-contact {
-            margin: 0.25em 0;
-        }
-
-        .list-item {
-            &.requesting-xmpp-contact {
-                a {
-                    line-height: var(--line-height);
-                }
-                .req-contact-name {
-                    padding: 0 0.2em 0 0;
+            .group-toggle, .group-toggle .fa {
+                color: var(--chat-head-color-dark) !important;
+                &:hover {
+                    color: var(--chat-head-color-darker) !important;
                 }
             }
 
-            .open-chat {
-                margin: 0;
-                padding: 0;
-                &.unread-msgs {
-                    font-weight: bold;
-                    color: var(--unread-msgs-color);
-                    .contact-name {
-                        width: 70%;
+            .current-xmpp-contact {
+                margin: 0.25em 0;
+            }
+
+            .list-item {
+                &.requesting-xmpp-contact {
+                    a {
+                        line-height: var(--line-height);
+                    }
+                    .req-contact-name {
+                        padding: 0 0.2em 0 0;
                     }
                 }
 
-                .msgs-indicator {
-                    color: var(--text-color-invert);
-                    background-color: var(--chat-color);
-                    opacity: 1;
-                    border-radius: 10%;
-                    padding: 0.2em 0.4em;
-                    font-size: var(--font-size-small);
-                    margin-right: 0;
-                }
-
-                .contact-name {
-                    padding: 0;
+                .open-chat {
                     margin: 0;
-                    max-width: 85%;
-                    float: none;
-                    height: 100%;
+                    padding: 0;
                     &.unread-msgs {
-                        max-width: 60%;
+                        font-weight: bold;
+                        color: var(--unread-msgs-color);
+                        .contact-name {
+                            width: 70%;
+                        }
                     }
-                    &.contact-name--offline {
-                        margin-left: 0.25em;
+
+                    .msgs-indicator {
+                        color: var(--text-color-invert);
+                        background-color: var(--chat-color);
+                        opacity: 1;
+                        border-radius: 10%;
+                        padding: 0.2em 0.4em;
+                        font-size: var(--font-size-small);
+                        margin-right: 0;
+                    }
+
+                    .contact-name {
+                        padding: 0;
+                        margin: 0;
+                        max-width: 85%;
+                        float: none;
+                        height: 100%;
+                        &.unread-msgs {
+                            max-width: 60%;
+                        }
+                        &.contact-name--offline {
+                            margin-left: 0.25em;
+                        }
                     }
                 }
-            }
-            &.odd {
-                background-color: #DCEAC5;
-                /* Make this difference */
-            }
-            a, span {
-                white-space: nowrap;
-                text-overflow: ellipsis;
-            }
-            .span {
-                display: inline-block;
-            }
-            .decline-xmpp-request {
-                margin-left: 5px;
-            }
-            &:hover {
-                background-color: var(--controlbox-pane-bg-hover-color);
+                &.odd {
+                    background-color: #DCEAC5;
+                    /* Make this difference */
+                }
+                a, span {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+                .span {
+                    display: inline-block;
+                }
+                .decline-xmpp-request {
+                    margin-left: 5px;
+                }
+                &:hover {
+                    background-color: var(--controlbox-pane-bg-hover-color);
+                }
             }
         }
-    }
-    span {
-        &.pending-contact-name {
-            line-height: var(--line-height);
-            width: 100%;
+        span {
+            &.pending-contact-name {
+                line-height: var(--line-height);
+                width: 100%;
+            }
         }
     }
 }

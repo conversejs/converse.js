@@ -9,7 +9,7 @@ const RoomsListModel = Model.extend({
         return {
             'muc_domain': api.settings.get('muc_domain'),
             'nick': _converse.getDefaultMUCNickname(),
-            'toggle-state':  _converse.OPENED,
+            'toggle_state':  _converse.OPENED,
         };
     },
 
@@ -25,4 +25,3 @@ const RoomsListModel = Model.extend({
 });
 
 export default RoomsListModel;
-

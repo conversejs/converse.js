@@ -284,12 +284,11 @@ u.slideToggleElement = function (el, duration) {
 
 /**
  * Shows/expands an element by sliding it out of itself
- * @private
- * @method u#slideOut
+ * @method slideOut
  * @param { HTMLElement } el - The HTML string
  * @param { Number } duration - The duration amount in milliseconds
  */
-u.slideOut = function (el, duration = 200) {
+export function slideOut (el, duration = 200) {
     return new Promise((resolve, reject) => {
         if (!el) {
             const err = 'An element needs to be passed in to slideOut';
@@ -340,10 +339,15 @@ u.slideOut = function (el, duration = 200) {
         el.classList.remove('collapsed');
         el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
     });
-};
+}
 
-u.slideIn = function (el, duration = 200) {
-    /* Hides/collapses an element by sliding it into itself. */
+/**
+ * Hides/contracts an element by sliding it into itself
+ * @method slideIn
+ * @param { HTMLElement } el - The HTML string
+ * @param { Number } duration - The duration amount in milliseconds
+ */
+export function slideIn (el, duration = 200) {
     return new Promise((resolve, reject) => {
         if (!el) {
             const err = 'An element needs to be passed in to slideIn';
@@ -382,7 +386,7 @@ u.slideIn = function (el, duration = 200) {
         }
         el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
     });
-};
+}
 
 function afterAnimationEnds (el, callback) {
     el.classList.remove('visible');
@@ -514,6 +518,6 @@ u.xForm2TemplateResult = function (field, stanza, options) {
     }
 };
 
-Object.assign(u, { getOOBURLMarkup, ancestor });
+Object.assign(u, { getOOBURLMarkup, ancestor, slideIn, slideOut });
 
 export default u;

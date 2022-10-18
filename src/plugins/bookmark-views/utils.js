@@ -1,4 +1,3 @@
-import './modal.js';
 import invokeMap from 'lodash-es/invokeMap';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';

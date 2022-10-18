@@ -11,15 +11,18 @@ import '@converse/headless/plugins/status';
 import '@converse/headless/plugins/vcard';
 import { api, converse } from '@converse/headless/core';
 
-
 converse.plugins.add('converse-profile', {
-
-    dependencies: ["converse-status", "converse-modal", "converse-vcard", "converse-chatboxviews"],
+    dependencies: [
+        'converse-status',
+        'converse-modal',
+        'converse-vcard',
+        'converse-chatboxviews',
+        'converse-adhoc-views',
+    ],
 
     initialize () {
         api.settings.extend({
-            'allow_adhoc_commands': true,
-            'show_client_info': true
+            'show_client_info': true,
         });
-    }
+    },
 });

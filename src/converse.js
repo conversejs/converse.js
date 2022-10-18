@@ -18,6 +18,7 @@ import 'shared/styles/index.scss';
  * Any of the following plugin imports may be removed if the plugin is not needed
  */
 import "./plugins/modal/index.js";
+import "./plugins/adhoc-views/index.js";    // Views for XEP-0050 Ad-Hoc commands
 import "./plugins/bookmark-views/index.js"; // Views for XEP-0048 Bookmarks
 import "./plugins/chatview/index.js";       // Renders standalone chat boxes for single user chat
 import "./plugins/controlbox/index.js";     // The control box

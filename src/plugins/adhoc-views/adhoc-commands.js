@@ -16,6 +16,7 @@ export default class AdHocCommands extends CustomElement {
             'alert': { type: String },
             'alert_type': { type: String },
             'nonce': { type: String }, // Used to force re-rendering
+            'fetching': { type: Boolean }, // Used to force re-rendering
             'showform': { type: String },
             'view': { type: String },
         }
@@ -24,21 +25,17 @@ export default class AdHocCommands extends CustomElement {
     constructor () {
         super();
         this.view = 'choose-service';
+        this.fetching = false;
         this.showform = '';
         this.commands = [];
     }
 
     render () {
-        return tpl_adhoc({
-            'alert': this.alert,
-            'alert_type': this.alert_type,
-            'commands': this.commands,
-            'fetchCommands': ev => this.fetchCommands(ev),
+        return tpl_adhoc(this, {
             'hideCommandForm': ev => this.hideCommandForm(ev),
             'runCommand': ev => this.runCommand(ev),
             'showform': this.showform,
             'toggleCommandForm': ev => this.toggleCommandForm(ev),
-            'view': this.view,
         });
     }
 
@@ -47,6 +44,8 @@ export default class AdHocCommands extends CustomElement {
         delete this.alert_type;
         delete this.alert;
 
+        this.fetching = true;
+
         const form_data = new FormData(ev.target);
         const jid = form_data.get('jid').trim();
         let supported;
@@ -54,7 +53,10 @@ export default class AdHocCommands extends CustomElement {
             supported = await api.disco.supports(Strophe.NS.ADHOC, jid)
         } catch (e) {
             log.error(e);
+        } finally {
+            this.fetching = false;
         }
+
         if (supported) {
             try {
                 this.commands = await api.adhoc.getCommands(jid);

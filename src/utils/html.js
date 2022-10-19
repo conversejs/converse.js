@@ -438,7 +438,7 @@ u.fadeIn = function (el, callback) {
  * @param { Object } options
  * @returns { TemplateResult }
  */
-u.xForm2TemplateResult = function (field, stanza, options) {
+u.xForm2TemplateResult = function (field, stanza, options={}) {
     if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
         const values = u.queryChildren(field, 'value').map(el => el?.textContent);
         const options = u.queryChildren(field, 'option').map(option => {
@@ -474,8 +474,7 @@ u.xForm2TemplateResult = function (field, stanza, options) {
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
-            'checked': ((value === '1' || value === 'true') && 'checked="1"') || '',
-            'required': !!field.querySelector('required')
+            'checked': ((value === '1' || value === 'true') && 'checked="1"') || ''
         });
     } else if (field.getAttribute('var') === 'url') {
         return tpl_form_url({
@@ -487,6 +486,14 @@ u.xForm2TemplateResult = function (field, stanza, options) {
             'domain': ' @' + options.domain,
             'name': field.getAttribute('var'),
             'type': getInputType(field),
+            'label': field.getAttribute('label') || '',
+            'value': field.querySelector('value')?.textContent,
+            'required': !!field.querySelector('required')
+        });
+    } else if (field.getAttribute('var') === 'password') {
+        return tpl_form_input({
+            'name': field.getAttribute('var'),
+            'type': 'password',
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')

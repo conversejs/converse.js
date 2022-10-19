@@ -85,6 +85,7 @@ export default class AdHocCommands extends CustomElement {
 
     hideCommandForm (ev) {
         ev.preventDefault();
+        this.nonce = u.getUniqueId();
         this.showform = ''
     }
 
@@ -117,7 +118,9 @@ export default class AdHocCommands extends CustomElement {
             result = await api.sendIQ(iq);
         } catch (e) {
             cmd.alert_type = 'danger';
-            cmd.alert = __('Sorry, an error occurred while trying to execute the command. See the developer console for details');
+            cmd.alert = __(
+                'Sorry, an error occurred while trying to execute the command. See the developer console for details'
+            );
             log.error('Error while trying to execute an ad-hoc command');
             log.error(e);
         }

@@ -20,7 +20,7 @@ export async function fetchCommandForm (command) {
         command.sessionid = cmd_el.getAttribute('sessionid');
         command.instructions = sizzle('x[type="form"][xmlns="jabber:x:data"] instructions', cmd_el).pop()?.textContent;
         command.fields = sizzle('x[type="form"][xmlns="jabber:x:data"] field', cmd_el)
-            .map(f => u.xForm2TemplateResult(f, cmd_el));
+            .map(f => u.xForm2TemplateResult(f, cmd_el, { domain: jid }));
 
     } catch (e) {
         if (e === null) {

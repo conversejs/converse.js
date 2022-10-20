@@ -51,8 +51,9 @@ function lzwDecode (minCodeSize, data) {
         dict[eoiCode] = null;
     };
 
-    let code;
+    let code = clearCode;
     let last;
+    clear();
 
     while (true) { // eslint-disable-line no-constant-condition
         last = code;

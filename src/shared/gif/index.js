@@ -30,8 +30,7 @@ export default class ConverseGif {
      * @param { Number } [options.progress_bar_height=5]
      */
     constructor (el, opts) {
-        this.options = Object.assign(
-            {
+        this.options = Object.assign({
                 width: null,
                 height: null,
                 autoplay: true,
@@ -100,6 +99,9 @@ export default class ConverseGif {
      * @returns {number}
      */
     getNextFrameNo () {
+        if (this.frames.length === 0) {
+            return 0;
+        }
         return (this.frame_idx + 1 + this.frames.length) % this.frames.length;
     }
 
@@ -286,10 +288,6 @@ export default class ConverseGif {
      */
     handleEOF (stream) {
         this.doDecodeProgress(stream, false);
-        if (!(this.options.width && this.options.height)) {
-            this.canvas.width = this.hdr.width * this.getCanvasScale();
-            this.canvas.height = this.hdr.height * this.getCanvasScale();
-        }
         this.initPlayer();
         !this.options.autoplay && this.drawPlayIcon();
     }
@@ -394,11 +392,10 @@ export default class ConverseGif {
      * @param { Number } i - The frame index
      */
     putFrame (i, show_pause_on_hover=true) {
+        if (!this.frames.length) return
+
         i = parseInt(i, 10);
-        if (i > this.frames.length - 1) {
-            i = 0;
-        }
-        if (i < 0) {
+        if (i > this.frames.length - 1 || i < 0) {
             i = 0;
         }
         const offset = this.frame_offsets[i];

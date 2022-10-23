@@ -61,6 +61,7 @@ export default class ConverseGif {
         this.load_error = null;
         this.playing = this.options.autoplay;
         this.transparency = null;
+        this.frame_delay = null;
 
         this.frame_idx = 0;
         this.iteration_count = 0;
@@ -277,8 +278,9 @@ export default class ConverseGif {
      * Handler for GIF Graphic Control Extension (GCE) data
      */
     handleGCE (gce) {
-        this.pushFrame(gce.delayTime);
+        this.pushFrame();
         this.clear();
+        this.frame_delay = gce.delayTime;
         this.transparency = gce.transparencyGiven ? gce.transparencyIndex : null;
         this.disposal_method = gce.disposalMethod;
     }
@@ -287,16 +289,17 @@ export default class ConverseGif {
      * Handler for when the end of the GIF's file has been reached
      */
     handleEOF (stream) {
+        this.pushFrame();
         this.doDecodeProgress(stream, false);
         this.initPlayer();
         !this.options.autoplay && this.drawPlayIcon();
     }
 
-    pushFrame (delay) {
+    pushFrame () {
         if (!this.frame) return;
         this.frames.push({
             data: this.frame.getImageData(0, 0, this.hdr.width, this.hdr.height),
-            delay,
+            delay: this.frame_delay
         });
         this.frame_offsets.push({ x: 0, y: 0 });
     }
@@ -381,7 +384,7 @@ export default class ConverseGif {
         }
 
         if (!this.last_img) {
-            // This is the first receivd image, so we draw it
+            // This is the first received image, so we draw it
             this.ctx.drawImage(this.offscreenCanvas, 0, 0);
         }
         this.last_img = img;

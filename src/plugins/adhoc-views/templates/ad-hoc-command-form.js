@@ -5,6 +5,9 @@ export default (o, command) => {
     const i18n_hide = __('Hide');
     const i18n_run = __('Execute');
     return html`
+        <span> <!-- Don't remove this <span>,
+                    this is a workaround for a lit bug where a <form> cannot be removed
+                    if it contains an <input> with name "remove" -->
         <form @submit=${o.runCommand}>
             ${ command.alert ? html`<div class="alert alert-${command.alert_type}" role="alert">${command.alert}</div>` : '' }
             <fieldset class="form-group">
@@ -19,5 +22,6 @@ export default (o, command) => {
                 <input type="button" class="btn btn-secondary button-cancel" value="${i18n_hide}" @click=${o.hideCommandForm}>
             </fieldset>
         </form>
+        </span>
     `;
 }

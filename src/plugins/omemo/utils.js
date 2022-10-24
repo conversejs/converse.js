@@ -12,6 +12,7 @@ import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/utils/storage.js';
+import { isError } from '@converse/headless/utils/core.js';
 import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
 import { until } from 'lit/directives/until.js';
 import {
@@ -170,8 +171,8 @@ async function getAndDecryptFile (uri) {
     const http_url = uri.toString().replace(/^aesgcm/, protocol);
     const cipher = await downloadFile(http_url);
     if (cipher === null) {
-        log.error(`Could not decrypt file ${uri.toString()} since it could not be downloaded`);
-        return null;
+        log.error(`Could not decrypt a received encrypted file ${uri.toString()} since it could not be downloaded`);
+        return new Error(__('Error: could not decrypt a received encrypted file, because it could not be downloaded'));
     }
     const iv = hash.slice(0, 24);
     const key = hash.slice(24);
@@ -183,7 +184,7 @@ async function getAndDecryptFile (uri) {
         log.error(e);
         return null;
     }
-    const [filename, extension] = uri.filename()?.split('.');
+    const [filename, extension] = uri.filename().split('.');
     const mimetype = MIMETYPES_MAP[extension];
     try {
         const file = new File([content], filename, { 'type': mimetype });
@@ -196,10 +197,11 @@ async function getAndDecryptFile (uri) {
 }
 
 function getTemplateForObjectURL (uri, obj_url, richtext) {
-    const file_url = uri.toString();
-    if (obj_url === null) {
-        return file_url;
+    if (isError(obj_url)) {
+        return html`<p class="error">${obj_url.message}</p>`;
     }
+
+    const file_url = uri.toString();
     if (isImageURL(file_url)) {
         return tpl_image({
             'src': obj_url,
@@ -236,6 +238,7 @@ function addEncryptedFiles(text, offset, richtext) {
         const uri = getURI(text.slice(o.start, o.end));
         const promise = getAndDecryptFile(uri)
             .then(obj_url => getTemplateForObjectURL(uri, obj_url, richtext));
+
         const template = html`${until(promise, '')}`;
         richtext.addTemplateResult(o.start + offset, o.end + offset, template);
     });

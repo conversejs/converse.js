@@ -4,6 +4,7 @@
 // as a whitelist (see src/converse.js) in addition to the
 // CORE_PLUGINS list in src/headless/consts.js.
 export const VIEW_PLUGINS = [
+    'converse-adhoc-views',
     'converse-bookmark-views',
     'converse-chatboxviews',
     'converse-chatview',

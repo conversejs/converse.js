@@ -4,9 +4,8 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../chatboxviews/index.js';
-import './adhoc-commands.js';
 import MUCView from './muc.js';
-import { api, converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless/core.js';
 import { clearHistory, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;

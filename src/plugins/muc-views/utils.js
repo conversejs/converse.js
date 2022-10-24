@@ -7,7 +7,7 @@ import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit";
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
-const { Strophe, $iq, sizzle, u } = converse.env;
+const { Strophe, u } = converse.env;
 
 const COMMAND_TO_AFFILIATION = {
     'admin': 'admin',
@@ -132,37 +132,6 @@ export async function getAutoCompleteList () {
     const jids = [...new Set(models.map(o => Strophe.getDomainFromJid(o.get('jid'))))];
     return jids;
 }
-
-export async function fetchCommandForm (command) {
-    const node = command.node;
-    const jid = command.jid;
-    const stanza = $iq({
-        'type': 'set',
-        'to': jid
-    }).c('command', {
-        'xmlns': Strophe.NS.ADHOC,
-        'node': node,
-        'action': 'execute'
-    });
-    try {
-        const iq = await api.sendIQ(stanza);
-        const cmd_el = sizzle(`command[xmlns="${Strophe.NS.ADHOC}"]`, iq).pop();
-        command.sessionid = cmd_el.getAttribute('sessionid');
-        command.instructions = sizzle('x[type="form"][xmlns="jabber:x:data"] instructions', cmd_el).pop()?.textContent;
-        command.fields = sizzle('x[type="form"][xmlns="jabber:x:data"] field', cmd_el)
-            .map(f => u.xForm2TemplateResult(f, cmd_el));
-
-    } catch (e) {
-        if (e === null) {
-            log.error(`Error: timeout while trying to execute command for ${jid}`);
-        } else {
-            log.error(`Error while trying to execute command for ${jid}`);
-            log.error(e);
-        }
-        command.fields = [];
-    }
-}
-
 
 function setRole (muc, command, args, required_affiliations = [], required_roles = []) {
     const role = COMMAND_TO_ROLE[command];

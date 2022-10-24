@@ -87,7 +87,7 @@
     "karma-jasmine": "^5.0.0",
     "karma-jasmine-html-reporter": "^1.7.0",
     "karma-webpack": "^5.0.0",
-    "lerna": "^5.5.1",
+    "lerna": "^5.6.2",
     "mini-css-extract-plugin": "^2.6.0",
     "minimist": "^1.2.6",
     "po-loader": "0.6.1",
@@ -105,13 +105,24 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@converse/openpromise": "^0.0.1",
+    "@converse/skeletor": "0.0.7",
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^2.0.27",
     "client-compress": "^2.2.2",
+    "dayjs": "1.11.3",
     "dompurify": "^2.3.1",
     "favico.js-slevomat": "^0.3.11",
+    "filesize": "^7.0.0",
     "jed": "1.1.1",
-    "lit": "^2.2.6"
+    "lit": "^2.4.0",
+    "localforage-webextensionstorage-driver": "^3.0.0",
+    "lodash-es": "^4.17.21",
+    "pluggable.js": "3.0.1",
+    "sizzle": "^2.3.5",
+    "sprintf-js": "^1.1.2",
+    "strophe.js": "1.5.0",
+    "urijs": "^1.19.10"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"

@@ -18,6 +18,10 @@ import { setUserJID, } from '@converse/headless/utils/init.js';
 import { settings_api } from '@converse/headless/shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
 
+export function isError (obj) {
+    return Object.prototype.toString.call(obj) === "[object Error]";
+}
+
 export function isEmptyMessage (attrs) {
     if (attrs instanceof Model) {
         attrs = attrs.attributes;

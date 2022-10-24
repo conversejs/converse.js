@@ -90,9 +90,11 @@ export default class ConverseGIFElement extends CustomElement {
 
     onControlsClicked (ev) {
         ev.preventDefault();
+
+
         if (this.supergif.playing) {
             this.supergif.pause();
-        } else {
+        } else if (this.supergif.frames.length > 0) {
             // When the user manually clicks play, we turn on looping
             this.supergif.options.loop = true;
             this.supergif.play();

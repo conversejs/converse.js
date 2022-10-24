@@ -30,8 +30,7 @@ export default class ConverseGif {
      * @param { Number } [options.progress_bar_height=5]
      */
     constructor (el, opts) {
-        this.options = Object.assign(
-            {
+        this.options = Object.assign({
                 width: null,
                 height: null,
                 autoplay: true,
@@ -62,6 +61,7 @@ export default class ConverseGif {
         this.load_error = null;
         this.playing = this.options.autoplay;
         this.transparency = null;
+        this.frame_delay = null;
 
         this.frame_idx = 0;
         this.iteration_count = 0;
@@ -100,6 +100,9 @@ export default class ConverseGif {
      * @returns {number}
      */
     getNextFrameNo () {
+        if (this.frames.length === 0) {
+            return 0;
+        }
         return (this.frame_idx + 1 + this.frames.length) % this.frames.length;
     }
 
@@ -275,8 +278,9 @@ export default class ConverseGif {
      * Handler for GIF Graphic Control Extension (GCE) data
      */
     handleGCE (gce) {
-        this.pushFrame(gce.delayTime);
+        this.pushFrame();
         this.clear();
+        this.frame_delay = gce.delayTime;
         this.transparency = gce.transparencyGiven ? gce.transparencyIndex : null;
         this.disposal_method = gce.disposalMethod;
     }
@@ -285,20 +289,17 @@ export default class ConverseGif {
      * Handler for when the end of the GIF's file has been reached
      */
     handleEOF (stream) {
+        this.pushFrame();
         this.doDecodeProgress(stream, false);
-        if (!(this.options.width && this.options.height)) {
-            this.canvas.width = this.hdr.width * this.getCanvasScale();
-            this.canvas.height = this.hdr.height * this.getCanvasScale();
-        }
         this.initPlayer();
         !this.options.autoplay && this.drawPlayIcon();
     }
 
-    pushFrame (delay) {
+    pushFrame () {
         if (!this.frame) return;
         this.frames.push({
             data: this.frame.getImageData(0, 0, this.hdr.width, this.hdr.height),
-            delay,
+            delay: this.frame_delay
         });
         this.frame_offsets.push({ x: 0, y: 0 });
     }
@@ -383,7 +384,7 @@ export default class ConverseGif {
         }
 
         if (!this.last_img) {
-            // This is the first receivd image, so we draw it
+            // This is the first received image, so we draw it
             this.ctx.drawImage(this.offscreenCanvas, 0, 0);
         }
         this.last_img = img;
@@ -394,11 +395,10 @@ export default class ConverseGif {
      * @param { Number } i - The frame index
      */
     putFrame (i, show_pause_on_hover=true) {
+        if (!this.frames.length) return
+
         i = parseInt(i, 10);
-        if (i > this.frames.length - 1) {
-            i = 0;
-        }
-        if (i < 0) {
+        if (i > this.frames.length - 1 || i < 0) {
             i = 0;
         }
         const offset = this.frame_offsets[i];

@@ -23,6 +23,7 @@
 - #3005: Fix MUC messages with a fallback body not rendering.
 - #3007: Fix links becoming text when a message is edited
 - #3018: Fix MUC icons not functioning.
+- #3028: Fix encrypted media from Conversations/Quicksy not properly decrypting
 
 
 ## 9.1.1 (2022-05-05)

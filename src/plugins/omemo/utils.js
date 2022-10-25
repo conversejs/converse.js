@@ -167,7 +167,7 @@ async function downloadFile(url) {
 
 async function getAndDecryptFile (uri) {
     const hash = uri.hash().slice(1);
-    const protocol = window.location.hostname === 'localhost' ? 'http' : 'https';
+    const protocol = (window.location.hostname === 'localhost' && uri.domain() === 'localhost') ? 'http' : 'https';
     const http_url = uri.toString().replace(/^aesgcm/, protocol);
     const cipher = await downloadFile(http_url);
     if (cipher === null) {

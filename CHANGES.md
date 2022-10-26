@@ -49,6 +49,7 @@
 - Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 
 ### Changes and features
+- Embed the Spotify player for links to Spotify tracks. New config option [embed_3rd_party_media_players](https://conversejs.org/docs/html/configuration.html#embed-3rd-party-media-players).
 - Add support for XEP-0191 Blocking Command
 - Upgrade to Bootstrap 5
 - Add an occupants filter to the MUC sidebar

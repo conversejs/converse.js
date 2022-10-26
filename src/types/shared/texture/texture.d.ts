@@ -102,14 +102,18 @@ export class Texture extends String {
     shouldRenderMedia(url: string, type: "audio" | "image" | "video"): any;
     /**
      * Look for `http` URIs and return templates that render them as URL links
+     * @param {import('utils/url').MediaURLData} url_obj
+     * @returns {Promise<string|import('lit').TemplateResult>}
+     */
+    addHyperlinkTemplate(url_obj: import("utils/url").MediaURLData): Promise<string | import("lit").TemplateResult>;
+    /**
+     * Look for `http` URIs and return templates that render them as URL links
      * @param {string} text
      * @param {number} local_offset - The index of the passed in text relative to
      *  the start of this Texture instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
-     *
-     * @typedef {module:headless-shared-parsers.MediaURLData} MediaURLData
      */
-    addHyperlinks(text: string, local_offset: number): void;
+    addHyperlinks(text: string, local_offset: number): Promise<void>;
     /**
      * Look for `geo` URIs and return templates that render them as URL links
      * @param {String} text
@@ -141,9 +145,9 @@ export class Texture extends String {
     /**
      * Look for plaintext (i.e. non-templated) sections of this Texture
      * instance and add references via the passed in function.
-     * @param { Function } func
+     * @param {Function} func
      */
-    addAnnotations(func: Function): void;
+    addAnnotations(func: Function): Promise<void>;
     /**
      * Parse the text and add template references for rendering the "rich" parts.
      **/

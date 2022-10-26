@@ -11,6 +11,7 @@ export namespace DEFAULT_SETTINGS {
     let credentials_url: any;
     let disable_effects: boolean;
     let discover_connection_methods: boolean;
+    let embed_3rd_party_media_players: boolean;
     let geouri_regex: RegExp;
     let geouri_replacement: string;
     let i18n: any;

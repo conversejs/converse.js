@@ -16,7 +16,7 @@ const bookmark = (o) => {
                @click=${o.removeBookmark}
                title="${ o.bookmarked ? i18n_remove_bookmark : i18n_add_bookmark }">
 
-                <converse-icon class="fa fa-bookmark" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+                <converse-icon class="fa fa-bookmark" size="1.2em" color="${ o.currently_open(o.room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
             </a>`;
     } else {
         return html`
@@ -26,7 +26,7 @@ const bookmark = (o) => {
                @click=${o.addBookmark}
                title="${ o.bookmarked ? i18n_remove_bookmark : i18n_add_bookmark }">
 
-                <converse-icon class="fa fa-bookmark" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+                <converse-icon class="fa fa-bookmark" size="1.2em" color="${ o.currently_open(o.room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
             </a>`;
     }
 }
@@ -57,7 +57,7 @@ const room_item = (o) => {
                 title="${__('Show more information on this groupchat')}"
                 @click=${o.showRoomDetailsModal}>
 
-                <converse-icon class="fa fa-info-circle" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+                <converse-icon class="fa fa-info-circle" size="1.2em" color="${ o.currently_open(o.room) ? 'var(--inverse-link-color)' : '' }""></converse-icon>
             </a>
 
             <a class="list-item-action close-room"
@@ -66,7 +66,7 @@ const room_item = (o) => {
                 title="${i18n_leave_room}"
                 @click=${o.closeRoom}>
 
-                <converse-icon class="fa fa-sign-out-alt" size="1.2em" color="var(--inverse-link-color)"></converse-icon>
+                <converse-icon class="fa fa-sign-out-alt" size="1.2em" color="${ o.currently_open(o.room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
             </a>
         </div>`;
 }

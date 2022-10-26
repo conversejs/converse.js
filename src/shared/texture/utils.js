@@ -11,6 +11,20 @@ export function isString(s) {
 
 /**
  * @param {string} url
+ * @returns {boolean}
+ */
+export function isSpotifyTrack(url) {
+    try {
+        const { hostname, pathname } = new URL(url);
+        return hostname === 'open.spotify.com' && pathname.startsWith('/track/');
+    } catch (e) {
+        console.warn(`Could not create URL object from ${url}`);
+        return false;
+    }
+}
+
+/**
+ * @param {string} url
  * @returns {Promise<Headers>}
  */
 export async function getHeaders(url) {

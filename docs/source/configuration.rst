@@ -809,6 +809,14 @@ domain_placeholder
 
 The placeholder text shown in the domain input on the registration form.
 
+embed_3rd_party_media_players
+-----------------------------
+
+* Default: ``true``
+
+If ``true``, links to 3rd party media sites, such as Spotify will be turned
+into embedded media players from those sites (if supported by Converse).
+
 
 emoji_categories
 ----------------

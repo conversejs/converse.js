@@ -761,6 +761,7 @@ async function _initConverse (settings) {
         bosh_service_url: 'montague.lit/http-bind',
         disable_effects: true,
         discover_connection_methods: false,
+        embed_3rd_party_media_players: false,
         enable_smacks: false,
         fetch_url_headers: false,
         i18n: 'en',

@@ -6,6 +6,7 @@ import tplAudio from 'templates/audio.js';
 import tplGif from 'templates/gif.js';
 import tplImage from 'templates/image.js';
 import tplVideo from 'templates/video.js';
+import tplSpotify from 'templates/spotify.js';
 import { getEmojiMarkup } from '../chat/utils.js';
 import { getHyperlinkTemplate } from '../../utils/html.js';
 import { shouldRenderMediaFromURL } from 'utils/url.js';
@@ -15,6 +16,7 @@ import {
     getDirectiveAndLength,
     getHeaders,
     isQuoteDirective,
+    isSpotifyTrack,
     isString,
     tplMention,
     tplMentionWithNick,
@@ -124,49 +126,60 @@ export class Texture extends String {
 
     /**
      * Look for `http` URIs and return templates that render them as URL links
+     * @param {import('utils/url').MediaURLData} url_obj
+     * @returns {Promise<string|import('lit').TemplateResult>}
+     */
+    async addHyperlinkTemplate(url_obj) {
+        const url_text = url_obj.url;
+        const filtered_url = filterQueryParamsFromURL(url_text);
+        let template;
+        if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
+            template = tplGif(filtered_url, this.hide_media_urls);
+        } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
+            template = tplImage({
+                src: filtered_url,
+                // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
+                href: this.hide_media_urls ? null : filtered_url,
+                onClick: this.onImgClick,
+                onLoad: this.onImgLoad,
+            });
+        } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, 'video')) {
+            template = tplVideo(filtered_url, this.hide_media_urls);
+        } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
+            template = tplAudio(filtered_url, this.hide_media_urls);
+        } else if (api.settings.get('embed_3rd_party_media_players') && isSpotifyTrack(url_text)) {
+            const song_id = url_text.split('/track/')[1];
+            template = tplSpotify(song_id, url_text, this.hide_media_urls);
+        } else {
+            if (this.shouldRenderMedia(url_text, 'audio') && api.settings.get('fetch_url_headers')) {
+                const headers = await getHeaders(url_text);
+                if (headers.get('content-type')?.startsWith('audio')) {
+                    template = tplAudio(filtered_url, this.hide_media_urls, headers.get('Icy-Name'));
+                }
+            }
+        }
+        return template || getHyperlinkTemplate(filtered_url);
+    }
+
+    /**
+     * Look for `http` URIs and return templates that render them as URL links
      * @param {string} text
      * @param {number} local_offset - The index of the passed in text relative to
      *  the start of this Texture instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
-     *
-     * @typedef {module:headless-shared-parsers.MediaURLData} MediaURLData
      */
     async addHyperlinks(text, local_offset) {
         const full_offset = local_offset + this.offset;
         const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
-        const media_urls = /** @type {MediaURLData[]} */ (getMediaURLs(urls_meta, text, full_offset));
-
-        await Promise.all(media_urls
-            .filter((o) => !o.is_encrypted)
-            .map(async (url_obj) => {
-                const url_text = url_obj.url;
-                const filtered_url = filterQueryParamsFromURL(url_text);
-                let template;
-                if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
-                    template = tplGif(filtered_url, this.hide_media_urls);
-                } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
-                    template = tplImage({
-                        src: filtered_url,
-                        // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
-                        href: this.hide_media_urls ? null : filtered_url,
-                        onClick: this.onImgClick,
-                        onLoad: this.onImgLoad,
-                    });
-                } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, 'video')) {
-                    template = tplVideo(filtered_url, this.hide_media_urls);
-                } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
-                    template = tplAudio(filtered_url, this.hide_media_urls);
-                } else {
-                    if (this.shouldRenderMedia(url_text, 'audio') && api.settings.get('fetch_url_headers')) {
-                        const headers = await getHeaders(url_text);
-                        if (headers.get('content-type')?.startsWith('audio')) {
-                            template = tplAudio(filtered_url, this.hide_media_urls, headers.get('Icy-Name'));
-                        }
-                    }
-                }
-                template = template || getHyperlinkTemplate(filtered_url);
-                this.addTemplateResult(url_obj.start + local_offset, url_obj.end + local_offset, template);
-            }));
+        const media_urls = getMediaURLs(urls_meta, text, full_offset);
+        await Promise.all(
+            media_urls
+                .filter((o) => !o.is_encrypted)
+                .map(async (o) => {
+                    const template = await this.addHyperlinkTemplate(o);
+                    this.addTemplateResult(o.start + local_offset, o.end + local_offset, template);
+                })
+        );
     }
 
     /**
@@ -311,7 +324,7 @@ export class Texture extends String {
          * Synchronous event which provides a hook for transforming a chat message's body text
          * before the default transformations have been applied.
          * @event _converse#beforeMessageBodyTransformed
-         * @param { Texture } text - A {@link Texture } instance. You
+         * @param {Texture} text - A {@link Texture } instance. You
          *  can call {@link Texture#addTemplateResult } on it in order to
          *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });

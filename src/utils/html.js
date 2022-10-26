@@ -321,6 +321,7 @@ function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOL
 
 /**
  * @param {string} url
+ * @returns {TemplateResult|string}
  */
 export function getHyperlinkTemplate (url) {
     const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;

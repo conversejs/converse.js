@@ -49,8 +49,9 @@ export function removeElement(el: Element): Element;
 export function ancestor(el: HTMLElement, selector: string): HTMLElement;
 /**
  * @param {string} url
+ * @returns {TemplateResult|string}
  */
-export function getHyperlinkTemplate(url: string): string | import("lit").TemplateResult<1>;
+export function getHyperlinkTemplate(url: string): TemplateResult | string;
 /**
  * Shows/expands an element by sliding it out of itself
  * @method slideOut

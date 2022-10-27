@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 09:56+0100\n"
-"PO-Revision-Date: 2022-04-20 13:47+0200\n"
+"PO-Revision-Date: 2022-10-30 09:42+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -665,7 +665,7 @@ msgstr "Ønsker du å automatisk ta del i denne gruppesludringen ved oppstart?"
 
 #: dist/converse-no-dependencies.js:62982
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: dist/converse-no-dependencies.js:62984
 msgid "The name for this bookmark:"
@@ -676,8 +676,9 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "Hva lags kallenavn ønsker du for denne gruppesludringen?"
 
 #: dist/converse-no-dependencies.js:62988
+#, fuzzy
 msgid "Update"
-msgstr ""
+msgstr "Oppdater"
 
 #: dist/converse-no-dependencies.js:62988
 #: dist/converse-no-dependencies.js:91564
@@ -1109,15 +1110,16 @@ msgstr "Dette er en betrodd enhet"
 
 #: dist/converse-no-dependencies.js:81979
 msgid "Connection URL"
-msgstr ""
+msgstr "Tilkoblingsnettadresse"
 
 #: dist/converse-no-dependencies.js:81981
+#, fuzzy
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
-msgstr ""
+msgstr "HTTP eller nettsocket-nettadresse brukt til å koble til din XMPP-tjener"
 
 #: dist/converse-no-dependencies.js:81983
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "f.eks. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:80425
 msgid "Password"

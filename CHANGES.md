@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add a "Add to Contacts" button in MUC occupant modals
+
 ## 10.0.0 (2022-10-30)
 
 - Update to Strophe.js 1.6.0 which adds support for SCRAM-SHA-256 and SCRAM-SHA-512

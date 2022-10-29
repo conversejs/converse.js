@@ -1,9 +1,11 @@
 import 'shared/avatar/avatar.js';
 import { __ } from 'i18n';
 import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 
 
 export default (o) => {
+    const addToContacts = o.addToContacts.then(add => add ? html`<li><button class="btn btn-primary" type="button" @click=${add}>${__('Add to Contacts')}</button></li>` : '');
     return html`
         <div class="row">
             <div class="col-auto">
@@ -33,6 +35,7 @@ export default (o) => {
                     <li>
                         ${ o.occupant_id ? html`<div class="row"><strong>${__('Occupant Id')}:</strong></div><div class="row">${o.occupant_id}</div>` : '' }
                     </li>
+                    ${ until(addToContacts, '') }
                 </ul>
             </div>
         </div>

@@ -31,7 +31,7 @@
   "dependencies": {
     "@converse/openpromise": "^0.0.1",
     "@converse/skeletor": "0.0.7",
-    "dayjs": "1.11.3",
+    "dayjs": "1.11.6",
     "dompurify": "^2.3.1",
     "filesize": "^7.0.0",
     "localforage-webextensionstorage-driver": "^3.0.0",

@@ -24,12 +24,12 @@
     // ---
 
     --headlines-color: var(--pink);
-    --headline-head-text-color: var(--headlines-color);
-    --headline-head-fg-color: var(--headlines-color);
-    --headline-head-bg-color: var(--background);
+    --headlines-head-text-color: var(--headlines-color);
+    --headlines-head-fg-color: var(--headlines-color);
+    --headlines-head-bg-color: var(--background);
     --headline-message-color: var(--headlines-color);
     --headline-separator-border-bottom: 2px solid var(--headlines-color);
-    --headline-head-border-bottom: 0.15em solid var(--headlines-color);
+    --headlines-head-border-bottom: 0.15em solid var(--headlines-color);
 
     --icon-hover-color: var(--cyan);
     --gray-color: var(--comment);

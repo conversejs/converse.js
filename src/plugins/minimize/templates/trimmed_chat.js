@@ -8,7 +8,7 @@ export default (o) => {
     if (o.type === 'chatroom') {
         close_color = "var(--chatroom-head-color)";
     } else if (o.type === 'headline') {
-        close_color = "var(--headline-head-text-color)";
+        close_color = "var(--headlines-head-text-color)";
     } else {
         close_color = "var(--chat-head-text-color)";
     }

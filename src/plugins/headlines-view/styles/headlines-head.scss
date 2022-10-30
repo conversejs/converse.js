@@ -8,13 +8,13 @@
                     }
 
                     &.chat-head-chatbox {
-                        background-color: var(--headline-head-bg-color);
-                        border-bottom: var(--headline-head-border-bottom);
+                        background-color: var(--headlines-head-bg-color);
+                        border-bottom: var(--headlines-head-border-bottom);
                     }
-                    background-color: var(--headline-head-bg-color);
+                    background-color: var(--headlines-head-bg-color);
 
                     .chatbox-title__text {
-                        color: var(--headline-head-text-color) !important;
+                        color: var(--headlines-head-text-color) !important;
                     }
 
                     converse-dropdown {
@@ -30,7 +30,7 @@
                     .chatbox-btn {
                         converse-icon {
                             svg {
-                                fill: var(--headline-head-fg-color);
+                                fill: var(--headlines-head-fg-color);
                             }
                         }
                     }
@@ -42,7 +42,7 @@
                     .chatbox.headlines {
                         .chat-head {
                             &.chat-head-chatbox {
-                                background-color: var(--headline-head-bg-color);
+                                background-color: var(--headlines-head-bg-color);
                             }
                         }
                     }

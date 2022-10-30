@@ -30,7 +30,7 @@
     #controlbox {
         .controlbox-section {
             .controlbox-heading--headline {
-                color: var(--headline-head-text-color);
+                color: var(--headlines-head-text-color);
             }
         }
     }
@@ -40,10 +40,10 @@
         &.converse-fullscreen {
             .chatbox.headlines {
                 .box-flyout {
-                    background-color: var(--headline-head-text-color);
+                    background-color: var(--headlines-head-text-color);
                 }
                 .flyout {
-                    border-color: var(--headline-head-text-color);
+                    border-color: var(--headlines-head-text-color);
                 }
             }
         }

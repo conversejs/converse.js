@@ -14,21 +14,19 @@ export default class Dropdown extends DropdownBase {
     static get properties () {
         return {
             'icon_classes': { type: String },
-            'color': { type: String },
             'items': { type: Array }
         }
     }
 
     constructor () {
         super();
-        this.color = 'var(--text-color)';
         this.icon_classes = 'fa fa-bars';
     }
 
     render () {
         return html`
             <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <converse-icon color="${this.color}" size="1em" class="${ this.icon_classes }">
+                <converse-icon size="1em" class="${ this.icon_classes }">
             </button>
             <div class="dropdown-menu">
                 ${ this.items.map(b => until(b, '')) }

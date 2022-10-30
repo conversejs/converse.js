@@ -1,0 +1,24 @@
+.conversejs {
+    #controlbox {
+        .controlbox-head {
+            display: flex;
+            flex-direction: row-reverse;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            min-height: 0;
+
+            .brand-heading {
+                color: var(--controlbox-text-color);
+                font-size: 2em;
+            }
+            .chatbox-btn {
+                margin: 0;
+                converse-icon {
+                    svg {
+                        fill: var(--controlbox-head-btn-color);
+                    }
+                }
+            }
+        }
+    }
+}

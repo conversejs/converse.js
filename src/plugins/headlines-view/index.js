@@ -9,6 +9,7 @@ import { HeadlinesFeedsList } from './feed-list.js';
 import { _converse, converse } from '@converse/headless/core';
 
 import './styles/headlines.scss';
+import './styles/headlines-head.scss';
 
 
 converse.plugins.add('converse-headlines-view', {

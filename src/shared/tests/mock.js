@@ -628,6 +628,8 @@ function clearStores () {
     window.sessionStorage.removeItem(cache_key+'fetched');
 }
 
+const theme = ['dracula', 'classic', 'concord'][Math.floor(Math.random()*3)];
+
 async function _initConverse (settings) {
     clearStores();
     await clearIndexedDB();
@@ -639,10 +641,11 @@ async function _initConverse (settings) {
         'discover_connection_methods': false,
         'enable_smacks': false,
         'i18n': 'en',
-        'persistent_store': 'localStorage',
         'loglevel': 'debug',
         'no_trimming': true,
+        'persistent_store': 'localStorage',
         'play_sounds': false,
+        'theme': theme,
         'use_emojione': false,
         'view_mode': view_mode
     }, settings || {}));

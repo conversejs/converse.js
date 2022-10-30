@@ -2,6 +2,7 @@ import debounce from 'lodash/debounce';
 import tpl_new_day from "./templates/new-day.js";
 import { _converse, api, converse } from '@converse/headless/core';
 import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
 import {
     convertASCII2Emoji,
     getShortnameReferences,
@@ -9,6 +10,59 @@ import {
 } from '@converse/headless/plugins/emoji/utils.js';
 
 const { dayjs, u } = converse.env;
+
+export async function getHeadingDropdownItem (promise_or_data) {
+    const data = await promise_or_data;
+    return data
+        ? html`
+              <a href="#" class="dropdown-item ${data.a_class}" @click=${data.handler} title="${data.i18n_title}">
+                  <converse-icon
+                      size="1em"
+                      class="fa ${data.icon_class}"
+                  ></converse-icon>
+                  ${data.i18n_text}
+              </a>
+          `
+        : '';
+}
+
+export async function getHeadingStandaloneButton (promise_or_data) {
+    const data = await promise_or_data;
+    return html`
+        <a
+            href="#"
+            class="chatbox-btn ${data.a_class}"
+            @click=${data.handler}
+            title="${data.i18n_title}"
+        >
+            <converse-icon
+                size="1em"
+                class="fa ${data.icon_class}"
+            ></converse-icon>
+        </a>
+    `;
+}
+
+export function getStandaloneButtons (promise) {
+    return promise.then(
+        btns => btns
+            .filter(b => b.standalone)
+            .map(b => getHeadingStandaloneButton(b))
+            .reverse()
+            .map(b => until(b, '')));
+}
+
+export function getDropdownButtons (promise) {
+    return promise.then(
+        btns => {
+            const dropdown_btns = btns
+                .filter(b => !b.standalone)
+                .map(b => getHeadingDropdownItem(b));
+            return dropdown_btns.length ? html`<converse-dropdown class="chatbox-btn dropleft" .items=${dropdown_btns}></converse-dropdown>` : '';
+        }
+    );
+}
+
 
 export function onScrolledDown (model) {
     if (!model.isHidden()) {

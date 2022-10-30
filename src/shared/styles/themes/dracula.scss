@@ -25,6 +25,7 @@
 
     --headlines-color: var(--pink);
     --headline-head-text-color: var(--headlines-color);
+    --headline-head-fg-color: var(--headlines-color);
     --headline-head-bg-color: var(--background);
     --headline-message-color: var(--headlines-color);
     --headline-separator-border-bottom: 2px solid var(--headlines-color);
@@ -65,28 +66,31 @@
 
     --badge-color: var(--background);
 
-    --chatroom-head-color: var(--muc-color);
+    --chatroom-correcting-color: var(--comment);
+    --chatroom-head-bg-color-dark: var(--muc-color);
     --chatroom-head-bg-color: var(--background);
     --chatroom-head-border-bottom: 0.15em solid var(--muc-color);
+    --chatroom-head-fg-color: var(--muc-color);
+    --chatroom-head-color: var(--muc-color);
     --chatroom-head-description-link-color: var(--link-color);
-    --chatroom-separator-border-bottom: 0.15em solid var(--muc-color);
     --chatroom-message-input-border-top: 0.15em solid var(--muc-color);
-    --chatroom-head-bg-color-dark: var(--muc-color);
-    --chatroom-correcting-color: var(--comment);
+    --chatroom-separator-border-bottom: 0.15em solid var(--muc-color);
     --muc-toolbar-btn-disabled-color: var(--disabled-color);
 
     --occupants-border-left: 0.15em solid var(--muc-color);
     --occupants-border-bottom: 0.15em solid var(--muc-color);
 
-    --chat-head-text-color: var(--chat-color);
-    --chat-head-color: var(--background);
+    --chat-correcting-color: var(--comment);
+    --chat-head-border-bottom: 0.15em solid var(--chat-color);
+    --chat-head-fg-color: var(--chat-color);
     --chat-head-color-dark: var(--chat-color);
     --chat-head-color-darker: var(--chat-color);
     --chat-head-color-lighten-50-percent: var(--chat-color);
-    --chat-head-border-bottom: 0.15em solid var(--chat-color);
-    --chatbox-message-input-border-top: 0.15em solid var(--chat-color);
+    --chat-head-color: var(--background);
+    --chat-head-text-color: var(--chat-color);
     --chat-toolbar-btn-color: var(--chat-color);
-    --chat-correcting-color: var(--comment);
+    --chat-toolbar-btn-color: var(--green);
+    --chatbox-message-input-border-top: 0.15em solid var(--chat-color);
 
     --toolbar-btn-text-color: var(--background);
 
@@ -118,6 +122,7 @@
     --message-author-color: var(--purple);
 
     --controlbox-head-color: var(--purple);
+    --controlbox-head-btn-color: var(--subdued-color);
 
     --message-receipt-color: var(--green);
 

@@ -15,6 +15,7 @@ import { _converse, api, converse } from '@converse/headless/core';
 import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
 
 import './styles/_controlbox.scss';
+import './styles/controlbox-head.scss';
 
 
 converse.plugins.add('converse-controlbox', {

@@ -67,6 +67,7 @@
     --chat-textarea-height: 60px;
 
     --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
+    --chat-head-fg-color: white;
     --chat-head-color-dark: #1E9652;
     --chat-head-color-darker: #0E763B;
     --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
@@ -101,6 +102,7 @@
 
     --controlbox-width: 250px;
     --controlbox-head-color: var(--light-blue);
+    --controlbox-head-btn-color: var(--light-blue);
     --controlbox-heading-color: inherit;
     --controlbox-heading-font-weight: bold;
     --controlbox-heading-top-margin: 0.75em;
@@ -123,7 +125,7 @@
     --chatroom-head-bg-color-dark: #D24E2B; // $red
     --chatroom-head-bg-color: var(--redder-orange);
     --chatroom-head-border-bottom: 0px;
-    --chatroom-head-button-color: var(--chatroom-head-bg-color);
+    --chatroom-head-fg-color: white;
     --chatroom-head-color: white;
     --chatroom-head-description-display: block;
     --chatroom-head-description-link-color: white;
@@ -133,7 +135,8 @@
     --muc-toolbar-btn-disabled-color: gray;
 
     --headlines-color: var(--orange);
-    --headline-head-text-color: var(--white);
+    --headline-head-text-color: white;
+    --headline-head-fg-color: white;
     --headline-head-bg-color: var(--headlines-color);
     --headline-message-color: #D2842B;
     --headline-separator-border-bottom: 2px solid var(--headlines-color);

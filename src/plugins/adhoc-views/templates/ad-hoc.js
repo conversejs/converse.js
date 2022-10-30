@@ -1,7 +1,7 @@
 import tpl_command from './ad-hoc-command.js';
 import tpl_spinner from 'templates/spinner.js';
 import { __ } from 'i18n';
-import { getAutoCompleteList } from '../utils.js';
+import { getAutoCompleteList } from 'plugins/muc-views/utils.js';
 import { html } from "lit";
 
 

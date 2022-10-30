@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-02 16:32+0200\n"
-"PO-Revision-Date: 2020-08-05 09:32+0000\n"
+"PO-Revision-Date: 2022-10-30 09:42+0000\n"
 "Last-Translator: SilvanaFP <silvana@mailbox.org>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
 "translations/ca/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: ca\n"
 "Language-Code: ca\n"
@@ -72,26 +72,22 @@ msgstr "%1$s és absent"
 
 #: dist/converse-no-dependencies.js:43620
 #: dist/converse-no-dependencies.js:50559
-#, fuzzy
 msgid "You're not allowed to retract your message."
-msgstr "No tens permís per a retractar aquest missatge."
+msgstr "No tens permís per a retirar aquest missatge."
 
 #: dist/converse-no-dependencies.js:43622
 #: dist/converse-no-dependencies.js:50563
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "S'ha produït un error intentant retractar el teu missatge."
+msgstr "Ho sentim, s'ha produït un error intentant retirar el teu missatge."
 
 #: dist/converse-no-dependencies.js:43627
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "No teniu permís per enviar missatges a aquesta sala"
+msgstr "No tens permís per a enviar un missatge."
 
 #: dist/converse-no-dependencies.js:43629
 #: dist/converse-no-dependencies.js:50572
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "S'ha produït un error intentant desar el formulari de configuració."
+msgstr "Ho sentim, s'ha produït un error intentant enviar el teu missatge."
 
 #: dist/converse-no-dependencies.js:43955
 #, javascript-format
@@ -123,9 +119,8 @@ msgstr ""
 "qual és %2$s."
 
 #: dist/converse-no-dependencies.js:45396
-#, fuzzy
 msgid "Undecryptable OMEMO message"
-msgstr "Missatge OMEMO no encriptable"
+msgstr "Missatge OMEMO no xifrable"
 
 #: dist/converse-no-dependencies.js:45469
 msgid "Sorry, could not determine upload URL."

@@ -97,7 +97,7 @@
     "postcss-loader": "^7.0.1",
     "prettierx": "^0.19.0",
     "sass": "^1.51.0",
-    "sass-loader": "^12.6.0",
+    "sass-loader": "^13.1.0",
     "style-loader": "^3.1.0",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.7.2",

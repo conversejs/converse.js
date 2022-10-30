@@ -2,6 +2,7 @@
 
 ## 10.0.0 (Unreleased)
 
+- Update to Strophe.js 1.6.0 which adds support for SCRAM-SHA-256 and SCRAM-SHA-512
 - Don't automatically convert OpenStreetMap URLs into `geo:` URIs in sent messages
 - Remove the `allow_chat_pending_contacts` config option.
 - Show roster contacts with `subscription` set to `none`

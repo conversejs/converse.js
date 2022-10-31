@@ -64,34 +64,30 @@
                 padding: 0;
             }
 
-            a, a:visited, a:hover, a:not([href]):not([tabindex]) {
-                &.chatbox-btn {
-                    &.fa,
-                    &.fas,
-                    &.far {
-                        color: var(--chat-head-text-color);;
-                        &.button-on:before {
-                            padding: 0.2em;
-                            background-color: var(--chat-head-text-color);
-                            color: var(--chat-head-color);
+            .chatbox-btn {
+                color: white;
+                &:active {
+                    position: relative;
+                    top: 1px;
+                }
+            }
+
+            converse-dropdown {
+                .dropdown-menu {
+                    converse-icon {
+                        svg {
+                            fill: var(--chat-color);
                         }
                     }
                 }
             }
 
+
             .chatbox-btn {
-                color: white;
-                &.fa, &.far, &.fas  {
-                    color: white;
-                }
-                &:active {
-                    position: relative;
-                    top: 1px;
-                }
-                &.button-on:before {
-                    border-radius: 5%;
-                    background-color: var(--chat-head-text-color);
-                    color: var(--chat-head-color);
+                converse-icon {
+                    svg {
+                        fill: var(--chat-head-fg-color);
+                    }
                 }
             }
         }

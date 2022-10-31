@@ -166,16 +166,17 @@ async function downloadFile(url) {
 }
 
 async function getAndDecryptFile (uri) {
-    const hash = uri.hash().slice(1);
-    const protocol = window.location.hostname === 'localhost' ? 'http' : 'https';
+    const protocol = (window.location.hostname === 'localhost' && uri.domain() === 'localhost') ? 'http' : 'https';
     const http_url = uri.toString().replace(/^aesgcm/, protocol);
     const cipher = await downloadFile(http_url);
     if (cipher === null) {
         log.error(`Could not decrypt a received encrypted file ${uri.toString()} since it could not be downloaded`);
         return new Error(__('Error: could not decrypt a received encrypted file, because it could not be downloaded'));
     }
-    const iv = hash.slice(0, 24);
-    const key = hash.slice(24);
+
+    const hash = uri.hash().slice(1);
+    const key = hash.substring(hash.length-64);
+    const iv = hash.replace(key, '');
     let content;
     try {
         content = await decryptFile(iv, key, cipher);

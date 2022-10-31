@@ -1,21 +1,9 @@
 import { __ } from 'i18n';
 import { _converse } from '@converse/headless/core';
-import { getHeadingDropdownItem, getHeadingStandaloneButton } from 'plugins/chatview/utils.js';
+import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
 
-
-async function getStandaloneButtons (promise) {
-    const heading_btns = await promise;
-    const standalone_btns = heading_btns.filter(b => b.standalone);
-    return standalone_btns.map(b => getHeadingStandaloneButton(b))
-}
-
-async function getDropdownButtons (promise) {
-    const heading_btns = await promise;
-    const dropdown_btns = heading_btns.filter(b => !b.standalone);
-    return dropdown_btns.map(b => getHeadingDropdownItem(b));
-}
 
 export default (o) => {
     const i18n_profile = __("The User's Profile Image");
@@ -27,12 +15,6 @@ export default (o) => {
             height="40" width="40"></converse-avatar></span>`;
     const display_name = o.model.getDisplayName();
 
-    const tpl_dropdown_btns = () => getDropdownButtons(o.heading_buttons_promise)
-        .then(btns => btns.length ? html`<converse-dropdown class="dropleft" color="var(--chat-head-text-color)" .items=${btns}></converse-dropdown>` : '');
-
-    const tpl_standalone_btns = () => getStandaloneButtons(o.heading_buttons_promise)
-        .then(btns => btns.reverse().map(b => until(b, '')));
-
     return html`
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">
@@ -43,8 +25,8 @@ export default (o) => {
                 </div>
             </div>
             <div class="chatbox-title__buttons row no-gutters">
-                ${ until(tpl_dropdown_btns(), '') }
-                ${ until(tpl_standalone_btns(), '') }
+                ${ until(getDropdownButtons(o.heading_buttons_promise), '') }
+                ${ until(getStandaloneButtons(o.heading_buttons_promise), '') }
             </div>
         </div>
         ${ o.status ? html`<p class="chat-head__desc">${ o.status }</p>` : '' }

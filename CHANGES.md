@@ -1,7 +1,8 @@
 # Changelog
 
-## 10.0.0 (Unreleased)
+## 10.0.0 (2022-10-30)
 
+- Update to Strophe.js 1.6.0 which adds support for SCRAM-SHA-256 and SCRAM-SHA-512
 - Don't automatically convert OpenStreetMap URLs into `geo:` URIs in sent messages
 - Remove the `allow_chat_pending_contacts` config option.
 - Show roster contacts with `subscription` set to `none`
@@ -23,6 +24,7 @@
 - #3005: Fix MUC messages with a fallback body not rendering.
 - #3007: Fix links becoming text when a message is edited
 - #3018: Fix MUC icons not functioning.
+- #3028: Fix encrypted media from Conversations/Quicksy not properly decrypting
 
 
 ## 9.1.1 (2022-05-05)

@@ -47,15 +47,27 @@
                     &.fa {
                         color: var(--chatroom-head-color);
                         &.button-on:before {
-                            color: var(--chatroom-head-button-color);
+                            color: var(--chatroom-head-fg-color);
+                        }
+                    }
+                }
+            }
+
+            converse-dropdown {
+                .dropdown-menu {
+                    converse-icon {
+                        svg {
+                            fill: var(--chatroom-color);
                         }
                     }
                 }
             }
 
             .chatbox-btn {
-                &.button-on:before {
-                    color: var(--chatroom-head-button-color);
+                converse-icon {
+                    svg {
+                        fill: var(--chatroom-head-fg-color);
+                    }
                 }
             }
             .chatbox-title__text {

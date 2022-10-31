@@ -1,0 +1,53 @@
+.conversejs {
+    .chatbox {
+        &.headlines {
+            converse-headlines-heading {
+                &.chat-head {
+                    .chatbox-title--no-desc {
+                        padding: 0.75rem 1rem;
+                    }
+
+                    &.chat-head-chatbox {
+                        background-color: var(--headlines-head-bg-color);
+                        border-bottom: var(--headlines-head-border-bottom);
+                    }
+                    background-color: var(--headlines-head-bg-color);
+
+                    .chatbox-title__text {
+                        color: var(--headlines-head-text-color) !important;
+                    }
+
+                    converse-dropdown {
+                        .dropdown-menu {
+                            converse-icon {
+                                svg {
+                                    fill: var(--headlines-color);
+                                }
+                            }
+                        }
+                    }
+
+                    .chatbox-btn {
+                        converse-icon {
+                            svg {
+                                fill: var(--headlines-head-fg-color);
+                            }
+                        }
+                    }
+                }
+            }
+
+            converse-chats {
+                &.converse-fullscreen {
+                    .chatbox.headlines {
+                        .chat-head {
+                            &.chat-head-chatbox {
+                                background-color: var(--headlines-head-bg-color);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

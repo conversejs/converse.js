@@ -21,7 +21,7 @@ function tpl_user_settings_button (o) {
 
 export default (el) => {
     const chat_status = el.model.get('status') || 'offline';
-    const fullname = el.model.vcard?.get('fullname') || _converse.bare_jid;
+    const fullname = el.model.vcard?.get('fullname') || el.model.vcard?.get('nickname') || _converse.bare_jid;
     const status_message = el.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status));
     const i18n_change_status = __('Click to change your chat status');
     const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');

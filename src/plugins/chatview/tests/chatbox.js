@@ -892,6 +892,45 @@ describe("Chatboxes", function () {
                 }));
             });
         });
+
+        describe("Chatbox Message Styling", function() {
+
+            it("is not applied when sending a chat message containing a HTTP URL with styling template characters( _, \`, \`\`\`, ~, *) in the middle of it",
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+                await mock.waitForRoster(_converse, 'current');
+                await mock.openControlBox(_converse);
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+    
+                spyOn(_converse.api, "trigger").and.callThrough();
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+                let message = 'https://nitter.kavin.rocks/_MG_/~/*/1506109152665382920';
+                await mock.sendMessage(view, message);
+    
+                expect(view.model.messages.length === 1).toBeTruthy();
+                const stored_messages = await view.model.messages.browserStorage.findAll();
+                expect(view.model.messages.models[0].attributes.message).toEqual(message);
+                expect(view.model.messages.length).toBe(1);
+
+                // try second URL 
+                let message2 = 'https://nitter.george.rocks/_G*_/\`/\`\`\`/665382920';
+                await mock.sendMessage(view, message2);
+    
+                expect(view.model.messages.length === 2).toBeTruthy();
+                expect(view.model.messages.models[1].attributes.message).toEqual(message2);
+                expect(view.model.messages.length).toBe(2);
+
+                // try third URL 
+                let message3 = 'https://nitter.frank.rocks/_OP_/_NP_/\`\`\`/*/~/_qweq_665382920';
+                await mock.sendMessage(view, message3);
+    
+                expect(view.model.messages.length === 3).toBeTruthy();
+                expect(view.model.messages.models[2].attributes.message).toEqual(message3);
+                expect(view.model.messages.length).toBe(3);
+            }));
+
+        });;
     });
 
     describe("Special Messages", function () {
@@ -1052,5 +1091,7 @@ describe("Chatboxes", function () {
             await mock.openChatBoxFor(_converse, sender_jid);
             expect(select_msgs_indicator().textContent).toBe('1');
         }));
+
+ 
     });
 });

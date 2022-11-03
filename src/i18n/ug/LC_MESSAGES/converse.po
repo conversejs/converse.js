@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 9.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-06 12:59+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-11-03 16:31+0000\n"
+"Last-Translator: K.Y. <keramyasina@gmail.com>\n"
+"Language-Team: Uyghur <https://hosted.weblate.org/projects/conversejs/"
+"translations/ug/>\n"
 "Language: ug\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: dist/converse-no-dependencies.js:28713
 #: dist/converse-no-dependencies.js:28777
@@ -132,35 +135,35 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:42315
 msgid "People"
-msgstr ""
+msgstr "كىشلەر"
 
 #: dist/converse-no-dependencies.js:42316
 msgid "Activities"
-msgstr ""
+msgstr "پائالىيەتلەر"
 
 #: dist/converse-no-dependencies.js:42317
 msgid "Travel"
-msgstr ""
+msgstr "ساياھەت"
 
 #: dist/converse-no-dependencies.js:42318
 msgid "Objects"
-msgstr ""
+msgstr "شەيئىلەر"
 
 #: dist/converse-no-dependencies.js:42319
 msgid "Animals and nature"
-msgstr ""
+msgstr "ھايۋاناتلار ۋە تەبىئەت"
 
 #: dist/converse-no-dependencies.js:42320
 msgid "Food and drink"
-msgstr ""
+msgstr "يىمەك-ئىچمەك"
 
 #: dist/converse-no-dependencies.js:42321
 msgid "Symbols"
-msgstr ""
+msgstr "بەلگىلەر"
 
 #: dist/converse-no-dependencies.js:42322
 msgid "Flags"
-msgstr ""
+msgstr "بايراقلار"
 
 #: dist/converse-no-dependencies.js:42323
 msgid "Stickers"

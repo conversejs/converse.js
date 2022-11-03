@@ -103,6 +103,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/omemo/tests/media-sharing.js", type: 'module' },
       { pattern: "src/plugins/omemo/tests/muc.js", type: 'module' },
       { pattern: "src/plugins/omemo/tests/omemo.js", type: 'module' },
+      { pattern: "src/plugins/profile/tests/password-reset.js", type: 'module' },
       { pattern: "src/plugins/push/tests/push.js", type: 'module' },
       { pattern: "src/plugins/register/tests/register.js", type: 'module' },
       { pattern: "src/plugins/roomslist/tests/roomslist.js", type: 'module' },

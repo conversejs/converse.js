@@ -19,7 +19,6 @@ export const VIEW_PLUGINS = [
     'converse-notification',
     'converse-omemo',
     'converse-profile',
-    'converse-passwordreset',
     'converse-push',
     'converse-register',
     'converse-roomslist',

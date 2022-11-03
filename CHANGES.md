@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-- #2816 Chat highlight behaves odd
-- #2925 File upload is not always enabled
+- #326: Add the ability to reset your password
+- #2816: Chat highlight behaves odd
+- #2925: File upload is not always enabled
 - Add a "Add to Contacts" button in MUC occupant modals
 
 ## 10.0.0 (2022-10-30)

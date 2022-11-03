@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-05-06 13:09+0200\n"
-"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
+"PO-Revision-Date: 2022-11-05 01:37+0000\n"
+"Last-Translator: Eric <hamburger1024@mailbox.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12.1-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: dist/converse-no-dependencies.js:28189
 #: dist/converse-no-dependencies.js:28246
@@ -1044,18 +1044,16 @@ msgid "Image: "
 msgstr "影像： "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "消息版本"
+msgstr "较老版本"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "找不到远程服务器"
+msgstr "未找到老版本"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "当前版本"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1390,9 +1388,8 @@ msgstr "游客"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
-msgstr "成员"
+msgstr "参与者"
 
 #: dist/converse-no-dependencies.js:104591
 msgid "Participants"
@@ -1976,7 +1973,7 @@ msgstr ""
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
-msgstr ""
+msgstr "错误：无法解密收到的加密文件，因为无法下载"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2303,9 +2300,8 @@ msgid "Add a new groupchat"
 msgstr "添加聊天室"
 
 #: dist/converse-no-dependencies.js:123866
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "显示聊天室"
+msgstr "显示加为书签的群聊"
 
 #: dist/converse-no-dependencies.js:124472
 #, javascript-format
@@ -2318,7 +2314,6 @@ msgid "Add"
 msgstr "添加"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
 msgstr "群组"
 
@@ -2346,9 +2341,8 @@ msgid "Contacts"
 msgstr "联系人"
 
 #: dist/converse-no-dependencies.js:125398
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "按一下隐藏这些联系人"
+msgstr "单击切换联系人可见性"
 
 #: dist/converse-no-dependencies.js:125399
 msgid "Add a contact"

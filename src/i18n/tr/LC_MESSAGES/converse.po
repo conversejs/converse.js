@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-04-23 09:13+0000\n"
+"PO-Revision-Date: 2022-11-05 01:37+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.1-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: dist/converse-no-dependencies.js:28189
 #: dist/converse-no-dependencies.js:28246
@@ -1084,18 +1084,16 @@ msgid "Image: "
 msgstr "Resim: "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "Mesaj versiyonları"
+msgstr "Eski sürümler"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "Uzak sunucu bulunamadı"
+msgstr "Eski sürüm bulunamadı"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "Geçerli sürüm"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1432,9 +1430,8 @@ msgstr "Ziyaretçi"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
-msgstr "Katılımcılar"
+msgstr "Katılımcı"
 
 #: dist/converse-no-dependencies.js:104591
 msgid "Participants"
@@ -2028,7 +2025,7 @@ msgstr ""
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
-msgstr ""
+msgstr "Hata: indirilemediği için alınan şifreli dosyanın şifresi çözülemedi"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2367,9 +2364,8 @@ msgid "Add a new groupchat"
 msgstr "Yeni grup sohbeti ekle"
 
 #: dist/converse-no-dependencies.js:123866
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Toplu konuşmaları göster"
+msgstr "Yer imlerine eklenen grup sohbetlerini göster"
 
 #: dist/converse-no-dependencies.js:124472
 #, javascript-format
@@ -2382,9 +2378,8 @@ msgid "Add"
 msgstr "Ekle"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
-msgstr "Grup Sohbetleri"
+msgstr "Grup"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125158
@@ -2410,9 +2405,8 @@ msgid "Contacts"
 msgstr "İletişim"
 
 #: dist/converse-no-dependencies.js:125398
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Bu kişileri gizlemek için tıklayın"
+msgstr "Kişileri değiştirmek için tıklayın"
 
 #: dist/converse-no-dependencies.js:125399
 msgid "Add a contact"

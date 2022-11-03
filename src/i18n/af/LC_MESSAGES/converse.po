@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-01-10 14:17+0000\n"
+"PO-Revision-Date: 2022-11-05 01:37+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -474,15 +474,12 @@ msgid "Remote server not found"
 msgstr "Afgeleë bediener nie gevind nie"
 
 #: dist/converse-no-dependencies.js:50475
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr ""
-"U het geen toestemming om uself in hierdie groepgesprek te registreer nie."
+msgstr "U het nie toestemming om hierdie groepgesprek by te tree nie"
 
 #: dist/converse-no-dependencies.js:50478
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr "Jammer, 'n fout het voorgekom tydens storing van u profieldata."
+msgstr "'n Fout het voorgekom tydens betreding van hierdie groepgesprek"
 
 #: dist/converse-no-dependencies.js:51414
 #, javascript-format
@@ -995,9 +992,9 @@ msgid "Bookmarks"
 msgstr "Boekmerke"
 
 #: dist/converse-no-dependencies.js:76365
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Boekmerke"
+msgstr "Boekmerke vir %1$s"
 
 #: dist/converse-no-dependencies.js:76366
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -1005,7 +1002,7 @@ msgstr "Wil u outomaties na aanmelding aan hierdie groepsgesprek deelneem?"
 
 #: dist/converse-no-dependencies.js:76367
 msgid "Remove"
-msgstr ""
+msgstr "Verwyder"
 
 #: dist/converse-no-dependencies.js:76368
 msgid "The name for this bookmark:"
@@ -1017,7 +1014,7 @@ msgstr "Wat sal u bynaam vir hierdie groepgesprek wees?"
 
 #: dist/converse-no-dependencies.js:76370
 msgid "Update"
-msgstr ""
+msgstr "Wysig"
 
 #: dist/converse-no-dependencies.js:76370
 #: dist/converse-no-dependencies.js:105602
@@ -1110,18 +1107,16 @@ msgid "Image: "
 msgstr "Beeld: "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "Boodskap weergawes"
+msgstr "Ouer weergawes"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "Afgeleë bediener nie gevind nie"
+msgstr "Geen ouer weergawes gevind"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "Huidige weergawe"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1329,15 +1324,17 @@ msgstr "Hierdie toestel word vertrou"
 
 #: dist/converse-no-dependencies.js:97870
 msgid "Connection URL"
-msgstr ""
+msgstr "Verbindings-URL"
 
 #: dist/converse-no-dependencies.js:97871
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
+"HTTP- of websocket-URL wat gebruik word om 'n verbinding met u XMPP-server "
+"te maak"
 
 #: dist/converse-no-dependencies.js:97872
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "bv. wss://voorbeeld.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:97877
 msgid "Password"
@@ -1403,7 +1400,6 @@ msgid "Click to load missing messages"
 msgstr "Klik om vermisde boodskappe te laai"
 
 #: dist/converse-no-dependencies.js:103630
-#, fuzzy
 msgid "Change nickname"
 msgstr "Verander u bynaam"
 
@@ -1463,9 +1459,8 @@ msgstr "Besoeker"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
-msgstr "Deelnemers"
+msgstr "Deelnemer"
 
 #: dist/converse-no-dependencies.js:104591
 msgid "Participants"
@@ -1593,7 +1588,6 @@ msgid "Topic author"
 msgstr "Outeur van onderwerp"
 
 #: dist/converse-no-dependencies.js:106988
-#, fuzzy
 msgid "XMPP address"
 msgstr "XMPP-adres"
 
@@ -1774,9 +1768,8 @@ msgid "Configure this groupchat"
 msgstr "Verstel hierdie groepgesprek"
 
 #: dist/converse-no-dependencies.js:108488
-#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr "Registreer 'n bynaam vir hierdie groepgesprek"
+msgstr "Verander u bynaam vir hierdie groepgesprek"
 
 #: dist/converse-no-dependencies.js:108501
 msgid "Invite someone to join this groupchat"
@@ -2059,6 +2052,8 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Fout: kon nie die gegewe versleutelde leêr ontsleutel nie, want dit kon nie "
+"afgelaai word nie"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2400,9 +2395,8 @@ msgid "Add a new groupchat"
 msgstr "Voeg 'n nuwe groepgesprek by"
 
 #: dist/converse-no-dependencies.js:123866
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Wys groepgesprekke"
+msgstr "Wys geboekmerkde groepgesprekke"
 
 #: dist/converse-no-dependencies.js:124472
 #, javascript-format
@@ -2415,9 +2409,8 @@ msgid "Add"
 msgstr "Voeg by"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
-msgstr "Groepe"
+msgstr "Groep"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125158
@@ -2443,9 +2436,8 @@ msgid "Contacts"
 msgstr "Kontakte"
 
 #: dist/converse-no-dependencies.js:125398
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Klik om hierdie kontakte te verskuil"
+msgstr "Klik om kontakte te wissel"
 
 #: dist/converse-no-dependencies.js:125399
 msgid "Add a contact"

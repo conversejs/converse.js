@@ -28,24 +28,10 @@ export default class OccupantModal extends BaseModal {
     }
 
     renderModal () {
-        const model = this.model ?? this.message;
-        const jid = model?.get('jid');
-        const vcard = this.getVcard();
-        const nick = model.get('nick');
-        const occupant_id = model.get('occupant_id');
-        const role = this.model?.get('role');
-        const affiliation = this.model?.get('affiliation');
-        const hats = this.model?.get('hats')?.length ? this.model.get('hats') : null;
-        const muc = this.model.collection.chatroom;
-        const addToContacts = api.contacts.get(jid).then(contact => {
-            if (!contact && muc.features.get('nonanonymous') && jid && jid != _converse.bare_jid) {
-                return this.addToContacts.bind(this);
-            }
-        });
-        return tpl_occupant_modal({ jid, vcard, nick, occupant_id, role, affiliation, hats, addToContacts });
+        return tpl_occupant_modal(this);
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    getModalTitle () {
         const model = this.model ?? this.message;
         return model?.getDisplayName();
     }

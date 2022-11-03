@@ -3,16 +3,16 @@ import { generateFingerprint, getDevicesForContact, } from '../utils.js';
 
 const ConverseMixins = {
 
-    generateFingerprints: async function (jid) {
+    async generateFingerprints (jid) {
         const devices = await getDevicesForContact(jid);
         return Promise.all(devices.map(d => generateFingerprint(d)));
     },
 
-    getDeviceForContact: function (jid, device_id) {
+    getDeviceForContact (jid, device_id) {
         return getDevicesForContact(jid).then(devices => devices.get(device_id));
     },
 
-    contactHasOMEMOSupport: async function (jid) {
+    async contactHasOMEMOSupport (jid) {
         /* Checks whether the contact advertises any OMEMO-compatible devices. */
         const devices = await getDevicesForContact(jid);
         return devices.length > 0;

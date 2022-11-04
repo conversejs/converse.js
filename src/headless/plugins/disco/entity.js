@@ -40,6 +40,13 @@ const DiscoEntity = Model.extend({
         id = `converse.disco-items-${this.get('jid')}`;
         this.items.browserStorage = _converse.createStore(id, 'session');
         await new Promise(f => this.items.fetch({'success': f, 'error': f}));
+        _converse.disco_entities
+            .filter(e => {
+                // XXX: Ignore nodes for now.
+                // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
+                return typeof e.get('name') !== 'undefined';
+            })
+            .forEach(e => this.items.create(e));
 
         this.identities = new Collection();
         id = `converse.identities-${this.get('jid')}`;

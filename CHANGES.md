@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add a "Add to Contacts" button in MUC occupant modals
+- #2925: Fix missing disco-items in browser storage (after CTRL+F5).
 
 ## 10.0.0 (2022-10-30)
 

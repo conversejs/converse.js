@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-04-23 09:13+0000\n"
-"Last-Translator: Xosé M <xosem@disroot.org>\n"
+"PO-Revision-Date: 2022-11-05 01:37+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
 "Language: gl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.1-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: dist/converse-no-dependencies.js:28189
 #: dist/converse-no-dependencies.js:28246
@@ -1080,18 +1080,16 @@ msgid "Image: "
 msgstr "Imaxe: "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "Versións da mensaxe"
+msgstr "Versións máis antigas"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "Non se atopou o servidor remoto"
+msgstr "Non se atoparon versións anteriores"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "Versión actual"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1427,9 +1425,8 @@ msgstr "Visitante"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
-msgstr "Participantes"
+msgstr "Participante"
 
 #: dist/converse-no-dependencies.js:104591
 msgid "Participants"
@@ -2023,6 +2020,8 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Erro: non se puido descifrar un ficheiro cifrado recibido porque non se "
+"puido descargar"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2362,9 +2361,8 @@ msgid "Add a new groupchat"
 msgstr "Engadir unha nova conversa en grupo"
 
 #: dist/converse-no-dependencies.js:123866
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Mostra conversas en grupo"
+msgstr "Mostralos chats de grupo marcados"
 
 #: dist/converse-no-dependencies.js:124472
 #, javascript-format
@@ -2377,9 +2375,8 @@ msgid "Add"
 msgstr "Engadir"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
-msgstr "Grupos"
+msgstr "Grupo"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125158
@@ -2405,9 +2402,8 @@ msgid "Contacts"
 msgstr "Contactos"
 
 #: dist/converse-no-dependencies.js:125398
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Pulse para ocultar estos contactos"
+msgstr "Fai clic para alternalos contactos"
 
 #: dist/converse-no-dependencies.js:125399
 msgid "Add a contact"

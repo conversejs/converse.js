@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-10-17 00:42+0000\n"
+"PO-Revision-Date: 2022-11-05 01:37+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: es\n"
 "Language-Code: es\n"
@@ -217,7 +217,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:48066
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Se tardó demasiado tiempo intentando retractar el mensaje."
+msgstr ""
+"Se agotó el tiempo de espera mientras intentaba retractarse de su mensaje."
 
 #: dist/converse-no-dependencies.js:48748
 msgid "Sorry, an error happened while running the command."
@@ -563,7 +564,7 @@ msgstr "Has sido bloqueado de esta conversación en grupo"
 
 #: dist/converse-no-dependencies.js:53103
 msgid "You have exited this groupchat due to a technical problem"
-msgstr "Ha salido de esta conversación de grupo debido a un problema técnico"
+msgstr "Has salido de este grupo de chat debido a un problema técnico"
 
 #: dist/converse-no-dependencies.js:53104
 msgid "You have been kicked from this groupchat"
@@ -626,9 +627,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:59073
 msgid "Timeout while trying to fetch archived messages."
-msgstr ""
-"Se ha agotado el tiempo de espera al intentar recuperar los mensajes "
-"archivados."
+msgstr "Se agotó el tiempo de espera al intentar obtener mensajes archivados."
 
 #: dist/converse-no-dependencies.js:59086
 msgid "An error occurred while querying for archived messages."
@@ -1123,18 +1122,16 @@ msgid "Image: "
 msgstr "Imagen: "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "Versiones del mensaje"
+msgstr "Versiones anteriores"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "Servidor remoto no encontrado"
+msgstr "No se han encontrado versiones anteriores"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "Versión actual"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1475,9 +1472,8 @@ msgstr "Visitante"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
-msgstr "Participantes"
+msgstr "Participante"
 
 #: dist/converse-no-dependencies.js:104591
 msgid "Participants"
@@ -2083,6 +2079,8 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Error: no se pudo descifrar un archivo cifrado recibido porque no se pudo "
+"descargar"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2426,9 +2424,8 @@ msgid "Add a new groupchat"
 msgstr "Añadir nueva conversación en grupo"
 
 #: dist/converse-no-dependencies.js:123866
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Mostrar conversaciones en grupo"
+msgstr "Mostrar los chats de grupo marcados"
 
 #: dist/converse-no-dependencies.js:124472
 #, javascript-format
@@ -2441,9 +2438,8 @@ msgid "Add"
 msgstr "Añadir"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
-msgstr "Grupos"
+msgstr "Grupo"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125158
@@ -2469,9 +2465,8 @@ msgid "Contacts"
 msgstr "Contactos"
 
 #: dist/converse-no-dependencies.js:125398
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Haz clic para ocultar estos contactos"
+msgstr "Haga clic para alternar los contactos"
 
 #: dist/converse-no-dependencies.js:125399
 msgid "Add a contact"

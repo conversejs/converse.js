@@ -27,14 +27,6 @@ export default class AddContactModal extends BaseModal {
     }
 
     afterRender () {
-<<<<<<< HEAD:src/plugins/rosterview/modals/add-contact.js
-        if (typeof api.settings.get('xhr_user_search_url') === 'string') {
-            this.initXHRAutoComplete();
-        } else {
-            this.initJIDAutoComplete();
-        }
-    }
-=======
         const jid_input = this.el.querySelector('input[name="jid"]');
         this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
     },
@@ -43,7 +35,6 @@ export default class AddContactModal extends BaseModal {
         return ['apple', 'pear', 'banana'];
         // return [...new Set(_converse.roster.map(i => i.get('gruop')).filter(i => i))];
     },
->>>>>>> a8e66ff20 (commit to be deleted):src/modals/add-contact.js
 
     initJIDAutoComplete () {
         if (!api.settings.get('autocomplete_add_contact')) {

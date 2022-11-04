@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-import log from "@converse/headless/log";
-import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless/core";
-=======
 import { _converse, api, converse } from "@converse/headless/core";
->>>>>>> a8e66ff20 (commit to be deleted)
 
 export function removeContact (contact) {
     contact.removeFromRoster(

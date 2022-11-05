@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-04-23 09:13+0000\n"
+"PO-Revision-Date: 2022-11-08 20:04+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.1-dev\n"
+"X-Generator: Weblate 4.14.2\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -728,8 +728,8 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
-"Moderatoren sind privilegierte Benutzer, die die Rollen anderer Benutzer "
-"ändern können (außer denen mit Administrator- oder Eigentümerzugehörigkeit)."
+"Moderatoren sind privilegierte Benutzer, die Rollen anderer Benutzer ändern "
+"können (außer denen mit Administrator- oder Eigentümerzugehörigkeit)."
 
 #: dist/converse-no-dependencies.js:72078
 msgid "The default role, implies that you can read and write messages."
@@ -1124,18 +1124,16 @@ msgid "Image: "
 msgstr "Bild: "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "Nachrichtenarchivierung"
+msgstr "Ältere Versionen"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "Server wurde nicht gefunden"
+msgstr "Keine älteren Versionen gefunden"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "Aktuelle Version"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1480,7 +1478,6 @@ msgstr "Besucher"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
 msgstr "Teilnehmer"
 
@@ -2088,6 +2085,8 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Fehler: Eine empfangene verschlüsselte Datei konnte nicht entschlüsselt "
+"werden, da sie nicht heruntergeladen werden konnte"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2436,9 +2435,8 @@ msgid "Add a new groupchat"
 msgstr "Neuen Gruppenchat hinzufügen"
 
 #: dist/converse-no-dependencies.js:123866
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Gruppen"
+msgstr "Mit Lesezeichen versehene Gruppenchats anzeigen"
 
 #: dist/converse-no-dependencies.js:124472
 #, javascript-format
@@ -2451,9 +2449,8 @@ msgid "Add"
 msgstr "Hinzufügen"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
-msgstr "Gruppen"
+msgstr "Gruppe"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125158
@@ -2479,7 +2476,6 @@ msgid "Contacts"
 msgstr "Kontakte"
 
 #: dist/converse-no-dependencies.js:125398
-#, fuzzy
 msgid "Click to toggle contacts"
 msgstr "Hier klicken, um diese Kontakte auszublenden"
 

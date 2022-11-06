@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-10-30 09:42+0000\n"
+"PO-Revision-Date: 2022-11-08 20:04+0000\n"
 "Last-Translator: Gediminas Murauskas <muziejusinfo@gmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/lt/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.14.2\n"
 
 #: dist/converse-no-dependencies.js:28189
 #: dist/converse-no-dependencies.js:28246
@@ -1080,18 +1080,16 @@ msgid "Image: "
 msgstr "Atvaizdas: "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "Pranešimo versijos"
+msgstr "Senesnės versijos"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "Nutolęs serveris nerastas"
+msgstr "Senesnių versijų nerasta"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "Dabartinė versija"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1428,9 +1426,8 @@ msgstr "Lankytojas"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
-msgstr "Dalyviai"
+msgstr "Dalyvis"
 
 #: dist/converse-no-dependencies.js:104591
 msgid "Participants"
@@ -2025,6 +2022,8 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Klaida: nepavyko iššifruoti gauto užšifruoto failo, nes jo nepavyko "
+"atsisiųsti"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2364,9 +2363,8 @@ msgid "Add a new groupchat"
 msgstr "Pridėti naują kambarį"
 
 #: dist/converse-no-dependencies.js:123866
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Rodyti kambarius"
+msgstr "Rodyti pažymėtus kambarius"
 
 #: dist/converse-no-dependencies.js:124472
 #, javascript-format
@@ -2379,9 +2377,8 @@ msgid "Add"
 msgstr "Pridėti"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
-msgstr "Grupės"
+msgstr "Kambarys"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125158
@@ -2407,9 +2404,8 @@ msgid "Contacts"
 msgstr "Kontaktai"
 
 #: dist/converse-no-dependencies.js:125398
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Spustelėkite norint paslėpti šiuos kontaktus"
+msgstr "Spustelėkite norėdami perjungti kontaktus"
 
 #: dist/converse-no-dependencies.js:125399
 msgid "Add a contact"

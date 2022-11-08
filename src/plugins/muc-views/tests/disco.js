@@ -28,13 +28,6 @@ describe("Service Discovery", function () {
             .c('feature', { 'var': 'http://jabber.org/protocol/disco#items'}).up();
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        const entities = await _converse.api.disco.entities.get();
-        expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
-        expect(entities.get(_converse.domain).identities.length).toBe(2);
-        expect(entities.get('montague.lit').features.where(
-            {'var': 'http://jabber.org/protocol/disco#items'}).length).toBe(1);
-        expect(entities.get('montague.lit').features.where(
-            {'var': 'http://jabber.org/protocol/disco#info'}).length).toBe(1);
 
         stanza = await u.waitUntil(() => IQ_stanzas.filter(
             iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]')).pop()
@@ -59,6 +52,14 @@ describe("Service Discovery", function () {
         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
             .c('identity', { 'category': 'conference', 'name': 'Play-Specific Chatrooms', 'type': 'text'}).up()
             .c('feature', { 'var': 'http://jabber.org/protocol/muc'}).up()));
+
+        const entities = await _converse.api.disco.entities.get();
+        expect(entities.length).toBe(3); // We have an extra entity, which is the user's JID
+        expect(entities.get(_converse.domain).identities.length).toBe(2);
+        expect(entities.get('montague.lit').features.where(
+            {'var': 'http://jabber.org/protocol/disco#items'}).length).toBe(1);
+        expect(entities.get('montague.lit').features.where(
+            {'var': 'http://jabber.org/protocol/disco#info'}).length).toBe(1);
 
         await u.waitUntil(() => _converse.api.settings.get('muc_domain') === 'chat.shakespeare.lit');
     }));

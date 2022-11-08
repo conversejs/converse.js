@@ -159,7 +159,7 @@ const DiscoEntity = Model.extend({
         this.onDiscoItems(stanza);
     },
 
-    onInfo (stanza) {
+    async onInfo (stanza) {
         Array.from(stanza.querySelectorAll('identity')).forEach(identity => {
             this.identities.create({
                 'category': identity.getAttribute('category'),
@@ -180,7 +180,7 @@ const DiscoEntity = Model.extend({
         });
 
         if (stanza.querySelector(`feature[var="${Strophe.NS.DISCO_ITEMS}"]`)) {
-            this.queryForItems();
+            await this.queryForItems();
         }
         Array.from(stanza.querySelectorAll('feature')).forEach(feature => {
             this.features.create({

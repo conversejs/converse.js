@@ -1,12 +1,16 @@
 .conversejs, .conversejs-bg, #conversejs-bg, body.converse-fullscreen {
     // Theme-defined variables:
     --green: #3AA569;
+    --dark-green: #1E9652;
+    --blue: #387592;
+    --dark-blue: #397491;
     --redder-orange: #E77051;
     --orange: #E7A151;
     --light-blue: #578EA9;
     --lighter-blue: #eff4f7;
     --dark-red: #D24E2B;
     --comment: #A8ABA1;
+    --gray: #818479;
 
     // Base variables
     --foreground: #666;
@@ -16,38 +20,38 @@
     --chat-color: var(--green);
     --disabled-color: gray;
     --error-color: var(--dark-red);
-    --focus-color: var(--white);
+    --focus-color: var(--background);
 
     // ---
 
     --icon-hover-color: var(--text-color);
-    --info-color: #1E9652; // $dark-green
+    --info-color: var(--dark-green);
 
     --chat-status-online: var(--green);
     --chat-status-busy: var(--redder-orange);
     --chat-status-away: var(--orange);
 
-    --brand-heading-color: #387592; // $blue
+    --brand-heading-color: var(--blue); // $blue
 
     --completion-light-color: #FFB9A7; // $lightest-red
     --completion-normal-color: var(--redder-orange);
     --completion-dark-color: #D24E2B; // $dark-red
 
     --dark-link-color: #206485; // $dark-blue
-    --inverse-link-color: white;
+    --inverse-link-color: var(--background);
     --link-color-lighten-10-percent: #79a5ba; // lighten($light-blue, 10%)
     --link-color: var(--light-blue);
     --link-hover-color: #345566;
 
-    --global-background-color: #397491; // dark blue
-    --modal-background-color: white;
+    --global-background-color: var(--dark-blue);
+    --modal-background-color: var(--background);
 
-    --img-thumbnail-background-color: white;
+    --img-thumbnail-background-color: var(--background);
     --img-thumbnail-border-color: #DEE2E6;
 
     --text-shadow-color: #FAFAFA;
-    --text-color: #666;
-    --controlbox-text-color: #666;
+    --text-color: var(--foreground);
+    --controlbox-text-color: var(--foreground);
     --text-color-lighten-15-percent: #8c8c8c; // lighten(#666, 15%)
     --message-author-color: var(--text-color);
     --text-color-invert: var(--background);
@@ -57,28 +61,28 @@
 
     --save-button-color: var(--green);
 
-    --button-text-color: white;
-    --button-hover-text-color: white;
+    --button-text-color: var(--background);
+    --button-hover-text-color: var(--background);
 
-    --chat-background-color: white;
-    --chat-textarea-color: #666;
-    --chat-textarea-background-color: white;
+    --chat-background-color: var(--background);
+    --chat-textarea-color: var(--foreground);
+    --chat-textarea-background-color: var(--background);
     --chat-textarea-disabled-bg-color: #EEE;
     --chat-textarea-height: 60px;
 
     --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
-    --chat-head-fg-color: white;
-    --chat-head-color-dark: #1E9652;
+    --chat-head-fg-color: var(--background);
+    --chat-head-color-dark: var(--dark-green);
     --chat-head-color-darker: #0E763B;
     --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
     --chat-head-color: var(--green);
-    --chat-head-text-color: white;
+    --chat-head-text-color: var(--background);
     --chat-toolbar-btn-color: var(--green);
     --chat-toolbar-btn-disabled-color: gray;
 
-    --toolbar-btn-text-color: white;
+    --toolbar-btn-text-color: var(--background);
 
-    --chat-content-background-color: white;
+    --chat-content-background-color: var(--background);
 
     --chat-info-color: var(--chatroom-head-bg-color);
 
@@ -86,11 +90,11 @@
     --danger-color: var(--redder-orange); // dark-red
     --highlight-color-darker: #B0E8E2;
     --highlight-color: #DCF9F6;
-    --primary-color-dark:  #397491;
+    --primary-color-dark:  var(--dark-blue);
     --primary-color: var(--light-blue);
     --primary-color-light: var(--lighter-blue);
     --secondary-color-dark: #585B51;
-    --secondary-color: #818479; // gray
+    --secondary-color: var(--gray);
     --warning-color-dark: #D2842B;
     --warning-color: var(--orange);
 
@@ -106,7 +110,7 @@
     --controlbox-heading-color: inherit;
     --controlbox-heading-font-weight: bold;
     --controlbox-heading-top-margin: 0.75em;
-    --controlbox-pane-background-color: white;
+    --controlbox-pane-background-color: var(--background);
     --controlbox-pane-bg-hover-color: #eff4f7;
     --panel-divider-color: #e7e7e7;
 
@@ -114,9 +118,9 @@
     // --font-path: "webfonts/icomoon/fonts/";
 
     --heading-display: block;
-    --heading-color: white;
+    --heading-color: var(--background);
 
-    --badge-color: white;
+    --badge-color: var(--background);
 
     --chatroom-color: var(--redder-orange);
     --chatroom-badge-color: var(--chatroom-head-bg-color);
@@ -125,18 +129,19 @@
     --chatroom-head-bg-color-dark: #D24E2B; // $red
     --chatroom-head-bg-color: var(--redder-orange);
     --chatroom-head-border-bottom: 0px;
-    --chatroom-head-fg-color: white;
-    --chatroom-head-color: white;
+    --chatroom-head-button-color: var(--chatroom-head-bg-color);
+    --chatroom-head-color: var(--background);
     --chatroom-head-description-display: block;
-    --chatroom-head-description-link-color: white;
+    --chatroom-head-description-link-color: var(--background);
+    --chatroom-head-fg-color: var(--background);
     --chatroom-head-title-font-weight: normal;
     --chatroom-head-title-padding-right: 0px;
     --muc-toolbar-btn-color: var(--redder-orange);
     --muc-toolbar-btn-disabled-color: gray;
 
     --headlines-color: var(--orange);
-    --headlines-head-text-color: white;
-    --headlines-head-fg-color: white;
+    --headlines-head-text-color: var(--background);
+    --headlines-head-fg-color: var(--background);
     --headlines-head-bg-color: var(--headlines-color);
     --headline-message-color: #D2842B;
     --headline-separator-border-bottom: 2px solid var(--headlines-color);
@@ -151,7 +156,7 @@
     --chatbox-message-input-border-top: 4px solid var(--chat-head-color);
     --chatroom-message-input-border-top: 4px solid var(--chatroom-head-bg-color);
 
-    --occupants-background-color: white;
+    --occupants-background-color: var(--background);
     --occupants-border-left: 0.2rem solid var(--panel-divider-color);
     --occupants-border-bottom: 1px solid lightgrey;
 
@@ -160,12 +165,12 @@
     --fullpage-emoji-picker-height: 300px;
     --fullpage-max-chat-textarea-height: 15em;
 
-    --overlayed-badge-color: #818479; // $gray-color
+    --overlayed-badge-color: var(--gray);
 
     --close-color: var(--text-color);
     --close-color: #585B51;
 
-    --list-toggle-color: #818479;
+    --list-toggle-color: var(--gray);
     --list-toggle-hover-color: #585B51;
     --list-item-hover-color: rgba(0, 0, 0, 0.035);
     --list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)

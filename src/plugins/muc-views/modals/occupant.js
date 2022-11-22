@@ -1,7 +1,7 @@
 import BaseModal from "plugins/modal/modal.js";
 import tpl_occupant_modal from "./templates/occupant.js";
 import { _converse, api } from "@converse/headless/core";
-
+import { Model } from '@converse/skeletor/src/model.js';
 
 export default class OccupantModal extends BaseModal {
 
@@ -28,20 +28,20 @@ export default class OccupantModal extends BaseModal {
     }
 
     renderModal () {
-        const model = this.model ?? this.message;
-        const jid = model?.get('jid');
-        const vcard = this.getVcard();
-        const nick = model.get('nick');
-        const occupant_id = model.get('occupant_id');
-        const role = this.model?.get('role');
-        const affiliation = this.model?.get('affiliation');
-        const hats = this.model?.get('hats')?.length ? this.model.get('hats') : null;
-        return tpl_occupant_modal({ jid, vcard, nick, occupant_id, role, affiliation, hats });
+        return tpl_occupant_modal(this);
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    getModalTitle () {
         const model = this.model ?? this.message;
         return model?.getDisplayName();
+    }
+
+    addToContacts () {
+        const model = this.model ?? this.message;
+        const jid = model.get('jid');
+        if (jid) {
+            api.modal.show('converse-add-contact-modal', {'model': new Model({ jid })});
+        }
     }
 }
 

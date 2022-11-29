@@ -1,7 +1,6 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
  */
-import log from '../../log.js';
 import {
     extendAppSettings,
     getAppSetting,
@@ -29,7 +28,7 @@ export const settings_api = {
      * `converse.initialize`.
      *
      * @method api.settings.extend
-     * @param { object } settings The configuration settings
+     * @param {object} settings The configuration settings
      * @example
      * api.settings.extend({
      *    'enable_foo': true
@@ -43,14 +42,6 @@ export const settings_api = {
      */
     extend (settings) {
         return extendAppSettings(settings);
-    },
-
-    update (settings) {
-        log.warn(
-            'The api.settings.update method has been deprecated and will be removed. ' +
-                'Please use api.settings.extend instead.'
-        );
-        return this.extend(settings);
     },
 
     /**

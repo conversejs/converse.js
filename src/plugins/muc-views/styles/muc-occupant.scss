@@ -23,7 +23,7 @@
             }
 
             .occupant-details {
-                padding-left: 0.3em;
+                padding-inline-start: 0.3em;
                 padding-bottom: 1em;
                 border-bottom: 0.05em solid var(--secondary-color);
                 li {
@@ -32,7 +32,7 @@
                     margin-bottom: 0.5em;
                 }
                 .row {
-                    padding-left: 1em;
+                    padding-inline-start: 1em;
                 }
                 .occupant-details-nickname {
                     font-size: var(--font-size-huge);
@@ -47,7 +47,7 @@
 
             .bottom-panel {
                 .chat-message-form {
-                    border-right: none;
+                    border-inline-end: none;
                     border-top: 0.2em solid var(--secondary-color);
                     .send-button {
                         background-color: var(--secondary-color);

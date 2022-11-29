@@ -8,7 +8,7 @@ export namespace settings_api {
      * `converse.initialize`.
      *
      * @method api.settings.extend
-     * @param { object } settings The configuration settings
+     * @param {object} settings The configuration settings
      * @example
      * api.settings.extend({
      *    'enable_foo': true
@@ -21,7 +21,6 @@ export namespace settings_api {
      * });
      */
     function extend(settings: object): void;
-    function update(settings: any): void;
     /**
      * @method _converse.api.settings.get
      * @param {string} [key]

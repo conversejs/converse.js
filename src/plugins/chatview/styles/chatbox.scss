@@ -10,7 +10,7 @@
 
 .conversejs {
     .chatbox {
-        text-align: left;
+        text-align: start;
 
         @media screen and (max-height: $mobile-landscape-height) {
             margin: 0;
@@ -89,7 +89,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             &.groupchat {
-                padding-right: 0;
+                padding-inline-end: 0;
             }
             a {
                 color: var(--chat-color);
@@ -161,7 +161,7 @@
                 }
                 .close-chat-help {
                     float: right;
-                    padding-right: 1em;
+                    padding-inline-end: 1em;
                     cursor: pointer;
                     color: var(--background-color);
                     svg {

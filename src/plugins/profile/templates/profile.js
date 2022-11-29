@@ -43,12 +43,14 @@ export default (el) => {
                    data-target="#changeStatusModal"
                    @click=${el.showStatusChangeModal}>
 
-                    <span class="${chat_status} w-100 align-self-center" data-value="${chat_status}">
+                    <span class="${chat_status} w-100" data-value="${chat_status}">
                         <converse-icon
                                 color="var(--${color})"
                                 css="margin-top: -0.1em"
                                 size="0.82em"
-                                class="${classes}"></converse-icon> ${status_message}</span>
+                                class="${classes}"></converse-icon>
+                        <span class="xmpp-status__msg">${status_message}</span>
+                    </span>
                 </a>
             </div>
         </div>`

@@ -3,13 +3,18 @@ converse-user-profile {
         min-width: 25px;
         text-align: center;
         converse-icon {
-            padding-right: 0.5em;
+            padding-inline-end: 0.5em;
         }
     }
 
     .userinfo {
+        .xmpp-status__msg {
+            margin-inline-end: 0.5em;
+        }
+
         .username {
-            margin-left: 0.5em;
+            margin-inline-end: 0.5em;
+            margin-inline-start: 0.5em;
             overflow: hidden;
             text-overflow: ellipsis;
         }

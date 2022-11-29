@@ -10,7 +10,7 @@
     }
 
     .list-container {
-        text-align: left;
+        text-align: start;
         padding: 0.3em 0;
 
         .list-toggle {
@@ -23,8 +23,9 @@
     }
 
     .items-list {
-        padding-left: 0;
-        text-align: left;
+        padding-inline-end: 0;
+        padding-inline-start: 0;
+        text-align: start;
 
         .list-item {
             border: none;

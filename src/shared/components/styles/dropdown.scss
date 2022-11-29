@@ -30,13 +30,15 @@
         }
 
         .dropdown-item {
+            text-align: start;
             color: var(--text-color) !important;
             font-size: var(--font-size);
             padding: 0.5rem 1rem;
             converse-icon {
                 margin-top: -0.1em;
                 width: 1.25em;
-                margin-right: 0.25rem;
+                margin-inline-end: 0.25rem;
+                margin-inline-start: 0.25rem;
             }
             &:active, &.selected {
                 background-color: var(--highlight-color);

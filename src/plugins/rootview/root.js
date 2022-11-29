@@ -1,10 +1,10 @@
+import { i18n } from 'i18n';
+import { _converse, api } from '@converse/headless';
 import tplRoot from "./templates/root.js";
-import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { getTheme } from './utils.js';
 
 import './styles/root.scss';
-
 
 /**
  * `converse-root` is an optional custom element which can be used to
@@ -15,7 +15,7 @@ import './styles/root.scss';
  */
 export default class ConverseRoot extends CustomElement {
 
-    render () { // eslint-disable-line class-methods-use-this
+    render () {
         return tplRoot();
     }
 
@@ -39,6 +39,17 @@ export default class ConverseRoot extends CustomElement {
         this.classList.add(`theme-${theme}`);
         this.setAttribute('data-bs-theme', theme);
         this.setAttribute('data-converse-theme', theme);
+
+        const lang = i18n.getLocale();
+        this.setAttribute('lang', lang);
+
+        const rtl_langs = api.settings.get('rtl_langs');
+        if (rtl_langs.includes(lang)) {
+            this.setAttribute('dir', 'rtl');
+        } else {
+            this.setAttribute('dir', 'ltr');
+        }
+
         this.requestUpdate();
     }
 }

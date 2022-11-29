@@ -2,7 +2,6 @@
     color: var(--text-color);
     font-family: var(--normal-font);
     font-size: var(--font-size);
-    direction: ltr;
 
     .flyout {
         position: absolute;
@@ -63,7 +62,7 @@
                 font-family: var(--heading-font);
                 font-size: 0.3em;
                 margin-bottom: 0.75em;
-                margin-left: -2.7em;
+                margin-inline-start: -2.7em;
                 opacity: 0.55;
                 word-spacing: 5px;
             }
@@ -81,7 +80,7 @@
         .converse-svg-logo {
             color: var(--link-color);
             height: 1.5em;
-            margin-right: 0.25em;
+            margin-inline-end: 0.25em;
             margin-bottom: -0.25em;
             .cls-1 {
                 isolation: isolate;
@@ -109,7 +108,7 @@
             font-family: var(--heading-font);
             font-size: 0.25em;
             opacity: 0.55;
-            margin-left: -7em;
+            margin-inline-start: -7em;
             word-spacing: 5px;
         }
     }
@@ -388,7 +387,7 @@
     }
 
     .locked {
-        padding-right: 22px;
+        padding-inline-end: 22px;
     }
 
     @keyframes spin {
@@ -437,7 +436,7 @@
     }
 
     .avatar-autocomplete {
-        margin-right: 0.5em;
+        margin-inline-end: 0.5em;
         vertical-align: middle;
     }
 
@@ -480,28 +479,28 @@
 
 @media screen and (min-width: 576px) {
     .conversejs .offset-sm-2 {
-        margin-left: 16.666667%;
+        margin-inline-start: 16.666667%;
     }
 }
 @media screen and (min-width: 768px) {
     .conversejs .offset-md-2 {
-        margin-left: 16.666667%;
+        margin-inline-start: 16.666667%;
     }
     .conversejs .offset-md-3 {
-        margin-left: 25%;
+        margin-inline-start: 25%;
     }
 }
 @media screen and (min-width: 992px) {
     .conversejs .offset-lg-2 {
-        margin-left: 16.666667%;
+        margin-inline-start: 16.666667%;
     }
     .conversejs .offset-lg-3 {
-        margin-left: 25%;
+        margin-inline-start: 25%;
     }
 }
 @media screen and (min-width: 1200px) {
     .conversejs .offset-xl-2 {
-        margin-left: 16.666667%;
+        margin-inline-start: 16.666667%;
     }
 }
 @media screen and (max-height: 450px) {

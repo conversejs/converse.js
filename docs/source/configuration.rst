@@ -1922,6 +1922,14 @@ If set to ``true``, Converse will show any roster groups you might have configur
     elsewhere.
 
 
+rtl_langs
+---------
+
+* Default: ``["ar", "fa", "he", "ur"]``
+
+A list of languages which are written right-to-left and for which the UI should also be shown right-to-left.
+
+
 send_chat_state_notifications
 -----------------------------
 

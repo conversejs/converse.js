@@ -7,7 +7,7 @@ describe("The \"settings\" API", function () {
 
         const { api } = _converse;
 
-        expect(Object.keys(api.settings)).toEqual(["extend", "update", "get", "set", "listen"]);
+        expect(Object.keys(api.settings)).toEqual(["extend", "get", "set", "listen"]);
         expect(api.settings.get("play_sounds")).toBe(true);
         api.settings.set("play_sounds", false);
         expect(api.settings.get("play_sounds")).toBe(false);

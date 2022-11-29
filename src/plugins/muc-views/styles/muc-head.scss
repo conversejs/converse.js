@@ -33,7 +33,7 @@
                     }
                 }
                 .chatbox-title__text--bookmarked {
-                    margin-left: 0.5em;
+                    margin-inline-start: 0.5em;
                 }
             }
 
@@ -70,7 +70,7 @@
                 display: block;
                 font-weight: normal;
                 margin: auto 0;
-                padding-right: 0;
+                padding-inline-end: 0;
                 white-space: nowrap;
                 .chatroom-jid {
                     font-size: var(--font-size-small);

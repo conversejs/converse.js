@@ -1,5 +1,5 @@
 converse-message-actions {
-    margin-left: 0.5em;
+    margin-inline-start: 0.5em;
 
     .chat-msg__actions {
         .dropdown-menu {
@@ -25,11 +25,11 @@ converse-message-actions {
         .chat-msg__action {
             width: 100%;
             padding: 0.5em 1em;
-            text-align: left;
+            text-align: start;
             white-space: nowrap;
 
             converse-icon {
-                margin-right: 0.25em;
+                margin-inline-end: 0.25em;
             }
 
             &:hover {

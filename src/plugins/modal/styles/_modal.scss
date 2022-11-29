@@ -7,11 +7,16 @@ $prefix: 'converse-';
     .modal-header {
         background-color: var(--primary-color);
         border-bottom: none;
+        display: flex;
+        justify-content: space-between;
         &.alert-danger {
             background-color: var(--error-color);
         }
         .modal-title {
             color: var(--background-color);
+        }
+        .btn-close {
+            margin: 0;
         }
         .close {
             color: var(--background-color);
@@ -24,8 +29,8 @@ $prefix: 'converse-';
 
     .modal-body {
         .row {
-            margin-left: 0;
-            margin-right: 0;
+            margin-inline-start: 0;
+            margin-inline-end: 0;
         }
     }
 

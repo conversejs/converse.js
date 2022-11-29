@@ -256,7 +256,7 @@ section {
         font-size: 20px;
         opacity: 0.5;
         margin-bottom: 2em;
-        margin-left: -75px;
+        margin-inline-start: -75px;
     }
 
     .subdued {
@@ -267,7 +267,7 @@ section {
 
     .converse-svg-logo {
         height: 1.2em;
-        margin-right: 0.25em;
+        margin-inline-end: 0.25em;
         margin-bottom: 0.1em;
         .cls-1 {
             isolation: isolate;
@@ -454,7 +454,7 @@ ul.contact,
 ul.integration,
 ul.screencasts,
 ul.features {
-    text-align: left;
+    text-align: start;
     font-size: 19px;
 }
 .feature-icon {
@@ -481,7 +481,7 @@ ul.features {
     position: absolute;
     bottom: 0;
     left: 50%;
-    margin-left: -0.325em;
+    margin-inline-start: -0.325em;
     width: 0.65em;
     height: 0.65em;
     display: block;
@@ -495,11 +495,11 @@ ul.features {
     width: 1px;
     height: 4.35em;
     background: white;
-    margin-left: -0.5px;
+    margin-inline-start: -0.5px;
 }
 .row {
-    margin-left: 0;
-    margin-right: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
 }
 
 .mastodon {
@@ -529,6 +529,6 @@ ul.features {
     list-style: none;
 }
 .sponsors-text {
-    text-align: left;
+    text-align: start;
     padding: 0 0 1em 0;
 }

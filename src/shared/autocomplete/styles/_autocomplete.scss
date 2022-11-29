@@ -33,7 +33,7 @@
                 padding: .4em;
                 background: var(--background-color);
                 border: inherit;
-                border-right: 0;
+                border-inline-end: 0;
                 border-bottom: 0;
                 -webkit-transform: rotate(45deg);
                 transform: rotate(45deg);
@@ -93,7 +93,7 @@
                 padding: 0.4em;
                 background: var(--background-color);
                 border: inherit;
-                border-left: 0;
+                border-inline-start: 0;
                 border-top: 0;
                 -webkit-transform: rotate(45deg);
                 transform: rotate(45deg);

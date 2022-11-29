@@ -16,7 +16,7 @@
             font-size: 95%;
             border-color: var(--primary-color);
             input[type="checkbox"] {
-                margin-right: 1em;
+                margin-inline-end: 1em;
             }
         }
 
@@ -30,7 +30,7 @@
             justify-content: space-between;
             font-size: 95%;
             .fingerprint {
-                margin-left: 1em;
+                margin-inline-start: 1em;
             }
         }
     }

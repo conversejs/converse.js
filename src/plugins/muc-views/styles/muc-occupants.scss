@@ -23,10 +23,6 @@
                 }
             }
 
-            .fa-user-plus {
-                margin-right: 0.25em;
-            }
-
             .suggestion-box{
                 ul {
                     padding: 0;
@@ -55,7 +51,7 @@
                     padding: 0.25em 0.25em 0.25em 0;
                     text-overflow: ellipsis;
                     .fa {
-                        margin-right: 0.5em;
+                        margin-inline-end: 0.5em;
                     }
                     &.feature {
                         font-size: var(--font-size-tiny);
@@ -63,8 +59,8 @@
                     &.occupant {
                         cursor: pointer;
                         .msgs-indicator {
-                            margin-left: -3em;
-                            margin-right: 0.5em;
+                            margin-inline-start: -3em;
+                            margin-inline-end: 0.5em;
                             margin-top: -0.25em;
                             position: absolute;
                             font-size: xx-small;
@@ -155,7 +151,7 @@
             converse-muc-occupants {
                 .occupants {
                     .occupant-list {
-                        padding-left: 0.3em;
+                        padding-inline-start: 0.3em;
                     }
                 }
             }

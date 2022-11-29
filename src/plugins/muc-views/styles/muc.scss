@@ -28,10 +28,11 @@
             background: var(--background-color);
             border: 2px solid var(--background-color);
             font-size: 0.6rem;
-            margin-top: 0;
-            margin-left: -0.3em;
             margin-bottom: -2em;
+            margin-inline-start: -0.3em;
+            margin-top: 0;
             padding: 0.1em;
+            position: relative;
 
             svg {
                 display: flex;

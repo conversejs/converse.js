@@ -13,9 +13,9 @@
 
             .chat-message-form {
                 border-bottom: 0;
-                border-left: 0;
+                border-inline-start: 0;
                 border-top: 0.25em solid var(--chat-color);
-                border-right: 0.25em solid var(--chat-color);
+                border-inline-end: 0.25em solid var(--chat-color);
                 border-bottom-radius: var(--chatbox-border-radius);
                 background-clip: padding-box;
                 background-color: var(--background-color);

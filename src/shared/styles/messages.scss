@@ -16,13 +16,13 @@
         }
 
         blockquote {
-            margin-left: 0.5em;
-            margin-bottom: 0.25em;
-            padding-right: 1em;
+            border-inline-start: 0.3em solid var(--info-color);
             color: var(--info-color);
-            border-left: 0.3em solid var(--info-color);
-            padding-left: 0.5em;
             display: inline-block;
+            margin-bottom: 0.25em;
+            margin-inline-start: 0;
+            padding-inline-end: 1em;
+            padding-inline-start: 0.5em;
         }
 
         code {
@@ -100,7 +100,7 @@
             font-style: italic;
 
             .chat-msg__author {
-                padding-right: 0.2em;
+                padding-inline-end: 0.2em;
             }
         }
 
@@ -131,10 +131,10 @@
                 color: var(--background-color);
                 i {
                     color: var(--background-color);
-                    padding-right: 0.5em;
+                    padding-inline-end: 0.5em;
                 }
                 &:before {
-                    padding-right: 0.25em;
+                    padding-inline-end: 0.25em;
                     white-space: nowrap;
                 }
             }
@@ -153,7 +153,7 @@
 
             .chat-msg__content--action {
                 width: 100%;
-                margin-left: 0;
+                margin-inline-start: 0;
             }
 
             .chat-msg__message {
@@ -201,7 +201,7 @@
 
             .chat-msg__edit-modal {
                 cursor: pointer;
-                padding-right: 0.5em;
+                padding-inline-end: 0.5em;
             }
 
             .chat-msg__subject {
@@ -242,15 +242,15 @@
 
             .chat-msg__heading {
                 width: 100%;
-                padding-right: 0.25rem;
+                padding-inline-end: 0.25rem;
 
                 .badge {
-                    margin-left: 0.5em;
+                    margin-inline-start: 0.5em;
                     font-family: var(--normal_font);
                 }
                 .chat-msg__time {
-                    padding-left: 0.25em;
-                    padding-right: 0.25em;
+                    padding-inline-start: 0.25em;
+                    padding-inline-end: 0.25em;
                     color: var(--secondary-color);
                 }
                 .fa-lock {
@@ -272,14 +272,14 @@
                     width: auto;
 
                     .fa {
-                        margin-left: 0.5em;
+                        margin-inline-start: 0.5em;
                     }
                 }
                 .chat-msg__author {
                     font-size: var(--message-font-size);
                 }
                 .chat-msg__time {
-                    margin-left: 0;
+                    margin-inline-start: 0;
                 }
             }
 
@@ -293,14 +293,14 @@
                     display: none;
                 }
                 &.chat-msg--with-avatar .chat-msg__content {
-                    margin-left: 2.75rem;
+                    margin-inline-start: 2.75rem;
                     width: 100%;
                 }
             }
 
             .chat-msg__receipt {
-                margin-left: 0.5em;
-                margin-right: 0.5em;
+                margin-inline-start: 0.5em;
+                margin-inline-end: 0.5em;
                 color: var(--success-color);
             }
         }
@@ -310,7 +310,7 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: stretch;
-            margin-left: 0.5rem;
+            margin-inline-start: 0.5rem;
             &:hover {
                 .btn--standalone {
                     opacity: 1;
@@ -342,7 +342,7 @@
                 &.chat-msg {
                     &.chat-msg--followup {
                         .chat-msg__content {
-                            margin-left: 0;
+                            margin-inline-start: 0;
                         }
                     }
                 }

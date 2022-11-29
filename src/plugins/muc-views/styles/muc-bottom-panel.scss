@@ -35,7 +35,7 @@
         converse-muc-bottom-panel {
             .chat-message-form {
                 border-top: 0.25em solid var(--muc-color) !important;
-                border-right: 0 !important;
+                border-inline-end: 0 !important;
 
                 .suggestion-box__results--above {
                     bottom: 4.5em;

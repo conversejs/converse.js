@@ -16,7 +16,7 @@ const trust_checkbox = (checked) => {
     );
     const i18n_trusted = __('This is a trusted device');
     return html`
-        <div class="form-group form-check login-trusted mt-2">
+        <div class="form-group form-check login-trusted">
             <input
                 id="converse-login-trusted"
                 type="checkbox"

@@ -69,7 +69,7 @@ export async function initializeDisco () {
     const collection = await _converse.disco_entities.fetchEntities();
     if (collection.length === 0 || !collection.get(_converse.domain)) {
         // If we don't have an entity for our own XMPP server, create one.
-        _converse.disco_entities.create({'jid': _converse.domain});
+        api.disco.entities.create({'jid': _converse.domain}, {'ignore_cache': true});
     }
     /**
      * Triggered once the `converse-disco` plugin has been initialized and the

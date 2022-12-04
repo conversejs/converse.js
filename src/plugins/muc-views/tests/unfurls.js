@@ -428,7 +428,7 @@ describe("A Groupchat Message", function () {
         expect(view.querySelector('.chat-msg__text').textContent)
             .toBe(unfurl_url);
 
-        let msg = _converse.connection.send.calls.all()[0].args[0];
+        let msg = _converse.connection.send.calls.all()[1].args[0];
         expect(Strophe.serialize(msg))
         .toBe(
             `<message from="${_converse.jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+

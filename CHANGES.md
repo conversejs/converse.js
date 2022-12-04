@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- #2925 File upload is not always enabled
 - Add a "Add to Contacts" button in MUC occupant modals
 
 ## 10.0.0 (2022-10-30)

@@ -1,8 +1,8 @@
-import log from "@converse/headless/log.js";
-import sizzle from "sizzle";
-import { Collection } from "@converse/skeletor/src/collection";
+import log from '@converse/headless/log.js';
+import sizzle from 'sizzle';
+import { Collection } from '@converse/skeletor/src/collection';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "@converse/headless/core.js";
+import { _converse, api, converse } from '@converse/headless/core.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 const { Strophe } = converse.env;
@@ -19,7 +19,7 @@ const { Strophe } = converse.env;
 const DiscoEntity = Model.extend({
     idAttribute: 'jid',
 
-    async initialize (_, options) {
+    initialize (_, options) {
         this.waitUntilFeaturesDiscovered = getOpenPromise();
 
         this.dataforms = new Collection();
@@ -29,17 +29,12 @@ const DiscoEntity = Model.extend({
         this.features = new Collection();
         id = `converse.features-${this.get('jid')}`;
         this.features.browserStorage = _converse.createStore(id, 'session');
-        this.listenTo(this.features, 'add', this.onFeatureAdded)
+        this.listenTo(this.features, 'add', this.onFeatureAdded);
 
         this.fields = new Collection();
         id = `converse.fields-${this.get('jid')}`;
         this.fields.browserStorage = _converse.createStore(id, 'session');
-        this.listenTo(this.fields, 'add', this.onFieldAdded)
-
-        this.items = new _converse.DiscoEntities();
-        id = `converse.disco-items-${this.get('jid')}`;
-        this.items.browserStorage = _converse.createStore(id, 'session');
-        await new Promise(f => this.items.fetch({'success': f, 'error': f}));
+        this.listenTo(this.fields, 'add', this.onFieldAdded);
 
         this.identities = new Collection();
         id = `converse.identities-${this.get('jid')}`;
@@ -59,7 +54,7 @@ const DiscoEntity = Model.extend({
         await this.waitUntilFeaturesDiscovered;
         return this.identities.findWhere({
             'category': category,
-            'type': type
+            'type': type,
         });
     },
 
@@ -67,12 +62,12 @@ const DiscoEntity = Model.extend({
      * Returns a Promise which resolves with a map indicating
      * whether a given feature is supported.
      * @private
-     * @method _converse.DiscoEntity#hasFeature
+     * @method _converse.DiscoEntity#getFeature
      * @param { String } feature - The feature that might be supported.
      */
-    async hasFeature (feature) {
-        await this.waitUntilFeaturesDiscovered
-        if (this.features.findWhere({'var': feature})) {
+    async getFeature (feature) {
+        await this.waitUntilFeaturesDiscovered;
+        if (this.features.findWhere({ 'var': feature })) {
             return this;
         }
     },
@@ -106,7 +101,7 @@ const DiscoEntity = Model.extend({
         } else {
             const store_id = this.features.browserStorage.name;
             const result = await this.features.browserStorage.store.getItem(store_id);
-            if (result && result.length === 0 || result === null) {
+            if ((result && result.length === 0) || result === null) {
                 this.queryInfo();
             } else {
                 this.features.fetch({
@@ -114,9 +109,9 @@ const DiscoEntity = Model.extend({
                     success: () => {
                         this.waitUntilFeaturesDiscovered.resolve(this);
                         this.trigger('featuresDiscovered');
-                    }
+                    },
                 });
-                this.identities.fetch({add: true});
+                this.identities.fetch({ add: true });
             }
         }
     },
@@ -135,22 +130,27 @@ const DiscoEntity = Model.extend({
 
     onDiscoItems (stanza) {
         sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza).forEach(item => {
-            if (item.getAttribute("node")) {
+            if (item.getAttribute('node')) {
                 // XXX: Ignore nodes for now.
                 // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
                 return;
             }
             const jid = item.getAttribute('jid');
-            if (this.items.get(jid) === undefined) {
-                const entities = _converse.disco_entities;
-                const entity = entities.get(jid) || entities.create({ jid, name: item.getAttribute('name') });
-                this.items.create(entity);
+            const entity = _converse.disco_entities.get(jid);
+            if (entity) {
+                entity.set({ parent_jids: [this.get('jid')] });
+            } else {
+                api.disco.entities.create({
+                    jid,
+                    'parent_jids': [this.get('jid')],
+                    'name': item.getAttribute('name'),
+                });
             }
         });
     },
 
     async queryForItems () {
-        if (this.identities.where({'category': 'server'}).length === 0) {
+        if (this.identities.where({ 'category': 'server' }).length === 0) {
             // Don't fetch features and items if this is not a
             // server or a conference component.
             return;
@@ -164,7 +164,7 @@ const DiscoEntity = Model.extend({
             this.identities.create({
                 'category': identity.getAttribute('category'),
                 'type': identity.getAttribute('type'),
-                'name': identity.getAttribute('name')
+                'name': identity.getAttribute('name'),
             });
         });
 
@@ -173,7 +173,7 @@ const DiscoEntity = Model.extend({
             sizzle('field', form).forEach(field => {
                 data[field.getAttribute('var')] = {
                     'value': field.querySelector('value')?.textContent,
-                    'type': field.getAttribute('type')
+                    'type': field.getAttribute('type'),
                 };
             });
             this.dataforms.create(data);
@@ -185,7 +185,7 @@ const DiscoEntity = Model.extend({
         Array.from(stanza.querySelectorAll('feature')).forEach(feature => {
             this.features.create({
                 'var': feature.getAttribute('var'),
-                'from': stanza.getAttribute('from')
+                'from': stanza.getAttribute('from'),
             });
         });
 
@@ -194,13 +194,13 @@ const DiscoEntity = Model.extend({
             this.fields.create({
                 'var': field.getAttribute('var'),
                 'value': field.querySelector('value')?.textContent,
-                'from': stanza.getAttribute('from')
+                'from': stanza.getAttribute('from'),
             });
         });
 
         this.waitUntilFeaturesDiscovered.resolve(this);
         this.trigger('featuresDiscovered');
-    }
+    },
 });
 
 export default DiscoEntity;

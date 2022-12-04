@@ -507,7 +507,7 @@ describe("A sent groupchat message", function () {
             message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
-            const msg = _converse.connection.send.calls.all()[0].args[0];
+            const msg = _converse.connection.send.calls.all()[1].args[0];
             expect(Strophe.serialize(msg))
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+

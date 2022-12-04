@@ -49,14 +49,13 @@ describe("XEP-0198 Stream Management", function () {
             `<iq id="${IQ_stanzas[1].getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
         await mock.waitForRoster(_converse, 'current', 1);
 
-        const omemo_iq = IQ_stanzas[2];
-        expect(Strophe.serialize(omemo_iq)).toBe(
-            `<iq from="romeo@montague.lit" id="${omemo_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-            `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
+        expect(Strophe.serialize(IQ_stanzas[2])).toBe(
+            `<iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[2].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
         expect(Strophe.serialize(IQ_stanzas[3])).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[3].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
+            `<iq from="romeo@montague.lit" id="${IQ_stanzas[3].getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+            `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
 
         expect(Strophe.serialize(IQ_stanzas[4])).toBe(
             `<iq from="romeo@montague.lit/orchard" id="${IQ_stanzas[4].getAttribute('id')}" type="set" xmlns="jabber:client"><enable xmlns="urn:xmpp:carbons:2"/></iq>`);
@@ -137,13 +136,13 @@ describe("XEP-0198 Stream Management", function () {
 
         iq = IQ_stanzas.pop();
         expect(Strophe.serialize(iq)).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
+            `<iq from="romeo@montague.lit" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+            `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
 
         iq = IQ_stanzas.pop();
         expect(Strophe.serialize(iq)).toBe(
-            `<iq from="romeo@montague.lit" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-            `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
+            `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
         expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);
     }));

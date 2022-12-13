@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- #2816 Chat highlight behaves odd
 - #2925 File upload is not always enabled
 - Add a "Add to Contacts" button in MUC occupant modals
 

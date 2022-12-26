@@ -178,7 +178,7 @@ export async function parseMessage (stanza) {
             'thread': stanza.querySelector('thread')?.textContent,
             'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : now,
             'to': stanza.getAttribute('to'),
-            'type': stanza.getAttribute('type')
+            'type': stanza.getAttribute('type') || 'normal'
         },
         getErrorAttributes(stanza),
         getOutOfBandAttributes(stanza),

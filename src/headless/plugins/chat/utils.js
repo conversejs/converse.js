@@ -1,9 +1,9 @@
 import { _converse, api, converse } from '@converse/headless/core.js';
-import { isServerMessage, } from '@converse/headless/shared/parsers';
+import { isArchived, isHeadline, isServerMessage, } from '@converse/headless/shared/parsers';
 import { parseMessage } from './parsers.js';
 import log from '@converse/headless/log.js';
 
-const { Strophe, sizzle, u } = converse.env;
+const { Strophe, u } = converse.env;
 
 export function openChat (jid) {
     if (!u.isValidJID(jid)) {
@@ -60,43 +60,22 @@ export function autoJoinChats () {
 export function registerMessageHandlers () {
     _converse.connection.addHandler(
         stanza => {
-            if (sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop()) {
-                // MAM messages are handled in converse-mam.
-                // We shouldn't get MAM messages here because
-                // they shouldn't have a `type` attribute.
-                log.warn(`Received a MAM message with type "chat".`);
+            if (
+                ['groupchat', 'error'].includes(stanza.getAttribute('type')) ||
+                isHeadline(stanza) ||
+                isServerMessage(stanza) ||
+                isArchived(stanza)
+            ) {
                 return true;
             }
-            _converse.handleMessageStanza(stanza);
-            return true;
+            return _converse.handleMessageStanza(stanza) || true;
         },
         null,
         'message',
-        'chat'
     );
 
     _converse.connection.addHandler(
-        stanza => {
-            // Message receipts are usually without the `type` attribute. See #1353
-            if (stanza.getAttribute('type') !== null) {
-                // TODO: currently Strophe has no way to register a handler
-                // for stanzas without a `type` attribute.
-                // We could update it to accept null to mean no attribute,
-                // but that would be a backward-incompatible change
-                return true; // Gets handled above.
-            }
-            _converse.handleMessageStanza(stanza);
-            return true;
-        },
-        Strophe.NS.RECEIPTS,
-        'message'
-    );
-
-    _converse.connection.addHandler(
-        stanza => {
-            handleErrorMessage(stanza);
-            return true;
-        },
+        stanza => handleErrorMessage(stanza) || true,
         null,
         'message',
         'error'

@@ -407,48 +407,6 @@ in to their XMPP account.
   So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
   `authentication`_ is set to ``login``, then Converse will try to log the user in.
 
-save_scram_keys
----------------
-* Default: ``false``
-
-Most XMPP servers enable the Salted Challenge Response Authentication Mechanism
-or SCRAM for short. This allows the user and the server to mutually
-authenticate *without* the need to transmit the user's password in plaintext.
-Coincidentally, assuming the server does not alter the user's password or the
-storage parameters, we can authenticate with the same SCRAM key multiple times.
-This opens an opportunity: we can store the user's login credentials in the
-browser without the need to store their sensitive plaintext password, or the
-need to set up complicated third party backends, like oauth.
-
-Enabling this option will cause converse to save the SCRAM keys on successful
-login into browser storage. This information can be recovered from the public
-API method ``converse.savedLoginInfo()``, which returns on success a Promise
-which resolves to an object whose ``attributes`` object contains the following
-information:
-
-::
-     { 'id': 'converse.savedLoginInfo',
-       'users': Usermap Object
-     }
-
-Where the ``Usermap`` Object has keys corresponding to users and values
-which are valid login credentials (which can be passed in as the
-``password`` field on login), like so:
-
-::
-    { 'user1@xmpp.org': Credentials,
-      'user2@opkode.com': Credentials,
-      ...
-    }
-
-From here, one may configure their client to simply choose one of the logins,
-depending on their needs, and pass the username and credentials into the
-settings.
-Note well that this method will only work once converse has been loaded.
-If you need the utilities provided here before login, call
-`window.converse.load()`.
-
-
 auto_away
 ---------
 
@@ -1859,6 +1817,27 @@ Based on the OGP metadata Converse will render a URL preview (also known as an
 
   This setting, together with the three allowed domain settings above, obsolete
   the ``show_images_inline``, ``embed_audio`` and ``embed_videos`` settings.
+
+
+reuse_scram_keys
+----------------
+
+* Default: ``false``
+
+Most XMPP servers enable the Salted Challenge Response Authentication Mechanism
+or SCRAM for short. This allows the user and the server to mutually
+authenticate *without* the need to transmit the user's password in plaintext.
+
+Assuming the server does not alter the user's password or the
+storage parameters, we can authenticate with the same SCRAM key multiple times.
+
+This opens an opportunity: we can store the user's login credentials in the
+browser without storing the sensitive plaintext password, or the
+need to set up complicated third party backends, like OAuth.
+
+Enabling this option will let Converse save a user's SCRAM keys upon successful
+login, and next time Converse is loaded the user will be automatically logged in
+with those SCRAM keys.
 
 
 .. _`roomconfig_whitelist`:

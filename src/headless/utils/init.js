@@ -9,7 +9,7 @@ import { Connection } from '@converse/headless/shared/connection/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe';
 import { createStore, initStorage } from '@converse/headless/utils/storage.js';
-import { getLoginCredentialsFromBrowser } from '@converse/headless/utils/core.js';
+import { isValidJID } from './core.js';
 
 
 export function initPlugins (_converse) {
@@ -87,17 +87,6 @@ export async function initSessionStorage (_converse) {
     };
 }
 
-export async function initScramStorage (_converse) {
-    _converse.storage = {
-        ..._converse.storage,
-        'scramStorage': Storage.localForage.createInstance({
-            'name': 'converse-scram',
-            'description': 'SCRAM storage driver',
-            'driver': Storage.localForage.INDEXEDDB
-        })
-    };
-}
-
 function initPersistentStorage (_converse, store_name) {
     if (_converse.api.settings.get('persistent_store') === 'sessionStorage') {
         return;
@@ -129,6 +118,7 @@ function initPersistentStorage (_converse, store_name) {
     }
     _converse.storage['persistent'] = Storage.localForage.createInstance(config);
 }
+
 
 function saveJIDtoSession (_converse, jid) {
     jid = _converse.session.get('jid') || jid;
@@ -169,6 +159,7 @@ function saveJIDtoSession (_converse, jid) {
  */
 export async function setUserJID (jid) {
     await initSession(_converse, jid);
+
     /**
      * Triggered whenever the user's JID has been updated
      * @event _converse#setUserJID
@@ -176,6 +167,7 @@ export async function setUserJID (jid) {
     _converse.api.trigger('setUserJID');
     return jid;
 }
+
 
 export async function initSession (_converse, jid) {
     const is_shared_session = _converse.api.settings.get('connection_options').worker;
@@ -212,6 +204,7 @@ export async function initSession (_converse, jid) {
     }
 }
 
+
 export function registerGlobalEventHandlers (_converse) {
     document.addEventListener("visibilitychange", _converse.saveWindowState);
     _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
@@ -233,6 +226,7 @@ function unregisterGlobalEventHandlers (_converse) {
     api.trigger('unregisteredGlobalEventHandlers');
 }
 
+
 // Make sure everything is reset in case this is a subsequent call to
 // converse.initialize (happens during tests).
 export async function cleanup (_converse) {
@@ -246,23 +240,6 @@ export async function cleanup (_converse) {
     if (_converse.promises['initialized'].isResolved) {
         api.promises.add('initialized')
     }
-}
-
-async function getLoginCredentials () {
-    let credentials;
-    let wait = 0;
-    while (!credentials) {
-        try {
-            credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
-        } catch (e) {
-            log.error('Could not fetch login credentials');
-            log.error(e);
-        }
-        // If unsuccessful, we wait 2 seconds between subsequent attempts to
-        // fetch the credentials.
-        wait = 2000;
-    }
-    return credentials;
 }
 
 
@@ -296,6 +273,50 @@ function fetchLoginCredentials (wait=0) {
     );
 }
 
+
+async function getLoginCredentialsFromURL () {
+    let credentials;
+    let wait = 0;
+    while (!credentials) {
+        try {
+            credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
+        } catch (e) {
+            log.error('Could not fetch login credentials');
+            log.error(e);
+        }
+        // If unsuccessful, we wait 2 seconds between subsequent attempts to
+        // fetch the credentials.
+        wait = 2000;
+    }
+    return credentials;
+}
+
+
+async function getLoginCredentialsFromBrowser () {
+    try {
+        const creds = await navigator.credentials.get({'password': true});
+        if (creds && creds.type == 'password' && isValidJID(creds.id)) {
+            await setUserJID(creds.id);
+            return {'jid': creds.id, 'password': creds.password};
+        }
+    } catch (e) {
+        log.error(e);
+    }
+}
+
+
+async function getLoginCredentialsFromSCRAMKeys () {
+    const jid = localStorage.getItem('conversejs-session-jid');
+    if (!jid) return null;
+
+    await setUserJID(jid);
+
+    const login_info = await savedLoginInfo(jid);
+    const scram_keys = login_info.get('scram_keys');
+    return scram_keys ? { jid , 'password': scram_keys } : null;
+}
+
+
 export async function attemptNonPreboundSession (credentials, automatic) {
     const { api } = _converse;
     if (api.settings.get("authentication") === _converse.LOGIN) {
@@ -306,18 +327,24 @@ export async function attemptNonPreboundSession (credentials, automatic) {
         // automatically setting up a new session (``auto_login``).
         // So we can't do the check (!automatic || _converse.api.settings.get("auto_login")) here.
         if (credentials) {
-            connect(credentials);
+            return connect(credentials);
         } else if (api.settings.get("credentials_url")) {
             // We give credentials_url preference, because
             // _converse.connection.pass might be an expired token.
-            connect(await getLoginCredentials());
+            return connect(await getLoginCredentialsFromURL());
         } else if (_converse.jid && (api.settings.get("password") || _converse.connection.pass)) {
-            connect();
-        } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
-            connect(await getLoginCredentialsFromBrowser());
-        } else {
-            !_converse.isTestEnv() && log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
+            return connect();
         }
+
+        if (api.settings.get('reuse_scram_keys')) {
+            const credentials = await getLoginCredentialsFromSCRAMKeys();
+            if (credentials) return connect(credentials);
+        }
+
+        if (!_converse.isTestEnv() && 'credentials' in navigator) {
+            return connect(await getLoginCredentialsFromBrowser());
+        }
+        !_converse.isTestEnv() && log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
     } else if (
         [_converse.ANONYMOUS, _converse.EXTERNAL].includes(api.settings.get("authentication")) &&
         (!automatic || api.settings.get("auto_login"))
@@ -338,7 +365,26 @@ export function getConnectionServiceURL () {
 }
 
 
-function connect (credentials) {
+/**
+ * Fetch the stored SCRAM keys for the given JID, if available.
+ *
+ * The user's plaintext password is not stored, nor any material from which
+ * the user's plaintext password could be recovered.
+ *
+ * @param { String } JID - The XMPP address for which to fetch the SCRAM keys
+ * @returns { Promise } A promise which resolves once we've fetched the previously
+ *  used login keys.
+ */
+export async function savedLoginInfo (jid) {
+    const id = `converse.scram-keys-${Strophe.getBareJidFromJid(jid)}`;
+    const login_info = new Model({ id });
+    initStorage(login_info, id, 'persistent');
+    await new Promise(f => login_info.fetch({'success': f, 'error': f}));
+    return login_info;
+}
+
+
+async function connect (credentials) {
     const { api } = _converse;
     if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(api.settings.get("authentication"))) {
         if (!_converse.jid) {
@@ -369,26 +415,19 @@ function connect (credentials) {
 
         let callback;
 
-        if (api.settings.get("save_scram_keys") && !password.ck) {
-            // Don't save the SCRAM data if we already logged in with SCRAM
-            const login_info = await _converse.api.savedLoginInfo();
+        // Save the SCRAM data if we're not already logged in with SCRAM
+        if (
+            _converse.config.get('trusted') &&
+            _converse.jid &&
+            api.settings.get("reuse_scram_keys") &&
+            !password?.ck
+        ) {
+            // Store scram keys in scram storage
+            const login_info = await savedLoginInfo(_converse.jid);
 
-            callback = async (status) => {
-                // Store scram keys in scram storage
-                if (!_converse?.storage?.scramStorage) {
-                    await initScramStorage(_converse);
-                }
-
-                const newScramKeys = _converse.connection.scramKeys;
-                if (newScramKeys) {
-                    try {
-                        const new_users_info = login_info.users ?? { };
-                        new_users_info[_converse.connection.authzid] = newScramKeys;
-                        login_info.save({'users': new_users_info });
-                    } catch (e) { // Could not find local storage }
-                        log.error("No storage method found: ", e);
-                    }
-                }
+            callback = (status) => {
+                const { scram_keys } = _converse.connection;
+                if (scram_keys) login_info.save({ scram_keys });
                 _converse.connection.onConnectStatusChanged(status);
             };
         }

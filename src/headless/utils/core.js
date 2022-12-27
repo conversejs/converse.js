@@ -14,7 +14,6 @@ import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { setUserJID, } from '@converse/headless/utils/init.js';
 import { settings_api } from '@converse/headless/shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
 
@@ -125,12 +124,12 @@ u.getLongestSubstring = function (string, candidates) {
     return candidates.reduce(reducer, '');
 }
 
-u.isValidJID = function (jid) {
+export function isValidJID (jid) {
     if (typeof jid === 'string') {
         return compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     }
     return false;
-};
+}
 
 u.isValidMUCJID = function (jid) {
     return !jid.startsWith('@') && !jid.endsWith('@');
@@ -553,18 +552,6 @@ export function setUnloadEvent () {
     }
 }
 
-export async function getLoginCredentialsFromBrowser () {
-    try {
-        const creds = await navigator.credentials.get({'password': true});
-        if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-            await setUserJID(creds.id);
-            return {'jid': creds.id, 'password': creds.password};
-        }
-    } catch (e) {
-        log.error(e);
-    }
-}
-
 export function replacePromise (name) {
     const existing_promise = _converse.promises[name];
     if (!existing_promise) {
@@ -591,9 +578,10 @@ export function decodeHTMLEntities (str) {
 }
 
 export default Object.assign({
-    prefixMentions,
-    isEmptyMessage,
     getUniqueId,
-    toStanza,
+    isEmptyMessage,
+    isValidJID,
+    prefixMentions,
     stx,
+    toStanza,
 }, u);

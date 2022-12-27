@@ -181,6 +181,10 @@ export class Connection extends Strophe.Connection {
         this.flush(); // Solves problem of returned PubSub BOSH response not received by browser
         await setUserJID(this.jid);
 
+        // Save the current JID in persistent storage so that we can attempt to
+        // recreate the session from SCRAM keys
+        localStorage.setItem('conversejs-session-jid', _converse.bare_jid);
+
         /**
          * Synchronous event triggered after we've sent an IQ to bind the
          * user's JID resource for this session.

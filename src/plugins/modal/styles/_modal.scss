@@ -38,10 +38,17 @@
         .modal {
             .nav-item {
                 margin: 0.25em;
+                .nav-link {
+                    &.active {
+                        color: var(--background);
+                    }
+                }
                 &:hover {
                     .nav-link {
+                        color: var(--foreground);
                         background-color: var(--primary-color-light);
                         &.active {
+                            color: var(--background);
                             background-color: var(--primary-color);
                         }
                     }

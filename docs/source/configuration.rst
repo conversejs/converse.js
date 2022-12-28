@@ -693,7 +693,7 @@ appear in another.
 .. code-block:: javascript
 
         converse.initialize({
-            connection_options: { 'worker': true }
+            connection_options: { worker: '/dist/shared-connection-worker.js' }
         });
 
 

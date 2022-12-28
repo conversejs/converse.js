@@ -42,6 +42,7 @@
         websocket_url: 'wss://conversejs.org/xmpp-websocket',
         // websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
         whitelisted_plugins: ['converse-debug'],
+        connection_options: { worker: '/dist/shared-connection-worker.js' }
     });
 </script>
 </body>

@@ -41,6 +41,7 @@ export function isUniView () {
     return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
 }
 
+
 export async function tearDown () {
     await _converse.api.trigger('beforeTearDown', {'synchronous': true});
     window.removeEventListener('click', _converse.onUserActivity);
@@ -81,7 +82,6 @@ export function prefixMentions (message) {
         });
     return text;
 }
-
 
 
 /**
@@ -541,6 +541,7 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     return promise;
 };
 
+
 export function setUnloadEvent () {
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -554,6 +555,7 @@ export function setUnloadEvent () {
         _converse.unloadevent = 'unload';
     }
 }
+
 
 export function replacePromise (name) {
     const existing_promise = _converse.promises[name];
@@ -569,6 +571,7 @@ export function replacePromise (name) {
     }
 }
 
+
 const element = document.createElement('div');
 
 export function decodeHTMLEntities (str) {
@@ -580,6 +583,39 @@ export function decodeHTMLEntities (str) {
     return str;
 }
 
+
+export function saveWindowState (ev) {
+    // XXX: eventually we should be able to just use
+    // document.visibilityState (when we drop support for older
+    // browsers).
+    let state;
+    const event_map = {
+        'focus': "visible",
+        'focusin': "visible",
+        'pageshow': "visible",
+        'blur': "hidden",
+        'focusout': "hidden",
+        'pagehide': "hidden"
+    };
+    ev = ev || document.createEvent('Events');
+    if (ev.type in event_map) {
+        state = event_map[ev.type];
+    } else {
+        state = document.hidden ? "hidden" : "visible";
+    }
+    _converse.windowState = state;
+    /**
+     * Triggered when window state has changed.
+     * Used to determine when a user left the page and when came back.
+     * @event _converse#windowStateChanged
+     * @type { object }
+     * @property{ string } state - Either "hidden" or "visible"
+     * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
+     */
+    _converse.api.trigger('windowStateChanged', {state});
+}
+
+
 export default Object.assign({
     getRandomInt,
     getUniqueId,
@@ -587,6 +623,7 @@ export default Object.assign({
     isValidJID,
     merge,
     prefixMentions,
+    saveWindowState,
     stx,
     toStanza,
 }, u);

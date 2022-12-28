@@ -1,7 +1,8 @@
 import bootstrap from 'bootstrap.native';
 import tpl_login_panel from './templates/loginform.js';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core.js';
+import { initConnection } from '@converse/headless/utils/init.js';
 import { updateSettingsWithFormData, validateJID } from './utils.js';
 
 const { Strophe, u } = converse.env;
@@ -60,7 +61,7 @@ class LoginForm extends CustomElement {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    async discoverConnectionMethods (ev) {
+    discoverConnectionMethods (ev) {
         if (!api.settings.get("discover_connection_methods")) {
             return;
         }
@@ -68,7 +69,7 @@ class LoginForm extends CustomElement {
         const jid = form_data.get('jid');
         const domain = Strophe.getDomainFromJid(jid);
         if (!_converse.connection?.jid || (jid && !u.isSameDomain(_converse.connection.jid, jid))) {
-            await _converse.initConnection();
+            initConnection();
         }
         return _converse.connection.discoverConnectionMethods(domain);
     }

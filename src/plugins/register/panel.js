@@ -8,7 +8,8 @@ import tpl_spinner from "templates/spinner.js";
 import utils from "@converse/headless/utils/form";
 import { ElementView } from "@converse/skeletor/src/element";
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core.js";
+import { initConnection } from '@converse/headless/utils/init.js';
 import { render } from 'lit';
 
 // Strophe methods for building stanzas
@@ -211,13 +212,13 @@ class RegisterPanel extends ElementView {
      * @method _converse.RegisterPanel#fetchRegistrationForm
      * @param { String } domain_name - XMPP server domain
      */
-    async fetchRegistrationForm (domain_name) {
+    fetchRegistrationForm (domain_name) {
         this.model.set('registration_status', FETCHING_FORM);
         this.reset({
             'domain': Strophe.getDomainFromJid(domain_name),
             '_registering': true
         });
-        await _converse.initConnection(this.domain);
+        initConnection(this.domain);
         // When testing, the test tears down before the async function
         // above finishes. So we use optional chaining here
         _converse.connection?.connect(this.domain, "", status => this.onConnectStatusChanged(status));

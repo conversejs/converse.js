@@ -1,15 +1,72 @@
 import Storage from '@converse/skeletor/src/storage.js';
-import _converse from '@converse/headless/shared/_converse';
+import _converse from '../shared/_converse';
 import debounce from 'lodash-es/debounce';
 import localDriver from 'localforage-webextensionstorage-driver/local';
-import log from '@converse/headless/log';
+import log from '../log.js';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
-import { CORE_PLUGINS } from '@converse/headless/shared/constants.js';
-import { Connection } from '@converse/headless/shared/connection/index.js';
+import { CORE_PLUGINS } from '../shared/constants.js';
+import { Connection, MockConnection } from '../shared/connection/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe';
-import { createStore, initStorage } from '@converse/headless/utils/storage.js';
-import { isValidJID } from './core.js';
+import { createStore, initStorage } from './storage.js';
+import { saveWindowState, isValidJID } from './core.js';
+
+
+function setUpXMLLogging () {
+    const lmap = {}
+    lmap[Strophe.LogLevel.DEBUG] = 'debug';
+    lmap[Strophe.LogLevel.INFO] = 'info';
+    lmap[Strophe.LogLevel.WARN] = 'warn';
+    lmap[Strophe.LogLevel.ERROR] = 'error';
+    lmap[Strophe.LogLevel.FATAL] = 'fatal';
+
+    Strophe.log = (level, msg) => log.log(msg, lmap[level]);
+    Strophe.error = (msg) => log.error(msg);
+
+    _converse.connection.xmlInput = body => log.debug(body.outerHTML, 'color: darkgoldenrod');
+    _converse.connection.xmlOutput = body => log.debug(body.outerHTML, 'color: darkcyan');
+}
+
+
+function getConnectionServiceURL () {
+    const { api } = _converse;
+    if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
+        return api.settings.get('websocket_url');
+    } else if (api.settings.get('bosh_service_url')) {
+        return api.settings.get('bosh_service_url');
+    }
+    return '';
+}
+
+
+export function initConnection () {
+    const api = _converse.api;
+
+    if (! api.settings.get('bosh_service_url')) {
+        if (api.settings.get("authentication") === _converse.PREBIND) {
+            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+        }
+    }
+
+    const XMPPConnection = _converse.isTestEnv() ? MockConnection : Connection;
+    _converse.connection = new XMPPConnection(
+        getConnectionServiceURL(),
+        Object.assign(
+            _converse.default_connection_options,
+            api.settings.get("connection_options"),
+            {'keepalive': api.settings.get("keepalive")}
+        )
+    );
+
+    setUpXMLLogging();
+    /**
+     * Triggered once the `Connection` constructor has been initialized, which
+     * will be responsible for managing the connection to the XMPP server.
+     *
+     * @event _converse#connectionInitialized
+     */
+    api.trigger('connectionInitialized');
+}
 
 
 export function initPlugins (_converse) {
@@ -54,6 +111,7 @@ export function initPlugins (_converse) {
     _converse.api.trigger('pluginsInitialized');
 }
 
+
 export async function initClientConfig (_converse) {
     /* The client config refers to configuration of the client which is
      * independent of any particular user.
@@ -76,6 +134,7 @@ export async function initClientConfig (_converse) {
     _converse.api.trigger('clientConfigInitialized');
 }
 
+
 export async function initSessionStorage (_converse) {
     await Storage.sessionStorageInitialized;
     _converse.storage = {
@@ -86,6 +145,7 @@ export async function initSessionStorage (_converse) {
         })
     };
 }
+
 
 function initPersistentStorage (_converse, store_name) {
     if (_converse.api.settings.get('persistent_store') === 'sessionStorage') {
@@ -151,7 +211,7 @@ function saveJIDtoSession (_converse, jid) {
  *
  * Given that we can only create an XMPP connection if we know the domain of
  * the server connect to and we only know this once we know the JID, we also
- * call {@link _converse.initConnection } (if necessary) to make sure that the
+ * call {@link initConnection } (if necessary) to make sure that the
  * connection is set up.
  *
  * @emits _converse#setUserJID
@@ -206,8 +266,8 @@ export async function initSession (_converse, jid) {
 
 
 export function registerGlobalEventHandlers (_converse) {
-    document.addEventListener("visibilitychange", _converse.saveWindowState);
-    _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
+    document.addEventListener("visibilitychange", saveWindowState);
+    saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
     /**
      * Called once Converse has registered its global event handlers
      * (for events such as window resize or unload).
@@ -222,7 +282,7 @@ export function registerGlobalEventHandlers (_converse) {
 
 function unregisterGlobalEventHandlers (_converse) {
     const { api } = _converse;
-    document.removeEventListener("visibilitychange", _converse.saveWindowState);
+    document.removeEventListener("visibilitychange", saveWindowState);
     api.trigger('unregisteredGlobalEventHandlers');
 }
 
@@ -362,17 +422,6 @@ export async function attemptNonPreboundSession (credentials, automatic) {
     ) {
         connect();
     }
-}
-
-
-export function getConnectionServiceURL () {
-    const { api } = _converse;
-    if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
-        return api.settings.get('websocket_url');
-    } else if (api.settings.get('bosh_service_url')) {
-        return api.settings.get('bosh_service_url');
-    }
-    return '';
 }
 
 

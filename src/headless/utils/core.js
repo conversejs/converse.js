@@ -437,9 +437,9 @@ u.getSelectValues = function (select) {
     return result;
 };
 
-u.getRandomInt = function (max) {
-    return Math.floor(Math.random() * Math.floor(max));
-};
+export function getRandomInt (max) {
+    return (Math.random() * max) | 0;
+}
 
 u.placeCaretAtEnd = function (textarea) {
     if (textarea !== document.activeElement) {
@@ -455,11 +455,12 @@ u.placeCaretAtEnd = function (textarea) {
 };
 
 export function getUniqueId (suffix) {
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : r & 0x3 | 0x8;
-        return v.toString(16);
-    });
+    const uuid = crypto.randomUUID?.() ??
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = getRandomInt(16);
+            const v = c === 'x' ? r : r & 0x3 | 0x8;
+            return v.toString(16);
+        });
     if (typeof(suffix) === "string" || typeof(suffix) === "number") {
         return uuid + ":" + suffix;
     } else {
@@ -578,6 +579,7 @@ export function decodeHTMLEntities (str) {
 }
 
 export default Object.assign({
+    getRandomInt,
     getUniqueId,
     isEmptyMessage,
     isValidJID,

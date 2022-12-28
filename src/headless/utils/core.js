@@ -207,20 +207,22 @@ u.isServiceUnavailableError = function (stanza) {
 
 /**
  * Merge the second object into the first one.
- * @private
  * @method u#merge
- * @param { Object } first
- * @param { Object } second
+ * @param { Object } dst
+ * @param { Object } src
  */
-u.merge = function merge (first, second) {
-    for (const k in second) {
-        if (isObject(first[k])) {
-            merge(first[k], second[k]);
+export function merge (dst, src) {
+    for (const k in src) {
+        if (!Object.prototype.hasOwnProperty.call(src, k)) continue;
+        if (k === "__proto__" || k === "constructor") continue;
+
+        if (isObject(dst[k])) {
+            merge(dst[k], src[k]);
         } else {
-            first[k] = second[k];
+            dst[k] = src[k];
         }
     }
-};
+}
 
 u.getOuterWidth = function (el, include_margin=false) {
     let width = el.offsetWidth;
@@ -583,6 +585,7 @@ export default Object.assign({
     getUniqueId,
     isEmptyMessage,
     isValidJID,
+    merge,
     prefixMentions,
     stx,
     toStanza,

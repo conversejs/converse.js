@@ -95,7 +95,7 @@ export async function handleMessageStanza (stanza) {
     }
     let attrs;
     try {
-        attrs = await parseMessage(stanza, _converse);
+        attrs = await parseMessage(stanza);
     } catch (e) {
         return log.error(e);
     }

@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ javascript, python ]
+        language: [ javascript ]
 
     steps:
       - name: Checkout
@@ -29,12 +29,13 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
+          config-file: ./.github/codeql-config.yml
           languages: ${{ matrix.language }}
           queries: +security-and-quality
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2
-        if: ${{ matrix.language == 'javascript' || matrix.language == 'python' }}
+        if: ${{ matrix.language == 'javascript' }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2

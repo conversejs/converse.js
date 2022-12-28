@@ -293,14 +293,21 @@ async function getLoginCredentialsFromURL () {
 
 
 async function getLoginCredentialsFromBrowser () {
+    const jid = localStorage.getItem('conversejs-session-jid');
+    if (!jid) return null;
+
     try {
         const creds = await navigator.credentials.get({'password': true});
         if (creds && creds.type == 'password' && isValidJID(creds.id)) {
+            // XXX: We don't actually compare `creds.id` with `jid` because
+            // the user might have been presented a list of credentials with
+            // which to log in, and we want to respect their wish.
             await setUserJID(creds.id);
             return {'jid': creds.id, 'password': creds.password};
         }
     } catch (e) {
         log.error(e);
+        return null;
     }
 }
 
@@ -319,6 +326,7 @@ async function getLoginCredentialsFromSCRAMKeys () {
 
 export async function attemptNonPreboundSession (credentials, automatic) {
     const { api } = _converse;
+
     if (api.settings.get("authentication") === _converse.LOGIN) {
         // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
         // ``authentication`` is set to ``login``, then Converse will try to log the user in,
@@ -342,9 +350,12 @@ export async function attemptNonPreboundSession (credentials, automatic) {
         }
 
         if (!_converse.isTestEnv() && 'credentials' in navigator) {
-            return connect(await getLoginCredentialsFromBrowser());
+            const credentials = await getLoginCredentialsFromBrowser();
+            if (credentials) return connect(credentials);
         }
-        !_converse.isTestEnv() && log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
+
+        if (!_converse.isTestEnv()) log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
+
     } else if (
         [_converse.ANONYMOUS, _converse.EXTERNAL].includes(api.settings.get("authentication")) &&
         (!automatic || api.settings.get("auto_login"))

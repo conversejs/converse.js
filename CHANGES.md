@@ -3,6 +3,7 @@
 ## Unreleased
 
 - #326: Add the ability to reset your password
+- #2759: Don't automatically log in again if the user manually logged out
 - #2816: Chat highlight behaves odd
 - #2925: File upload is not always enabled
 - #3001: Add option to save SCRAM details and to use them to stay logged in upon reload

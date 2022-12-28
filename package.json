@@ -4,6 +4,9 @@
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
   "module": "src/converse.js",
+  "workspaces": [
+    "src/headless"
+  ],
   "files": [
     "*.js",
     "*.json",

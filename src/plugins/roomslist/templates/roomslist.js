@@ -43,7 +43,7 @@ const room_item = (o) => {
         <div class="list-item controlbox-padded available-chatroom d-flex flex-row ${ o.currently_open(o.room) ? 'open' : '' } ${ has_unread_msgs ? 'unread-msgs' : '' }"
             data-room-jid="${o.room.get('jid')}">
 
-            ${ o.room.get('num_unread') ? unread_indicator(o) : (o.room.get('has_activity') ? activity_indicator(o) : '') }
+            ${ o.room.get('num_unread') ? unread_indicator(o) : (o.room.get('has_activity') ? activity_indicator() : '') }
 
             <a class="list-item-link open-room available-room w-100"
                 data-room-jid="${o.room.get('jid')}"

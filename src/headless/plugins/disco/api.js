@@ -195,19 +195,29 @@ export default {
                 }
                 if (_converse.disco_entities === undefined) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
-                    const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
-                    log.warn(msg);
+                    log.warn(`Tried to look up entity ${jid} but _converse.disco_entities has been torn down`);
                     return;
                 }
                 const entity = _converse.disco_entities.get(jid);
                 if (entity || !create) {
                     return entity;
                 }
-                return api.disco.entities.create(jid);
+                return api.disco.entities.create({ jid });
             },
 
             /**
-             * Create a new disco entity. It's identity and features
+             * Return any disco items advertised on this entity
+             *
+             * @method api.disco.entities.items
+             * @param {string} jid The Jabber ID of the entity for which we want to fetch items
+             * @example api.disco.entities.items(jid);
+             */
+            items (jid) {
+                return _converse.disco_entities.filter(e => e.get('parent_jids')?.includes(jid));
+            },
+
+            /**
+             * Create a new  disco entity. It's identity and features
              * will automatically be fetched from cache or from the
              * XMPP server.
              *
@@ -215,14 +225,17 @@ export default {
              * `ignore_cache: true` in the options parameter.
              *
              * @method api.disco.entities.create
-             * @param {string} jid The Jabber ID of the entity
-             * @param {object} [options] Additional options
+             * @param {object} data
+             * @param {string} data.jid - The Jabber ID of the entity
+             * @param {string} data.parent_jid - The Jabber ID of the parent entity
+             * @param {string} data.name
+             * @param {object} [options] - Additional options
              * @param {boolean} [options.ignore_cache]
              *     If true, fetch all features from the XMPP server instead of restoring them from cache
-             * @example _converse.api.disco.entities.create(jid, {'ignore_cache': true});
+             * @example _converse.api.disco.entities.create({ jid }, {'ignore_cache': true});
              */
-            create (jid, options) {
-                return _converse.disco_entities.create({'jid': jid}, options);
+            create (data, options) {
+                return _converse.disco_entities.create(data, options);
             }
         },
 
@@ -249,22 +262,56 @@ export default {
              * api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
              */
             async get (feature, jid) {
-                if (!jid) {
-                    throw new TypeError('You need to provide an entity JID');
-                }
-                await api.waitUntil('discoInitialized');
-                let entity = await api.disco.entities.get(jid, true);
+                if (!jid) throw new TypeError('You need to provide an entity JID');
+
+                const entity = await api.disco.entities.get(jid, true);
 
                 if (_converse.disco_entities === undefined && !api.connection.connected()) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
-                    const msg = `Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`;
-                    log.warn(msg);
-                    return;
+                    log.warn(`Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`);
+                    return [];
                 }
-                entity = await entity.waitUntilFeaturesDiscovered;
-                const promises = [...entity.items.map(i => i.hasFeature(feature)), entity.hasFeature(feature)];
+
+                const promises = [
+                    entity.getFeature(feature),
+                    ...api.disco.entities.items(jid).map(i => i.getFeature(feature))
+                ];
                 const result = await Promise.all(promises);
                 return result.filter(isObject);
+            },
+
+            /**
+             * Returns true if an entity with the given JID, or if one of its
+             * associated items, supports a given feature.
+             *
+             * @method api.disco.features.has
+             * @param {string} feature The feature that might be
+             *     supported. In the XML stanza, this is the `var`
+             *     attribute of the `<feature>` element. For
+             *     example: `http://jabber.org/protocol/muc`
+             * @param {string} jid The JID of the entity
+             *     (and its associated items) which should be queried
+             * @returns {Promise} A promise which resolves with a boolean
+             * @example
+             *      api.disco.features.has(Strophe.NS.MAM, _converse.bare_jid);
+             */
+            async has (feature, jid) {
+                if (!jid) throw new TypeError('You need to provide an entity JID');
+
+                const entity = await api.disco.entities.get(jid, true);
+
+                if (_converse.disco_entities === undefined && !api.connection.connected()) {
+                    // Happens during tests when disco lookups happen asynchronously after teardown.
+                    log.warn(`Tried to check if ${jid} supports feature ${feature}`);
+                    return false;
+                }
+
+                if (await entity.getFeature(feature)) {
+                    return true;
+                }
+
+                const result = await Promise.all(api.disco.entities.items(jid).map(i => i.getFeature(feature)));
+                return result.map(isObject).includes(true);
             }
         },
 
@@ -286,9 +333,8 @@ export default {
          *     // The feature is not supported
          * }
          */
-        async supports (feature, jid) {
-            const features = await api.disco.features.get(feature, jid) || [];
-            return features.length > 0;
+        supports (feature, jid) {
+            return api.disco.features.has(feature, jid);
         },
 
         /**
@@ -316,7 +362,7 @@ export default {
                 entity.queryInfo();
             } else {
                 // Create it if it doesn't exist
-                entity = await api.disco.entities.create(jid, {'ignore_cache': true});
+                entity = await api.disco.entities.create({ jid }, {'ignore_cache': true});
             }
             return entity.waitUntilFeaturesDiscovered;
         },

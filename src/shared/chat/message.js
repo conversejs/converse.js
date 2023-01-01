@@ -124,7 +124,7 @@ export default class Message extends CustomElement {
     shouldShowAvatar () {
         return api.settings.get('show_message_avatar') &&
             !this.model.isMeCommand() &&
-            ['chat', 'groupchat'].includes(this.model.get('type'));
+            ['chat', 'groupchat', 'normal'].includes(this.model.get('type'));
     }
 
     onUnfurlAnimationEnd () {

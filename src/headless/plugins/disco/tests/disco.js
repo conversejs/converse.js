@@ -2,7 +2,7 @@
 
 describe("Service Discovery", function () {
 
-    describe("Whenever converse.js queries a server for its features", function () {
+    describe("Whenever a server is queried for its features", function () {
 
         it("stores the features it receives",
             mock.initConverse(
@@ -76,23 +76,12 @@ describe("Service Discovery", function () {
                     'var': 'jabber:iq:version'});
             _converse.connection._dataRecv(mock.createRequest(stanza));
 
-            let entities = await _converse.api.disco.entities.get()
-            expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
-            expect(entities.get(_converse.domain).features.length).toBe(5);
-            expect(entities.get(_converse.domain).identities.length).toBe(3);
-            expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
-            expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:time'}).length).toBe(1);
-            expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:register'}).length).toBe(1);
-            expect(entities.get('montague.lit').features.where(
-                {'var': 'http://jabber.org/protocol/disco#items'}).length).toBe(1);
-            expect(entities.get('montague.lit').features.where(
-                {'var': 'http://jabber.org/protocol/disco#info'}).length).toBe(1);
-
             await u.waitUntil(function () {
                 // Converse.js sees that the entity has a disco#items feature,
                 // so it will make a query for it.
                 return IQ_stanzas.filter(iq => iq.querySelector('query[xmlns="http://jabber.org/protocol/disco#items"]')).length > 0;
             });
+
             /* <iq type='result'
              *     from='catalog.shakespeare.lit'
              *     to='romeo@montague.net/orchard'
@@ -119,9 +108,8 @@ describe("Service Discovery", function () {
              * </query>
              * </iq>
              */
-            stanza = IQ_stanzas.find(function (iq) {
-                return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
-            });
+            stanza = IQ_stanzas.find(iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]'));
+
             const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
             stanza = $iq({
                 'type': 'result',
@@ -152,9 +140,19 @@ describe("Service Discovery", function () {
                 });
 
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            await u.waitUntil(() => _converse.disco_entities);
-            entities = _converse.disco_entities;
-            expect(entities.length).toBe(5);
+
+            const entities = await _converse.api.disco.entities.get()
+            expect(entities.length).toBe(5); // We have an extra entity, which is the user's JID
+            expect(entities.get(_converse.domain).features.length).toBe(5);
+            expect(entities.get(_converse.domain).identities.length).toBe(3);
+            expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
+            expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:time'}).length).toBe(1);
+            expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:register'}).length).toBe(1);
+            expect(entities.get('montague.lit').features.where(
+                {'var': 'http://jabber.org/protocol/disco#items'}).length).toBe(1);
+            expect(entities.get('montague.lit').features.where(
+                {'var': 'http://jabber.org/protocol/disco#info'}).length).toBe(1);
+
             expect(entities.map(e => e.get('jid'))).toEqual([
                 'montague.lit',
                 'romeo@montague.lit',
@@ -162,11 +160,14 @@ describe("Service Discovery", function () {
                 'plays.shakespeare.lit',
                 'words.shakespeare.lit'
             ]);
+            const { api, domain } = _converse;
             let entity = entities.get(_converse.domain);
-            expect(entity.items.length).toBe(3);
-            expect(entity.items.pluck('jid').includes('people.shakespeare.lit')).toBeTruthy();
-            expect(entity.items.pluck('jid').includes('plays.shakespeare.lit')).toBeTruthy();
-            expect(entity.items.pluck('jid').includes('words.shakespeare.lit')).toBeTruthy();
+            expect(api.disco.entities.items(domain).length).toBe(3);
+
+            expect(api.disco.entities.items(domain).map(e => e.get('jid'))).toEqual(
+                ['people.shakespeare.lit', 'plays.shakespeare.lit', 'words.shakespeare.lit']
+            )
+
             expect(entity.identities.where({'category': 'conference'}).length).toBe(1);
             expect(entity.identities.where({'category': 'directory'}).length).toBe(1);
 

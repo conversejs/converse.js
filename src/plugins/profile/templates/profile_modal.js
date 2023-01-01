@@ -3,36 +3,12 @@ import { __ } from 'i18n';
 import { _converse } from  "@converse/headless/core";
 import { html } from "lit";
 
-const omemo_page = (el) => html`
+
+const tpl_omemo_page = (el) => html`
     <div class="tab-pane ${ el.tab === 'omemo' ? 'active' : ''}" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
-        <converse-omemo-profile></converse-omemo-profile>
+        ${ el.tab === 'omemo' ? html`<converse-omemo-profile></converse-omemo-profile>` : '' }
     </div>`;
 
-const navigation = (el) => {
-    const i18n_omemo = __('OMEMO');
-    const i18n_profile = __('Profile');
-
-    return html`<ul class="nav nav-pills justify-content-center">
-        <li role="presentation" class="nav-item">
-            <a class="nav-link ${el.tab === "profile" ? "active" : ""}"
-               id="profile-tab"
-               href="#profile-tabpanel"
-               aria-controls="profile-tabpanel" role="tab"
-               @click=${ev => el.switchTab(ev)}
-               data-name="profile"
-               data-toggle="tab">${i18n_profile}</a>
-        </li>
-        <li role="presentation" class="nav-item">
-            <a class="nav-link ${el.tab === "omemo" ? "active" : ""}"
-               id="omemo-tab"
-               href="#omemo-tabpanel"
-               aria-controls="omemo-tabpanel" role="tab"
-               @click=${ev => el.switchTab(ev)}
-               data-name="omemo"
-               data-toggle="tab">${i18n_omemo}</a>
-        </li>
-    </ul>`;
-}
 
 export default (el) => {
     const o = { ...el.model.toJSON(), ...el.model.vcard.toJSON() };
@@ -45,8 +21,53 @@ export default (el) => {
     const i18n_role_help = __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.');
     const i18n_url = __('URL');
 
+    const i18n_omemo = __('OMEMO');
+    const i18n_profile = __('Profile');
+    const ii18n_reset_password = __('Reset Password');
+
+    const navigation_tabs = [
+        html`<li role="presentation" class="nav-item">
+            <a class="nav-link ${el.tab === "profile" ? "active" : ""}"
+               id="profile-tab"
+               href="#profile-tabpanel"
+               aria-controls="profile-tabpanel"
+               role="tab"
+               @click=${ev => el.switchTab(ev)}
+               data-name="profile"
+               data-toggle="tab">${ i18n_profile }</a>
+            </li>`
+    ];
+
+    navigation_tabs.push(
+        html`<li role="presentation" class="nav-item">
+                <a class="nav-link ${el.tab === "passwordreset" ? "active" : ""}"
+                id="passwordreset-tab"
+                href="#passwordreset-tabpanel"
+                aria-controls="passwordreset-tabpanel"
+                role="tab"
+                @click=${ev => el.switchTab(ev)}
+                data-name="passwordreset"
+                data-toggle="tab">${ ii18n_reset_password }</a>
+        </li>`
+    );
+
+    if (_converse.pluggable.plugins['converse-omemo']?.enabled(_converse)) {
+        navigation_tabs.push(
+            html`<li role="presentation" class="nav-item">
+                <a class="nav-link ${el.tab === "omemo" ? "active" : ""}"
+                   id="omemo-tab"
+                   href="#omemo-tabpanel"
+                   aria-controls="omemo-tabpanel"
+                   role="tab"
+                   @click=${ev => el.switchTab(ev)}
+                   data-name="omemo"
+                   data-toggle="tab">${ i18n_omemo }</a>
+            </li>`
+        );
+    }
+
     return html`
-        ${_converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? navigation(el) : ''}
+        <ul class="nav nav-pills justify-content-center">${navigation_tabs}</ul>
         <div class="tab-content">
             <div class="tab-pane ${ el.tab === 'profile' ? 'active' : ''}" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                 <form class="converse-form converse-form--modal profile-form" action="#" @submit=${ev => el.onFormSubmitted(ev)}>
@@ -88,7 +109,12 @@ export default (el) => {
                     </div>
                 </form>
             </div>
-            ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? omemo_page(el) : '' }
+
+            <div class="tab-pane ${ el.tab === 'passwordreset' ? 'active' : ''}" id="passwordreset-tabpanel" role="tabpanel" aria-labelledby="passwordreset-tab">
+                ${ el.tab === 'passwordreset' ? html`<converse-change-password-form></converse-change-password-form>` : '' }
+            </div>
+
+            ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? tpl_omemo_page(el) : '' }
         </div>
-    `;
+    </div>`;
 }

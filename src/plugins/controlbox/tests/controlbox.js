@@ -120,7 +120,7 @@ describe("The Controlbox", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             await mock.openControlBox(_converse);
-            var cbview = _converse.chatboxviews.get('controlbox');
+            const cbview = _converse.chatboxviews.get('controlbox');
             cbview.querySelector('.change-status').click()
             const modal = _converse.api.modal.get('converse-chat-status-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);

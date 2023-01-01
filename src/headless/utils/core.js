@@ -14,7 +14,6 @@ import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { setUserJID, } from '@converse/headless/utils/init.js';
 import { settings_api } from '@converse/headless/shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
 
@@ -41,6 +40,7 @@ export function isEmptyMessage (attrs) {
 export function isUniView () {
     return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
 }
+
 
 export async function tearDown () {
     await _converse.api.trigger('beforeTearDown', {'synchronous': true});
@@ -84,7 +84,6 @@ export function prefixMentions (message) {
 }
 
 
-
 /**
  * The utils object
  * @namespace u
@@ -125,12 +124,12 @@ u.getLongestSubstring = function (string, candidates) {
     return candidates.reduce(reducer, '');
 }
 
-u.isValidJID = function (jid) {
+export function isValidJID (jid) {
     if (typeof jid === 'string') {
         return compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     }
     return false;
-};
+}
 
 u.isValidMUCJID = function (jid) {
     return !jid.startsWith('@') && !jid.endsWith('@');
@@ -208,20 +207,22 @@ u.isServiceUnavailableError = function (stanza) {
 
 /**
  * Merge the second object into the first one.
- * @private
  * @method u#merge
- * @param { Object } first
- * @param { Object } second
+ * @param { Object } dst
+ * @param { Object } src
  */
-u.merge = function merge (first, second) {
-    for (const k in second) {
-        if (isObject(first[k])) {
-            merge(first[k], second[k]);
+export function merge (dst, src) {
+    for (const k in src) {
+        if (!Object.prototype.hasOwnProperty.call(src, k)) continue;
+        if (k === "__proto__" || k === "constructor") continue;
+
+        if (isObject(dst[k])) {
+            merge(dst[k], src[k]);
         } else {
-            first[k] = second[k];
+            dst[k] = src[k];
         }
     }
-};
+}
 
 u.getOuterWidth = function (el, include_margin=false) {
     let width = el.offsetWidth;
@@ -438,9 +439,9 @@ u.getSelectValues = function (select) {
     return result;
 };
 
-u.getRandomInt = function (max) {
-    return Math.floor(Math.random() * Math.floor(max));
-};
+export function getRandomInt (max) {
+    return (Math.random() * max) | 0;
+}
 
 u.placeCaretAtEnd = function (textarea) {
     if (textarea !== document.activeElement) {
@@ -456,11 +457,12 @@ u.placeCaretAtEnd = function (textarea) {
 };
 
 export function getUniqueId (suffix) {
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : r & 0x3 | 0x8;
-        return v.toString(16);
-    });
+    const uuid = crypto.randomUUID?.() ??
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = getRandomInt(16);
+            const v = c === 'x' ? r : r & 0x3 | 0x8;
+            return v.toString(16);
+        });
     if (typeof(suffix) === "string" || typeof(suffix) === "number") {
         return uuid + ":" + suffix;
     } else {
@@ -539,6 +541,7 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     return promise;
 };
 
+
 export function setUnloadEvent () {
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -553,17 +556,6 @@ export function setUnloadEvent () {
     }
 }
 
-export async function getLoginCredentialsFromBrowser () {
-    try {
-        const creds = await navigator.credentials.get({'password': true});
-        if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-            await setUserJID(creds.id);
-            return {'jid': creds.id, 'password': creds.password};
-        }
-    } catch (e) {
-        log.error(e);
-    }
-}
 
 export function replacePromise (name) {
     const existing_promise = _converse.promises[name];
@@ -579,6 +571,7 @@ export function replacePromise (name) {
     }
 }
 
+
 const element = document.createElement('div');
 
 export function decodeHTMLEntities (str) {
@@ -590,10 +583,47 @@ export function decodeHTMLEntities (str) {
     return str;
 }
 
+
+export function saveWindowState (ev) {
+    // XXX: eventually we should be able to just use
+    // document.visibilityState (when we drop support for older
+    // browsers).
+    let state;
+    const event_map = {
+        'focus': "visible",
+        'focusin': "visible",
+        'pageshow': "visible",
+        'blur': "hidden",
+        'focusout': "hidden",
+        'pagehide': "hidden"
+    };
+    ev = ev || document.createEvent('Events');
+    if (ev.type in event_map) {
+        state = event_map[ev.type];
+    } else {
+        state = document.hidden ? "hidden" : "visible";
+    }
+    _converse.windowState = state;
+    /**
+     * Triggered when window state has changed.
+     * Used to determine when a user left the page and when came back.
+     * @event _converse#windowStateChanged
+     * @type { object }
+     * @property{ string } state - Either "hidden" or "visible"
+     * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
+     */
+    _converse.api.trigger('windowStateChanged', {state});
+}
+
+
 export default Object.assign({
-    prefixMentions,
-    isEmptyMessage,
+    getRandomInt,
     getUniqueId,
-    toStanza,
+    isEmptyMessage,
+    isValidJID,
+    merge,
+    prefixMentions,
+    saveWindowState,
     stx,
+    toStanza,
 }, u);

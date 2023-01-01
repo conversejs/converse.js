@@ -7,7 +7,8 @@ import { getOpenPromise } from '@converse/openpromise';
 const { Strophe, sizzle, u } = converse.env;
 
 /**
- * Mixin which turns a `ModelWithContact` model into a non-MUC message. These can be either `chat` messages or `headline` messages.
+ * Mixin which turns a `ModelWithContact` model into a non-MUC message.
+ * These can be either `chat`, `normal` or `headline` messages.
  * @mixin
  * @namespace _converse.Message
  * @memberOf _converse
@@ -47,9 +48,8 @@ const MessageMixin = {
         this.initialized.resolve();
     },
 
-
     setContact () {
-        if (this.get('type') === 'chat') {
+        if (['chat', 'normal'].includes(this.get('type'))) {
             ModelWithContact.prototype.initialize.apply(this, arguments);
             this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
         }
@@ -164,7 +164,7 @@ const MessageMixin = {
         if (this.get('is_encrypted')) {
             const { __ } = _converse;
             return this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
-        } else if (['groupchat', 'chat'].includes(this.get('type'))) {
+        } else if (['groupchat', 'chat', 'normal'].includes(this.get('type'))) {
             return this.get('body');
         } else {
             return this.get('message');

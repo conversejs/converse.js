@@ -44,19 +44,13 @@ export default (el) => {
                     <converse-icon class="fa fa-user-plus right" size="1.25em"></converse-icon>
                 </a>` : '' }
         </div>
+
         <div class="list-container roster-contacts ${ is_closed ? 'hidden' : '' }">
             <converse-roster-filter @update=${() => el.requestUpdate()}></converse-roster-filter>
-            ${ repeat(groupnames, n => n, name => {
+            ${ repeat(groupnames, (n) => n, (name) => {
                 const contacts = contacts_map[name].filter(c => shouldShowContact(c, name));
                 contacts.sort(contactsComparator);
-                if (contacts.length) {
-                    return tpl_group({
-                        'contacts': contacts,
-                        'name': name,
-                    });
-                } else {
-                    return '';
-                }
+                return contacts.length ? tpl_group({ contacts, name }) : '';
             }) }
         </div>
     `;

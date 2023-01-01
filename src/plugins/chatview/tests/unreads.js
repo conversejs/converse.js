@@ -105,7 +105,7 @@ describe("A ChatBox's Unread Message Count", function () {
         expect(chatbox.get('first_unread_id')).toBe(msgid);
         await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 1);
         expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-        _converse.saveWindowState({'type': 'focus'});
+        u.saveWindowState({'type': 'focus'});
         await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
         expect(sent_stanzas[1].querySelector('displayed')).toBeDefined();
         expect(chatbox.get('num_unread')).toBe(0);
@@ -148,7 +148,7 @@ describe("A ChatBox's Unread Message Count", function () {
         expect(chatbox.get('first_unread_id')).toBe(msgid);
         await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 1);
         expect(sent_stanzas[0].querySelector('received')).toBeDefined();
-        _converse.saveWindowState({'type': 'focus'});
+        u.saveWindowState({'type': 'focus'});
         await u.waitUntil(() => chatbox.get('num_unread') === 1);
         expect(chatbox.get('first_unread_id')).toBe(msgid);
         expect(sent_stanzas[0].querySelector('received')).toBeDefined();

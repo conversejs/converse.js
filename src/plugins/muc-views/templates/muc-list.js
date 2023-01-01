@@ -54,9 +54,9 @@ export default (o) => {
     return html`
         ${o.show_form ? form(o) : '' }
         <ul class="available-chatrooms list-group">
-            ${ o.loading_items ? html`<li class="list-group-item"> ${spinner()} </li>` : '' }
+            ${ o.loading_items ? html`<li class="list-group-item"> ${ spinner() } </li>` : '' }
             ${ o.feedback_text ? html`<li class="list-group-item active">${ o.feedback_text }</li>` : '' }
-            ${repeat(o.items, item => item.jid, item => tpl_item(o, item))}
+            ${ repeat(o.items, (item) => item.jid, (item) => tpl_item(o, item)) }
         </ul>
     `;
 }

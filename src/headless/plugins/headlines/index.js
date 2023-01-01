@@ -4,7 +4,7 @@
  */
 import HeadlinesFeed from './feed.js';
 import headlines_api from './api.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "../../core.js";
 import { onHeadlineMessage } from './utils.js';
 
 

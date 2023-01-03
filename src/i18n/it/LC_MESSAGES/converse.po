@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 16:53+0100\n"
-"PO-Revision-Date: 2022-05-30 18:18+0000\n"
-"Last-Translator: random r <epsilin@yopmail.com>\n"
+"PO-Revision-Date: 2023-01-04 13:50+0000\n"
+"Last-Translator: Marco Marchiò <marcomarchi89@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
 "Language: it\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1124,18 +1124,16 @@ msgid "Image: "
 msgstr "Immagine: "
 
 #: dist/converse-no-dependencies.js:88518
-#, fuzzy
 msgid "Older versions"
-msgstr "Versioni del messaggio"
+msgstr "Versioni precedenti"
 
 #: dist/converse-no-dependencies.js:88520
-#, fuzzy
 msgid "No older versions found"
-msgstr "Server remoto non trovato"
+msgstr "Nessuna versione precedente trovata"
 
 #: dist/converse-no-dependencies.js:88520
 msgid "Current version"
-msgstr ""
+msgstr "Versione corrente"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88667
@@ -1477,9 +1475,8 @@ msgstr "Visitatore"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:104591
-#, fuzzy
 msgid "Participant"
-msgstr "Partecipanti"
+msgstr "Partecipante"
 
 #: dist/converse-no-dependencies.js:104591
 msgid "Participants"
@@ -2086,6 +2083,8 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Errore: impossibile decriptare il file criptato ricevuto perchè non è stato "
+"possibile scaricarlo"
 
 #: dist/converse-no-dependencies.js:114730
 msgid ""
@@ -2447,9 +2446,8 @@ msgid "Add"
 msgstr "Aggiungi"
 
 #: dist/converse-no-dependencies.js:124962
-#, fuzzy
 msgid "Group"
-msgstr "Gruppi"
+msgstr "Gruppo"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125158

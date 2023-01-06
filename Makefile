@@ -98,6 +98,7 @@ release:
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' docs/source/quickstart.rst
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' *.html
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' demo/*.html
+	make declarations
 	make pot
 	make po
 	make dist
@@ -201,6 +202,10 @@ install:: dist
 .PHONY: cdn
 cdn:: node_modules
 	npm run cdn
+
+.PHONY: declarations
+declarations:: node_modules
+	npx tsc src/converse.js --declaration --emitDeclarationOnly --allowJs
 
 ########################################################################
 ## Tests

@@ -1,4 +1,3 @@
-import URI from 'urijs';
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
 import sizzle from 'sizzle';
@@ -150,13 +149,102 @@ export function getOpenGraphMetadata (stanza) {
 }
 
 
+/**
+ * @copyright Rodney Rehm
+ * @description Taken from https://github.com/medialize/URI.js
+ */
+const findUri = {
+    // valid "scheme://" or "www."
+    start: /\b(?:([a-z][a-z0-9.+-]*:\/\/)|www\.)/gi,
+    // everything up to the next whitespace
+    end: /[\s\r\n]|$/,
+    // trim trailing punctuation captured by end RegExp
+    trim: /[`!()\[\]{};:'".,<>?«»“”„‘’]+$/,
+    // balanced parens inclusion (), [], {}, <>
+    parens: /(\([^\)]*\)|\[[^\]]*\]|\{[^}]*\}|<[^>]*>)/g,
+}
+
+/**
+ * @copyright Rodney Rehm
+ * @description Taken from https://github.com/medialize/URI.js
+ */
+function withinString (string, callback, options) {
+    options || (options = {});
+    const _start = options.start || findUri.start;
+    const _end = options.end || findUri.end;
+    const _trim = options.trim || findUri.trim;
+    const _parens = options.parens || findUri.parens;
+    const _attributeOpen = /[a-z0-9-]=["']?$/i;
+
+    _start.lastIndex = 0;
+    while (true) { // eslint-disable-line no-constant-condition
+        const match = _start.exec(string);
+        if (!match) {
+            break;
+        }
+
+        const start = match.index;
+        if (options.ignoreHtml) {
+        // attribut(e=["']?$)
+        const attributeOpen = string.slice(Math.max(start - 3, 0), start);
+        if (attributeOpen && _attributeOpen.test(attributeOpen)) {
+            continue;
+        }
+        }
+
+        let end = start + string.slice(start).search(_end);
+        let slice = string.slice(start, end);
+        // make sure we include well balanced parens
+        let parensEnd = -1;
+        while (true) {  // eslint-disable-line no-constant-condition
+            const parensMatch = _parens.exec(slice);
+            if (!parensMatch) {
+                break;
+            }
+
+            const parensMatchEnd = parensMatch.index + parensMatch[0].length;
+            parensEnd = Math.max(parensEnd, parensMatchEnd);
+        }
+
+        if (parensEnd > -1) {
+            slice = slice.slice(0, parensEnd) + slice.slice(parensEnd).replace(_trim, '');
+        } else {
+            slice = slice.replace(_trim, '');
+        }
+
+        if (slice.length <= match[0].length) {
+            // the extract only contains the starting marker of a URI,
+            // e.g. "www" or "http://"
+            continue;
+        }
+
+        if (options.ignore && options.ignore.test(slice)) {
+            continue;
+        }
+
+        end = start + slice.length;
+        let result = callback(slice, start, end, string);
+        if (result === undefined) {
+            _start.lastIndex = end;
+            continue;
+        }
+
+        result = String(result);
+        string = string.slice(0, start) + result + string.slice(end);
+        _start.lastIndex = start + result.length;
+    }
+
+    _start.lastIndex = 0;
+    return string;
+}
+
 export function getMediaURLsMetadata (text, offset=0) {
     const objs = [];
     if (!text) {
         return {};
     }
     try {
-        URI.withinString(
+        withinString(
             text,
             (url, start, end) => {
                 if (url.startsWith('_')) {

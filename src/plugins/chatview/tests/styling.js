@@ -106,7 +106,7 @@ describe("An incoming chat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<span class="styling-directive">~</span>'+
-            '<del>Check out this site: <a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a></del>'+
+            '<del>Check out this site: <a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a></del>'+
             '<span class="styling-directive">~</span>');
 
         // Images inside directives aren't shown inline
@@ -182,7 +182,7 @@ describe("An incoming chat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             'Go to <span class="styling-directive">_</span>'+
-            '<i><a target="_blank" rel="noopener" href="https://converse_js.org/">https://converse_js.org</a></i>'+
+            '<i><a target="_blank" rel="noopener" href="https://converse_js.org">https://converse_js.org</a></i>'+
             '<span class="styling-directive">_</span> <span class="styling-directive">_</span><i>please</i><span class="styling-directive">_</span>');
 
     }));
@@ -249,8 +249,8 @@ describe("An incoming chat Message", function () {
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             '<blockquote>'+
-                '<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\u200B\u200B'+
-                '<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>'+
+                '<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>\n\u200B\u200B'+
+                '<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>'+
             '</blockquote>');
 
         msg_text = `> This is quoted text\n>This is also quoted\nThis is not quoted`;
@@ -447,8 +447,8 @@ describe("An XEP-0393 styled message ", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
         const msg_el = view.querySelector('converse-chat-message-body');
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            '<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n'+
-            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+            '<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com">https://opkode.com</a>'
         );
 
         _converse.handleMessageStanza($msg({
@@ -462,8 +462,8 @@ describe("An XEP-0393 styled message ", function () {
 
         expect(view.querySelectorAll('.chat-msg__text').length).toBe(1);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\n'+
-            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>\n\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com">https://opkode.com</a>'
         );
     }));
 
@@ -489,8 +489,8 @@ describe("An XEP-0393 styled message ", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         const msg_el = view.querySelector('converse-chat-message-body');
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
-            '<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n'+
-            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+            '<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com">https://opkode.com</a>'
         );
 
         expect(textarea.value).toBe('');
@@ -509,8 +509,8 @@ describe("An XEP-0393 styled message ", function () {
 
         expect(view.querySelectorAll('.chat-msg__text').length).toBe(1);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>\n\n'+
-            '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>'
+            'A\n<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>\n\n'+
+            '<a target="_blank" rel="noopener" href="https://opkode.com">https://opkode.com</a>'
         );
     }));
 

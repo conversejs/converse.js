@@ -163,7 +163,7 @@ describe("A XEP-0316 MEP notification", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1, 1000);
         expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason converse-rich-text').innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
-            'Check out <a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>');
+            'Check out <a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>');
     }));
 
     it("can be retracted by a moderator",

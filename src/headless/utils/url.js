@@ -1,8 +1,16 @@
-import URI from 'urijs';
 import log from '@converse/headless/log';
 import { api, converse } from '@converse/headless/core';
 
 const { u } = converse.env;
+
+export function getURL (url) {
+    try {
+        return url instanceof URL ? url : new URL(url);
+    } catch (error) {
+        log.debug(error);
+        return null;
+    }
+}
 
 /**
  * Given a url, check whether the protocol being used is allowed for rendering
@@ -11,24 +19,15 @@ const { u } = converse.env;
  * @returns { Boolean }
  */
 function isAllowedProtocolForMedia(url) {
-    const uri = getURI(url);
+    const uri = getURL(url);
     const { protocol } = window.location;
     if (['chrome-extension:','file:'].includes(protocol)) {
         return true;
     }
     return (
         protocol === 'http:' ||
-        (protocol === 'https:' && ['https', 'aesgcm'].includes(uri.protocol().toLowerCase()))
+        (protocol === 'https:' && ['https', 'aesgcm'].includes(uri.protocol))
     );
-}
-
-export function getURI (url) {
-    try {
-        return url instanceof URI ? url : new URI(url);
-    } catch (error) {
-        log.debug(error);
-        return null;
-    }
 }
 
 /**
@@ -41,20 +40,18 @@ export function getURI (url) {
  *  checkFileTypes(['.gif'], 'https://conversejs.org/cat.gif?foo=bar');
  */
 function checkFileTypes (types, url) {
-    const uri = getURI(url);
-    if (uri === null) {
-        throw new Error(`checkFileTypes: could not parse url ${url}`);
-    }
-    const filename = uri.filename().toLowerCase();
+    url = getURL(url);
+    if (url === null) return false;
+
+    const filename = url.pathname.split('/').pop().toLowerCase();
     return !!types.filter(ext => filename.endsWith(ext)).length;
 }
 
 export function isDomainWhitelisted (whitelist, url) {
-    const uri = getURI(url);
-    const subdomain = uri.subdomain();
-    const domain = uri.domain();
-    const fulldomain = `${subdomain ? `${subdomain}.` : ''}${domain}`;
-    return whitelist.includes(domain) || whitelist.includes(fulldomain);
+    url = getURL(url);
+    if (url === null) return false;
+
+    return whitelist.includes(url.host) || !!whitelist.find((i) => i.endsWith(url.host));
 }
 
 export function shouldRenderMediaFromURL (url_text, type) {
@@ -72,10 +69,20 @@ export function shouldRenderMediaFromURL (url_text, type) {
 }
 
 export function filterQueryParamsFromURL (url) {
-    const paramsArray = api.settings.get('filter_url_query_params');
-    if (!paramsArray) return url;
-    const parsed_uri = getURI(url);
-    return parsed_uri.removeQuery(paramsArray).toString();
+    let params = api.settings.get('filter_url_query_params');
+
+    if (!params || (!Array.isArray(params) && typeof params !== 'string')) {
+        return url;
+    }
+
+    if (typeof params === 'string') {
+        params = [params];
+    }
+
+    const parsed_uri = getURL(url);
+    params.forEach((p) => parsed_uri.searchParams.delete(p));
+
+    return parsed_uri;
 }
 
 export function isDomainAllowed (url, setting) {
@@ -135,7 +142,7 @@ Object.assign(u, {
     isImageURL,
     isURLWithImageExtension,
     checkFileTypes,
-    getURI,
+    getURL,
     shouldRenderMediaFromURL,
     isAllowedProtocolForMedia,
 });

@@ -13,7 +13,7 @@ import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isError } from '@converse/headless/utils/core.js';
-import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
+import { isAudioURL, isImageURL, isVideoURL, getURL, withinString } from '@converse/headless/utils/url.js';
 import { until } from 'lit/directives/until.js';
 import {
     appendArrayBuffer,
@@ -25,7 +25,7 @@ import {
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
 
-const { Strophe, URI, sizzle, u } = converse.env;
+const { Strophe, sizzle, u } = converse.env;
 
 export function formatFingerprint (fp) {
     fp = fp.replace(/^05/, '');
@@ -165,33 +165,33 @@ async function downloadFile(url) {
     }
 }
 
-async function getAndDecryptFile (uri) {
-    const protocol = (window.location.hostname === 'localhost' && uri.domain() === 'localhost') ? 'http' : 'https';
-    const http_url = uri.toString().replace(/^aesgcm/, protocol);
+async function getAndDecryptFile (url) {
+    const protocol = (window.location.hostname === 'localhost' && url.hostname === 'localhost') ? 'http' : 'https';
+    const http_url = url.toString().replace(/^aesgcm/, protocol);
     const cipher = await downloadFile(http_url);
     if (cipher === null) {
-        log.error(`Could not decrypt a received encrypted file ${uri.toString()} since it could not be downloaded`);
+        log.error(`Could not decrypt a received encrypted file ${url.toString()} since it could not be downloaded`);
         return new Error(__('Error: could not decrypt a received encrypted file, because it could not be downloaded'));
     }
 
-    const hash = uri.hash().slice(1);
+    const hash = url.hash.slice(1);
     const key = hash.substring(hash.length-64);
     const iv = hash.replace(key, '');
     let content;
     try {
         content = await decryptFile(iv, key, cipher);
     } catch (e) {
-        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(`Could not decrypt file ${url.toString()}`);
         log.error(e);
         return null;
     }
-    const [filename, extension] = uri.filename().split('.');
+    const [filename, extension] = url.pathname.split('/').pop().split('.');
     const mimetype = MIMETYPES_MAP[extension];
     try {
         const file = new File([content], filename, { 'type': mimetype });
         return URL.createObjectURL(file);
     } catch (e) {
-        log.error(`Could not decrypt file ${uri.toString()}`);
+        log.error(`Could not decrypt file ${url.toString()}`);
         log.error(e);
         return null;
     }
@@ -223,7 +223,7 @@ function addEncryptedFiles(text, offset, richtext) {
     const objs = [];
     try {
         const parse_options = { 'start': /\b(aesgcm:\/\/)/gi };
-        URI.withinString(
+        withinString(
             text,
             (url, start, end) => {
                 objs.push({ url, start, end });
@@ -236,9 +236,9 @@ function addEncryptedFiles(text, offset, richtext) {
         return;
     }
     objs.forEach(o => {
-        const uri = getURI(text.slice(o.start, o.end));
-        const promise = getAndDecryptFile(uri)
-            .then(obj_url => getTemplateForObjectURL(uri, obj_url, richtext));
+        const url = getURL(text.slice(o.start, o.end));
+        const promise = getAndDecryptFile(url)
+            .then(obj_url => getTemplateForObjectURL(url, obj_url, richtext));
 
         const template = html`${until(promise, '')}`;
         richtext.addTemplateResult(o.start + offset, o.end + offset, template);

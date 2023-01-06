@@ -559,6 +559,7 @@ describe("A Chat Message", function () {
 
         // Test assigning a string to filter_url_query_params
         _converse.api.settings.set('filter_url_query_params', 'utm_medium');
+
         message = 'Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
@@ -628,7 +629,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
         await u.waitUntil(() => {
             const text = view.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!-.*?->/g, '');
-            return text === 'Hey\nHave you heard\n\u200B\nthe news?\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>';
+            return text === 'Hey\nHave you heard\n​\nthe news?\n<a target="_blank" rel="noopener" href="https://conversejs.org">https://conversejs.org</a>'
         });
     }));
 

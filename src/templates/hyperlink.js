@@ -1,4 +1,5 @@
 import { api } from  "@converse/headless/core";
+import { getURL } from '@converse/headless/utils/url.js';
 import { html } from "lit";
 
 function onClickXMPPURI (ev) {
@@ -6,12 +7,10 @@ function onClickXMPPURI (ev) {
     api.rooms.open(ev.target.href);
 }
 
-export default (uri, url_text) => {
-    let href_text = uri.normalizePath().toString();
-    if (!uri._parts.protocol && !url_text.startsWith('http://') && !url_text.startsWith('https://')) {
-        href_text = 'http://' + href_text;
-    }
-    if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
+export default (url_text) => {
+    const href_text = getURL(url_text) ? url_text : 'http://' + url_text;
+    const url = getURL(href_text);
+    if (url.protocol === 'xmpp:' && url.search === '?join') {
         return html`
             <a target="_blank"
                rel="noopener"

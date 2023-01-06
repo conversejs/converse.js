@@ -1,18 +1,13 @@
 import 'shared/components/image.js';
-import { getURI, isGIFURL, isDomainAllowed } from '@converse/headless/utils/url.js';
+import { getURL, isGIFURL, isDomainAllowed } from '@converse/headless/utils/url.js';
 import { html } from 'lit';
 
-function isValidURL (url) {
-    // We don't consider relative URLs as valid
-    return !!getURI(url).host();
-}
-
 function isValidImage (image) {
-    return image && isDomainAllowed(image, 'allowed_image_domains') && isValidURL(image);
+    return image && isDomainAllowed(image, 'allowed_image_domains') && (getURL(image) instanceof URL);
 }
 
 const tpl_url_wrapper = (o, wrapped_template) =>
-    o.url && isValidURL(o.url) && !isGIFURL(o.image)
+    o.url && !isGIFURL(o.image)
         ? html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>`
         : wrapped_template(o);
 
@@ -35,7 +30,7 @@ export default o => {
                           : ''}
                       ${o.url
                           ? html`<p class="card-text">
-                                <a href="${o.url}" target="_blank" rel="noopener">${getURI(o.url).domain()}</a>
+                                <a href="${o.url}" target="_blank" rel="noopener">${getURL(o.url).host}</a>
                             </p>`
                           : ''}
                   </div>`

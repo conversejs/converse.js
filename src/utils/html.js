@@ -19,12 +19,12 @@ import tpl_hyperlink from 'templates/hyperlink.js';
 import tpl_video from 'templates/video.js';
 import u from '../headless/utils/core';
 import { converse } from '@converse/headless/core';
-import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
+import { getURL, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';
 
 const { sizzle } = converse.env;
 
-const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
+const APPROVED_URL_PROTOCOLS = ['http:', 'https:', 'xmpp:', 'mailto:'];
 
 function getAutoCompleteProperty (name, options) {
     return {
@@ -75,12 +75,12 @@ function slideOutWrapup (el) {
 }
 
 export function getFileName (url) {
-    const uri = getURI(url);
+    url = getURL(url);
     try {
-        return decodeURI(uri.filename());
+        return decodeURI(url.pathname.split('/').pop());
     } catch (error) {
         log.debug(error);
-        return uri.filename();
+        return url.pathname.split('/').pop();
     }
 }
 
@@ -91,19 +91,18 @@ export function getFileName (url) {
  * @param { String } url
  * @returns { String }
  */
-export function getOOBURLMarkup (url) {
-    const uri = getURI(url);
-    if (uri === null) {
-        return url;
-    }
-    if (isVideoURL(uri)) {
-        return tpl_video(url);
-    } else if (isAudioURL(uri)) {
-        return tpl_audio(url);
-    } else if (isImageURL(uri)) {
-        return tpl_file(uri.toString(), getFileName(uri));
+export function getOOBURLMarkup (url_str) {
+    const url = getURL(url_str);
+    if (url === null) return url_str;
+
+    if (isVideoURL(url)) {
+        return tpl_video(url_str);
+    } else if (isAudioURL(url)) {
+        return tpl_audio(url_str);
+    } else if (isImageURL(url)) {
+        return tpl_file(url.toString(), getFileName(url));
     } else {
-        return tpl_file(uri.toString(), getFileName(uri));
+        return tpl_file(url.toString(), getFileName(url));
     }
 }
 
@@ -252,22 +251,26 @@ function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOL
 }
 
 // Will return false if URL is malformed or contains disallowed characters
-function isUrlValid (urlString) {
+function isUrlValid (url) {
+    if (url instanceof URL) return true;
+
+    if (url.startsWith('www')) {
+        url = 'http://'+url;
+    }
     try {
-        const url = new URL(urlString);
-        return !!url;
-    } catch (error) {
+        return (new URL(url)) instanceof URL;
+    } catch {
         return false;
     }
 }
 
-export function getHyperlinkTemplate (url) {
-    const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
-    const uri = getURI(url);
-    if (uri !== null && isUrlValid(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
-        return tpl_hyperlink(uri, url);
+export function getHyperlinkTemplate (url_str) {
+    const http_url = RegExp('^w{3}.', 'ig').test(url_str) ? `http://${url_str}` : url_str;
+    const url = getURL(url_str);
+    if (isUrlValid(http_url) && (url === null || isProtocolApproved(url.protocol) || !url.protocol)) {
+        return tpl_hyperlink(url_str);
     }
-    return url;
+    return url_str;
 }
 
 u.slideInAllElements = function (elements, duration = 300) {

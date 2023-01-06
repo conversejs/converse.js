@@ -1,11 +1,8 @@
 import { AsyncDirective } from 'lit/async-directive.js';
-import { converse } from '@converse/headless/core';
 import { directive } from 'lit/directive.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { html } from 'lit';
 import { isURLWithImageExtension } from '@converse/headless/utils/url.js';
-
-const { URI } = converse.env;
 
 
 class ImageDirective extends AsyncDirective {
@@ -32,10 +29,10 @@ class ImageDirective extends AsyncDirective {
             // Before giving up and falling back to just rendering a hyperlink,
             // we attach `.png` and try one more time.
             // This works with some Imgur URLs
-            const uri = new URI(src);
-            const filename = uri.filename();
-            uri.filename(`${filename}.png`);
-            this.setValue(renderImage(uri.toString(), href, onLoad, onClick));
+            const url = new URL(src);
+            const filename = url.pathname.split('/').pop();
+            const new_url = new URL(`./${filename}.png`, src);
+            this.setValue(renderImage(new_url.toString(), href, onLoad, onClick));
         }
     }
 }

@@ -253,7 +253,7 @@ u.stringToElement = function (s) {
  * Checks whether the DOM element matches the given selector.
  * @private
  * @method u#matchesSelector
- * @param { DOMElement } el - The DOM element
+ * @param { Element } el - The DOM element
  * @param { String } selector - The selector
  */
 u.matchesSelector = function (el, selector) {
@@ -272,7 +272,7 @@ u.matchesSelector = function (el, selector) {
  * Returns a list of children of the DOM element that match the selector.
  * @private
  * @method u#queryChildren
- * @param { DOMElement } el - the DOM element
+ * @param { Element } el - the DOM element
  * @param { String } selector - the selector they should be matched against
  */
 u.queryChildren = function (el, selector) {
@@ -392,7 +392,7 @@ u.siblingIndex = function (el) {
  * Returns the current word being written in the input element
  * @method u#getCurrentWord
  * @param {HTMLElement} input - The HTMLElement in which text is being entered
- * @param {integer} [index] - An optional rightmost boundary index. If given, the text
+ * @param {number} [index] - An optional rightmost boundary index. If given, the text
  *  value of the input element will only be considered up until this index.
  * @param {string} [delineator] - An optional string delineator to
  *  differentiate between words.

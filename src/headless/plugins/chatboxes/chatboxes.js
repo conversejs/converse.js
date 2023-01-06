@@ -16,7 +16,7 @@ const ChatBoxes = Collection.extend({
          * @event _converse#chatBoxesFetched
          * @type { object }
          * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
-         * @property { XMLElement } stanza
+         * @property { Element } stanza
          * @example _converse.api.listen.on('chatBoxesFetched', obj => { ... });
          * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
          */

@@ -130,7 +130,7 @@ class RegisterPanel extends ElementView {
      * Handler for {@link _converse.RegisterPanel#getRegistrationFields}
      * @private
      * @method _converse.RegisterPanel#onRegistrationFields
-     * @param { XMLElement } stanza - The query stanza.
+     * @param { Element } stanza - The query stanza.
      */
     onRegistrationFields (stanza) {
         if (stanza.getAttribute("type") === "error") {
@@ -330,7 +330,7 @@ class RegisterPanel extends ElementView {
      * received from the XMPP server.
      * @private
      * @method _converse.RegisterPanel#renderRegistrationForm
-     * @param { XMLElement } stanza - The IQ stanza received from the XMPP server.
+     * @param { Element } stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm (stanza) {
         this.form_fields = this.getFormFields(stanza);
@@ -364,7 +364,7 @@ class RegisterPanel extends ElementView {
      * XMPP server after attempted registration.
      * @private
      * @method _converse.RegisterPanel#reportErrors
-     * @param { XMLElement } stanza - The IQ stanza received from the XMPP server
+     * @param { Element } stanza - The IQ stanza received from the XMPP server
      */
     reportErrors (stanza) {
         const errors = stanza.querySelectorAll('error');
@@ -433,7 +433,7 @@ class RegisterPanel extends ElementView {
     /* Stores the values that will be sent to the XMPP server during attempted registration.
      * @private
      * @method _converse.RegisterPanel#setFields
-     * @param { XMLElement } stanza - the IQ stanza that will be sent to the XMPP server.
+     * @param { Element } stanza - the IQ stanza that will be sent to the XMPP server.
      */
     setFields (stanza) {
         const query = stanza.querySelector('query');
@@ -482,7 +482,7 @@ class RegisterPanel extends ElementView {
      * register a new user.
      * @private
      * @method _converse.RegisterPanel#reportErrors
-     * @param { XMLElement } stanza - The IQ stanza.
+     * @param { Element } stanza - The IQ stanza.
      */
     _onRegisterIQ (stanza) {
         if (stanza.getAttribute("type") === "error") {

@@ -32,7 +32,7 @@ const { Strophe, sizzle } = converse.env;
 /**
  * Parses a passed in message stanza and returns an object of attributes.
  * @method st#parseMessage
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @param { _converse } _converse
  * @returns { (MessageAttributes|Error) }
  */

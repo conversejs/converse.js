@@ -205,6 +205,7 @@ cdn:: node_modules
 
 .PHONY: declarations
 declarations:: node_modules
+	npx tsc src/headless/headless.js --declaration --emitDeclarationOnly --allowJs
 	npx tsc src/converse.js --declaration --emitDeclarationOnly --allowJs
 
 ########################################################################

@@ -1,0 +1,11 @@
+export function getAppSettings(): any;
+export function initAppSettings(settings: any): void;
+export function getInitSettings(): {};
+export function getAppSetting(key: any): any;
+export function extendAppSettings(settings: any): void;
+export function registerListener(name: any, func: any, context: any): void;
+export function unregisterListener(name: any, func: any): void;
+export function updateAppSettings(key: any, val: any): any;
+export function getUserSettings(): Promise<any>;
+export function updateUserSettings(data: any, options: any): Promise<any>;
+export function clearUserSettings(): Promise<any>;

@@ -48,7 +48,7 @@ export const Presence = Model.extend({
      * from the passed in presence stanza.
      * Also updates the presence if the resource has higher priority (and is newer).
      * @private
-     * @param { XMLElement } presence: The presence stanza
+     * @param { Element } presence: The presence stanza
      */
     addResource (presence) {
         const jid = presence.getAttribute('from'),

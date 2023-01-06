@@ -1,5 +1,5 @@
 export function isMessageToHiddenChat(attrs: any): any;
-export function areDesktopNotificationsEnabled(): any;
+export function areDesktopNotificationsEnabled(): boolean;
 export function clearFavicon(): void;
 export function updateUnreadFavicon(): void;
 /**

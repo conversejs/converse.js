@@ -410,7 +410,7 @@ export const api = _converse.api = {
     /**
      * Allows you to send XML stanzas.
      * @method _converse.api.send
-     * @param {XMLElement} stanza
+     * @param {Element} stanza
      * @return {void}
      * @example
      * const msg = converse.env.$msg({
@@ -443,8 +443,8 @@ export const api = _converse.api = {
     /**
      * Send an IQ stanza
      * @method _converse.api.sendIQ
-     * @param {XMLElement} stanza
-     * @param {Integer} [timeout=_converse.STANZA_TIMEOUT]
+     * @param {Element} stanza
+     * @param {number} [timeout=_converse.STANZA_TIMEOUT]
      * @param {Boolean} [reject=true] - Whether an error IQ should cause the promise
      *  to be rejected. If `false`, the promise will resolve instead of being rejected.
      * @returns {Promise} A promise which resolves (or potentially rejected) once we
@@ -497,9 +497,6 @@ _converse.ConnectionFeedback = Model.extend({
 });
 
 
-export const converse = window.converse || {};
-
-
 /**
  * ### The Public API
  *
@@ -513,7 +510,7 @@ export const converse = window.converse || {};
  * @global
  * @namespace converse
  */
-Object.assign(converse, {
+export const converse = Object.assign(window.converse || {}, {
 
     CHAT_STATES,
 

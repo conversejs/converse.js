@@ -8,11 +8,11 @@ export function handleEncryptedFiles(richtext: any): void;
  * Hook handler for { @link parseMessage } and { @link parseMUCMessage }, which
  * parses the passed in `message` stanza for OMEMO attributes and then sets
  * them on the attrs object.
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @param { (MUCMessageAttributes|MessageAttributes) } attrs
  * @returns (MUCMessageAttributes|MessageAttributes)
  */
-export function parseEncryptedMessage(stanza: XMLElement, attrs: (MUCMessageAttributes | MessageAttributes)): Promise<any>;
+export function parseEncryptedMessage(stanza: Element, attrs: (MUCMessageAttributes | MessageAttributes)): Promise<any>;
 export function onChatBoxesInitialized(): void;
 export function onChatInitialized(el: any): void;
 export function getSessionCipher(jid: any, id: any): any;

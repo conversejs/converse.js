@@ -433,8 +433,8 @@ u.fadeIn = function (el, callback) {
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
  * @method u#xForm2TemplateResult
- * @param { XMLElement } field - the field to convert
- * @param { XMLElement } stanza - the containing stanza
+ * @param { Element } field - the field to convert
+ * @param { Element } stanza - the containing stanza
  * @param { Object } options
  * @returns { TemplateResult }
  */

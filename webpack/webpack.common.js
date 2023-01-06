@@ -107,9 +107,6 @@ module.exports = {
             path.resolve(__dirname, "../src")
         ],
         alias: {
-            "IPv6":                     path.resolve(__dirname, "../node_modules/urijs/src/IPv6"),
-            "SecondLevelDomains":       path.resolve(__dirname, "../node_modules/urijs/src/SecondLevelDomains"),
-            "punycode":                 path.resolve(__dirname, "../node_modules/urijs/src/punycode"),
             "./shims":                  path.resolve(__dirname, "../src/strophe-shims.js"),
         }
     }

@@ -2,7 +2,6 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import URI from 'urijs';
 import _converse from './shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import connection_api from './shared/connection/api.js';
@@ -667,7 +666,6 @@ export const converse = Object.assign(window.converse || {}, {
         Model,
         Promise,
         Strophe,
-        URI,
         dayjs,
         html,
         log,

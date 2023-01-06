@@ -2,10 +2,13 @@
   "name": "@converse/headless",
   "version": "10.0.0",
   "description": "Converse.js Headless build",
-  "author": "cmrd Senya <senya@riseup.net>",
+  "author": {
+    "name": "JC Brand",
+    "email": "jc@opkode.com"
+  },
   "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
-  "main": "dist/converse-headless.min.js",
+  "main": "dist/converse-headless.js",
   "module": "headless.js",
   "keywords": [
     "converse.js",

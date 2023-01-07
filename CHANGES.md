@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.1 (Unreleased)
+
+- Bugfix. Uyghur translations weren't loading
+
 ## 10.1.0 (2023-01-07)
 
 - #326: Add the ability to reset your password

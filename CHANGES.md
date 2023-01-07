@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 10.1.0 (2023-01-07)
 
 - #326: Add the ability to reset your password
 - #2759: Don't automatically log in again if the user manually logged out
@@ -8,6 +8,7 @@
 - #2925: File upload is not always enabled
 - #3001: Add option to save SCRAM details and to use them to stay logged in upon reload
 - Add a "Add to Contacts" button in MUC occupant modals
+- Updated tranlsations and new language Uyghur
 
 - New config option [save_scram_keys](https://conversejs.org/docs/html/configuration.html#save-scram-keys)
 

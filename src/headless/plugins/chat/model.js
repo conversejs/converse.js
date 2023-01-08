@@ -1099,7 +1099,10 @@ const ChatBox = ModelWithContact.extend({
                 // when the user writes a message as opposed to when a
                 // message is received.
                 this.ui.set('scrolled', false);
-            } else if (this.isHidden()) {
+            } else if ( this.isHidden() ||
+                        ( _converse.pluggable.plugins['converse.blocking'] &&
+                          api.blockedUsers()?.has(message?.get('from_real_jid'))
+                        ) {
                 this.incrementUnreadMsgsCounter(message);
             } else {
                 this.sendMarkerForMessage(message);

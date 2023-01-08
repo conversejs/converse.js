@@ -67,6 +67,13 @@ export async function shouldNotifyOfGroupMessage (attrs) {
     let is_mentioned = false;
     const nick = room.get('nick');
 
+    if { _converse.pluggable.plugins['converse-blocking']?.enabled(_converse) } {
+        // Don't show notifications for blocked users
+        if (real_jid && api.blockedUsers()?.has(real_jid)) {
+                return false;
+        }
+    }
+
     if (api.settings.get('notify_nicknames_without_references')) {
         is_mentioned = new RegExp(`\\b${nick}\\b`).test(attrs.body);
     }

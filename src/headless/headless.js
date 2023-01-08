@@ -18,6 +18,7 @@ import "./plugins/roster/index.js";     // RFC-6121 Contacts Roster
 import "./plugins/smacks/index.js";     // XEP-0198 Stream Management
 import "./plugins/status/index.js";
 import "./plugins/vcard/index.js";      // XEP-0054 VCard-temp
+import "./plugins/blocking/index.js";   // XEP-0191 Blocking Command
 /* END: Removable components */
 
 import { converse } from "./core.js";

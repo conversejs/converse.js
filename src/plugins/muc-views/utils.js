@@ -315,6 +315,12 @@ export function parseMessageForMUCCommands (data, handled) {
     } else if (command === 'voice' && allowed_commands.includes(command)) {
         setRole(model, command, args, [], ['moderator']);
         return true;
+    } else if ((command === 'ignore' || command === 'block') && allowed_commands.includes('block')) {
+        api.blockUser(args);
+        return true;
+    } else if ((command === 'unignore' || command === 'block') && allowed_commands.includes('unblock')) {
+        api.unblockUser(args);
+        return true;
     } else {
         return false;
     }

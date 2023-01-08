@@ -35,7 +35,8 @@ export const CORE_PLUGINS = [
     'converse-roster',
     'converse-smacks',
     'converse-status',
-    'converse-vcard'
+    'converse-vcard',
+    'converse-blocking'
 ];
 
 export const URL_PARSE_OPTIONS = { 'start': /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };

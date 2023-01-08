@@ -1324,6 +1324,12 @@ const ChatRoomMixin = {
 
     getAllowedCommands () {
         let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
+        // Only allow blocking commands when server supports it and we also support it
+        if ( _converse.disco_entities.get(_converse.domain, true)?.features?.findWhere({'var': Strophe.NS.BLOCKING}) &&
+             ( _converse.pluggable.plugins['converse-blocking']?.enabled(_converse) )
+           ) {
+            allowed_commands = [...allowed_commands, ...['block', 'unblock']];
+        }
         if (this.config.get('changesubject') || ['owner', 'admin'].includes(this.getOwnAffiliation())) {
             allowed_commands = [...allowed_commands, ...['subject', 'topic']];
         }

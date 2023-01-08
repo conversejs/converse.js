@@ -2,33 +2,29 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import './fingerprints.js';
-import './profile.js';
-import 'shared/modals/user-details.js';
 import ConverseMixins from './mixins/converse.js';
+import omemo_api from './api.js';
 import Device from './device.js';
 import DeviceList from './devicelist.js';
 import DeviceLists from './devicelists.js';
 import Devices from './devices.js';
 import OMEMOStore from './store.js';
-import log from '@converse/headless/log';
-import omemo_api from './api.js';
 import { _converse, api, converse } from '@converse/headless/core';
+
 import {
     createOMEMOMessageStanza,
     encryptFile,
-    getOMEMOToolbarButton,
     getOutgoingMessageAttributes,
     handleEncryptedFiles,
     handleMessageSendError,
     initOMEMO,
     omemo,
     onChatBoxesInitialized,
-    onChatInitialized,
+    onChatBoxInitialized,
     parseEncryptedMessage,
-    registerPEPPushHandler,
+    registerPEPPushHandler
     setEncryptedFileURL,
-} from './utils.js';
+} from './utils.js'
 
 const { Strophe } = converse.env;
 
@@ -42,18 +38,18 @@ Strophe.addNamespace('OMEMO_BUNDLES', Strophe.NS.OMEMO + '.bundles');
 
 converse.plugins.add('converse-omemo', {
     enabled (_converse) {
-        return (
-            window.libsignal &&
-            _converse.config.get('trusted') &&
-            !api.settings.get('clear_cache_on_logout') &&
-            !_converse.api.settings.get('blacklisted_plugins').includes('converse-omemo')
-        );
+      return (
+          window.libsignal &&
+          _converse.config.get('trusted') &&
+          !api.settings.get('clear_cache_on_logout') &&
+          !_converse.api.settings.get('blacklisted-plugins').includes('converse-omemo-views')
+      );
     },
 
-    dependencies: ['converse-chatview', 'converse-pubsub', 'converse-profile'],
+    dependencies: ['converse-chat', 'converse-pubsub'],
 
-    initialize () {
-        api.settings.extend({ 'omemo_default': false });
+    initialize() {
+        api.settings.extend({ 'omemo-default': false });
         api.promises.add(['OMEMOInitialized']);
 
         _converse.NUM_PREKEYS = 100; // Set here so that tests can override
@@ -69,6 +65,8 @@ converse.plugins.add('converse-omemo', {
 
         /******************** Event Handlers ********************/
         api.waitUntil('chatBoxesInitialized').then(onChatBoxesInitialized);
+
+        api.listen.on('chatBoxInitialized', onChatBoxInitialized);
 
         api.listen.on('getOutgoingMessageAttributes', getOutgoingMessageAttributes);
 
@@ -87,25 +85,10 @@ converse.plugins.add('converse-omemo', {
         api.listen.on('parseMessage', parseEncryptedMessage);
         api.listen.on('parseMUCMessage', parseEncryptedMessage);
 
-        api.listen.on('chatBoxViewInitialized', onChatInitialized);
-        api.listen.on('chatRoomViewInitialized', onChatInitialized);
-
         api.listen.on('connected', registerPEPPushHandler);
-        api.listen.on('getToolbarButtons', getOMEMOToolbarButton);
 
         api.listen.on('statusInitialized', initOMEMO);
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
-
-        api.listen.on('afterMessageBodyTransformed', handleEncryptedFiles);
-
-        api.listen.on('userDetailsModalInitialized', contact => {
-            const jid = contact.get('jid');
-            _converse.generateFingerprints(jid).catch(e => log.error(e));
-        });
-
-        api.listen.on('profileModalInitialized', () => {
-            _converse.generateFingerprints(_converse.bare_jid).catch(e => log.error(e));
-        });
 
         api.listen.on('clearSession', () => {
             delete _converse.omemo_store

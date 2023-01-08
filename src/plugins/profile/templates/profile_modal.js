@@ -51,7 +51,7 @@ export default (el) => {
         </li>`
     );
 
-    if (_converse.pluggable.plugins['converse-omemo']?.enabled(_converse)) {
+    if (_converse.pluggable.plugins['converse-omemo-views']?.enabled(_converse)) {
         navigation_tabs.push(
             html`<li role="presentation" class="nav-item">
                 <a class="nav-link ${el.tab === "omemo" ? "active" : ""}"
@@ -114,7 +114,7 @@ export default (el) => {
                 ${ el.tab === 'passwordreset' ? html`<converse-change-password-form></converse-change-password-form>` : '' }
             </div>
 
-            ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? tpl_omemo_page(el) : '' }
+            ${ _converse.pluggable.plugins['converse-omemo-views']?.enabled(_converse) ? tpl_omemo_page(el) : '' }
         </div>
     </div>`;
 }

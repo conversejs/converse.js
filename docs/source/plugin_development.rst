@@ -33,7 +33,7 @@ modular and self-contained way, without having to change other files.
 
 This ensures that plugins are fully optional (one of the design goals of
 Converse) and can be removed from the main build without breaking the app.
-For example, the ``converse-omemo``,
+For example, the ``converse-omemo-views``,
 ``converse-rosterview``, ``converse-dragresize``, ``converse-minimize``,
 ``converse-muc`` and ``converse-muc-views`` plugins can all be removed from the
 build without breaking the app.

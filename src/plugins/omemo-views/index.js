@@ -16,19 +16,26 @@ import omemo_api from './api.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import {
     createOMEMOMessageStanza,
-    encryptFile,
     getOMEMOToolbarButton,
+    onChatInitialized,
+} from './utils.js';
+
+// Temporary: to be removed to headless if possible!
+import {
+    // createOMEMOMessageStanza,
+    encryptFile,
+    // getOMEMOToolbarButton,
     getOutgoingMessageAttributes,
     handleEncryptedFiles,
     handleMessageSendError,
     initOMEMO,
     omemo,
-    onChatBoxesInitialized,
-    onChatInitialized,
+    /onChatBoxesInitialized,
+    // onChatInitialized,
     parseEncryptedMessage,
     registerPEPPushHandler,
     setEncryptedFileURL,
-} from './utils.js';
+} from '@converse/headless/plugins/omemo/utils.js'
 
 const { Strophe } = converse.env;
 
@@ -40,13 +47,13 @@ Strophe.addNamespace('OMEMO_WHITELISTED', Strophe.NS.OMEMO + '.whitelisted');
 Strophe.addNamespace('OMEMO_BUNDLES', Strophe.NS.OMEMO + '.bundles');
 
 
-converse.plugins.add('converse-omemo', {
+converse.plugins.add('converse-omemo-views', {
     enabled (_converse) {
         return (
             window.libsignal &&
             _converse.config.get('trusted') &&
             !api.settings.get('clear_cache_on_logout') &&
-            !_converse.api.settings.get('blacklisted_plugins').includes('converse-omemo')
+            !_converse.api.settings.get('blacklisted_plugins').includes('converse-omemo-views')
         );
     },
 

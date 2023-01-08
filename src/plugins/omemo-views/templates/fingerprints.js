@@ -1,6 +1,6 @@
 import { __ } from 'i18n';
 import { html } from 'lit';
-import { formatFingerprint } from '../utils.js';
+import { formatFingerprint } from '@converse/headless/plugins/omemo/utils.js';
 
 const device_fingerprint = (el, device) => {
     const i18n_trusted = __('Trusted');

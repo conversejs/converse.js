@@ -4,6 +4,12 @@ import { _converse } from  "@converse/headless/core";
 import { html } from "lit";
 
 
+const tplBlockUsersPage = (el) => html`
+    <div class="tab-pane ${ el.tab === 'blockedusers' ? 'active' : ''}" id="blockedusers-tabpanel" role="tabpanel" aria-labelledby="blockedusers-tab">
+        <converse-blockedusers-profile></converse-blockedusers-profile>
+    </div>`;
+
+
 const tplOmemoPage = (el) => html`
     <div class="tab-pane ${ el.tab === 'omemo' ? 'active' : ''}" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
         ${ el.tab === 'omemo' ? html`<converse-omemo-profile></converse-omemo-profile>` : '' }
@@ -50,6 +56,19 @@ export default (el) => {
                 data-toggle="tab">${ ii18n_reset_password }</a>
         </li>`
     );
+
+    if (_converse.pluggable.plugins['converse-blocking']?.enabled(_converse)) {
+        navigation_tabs.push(html`<li role="presentation" class="nav-item">
+        <a class="nav-link ${el.tab === "blockedusers" ? "active" : ""}"
+               id="blockedusers-tab"
+               href="#blockedusers-tabpanel"
+               aria-controls="blockedusers-tabpanel" role="tab"
+               @click=${ev => el.switchTab(ev)}
+               data-name="blockedusers"
+               data-toggle="tab">Blocked Users</a>
+            </li>`
+        );
+    }
 
     if (_converse.pluggable.plugins['converse-omemo']?.enabled(_converse)) {
         navigation_tabs.push(
@@ -114,6 +133,7 @@ export default (el) => {
                 ${ el.tab === 'passwordreset' ? html`<converse-change-password-form></converse-change-password-form>` : '' }
             </div>
 
+            ${ _converse.pluggable.plugins['converse-blocking']?.enabled(_converse) ? tplBlockUsersPage(el) : '' }
             ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? tplOmemoPage(el) : '' }
         </div>
     </div>`;

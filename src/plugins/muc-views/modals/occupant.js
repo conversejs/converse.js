@@ -1,10 +1,11 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplOccupantModal from "./templates/occupant.js";
+import tplOccupantModalFooter from "./templates/occupant_modal_footer.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
+import { ancestor } from 'utils/html.js';
 
-const { u } = converse.env;
 
 export default class OccupantModal extends BaseModal {
 
@@ -18,6 +19,9 @@ export default class OccupantModal extends BaseModal {
         super.initialize()
         const model = this.model ?? this.message;
         this.listenTo(model, 'change', () => this.render());
+        if ( _converse.pluggable.plugins['converse-blocking']?.enabled(_converse) ) {
+                this.listenTo(_converse.blocked, 'change', this.render);
+        }
         /**
          * Triggered once the OccupantModal has been initialized
          * @event _converse#occupantModalInitialized
@@ -37,7 +41,15 @@ export default class OccupantModal extends BaseModal {
     }
 
     renderModal () {
+        const model = this.model ?? this.message;
+        if (model?.collection?.chatroom) {
+            this.listenToOnce(model.collection.chatroom, 'change', () => this.render());
+        }
         return tplOccupantModal(this);
+    }
+
+    renderModalFooter () {
+        return tplOccupantModalFooter(this);
     }
 
     getModalTitle () {
@@ -52,7 +64,7 @@ export default class OccupantModal extends BaseModal {
     }
 
     toggleForm (ev) {
-        const toggle = u.ancestor(ev.target, '.toggle-form');
+        const toggle = ancestor(ev.target, '.toggle-form');
         const form = toggle.getAttribute('data-form');
 
         if (form === 'row-form') {

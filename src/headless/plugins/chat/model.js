@@ -1090,9 +1090,10 @@ const ChatBox = ModelWithContact.extend({
      * @param {_converse.Message} message
      */
     handleUnreadMessage (message) {
-        if (!message?.get('body')) {
-            return
-        }
+        if (!message?.get('body')) return
+
+        const { pluggable } = _converse;
+
         if (u.isNewMessage(message)) {
             if (message.get('sender') === 'me') {
                 // We remove the "scrolled" flag so that the chat area
@@ -1100,7 +1101,12 @@ const ChatBox = ModelWithContact.extend({
                 // when the user writes a message as opposed to when a
                 // message is received.
                 this.ui.set('scrolled', false);
-            } else if (this.isHidden()) {
+            } else if (
+                this.isHidden() || (
+                    pluggable.plugins['converse-blocking'] &&
+                    api.blockedUsers()?.has(message?.get('from_real_jid'))
+                )
+            ) {
                 this.incrementUnreadMsgsCounter(message);
             } else {
                 this.sendMarkerForMessage(message);

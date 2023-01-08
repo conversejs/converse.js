@@ -118,6 +118,11 @@ export default class Message extends CustomElement {
     }
 
     renderChatMessage () {
+        if ( _converse.pluggable.plugins['converse-blocking']?.enabled(_converse) &&
+             api.blockedUsers()?.has(this.getProps()?.properties?.jid)
+           ) {
+            return;
+        }
         return tplMessage(this, this.getProps());
     }
 

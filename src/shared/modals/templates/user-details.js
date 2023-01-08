@@ -4,6 +4,17 @@ import { api } from "@converse/headless/core";
 import { html } from 'lit';
 import { modal_close_button } from "plugins/modal/templates/buttons.js";
 
+
+const block_button = (o) => {
+    const i18n_block = __("Unblock");
+    return html`<button @click=${() => api.blockUser([o.jid])}>${i18n_block}</button>`;
+}
+
+const unblock_button = (o) => {
+    const i18n_unblock = __("Unblock");
+    return html`<button @click=${() => api.unblockUser([o.jid])}>${i18n_unblock}</button>`;
+}
+
 const remove_button = (el) => {
     const i18n_remove_contact = __('Remove as contact');
     return html`
@@ -19,6 +30,10 @@ const remove_button = (el) => {
 }
 
 export const tplFooter = (el) => {
+    const vcard = el.model?.vcard;
+    const vcard_json = vcard ? vcard.toJSON() : {};
+    const o = { ...el.model.toJSON(), ...vcard_json };
+
     const is_roster_contact = el.model.contact !== undefined;
     const i18n_refresh = __('Refresh');
     const allow_contact_removal = api.settings.get('allow_contact_removal');
@@ -33,6 +48,7 @@ export const tplFooter = (el) => {
                 ></converse-icon>
                 ${i18n_refresh}</button>
             ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }
+            ${ api.blockedUsers ? ((api.blockedUsers()?.has(o.jid)) ? unblock_button(o) : block_button(o)) : '' }
         </div>
     `;
 }

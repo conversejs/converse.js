@@ -2340,10 +2340,10 @@ msgstr "Neues Passwort bestätigen"
 msgid "Timeout error"
 msgstr "Zeitüberschreitungsfehler"
 
-#: dist/converse-no-dependencies.js:113107
 #: dist/converse-no-dependencies.js:113131
 msgid "Your server does not support in-band password reset"
 msgstr ""
+"Ihr Server unterstützt nicht das integrierte Zurücksetzen des Passworts"
 
 #: dist/converse-no-dependencies.js:113138
 msgid "Your server responded with an unknown error"
@@ -2353,10 +2353,9 @@ msgstr "Ihr Server hat mit einem unbekannten Fehler geantwortet"
 msgid "Timeout error while trying to set your password"
 msgstr "Zeitüberschreitungsfehler beim Versuch, Ihr Passwort festzulegen"
 
-#: dist/converse-no-dependencies.js:113133
 #: dist/converse-no-dependencies.js:113157
 msgid "Your server does not allow in-band password reset"
-msgstr ""
+msgstr "Ihr Server erlaubt nicht das integrierte Zurücksetzen des Passworts"
 
 #: dist/converse-no-dependencies.js:113159
 #: dist/converse-no-dependencies.js:113161
@@ -2757,8 +2756,8 @@ msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
-"Leider unterstützt der angegebene Anbieter die keine Benutzerregistrierung. "
-"Bitte versuche es bei einem anderen Anbieter."
+"Leider unterstützt der angegebene Anbieter die keine integrierte "
+"Benutzerregistrierung. Bitte versuchen Sie es mit einem anderen Anbieter."
 
 #: dist/converse-no-dependencies.js:122155
 #: dist/converse-no-dependencies.js:122179

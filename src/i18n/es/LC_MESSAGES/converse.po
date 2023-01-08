@@ -2315,37 +2315,29 @@ msgstr "OMEMO"
 msgid "Profile"
 msgstr "Perfil"
 
-#: dist/converse-no-dependencies.js:112539
 #: dist/converse-no-dependencies.js:112563
-#, fuzzy
 msgid "Reset Password"
-msgstr "Reiniciar contraseña"
+msgstr "Restablecer la contraseña"
 
-#: dist/converse-no-dependencies.js:112577
 #: dist/converse-no-dependencies.js:112601
 msgid "The new passwords must match"
-msgstr ""
+msgstr "Las contraseñas deben coincidir"
 
 #: dist/converse-no-dependencies.js:112602
 msgid "New password"
 msgstr "Nueva contraseña"
 
-#: dist/converse-no-dependencies.js:112579
 #: dist/converse-no-dependencies.js:112603
-#, fuzzy
 msgid "Confirm new password"
-msgstr "Confirme la nueva contraseña"
+msgstr "Confirmar la nueva contraseña"
 
-#: dist/converse-no-dependencies.js:113100
 #: dist/converse-no-dependencies.js:113124
-#, fuzzy
 msgid "Timeout error"
-msgstr "Error de tiempo de espera"
+msgstr "Error en el tiempo de espera"
 
-#: dist/converse-no-dependencies.js:113107
 #: dist/converse-no-dependencies.js:113131
 msgid "Your server does not support in-band password reset"
-msgstr ""
+msgstr "Su servidor no admite cambiar la contraseña desde aquí"
 
 #: dist/converse-no-dependencies.js:113138
 msgid "Your server responded with an unknown error"
@@ -2355,26 +2347,22 @@ msgstr "Su servidor respondió con un error desconocido"
 msgid "Timeout error while trying to set your password"
 msgstr "Error de tiempo de espera al intentar establecer la contraseña"
 
-#: dist/converse-no-dependencies.js:113133
 #: dist/converse-no-dependencies.js:113157
 msgid "Your server does not allow in-band password reset"
-msgstr ""
+msgstr "Su servidor no permite cambiar la contraseña del cliente"
 
 #: dist/converse-no-dependencies.js:113159
 #: dist/converse-no-dependencies.js:113161
 msgid "You are not allowed to change your password"
 msgstr "No está autorizado para cambiar su contraseña"
 
-#: dist/converse-no-dependencies.js:113139
 #: dist/converse-no-dependencies.js:113163
 msgid "Successful"
-msgstr ""
+msgstr "Exitoso"
 
-#: dist/converse-no-dependencies.js:113139
 #: dist/converse-no-dependencies.js:113163
-#, fuzzy
 msgid "Your new password has been set"
-msgstr "Se ha creado una nueva conversación en grupo"
+msgstr "Se ha establecido una nueva contraseña"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:113684

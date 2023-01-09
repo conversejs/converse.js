@@ -2219,11 +2219,9 @@ msgstr "OMEMO"
 msgid "Profile"
 msgstr "个人数据"
 
-#: dist/converse-no-dependencies.js:112539
 #: dist/converse-no-dependencies.js:112563
-#, fuzzy
 msgid "Reset Password"
-msgstr "密码"
+msgstr "重设密码"
 
 #: dist/converse-no-dependencies.js:112601
 msgid "The new passwords must match"

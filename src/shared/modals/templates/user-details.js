@@ -8,14 +8,14 @@ import { modal_close_button } from "plugins/modal/templates/buttons.js";
 const block_button = (o) => {
     const block_contact = "Block Contact";
     return html`
-        <button @click=${(ev) => api.blockUser([o.jid])}>Block</button>
+        <button @click=${(ev) => api.blockUser([o.jid])}>${block_contact}</button>
     `;
 }
 
 const unblock_button = (o) => {
-    const block_contact = "Block Contact";
+    const unblock_contact = "Unblock Contact";
     return html`
-        <button @click=${(ev) => api.unblockUser([o.jid])}>Unblock</button>
+        <button @click=${(ev) => api.unblockUser([o.jid])}>${unblock_contact}</button>
     `;
 }
 

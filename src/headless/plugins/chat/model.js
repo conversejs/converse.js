@@ -1102,7 +1102,8 @@ const ChatBox = ModelWithContact.extend({
             } else if ( this.isHidden() ||
                         ( _converse.pluggable.plugins['converse.blocking'] &&
                           api.blockedUsers()?.has(message?.get('from_real_jid'))
-                        ) {
+                        )
+                      ) {
                 this.incrementUnreadMsgsCounter(message);
             } else {
                 this.sendMarkerForMessage(message);

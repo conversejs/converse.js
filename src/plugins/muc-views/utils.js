@@ -133,7 +133,7 @@ export async function getAutoCompleteList () {
     return jids;
 }
 
-function setRole (muc, command, args, required_affiliations = [], required_roles = []) {
+export function setRole (muc, command, args, required_affiliations = [], required_roles = []) {
     const role = COMMAND_TO_ROLE[command];
     if (!role) {
         throw Error(`ChatRoomView#setRole called with invalid command: ${command}`);
@@ -156,7 +156,7 @@ function setRole (muc, command, args, required_affiliations = [], required_roles
 }
 
 
-function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
+export function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
     const affiliation = COMMAND_TO_AFFILIATION[command];
     if (!affiliation) {
         throw Error(`verifyAffiliations called with invalid command: ${command}`);

@@ -4,7 +4,7 @@ import { html } from "lit";
 import { until } from 'lit/directives/until.js';
 import { setRole, verifyAndSetAffiliation } from "../../utils.js"
 import { showOccupantModal } from '../../utils.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
 
 export const tpl_footer = (el) => {
     const model = el.model ?? el.message;
@@ -18,7 +18,6 @@ export const tpl_footer = (el) => {
     const role = model.get('role') ?? 'none';
     const affiliation = model.get('affiliation');
 
-    const ownRole = muc.getOwnRole();
     const ownAffiliation = muc.getOwnAffiliation();
 
     let handleBlock = (ev) => {
@@ -80,7 +79,8 @@ export const tpl_footer = (el) => {
     const adminButton = html`<button class='btn btn-primary' @click=${handleAdmin}>Make Admin</button>`
     const ownerButton = html`<button class='btn btn-primary' @click=${handleOwner}>Make Owner</button>`
 
-    // The following table stores a map from Affiliation x Role -> Button
+    // The following table stores a map from
+    // OwnAffiliation x { Target User's Role x Target User's Affiliation } -> Button
     // Mapping to a button rather than a boolean provides us with a bit more
     // flexibility in how we determine the names for certain actions. See
     // the "Add to Chat" button vs the "Unban" button. They both represent

@@ -202,5 +202,4 @@ Storing the SASL SCRAM-SHA1 hash in IndexedDB
 Another suggestion that's been suggested is to store the SCRAM-SHA1 computed
 ``clientKey`` in localStorage and to use that upon page reload to log the user in again.
 
-We might implement this feature in core Converse.js eventually.
-As always, contributions welcome!
+This has been implemented since version 10, see documentation on `reuse_scram_keys <https://conversejs.org/docs/html/configuration.html#reuse-scram-keys>`_

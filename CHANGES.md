@@ -14,7 +14,7 @@
 - Add a "Add to Contacts" button in MUC occupant modals
 - Updated tranlsations and new language Uyghur
 
-- New config option [save_scram_keys](https://conversejs.org/docs/html/configuration.html#save-scram-keys)
+- New config option [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys)
 
 ## 10.0.0 (2022-10-30)
 

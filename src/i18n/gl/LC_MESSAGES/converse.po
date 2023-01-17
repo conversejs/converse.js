@@ -1635,12 +1635,12 @@ msgstr "Admin"
 #: dist/converse-no-dependencies.js:104691
 #: dist/converse-no-dependencies.js:104715
 msgid "Member"
-msgstr "Membro"
+msgstr "Participante"
 
 #: dist/converse-no-dependencies.js:104692
 #: dist/converse-no-dependencies.js:104716
 msgid "Moderator"
-msgstr "Moderador"
+msgstr "Moderadora"
 
 #: dist/converse-no-dependencies.js:104693
 #: dist/converse-no-dependencies.js:104717

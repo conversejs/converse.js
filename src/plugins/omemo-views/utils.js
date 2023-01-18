@@ -77,7 +77,6 @@ export function onChatInitialized (el) {
     });
 }
 
-// TODO: move non-UI part of this into headless
 function toggleOMEMO (ev) {
     ev.stopPropagation();
     ev.preventDefault();
@@ -104,7 +103,6 @@ function toggleOMEMO (ev) {
     toolbar_el.model.save({ 'omemo_active': !toolbar_el.model.get('omemo_active') });
 }
 
-// TODO: move non-UI part of this into headless (but is there any?)
 export function getOMEMOToolbarButton (toolbar_el, buttons) {
     const model = toolbar_el.model;
     const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;

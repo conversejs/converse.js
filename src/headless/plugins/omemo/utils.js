@@ -665,11 +665,6 @@ async function checkOMEMOSupported (chatbox) {
     }
 }
 
-// TODO: add headless version of toggleOMEMO function here
-
-// TODO: add headless version of getOMEMOToolbarButton (if any)
-
-
 async function getBundlesAndBuildSessions (chatbox) {
     const no_devices_err = __('Sorry, no devices found to which we can send an OMEMO encrypted message.');
     let devices;

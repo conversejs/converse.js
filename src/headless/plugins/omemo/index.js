@@ -87,8 +87,6 @@ converse.plugins.add('converse-omemo', {
         api.listen.on('statusInitialized', initOMEMO);
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
 
-        api.listen.on('afterMessageBodyTransformed', handleEncryptedFiles);
-
         api.listen.on('clearSession', () => {
             delete _converse.omemo_store
             if (_converse.shouldClearCache() && _converse.devicelists) {

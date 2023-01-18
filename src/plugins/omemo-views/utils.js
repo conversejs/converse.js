@@ -11,6 +11,7 @@ import { _converse, converse, api } from '@converse/headless/core';
 import { html } from 'lit';
 import { isError } from '@converse/headless/utils/core.js';
 import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
+import { processEncryptedFiles } from '@converse/headless/plugins/omemo/utils.js'
 import { until } from 'lit/directives/until.js';
 
 const { Strophe, URI, sizzle, u } = converse.env;
@@ -37,31 +38,22 @@ function getTemplateForObjectURL (uri, obj_url, richtext) {
 
 }
 
-// TODO: move the non-template part to headless
 function addEncryptedFiles(text, offset, richtext) {
-    const objs = [];
-    try {
-        const parse_options = { 'start': /\b(aesgcm:\/\/)/gi };
-        URI.withinString(
-            text,
-            (url, start, end) => {
-                objs.push({ url, start, end });
-                return url;
-            },
-            parse_options
-        );
-    } catch (error) {
-        log.debug(error);
-        return;
-    }
-    objs.forEach(o => {
-        const uri = getURI(text.slice(o.start, o.end));
-        const promise = getAndDecryptFile(uri)
-            .then(obj_url => getTemplateForObjectURL(uri, obj_url, richtext));
+    const objs = processEncryptedFiles(text);
 
-        const template = html`${until(promise, '')}`;
+    objs.forEach(o => {
+        o.obj_url.then(obj_url => getTemplateForObjectURL(o.uri, obj_url, richtext));
+
+        const template = html`${until(o.obj_url, '')}`;
         richtext.addTemplateResult(o.start + offset, o.end + offset, template);
     });
+}
+
+export function handleEncryptedFiles (richtext) {
+    if (!_converse.config.get('trusted')) {
+        return;
+    }
+    richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
 }
 
 // TODO: move non-UI functions (eg. el.model stuff) to headless

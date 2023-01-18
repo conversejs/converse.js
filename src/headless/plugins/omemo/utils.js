@@ -6,6 +6,7 @@ import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
 import { MIMETYPES_MAP } from 'utils/file.js';
 import { __ } from 'i18n';
 import { _converse, converse, api } from '@converse/headless/core';
+import { getURI } from '@converse/headless/utils/url.js';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import {
     appendArrayBuffer,
@@ -195,13 +196,30 @@ export const omemo = {
     formatFingerprint
 }
 
-// TODO: addEncryptedFiles (without the template part)
-
-export function handleEncryptedFiles (richtext) {
-    if (!_converse.config.get('trusted')) {
+export function processEncryptedFiles (text) {
+    const objs = [];
+    try {
+        const parse_options = { 'start': /\b(aesgcm:\/\/)/gi };
+        URI.withinString(
+            text,
+            (url, start, end) => {
+                const uri = getURI(text.slice(o.start, o.end));
+                objs.push({
+                    uri,
+                    start,
+                    end,
+                    obj_url: getAndDecryptFile(uri); // this is a promise
+                });
+                return url;
+            },
+            parse_options
+        );
+    } catch (error) {
+        log.debug(error);
         return;
     }
-    richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
+
+    return objs;
 }
 
 /**

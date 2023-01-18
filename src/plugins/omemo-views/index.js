@@ -38,5 +38,7 @@ converse.plugins.add('converse-omemo-views', {
         api.listen.on('profileModalInitialized', () => {
             _converse.generateFingerprints(_converse.bare_jid).catch(e => log.error(e));
         });
+
+        api.listen.on('afterMessageBodyTransformed', handleEncryptedFiles);
     }
 });

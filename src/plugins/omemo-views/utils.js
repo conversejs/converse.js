@@ -1,6 +1,4 @@
 /* global libsignal */
-import concat from 'lodash-es/concat';
-import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
 import tpl_audio from 'templates/audio.js';
 import tpl_file from 'templates/file.js';
@@ -14,7 +12,7 @@ import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/u
 import { processEncryptedFiles } from '@converse/headless/plugins/omemo/utils.js'
 import { until } from 'lit/directives/until.js';
 
-const { Strophe, URI, sizzle, u } = converse.env;
+const { u } = converse.env;
 
 function getTemplateForObjectURL (uri, obj_url, richtext) {
     if (isError(obj_url)) {

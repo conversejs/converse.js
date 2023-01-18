@@ -4,6 +4,7 @@ import tpl_profile_modal from "../templates/profile_modal.js";
 import Compress from 'client-compress';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
+import '../password-reset.js';
 
 const compress = new Compress({
     targetSize: 0.1,

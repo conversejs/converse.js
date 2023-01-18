@@ -1,4 +1,3 @@
-
 /**
  * Custom error for indicating timeouts
  * @namespace _converse

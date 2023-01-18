@@ -21,9 +21,10 @@ export default class RosterView extends CustomElement {
 
         await api.waitUntil('rosterInitialized')
 
-        const { presences, roster } = _converse;
+        const { chatboxes, presences, roster } = _converse;
         this.listenTo(_converse, 'rosterContactsFetched', () => this.requestUpdate());
         this.listenTo(presences, 'change:show', () => this.requestUpdate());
+        this.listenTo(chatboxes, 'change:hidden', () => this.requestUpdate());
         this.listenTo(roster, 'add', () => this.requestUpdate());
         this.listenTo(roster, 'destroy', () => this.requestUpdate());
         this.listenTo(roster, 'remove', () => this.requestUpdate());

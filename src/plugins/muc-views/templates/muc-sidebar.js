@@ -1,6 +1,7 @@
-import { html } from "lit";
-import { __ } from 'i18n';
 import tpl_occupant from "./occupant.js";
+import { __ } from 'i18n';
+import { html } from "lit";
+import { repeat } from 'lit/directives/repeat.js';
 
 
 export default (o) => {
@@ -15,6 +16,6 @@ export default (o) => {
             </div>
         </div>
         <div class="dragresize dragresize-occupants-left"></div>
-        <ul class="occupant-list">${o.occupants.map(occ => tpl_occupant(occ, o))}</ul>
+        <ul class="occupant-list">${ repeat(o.occupants, (occ) => occ.get('jid'), (occ) => tpl_occupant(occ, o)) }</ul>
     `;
 }

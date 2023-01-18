@@ -239,7 +239,7 @@ describe("Notifications", function () {
 
             // Check that it's cleared when the window is focused
             _converse.windowState = 'hidden';
-            _converse.saveWindowState({'type': 'focus'});
+            u.saveWindowState({'type': 'focus'});
             await u.waitUntil(() => favico.badge.calls.count() === 2);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(0);
 
@@ -256,7 +256,7 @@ describe("Notifications", function () {
             const favico = jasmine.createSpyObj('favico', ['badge']);
             spyOn(converse.env, 'Favico').and.returnValue(favico);
 
-            _converse.saveWindowState({'type': 'focus'});
+            u.saveWindowState({'type': 'focus'});
             const message = 'This message will not increment the message counter';
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 msg = $msg({
@@ -305,7 +305,7 @@ describe("Notifications", function () {
             expect(view.model.get('num_unread')).toBe(1);
 
             // come back to converse-chat page
-            _converse.saveWindowState({'type': 'focus'});
+            u.saveWindowState({'type': 'focus'});
 
 
             await u.waitUntil(() => u.isVisible(view));

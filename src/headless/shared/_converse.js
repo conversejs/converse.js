@@ -1,10 +1,10 @@
-import i18n from '@converse/headless/shared/i18n';
-import log from '@converse/headless/log';
-import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
+import i18n from './i18n.js';
+import log from '../log.js';
+import { CONNECTION_STATUS } from './constants';
 import { Router } from '@converse/skeletor/src/router.js';
-import { TimeoutError } from '@converse/headless/shared/errors';
-import { createStore, getDefaultStore } from '@converse/headless/utils/storage.js';
-import { getInitSettings } from '@converse/headless/shared/settings/utils.js';
+import { TimeoutError } from './errors.js';
+import { createStore, getDefaultStore } from '../utils/storage.js';
+import { getInitSettings } from './settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 

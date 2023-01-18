@@ -1,5 +1,7 @@
 import { __ } from 'i18n';
-import { api } from '@converse/headless/core';
+import { api, converse, _converse } from '@converse/headless/core';
+
+const { Strophe, $iq, sizzle, u } = converse.env;
 
 export function getPrettyStatus (stat) {
     if (stat === 'chat') {

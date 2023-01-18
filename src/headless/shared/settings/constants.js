@@ -6,6 +6,7 @@
  * @property { String } [assets_path='/dist']
  * @property { ('login'|'prebind'|'anonymous'|'external') } [authentication='login']
  * @property { Boolean } [auto_login=false] - Currently only used in connection with anonymous login
+ * @property { Boolean } [reuse_scram_keys=false] - Save SCRAM keys after login to allow for future auto login
  * @property { Boolean } [auto_reconnect=true]
  * @property { Array<String>} [blacklisted_plugins]
  * @property { Boolean } [clear_cache_on_logout=false]
@@ -37,6 +38,7 @@ export const DEFAULT_SETTINGS = {
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
     auto_login: false, // Currently only used in connection with anonymous login
+    reuse_scram_keys: false,
     auto_reconnect: true,
     blacklisted_plugins: [],
     clear_cache_on_logout: false,
@@ -50,9 +52,46 @@ export const DEFAULT_SETTINGS = {
     keepalive: true,
     loglevel: 'info',
     locales: [
-        'af', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'eo', 'es', 'eu', 'en', 'fa', 'fi', 'fr',
-        'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'lt', 'nb', 'nl', 'mr', 'oc',
-        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'sv', 'th', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
+        'af',
+        'ar',
+        'bg',
+        'ca',
+        'cs',
+        'da',
+        'de',
+        'el',
+        'en',
+        'eo',
+        'es',
+        'eu',
+        'fa',
+        'fi',
+        'fr',
+        'gl',
+        'he',
+        'hi',
+        'hu',
+        'id',
+        'it',
+        'ja',
+        'lt',
+        'mr',
+        'nb',
+        'nl',
+        'oc',
+        'pl',
+        'pt',
+        'pt_BR',
+        'ro',
+        'ru',
+        'sv',
+        'th',
+        'tr',
+        'ug',
+        'uk',
+        'vi',
+        'zh_CN',
+        'zh_TW',
     ],
     nickname: undefined,
     password: undefined,
@@ -64,5 +103,5 @@ export const DEFAULT_SETTINGS = {
     strict_plugin_dependencies: false,
     view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
     websocket_url: undefined,
-    whitelisted_plugins: []
+    whitelisted_plugins: [],
 };

@@ -10,13 +10,13 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
-import { handleCorrection } from '@converse/headless/shared/chat/utils.js';
+import { handleCorrection } from '../../shared/chat/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/utils/storage.js';
-import { isArchived, getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
-import { isUniView, getUniqueId, safeSave } from '@converse/headless/utils/core.js';
+import { initStorage } from '../../utils/storage.js';
+import { isArchived, getMediaURLsMetadata } from '../../shared/parsers.js';
+import { isUniView, getUniqueId, safeSave } from '../../utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
-import { sendMarker } from '@converse/headless/shared/actions.js';
+import { sendMarker } from '../../shared/actions.js';
 import { ROOMSTATUS } from './constants.js';
 
 const OWNER_COMMANDS = ['owner'];
@@ -444,7 +444,7 @@ const ChatRoomMixin = {
 
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
-        const attrs = await parseMUCMessage(stanza, this, _converse);
+        const attrs = await parseMUCMessage(stanza, this);
         if (!(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
@@ -535,7 +535,7 @@ const ChatRoomMixin = {
                 'num_unread': this.get('num_unread') + mentions.length
             });
             mentions.forEach(async stanza => {
-                const attrs = await parseMUCMessage(stanza, this, _converse);
+                const attrs = await parseMUCMessage(stanza, this);
                 const data = { stanza, attrs, 'chatbox': this };
                 api.trigger('message', data);
             });
@@ -574,7 +574,7 @@ const ChatRoomMixin = {
          */
         let attrs;
         try {
-            attrs = await parseMUCMessage(stanza, this, _converse);
+            attrs = await parseMUCMessage(stanza, this);
         } catch (e) {
             return log.error(e);
         }
@@ -2455,14 +2455,15 @@ const ChatRoomMixin = {
         } else if (is_self && code in _converse.muc.new_nickname_messages) {
             // XXX: Side-effect of setting the nick. Should ideally be refactored out of this method
             let nick;
-            if (is_self && code === '210') {
+            if (code === '210') {
                 nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-            } else if (is_self && code === '303') {
+            } else if (code === '303') {
                 nick = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop().getAttribute('nick');
             }
             this.save('nick', nick);
             data.message = __(_converse.muc.new_nickname_messages[code], nick);
         }
+
         if (data.message) {
             if (code === '201' && this.messages.findWhere(data)) {
                 return;

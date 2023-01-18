@@ -3,28 +3,27 @@
  * @license Mozilla Public License (MPLv2)
  */
 import URI from 'urijs';
-import _converse from '@converse/headless/shared/_converse';
+import _converse from './shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import connection_api from '@converse/headless/shared/connection/api.js';
+import connection_api from './shared/connection/api.js';
 import dayjs from 'dayjs';
-import i18n from '@converse/headless/shared/i18n';
+import i18n from './shared/i18n';
 import invoke from 'lodash-es/invoke';
 import isFunction from 'lodash-es/isFunction';
-import log from '@converse/headless/log.js';
+import log from './log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import sizzle from 'sizzle';
-import u, { setUnloadEvent, replacePromise } from '@converse/headless/utils/core.js';
+import u, { setUnloadEvent, replacePromise } from './utils/core.js';
 import { CHAT_STATES, KEYCODES } from './shared/constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
-import { Connection, MockConnection } from '@converse/headless/shared/connection/index.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
-import { TimeoutError } from '@converse/headless/shared/errors';
+import { TimeoutError } from './shared/errors';
 import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit';
-import { initAppSettings } from '@converse/headless/shared/settings/utils.js';
-import { settings_api, user_settings_api } from '@converse/headless/shared/settings/api.js';
+import { initAppSettings } from './shared/settings/utils.js';
+import { settings_api, user_settings_api } from './shared/settings/api.js';
 import { sprintf } from 'sprintf-js';
 
 export { _converse };
@@ -33,8 +32,8 @@ export { i18n };
 import {
     attemptNonPreboundSession,
     cleanup,
-    getConnectionServiceURL,
     initClientConfig,
+    initConnection,
     initPlugins,
     initSessionStorage,
     registerGlobalEventHandlers,
@@ -80,7 +79,7 @@ Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
-_converse.VERSION_NAME = "v10.0.0";
+_converse.VERSION_NAME = "v10.1.0";
 
 Object.assign(_converse, Events);
 
@@ -203,7 +202,7 @@ export const api = _converse.api = {
         async login (jid, password, automatic=false) {
             jid = jid || api.settings.get('jid');
             if (!_converse.connection?.jid || (jid && !u.isSameDomain(_converse.connection.jid, jid))) {
-                await _converse.initConnection();
+                initConnection();
             }
             if (api.settings.get("connection_options")?.worker && (await _converse.connection.restoreWorkerSession())) {
                 return;
@@ -243,6 +242,11 @@ export const api = _converse.api = {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach(replacePromise);
                 delete _converse.jid
+
+                // Remove the session JID, otherwise the user would just be logged
+                // in again upon reload. See #2759
+                localStorage.removeItem('conversejs-session-jid');
+
                 /**
                  * Triggered once the user has logged out.
                  * @event _converse#logout
@@ -481,82 +485,6 @@ _converse.shouldClearCache = () => (
     _converse.isTestEnv()
 );
 
-
-_converse.initConnection = function () {
-    const api = _converse.api;
-
-    if (! api.settings.get('bosh_service_url')) {
-        if (api.settings.get("authentication") === _converse.PREBIND) {
-            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
-        }
-    }
-
-    const XMPPConnection = _converse.isTestEnv() ? MockConnection : Connection;
-    _converse.connection = new XMPPConnection(
-        getConnectionServiceURL(),
-        Object.assign(
-            _converse.default_connection_options,
-            api.settings.get("connection_options"),
-            {'keepalive': api.settings.get("keepalive")}
-        )
-    );
-
-    setUpXMLLogging();
-    /**
-     * Triggered once the `Connection` constructor has been initialized, which
-     * will be responsible for managing the connection to the XMPP server.
-     *
-     * @event _converse#connectionInitialized
-     */
-    api.trigger('connectionInitialized');
-}
-
-
-function setUpXMLLogging () {
-    const lmap = {}
-    lmap[Strophe.LogLevel.DEBUG] = 'debug';
-    lmap[Strophe.LogLevel.INFO] = 'info';
-    lmap[Strophe.LogLevel.WARN] = 'warn';
-    lmap[Strophe.LogLevel.ERROR] = 'error';
-    lmap[Strophe.LogLevel.FATAL] = 'fatal';
-
-    Strophe.log = (level, msg) => log.log(msg, lmap[level]);
-    Strophe.error = (msg) => log.error(msg);
-
-    _converse.connection.xmlInput = body => log.debug(body.outerHTML, 'color: darkgoldenrod');
-    _converse.connection.xmlOutput = body => log.debug(body.outerHTML, 'color: darkcyan');
-}
-
-_converse.saveWindowState = function (ev) {
-    // XXX: eventually we should be able to just use
-    // document.visibilityState (when we drop support for older
-    // browsers).
-    let state;
-    const event_map = {
-        'focus': "visible",
-        'focusin': "visible",
-        'pageshow': "visible",
-        'blur': "hidden",
-        'focusout': "hidden",
-        'pagehide': "hidden"
-    };
-    ev = ev || document.createEvent('Events');
-    if (ev.type in event_map) {
-        state = event_map[ev.type];
-    } else {
-        state = document.hidden ? "hidden" : "visible";
-    }
-    _converse.windowState = state;
-    /**
-        * Triggered when window state has changed.
-        * Used to determine when a user left the page and when came back.
-        * @event _converse#windowStateChanged
-        * @type { object }
-        * @property{ string } state - Either "hidden" or "visible"
-        * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
-        */
-    api.trigger('windowStateChanged', {state});
-}
 
 _converse.ConnectionFeedback = Model.extend({
     defaults: {

@@ -11,8 +11,13 @@ module.exports = merge(common, {
     output: {
         path: path.resolve(__dirname, '../src/headless/dist'), // Output path for generated bundles
         filename: "[name].js",
-        chunkFilename: '[name].js'
+        chunkFilename: '[name].js',
+        globalObject: 'this',
+        publicPath: '',
+        library: {
+            name: 'converse',
+            type: 'umd',
+        },
     },
     mode: "production",
 });
-

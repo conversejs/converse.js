@@ -28,10 +28,12 @@
     });
 
     converse.initialize({
+        i18n: 'ug',
         theme: 'dracula',
         auto_away: 300,
         enable_smacks: true,
         loglevel: 'debug',
+        reuse_scram_keys: true,
         prune_messages_above: 100,
         message_archiving: 'always',
         muc_respect_autojoin: true,
@@ -41,6 +43,7 @@
         websocket_url: 'wss://conversejs.org/xmpp-websocket',
         // websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
         whitelisted_plugins: ['converse-debug'],
+        connection_options: { worker: '/dist/shared-connection-worker.js' }
     });
 </script>
 </body>

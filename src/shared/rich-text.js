@@ -212,7 +212,7 @@ export class RichText extends String {
      * Look for XEP-0393 styling directives and add templates for rendering them.
      */
     addStyling () {
-        if (!containsDirectives(this, this.mentions)) {
+        if (!containsDirectives(this)) {
             return;
         }
 

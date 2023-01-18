@@ -5,8 +5,8 @@
  * @description This is the internationalization module
  */
 import Jed from 'jed';
-import log from "@converse/headless/log";
-import { _converse, api, converse, i18n } from '@converse/headless/core';
+import log from "@converse/headless/log.js";
+import { _converse, api, converse, i18n } from '@converse/headless/core.js';
 
 const { dayjs } = converse.env;
 
@@ -66,6 +66,11 @@ function isLocaleAvailable (locale, available) {
     }
 }
 
+function getDayJSLocale (locale) {
+    const dayjs_locale = locale.toLowerCase().replace('_', '-');
+    return dayjs_locale === 'ug' ? 'ug-cn' : dayjs_locale;
+}
+
 
 /* Fetch the translations for the given local at the given URL.
  * @private
@@ -74,7 +79,7 @@ function isLocaleAvailable (locale, available) {
  */
 async function fetchTranslations (_converse) {
     const { api, locale } = _converse;
-    const dayjs_locale = locale.toLowerCase().replace('_', '-');
+    const dayjs_locale = getDayJSLocale(locale);
 
     if (!isConverseLocale(locale, api.settings.get("locales")) || locale === 'en') {
         return;

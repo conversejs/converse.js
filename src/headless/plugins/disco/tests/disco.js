@@ -4,7 +4,7 @@ describe("Service Discovery", function () {
 
     describe("Whenever a server is queried for its features", function () {
 
-        fit("stores the features it receives",
+        it("stores the features it receives",
             mock.initConverse(
                 ['discoInitialized'], {},
                 async function (_converse) {

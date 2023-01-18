@@ -5,7 +5,7 @@ import log from '@converse/headless/log';
 import range from 'lodash-es/range';
 import omit from 'lodash-es/omit';
 import { Model } from '@converse/skeletor/src/model.js';
-import { generateDeviceID } from './utils.js';
+import { generateDeviceID } from '@converse/headless/plugins/omemo/utils.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 const { Strophe, $build, u } = converse.env;

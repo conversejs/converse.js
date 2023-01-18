@@ -56,16 +56,11 @@ export function handleEncryptedFiles (richtext) {
     richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
 }
 
-// TODO: move non-UI functions (eg. el.model stuff) to headless
 export function onChatInitialized (el) {
-    el.listenTo(el.model.messages, 'add', message => {
-        if (message.get('is_encrypted') && !message.get('is_error')) {
-            el.model.save('omemo_supported', true);
-        }
-    });
     el.listenTo(el.model, 'change:omemo_supported', () => {
-        if (!el.model.get('omemo_supported') && el.model.get('omemo_active')) {
-            el.model.set('omemo_active', false);
+        if (el.model.get('omemo_supported') || !el.model.get('omemo_active')) {
+            // Do nothing; the model will be updated by
+            // onChatBoxInitialized in the headless plugin
         } else {
             // Manually trigger an update, setting omemo_active to
             // false above will automatically trigger one.

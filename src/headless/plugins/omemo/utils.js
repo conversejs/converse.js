@@ -276,7 +276,18 @@ export function onChatBoxesInitialized () {
     });
 }
 
-// TODO: add headless part of onChatInitialized
+export function onChatBoxInitialized(model) {
+    model.listenTo(model.messages, 'add', message => {
+        if (message.get('is_encrypted') && !message.get('is_error')) {
+            model.save('omemo_supported', true);
+        }
+    });
+    model.listenTo(model, 'change:omemo_supported', () => {
+        if (!model.get('omemo_supported') && model.get('omemo_active')) {
+            model.set('omemo_active', false);
+        }
+    });
+}
 
 export function getSessionCipher (jid, id) {
     const address = new libsignal.SignalProtocolAddress(jid, id);

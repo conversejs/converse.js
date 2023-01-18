@@ -20,6 +20,7 @@ import {
     initOMEMO,
     omemo,
     onChatBoxesInitialized,
+    onChatBoxInitialized,
     parseEncryptedMessage,
     registerPEPPushHandler
     setEncryptedFileURL,
@@ -64,6 +65,8 @@ converse.plugins.add('converse-omemo', {
 
         /******************** Event Handlers ********************/
         api.waitUntil('chatBoxesInitialized').then(onChatBoxesInitialized);
+
+        api.listen.on('chatBoxInitialized', onChatBoxInitialized);
 
         api.listen.on('getOutgoingMessageAttributes', getOutgoingMessageAttributes);
 

@@ -22,7 +22,7 @@ import { converse } from '@converse/headless/core';
 import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';
 
-const { sizzle } = converse.env;
+const { sizzle, Strophe } = converse.env;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 
@@ -53,6 +53,93 @@ const XFORM_VALIDATE_TYPE_MAP = {
     'xs:integer': 'number',
     'xs:time': 'time',
 }
+
+
+const EMPTY_TEXT_REGEX = /\s*\n\s*/
+
+function stripEmptyTextNodes (el) {
+    el = el.tree?.() ?? el;
+
+    let n;
+    const text_nodes = [];
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, (node) => {
+        if (node.parentElement.nodeName.toLowerCase() === 'body') {
+            return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+    });
+    while (n = walker.nextNode()) text_nodes.push(n);
+    text_nodes.forEach((n) => EMPTY_TEXT_REGEX.test(n.data) && n.parentElement.removeChild(n))
+
+    return el;
+}
+
+const serializer = new XMLSerializer();
+
+/**
+ * Given two XML or HTML elements, determine if they're equal
+ * @param { XMLElement | HTMLElement } actual
+ * @param { XMLElement | HTMLElement } expected
+ * @returns { Boolean }
+ */
+function isEqualNode (actual, expected) {
+    if (!u.isElement(actual)) throw new Error("Element being compared must be an Element!");
+
+    actual = stripEmptyTextNodes(actual);
+    expected = stripEmptyTextNodes(expected);
+
+    let isEqual = actual.isEqualNode(expected);
+
+    if (!isEqual) {
+        // XXX: This is a hack.
+        // When creating two XML elements, one via DOMParser, and one via
+        // createElementNS (or createElement), then "isEqualNode" doesn't match.
+        //
+        // For example, in the following code `isEqual` is false:
+        // ------------------------------------------------------
+        // const a = document.createElementNS('foo', 'div');
+        // a.setAttribute('xmlns', 'foo');
+        //
+        // const b = (new DOMParser()).parseFromString('<div xmlns="foo"></div>', 'text/xml').firstElementChild;
+        // const isEqual = a.isEqualNode(div); //  false
+        //
+        // The workaround here is to serialize both elements to string and then use
+        // DOMParser again for both (via xmlHtmlNode).
+        //
+        // This is not efficient, but currently this is only being used in tests.
+        //
+        const { xmlHtmlNode } = Strophe;
+        const actual_string = serializer.serializeToString(actual);
+        const expected_string = serializer.serializeToString(expected);
+        isEqual = actual_string === expected_string || xmlHtmlNode(actual_string).isEqualNode(xmlHtmlNode(expected_string));
+    }
+
+    return isEqual;
+}
+
+/**
+ * Given an HTMLElement representing a form field, return it's name and value.
+ * @param { HTMLElement } field
+ * @returns { { string, string } | null }
+ */
+export function getNameAndValue(field) {
+    const name = field.getAttribute('name');
+    if (!name) {
+        return null; // See #1924
+    }
+    let value;
+    if (field.getAttribute('type') === 'checkbox') {
+        value = field.checked && 1 || 0;
+    } else if (field.tagName == "TEXTAREA") {
+        value = field.value.split('\n').filter(s => s.trim());
+    } else if (field.tagName == "SELECT") {
+        value = u.getSelectValues(field);
+    } else {
+        value = field.value;
+    }
+    return { name, value };
+}
+
 
 function getInputType(field) {
     const type = XFORM_TYPE_MAP[field.getAttribute('type')]
@@ -525,6 +612,6 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
     }
 };
 
-Object.assign(u, { getOOBURLMarkup, ancestor, slideIn, slideOut });
+Object.assign(u, { getOOBURLMarkup, ancestor, slideIn, slideOut, isEqualNode });
 
 export default u;

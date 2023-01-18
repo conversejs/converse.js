@@ -16,11 +16,8 @@ describe("Ad-hoc commands", function () {
         const adhoc_form = modal.querySelector('converse-adhoc-commands');
         await u.waitUntil(() => u.isVisible(adhoc_form));
 
-        const input = adhoc_form.querySelector('input[name="jid"]');
-        input.value = entity_jid;
-
-        const submit = adhoc_form.querySelector('input[type="submit"]');
-        submit.click();
+        adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
+        adhoc_form.querySelector('input[type="submit"]').click();
 
         await mock.waitUntilDiscoConfirmed(_converse, entity_jid, [], ['http://jabber.org/protocol/commands'], [], 'info');
 
@@ -31,7 +28,8 @@ describe("Ad-hoc commands", function () {
             <iq type="result"
                 id="${iq.getAttribute("id")}"
                 to="${_converse.jid}"
-                from="${entity_jid}">
+                from="${entity_jid}"
+                xmlns="jabber:client">
             <query xmlns="http://jabber.org/protocol/disco#items"
                     node="http://jabber.org/protocol/commands">
                 <item jid="${entity_jid}"
@@ -125,12 +123,443 @@ describe("Ad-hoc commands", function () {
         expect(inputs[4].getAttribute('name')).toBe('password');
         expect(inputs[4].getAttribute('type')).toBe('password');
         expect(inputs[4].getAttribute('value')).toBe('secret');
-        expect(inputs[5].getAttribute('type')).toBe('submit');
-        expect(inputs[5].getAttribute('value')).toBe('Execute');
+        expect(inputs[5].getAttribute('type')).toBe('button');
+        expect(inputs[5].getAttribute('value')).toBe('Complete');
         expect(inputs[6].getAttribute('type')).toBe('button');
-        expect(inputs[6].getAttribute('value')).toBe('Hide');
+        expect(inputs[6].getAttribute('value')).toBe('Cancel');
 
         inputs[6].click();
         await u.waitUntil(() => !u.isVisible(form));
+    }));
+});
+
+describe("Ad-hoc commands consisting of multiple steps", function () {
+
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
+    it("can be queried and executed via a modal", mock.initConverse([], {}, async (_converse) => {
+        const { api } = _converse;
+        const entity_jid = 'montague.lit';
+        const { IQ_stanzas } = _converse.connection;
+
+        const modal = await api.modal.show('converse-user-settings-modal');
+        await u.waitUntil(() => u.isVisible(modal));
+        modal.querySelector('#commands-tab').click();
+
+        const adhoc_form = modal.querySelector('converse-adhoc-commands');
+        await u.waitUntil(() => u.isVisible(adhoc_form));
+
+        adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
+        adhoc_form.querySelector('input[type="submit"]').click();
+
+        await mock.waitUntilDiscoConfirmed(_converse, entity_jid, [], ['http://jabber.org/protocol/commands'], [], 'info');
+
+        let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
+        let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq from="${_converse.jid}" id="${iq.getAttribute('id')}" to="${entity_jid}" type="get" xmlns="jabber:client">
+                <query node="http://jabber.org/protocol/commands" xmlns="http://jabber.org/protocol/disco#items"/>
+            </iq>`
+        );
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
+                    <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
+                    <item node="urn:xmpp:mam#configure" name="Archive settings" jid="${entity_jid}"/>
+                    <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#form" name="Dataforms Demo" jid="${entity_jid}"/>
+                    <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" name="Multi-step command demo" jid="${entity_jid}"/>
+                </query>
+            </iq>
+        `));
+
+        const item = await u.waitUntil(() => adhoc_form.querySelector('form a[data-command-node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"]'));
+        item.click();
+
+        sel = `iq[to="${entity_jid}"] command`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`
+        );
+
+        const sessionid = "f4d477d3-d8b1-452d-95c9-fece53ef99ad";
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+        <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+            <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
+                <actions>
+                    <next/>
+                    <complete/>
+                </actions>
+
+                <x xmlns="jabber:x:data" type="form">
+                    <title>Step 1</title>
+                    <instructions>Here's a form.</instructions>
+                    <field label="text-private-label" type="text-private" var="text-private-field">
+                        <value>text-private-value</value>
+                    </field>
+                    <field label="jid-multi-label" type="jid-multi" var="jid-multi-field">
+                        <value>jid@multi/value#1</value>
+                        <value>jid@multi/value#2</value>
+                    </field>
+                    <field label="text-multi-label" type="text-multi" var="text-multi-field">
+                        <value>text</value>
+                        <value>multi</value>
+                        <value>value</value>
+                    </field>
+                    <field label="jid-single-label" type="jid-single" var="jid-single-field">
+                        <value>jid@single/value</value>
+                    </field>
+                    <field label="list-single-label" type="list-single" var="list-single-field">
+                        <option label="list-single-value"><value>list-single-value</value></option>
+                        <option label="list-single-value#2"><value>list-single-value#2</value></option>
+                        <option label="list-single-value#3"><value>list-single-value#3</value></option>
+                        <value>list-single-value</value>
+                    </field>
+                </x>
+            </command>
+        </iq>
+        `));
+
+        let button = await u.waitUntil(() => modal.querySelector('input[data-action="next"]'));
+        button.click();
+
+        sel = `iq[to="${entity_jid}"] command[sessionid="${sessionid}"]`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq type="set" to="${entity_jid}" xmlns="jabber:client" id="${iq.getAttribute('id')}">
+                <command sessionid="${sessionid}" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" action="next" xmlns="http://jabber.org/protocol/commands">
+                    <x type="submit" xmlns="jabber:x:data">
+                        <field var="text-private-field">
+                            <value>text-private-value</value>
+                        </field>
+                        <field var="jid-multi-field">
+                            <value>jid@multi/value#1</value>
+                        </field>
+                        <field var="text-multi-field">
+                            <value>text</value>
+                        </field>
+                        <field var="jid-single-field">
+                            <value>jid@single/value</value>
+                        </field>
+                        <field var="list-single-field">
+                            <value>list-single-value</value>
+                        </field>
+                    </x>
+                </command>
+            </iq>`
+        );
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
+                <actions>
+                    <prev/>
+                    <next/>
+                    <complete/>
+                </actions>
+                <x xmlns="jabber:x:data" type="form">
+                    <title>Step 2</title>
+                    <instructions>Here's another form.</instructions>
+                    <field label="jid-multi-label" type="jid-multi" var="jid-multi-field">
+                        <value>jid@multi/value#1</value>
+                        <value>jid@multi/value#2</value>
+                    </field>
+                    <field label="boolean-label" type="boolean" var="boolean-field">
+                        <value>1</value>
+                    </field>
+                    <field label="fixed-label" type="fixed" var="fixed-field#1">
+                        <value>fixed-value</value>
+                    </field>
+                    <field label="list-single-label" type="list-single" var="list-single-field">
+                        <option label="list-single-value">
+                            <value>list-single-value</value>
+                        </option>
+                        <option label="list-single-value#2">
+                            <value>list-single-value#2</value>
+                        </option>
+                        <option label="list-single-value#3">
+                            <value>list-single-value#3</value>
+                        </option>
+                        <value>list-single-value</value>
+                    </field>
+                    <field label="text-single-label" type="text-single" var="text-single-field">
+                        <value>text-single-value</value>
+                    </field>
+                </x>
+                </command>
+            </iq>
+        `));
+
+        button = await u.waitUntil(() => modal.querySelector('input[data-action="complete"]'));
+        button.click();
+
+        sel = `iq[to="${entity_jid}"] command[sessionid="${sessionid}"][action="complete"]`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq xmlns="jabber:client"
+                type="set"
+                to="${entity_jid}"
+                id="${iq.getAttribute('id')}">
+
+                <command xmlns="http://jabber.org/protocol/commands"
+                        sessionid="${sessionid}"
+                        node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"
+                        action="complete">
+                    <x xmlns="jabber:x:data"
+                    type="submit">
+                    <field var="text-private-field">
+                    <value>text-private-value</value></field>
+                    <field var="jid-multi-field"><value>jid@multi/value#1</value></field>
+                    <field var="text-multi-field"><value>text</value></field>
+                    <field var="jid-single-field"><value>jid@single/value</value></field>
+                    <field var="list-single-field"><value>list-single-value</value></field>
+                    </x>
+                </command>
+            </iq>`
+        );
+
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:server" type="result" from="${entity_jid}" to="${_converse.jid}" id="${iq.getAttribute("id")}">
+                <command xmlns="http://jabber.org/protocol/commands"
+                        sessionid="${sessionid}"
+                        node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"
+                        status="completed">
+                    <note type="info">Service has been configured.</note>
+                </command>
+            </iq>`)
+        );
+    }));
+
+    it("can be canceled", mock.initConverse([], {}, async (_converse) => {
+        const { api } = _converse;
+        const entity_jid = 'montague.lit';
+        const { IQ_stanzas } = _converse.connection;
+
+        const modal = await api.modal.show('converse-user-settings-modal');
+        await u.waitUntil(() => u.isVisible(modal));
+        modal.querySelector('#commands-tab').click();
+
+        const adhoc_form = modal.querySelector('converse-adhoc-commands');
+        await u.waitUntil(() => u.isVisible(adhoc_form));
+
+        adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
+        adhoc_form.querySelector('input[type="submit"]').click();
+
+        await mock.waitUntilDiscoConfirmed(_converse, entity_jid, [], ['http://jabber.org/protocol/commands'], [], 'info');
+
+        let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
+        let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
+                    <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" name="Multi-step command" jid="${entity_jid}"/>
+                </query>
+            </iq>
+        `));
+
+        const item = await u.waitUntil(() => adhoc_form.querySelector('form a[data-command-node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"]'));
+        item.click();
+
+        sel = `iq[to="${entity_jid}"] command`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        const sessionid = "f4d477d3-d8b1-452d-95c9-fece53ef99cc";
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+        <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+            <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
+                <actions>
+                    <next/>
+                    <complete/>
+                </actions>
+
+                <x xmlns="jabber:x:data" type="form">
+                    <title>Step 1</title>
+                    <instructions>Here's a form.</instructions>
+                    <field label="text-private-label" type="text-private" var="text-private-field">
+                        <value>text-private-value</value>
+                    </field>
+                </x>
+            </command>
+        </iq>
+        `));
+
+        const button = await u.waitUntil(() => modal.querySelector('input.button-cancel'));
+        button.click();
+
+        sel = `iq[to="${entity_jid}"] command[sessionid="${sessionid}"]`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq type="set" to="${entity_jid}" xmlns="jabber:client" id="${iq.getAttribute('id')}">
+                <command sessionid="${sessionid}"
+                        node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"
+                        action="cancel"
+                        xmlns="http://jabber.org/protocol/commands">
+                </command>
+            </iq>`
+        );
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <command xmlns="http://jabber.org/protocol/commands"
+                        sessionid="${sessionid}"
+                        status="canceled"
+                        node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
+                </command>
+            </iq>
+        `));
+    }));
+
+    it("can be navigated backwards", mock.initConverse([], {}, async (_converse) => {
+        const { api } = _converse;
+        const entity_jid = 'montague.lit';
+        const { IQ_stanzas } = _converse.connection;
+
+        const modal = await api.modal.show('converse-user-settings-modal');
+        await u.waitUntil(() => u.isVisible(modal));
+        modal.querySelector('#commands-tab').click();
+
+        const adhoc_form = modal.querySelector('converse-adhoc-commands');
+        await u.waitUntil(() => u.isVisible(adhoc_form));
+
+        adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
+        adhoc_form.querySelector('input[type="submit"]').click();
+
+        await mock.waitUntilDiscoConfirmed(_converse, entity_jid, [], ['http://jabber.org/protocol/commands'], [], 'info');
+
+        let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
+        let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq from="${_converse.jid}" to="${entity_jid}" type="get" xmlns="jabber:client" id="${iq.getAttribute('id')}">
+                <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands"/>
+            </iq>`
+        );
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
+                    <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
+                    <item node="urn:xmpp:mam#configure" name="Archive settings" jid="${entity_jid}"/>
+                    <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#form" name="Dataforms Demo" jid="${entity_jid}"/>
+                    <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" name="Multi-step command demo" jid="${entity_jid}"/>
+                </query>
+            </iq>
+        `));
+
+        const item = await u.waitUntil(() => adhoc_form.querySelector('form a[data-command-node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"]'));
+        item.click();
+
+        sel = `iq[to="${entity_jid}"] command`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq id="${iq.getAttribute('id')}" to="${entity_jid}" type="set" xmlns="jabber:client">
+                <command action="execute" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" xmlns="http://jabber.org/protocol/commands"/>
+            </iq>`);
+
+        const sessionid = "f4d477d3-d8b1-452d-95c9-fece53ef99ad";
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
+                    <actions>
+                        <next/>
+                        <complete/>
+                    </actions>
+
+                    <x xmlns="jabber:x:data" type="form">
+                        <title>Step 1</title>
+                        <instructions>Here's a form.</instructions>
+                        <field label="text-private-label" type="text-private" var="text-private-field">
+                            <value>text-private-value</value>
+                        </field>
+                    </x>
+                </command>
+            </iq>
+        `));
+
+        let button = await u.waitUntil(() => modal.querySelector('input[data-action="next"]'));
+        button.click();
+
+        sel = `iq[to="${entity_jid}"] command[sessionid="${sessionid}"]`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq type="set" to="${entity_jid}" xmlns="jabber:client" id="${iq.getAttribute('id')}">
+                <command sessionid="${sessionid}" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" action="next" xmlns="http://jabber.org/protocol/commands">
+                    <x type="submit" xmlns="jabber:x:data">
+                        <field var="text-private-field">
+                            <value>text-private-value</value>
+                        </field>
+                    </x>
+                </command>
+            </iq>`
+        );
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
+                <actions>
+                    <prev/>
+                    <next/>
+                    <complete/>
+                </actions>
+                <x xmlns="jabber:x:data" type="form">
+                    <title>Step 2</title>
+                    <instructions>Here's another form.</instructions>
+                    <field label="jid-multi-label" type="jid-multi" var="jid-multi-field">
+                        <value>jid@multi/value#1</value>
+                        <value>jid@multi/value#2</value>
+                    </field>
+                </x>
+                </command>
+            </iq>
+        `));
+
+        button = await u.waitUntil(() => modal.querySelector('input[data-action="prev"]'));
+        button.click();
+
+        sel = `iq[to="${entity_jid}"] command[sessionid="${sessionid}"][action="prev"]`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(iq).toEqualStanza(stx`
+            <iq type="set" to="${entity_jid}" xmlns="jabber:client" id="${iq.getAttribute('id')}">
+                <command sessionid="${sessionid}"
+                        node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"
+                        action="prev"
+                        xmlns="http://jabber.org/protocol/commands">
+                </command>
+            </iq>`
+        );
+
+        _converse.connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
+                <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
+                    <actions>
+                        <next/>
+                        <complete/>
+                    </actions>
+
+                    <x xmlns="jabber:x:data" type="form">
+                        <title>Step 1</title>
+                        <instructions>Here's a form.</instructions>
+                        <field label="text-private-label" type="text-private" var="text-private-field">
+                            <value>text-private-value</value>
+                        </field>
+                    </x>
+                </command>
+            </iq>
+        `));
     }));
 });

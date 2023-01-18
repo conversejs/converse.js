@@ -1,25 +1,24 @@
 import 'shared/autocomplete/index.js';
-import log from "@converse/headless/log";
+import log from '@converse/headless/log';
 import tpl_adhoc from './templates/ad-hoc.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse } from "@converse/headless/core";
-import { fetchCommandForm } from './utils.js';
+import { api, converse } from '@converse/headless/core.js';
+import { getNameAndValue } from 'utils/html.js';
 
-const { Strophe, $iq, sizzle, u } = converse.env;
+const { Strophe, sizzle } = converse.env;
 
 
 export default class AdHocCommands extends CustomElement {
-
     static get properties () {
         return {
             'alert': { type: String },
             'alert_type': { type: String },
-            'nonce': { type: String }, // Used to force re-rendering
-            'fetching': { type: Boolean }, // Used to force re-rendering
+            'commands': { type: Array },
+            'fetching': { type: Boolean },
             'showform': { type: String },
             'view': { type: String },
-        }
+        };
     }
 
     constructor () {
@@ -31,12 +30,7 @@ export default class AdHocCommands extends CustomElement {
     }
 
     render () {
-        return tpl_adhoc(this, {
-            'hideCommandForm': ev => this.hideCommandForm(ev),
-            'runCommand': ev => this.runCommand(ev),
-            'showform': this.showform,
-            'toggleCommandForm': ev => this.toggleCommandForm(ev),
-        });
+        return tpl_adhoc(this)
     }
 
     async fetchCommands (ev) {
@@ -50,7 +44,7 @@ export default class AdHocCommands extends CustomElement {
         const jid = form_data.get('jid').trim();
         let supported;
         try {
-            supported = await api.disco.supports(Strophe.NS.ADHOC, jid)
+            supported = await api.disco.supports(Strophe.NS.ADHOC, jid);
         } catch (e) {
             log.error(e);
         } finally {
@@ -79,59 +73,117 @@ export default class AdHocCommands extends CustomElement {
         ev.preventDefault();
         const node = ev.target.getAttribute('data-command-node');
         const cmd = this.commands.filter(c => c.node === node)[0];
-        this.showform !== node && await fetchCommandForm(cmd);
-        this.showform = node;
+        if (this.showform === node) {
+            this.showform = '';
+            this.requestUpdate();
+        } else {
+            const form = await api.adhoc.fetchCommandForm(cmd);
+            cmd.sessionid = form.sessionid;
+            cmd.instructions = form.instructions;
+            cmd.fields = form.fields;
+            cmd.actions = form.actions;
+            this.showform = node;
+        }
     }
 
-    hideCommandForm (ev) {
+    executeAction (ev) {
         ev.preventDefault();
-        this.nonce = u.getUniqueId();
-        this.showform = ''
+
+        const action = ev.target.getAttribute('data-action');
+
+        if (['execute', 'next', 'prev', 'complete'].includes(action)) {
+            this.runCommand(ev.target.form, action);
+        } else {
+            log.error(`Unknown action: ${action}`);
+        }
     }
 
-    async runCommand (ev) {
-        ev.preventDefault();
-        const form_data = new FormData(ev.target);
+    clearCommand (cmd) {
+        delete cmd.alert;
+        delete cmd.instructions;
+        delete cmd.sessionid;
+        delete cmd.alert_type;
+        cmd.fields = [];
+        cmd.acions = [];
+        this.showform = '';
+    }
+
+    async runCommand (form, action) {
+        const form_data = new FormData(form);
         const jid = form_data.get('command_jid').trim();
         const node = form_data.get('command_node').trim();
 
         const cmd = this.commands.filter(c => c.node === node)[0];
-        cmd.alert = null;
-        this.nonce = u.getUniqueId();
+        delete cmd.alert;
+        this.requestUpdate();
 
-        const inputs = sizzle(':input:not([type=button]):not([type=submit])', ev.target);
-        const config_array = inputs
-            .filter(i => !['command_jid', 'command_node'].includes(i.getAttribute('name')))
-            .map(u.webForm2xForm)
-            .filter(n => n);
+        const inputs = action === 'prev' ? [] :
+            sizzle(':input:not([type=button]):not([type=submit])', form)
+                .filter(i => !['command_jid', 'command_node'].includes(i.getAttribute('name')))
+                .map(getNameAndValue)
+                .filter(n => n);
 
-        const iq = $iq({to: jid, type: "set"})
-            .c("command", {
-                'sessionid': cmd.sessionid,
-                'node': cmd.node,
-                'xmlns': Strophe.NS.ADHOC
-            }).c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
-        config_array.forEach(node => iq.cnode(node).up());
+        const response = await api.adhoc.runCommand(jid, cmd.sessionid, cmd.node, action, inputs);
 
-        let result;
-        try {
-            result = await api.sendIQ(iq);
-        } catch (e) {
+        const { fields, status, note, instructions, actions } = response;
+
+        if (status === 'error') {
             cmd.alert_type = 'danger';
             cmd.alert = __(
                 'Sorry, an error occurred while trying to execute the command. See the developer console for details'
             );
-            log.error('Error while trying to execute an ad-hoc command');
-            log.error(e);
+            return this.requestUpdate();
         }
 
-        if (result) {
-            cmd.alert = result.querySelector('note')?.textContent;
+        if (status === 'executing') {
+            cmd.alert = __('Executing');
+            cmd.fields = fields;
+            cmd.instructions = instructions;
+            cmd.alert_type = 'primary';
+            cmd.actions = actions;
+        } else if (status === 'completed') {
+            this.alert_type = 'primary';
+            this.alert = __('Completed');
+            this.note = note;
+            this.clearCommand(cmd);
         } else {
-            cmd.alert = 'Done';
+            log.error(`Unexpected status for ad-hoc command: ${status}`);
+            cmd.alert = __('Completed');
+            cmd.alert_type = 'primary';
         }
-        cmd.alert_type = 'primary';
-        this.nonce = u.getUniqueId();
+        this.requestUpdate();
+    }
+
+    async cancel (ev) {
+        ev.preventDefault();
+        this.showform = '';
+        this.requestUpdate();
+
+        const form_data = new FormData(ev.target.form);
+        const jid = form_data.get('command_jid').trim();
+        const node = form_data.get('command_node').trim();
+
+        const cmd = this.commands.filter(c => c.node === node)[0];
+        delete cmd.alert;
+        this.requestUpdate();
+
+        const { status } = await api.adhoc.runCommand(jid, cmd.sessionid, cmd.node, 'cancel', []);
+
+        if (status === 'error') {
+            cmd.alert_type = 'danger';
+            cmd.alert = __(
+                'An error occurred while trying to cancel the command. See the developer console for details'
+            );
+        } else if (status === 'canceled') {
+            this.alert_type = '';
+            this.alert = '';
+            this.clearCommand(cmd);
+        } else {
+            log.error(`Unexpected status for ad-hoc command: ${status}`);
+            cmd.alert = __('Error: unexpected result');
+            cmd.alert_type = 'danger';
+        }
+        this.requestUpdate();
     }
 }
 

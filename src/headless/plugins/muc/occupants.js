@@ -1,13 +1,14 @@
 import ChatRoomOccupant from './occupant.js';
-import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection.js';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
-import { _converse, api } from '../../core.js';
+import { _converse, api, converse } from '../../core.js';
 import { getAffiliationList } from './affiliations/utils.js';
 import { getAutoFetchedAffiliationLists } from './utils.js';
 import { getUniqueId } from '@converse/headless/utils/core.js';
+
+const { u } = converse.env;
 
 
 /**

@@ -6,7 +6,6 @@
 import DOMPurify from 'dompurify';
 import _converse from '@converse/headless/shared/_converse.js';
 import compact from "lodash-es/compact";
-import isElement from "lodash-es/isElement";
 import isObject from "lodash-es/isObject";
 import last from "lodash-es/last";
 import log from '@converse/headless/log.js';
@@ -16,6 +15,10 @@ import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '@converse/headless/shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
+
+export function isElement (el) {
+    return el instanceof Element || el instanceof HTMLDocument;
+}
 
 export function isError (obj) {
     return Object.prototype.toString.call(obj) === "[object Error]";
@@ -619,6 +622,7 @@ export function saveWindowState (ev) {
 export default Object.assign({
     getRandomInt,
     getUniqueId,
+    isElement,
     isEmptyMessage,
     isValidJID,
     merge,

@@ -4,7 +4,20 @@ const converse = window.converse;
 converse.load();
 const { u, sizzle, Strophe, dayjs, $iq, $msg, $pres } = converse.env;
 
+
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
+
+jasmine.toEqualStanza = function toEqualStanza () {
+    return {
+        compare (actual, expected) {
+            const result = { pass: u.isEqualNode(actual, expected) };
+            if (!result.pass) {
+                result.message = `Stanzas don't match:\nActual:\n${actual.outerHTML}\nExpected:\n${expected.outerHTML}`;
+            }
+            return result;
+        }
+    }
+}
 
 function initConverse (promise_names=[], settings=null, func) {
     if (typeof promise_names === "function") {
@@ -670,7 +683,7 @@ async function _initConverse (settings) {
             name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
             fullname = name.join(' ');
         }
-        const vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
+        const vcard = $iq().c('vCard').c('FN').t(fullname).tree();
         return {
             'stanza': vcard,
             'fullname': vcard.querySelector('FN')?.textContent,

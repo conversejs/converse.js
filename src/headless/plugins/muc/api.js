@@ -1,7 +1,8 @@
 import log from '../../log';
-import u from '../../utils/form';
 import { Strophe } from 'strophe.js/src/strophe';
-import { _converse, api } from '../../core.js';
+import { _converse, api, converse } from '../../core.js';
+
+const { u } = converse.env;
 
 
 export default {

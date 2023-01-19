@@ -1130,7 +1130,7 @@ msgstr "您可以选择写下收回消息的原因。"
 #: dist/converse-no-dependencies.js:80415
 #: dist/converse-no-dependencies.js:80439
 msgid "Message Retraction"
-msgstr "消息撤回"
+msgstr "撤回消息"
 
 #: dist/converse-no-dependencies.js:80415
 #: dist/converse-no-dependencies.js:80439

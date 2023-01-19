@@ -1093,8 +1093,8 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
-"注意并非所有 XMPP/Jabber 用户端（和服务端）软件皆支持消息回收功能，这条消息有"
-"可能会未被收回。"
+"请注意：并非所有 XMPP/Jabber 用户端（和服务端）软件皆支持消息回收功能，这条消"
+"息有可能会未被收回。"
 
 #: dist/converse-no-dependencies.js:80289
 #: dist/converse-no-dependencies.js:80365

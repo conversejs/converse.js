@@ -11,10 +11,11 @@ class MUCBookmarkForm extends CustomElement {
         }
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.model = _converse.chatboxes.get(this.jid);
-        this.bookmark  = _converse.bookmarks.get(this.model.get('jid'));
+    willUpdate (changed_properties) {
+        if (changed_properties.has('jid')) {
+            this.model = _converse.chatboxes.get(this.jid);
+            this.bookmark  = _converse.bookmarks.get(this.jid);
+        }
     }
 
     render () {

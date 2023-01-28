@@ -18,13 +18,7 @@ class MUCBookmarkForm extends CustomElement {
     }
 
     render () {
-        return tpl_muc_bookmark_form(
-            Object.assign(this.model.toJSON(), {
-                'bookmark': this.bookmark,
-                'onCancel': ev => this.removeBookmark(ev),
-                'onSubmit': ev => this.onBookmarkFormSubmitted(ev)
-            })
-        );
+        return tpl_muc_bookmark_form(this)
     }
 
     onBookmarkFormSubmitted (ev) {

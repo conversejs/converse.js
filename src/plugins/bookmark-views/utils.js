@@ -7,18 +7,17 @@ import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/util
 
 export function getHeadingButtons (view, buttons) {
     if (api.settings.get('allow_bookmarks') && view.model.get('type') === _converse.CHATROOMS_TYPE) {
-        const bookmarked = view.model.get('bookmarked');
         const data = {
-            'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
-            'i18n_text': bookmarked ? __('Unbookmark') : __('Bookmark'),
-            'handler': ev => view.showBookmarkModal(ev),
+            'i18n_title': __('Bookmark this groupchat'),
+            'i18n_text': __('Bookmark'),
+            'handler': (ev) => view.showBookmarkModal(ev),
             'a_class': 'toggle-bookmark',
             'icon_class': 'fa-bookmark',
             'name': 'bookmark'
         };
         const names = buttons.map(t => t.name);
         const idx = names.indexOf('details');
-        const data_promise = checkBookmarksSupport().then(s => (s ? data : null));
+        const data_promise = checkBookmarksSupport().then((s) => (s ? data : null));
         return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
     }
     return buttons;

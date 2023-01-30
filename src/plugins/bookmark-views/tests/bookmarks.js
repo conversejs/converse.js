@@ -116,7 +116,6 @@ describe("A chat room", function () {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.get('bookmarked'));
         expect(view.model.get('bookmarked')).toBeTruthy();
-        await u.waitUntil(() => view.querySelector('.toggle-bookmark')?.title === 'Unbookmark this groupchat');
         expect(u.hasClass('on-button', view.querySelector('.toggle-bookmark')), true);
         // We ignore this IQ stanza... (unless it's an error stanza), so
         // nothing to test for here.

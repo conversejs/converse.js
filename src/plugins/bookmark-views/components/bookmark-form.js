@@ -11,20 +11,15 @@ class MUCBookmarkForm extends CustomElement {
         }
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.model = _converse.chatboxes.get(this.jid);
-        this.bookmark  = _converse.bookmarks.get(this.model.get('jid'));
+    willUpdate (changed_properties) {
+        if (changed_properties.has('jid')) {
+            this.model = _converse.chatboxes.get(this.jid);
+            this.bookmark  = _converse.bookmarks.get(this.jid);
+        }
     }
 
     render () {
-        return tpl_muc_bookmark_form(
-            Object.assign(this.model.toJSON(), {
-                'bookmark': this.bookmark,
-                'onCancel': ev => this.removeBookmark(ev),
-                'onSubmit': ev => this.onBookmarkFormSubmitted(ev)
-            })
-        );
+        return tpl_muc_bookmark_form(this)
     }
 
     onBookmarkFormSubmitted (ev) {

@@ -2,6 +2,7 @@
 
 ## 10.1.1 (Unreleased)
 
+- #3128: Second bookmarked room shows info of the first one
 - Bugfix. Uyghur translations weren't loading
 
 ## 10.1.0 (2023-01-07)

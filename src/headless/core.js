@@ -428,8 +428,8 @@ export const api = _converse.api = {
         }
         if (typeof stanza === 'string') {
             stanza = u.toStanza(stanza);
-        } else if (stanza?.nodeTree) {
-            stanza = stanza.nodeTree;
+        } else if (stanza?.tree) {
+            stanza = stanza.tree();
         }
 
         if (stanza.tagName === 'iq') {
@@ -454,7 +454,7 @@ export const api = _converse.api = {
      */
     sendIQ (stanza, timeout=_converse.STANZA_TIMEOUT, reject=true) {
         let promise;
-        stanza = stanza?.nodeTree ?? stanza;
+        stanza = stanza.tree?.() ?? stanza;
         if (['get', 'set'].includes(stanza.getAttribute('type'))) {
             timeout = timeout || _converse.STANZA_TIMEOUT;
             if (reject) {

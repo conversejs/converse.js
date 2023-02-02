@@ -91,8 +91,8 @@ export function prefixMentions (message) {
 const u = {};
 
 u.isTagEqual = function (stanza, name) {
-    if (stanza.nodeTree) {
-        return u.isTagEqual(stanza.nodeTree, name);
+    if (stanza.tree?.()) {
+        return u.isTagEqual(stanza.tree(), name);
     } else if (!(stanza instanceof Element)) {
         throw Error(
             "isTagEqual called with value which isn't "+

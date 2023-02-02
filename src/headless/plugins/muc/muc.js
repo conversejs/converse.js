@@ -549,6 +549,8 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     async handleMessageStanza (stanza) {
+        stanza = stanza.tree?.() ?? stanza;
+
         const type = stanza.getAttribute('type');
         if (type === 'error') {
             return this.handleErrorMessageStanza(stanza);
@@ -755,7 +757,7 @@ const ChatRoomMixin = {
         message.set({
             'retracted': new Date().toISOString(),
             'retracted_id': origin_id,
-            'retraction_id': stanza.nodeTree.getAttribute('id'),
+            'retraction_id': stanza.tree().getAttribute('id'),
             'editable': false
         });
         const result = await this.sendTimedMessage(stanza);

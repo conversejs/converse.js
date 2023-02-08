@@ -1,3 +1,4 @@
+import log from '@converse/headless/log';
 import tpl_password_reset from './templates/password-reset.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
@@ -48,7 +49,9 @@ class PasswordReset extends CustomElement {
             this.alert_message = __('Your server does not support in-band password reset');
             return;
         } else if (u.isErrorStanza(iq_response)) {
-            this.alert_message = __('Your server responded with an unknown error');
+            this.alert_message = __('Your server responded with an unknown error, check the console for details');
+            log.error("Could not set password");
+            log.error(iq_response);
             return;
         }
 
@@ -72,7 +75,7 @@ class PasswordReset extends CustomElement {
         } else if (u.isErrorStanza(iq_result)) {
             this.alert_message = __('You are not allowed to change your password');
         } else {
-            api.alert('info', __('Successful'), [__('Your new password has been set')]);
+            api.alert('info', __('Success'), [__('Your new password has been set')]);
         }
     }
 }

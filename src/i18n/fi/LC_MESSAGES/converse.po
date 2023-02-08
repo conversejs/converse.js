@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-28 22:36+0100\n"
+"POT-Creation-Date: 2023-02-08 11:16+0100\n"
 "PO-Revision-Date: 2022-03-27 17:07+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
@@ -128,8 +128,8 @@ msgstr "Valitettavasti tiedoston uloslataus-URL-osoitetta ei voitu määrittää
 #: dist/converse-no-dependencies.js:40522
 #, javascript-format
 msgid ""
-"Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
-"\""
+"Sorry, could not succesfully upload your file. Your server’s response: "
+"\"%1$s\""
 msgstr ""
 "Valitettavasti tiedostoa ei voitu ulosladata. Palvelimesi vastaus: \"%1$s\""
 
@@ -583,11 +583,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:88816
 #: dist/converse-no-dependencies.js:95790
 #: dist/converse-no-dependencies.js:106325
-#: dist/converse-no-dependencies.js:115167
-#: dist/converse-no-dependencies.js:115169
-#: dist/converse-no-dependencies.js:116378
-#: dist/converse-no-dependencies.js:117769
-#: dist/converse-no-dependencies.js:127072
+#: dist/converse-no-dependencies.js:115170
+#: dist/converse-no-dependencies.js:115172
+#: dist/converse-no-dependencies.js:116381
+#: dist/converse-no-dependencies.js:117772
+#: dist/converse-no-dependencies.js:127075
 msgid "Error"
 msgstr "Virhe"
 
@@ -660,7 +660,7 @@ msgstr "OK"
 
 #: dist/converse-no-dependencies.js:69054
 #: dist/converse-no-dependencies.js:105759
-#: dist/converse-no-dependencies.js:121793
+#: dist/converse-no-dependencies.js:121796
 msgid "Cancel"
 msgstr "Peruuta"
 
@@ -683,7 +683,7 @@ msgstr "Lisää yhteystieto"
 #: dist/converse-no-dependencies.js:103753
 #: dist/converse-no-dependencies.js:108714
 #: dist/converse-no-dependencies.js:112532
-#: dist/converse-no-dependencies.js:123472
+#: dist/converse-no-dependencies.js:123475
 msgid "Nickname"
 msgstr "Nimimerkki"
 
@@ -693,7 +693,7 @@ msgstr "Nimimerkki"
 #: dist/converse-no-dependencies.js:98031
 #: dist/converse-no-dependencies.js:107422
 #: dist/converse-no-dependencies.js:112531
-#: dist/converse-no-dependencies.js:125380
+#: dist/converse-no-dependencies.js:125383
 msgid "XMPP Address"
 msgstr "XMPP-osoite"
 
@@ -867,7 +867,7 @@ msgid "Please enter the XMPP address of this groupchat to confirm"
 msgstr "Ole hyvä ja kirjoita XMPP-palveluntarjoaja rekisteröidäksesi"
 
 #: dist/converse-no-dependencies.js:75676
-#: dist/converse-no-dependencies.js:125376
+#: dist/converse-no-dependencies.js:125379
 msgid "name@example.org"
 msgstr "name@example.org"
 
@@ -950,7 +950,7 @@ msgstr ""
 "lisätietoja kehittäjäkonsolista"
 
 #: dist/converse-no-dependencies.js:77560
-#: dist/converse-no-dependencies.js:124231
+#: dist/converse-no-dependencies.js:124234
 msgid "Bookmark this groupchat"
 msgstr "Lisää tämä ryhmäkeskustelu kirjanmerkkeihin"
 
@@ -967,19 +967,19 @@ msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Haluatko varmasti poistaa kirjanmerkin \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:77643
-#: dist/converse-no-dependencies.js:124232
+#: dist/converse-no-dependencies.js:124235
 msgid "Unbookmark this groupchat"
 msgstr "Poista tämä ryhmäkeskustelu kirjanmerkeistä"
 
 #: dist/converse-no-dependencies.js:77644
-#: dist/converse-no-dependencies.js:123845
-#: dist/converse-no-dependencies.js:124248
+#: dist/converse-no-dependencies.js:123848
+#: dist/converse-no-dependencies.js:124251
 msgid "Click to open this groupchat"
 msgstr "Avaa tämä ryhmäkeskustelu napsauttamalla"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:77668
-#: dist/converse-no-dependencies.js:127168
+#: dist/converse-no-dependencies.js:127171
 msgid "Filter"
 msgstr "Suodatin"
 
@@ -1157,7 +1157,7 @@ msgid "URL"
 msgstr "URL"
 
 #: dist/converse-no-dependencies.js:88816
-#: dist/converse-no-dependencies.js:127072
+#: dist/converse-no-dependencies.js:127075
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr ""
@@ -1168,7 +1168,7 @@ msgid "Sorry, something went wrong while trying to refresh"
 msgstr "Jokin meni pieleen yrittäessäsi päivittää"
 
 #: dist/converse-no-dependencies.js:89505
-#: dist/converse-no-dependencies.js:127054
+#: dist/converse-no-dependencies.js:127057
 msgid "Are you sure you want to remove this contact?"
 msgstr "Haluatko varmasti poistaa tämän yhteystiedon?"
 
@@ -1376,7 +1376,7 @@ msgstr "Napsauta tätä kirjautuaksesi anonyymisti"
 
 #: dist/converse-no-dependencies.js:98156
 #: dist/converse-no-dependencies.js:107421
-#: dist/converse-no-dependencies.js:125377
+#: dist/converse-no-dependencies.js:125380
 msgid "Please enter a valid XMPP address"
 msgstr "Anna kelvollinen XMPP-osoite"
 
@@ -1618,7 +1618,7 @@ msgid "Features"
 msgstr "Ominaisuudet"
 
 #: dist/converse-no-dependencies.js:107163
-#: dist/converse-no-dependencies.js:123810
+#: dist/converse-no-dependencies.js:123813
 msgid "Hidden"
 msgstr "Piilotettu"
 
@@ -1635,7 +1635,7 @@ msgid "Members only"
 msgstr "Vain jäsenille"
 
 #: dist/converse-no-dependencies.js:107167
-#: dist/converse-no-dependencies.js:123812
+#: dist/converse-no-dependencies.js:123815
 msgid "Moderated"
 msgstr "Valvottu"
 
@@ -1646,7 +1646,7 @@ msgstr ""
 "Ryhmäkeskusteluun osallistuvien osallistujien on pyydettävä lupaa kirjoittaa"
 
 #: dist/converse-no-dependencies.js:107169
-#: dist/converse-no-dependencies.js:125379
+#: dist/converse-no-dependencies.js:125382
 msgid "Name"
 msgstr "Nimi"
 
@@ -1679,7 +1679,7 @@ msgid "Online users"
 msgstr "Online-käyttäjät"
 
 #: dist/converse-no-dependencies.js:107177
-#: dist/converse-no-dependencies.js:123814
+#: dist/converse-no-dependencies.js:123817
 msgid "Open"
 msgstr "Avata"
 
@@ -1704,12 +1704,12 @@ msgid "This groupchat persists even if it's unoccupied"
 msgstr "Tämä ryhmäkeskustelu jatkuu, vaikka se olisi tyhjillään"
 
 #: dist/converse-no-dependencies.js:107183
-#: dist/converse-no-dependencies.js:123816
+#: dist/converse-no-dependencies.js:123819
 msgid "Public"
 msgstr "Julkinen"
 
 #: dist/converse-no-dependencies.js:107184
-#: dist/converse-no-dependencies.js:123817
+#: dist/converse-no-dependencies.js:123820
 msgid "Semi-anonymous"
 msgstr "Semi-anonyymi"
 
@@ -1718,7 +1718,7 @@ msgid "Only moderators can see your XMPP address"
 msgstr "Vain moderaattorit näkevät XMPP-osoitteesi"
 
 #: dist/converse-no-dependencies.js:107186
-#: dist/converse-no-dependencies.js:123818
+#: dist/converse-no-dependencies.js:123821
 msgid "Temporary"
 msgstr "Tilapäinen"
 
@@ -1909,17 +1909,17 @@ msgstr "haluaa olla yhteyshenkilösi"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:112056
-#: dist/converse-no-dependencies.js:127177
+#: dist/converse-no-dependencies.js:127180
 msgid "Away"
 msgstr "Poissa"
 
 #: dist/converse-no-dependencies.js:112057
-#: dist/converse-no-dependencies.js:127176
+#: dist/converse-no-dependencies.js:127179
 msgid "Busy"
 msgstr "Varattu"
 
 #: dist/converse-no-dependencies.js:112058
-#: dist/converse-no-dependencies.js:127174
+#: dist/converse-no-dependencies.js:127177
 msgid "Online"
 msgstr "Online"
 
@@ -1979,66 +1979,67 @@ msgstr "Salasana"
 msgid "Confirm new password"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113100
+#: dist/converse-no-dependencies.js:113101
 #, fuzzy
 msgid "Timeout error"
 msgstr "Aikakatkaisuvirhe"
 
-#: dist/converse-no-dependencies.js:113107
+#: dist/converse-no-dependencies.js:113108
 msgid "Your server does not support in-band password reset"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113114
-msgid "Your server responded with an unknown error"
+#: dist/converse-no-dependencies.js:113115
+msgid ""
+"Your server responded with an unknown error, check the console for details"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113131
+#: dist/converse-no-dependencies.js:113134
 #, fuzzy
 msgid "Timeout error while trying to set your password"
 msgstr "Anteeksi, jokin meni pieleen, kun yrittää asettaa kuuluminen"
 
-#: dist/converse-no-dependencies.js:113133
+#: dist/converse-no-dependencies.js:113136
 msgid "Your server does not allow in-band password reset"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113135
-#: dist/converse-no-dependencies.js:113137
+#: dist/converse-no-dependencies.js:113138
+#: dist/converse-no-dependencies.js:113140
 #, fuzzy
 msgid "You are not allowed to change your password"
 msgstr "Et voi luoda uusia ryhmäkeskusteluja."
 
-#: dist/converse-no-dependencies.js:113139
-msgid "Successful"
+#: dist/converse-no-dependencies.js:113142
+msgid "Success"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113139
+#: dist/converse-no-dependencies.js:113142
 #, fuzzy
 msgid "Your new password has been set"
 msgstr "Uusi ryhmäkeskustelu on luotu"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:113684
+#: dist/converse-no-dependencies.js:113687
 msgid "Your Profile"
 msgstr "Profiilisi"
 
-#: dist/converse-no-dependencies.js:113703
+#: dist/converse-no-dependencies.js:113706
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Anteeksi, tapahtui virhe yrittäessäsi tallentaa profiilisi tietoja."
 
-#: dist/converse-no-dependencies.js:113703
+#: dist/converse-no-dependencies.js:113706
 msgid "You can check your browser's developer console for any error output."
 msgstr "Voit tarkistaa virheet selaimesi kehittäjäkonsolista."
 
-#: dist/converse-no-dependencies.js:113777
+#: dist/converse-no-dependencies.js:113780
 msgid "About"
 msgstr "Noin"
 
-#: dist/converse-no-dependencies.js:113778
+#: dist/converse-no-dependencies.js:113781
 msgid "Commands"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:113786
+#: dist/converse-no-dependencies.js:113789
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
@@ -2046,59 +2047,59 @@ msgstr ""
 "%1$s Avoimen Lähdekoodin %2$s XMPP chat client tuonut sinulle %3$s Opkode "
 "%2$s"
 
-#: dist/converse-no-dependencies.js:113787
+#: dist/converse-no-dependencies.js:113790
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr "%1$s Käännä %2$s se omalle kielellesi"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:113937
+#: dist/converse-no-dependencies.js:113940
 msgid "Settings"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:114297
-#: dist/converse-no-dependencies.js:114307
+#: dist/converse-no-dependencies.js:114300
+#: dist/converse-no-dependencies.js:114310
 msgid "online"
 msgstr "verkossa"
 
-#: dist/converse-no-dependencies.js:114299
+#: dist/converse-no-dependencies.js:114302
 msgid "busy"
 msgstr "Varattu"
 
-#: dist/converse-no-dependencies.js:114301
+#: dist/converse-no-dependencies.js:114304
 msgid "away for long"
 msgstr "pois pitkään"
 
-#: dist/converse-no-dependencies.js:114303
+#: dist/converse-no-dependencies.js:114306
 msgid "away"
 msgstr "pois"
 
-#: dist/converse-no-dependencies.js:114305
+#: dist/converse-no-dependencies.js:114308
 msgid "offline"
 msgstr "Offline"
 
-#: dist/converse-no-dependencies.js:114321
+#: dist/converse-no-dependencies.js:114324
 msgid "Are you sure you want to log out?"
 msgstr "Haluatko varmasti kirjautua ulos?"
 
-#: dist/converse-no-dependencies.js:114353
+#: dist/converse-no-dependencies.js:114356
 msgid "Log out"
 msgstr "Kirjaudu ulos"
 
-#: dist/converse-no-dependencies.js:114357
+#: dist/converse-no-dependencies.js:114360
 msgid "Show details about this chat client"
 msgstr "Näytä tämän chat-asiakkaan tiedot"
 
-#: dist/converse-no-dependencies.js:114364
+#: dist/converse-no-dependencies.js:114367
 #, javascript-format
 msgid "I am %1$s"
 msgstr "Olen %1$s"
 
-#: dist/converse-no-dependencies.js:114365
+#: dist/converse-no-dependencies.js:114368
 msgid "Click to change your chat status"
 msgstr "Muuta keskustelutilaasi napsauttamalla tätä"
 
-#: dist/converse-no-dependencies.js:115160
+#: dist/converse-no-dependencies.js:115163
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
@@ -2107,7 +2108,7 @@ msgstr ""
 "Emme valitettavasti voi lähettää salattua viestiä, koska %1$s edellyttää, "
 "että olet tilannut heidän läsnäolonsa, jotta näet heidän OMEMO-tietonsa"
 
-#: dist/converse-no-dependencies.js:115162
+#: dist/converse-no-dependencies.js:115165
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
@@ -2116,11 +2117,11 @@ msgstr ""
 "Valitettavasti emme voi lähettää salattua viestiä, koska kohteen %1$s "
 "etäpalvelinta ei löytynyt"
 
-#: dist/converse-no-dependencies.js:115164
+#: dist/converse-no-dependencies.js:115167
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Salattua viestiä ei voi lähettää odottamattoman virheen vuoksi."
 
-#: dist/converse-no-dependencies.js:115177
+#: dist/converse-no-dependencies.js:115180
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -2128,13 +2129,13 @@ msgstr ""
 "Tämä on OMEMO-salattu viesti, jota asiakkaasi ei näytä tukevan. Lisätietoja "
 "https://conversations.im/omemo"
 
-#: dist/converse-no-dependencies.js:115408
+#: dist/converse-no-dependencies.js:115411
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115614
+#: dist/converse-no-dependencies.js:115617
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
@@ -2142,13 +2143,13 @@ msgstr ""
 "Valitettavasti vastaanotetun OMEMO-viestin salausta ei voitu purkaa, koska "
 "meillä ei ole XMPP-osoitetta tälle käyttäjälle."
 
-#: dist/converse-no-dependencies.js:115679
+#: dist/converse-no-dependencies.js:115682
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
 "Valitettavasti vastaanotetun OMEMO-viestin salausta ei voitu purkaa virheen "
 "vuoksi."
 
-#: dist/converse-no-dependencies.js:116310
+#: dist/converse-no-dependencies.js:116313
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
@@ -2157,7 +2158,7 @@ msgstr ""
 "%1$s ei näytä olevan asiakasta, joka tukee OMEMO:ta. Salattu chat ei ole "
 "enää mahdollista tässä ryhmäkeskustelussa."
 
-#: dist/converse-no-dependencies.js:116374
+#: dist/converse-no-dependencies.js:116377
 #, fuzzy
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
@@ -2167,7 +2168,7 @@ msgstr ""
 "Ryhmäkeskusteluissa on jonkin verran nimettömiä tai kaikki osallistujat "
 "eivät tue OMEMOa."
 
-#: dist/converse-no-dependencies.js:116376
+#: dist/converse-no-dependencies.js:116379
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
@@ -2176,91 +2177,91 @@ msgstr ""
 "Päästä päähän salausta ei voida käyttää, koska %1$s käyttää asiakasta, joka "
 "ei tue OMEMO:t a."
 
-#: dist/converse-no-dependencies.js:116389
+#: dist/converse-no-dependencies.js:116392
 msgid "Messages are being sent in plaintext"
 msgstr "Viestit lähetetään tekstinä"
 
-#: dist/converse-no-dependencies.js:116390
+#: dist/converse-no-dependencies.js:116393
 #, fuzzy
 msgid "Messages are sent encrypted"
 msgstr "Viestit lähetetään tekstinä"
 
-#: dist/converse-no-dependencies.js:116393
+#: dist/converse-no-dependencies.js:116396
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116395
+#: dist/converse-no-dependencies.js:116398
 msgid "OMEMO encryption is not supported"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116419
+#: dist/converse-no-dependencies.js:116422
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 "Valitettavasti mitään laitteita ei löytynyt, joihin voimme lähettää OMEMO-"
 "salatun viestin."
 
-#: dist/converse-no-dependencies.js:116609
+#: dist/converse-no-dependencies.js:116612
 msgid "Trusted"
 msgstr "Luotettu"
 
-#: dist/converse-no-dependencies.js:116610
+#: dist/converse-no-dependencies.js:116613
 msgid "Untrusted"
 msgstr "Ei-luotettu"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:116618
+#: dist/converse-no-dependencies.js:116621
 msgid "OMEMO Fingerprints"
 msgstr "OMEMO-sormenjäljet"
 
-#: dist/converse-no-dependencies.js:116619
+#: dist/converse-no-dependencies.js:116622
 msgid "No OMEMO-enabled devices found"
 msgstr "OMEMO-yhteensopivia laitteita ei löytynyt"
 
-#: dist/converse-no-dependencies.js:117167
+#: dist/converse-no-dependencies.js:117170
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "Valintaruutu seuraavan sormenjäljen valitsemiseksi"
 
-#: dist/converse-no-dependencies.js:117171
+#: dist/converse-no-dependencies.js:117174
 msgid "Device without a fingerprint"
 msgstr "Laite ilman sormenjälkiä"
 
-#: dist/converse-no-dependencies.js:117172
+#: dist/converse-no-dependencies.js:117175
 #, fuzzy
 msgid "Checkbox for selecting the following device"
 msgstr "Valintaruutu seuraavan sormenjäljen valitsemiseksi"
 
-#: dist/converse-no-dependencies.js:117180
+#: dist/converse-no-dependencies.js:117183
 msgid "Other OMEMO-enabled devices"
 msgstr "Muut OMEMO-yhteensopivat laitteet"
 
-#: dist/converse-no-dependencies.js:117181
+#: dist/converse-no-dependencies.js:117184
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr "Valintaruutu valitaksesi kaikkien muiden OMEMO-laitteiden sormenjäljet"
 
-#: dist/converse-no-dependencies.js:117182
+#: dist/converse-no-dependencies.js:117185
 msgid "Remove checked devices and close"
 msgstr "Poista valitut laitteet ja sulje"
 
-#: dist/converse-no-dependencies.js:117183
+#: dist/converse-no-dependencies.js:117186
 msgid "Select all"
 msgstr "Valitse kaikki"
 
-#: dist/converse-no-dependencies.js:117192
+#: dist/converse-no-dependencies.js:117195
 msgid "This device's OMEMO fingerprint"
 msgstr "Tämän laitteen OMEMO-sormenjälki"
 
-#: dist/converse-no-dependencies.js:117193
+#: dist/converse-no-dependencies.js:117196
 msgid "Generate new keys and fingerprint"
 msgstr "Luo uusia avaimia ja sormenjälkiä"
 
-#: dist/converse-no-dependencies.js:117769
+#: dist/converse-no-dependencies.js:117772
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Valitettavasti tapahtui virhe yritettäessä poistaa laitteita."
 
-#: dist/converse-no-dependencies.js:117796
+#: dist/converse-no-dependencies.js:117799
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -2270,57 +2271,57 @@ msgstr ""
 "eikä kaikkia aiemmin salattuja viestejä voi enää purkaa tässä laitteessa."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:121765
+#: dist/converse-no-dependencies.js:121768
 msgid "Choose a different provider"
 msgstr "Valitse toinen tarjoaja"
 
-#: dist/converse-no-dependencies.js:121766
-#: dist/converse-no-dependencies.js:121807
+#: dist/converse-no-dependencies.js:121769
+#: dist/converse-no-dependencies.js:121810
 msgid "Already have a chat account?"
 msgstr "Onko sinulla jo chat-tili?"
 
-#: dist/converse-no-dependencies.js:121767
+#: dist/converse-no-dependencies.js:121770
 msgid "Account Registration:"
 msgstr "Tilin rekisteröinti:"
 
-#: dist/converse-no-dependencies.js:121768
-#: dist/converse-no-dependencies.js:121808
+#: dist/converse-no-dependencies.js:121771
+#: dist/converse-no-dependencies.js:121811
 msgid "Log in here"
 msgstr "Kirjaudu sisään tästä"
 
-#: dist/converse-no-dependencies.js:121769
+#: dist/converse-no-dependencies.js:121772
 msgid "Register"
 msgstr "Rekisteröidy"
 
-#: dist/converse-no-dependencies.js:121792
+#: dist/converse-no-dependencies.js:121795
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Odota, haemme rekisteröintilomaketta …"
 
-#: dist/converse-no-dependencies.js:121800
+#: dist/converse-no-dependencies.js:121803
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Vihje: Julkisten XMPP-palveluntarjoajien luettelo on käytettävissä"
 
-#: dist/converse-no-dependencies.js:121801
+#: dist/converse-no-dependencies.js:121804
 msgid "here"
 msgstr "tässä"
 
-#: dist/converse-no-dependencies.js:121806
+#: dist/converse-no-dependencies.js:121809
 msgid "Fetch registration form"
 msgstr "Hae rekisteröintilomake"
 
-#: dist/converse-no-dependencies.js:121813
+#: dist/converse-no-dependencies.js:121816
 msgid "Create your account"
 msgstr "Luo tilisi"
 
-#: dist/converse-no-dependencies.js:121814
+#: dist/converse-no-dependencies.js:121817
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Ole hyvä ja kirjoita XMPP-palveluntarjoaja rekisteröidäksesi:"
 
-#: dist/converse-no-dependencies.js:122118
+#: dist/converse-no-dependencies.js:122121
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Valitettavasti emme voi muodostaa yhteyttä valitsemaasi tarjoajaan."
 
-#: dist/converse-no-dependencies.js:122129
+#: dist/converse-no-dependencies.js:122132
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -2328,7 +2329,7 @@ msgstr ""
 "Anteeksi, annettu tarjoaja ei tue bänditilin rekisteröintiä. Kokeile toista "
 "tarjoajaa."
 
-#: dist/converse-no-dependencies.js:122155
+#: dist/converse-no-dependencies.js:122158
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -2337,15 +2338,15 @@ msgstr ""
 "Jotain meni pieleen, kun muodostat yhteyden \"%1$s\". Oletko varma, että se "
 "on olemassa?"
 
-#: dist/converse-no-dependencies.js:122299
+#: dist/converse-no-dependencies.js:122302
 msgid "Now logging you in"
 msgstr "Kirjaudutaan sisään"
 
-#: dist/converse-no-dependencies.js:122301
+#: dist/converse-no-dependencies.js:122304
 msgid "Registered successfully"
 msgstr "Rekisteröity onnistuneesti"
 
-#: dist/converse-no-dependencies.js:122404
+#: dist/converse-no-dependencies.js:122407
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -2353,263 +2354,263 @@ msgstr ""
 "Palveluntarjoaja hylkäsi rekisteröintiyrityksen. Tarkista syöttämiesi "
 "arvojen oikeellisuus."
 
-#: dist/converse-no-dependencies.js:122957
+#: dist/converse-no-dependencies.js:122960
 msgid " e.g. conversejs.org"
 msgstr " esim. conversejs.org"
 
-#: dist/converse-no-dependencies.js:123473
+#: dist/converse-no-dependencies.js:123476
 msgid "This field is required"
 msgstr "Tämä kenttä pitää täyttää"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:123477
+#: dist/converse-no-dependencies.js:123480
 msgid "Join"
 msgstr "Liity"
 
-#: dist/converse-no-dependencies.js:123481
+#: dist/converse-no-dependencies.js:123484
 msgid "name@conference.example.org"
 msgstr "name@conference.example.org"
 
-#: dist/converse-no-dependencies.js:123483
+#: dist/converse-no-dependencies.js:123486
 msgid "Groupchat name"
 msgstr "Ryhmäkeskustelun nimi"
 
-#: dist/converse-no-dependencies.js:123483
+#: dist/converse-no-dependencies.js:123486
 msgid "Groupchat address"
 msgstr "Ryhmäkeskusteluosoite"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:123697
+#: dist/converse-no-dependencies.js:123700
 msgid "Enter a new Groupchat"
 msgstr "Anna uusi ryhmäkeskustelu"
 
-#: dist/converse-no-dependencies.js:123756
+#: dist/converse-no-dependencies.js:123759
 msgid "Groupchat id is invalid."
 msgstr "Ryhmäkeskustelun tunnus on virheellinen."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:123805
+#: dist/converse-no-dependencies.js:123808
 msgid "Description:"
 msgstr "Kuvaus:"
 
-#: dist/converse-no-dependencies.js:123806
+#: dist/converse-no-dependencies.js:123809
 #, fuzzy
 msgid "Groupchat XMPP Address:"
 msgstr "Ryhmäkeskusteluosoite"
 
-#: dist/converse-no-dependencies.js:123807
+#: dist/converse-no-dependencies.js:123810
 msgid "Participants:"
 msgstr "Osallistujat:"
 
-#: dist/converse-no-dependencies.js:123808
+#: dist/converse-no-dependencies.js:123811
 msgid "Features:"
 msgstr "Ominaisuuksia:"
 
-#: dist/converse-no-dependencies.js:123809
+#: dist/converse-no-dependencies.js:123812
 msgid "Requires authentication"
 msgstr "Edellyttää todennusta"
 
-#: dist/converse-no-dependencies.js:123811
+#: dist/converse-no-dependencies.js:123814
 msgid "Requires an invitation"
 msgstr "Vaatii kutsun"
 
-#: dist/converse-no-dependencies.js:123813
+#: dist/converse-no-dependencies.js:123816
 msgid "Non-anonymous"
 msgstr "Ei-anonyymi"
 
-#: dist/converse-no-dependencies.js:123815
+#: dist/converse-no-dependencies.js:123818
 msgid "Permanent"
 msgstr "Pysyvä"
 
-#: dist/converse-no-dependencies.js:123819
+#: dist/converse-no-dependencies.js:123822
 msgid "Unmoderated"
 msgstr "Valvomattomat"
 
-#: dist/converse-no-dependencies.js:123839
+#: dist/converse-no-dependencies.js:123842
 msgid "Show groupchats"
 msgstr "Näytä ryhmäkeskustelut"
 
-#: dist/converse-no-dependencies.js:123840
+#: dist/converse-no-dependencies.js:123843
 msgid "Server address"
 msgstr "Palvelimen osoite"
 
-#: dist/converse-no-dependencies.js:123844
-#: dist/converse-no-dependencies.js:124248
+#: dist/converse-no-dependencies.js:123847
+#: dist/converse-no-dependencies.js:124251
 msgid "Show more information on this groupchat"
 msgstr "Näytä lisätietoja tästä ryhmäkeskustelusta"
 
-#: dist/converse-no-dependencies.js:124086
+#: dist/converse-no-dependencies.js:124089
 msgid "conference.example.org"
 msgstr "conference.example.org"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:124107
+#: dist/converse-no-dependencies.js:124110
 msgid "Query for Groupchats"
 msgstr "Ryhmäkeskustelujen kysely"
 
-#: dist/converse-no-dependencies.js:124147
+#: dist/converse-no-dependencies.js:124150
 msgid "Groupchats found"
 msgstr "Löytyi ryhmäkeskusteluja"
 
-#: dist/converse-no-dependencies.js:124155
+#: dist/converse-no-dependencies.js:124158
 msgid "No groupchats found"
 msgstr "Ryhmäkeskusteluja ei löytynyt"
 
-#: dist/converse-no-dependencies.js:124246
+#: dist/converse-no-dependencies.js:124249
 msgid "Leave this groupchat"
 msgstr "Jätä tämä ryhmäkeskustelu"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:124251
+#: dist/converse-no-dependencies.js:124254
 msgid "Click to toggle the list of open groupchats"
 msgstr ""
 "Valitse tämä, jos haluat vaihtaa avoimien ryhmäkeskusteluiden luettelon"
 
-#: dist/converse-no-dependencies.js:124252
+#: dist/converse-no-dependencies.js:124255
 msgid "Groupchats"
 msgstr "Ryhmäkeskustelut"
 
-#: dist/converse-no-dependencies.js:124253
+#: dist/converse-no-dependencies.js:124256
 msgid "Query for groupchats"
 msgstr "Ryhmäkeskustelujen kysely"
 
-#: dist/converse-no-dependencies.js:124254
+#: dist/converse-no-dependencies.js:124257
 msgid "Add a new groupchat"
 msgstr "Uuden ryhmäkeskustelun lisääminen"
 
-#: dist/converse-no-dependencies.js:124255
+#: dist/converse-no-dependencies.js:124258
 #, fuzzy
 msgid "Show bookmarked groupchats"
 msgstr "Näytä ryhmäkeskustelut"
 
-#: dist/converse-no-dependencies.js:124861
+#: dist/converse-no-dependencies.js:124864
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Oletko varma, että haluat jättää ryhmäkeskustelun %1$s?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125375
+#: dist/converse-no-dependencies.js:125378
 msgid "Add"
 msgstr "Lisää"
 
-#: dist/converse-no-dependencies.js:125378
+#: dist/converse-no-dependencies.js:125381
 #, fuzzy
 msgid "Group"
 msgstr "Ryhmäkeskustelut"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:125586
+#: dist/converse-no-dependencies.js:125589
 msgid "Add a Contact"
 msgstr "Lisää yhteystieto"
 
-#: dist/converse-no-dependencies.js:125685
+#: dist/converse-no-dependencies.js:125688
 msgid "Sorry, could not find a contact with that name"
 msgstr "Anteeksi, ei löytynyt kontaktia tällä nimellä"
 
-#: dist/converse-no-dependencies.js:125707
+#: dist/converse-no-dependencies.js:125710
 msgid "This contact has already been added"
 msgstr "Tämä yhteystieto on jo lisätty"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125800
+#: dist/converse-no-dependencies.js:125803
 msgid "Click to hide these contacts"
 msgstr "Piilota nämä yhteystiedot napsauttamalla"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125828
+#: dist/converse-no-dependencies.js:125831
 msgid "Contacts"
 msgstr "Yhteystiedot"
 
-#: dist/converse-no-dependencies.js:125829
+#: dist/converse-no-dependencies.js:125832
 #, fuzzy
 msgid "Click to toggle contacts"
 msgstr "Piilota nämä yhteystiedot napsauttamalla"
 
-#: dist/converse-no-dependencies.js:125830
+#: dist/converse-no-dependencies.js:125833
 msgid "Add a contact"
 msgstr "Lisää yhteystieto"
 
-#: dist/converse-no-dependencies.js:125831
+#: dist/converse-no-dependencies.js:125834
 msgid "Re-sync your contacts"
 msgstr "Yhteystietojen synkronointi uudelleen"
 
-#: dist/converse-no-dependencies.js:126477
+#: dist/converse-no-dependencies.js:126480
 msgid "This contact is busy"
 msgstr "Tämä yhteystieto on varattu"
 
-#: dist/converse-no-dependencies.js:126478
+#: dist/converse-no-dependencies.js:126481
 msgid "This contact is online"
 msgstr "Tämä yhteyshenkilö on verkossa"
 
-#: dist/converse-no-dependencies.js:126479
+#: dist/converse-no-dependencies.js:126482
 msgid "This contact is offline"
 msgstr "Tämä yhteyshenkilö on offline-tilassa"
 
-#: dist/converse-no-dependencies.js:126480
+#: dist/converse-no-dependencies.js:126483
 msgid "This contact is unavailable"
 msgstr "Tämä yhteystieto ei ole käytettävissä"
 
-#: dist/converse-no-dependencies.js:126481
+#: dist/converse-no-dependencies.js:126484
 msgid "This contact is away for an extended period"
 msgstr "Tämä kontakti on poissa pidemmän aikaa"
 
-#: dist/converse-no-dependencies.js:126482
+#: dist/converse-no-dependencies.js:126485
 msgid "This contact is away"
 msgstr "Tämä yhteyshenkilö on poissa"
 
-#: dist/converse-no-dependencies.js:126502
+#: dist/converse-no-dependencies.js:126505
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Poista %1$s yhteystietona napsauttamalla tätä"
 
-#: dist/converse-no-dependencies.js:126525
+#: dist/converse-no-dependencies.js:126528
 #, fuzzy, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "Napsauttamalla tätä voit keskustella kohteen %1$s kanssa (JID: %2$s)"
 
-#: dist/converse-no-dependencies.js:127023
+#: dist/converse-no-dependencies.js:127026
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Hyväksy yhteystietopyyntö kohteesta %1$s napsauttamalla tätä"
 
-#: dist/converse-no-dependencies.js:127024
+#: dist/converse-no-dependencies.js:127027
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Hylkää yhteystietopyyntö kohteesta %1$s napsauttamalla tätä"
 
-#: dist/converse-no-dependencies.js:127121
+#: dist/converse-no-dependencies.js:127124
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Haluatko varmasti hylätä tämän yhteydenottopyynnön?"
 
-#: dist/converse-no-dependencies.js:127169
+#: dist/converse-no-dependencies.js:127172
 msgid "Filter by contact name"
 msgstr "Suodata yhteyshenkilön nimen perusteella"
 
-#: dist/converse-no-dependencies.js:127170
+#: dist/converse-no-dependencies.js:127173
 msgid "Filter by group name"
 msgstr "Suodata ryhmän nimen mukaan"
 
-#: dist/converse-no-dependencies.js:127171
+#: dist/converse-no-dependencies.js:127174
 msgid "Filter by status"
 msgstr "Suodata tilan mukaan"
 
-#: dist/converse-no-dependencies.js:127172
+#: dist/converse-no-dependencies.js:127175
 msgid "Any"
 msgstr "Mitään"
 
-#: dist/converse-no-dependencies.js:127173
+#: dist/converse-no-dependencies.js:127176
 msgid "Unread"
 msgstr "Lukemattomat"
 
-#: dist/converse-no-dependencies.js:127175
+#: dist/converse-no-dependencies.js:127178
 msgid "Chatty"
 msgstr "Puhelias"
 
-#: dist/converse-no-dependencies.js:127178
+#: dist/converse-no-dependencies.js:127181
 msgid "Extended Away"
 msgstr "Laajennettu pois"
 
-#: dist/converse-no-dependencies.js:127179
+#: dist/converse-no-dependencies.js:127182
 msgid "Offline"
 msgstr "Poissa"
 

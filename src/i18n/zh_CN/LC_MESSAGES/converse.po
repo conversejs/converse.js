@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 11:16+0100\n"
-"PO-Revision-Date: 2022-11-05 01:37+0000\n"
-"Last-Translator: Eric <hamburger1024@mailbox.org>\n"
+"PO-Revision-Date: 2023-02-09 05:28+0000\n"
+"Last-Translator: Eric <hamburger2048@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: dist/converse-no-dependencies.js:29478
 msgid "The connection has dropped, attempting to reconnect."
@@ -1371,11 +1371,11 @@ msgstr "管理员"
 
 #: dist/converse-no-dependencies.js:104691
 msgid "Member"
-msgstr "会员"
+msgstr "成员"
 
 #: dist/converse-no-dependencies.js:104692
 msgid "Moderator"
-msgstr "主持人"
+msgstr "版主"
 
 #: dist/converse-no-dependencies.js:104693
 msgid "Owner"
@@ -1887,10 +1887,9 @@ msgid "Your server does not support in-band password reset"
 msgstr "你的服务器不支持带内密码重置"
 
 #: dist/converse-no-dependencies.js:113115
-#, fuzzy
 msgid ""
 "Your server responded with an unknown error, check the console for details"
-msgstr "你的服务器以未知错误进行了响应"
+msgstr "你的服务器响应了一个未知错误，检查控制台查看详情"
 
 #: dist/converse-no-dependencies.js:113134
 msgid "Timeout error while trying to set your password"
@@ -1906,7 +1905,6 @@ msgid "You are not allowed to change your password"
 msgstr "你不被允许更改你的密码"
 
 #: dist/converse-no-dependencies.js:113142
-#, fuzzy
 msgid "Success"
 msgstr "成功"
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 11:16+0100\n"
-"PO-Revision-Date: 2022-11-05 01:37+0000\n"
+"PO-Revision-Date: 2023-02-09 05:28+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: dist/converse-no-dependencies.js:29478
 msgid "The connection has dropped, attempting to reconnect."
@@ -1934,10 +1934,10 @@ msgid "Your server does not support in-band password reset"
 msgstr "Sunucunuz bant içi parola sıfırlamayı desteklemiyor"
 
 #: dist/converse-no-dependencies.js:113115
-#, fuzzy
 msgid ""
 "Your server responded with an unknown error, check the console for details"
-msgstr "Sunucunuz bilinmeyen bir hata ile yanıt verdi"
+msgstr ""
+"Sunucunuz bilinmeyen bir hata ile yanıt verdi, ayrıntılar için konsola bakın"
 
 #: dist/converse-no-dependencies.js:113134
 msgid "Timeout error while trying to set your password"
@@ -1953,7 +1953,6 @@ msgid "You are not allowed to change your password"
 msgstr "Parolanızı değiştirmenize izin verilmiyor"
 
 #: dist/converse-no-dependencies.js:113142
-#, fuzzy
 msgid "Success"
 msgstr "Başarılı"
 
@@ -1964,7 +1963,7 @@ msgstr "Yeni parolanız belirlendi"
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:113687
 msgid "Your Profile"
-msgstr "Profilin"
+msgstr "Profiliniz"
 
 #: dist/converse-no-dependencies.js:113706
 msgid "Sorry, an error happened while trying to save your profile data."

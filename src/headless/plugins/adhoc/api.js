@@ -1,34 +1,11 @@
-import log from "@converse/headless/log";
-import sizzle from 'sizzle';
-import { __ } from 'i18n';
-import { converse } from "../core.js";
-import { getAttributes } from '@converse/headless/shared/parsers';
+import log from '@converse/headless/log';
+import { _converse, api, converse } from "@converse/headless/core";
+import { getCommandFields, parseForCommands } from './utils.js';
 
-const { Strophe, u, stx, $iq } = converse.env;
-let api;
-
-Strophe.addNamespace('ADHOC', 'http://jabber.org/protocol/commands');
+const { Strophe, $iq, u, stx } = converse.env;
 
 
-function parseForCommands (stanza) {
-    const items = sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"][node="${Strophe.NS.ADHOC}"] item`, stanza);
-    return items.map(getAttributes)
-}
-
-function getCommandFields (iq, jid) {
-    const cmd_el = sizzle(`command[xmlns="${Strophe.NS.ADHOC}"]`, iq).pop();
-    const data = {
-        sessionid: cmd_el.getAttribute('sessionid'),
-        instructions: sizzle('x[type="form"][xmlns="jabber:x:data"] instructions', cmd_el).pop()?.textContent,
-        fields: sizzle('x[type="form"][xmlns="jabber:x:data"] field', cmd_el)
-            .map(f => u.xForm2TemplateResult(f, cmd_el, { domain: jid })),
-        actions: Array.from(cmd_el.querySelector('actions')?.children).map((a) => a.nodeName.toLowerCase()) ?? []
-    }
-    return data;
-}
-
-
-const adhoc_api = {
+export default {
     /**
      * The XEP-0050 Ad-Hoc Commands API
      *
@@ -80,6 +57,7 @@ const adhoc_api = {
                     log.error(`Error while trying to execute command for ${jid}`);
                     log.error(e);
                 }
+                const { __ } = _converse;
                 return {
                     instructions: __('An error occurred while trying to fetch the command form'),
                     fields: []
@@ -99,15 +77,17 @@ const adhoc_api = {
             const iq =
                 stx`<iq type="set" to="${jid}" xmlns="jabber:client">
                     <command sessionid="${sessionid}" node="${node}" action="${action}" xmlns="${Strophe.NS.ADHOC}">
-                        <x xmlns="${Strophe.NS.XFORM}" type="submit">
-                            ${ inputs.reduce((out, { name, value }) => out + `<field var="${name}"><value>${value}</value></field>`, '') }
-                        </x>
+                        ${ !['cancel', 'prev'].includes(action) ? stx`
+                            <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                                ${ inputs.reduce((out, { name, value }) => out + `<field var="${name}"><value>${value}</value></field>`, '') }
+                            </x>` : '' }
                     </command>
                 </iq>`;
 
             const result = await api.sendIQ(iq, null, false);
             if (result === null) {
                 log.warn(`A timeout occurred while trying to run an ad-hoc command`);
+                const { __ } = _converse;
                 return {
                     status: 'error',
                     note: __('A timeout occurred'),
@@ -127,17 +107,3 @@ const adhoc_api = {
         }
     }
 }
-
-
-converse.plugins.add('converse-adhoc', {
-
-    dependencies: ["converse-disco"],
-
-    initialize () {
-        const _converse = this._converse;
-        api  = _converse.api;
-        Object.assign(api, adhoc_api);
-    }
-});
-
-export default adhoc_api;

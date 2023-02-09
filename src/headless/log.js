@@ -1,4 +1,4 @@
-import isElement from 'lodash-es/isElement';
+import { isElement } from './utils/core.js';
 
 const LEVELS = {
     'debug': 0,

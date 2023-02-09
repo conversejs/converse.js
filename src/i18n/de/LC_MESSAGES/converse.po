@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 11:16+0100\n"
-"PO-Revision-Date: 2022-11-08 20:04+0000\n"
+"PO-Revision-Date: 2023-02-10 18:37+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2\n"
+"X-Generator: Weblate 4.16-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1989,10 +1989,11 @@ msgstr ""
 "Ihr Server unterstützt nicht das integrierte Zurücksetzen des Passworts"
 
 #: dist/converse-no-dependencies.js:113115
-#, fuzzy
 msgid ""
 "Your server responded with an unknown error, check the console for details"
-msgstr "Ihr Server hat mit einem unbekannten Fehler geantwortet"
+msgstr ""
+"Ihr Server hat mit einem unbekannten Fehler geantwortet, beachten Sie die "
+"Konsole für weitere Details"
 
 #: dist/converse-no-dependencies.js:113134
 msgid "Timeout error while trying to set your password"
@@ -2008,9 +2009,8 @@ msgid "You are not allowed to change your password"
 msgstr "Sie dürfen Ihr Passwort nicht ändern"
 
 #: dist/converse-no-dependencies.js:113142
-#, fuzzy
 msgid "Success"
-msgstr "Erfolgreich"
+msgstr "Erfolg"
 
 #: dist/converse-no-dependencies.js:113142
 msgid "Your new password has been set"

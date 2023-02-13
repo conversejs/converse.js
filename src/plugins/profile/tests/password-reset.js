@@ -68,7 +68,7 @@ describe('The profile modal', function () {
 
             const alert = await u.waitUntil(() => document.querySelector('converse-alert-modal'));
             await u.waitUntil(() => u.isVisible(alert));
-            expect(alert.querySelector('.modal-title').textContent).toBe('Successful');
+            expect(alert.querySelector('.modal-title').textContent).toBe('Success');
         })
     );
 

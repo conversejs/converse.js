@@ -31,7 +31,7 @@ async function createCapsNode () {
         'hash': "sha-1",
         'node': "https://conversejs.org",
         'ver': await generateVerificationString()
-    }).nodeTree;
+    }).tree();
 }
 
 

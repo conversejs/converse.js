@@ -5,13 +5,17 @@
  */
 import u from "./core";
 
+const tpl_xform_field = (name, value) => `<field var="${name}">${ value }</field>`;
+
+const tpl_xform_value = (value) => `<value>${value}</value>`;
+
 /**
  * Takes an HTML DOM and turns it into an XForm field.
  * @private
  * @method u#webForm2xForm
  * @param { DOMElement } field - the field to convert
  */
-u.webForm2xForm = function (field) {
+export function webForm2xForm (field) {
     const name = field.getAttribute('name');
     if (!name) {
         return null; // See #1924
@@ -26,11 +30,10 @@ u.webForm2xForm = function (field) {
     } else {
         value = field.value;
     }
-    return u.toStanza(`
-        <field var="${name}">
-            ${ value.constructor === Array ?
-                value.map(v => `<value>${v}</value>`) :
-                `<value>${value}</value>` }
-        </field>`);
-};
-export default u;
+    return u.toStanza(tpl_xform_field(
+        name,
+        Array.isArray(value) ? value.map(tpl_xform_value) : tpl_xform_value(value),
+    ));
+}
+
+u.webForm2xForm = webForm2xForm;

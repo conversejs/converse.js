@@ -74,7 +74,7 @@ converse.plugins.add('converse-pubsub', {
 
                             // The publish-options precondition couldn't be
                             // met. We re-publish but without publish-options.
-                            const el = stanza.nodeTree;
+                            const el = stanza.tree();
                             el.querySelector('publish-options').outerHTML = '';
                             log.warn(`PubSub: Republishing without publish options. ${el.outerHTML}`);
                             await api.sendIQ(el);

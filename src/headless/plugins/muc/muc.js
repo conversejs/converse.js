@@ -5,7 +5,6 @@ import log from '../../log';
 import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
-import u from '../../utils/form';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
@@ -18,6 +17,8 @@ import { isUniView, getUniqueId, safeSave } from '../../utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
 import { ROOMSTATUS } from './constants.js';
+
+const { u } = converse.env;
 
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
@@ -549,6 +550,8 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     async handleMessageStanza (stanza) {
+        stanza = stanza.tree?.() ?? stanza;
+
         const type = stanza.getAttribute('type');
         if (type === 'error') {
             return this.handleErrorMessageStanza(stanza);
@@ -755,7 +758,7 @@ const ChatRoomMixin = {
         message.set({
             'retracted': new Date().toISOString(),
             'retracted_id': origin_id,
-            'retraction_id': stanza.nodeTree.getAttribute('id'),
+            'retraction_id': stanza.tree().getAttribute('id'),
             'editable': false
         });
         const result = await this.sendTimedMessage(stanza);

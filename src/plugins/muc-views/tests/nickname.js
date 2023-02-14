@@ -40,6 +40,7 @@ describe("A MUC", function () {
         _converse.connection._dataRecv(mock.createRequest(
             stx`
             <presence
+                xmlns="jabber:server"
                 from='${muc_jid}/${nick}'
                 id='DC352437-C019-40EC-B590-AF29E879AF98'
                 to='${_converse.jid}'
@@ -60,6 +61,7 @@ describe("A MUC", function () {
         _converse.connection._dataRecv(mock.createRequest(
             stx`
             <presence
+                xmlns="jabber:server"
                 from='${muc_jid}/${newnick}'
                 id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
                 to='${_converse.jid}'>

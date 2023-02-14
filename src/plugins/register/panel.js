@@ -5,7 +5,7 @@ import tpl_form_url from "templates/form_url.js";
 import tpl_form_username from "templates/form_username.js";
 import tpl_register_panel from "./templates/register_panel.js";
 import tpl_spinner from "templates/spinner.js";
-import utils from "@converse/headless/utils/form";
+import { webForm2xForm } from "@converse/headless/utils/form";
 import { ElementView } from "@converse/skeletor/src/element";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core.js";
@@ -318,7 +318,7 @@ class RegisterPanel extends ElementView {
     getFormFields (stanza) {
         if (this.form_type === 'xform') {
             return Array.from(stanza.querySelectorAll('field')).map(field =>
-                utils.xForm2TemplateResult(field, stanza, {'domain': this.domain})
+                u.xForm2TemplateResult(field, stanza, {'domain': this.domain})
             );
         } else {
             return this.getLegacyFormFields();
@@ -420,7 +420,7 @@ class RegisterPanel extends ElementView {
         if (this.form_type === 'xform') {
             iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
 
-            const xml_nodes = inputs.map(i => utils.webForm2xForm(i)).filter(n => n);
+            const xml_nodes = inputs.map(i => webForm2xForm(i)).filter(n => n);
             xml_nodes.forEach(n => iq.cnode(n).up());
         } else {
             inputs.forEach(input => iq.c(input.getAttribute('name'), {}, input.value));

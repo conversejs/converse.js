@@ -5,7 +5,7 @@ import { getAutoCompleteList } from 'plugins/muc-views/utils.js';
 import { html } from "lit";
 
 
-export default (el, o) => {
+export default (el) => {
     const i18n_choose_service = __('On which entity do you want to run commands?');
     const i18n_choose_service_instructions = __(
         'Certain XMPP services and entities allow privileged users to execute ad-hoc commands on them.');
@@ -15,6 +15,8 @@ export default (el, o) => {
     const i18n_no_commands_found = __('No commands found');
     return html`
         ${ el.alert ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert}</div>` : '' }
+        ${ el.note ? html`<p class="form-help">${el.note}</p>` : '' }
+
         <form class="converse-form" @submit=${el.fetchCommands}>
             <fieldset class="form-group">
                 <label>
@@ -22,6 +24,7 @@ export default (el, o) => {
                     <p class="form-help">${i18n_choose_service_instructions}</p>
                     <converse-autocomplete
                         .getAutoCompleteList="${getAutoCompleteList}"
+                        required
                         placeholder="${i18n_jid_placeholder}"
                         name="jid">
                     </converse-autocomplete>
@@ -34,7 +37,7 @@ export default (el, o) => {
             <fieldset class="form-group">
                 <ul class="list-group">
                     <li class="list-group-item active">${ el.commands.length ? i18n_commands_found : i18n_no_commands_found }:</li>
-                    ${ el.commands.map(cmd => tpl_command(o, cmd)) }
+                    ${ el.commands.map(cmd => tpl_command(el, cmd)) }
                 </ul>
             </fieldset>`
             : '' }

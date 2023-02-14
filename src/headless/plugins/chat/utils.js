@@ -88,6 +88,8 @@ export function registerMessageHandlers () {
  * @param { MessageAttributes } attrs - The message attributes
  */
 export async function handleMessageStanza (stanza) {
+    stanza = stanza.tree?.() ?? stanza;
+
     if (isServerMessage(stanza)) {
         // Prosody sends headline messages with type `chat`, so we need to filter them out here.
         const from = stanza.getAttribute('from');

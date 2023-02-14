@@ -428,8 +428,8 @@ export const api = _converse.api = {
         }
         if (typeof stanza === 'string') {
             stanza = u.toStanza(stanza);
-        } else if (stanza?.nodeTree) {
-            stanza = stanza.nodeTree;
+        } else if (stanza?.tree) {
+            stanza = stanza.tree();
         }
 
         if (stanza.tagName === 'iq') {
@@ -453,13 +453,16 @@ export const api = _converse.api = {
      *  nothing to wait for, so an already resolved promise is returned.
      */
     sendIQ (stanza, timeout=_converse.STANZA_TIMEOUT, reject=true) {
+
+        const { connection } = _converse;
+
         let promise;
-        stanza = stanza?.nodeTree ?? stanza;
+        stanza = stanza.tree?.() ?? stanza;
         if (['get', 'set'].includes(stanza.getAttribute('type'))) {
             timeout = timeout || _converse.STANZA_TIMEOUT;
             if (reject) {
-                promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
-                promise.catch(e => {
+                promise = new Promise((resolve, reject) => connection.sendIQ(stanza, resolve, reject, timeout));
+                promise.catch((e) => {
                     if (e === null) {
                         throw new TimeoutError(
                             `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(stanza)}`
@@ -467,7 +470,7 @@ export const api = _converse.api = {
                     }
                 });
             } else {
-                promise = new Promise(resolve => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
+                promise = new Promise((resolve) => connection.sendIQ(stanza, resolve, resolve, timeout));
             }
         } else {
             _converse.connection.sendIQ(stanza);

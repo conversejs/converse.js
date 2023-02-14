@@ -1,5 +1,4 @@
 import debounce from 'lodash-es/debounce';
-import isElement from 'lodash-es/isElement';
 import log from "../../log.js";
 import sizzle from 'sizzle';
 import { BOSH_WAIT } from '../../shared/constants.js';
@@ -441,9 +440,8 @@ export class MockConnection extends Connection {
     }
 
     sendIQ (iq, callback, errback) {
-        if (!isElement(iq)) {
-            iq = iq.nodeTree;
-        }
+        iq = iq.tree?.() ?? iq;
+
         this.IQ_stanzas.push(iq);
         const id = super.sendIQ(iq, callback, errback);
         this.IQ_ids.push(id);
@@ -451,11 +449,8 @@ export class MockConnection extends Connection {
     }
 
     send (stanza) {
-        if (isElement(stanza)) {
-            this.sent_stanzas.push(stanza);
-        } else {
-            this.sent_stanzas.push(stanza.nodeTree);
-        }
+        stanza = stanza.tree?.() ?? stanza;
+        this.sent_stanzas.push(stanza);
         return super.send(stanza);
     }
 

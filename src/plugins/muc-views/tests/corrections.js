@@ -276,6 +276,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             await model.handleMessageStanza(
                 stx`
                 <message
+                    xmlns="jabber:server"
                     from="lounge@montague.lit/newguy"
                     to="_converse.connection.jid"
                     type="groupchat"
@@ -293,6 +294,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             await model.handleMessageStanza(
                 stx`
                 <message
+                    xmlns="jabber:server"
                     from="lounge@montague.lit/newguy"
                     to="_converse.connection.jid"
                     type="groupchat"
@@ -315,6 +317,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             await model.handleMessageStanza(
                 stx`
                 <message
+                    xmlns="jabber:server"
                     from="lounge@montague.lit/newguy"
                     to="_converse.connection.jid"
                     type="groupchat"
@@ -355,6 +358,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             await model.handleMessageStanza(
                 stx`
                 <message
+                    xmlns="jabber:server"
                     from="lounge@montague.lit/${nick}"
                     to="_converse.connection.jid"
                     type="groupchat"
@@ -372,6 +376,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             await model.handleMessageStanza(
                 stx`
                 <message
+                    xmlns="jabber:server"
                     from="lounge@montague.lit/${nick}"
                     to="_converse.connection.jid"
                     type="groupchat"
@@ -389,6 +394,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
             await model.handleMessageStanza(
                 stx`
                 <message
+                    xmlns="jabber:server"
                     from="lounge@montague.lit/${nick}"
                     to="_converse.connection.jid"
                     type="groupchat"

@@ -9,14 +9,26 @@
     }
 
     form {
+
+        label {
+            font-weight: bold;
+        }
+
+        .form-instructions {
+            color: var(--text-color);
+            margin-bottom: 1em;
+        }
+
         .hidden-username {
             opacity: 0 !important;
             height: 0 !important;
             padding: 0 !important;
         }
+
         .error-feedback {
             margin-bottom: 0.5em;
         }
+
         .form-check-label {
             margin-top: $form-check-input-margin-y;
         }
@@ -101,17 +113,9 @@
             input[type=text] {
                 min-width: 50%;
             }
-            input[type=text],
-            input[type=password],
-            input[type=number],
             input[type=button],
             input[type=submit] {
-                padding: 0.5em;
-            }
-            input[type=button],
-            input[type=submit] {
-                padding-left: 1em;
-                padding-right: 1em;
+                margin-right: 0.25em;
                 border: none;
             }
             input.error {

@@ -8,25 +8,22 @@
     "src/headless"
   ],
   "files": [
-    "*.js",
-    "*.json",
     "CHANGES.md",
     "LICENSE.txt",
     "README.md",
     "COPYRIGHT",
     "dist/",
-    "docs/**/*.rst",
     "docs/**/*.md",
-    "sass/**/*.scss",
-    "src/*.js",
-    "src/**/*.pot",
-    "src/**/*.po",
-    "src/**/*.js",
+    "docs/**/*.rst",
     "src/**/*.html",
-    "src/**/*.svg",
+    "src/**/*.js",
+    "src/**/*.json",
     "src/**/*.md",
-    "src/**/*.txt",
-    "src/**/*.json"
+    "src/**/*.po",
+    "src/**/*.pot",
+    "src/**/*.scss",
+    "src/**/*.svg",
+    "src/**/*.txt"
   ],
   "scripts": {
     "build": "webpack --config webpack/webpack.build.js",

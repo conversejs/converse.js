@@ -1,6 +1,6 @@
 # Changelog
 
-## 10.1.1 (Unreleased)
+## 10.1.1 (2023-02-15)
 
 - #1851: Sort open groupchats alphabetically
 - #2240: Ad-Hoc command result form not shown

@@ -1,4 +1,4 @@
-import tpl_muc_nickname_form from './templates/muc-nickname-form.js';
+import tplMUCNicknameForm from './templates/muc-nickname-form.js';
 import { CustomElement } from 'shared/components/element';
 import { _converse, api } from "@converse/headless/core";
 
@@ -19,7 +19,7 @@ class MUCNicknameForm extends CustomElement {
     }
 
     render () {
-        return tpl_muc_nickname_form(this);
+        return tplMUCNicknameForm(this);
     }
 
     submitNickname (ev) {

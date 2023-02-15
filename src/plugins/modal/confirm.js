@@ -1,5 +1,5 @@
 import BaseModal from "plugins/modal/modal.js";
-import tpl_prompt from "./templates/prompt.js";
+import tplPrompt from "./templates/prompt.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { api } from "@converse/headless/core";
 
@@ -21,7 +21,7 @@ export default class Confirm extends BaseModal {
     }
 
     renderModal () {
-        return tpl_prompt(this);
+        return tplPrompt(this);
     }
 
     getModalTitle () {

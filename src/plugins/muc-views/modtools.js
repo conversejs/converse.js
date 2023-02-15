@@ -1,5 +1,5 @@
 import log from '@converse/headless/log.js';
-import tpl_moderator_tools from './templates/moderator-tools.js';
+import tplModeratorTools from './templates/moderator-tools.js';
 import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
@@ -57,7 +57,7 @@ export default class ModeratorTools extends CustomElement {
     render () {
         if (this.muc?.occupants) {
             const occupant = this.muc.occupants.findWhere({ 'jid': _converse.bare_jid });
-            return tpl_moderator_tools({
+            return tplModeratorTools({
                 'affiliations_filter': this.affiliations_filter,
                 'alert_message': this.alert_message,
                 'alert_type': this.alert_type,

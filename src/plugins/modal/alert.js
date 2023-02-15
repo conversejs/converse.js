@@ -1,5 +1,5 @@
 import BaseModal from "plugins/modal/modal.js";
-import tpl_alert_modal from "./templates/alert.js";
+import tplAlertModal from "./templates/alert.js";
 import { api } from "@converse/headless/core";
 
 
@@ -12,7 +12,7 @@ export default class Alert extends BaseModal {
     }
 
     renderModal () {
-        return tpl_alert_modal(this.model.toJSON());
+        return tplAlertModal(this.model.toJSON());
     }
 
     getModalTitle () {

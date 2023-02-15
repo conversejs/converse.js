@@ -1,6 +1,6 @@
 import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
-import tpl_alert_component from "./templates/modal-alert.js";
+import tplAlertComponent from "./templates/modal-alert.js";
 import { View } from '@converse/skeletor/src/view.js';
 import { api, converse } from "@converse/headless/core";
 import { render } from 'lit';
@@ -71,7 +71,7 @@ const BaseModal = View.extend({
         }
         // FIXME: Instead of adding the alert imperatively, we should
         // find a way to let the modal rerender with an alert message
-        render(tpl_alert_component({'type': `alert-${type}`, 'message': message}), body);
+        render(tplAlertComponent({'type': `alert-${type}`, 'message': message}), body);
         const el = body.firstElementChild;
         setTimeout(() => {
             u.addClass('fade-out', el);

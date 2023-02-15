@@ -1,4 +1,4 @@
-import tpl_muc_password_form from "./templates/muc-password-form.js";
+import tplMUCPasswordForm from "./templates/muc-password-form.js";
 import { CustomElement } from 'shared/components/element';
 import { _converse, api } from "@converse/headless/core";
 
@@ -19,7 +19,7 @@ class MUCPasswordForm extends CustomElement {
     }
 
     render () {
-        return tpl_muc_password_form({
+        return tplMUCPasswordForm({
             'jid': this.model.get('jid'),
             'submitPassword': ev => this.submitPassword(ev),
             'validation_message':  this.model.get('password_validation_message')

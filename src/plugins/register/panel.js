@@ -1,10 +1,10 @@
 import log from "@converse/headless/log";
 import pick from "lodash-es/pick";
-import tpl_form_input from "templates/form_input.js";
-import tpl_form_url from "templates/form_url.js";
-import tpl_form_username from "templates/form_username.js";
-import tpl_register_panel from "./templates/register_panel.js";
-import tpl_spinner from "templates/spinner.js";
+import tplFormInput from "templates/form_input.js";
+import tplFormUrl from "templates/form_url.js";
+import tplFormUsername from "templates/form_username.js";
+import tplRegisterPanel from "./templates/register_panel.js";
+import tplSpinner from "templates/spinner.js";
 import { webForm2xForm } from "@converse/headless/utils/form";
 import { ElementView } from "@converse/skeletor/src/element";
 import { __ } from 'i18n';
@@ -51,7 +51,7 @@ class RegisterPanel extends ElementView {
     }
 
     render () {
-        render(tpl_register_panel({
+        render(tplRegisterPanel({
             'domain': this.domain,
             'fields': this.fields,
             'form_fields': this.form_fields,
@@ -241,7 +241,7 @@ class RegisterPanel extends ElementView {
 
     showSpinner () {
         const form = this.querySelector('form');
-        render(tpl_spinner(), form);
+        render(tplSpinner(), form);
         return this;
     }
 
@@ -292,7 +292,7 @@ class RegisterPanel extends ElementView {
     getLegacyFormFields () {
         const input_fields = Object.keys(this.fields).map(key => {
             if (key === "username") {
-                return tpl_form_username({
+                return tplFormUsername({
                     'domain': ` @${this.domain}`,
                     'name': key,
                     'type': "text",
@@ -301,7 +301,7 @@ class RegisterPanel extends ElementView {
                     'required': true
                 });
             } else {
-                return tpl_form_input({
+                return tplFormInput({
                     'label': key,
                     'name': key,
                     'placeholder': key,
@@ -311,7 +311,7 @@ class RegisterPanel extends ElementView {
                 })
             }
         });
-        const urls = this.urls.map(u => tpl_form_url({'label': '', 'value': u}));
+        const urls = this.urls.map(u => tplFormUrl({'label': '', 'value': u}));
         return [...input_fields, ...urls];
     }
 

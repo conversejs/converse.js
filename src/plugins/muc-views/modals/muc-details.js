@@ -1,5 +1,5 @@
 import BaseModal from "plugins/modal/modal.js";
-import tpl_muc_details from "./templates/muc-details.js";
+import tplMUCDetails from "./templates/muc-details.js";
 import { __ } from 'i18n';
 import { api } from "@converse/headless/core";
 
@@ -17,7 +17,7 @@ export default class MUCDetailsModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_muc_details(this.model);
+        return tplMUCDetails(this.model);
     }
 
     getModalTitle () { // eslint-disable-line class-methods-use-this

@@ -1,5 +1,5 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import tpl_headlines from './templates/headlines.js';
+import tplHeadlines from './templates/headlines.js';
 import { _converse, api } from '@converse/headless/core';
 
 
@@ -29,7 +29,7 @@ class HeadlinesFeedView extends BaseChatView {
     }
 
     render () {
-        return tpl_headlines(this.model);
+        return tplHeadlines(this.model);
     }
 
     async close (ev) {

@@ -1,4 +1,4 @@
-import tpl_trimmed_chat from "../templates/trimmed_chat.js";
+import tplTrimmedChat from "../templates/trimmed_chat.js";
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
 import { maximize } from  '../utils.js';
@@ -23,7 +23,7 @@ export default class MinimizedChat extends CustomElement {
             'title': this.title,
             'type': this.type
         };
-        return tpl_trimmed_chat(data);
+        return tplTrimmedChat(data);
     }
 
     close (ev) {

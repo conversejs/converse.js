@@ -1,6 +1,6 @@
 import BaseModal from "plugins/modal/modal.js";
 import log from "@converse/headless/log";
-import tpl_profile_modal from "../templates/profile_modal.js";
+import tplProfileModal from "../templates/profile_modal.js";
 import Compress from 'client-compress';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
@@ -33,7 +33,7 @@ export default class ProfileModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_profile_modal(this);
+        return tplProfileModal(this);
     }
 
     getModalTitle () { // eslint-disable-line class-methods-use-this

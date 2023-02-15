@@ -1,4 +1,4 @@
-import tpl_muc_chatarea from './templates/muc-chatarea.js';
+import tplMUCChatarea from './templates/muc-chatarea.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { api, converse } from '@converse/headless/core';
@@ -31,7 +31,7 @@ export default class MUCChatArea extends CustomElement {
     }
 
     render () {
-        return tpl_muc_chatarea({
+        return tplMUCChatarea({
             'getHelpMessages': () => this.getHelpMessages(),
             'jid': this.jid,
             'model': this.model,

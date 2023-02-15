@@ -2,7 +2,7 @@ import 'shared/autocomplete/index.js';
 import BaseModal from "plugins/modal/modal.js";
 import compact from 'lodash-es/compact';
 import debounce from 'lodash-es/debounce';
-import tpl_add_contact_modal from "./templates/add-contact.js";
+import tplAddContactModal from "./templates/add-contact.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 
@@ -19,7 +19,7 @@ export default class AddContactModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_add_contact_modal(this);
+        return tplAddContactModal(this);
     }
 
     getModalTitle () { // eslint-disable-line class-methods-use-this

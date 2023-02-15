@@ -6,7 +6,7 @@ import { api, converse } from "@converse/headless/core";
 import { html } from "lit";
 
 
-const tpl_can_edit = (o) => {
+const tplCanEdit = (o) => {
     const unread_msgs = __('You have unread messages');
     const message_limit = api.settings.get('message_limit');
     const show_call_button = api.settings.get('visible_toolbar_buttons').call;
@@ -41,7 +41,7 @@ export default (o) => {
         return html`
             ${ o.model.ui.get('scrolled') && o.model.get('num_unread_general') ?
                     html`<div class="new-msgs-indicator" @click=${ev => o.viewUnreadMessages(ev)}>▼ ${ unread_msgs } ▼</div>` : '' }
-            ${(o.can_edit) ? tpl_can_edit(o) : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`}`;
+            ${(o.can_edit) ? tplCanEdit(o) : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`}`;
     } else if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
         if (api.settings.get('muc_show_logs_before_join')) {
             return html`<span class="muc-bottom-panel muc-bottom-panel--nickname">

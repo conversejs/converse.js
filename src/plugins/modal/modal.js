@@ -1,5 +1,5 @@
 import bootstrap from "bootstrap.native";
-import tpl_modal from './templates/modal.js';
+import tplModal from './templates/modal.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { getOpenPromise } from '@converse/openpromise';
 
@@ -29,7 +29,7 @@ class BaseModal extends ElementView {
     }
 
     toHTML () {
-        return tpl_modal(this);
+        return tplModal(this);
     }
 
     getModalTitle () { // eslint-disable-line class-methods-use-this

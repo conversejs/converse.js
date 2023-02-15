@@ -1,6 +1,6 @@
 import 'plugins/muc-views/modals/muc-details.js';
 import RoomsListModel from './model.js';
-import tpl_roomslist from "./templates/roomslist.js";
+import tplRoomslist from "./templates/roomslist.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -26,7 +26,7 @@ export class RoomsList extends CustomElement {
     }
 
     render () {
-        return tpl_roomslist(this);
+        return tplRoomslist(this);
     }
 
     renderIfChatRoom (model) {

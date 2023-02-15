@@ -6,7 +6,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { KEYCODES } from '@converse/headless/shared/constants.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getTonedEmojis } from './utils.js';
-import { tpl_emoji_picker } from "./templates/emoji-picker.js";
+import { tplEmojiPicker } from "./templates/emoji-picker.js";
 
 import './styles/emoji.scss';
 
@@ -50,7 +50,7 @@ export default class EmojiPicker extends CustomElement {
     }
 
     render () {
-        return tpl_emoji_picker({
+        return tplEmojiPicker({
             'chatview': this.chatview,
             'current_category': this.current_category,
             'current_skintone': this.current_skintone,

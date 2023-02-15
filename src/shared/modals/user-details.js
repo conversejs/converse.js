@@ -1,6 +1,6 @@
 import BaseModal from "plugins/modal/modal.js";
 import log from "@converse/headless/log";
-import { tpl_user_details_modal, tpl_footer } from "./templates/user-details.js";
+import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";
 import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
 import { removeContact } from 'plugins/rosterview/utils.js';
@@ -25,11 +25,11 @@ export default class UserDetailsModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_user_details_modal(this);
+        return tplUserDetailsModal(this);
     }
 
     renderModalFooter () {
-        return tpl_footer(this);
+        return tplFooter(this);
     }
 
     getModalTitle () {

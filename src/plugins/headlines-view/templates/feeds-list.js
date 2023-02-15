@@ -2,7 +2,7 @@ import { __ } from 'i18n';
 import { _converse } from '@converse/headless/core';
 import { html } from "lit";
 
-const tpls_headlines_feeds_list_item = (el, feed) => {
+function tplHeadlinesFeedsListItem (el, feed) {
     const open_title = __('Click to open this server message');
     return html`
         <div class="list-item controlbox-padded d-flex flex-row"
@@ -27,7 +27,7 @@ export default (el) => {
         </div>
         <div class="list-container list-container--headline ${ feeds.length ? '' : 'hidden' }">
             <div class="items-list rooms-list headline-list">
-                ${ feeds.map(feed => tpls_headlines_feeds_list_item(el, feed)) }
+                ${ feeds.map(feed => tplHeadlinesFeedsListItem(el, feed)) }
             </div>
         </div>`
 }

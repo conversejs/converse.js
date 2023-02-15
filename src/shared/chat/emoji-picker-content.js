@@ -1,7 +1,7 @@
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, converse, api } from "@converse/headless/core";
 import { html } from "lit";
-import { tpl_all_emojis, tpl_search_results } from "./templates/emoji-picker.js";
+import { tplAllEmojis, tplSearchResults } from "./templates/emoji-picker.js";
 import { getTonedEmojis } from './utils.js';
 
 const { sizzle } = converse.env;
@@ -28,8 +28,8 @@ export default class EmojiPickerContent extends CustomElement {
       }
       return html`
           <div class="emoji-picker__lists">
-              ${tpl_search_results(props)}
-              ${tpl_all_emojis(props)}
+              ${tplSearchResults(props)}
+              ${tplAllEmojis(props)}
           </div>
       `;
   }

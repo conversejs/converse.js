@@ -27,7 +27,7 @@ const form = (o) => {
 }
 
 
-const tpl_item = (o, item) => {
+const tplItem = (o, item) => {
     const i18n_info_title = __('Show more information on this groupchat');
     const i18n_open_title = __('Click to open this groupchat');
     return html`
@@ -56,7 +56,7 @@ export default (o) => {
         <ul class="available-chatrooms list-group">
             ${ o.loading_items ? html`<li class="list-group-item"> ${ spinner() } </li>` : '' }
             ${ o.feedback_text ? html`<li class="list-group-item active">${ o.feedback_text }</li>` : '' }
-            ${ repeat(o.items, (item) => item.jid, (item) => tpl_item(o, item)) }
+            ${ repeat(o.items, (item) => item.jid, (item) => tplItem(o, item)) }
         </ul>
     `;
 }

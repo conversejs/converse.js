@@ -1,6 +1,6 @@
 import 'shared/autocomplete/index.js';
 import BaseModal from "plugins/modal/modal.js";
-import tpl_muc_invite_modal from "./templates/muc-invite.js";
+import tplMUCInviteModal from "./templates/muc-invite.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 
@@ -14,7 +14,7 @@ export default class MUCInviteModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_muc_invite_modal(this);
+        return tplMUCInviteModal(this);
     }
 
     getModalTitle () { // eslint-disable-line class-methods-use-this

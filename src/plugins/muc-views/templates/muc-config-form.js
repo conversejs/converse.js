@@ -1,4 +1,4 @@
-import tpl_spinner from 'templates/spinner.js';
+import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
 import { html } from "lit";
@@ -39,7 +39,7 @@ export default (o) => {
             <fieldset class="form-group">
                 <legend class="centered">${title}</legend>
                 ${ (title !== instructions) ? html`<p class="form-help">${instructions}</p>` : '' }
-                ${ fields.length ? fields : tpl_spinner({'classes': 'hor_centered'}) }
+                ${ fields.length ? fields : tplSpinner({'classes': 'hor_centered'}) }
             </fieldset>
             ${ fields.length ? html`
                 <fieldset>

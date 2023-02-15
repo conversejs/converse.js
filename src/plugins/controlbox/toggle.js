@@ -1,4 +1,4 @@
-import tpl_controlbox_toggle from "./templates/toggle.js";
+import tplControlboxToggle from "./templates/toggle.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from "@converse/headless/core";
 import { showControlBox } from './utils.js';
@@ -15,7 +15,7 @@ class ControlBoxToggle extends CustomElement {
     }
 
     render () {
-        return tpl_controlbox_toggle({
+        return tplControlboxToggle({
             'onClick': showControlBox,
             'hide': !this.model?.get('closed')
         });

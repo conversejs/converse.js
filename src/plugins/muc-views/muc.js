@@ -1,5 +1,5 @@
 import BaseChatView from 'shared/chat/baseview.js';
-import tpl_muc from './templates/muc.js';
+import tplMuc from './templates/muc.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 
@@ -29,7 +29,7 @@ export default class MUCView extends BaseChatView {
     }
 
     render () {
-        return tpl_muc({ 'model': this.model });
+        return tplMuc({ 'model': this.model });
     }
 
     onConnectionStatusChanged () {

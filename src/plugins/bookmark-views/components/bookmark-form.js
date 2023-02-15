@@ -1,4 +1,4 @@
-import tpl_muc_bookmark_form from './templates/form.js';
+import tplMUCBookmarkForm from './templates/form.js';
 import { CustomElement } from 'shared/components/element';
 import { _converse, api } from "@converse/headless/core";
 
@@ -19,7 +19,7 @@ class MUCBookmarkForm extends CustomElement {
     }
 
     render () {
-        return tpl_muc_bookmark_form(this)
+        return tplMUCBookmarkForm(this)
     }
 
     onBookmarkFormSubmitted (ev) {

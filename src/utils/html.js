@@ -5,18 +5,18 @@
  */
 import isFunction from 'lodash-es/isFunction';
 import log from '@converse/headless/log';
-import tpl_audio from 'templates/audio.js';
-import tpl_file from 'templates/file.js';
-import tpl_form_captcha from '../templates/form_captcha.js';
-import tpl_form_checkbox from '../templates/form_checkbox.js';
-import tpl_form_help from '../templates/form_help.js';
-import tpl_form_input from '../templates/form_input.js';
-import tpl_form_select from '../templates/form_select.js';
-import tpl_form_textarea from '../templates/form_textarea.js';
-import tpl_form_url from '../templates/form_url.js';
-import tpl_form_username from '../templates/form_username.js';
-import tpl_hyperlink from 'templates/hyperlink.js';
-import tpl_video from 'templates/video.js';
+import tplAudio from 'templates/audio.js';
+import tplFile from 'templates/file.js';
+import tplFormCaptcha from '../templates/form_captcha.js';
+import tplFormCheckbox from '../templates/form_checkbox.js';
+import tplFormHelp from '../templates/form_help.js';
+import tplFormInput from '../templates/form_input.js';
+import tplFormSelect from '../templates/form_select.js';
+import tplFormTextarea from '../templates/form_textarea.js';
+import tplFormUrl from '../templates/form_url.js';
+import tplFormUsername from '../templates/form_username.js';
+import tplHyperlink from 'templates/hyperlink.js';
+import tplVideo from 'templates/video.js';
 import u from '../headless/utils/core';
 import { converse } from '@converse/headless/core';
 import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
@@ -184,13 +184,13 @@ export function getOOBURLMarkup (url) {
         return url;
     }
     if (isVideoURL(uri)) {
-        return tpl_video(url);
+        return tplVideo(url);
     } else if (isAudioURL(uri)) {
-        return tpl_audio(url);
+        return tplAudio(url);
     } else if (isImageURL(uri)) {
-        return tpl_file(uri.toString(), getFileName(uri));
+        return tplFile(uri.toString(), getFileName(uri));
     } else {
-        return tpl_file(uri.toString(), getFileName(uri));
+        return tplFile(uri.toString(), getFileName(uri));
     }
 }
 
@@ -352,7 +352,7 @@ export function getHyperlinkTemplate (url) {
     const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
     const uri = getURI(url);
     if (uri !== null && isUrlValid(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
-        return tpl_hyperlink(uri, url);
+        return tplHyperlink(uri, url);
     }
     return url;
 }
@@ -537,7 +537,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
                 'required': !!field.querySelector('required')
             };
         });
-        return tpl_form_select({
+        return tplFormSelect({
             options,
             'id': u.getUniqueId(),
             'label': field.getAttribute('label'),
@@ -547,9 +547,9 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         });
     } else if (field.getAttribute('type') === 'fixed') {
         const text = field.querySelector('value')?.textContent;
-        return tpl_form_help({ text });
+        return tplFormHelp({ text });
     } else if (field.getAttribute('type') === 'jid-multi') {
-        return tpl_form_textarea({
+        return tplFormTextarea({
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent,
@@ -557,19 +557,19 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         });
     } else if (field.getAttribute('type') === 'boolean') {
         const value = field.querySelector('value')?.textContent;
-        return tpl_form_checkbox({
+        return tplFormCheckbox({
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
             'checked': ((value === '1' || value === 'true') && 'checked="1"') || ''
         });
     } else if (field.getAttribute('var') === 'url') {
-        return tpl_form_url({
+        return tplFormUrl({
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent
         });
     } else if (field.getAttribute('var') === 'username') {
-        return tpl_form_username({
+        return tplFormUsername({
             'domain': ' @' + options.domain,
             'name': field.getAttribute('var'),
             'type': getInputType(field),
@@ -578,7 +578,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'password') {
-        return tpl_form_input({
+        return tplFormInput({
             'name': field.getAttribute('var'),
             'type': 'password',
             'label': field.getAttribute('label') || '',
@@ -589,7 +589,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         // Captcha
         const uri = field.querySelector('uri');
         const el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
-        return tpl_form_captcha({
+        return tplFormCaptcha({
             'label': field.getAttribute('label'),
             'name': field.getAttribute('var'),
             'data': el?.textContent,
@@ -598,7 +598,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         });
     } else {
         const name = field.getAttribute('var');
-        return tpl_form_input({
+        return tplFormInput({
             'id': u.getUniqueId(),
             'label': field.getAttribute('label') || '',
             'name': name,

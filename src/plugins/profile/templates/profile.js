@@ -5,14 +5,14 @@ import { getPrettyStatus, logOut } from '../utils.js';
 import { html } from "lit";
 
 
-function tpl_signout () {
+function tplSignout () {
     const i18n_logout = __('Log out');
     return html`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${logOut}>
         <converse-icon class="fa fa-sign-out-alt" size="1em"></converse-icon>
     </a>`
 }
 
-function tpl_user_settings_button (o) {
+function tplUserSettingsButton (o) {
     const i18n_details = __('Show details about this chat client');
     return html`<a class="controlbox-heading__btn show-client-info align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}>
         <converse-icon class="fa fa-cog" size="1em"></converse-icon>
@@ -45,8 +45,8 @@ export default (el) => {
                         height="40" width="40"></converse-avatar>
                 </a>
                 <span class="username w-100 align-self-center">${fullname}</span>
-                ${show_settings_button  ? tpl_user_settings_button(el) : ''}
-                ${api.settings.get('allow_logout') ? tpl_signout() : ''}
+                ${show_settings_button  ? tplUserSettingsButton(el) : ''}
+                ${api.settings.get('allow_logout') ? tplSignout() : ''}
             </div>
             <div class="d-flex xmpp-status">
                 <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${el.showStatusChangeModal}>

@@ -1,5 +1,5 @@
 import 'shared/autocomplete/index.js';
-import tpl_muc_sidebar from "./templates/muc-sidebar.js";
+import tplMUCSidebar from "./templates/muc-sidebar.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from "@converse/headless/core";
 
@@ -28,7 +28,7 @@ export default class MUCSidebar extends CustomElement {
     }
 
     render () {
-        const tpl = tpl_muc_sidebar(Object.assign(
+        const tpl = tplMUCSidebar(Object.assign(
             this.model.toJSON(), {
                 'occupants': [...this.model.occupants.models],
                 'closeSidebar': ev => this.closeSidebar(ev),

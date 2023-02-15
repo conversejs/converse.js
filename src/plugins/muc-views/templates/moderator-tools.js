@@ -38,7 +38,7 @@ const affiliation_option = (o) => html`
 `;
 
 
-const tpl_set_role_form = (o) => {
+const tplSetRoleForm = (o) => {
     const i18n_change_role = __('Change role');
     const i18n_new_role = __('New Role');
     const i18n_reason = __('Reason');
@@ -85,14 +85,14 @@ const role_list_item = (o) => html`
             </li>
             <li class="list-group-item">
                 <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? role_form_toggle(o) : ''}</div>
-                ${o.assignable_roles.length ? tpl_set_role_form(o) : ''}
+                ${o.assignable_roles.length ? tplSetRoleForm(o) : ''}
             </li>
         </ul>
     </li>
 `;
 
 
-const tpl_set_affiliation_form = (o) => {
+const tplSetAffiliationForm = (o) => {
     const i18n_change_affiliation = __('Change affiliation');
     const i18n_new_affiliation = __('New affiliation');
     const i18n_reason = __('Reason');
@@ -139,14 +139,14 @@ const affiliation_list_item = (o) => html`
             </li>
             <li class="list-group-item">
                 <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? affiliation_form_toggle(o) : ''}</div>
-                ${o.assignable_affiliations.length ? tpl_set_affiliation_form(o) : ''}
+                ${o.assignable_affiliations.length ? tplSetAffiliationForm(o) : ''}
             </li>
         </ul>
     </li>
 `;
 
 
-const tpl_navigation = (o) => html`
+const tplNavigation = (o) => html`
     <ul class="nav nav-pills justify-content-center">
         <li role="presentation" class="nav-item">
             <a class="nav-link ${o.tab === "affiliations" ? "active" : ""}"
@@ -190,7 +190,7 @@ export default (o) => {
     const show_both_tabs = o.queryable_roles.length && o.queryable_affiliations.length;
     return html`
         ${o.alert_message ? html`<div class="alert alert-${o.alert_type}" role="alert">${o.alert_message}</div>` : '' }
-        ${ show_both_tabs ? tpl_navigation(o) : '' }
+        ${ show_both_tabs ? tplNavigation(o) : '' }
 
         <div class="tab-content">
 

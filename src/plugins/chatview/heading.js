@@ -1,5 +1,5 @@
 import 'shared/modals/user-details.js';
-import tpl_chatbox_head from './templates/chat-head.js';
+import tplChatboxHead from './templates/chat-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
@@ -30,7 +30,7 @@ export default class ChatHeading extends CustomElement {
     }
 
     render () {
-        return tpl_chatbox_head(Object.assign(this.model.toJSON(), {
+        return tplChatboxHead(Object.assign(this.model.toJSON(), {
             'heading_buttons_promise': this.getHeadingButtons(),
             'model': this.model,
             'showUserDetailsModal': ev => this.showUserDetailsModal(ev),

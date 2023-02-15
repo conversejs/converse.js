@@ -33,7 +33,7 @@ const emoji_item = (o) => {
     `;
 }
 
-export const tpl_search_results = (o) => {
+export const tplSearchResults = (o) => {
     const i18n_search_results = __('Search results');
     return html`
         <span ?hidden=${!o.query} class="emoji-lists__container emojis-lists__container--search">
@@ -53,7 +53,7 @@ const emojis_for_category = (o) => {
         </ul>`;
 }
 
-export const tpl_all_emojis = (o) => {
+export const tplAllEmojis = (o) => {
     const cats = api.settings.get('emoji_categories');
     return html`
         <span ?hidden=${o.query} class="emoji-lists__container emoji-lists__container--browse">
@@ -70,7 +70,7 @@ const skintone_emoji = (o) => {
 }
 
 
-export const tpl_emoji_picker = (o) => {
+export const tplEmojiPicker = (o) => {
     const i18n_search = __('Search');
     const skintones = ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'];
     return html`

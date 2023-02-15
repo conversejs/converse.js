@@ -1,7 +1,7 @@
 import './modals/occupant.js';
 import './modals/moderator-tools.js';
 import log from "@converse/headless/log";
-import tpl_spinner from 'templates/spinner.js';
+import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { html } from "lit";
@@ -82,7 +82,7 @@ export function getChatRoomBodyTemplate (o) {
         return html`
             ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
             ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>` : '' }
-            ${ conn_status == RS.CONNECTING ? tpl_spinner() : '' }
+            ${ conn_status == RS.CONNECTING ? tplSpinner() : '' }
             ${ conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(o.model) : '' }
             ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
             ${ conn_status == RS.BANNED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }

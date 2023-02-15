@@ -1,4 +1,4 @@
-import tpl_feeds_list from './templates/feeds-list.js';
+import tplFeedsList from './templates/feeds-list.js';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless/core';
 
@@ -19,7 +19,7 @@ export class HeadlinesFeedsList extends CustomElement {
     }
 
     render () {
-        return tpl_feeds_list(this);
+        return tplFeedsList(this);
     }
 
     renderIfHeadline (model) {

@@ -1,4 +1,4 @@
-import tpl_fingerprints from './templates/fingerprints.js';
+import tplFingerprints from './templates/fingerprints.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
 
@@ -21,7 +21,7 @@ export class Fingerprints extends CustomElement {
     }
 
     render () {
-        return this.devicelist ? tpl_fingerprints(this) : '';
+        return this.devicelist ? tplFingerprints(this) : '';
     }
 
     toggleDeviceTrust (ev) {

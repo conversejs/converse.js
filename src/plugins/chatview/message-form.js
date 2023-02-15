@@ -1,4 +1,4 @@
-import tpl_message_form from './templates/message-form.js';
+import tplMessageForm from './templates/message-form.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core.js";
@@ -32,7 +32,7 @@ export default class MessageForm extends ElementView {
     }
 
     toHTML () {
-        return tpl_message_form(
+        return tplMessageForm(
             Object.assign(this.model.toJSON(), {
                 'onDrop': ev => this.onDrop(ev),
                 'hint_value': this.querySelector('.spoiler-hint')?.value,

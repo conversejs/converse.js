@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce';
-import tpl_new_day from "./templates/new-day.js";
+import tplNewDay from "./templates/new-day.js";
 import { _converse, api, converse } from '@converse/headless/core';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
@@ -127,7 +127,7 @@ export function getDayIndicator (message) {
     const prev_message =  messages[idx-1];
     if (!prev_message || dayjs(message.get('time')).isAfter(dayjs(prev_message.get('time')), 'day')) {
         const day_date = dayjs(message.get('time')).startOf('day');
-        return tpl_new_day({
+        return tplNewDay({
             'type': 'date',
             'time': day_date.toISOString(),
             'datestring': day_date.format("dddd MMM Do YYYY")

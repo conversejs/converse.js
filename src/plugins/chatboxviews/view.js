@@ -1,5 +1,5 @@
-import tpl_background_logo from '../../templates/background_logo.js';
-import tpl_chats from './templates/chats.js';
+import tplBackgroundLogo from '../../templates/background_logo.js';
+import tplChats from './templates/chats.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api, _converse } from '@converse/headless/core';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
@@ -29,7 +29,7 @@ class ConverseChats extends CustomElement {
 
         const bg = document.getElementById('conversejs-bg');
         if (bg && !bg.innerHTML.trim()) {
-            render(tpl_background_logo(), bg);
+            render(tplBackgroundLogo(), bg);
         }
         const body = document.querySelector('body');
         body.classList.add(`converse-${api.settings.get('view_mode')}`);
@@ -43,7 +43,7 @@ class ConverseChats extends CustomElement {
     }
 
     render () { // eslint-disable-line class-methods-use-this
-        return tpl_chats();
+        return tplChats();
     }
 }
 

@@ -1,5 +1,5 @@
-import tpl_command from './ad-hoc-command.js';
-import tpl_spinner from 'templates/spinner.js';
+import tplCommand from './ad-hoc-command.js';
+import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { getAutoCompleteList } from 'plugins/muc-views/utils.js';
 import { html } from "lit";
@@ -31,13 +31,13 @@ export default (el) => {
                 </label>
             </fieldset>
             <fieldset class="form-group">
-                ${ el.fetching ? tpl_spinner() : html`<input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}">` }
+                ${ el.fetching ? tplSpinner() : html`<input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}">` }
             </fieldset>
             ${ el.view === 'list-commands' ? html`
             <fieldset class="form-group">
                 <ul class="list-group">
                     <li class="list-group-item active">${ el.commands.length ? i18n_commands_found : i18n_no_commands_found }:</li>
-                    ${ el.commands.map(cmd => tpl_command(el, cmd)) }
+                    ${ el.commands.map(cmd => tplCommand(el, cmd)) }
                 </ul>
             </fieldset>`
             : '' }

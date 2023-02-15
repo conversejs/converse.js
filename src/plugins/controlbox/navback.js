@@ -1,4 +1,4 @@
-import tpl_controlbox_navback from "./templates/navback.js";
+import tplControlboxNavback from "./templates/navback.js";
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
 
@@ -12,7 +12,7 @@ class ControlBoxNavback extends CustomElement {
     }
 
     render () {
-        return tpl_controlbox_navback(this.jid);
+        return tplControlboxNavback(this.jid);
     }
 }
 

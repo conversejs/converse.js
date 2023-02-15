@@ -2,6 +2,7 @@
 
 ## 10.1.1 (Unreleased)
 
+- #1851: Sort open groupchats alphabetically
 - #2240: Ad-Hoc command result form not shown
 - #3128: Second bookmarked room shows info of the first one
 - Bugfix. Uyghur translations weren't loading

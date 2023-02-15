@@ -68,14 +68,16 @@ function tplRoomItem (el, room) {
 }
 
 export default (el) => {
-    const rooms = _converse.chatboxes.filter(m => m.get('type') === _converse.CHATROOMS_TYPE);
+    const { chatboxes, CHATROOMS_TYPE, CLOSED } = _converse;
+    const rooms = chatboxes.filter(m => m.get('type') === CHATROOMS_TYPE);
+    rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
 
     const i18n_desc_rooms = __('Click to toggle the list of open groupchats');
     const i18n_heading_chatrooms = __('Groupchats');
     const i18n_title_list_rooms = __('Query for groupchats');
     const i18n_title_new_room = __('Add a new groupchat');
     const i18n_show_bookmarks = __('Show bookmarked groupchats');
-    const is_closed = el.model.get('toggle_state') === _converse.CLOSED;
+    const is_closed = el.model.get('toggle_state') === CLOSED;
     return html`
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--groupchats">

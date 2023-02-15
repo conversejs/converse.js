@@ -34,7 +34,7 @@
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "dependencies": {
     "@converse/openpromise": "^0.0.1",
-    "@converse/skeletor": "0.0.7",
+    "@converse/skeletor": "0.0.8",
     "dayjs": "1.11.6",
     "dompurify": "^2.3.1",
     "filesize": "^7.0.0",

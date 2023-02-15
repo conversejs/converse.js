@@ -5,7 +5,6 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isUniView } from '@converse/headless/utils/core.js';
 
 const { Strophe, u } = converse.env;
 
@@ -26,6 +25,10 @@ export class RoomsList extends CustomElement {
         this.requestUpdate();
     }
 
+    render () {
+        return tpl_roomslist(this);
+    }
+
     renderIfChatRoom (model) {
         u.isChatRoom(model) && this.requestUpdate();
     }
@@ -36,21 +39,6 @@ export class RoomsList extends CustomElement {
         if (u.isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
             this.requestUpdate();
         }
-    }
-
-    render () {
-        return tpl_roomslist({
-            'addBookmark': ev => this.addBookmark(ev),
-            'allow_bookmarks': api.settings.get('allow_bookmarks') && _converse.bookmarks,
-            'closeRoom': ev => this.closeRoom(ev),
-            'currently_open': room => isUniView() && !room.get('hidden'),
-            'model': this.model,
-            'openRoom': ev => this.openRoom(ev),
-            'removeBookmark': ev => this.removeBookmark(ev),
-            'rooms': _converse.chatboxes.filter(m => m.get('type') === _converse.CHATROOMS_TYPE),
-            'showRoomDetailsModal': ev => this.showRoomDetailsModal(ev),
-            'toggleRoomsList': ev => this.toggleRoomsList(ev)
-        });
     }
 
     showRoomDetailsModal (ev) { // eslint-disable-line class-methods-use-this
@@ -79,14 +67,6 @@ export class RoomsList extends CustomElement {
             const room = await api.rooms.get(jid);
             room.close();
         }
-    }
-
-    removeBookmark (ev) { // eslint-disable-line class-methods-use-this
-        _converse.removeBookmarkViaEvent(ev);
-    }
-
-    addBookmark (ev) { // eslint-disable-line class-methods-use-this
-        _converse.addBookmarkViaEvent(ev);
     }
 
     toggleRoomsList (ev) {

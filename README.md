@@ -172,11 +172,6 @@ We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapa
   </a>
 </p>
 <p>
-  <a href="https://www.codefirst.co.uk?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="Codefirst" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/codefirst.png" width="200">
-  </a>
-</p>
-<p>
   <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="KeyCDN" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/keycdn.png" width="200">
   </a>

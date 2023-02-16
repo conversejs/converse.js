@@ -60,7 +60,7 @@ converse.plugins.add('converse-controlbox', {
             sticky_controlbox: false
         });
 
-        api.promises.add('controlBoxInitialized');
+        api.promises.add('controlBoxInitialized', false);
         Object.assign(api, controlbox_api);
 
         _converse.ControlBoxView = ControlBoxView;

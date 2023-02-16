@@ -4,18 +4,19 @@ import { __ } from 'i18n';
 import { api } from '@converse/headless/core';
 import { html } from 'lit';
 
-const tplFormRequest = () => {
+const tplFormRequest = (el) => {
     const default_domain = api.settings.get('registration_domain');
     const i18n_fetch_form = __("Hold tight, we're fetching the registration form…");
     const i18n_cancel = __('Cancel');
     return html`
-        <form id="converse-register" class="converse-form no-scrolling">
+        <form id="converse-register" class="converse-form no-scrolling" @submit=${ev => el.onFormSubmission(ev)}>
             ${tplSpinner({ 'classes': 'hor_centered' })}
             <p class="info">${i18n_fetch_form}</p>
             ${default_domain
                 ? ''
                 : html`
-                      <button class="btn btn-secondary button-cancel hor_centered">${i18n_cancel}</button>
+                    <button class="btn btn-secondary button-cancel hor_centered"
+                            @click=${ev => el.renderProviderChoiceForm(ev)}>${i18n_cancel}</button>
                   `}
         </form>
     `;
@@ -50,19 +51,21 @@ const tplFetchFormButtons = () => {
     `;
 };
 
-const tplChooseProvider = () => {
+const tplChooseProvider = (el) => {
     const default_domain = api.settings.get('registration_domain');
     const i18n_create_account = __('Create your account');
     const i18n_choose_provider = __('Please enter the XMPP provider to register with:');
+    const show_form_buttons = !default_domain && el.status === CHOOSE_PROVIDER;
+
     return html`
-        <form id="converse-register" class="converse-form">
+        <form id="converse-register" class="converse-form" @submit=${ev => el.onFormSubmission(ev)}>
             <legend class="col-form-label">${i18n_create_account}</legend>
             <div class="form-group">
                 <label>${i18n_choose_provider}</label>
-                <div class="form-errors hidden"></div>
+
                 ${default_domain ? default_domain : tplDomainInput()}
             </div>
-            ${default_domain ? '' : tplFetchFormButtons()}
+            ${show_form_buttons ? tplFetchFormButtons() : ''}
         </form>
     `;
 };
@@ -71,11 +74,12 @@ const CHOOSE_PROVIDER = 0;
 const FETCHING_FORM = 1;
 const REGISTRATION_FORM = 2;
 
-export default o => {
+export default (el) => {
     return html`
         <converse-brand-logo></converse-brand-logo>
-        ${o.model.get('registration_status') === CHOOSE_PROVIDER ? tplChooseProvider() : ''}
-        ${o.model.get('registration_status') === FETCHING_FORM ? tplFormRequest() : ''}
-        ${o.model.get('registration_status') === REGISTRATION_FORM ? tplRegistrationForm(o) : ''}
+        ${ el.error_message ? html`<div class="alert alert-danger" role="alert">${el.error_message}</div>` : '' }
+        ${el.status === CHOOSE_PROVIDER ? tplChooseProvider(el) : ''}
+        ${el.status === FETCHING_FORM ? tplFormRequest(el) : ''}
+        ${el.status === REGISTRATION_FORM ? tplRegistrationForm(el) : ''}
     `;
 };

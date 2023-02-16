@@ -1,0 +1,61 @@
+@import "shared/styles/_mixins.scss";
+
+converse-register-panel {
+    .alert {
+        margin: auto;
+        max-width: 50vw;
+    }
+}
+
+#converse-register {
+    @include fade-in;
+    background-color: var(--controlbox-pane-background-color);
+
+    .title {
+        font-weight: bold;
+    }
+
+    .input-group {
+        input {
+            height: auto;
+        }
+        .input-group-text {
+            color: var(--text-color);
+            background-color: var(--controlbox-pane-background-color);
+        }
+    }
+
+    .info {
+        color: green;
+        font-size: 90%;
+        margin: 1.5em 0;
+    }
+
+    .form-errors {
+        color: var(--error-color);
+        margin: 1em 0;
+    }
+
+    .provider-title {
+        font-size: var(--font-size-huge);
+        margin: 0;
+    }
+
+    .provider-score {
+        width: 178px;
+        margin-bottom: 8px;
+    }
+
+    .form-help .url {
+        font-weight: bold;
+        color: var(--link-color);
+    }
+
+    .instructions {
+        color: gray;
+        font-size: 85%;
+        &:hover {
+            color: var(--controlbox-text-color);
+        }
+    }
+}

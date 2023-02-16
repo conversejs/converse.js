@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.1.2 (Unreleased)
+
+- #1556: Can't switch to registration form afrer logout
+- #3137: Various UI/UX bugfixes regarding the registration form
+
 ## 10.1.1 (2023-02-15)
 
 - #1851: Sort open groupchats alphabetically

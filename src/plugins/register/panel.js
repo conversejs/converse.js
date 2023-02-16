@@ -1,16 +1,18 @@
 import log from "@converse/headless/log";
-import pick from "lodash-es/pick";
 import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
 import tplRegisterPanel from "./templates/register_panel.js";
 import tplSpinner from "templates/spinner.js";
-import { webForm2xForm } from "@converse/headless/utils/form";
-import { ElementView } from "@converse/skeletor/src/element";
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core.js";
 import { initConnection } from '@converse/headless/utils/init.js';
 import { render } from 'lit';
+import { setActiveForm } from './utils.js';
+import { webForm2xForm } from "@converse/headless/utils/form";
+
+import './styles/register.scss';
 
 // Strophe methods for building stanzas
 const { Strophe, sizzle, $iq } = converse.env;
@@ -27,38 +29,29 @@ const REGISTRATION_FORM = 2;
  * @namespace _converse.RegisterPanel
  * @memberOf _converse
  */
-class RegisterPanel extends ElementView {
-    id = "converse-register-panel"
-    className = 'controlbox-pane fade-in'
-    events = {
-        'submit form#converse-register': 'onFormSubmission',
-        'click .button-cancel': 'renderProviderChoiceForm',
+class RegisterPanel extends CustomElement {
+
+    static get properties () {
+        return {
+            status : { type: String },
+            error_message: { type: String },
+        }
     }
 
     initialize () {
         this.reset();
-        const controlbox = _converse.chatboxes.get('controlbox');
-        this.model = controlbox;
-        this.listenTo(_converse, 'connectionInitialized', this.registerHooks);
-        this.listenTo(this.model, 'change:registration_status', this.render);
+        this.listenTo(_converse, 'connectionInitialized', () => this.registerHooks());
 
         const domain = api.settings.get('registration_domain');
         if (domain) {
             this.fetchRegistrationForm(domain);
         } else {
-            this.model.set('registration_status', CHOOSE_PROVIDER);
+            this.status = CHOOSE_PROVIDER;
         }
     }
 
     render () {
-        render(tplRegisterPanel({
-            'domain': this.domain,
-            'fields': this.fields,
-            'form_fields': this.form_fields,
-            'instructions': this.instructions,
-            'model': this.model,
-            'title': this.title,
-        }), this);
+        return tplRegisterPanel(this);
     }
 
     /**
@@ -79,11 +72,6 @@ class RegisterPanel extends ElementView {
         };
     }
 
-    connectedCallback () {
-        super.connectedCallback();
-        this.render();
-    }
-
     /**
      * Send an IQ stanza to the XMPP server asking for the registration fields.
      * @private
@@ -98,9 +86,8 @@ class RegisterPanel extends ElementView {
         const body = conn._proto._reqToData(req);
         if (!body) { return; }
         if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
-            this.showValidationError(
-                __("Sorry, we're unable to connect to your chosen provider.")
-            );
+            this.status = CHOOSE_PROVIDER;
+            this.error_message = __("Sorry, we're unable to connect to your chosen provider.");
             return false;
         }
         const register = body.getElementsByTagName("register");
@@ -111,14 +98,14 @@ class RegisterPanel extends ElementView {
         }
         if (register.length === 0) {
             conn._changeConnectStatus(Strophe.Status.REGIFAIL);
-            this.showValidationError(
+            this.error_message =
                 __("Sorry, the given provider does not support in "+
                    "band account registration. Please try with a "+
-                   "different provider."))
+                   "different provider.");
             return true;
         }
         // Send an IQ stanza to get all required data fields
-        conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
+        conn._addSysHandler((s) => this.onRegistrationFields(s), null, "iq", null, null);
         const stanza = $iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree();
         stanza.setAttribute("id", conn.getUniqueId("sendIQ"));
         conn.send(stanza);
@@ -149,7 +136,7 @@ class RegisterPanel extends ElementView {
             return false;
         }
         this.setFields(stanza);
-        if (this.model.get('registration_status') === FETCHING_FORM) {
+        if (this.status === FETCHING_FORM) {
             this.renderRegistrationForm(stanza);
         }
         return false;
@@ -167,9 +154,7 @@ class RegisterPanel extends ElementView {
             form_type: null
         };
         Object.assign(this, defaults);
-        if (settings) {
-            Object.assign(this, pick(settings, Object.keys(defaults)));
-        }
+        if (settings) Object.assign(this, settings);
     }
 
     /**
@@ -179,7 +164,7 @@ class RegisterPanel extends ElementView {
      * @param { Event } ev
      */
     onFormSubmission (ev) {
-        if (ev && ev.preventDefault) { ev.preventDefault(); }
+        ev?.preventDefault?.();
         if (ev.target.querySelector('input[name=domain]') === null) {
             this.submitRegistrationForm(ev.target);
         } else {
@@ -195,15 +180,8 @@ class RegisterPanel extends ElementView {
      * @param { HTMLElement } form - The form that was submitted
      */
     onProviderChosen (form) {
-        const domain_input = form.querySelector('input[name=domain]'),
-            domain = domain_input?.value;
-        if (!domain) {
-            // TODO: add validation message
-            domain_input.classList.add('error');
-            return;
-        }
-        form.querySelector('input[type=submit]').classList.add('hidden');
-        this.fetchRegistrationForm(domain.trim());
+        const domain = form.querySelector('input[name=domain]')?.value;
+        if (domain) this.fetchRegistrationForm(domain.trim());
     }
 
     /**
@@ -213,7 +191,7 @@ class RegisterPanel extends ElementView {
      * @param { String } domain_name - XMPP server domain
      */
     fetchRegistrationForm (domain_name) {
-        this.model.set('registration_status', FETCHING_FORM);
+        this.status = FETCHING_FORM;
         this.reset({
             'domain': Strophe.getDomainFromJid(domain_name),
             '_registering': true
@@ -221,7 +199,7 @@ class RegisterPanel extends ElementView {
         initConnection(this.domain);
         // When testing, the test tears down before the async function
         // above finishes. So we use optional chaining here
-        _converse.connection?.connect(this.domain, "", status => this.onConnectStatusChanged(status));
+        _converse.connection?.connect(this.domain, "", (s) => this.onConnectStatusChanged(s));
         return false;
     }
 
@@ -281,6 +259,8 @@ class RegisterPanel extends ElementView {
                     this.fields.password,
                     _converse.onConnectStatusChanged
                 );
+                setActiveForm('login');
+                _converse.router.navigate('');
                 this.giveFeedback(__('Now logging you in'), 'info');
             } else {
                 _converse.giveFeedback(__('Registered successfully'));
@@ -334,29 +314,7 @@ class RegisterPanel extends ElementView {
      */
     renderRegistrationForm (stanza) {
         this.form_fields = this.getFormFields(stanza);
-        this.model.set('registration_status', REGISTRATION_FORM);
-    }
-
-    showValidationError (message) {
-        const form = this.querySelector('form');
-        let flash = form.querySelector('.form-errors');
-        if (flash === null) {
-            flash = '<div class="form-errors hidden"></div>';
-            const instructions = form.querySelector('p.instructions');
-            if (instructions === null) {
-                form.insertAdjacentHTML('afterbegin', flash);
-            } else {
-                instructions.insertAdjacentHTML('afterend', flash);
-            }
-            flash = form.querySelector('.form-errors');
-        } else {
-            flash.innerHTML = '';
-        }
-        flash.insertAdjacentHTML(
-            'beforeend',
-            '<p class="form-help error">'+message+'</p>'
-        );
-        flash.classList.remove('hidden');
+        this.status = REGISTRATION_FORM;
     }
 
     /**
@@ -367,31 +325,31 @@ class RegisterPanel extends ElementView {
      * @param { XMLElement } stanza - The IQ stanza received from the XMPP server
      */
     reportErrors (stanza) {
-        const errors = stanza.querySelectorAll('error');
-        errors.forEach(e => this.showValidationError(e.textContent));
-        if (!errors.length) {
-            const message = __('The provider rejected your registration attempt. '+
+        const errors = Array.from(stanza.querySelectorAll('error'));
+        if (errors.length) {
+            this.error_message = errors.reduce((result, e) => `${result}\n${e.textContent}`, '');
+        } else {
+            this.error_message = __('The provider rejected your registration attempt. '+
                 'Please check the values you entered for correctness.');
-            this.showValidationError(message);
         }
     }
 
     renderProviderChoiceForm (ev) {
-        if (ev && ev.preventDefault) { ev.preventDefault(); }
+        ev?.preventDefault?.();
         _converse.connection._proto._abortAllRequests();
         _converse.connection.reset();
-        this.render();
+        this.status = CHOOSE_PROVIDER;
     }
 
     abortRegistration () {
         _converse.connection._proto._abortAllRequests();
         _converse.connection.reset();
-        if ([FETCHING_FORM, REGISTRATION_FORM].includes(this.model.get('registration_status'))) {
+        if ([FETCHING_FORM, REGISTRATION_FORM].includes(this.status)) {
             if (api.settings.get('registration_domain')) {
                 this.fetchRegistrationForm(api.settings.get('registration_domain'));
             }
         } else {
-            this.render();
+            this.requestUpdate();
         }
     }
 
@@ -403,16 +361,6 @@ class RegisterPanel extends ElementView {
      * @param { HTMLElement } form - The HTML form that was submitted
      */
     submitRegistrationForm (form) {
-        const has_empty_inputs = Array.from(this.querySelectorAll('input.required'))
-            .reduce((result, input) => {
-                if (input.value === '') {
-                    input.classList.add('error');
-                    return result + 1;
-                }
-                return result;
-            }, 0);
-        if (has_empty_inputs) { return; }
-
         const inputs = sizzle(':input:not([type=button]):not([type=submit])', form);
         const iq = $iq({'type': 'set', 'id': u.getUniqueId()})
                     .c("query", {xmlns:Strophe.NS.REGISTER});
@@ -425,7 +373,7 @@ class RegisterPanel extends ElementView {
         } else {
             inputs.forEach(input => iq.c(input.getAttribute('name'), {}, input.value));
         }
-        _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
+        _converse.connection._addSysHandler((iq) => this._onRegisterIQ(iq), null, "iq", null, null);
         _converse.connection.send(iq);
         this.setFields(iq.tree());
     }
@@ -462,8 +410,8 @@ class RegisterPanel extends ElementView {
     }
 
     _setFieldsFromXForm (xform) {
-        this.title = xform.querySelector('title')?.textContent;
-        this.instructions = xform.querySelector('instructions')?.textContent;
+        this.title = xform.querySelector('title')?.textContent ?? '';
+        this.instructions = xform.querySelector('instructions')?.textContent ?? '';
         xform.querySelectorAll('field').forEach(field => {
             const _var = field.getAttribute('var');
             if (_var) {

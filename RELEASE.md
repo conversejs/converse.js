@@ -10,10 +10,8 @@
 8. Run `git push && git push origin v10.1.2`
 9. Update https://conversejs.org
     * `cd /home/conversejs/converse.js`
-    * `git clone --branch v10.1.2 git@github.com:conversejs/converse.js.git 10.1.2`
-    * `cd 10.1.2 && nvm install && ASSET_PATH=https://cdn.conversejs.org/10.1.2/dist/ make dist && make doc`
-    * `cd .. && git pull && nvm install && ASSET_PATH=https://cdn.conversejs.org/dist/ make dist && make doc`
+    * `make deploy VERSION=10.1.2`
 10. Update release page on Github
 11. Run `npm publish && cd src/headless/ && npm publish`
 12. Update the repository on weblate
-13. Decide on next release number and run `make postrelease VERSION=9.1.2`
+13. Decide on next release number and run `make postrelease VERSION=10.1.3`

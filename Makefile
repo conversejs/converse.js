@@ -108,6 +108,12 @@ release:
 postrelease:
 	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/core.js
 
+.PHONY: deploy
+deploy:
+	git clone --branch v$(VERSION) git@github.com:conversejs/converse.js.git $(VERSION)
+	cd $(VERSION) && make node && ASSET_PATH=https://cdn.conversejs.org/$(VERSION)/dist/ make dist && make doc
+	cd .. && git pull && make node && ASSET_PATH=https://cdn.conversejs.org/dist/ make dist && make doc
+
 ########################################################################
 ## Install dependencies
 

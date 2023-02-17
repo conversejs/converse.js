@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2023-02-09 05:28+0000\n"
+"PO-Revision-Date: 2023-02-19 05:39+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -626,15 +626,13 @@ msgstr ""
 "recargar la página para realizar la petición de nuevo."
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
 msgstr ""
-"Lo sentimos, ocurrió un error mientras se intentaba enviar el formulario de "
-"configuración."
+"Se ha producido un error al intentar recuperar el formulario de comandos"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Se ha agotado el tiempo de espera"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -700,15 +698,15 @@ msgstr "Ejecutar"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Siguiente"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "Completo"
 
 #: dist/converse-no-dependencies.js:74520
 msgid "Add to Contacts"
@@ -992,27 +990,25 @@ msgstr ""
 "consola del desarrollador para obtener más información"
 
 #: dist/converse-no-dependencies.js:78102
-#, fuzzy
 msgid "Executing"
-msgstr "Ejecutar"
+msgstr "Ejecutando"
 
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "Completado"
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Lo sentimos, ocurrió un error al intentar ejecutar el comando. Consulte la "
-"consola del desarrollador para obtener más información"
+"Se ha producido un error al intentar cancelar el comando. Consulte la "
+"consola de desarrollador para obtener más detalles"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Error: resultado imprevisto"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"

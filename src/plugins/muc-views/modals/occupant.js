@@ -39,9 +39,7 @@ export default class OccupantModal extends BaseModal {
     addToContacts () {
         const model = this.model ?? this.message;
         const jid = model.get('jid');
-        if (jid) {
-            api.modal.show('converse-add-contact-modal', {'model': new Model({ jid })});
-        }
+        if (jid) api.modal.show('converse-add-contact-modal', {'model': new Model({ jid })});
     }
 }
 

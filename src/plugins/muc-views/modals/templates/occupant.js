@@ -46,7 +46,7 @@ export default (el) => {
                         ${ affiliation ? html`<div class="row"><strong>${__('Affiliation')}:</strong></div><div class="row">${affiliation}</div>` : '' }
                     </li>
                     <li>
-                        ${ role ? html`<div class="row"><strong>${__('Roles')}:</strong></div><div class="row">${role}</div>` : '' }
+                        ${ role ? html`<div class="row"><strong>${__('Role')}:</strong></div><div class="row">${role}</div>` : '' }
                     </li>
                     <li>
                         ${ hats ? html`<div class="row"><strong>${__('Hats')}:</strong></div><div class="row">${hats}</div>` : '' }

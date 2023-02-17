@@ -1,4 +1,3 @@
-import log from '../../log';
 import { Strophe } from 'strophe.js/src/strophe';
 import { _converse, api } from '../../core.js';
 
@@ -20,6 +19,7 @@ const ChatRoomMessageMixin = {
         this.on('change:type', () => this.setOccupant());
         this.on('change:is_ephemeral', () => this.setTimerForEphemeralMessage());
 
+        this.chatbox = this.collection?.chatbox;
         this.setTimerForEphemeralMessage();
         this.setOccupant();
         /**
@@ -53,24 +53,20 @@ const ChatRoomMessageMixin = {
         return (
             ['all', 'moderator'].includes(api.settings.get('allow_message_retraction')) &&
             this.get(`stanza_id ${this.get('from_muc')}`) &&
-            this.collection.chatbox.canModerateMessages()
+            this.chatbox.canModerateMessages()
         );
     },
 
     checkValidity () {
         const result = _converse.Message.prototype.checkValidity.call(this);
-        !result && this.collection.chatbox.debouncedRejoin();
+        !result && this.chatbox.debouncedRejoin();
         return result;
     },
 
     onOccupantRemoved () {
         this.stopListening(this.occupant);
         delete this.occupant;
-        const chatbox = this?.collection?.chatbox;
-        if (!chatbox) {
-            return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
-        }
-        this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
+        this.listenTo(this.chatbox.occupants, 'add', this.onOccupantAdded);
     },
 
     onOccupantAdded (occupant) {
@@ -81,10 +77,6 @@ const ChatRoomMessageMixin = {
         } else if (occupant.get('nick') !== Strophe.getResourceFromJid(this.get('from'))) {
             return;
         }
-        const chatbox = this?.collection?.chatbox;
-        if (!chatbox) {
-            return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
-        }
 
         this.occupant = occupant;
         if (occupant.get('jid')) {
@@ -93,32 +85,40 @@ const ChatRoomMessageMixin = {
 
         this.trigger('occupantAdded');
         this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-        this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
+        this.stopListening(this.chatbox.occupants, 'add', this.onOccupantAdded);
+    },
+
+    getOccupant() {
+        if (this.occupant) return this.occupant;
+
+        this.setOccupant();
+        return this.occupant;
     },
 
     setOccupant () {
         if (this.get('type') !== 'groupchat' || this.isEphemeral() || this.occupant) {
             return;
         }
-        const chatbox = this?.collection?.chatbox;
-        if (!chatbox) {
-            return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
-        }
+
         const nick = Strophe.getResourceFromJid(this.get('from'));
         const occupant_id = this.get('occupant_id');
-        this.occupant = chatbox.occupants.findOccupant({ nick, occupant_id });
 
-        if (!this.occupant && api.settings.get('muc_send_probes')) {
-            this.occupant = chatbox.occupants.create({ nick, occupant_id, 'type': 'unavailable' });
-            const jid = `${chatbox.get('jid')}/${nick}`;
-            api.user.presence.send('probe', jid);
+        this.occupant = this.chatbox.occupants.findOccupant({ nick, occupant_id });
+
+        if (!this.occupant) {
+            this.occupant = this.chatbox.occupants.create({
+                nick,
+                occupant_id,
+                jid: this.get('from_real_jid'),
+            });
+
+            if (api.settings.get('muc_send_probes')) {
+                const jid = `${this.chatbox.get('jid')}/${nick}`;
+                api.user.presence.send('probe', jid);
+            }
         }
 
-        if (this.occupant) {
-            this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-        } else {
-            this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
-        }
+        this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
     }
 };
 

@@ -83,7 +83,14 @@ describe("A MUC occupant", function () {
         await u.waitUntil(() => model.messages.length);
         let message = model.messages.at(0);
         expect(message.get('occupant_id')).toBe("dd72603deec90a38ba552f7c68cbcc61bca202cd");
-        expect(message.occupant).toBeUndefined();
+        expect(message.occupant).not.toBeUndefined();
+
+        let occupant = message.occupant;
+        expect(occupant.getDisplayName()).toBe('3rdwitch');
+        expect(occupant.get('nick')).toBe('3rdwitch');
+        expect(occupant.get('jid')).toBe(undefined);
+        expect(occupant.get('occupant_id')).toBe("dd72603deec90a38ba552f7c68cbcc61bca202cd");
+
         expect(message.getDisplayName()).toBe('3rdwitch');
 
         const presence = u.toStanza(`
@@ -98,7 +105,7 @@ describe("A MUC occupant", function () {
             </presence>`);
         _converse.connection._dataRecv(mock.createRequest(presence));
 
-        const occupant = await u.waitUntil(() => model.getOccupantByNickname('thirdwitch'));
+        occupant = await u.waitUntil(() => model.getOccupantByNickname('thirdwitch'));
         expect(occupant.get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');
         expect(model.occupants.findWhere({'occupant_id': "dd72603deec90a38ba552f7c68cbcc61bca202cd"})).toBe(occupant);
 

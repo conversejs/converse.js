@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2023-02-09 05:28+0000\n"
+"PO-Revision-Date: 2023-02-19 05:39+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -592,13 +592,12 @@ msgstr ""
 "istemek için yeniden yükleyebilirsiniz."
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr "Üzgünüm, yapılandırma formunu göndermeye çalışırken bir hata oluştu."
+msgstr "Komut formu alınmaya çalışılırken bir hata oluştu"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Bir zaman aşımı meydana geldi"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -663,15 +662,15 @@ msgstr "Yürüt"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Önceki"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Sonraki"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "Tamamla"
 
 #: dist/converse-no-dependencies.js:74520
 msgid "Add to Contacts"
@@ -953,27 +952,25 @@ msgstr ""
 "geliştirici konsoluna bakın"
 
 #: dist/converse-no-dependencies.js:78102
-#, fuzzy
 msgid "Executing"
-msgstr "Yürüt"
+msgstr "Çalıştırılıyor"
 
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "Tamamlandı"
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Üzgünüm, komutu yürütmeye çalışırken bir hata oluştu. Ayrıntılar için "
+"Komut iptal edilmeye çalışılırken bir hata oluştu. Ayrıntılar için "
 "geliştirici konsoluna bakın"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Hata: beklenmeyen sonuç"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"

@@ -1,6 +1,6 @@
 # Changelog
 
-## 10.1.2 (Unreleased)
+## 10.1.2 (2023-02-17)
 
 - #1490: Busy-loop when fetching registration form fails
 - #1556: Can't switch to registration form afrer logout

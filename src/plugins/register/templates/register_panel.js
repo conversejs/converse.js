@@ -1,17 +1,16 @@
 import tplRegistrationForm from './registration_form.js';
 import tplSpinner from 'templates/spinner.js';
+import tplSwitchForm from './switch_form.js';
 import { __ } from 'i18n';
 import { api } from '@converse/headless/core';
 import { html } from 'lit';
 
 const tplFormRequest = (el) => {
     const default_domain = api.settings.get('registration_domain');
-    const i18n_fetch_form = __("Hold tight, we're fetching the registration form…");
     const i18n_cancel = __('Cancel');
     return html`
         <form id="converse-register" class="converse-form no-scrolling" @submit=${ev => el.onFormSubmission(ev)}>
             ${tplSpinner({ 'classes': 'hor_centered' })}
-            <p class="info">${i18n_fetch_form}</p>
             ${default_domain
                 ? ''
                 : html`
@@ -73,13 +72,15 @@ const tplChooseProvider = (el) => {
 const CHOOSE_PROVIDER = 0;
 const FETCHING_FORM = 1;
 const REGISTRATION_FORM = 2;
+const REGISTRATION_FORM_ERROR = 3;
 
 export default (el) => {
     return html`
         <converse-brand-logo></converse-brand-logo>
-        ${ el.error_message ? html`<div class="alert alert-danger" role="alert">${el.error_message}</div>` : '' }
+        ${ el.alert_message ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>` : '' }
         ${el.status === CHOOSE_PROVIDER ? tplChooseProvider(el) : ''}
         ${el.status === FETCHING_FORM ? tplFormRequest(el) : ''}
         ${el.status === REGISTRATION_FORM ? tplRegistrationForm(el) : ''}
+        ${el.status === REGISTRATION_FORM_ERROR ? tplSwitchForm() : '' }
     `;
 };

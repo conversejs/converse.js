@@ -2,8 +2,10 @@
 
 ## 10.1.2 (Unreleased)
 
+- #1490: Busy-loop when fetching registration form fails
 - #1556: Can't switch to registration form afrer logout
 - #3137: Various UI/UX bugfixes regarding the registration form
+- XEP-0437: Room Activity Indicators (RAI) optimizations
 
 ## 10.1.1 (2023-02-15)
 

@@ -3,12 +3,10 @@ import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
 import tplRegisterPanel from "./templates/register_panel.js";
-import tplSpinner from "templates/spinner.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core.js";
 import { initConnection } from '@converse/headless/utils/init.js';
-import { render } from 'lit';
 import { setActiveForm } from './utils.js';
 import { webForm2xForm } from "@converse/headless/utils/form";
 
@@ -22,6 +20,7 @@ const u = converse.env.utils;
 const CHOOSE_PROVIDER = 0;
 const FETCHING_FORM = 1;
 const REGISTRATION_FORM = 2;
+const REGISTRATION_FORM_ERROR = 3;
 
 
 /**
@@ -34,8 +33,16 @@ class RegisterPanel extends CustomElement {
     static get properties () {
         return {
             status : { type: String },
-            error_message: { type: String },
+            alert_message: { type: String },
+            alert_type: { type: String },
         }
+    }
+
+    constructor () {
+        super();
+        this.alert_type = 'info';
+        this.setErrorMessage = (m) => this.setMessage(m, 'danger');
+        this.setFeedbackMessage = (m) => this.setMessage(m, 'info');
     }
 
     initialize () {
@@ -54,6 +61,11 @@ class RegisterPanel extends CustomElement {
         return tplRegisterPanel(this);
     }
 
+    setMessage(message, type) {
+        this.alert_type = type;
+        this.alert_message = message;
+    }
+
     /**
      * Hook into Strophe's _connect_cb, so that we can send an IQ
      * requesting the registration fields.
@@ -64,17 +76,14 @@ class RegisterPanel extends CustomElement {
         conn._connect_cb = (req, callback, raw) => {
             if (!this._registering) {
                 connect_cb(req, callback, raw);
-            } else {
-                if (this.getRegistrationFields(req, callback)) {
-                    this._registering = false;
-                }
+            } else if (this.getRegistrationFields(req, callback)) {
+                this._registering = false;
             }
         };
     }
 
     /**
      * Send an IQ stanza to the XMPP server asking for the registration fields.
-     * @private
      * @method _converse.RegisterPanel#getRegistrationFields
      * @param { Strophe.Request } req - The current request
      * @param { Function } callback - The callback function
@@ -87,7 +96,7 @@ class RegisterPanel extends CustomElement {
         if (!body) { return; }
         if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
             this.status = CHOOSE_PROVIDER;
-            this.error_message = __("Sorry, we're unable to connect to your chosen provider.");
+            this.setErrorMessage(__("Sorry, we're unable to connect to your chosen provider."));
             return false;
         }
         const register = body.getElementsByTagName("register");
@@ -98,10 +107,11 @@ class RegisterPanel extends CustomElement {
         }
         if (register.length === 0) {
             conn._changeConnectStatus(Strophe.Status.REGIFAIL);
-            this.error_message =
+            this.alert_type = 'danger';
+            this.setErrorMessage(
                 __("Sorry, the given provider does not support in "+
                    "band account registration. Please try with a "+
-                   "different provider.");
+                   "different provider."));
             return true;
         }
         // Send an IQ stanza to get all required data fields
@@ -115,24 +125,17 @@ class RegisterPanel extends CustomElement {
 
     /**
      * Handler for {@link _converse.RegisterPanel#getRegistrationFields}
-     * @private
      * @method _converse.RegisterPanel#onRegistrationFields
      * @param { XMLElement } stanza - The query stanza.
      */
     onRegistrationFields (stanza) {
         if (stanza.getAttribute("type") === "error") {
-            _converse.connection._changeConnectStatus(
-                Strophe.Status.REGIFAIL,
-                __('Something went wrong while establishing a connection with "%1$s". '+
-                   'Are you sure it exists?', this.domain)
-            );
-            return false;
-        }
-        if (stanza.getElementsByTagName("query").length !== 1) {
-            _converse.connection._changeConnectStatus(
-                Strophe.Status.REGIFAIL,
-                "unknown"
-            );
+            this.reportErrors(stanza);
+            if (api.settings.get('registration_domain')) {
+                this.status = REGISTRATION_FORM_ERROR;
+            } else {
+                this.status = CHOOSE_PROVIDER;
+            }
             return false;
         }
         this.setFields(stanza);
@@ -160,7 +163,6 @@ class RegisterPanel extends CustomElement {
     /**
      * Event handler when the #converse-register form is submitted.
      * Depending on the available input fields, we delegate to other methods.
-     * @private
      * @param { Event } ev
      */
     onFormSubmission (ev) {
@@ -175,7 +177,6 @@ class RegisterPanel extends CustomElement {
 
     /**
      * Callback method that gets called when the user has chosen an XMPP provider
-     * @private
      * @method _converse.RegisterPanel#onProviderChosen
      * @param { HTMLElement } form - The form that was submitted
      */
@@ -186,7 +187,6 @@ class RegisterPanel extends CustomElement {
 
     /**
      * Fetch a registration form from the requested domain
-     * @private
      * @method _converse.RegisterPanel#fetchRegistrationForm
      * @param { String } domain_name - XMPP server domain
      */
@@ -203,30 +203,9 @@ class RegisterPanel extends CustomElement {
         return false;
     }
 
-    giveFeedback (message, klass) {
-        let feedback = this.querySelector('.reg-feedback');
-        if (feedback !== null) {
-            feedback.parentNode.removeChild(feedback);
-        }
-        const form = this.querySelector('form');
-        form.insertAdjacentHTML('afterbegin', '<span class="reg-feedback"></span>');
-        feedback = form.querySelector('.reg-feedback');
-        feedback.textContent = message;
-        if (klass) {
-            feedback.classList.add(klass);
-        }
-    }
-
-    showSpinner () {
-        const form = this.querySelector('form');
-        render(tplSpinner(), form);
-        return this;
-    }
-
     /**
      * Callback function called by Strophe whenever the connection status changes.
      * Passed to Strophe specifically during a registration attempt.
-     * @private
      * @method _converse.RegisterPanel#onConnectStatusChanged
      * @param { integer } status_code - The Strophe.Status status code
      */
@@ -246,11 +225,11 @@ class RegisterPanel extends CustomElement {
         } else if (status_code === Strophe.Status.REGISTERED) {
             log.debug("Registered successfully.");
             _converse.connection.reset();
-            this.showSpinner();
 
             if (["converse/login", "converse/register"].includes(_converse.router.history.getFragment())) {
                 _converse.router.navigate('', {'replace': true});
             }
+            setActiveForm('login');
 
             if (this.fields.password && this.fields.username) {
                 // automatically log the user in
@@ -259,11 +238,9 @@ class RegisterPanel extends CustomElement {
                     this.fields.password,
                     _converse.onConnectStatusChanged
                 );
-                setActiveForm('login');
-                _converse.router.navigate('');
-                this.giveFeedback(__('Now logging you in'), 'info');
+                this.setFeedbackMessage(__('Now logging you in'));
             } else {
-                _converse.giveFeedback(__('Registered successfully'));
+                this.setFeedbackMessage(__('Registered successfully'));
             }
             this.reset();
         }
@@ -308,7 +285,6 @@ class RegisterPanel extends CustomElement {
     /**
      * Renders the registration form based on the XForm fields
      * received from the XMPP server.
-     * @private
      * @method _converse.RegisterPanel#renderRegistrationForm
      * @param { XMLElement } stanza - The IQ stanza received from the XMPP server.
      */
@@ -320,17 +296,16 @@ class RegisterPanel extends CustomElement {
     /**
      * Report back to the user any error messages received from the
      * XMPP server after attempted registration.
-     * @private
      * @method _converse.RegisterPanel#reportErrors
      * @param { XMLElement } stanza - The IQ stanza received from the XMPP server
      */
     reportErrors (stanza) {
         const errors = Array.from(stanza.querySelectorAll('error'));
         if (errors.length) {
-            this.error_message = errors.reduce((result, e) => `${result}\n${e.textContent}`, '');
+            this.setErrorMessage(errors.reduce((result, e) => `${result}\n${e.textContent}`, ''));
         } else {
-            this.error_message = __('The provider rejected your registration attempt. '+
-                'Please check the values you entered for correctness.');
+            this.setErrorMessage(__('The provider rejected your registration attempt. '+
+                'Please check the values you entered for correctness.'));
         }
     }
 
@@ -356,7 +331,6 @@ class RegisterPanel extends CustomElement {
     /**
      * Handler, when the user submits the registration form.
      * Provides form error feedback or starts the registration process.
-     * @private
      * @method _converse.RegisterPanel#submitRegistrationForm
      * @param { HTMLElement } form - The HTML form that was submitted
      */
@@ -378,8 +352,8 @@ class RegisterPanel extends CustomElement {
         this.setFields(iq.tree());
     }
 
-    /* Stores the values that will be sent to the XMPP server during attempted registration.
-     * @private
+    /**
+     * Stores the values that will be sent to the XMPP server during attempted registration.
      * @method _converse.RegisterPanel#setFields
      * @param { XMLElement } stanza - the IQ stanza that will be sent to the XMPP server.
      */
@@ -428,7 +402,6 @@ class RegisterPanel extends CustomElement {
      * Callback method that gets called when a return IQ stanza
      * is received from the XMPP server, after attempting to
      * register a new user.
-     * @private
      * @method _converse.RegisterPanel#reportErrors
      * @param { XMLElement } stanza - The IQ stanza.
      */

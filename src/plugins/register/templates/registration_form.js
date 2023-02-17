@@ -1,12 +1,11 @@
+import tplSwitchForm from './switch_form.js';
 import { __ } from 'i18n';
 import { api } from '@converse/headless/core';
 import { html } from 'lit';
 
 export default (el) => {
     const i18n_choose_provider = __('Choose a different provider');
-    const i18n_has_account = __('Already have a chat account?');
     const i18n_legend = __('Account Registration:');
-    const i18n_login = __('Log in here');
     const i18n_register = __('Register');
     const registration_domain = api.settings.get('registration_domain');
 
@@ -34,10 +33,7 @@ export default (el) => {
                               @click=${ev => el.renderProviderChoiceForm(ev)}
                           />
                       `}
-                <div class="switch-form">
-                    <p>${i18n_has_account}</p>
-                    <p><a class="login-here toggle-register-login" href="#converse/login">${i18n_login}</a></p>
-                </div>
+                ${ tplSwitchForm() }
             </fieldset>
         </form>
     `;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2023-02-09 05:28+0000\n"
+"PO-Revision-Date: 2023-02-19 05:39+0000\n"
 "Last-Translator: Eric <hamburger2048@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -575,13 +575,12 @@ msgid ""
 msgstr "服务器未在响应时间内返回书签。您可以尝试重新加载本页面。"
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr "抱歉，尝试送出配置时遭遇错误。"
+msgstr "尝试获取命令表单时发生了错误"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "发生了超时"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -646,15 +645,15 @@ msgstr "运行"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "上一个"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "下一个"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "完毕"
 
 #: dist/converse-no-dependencies.js:74520
 msgid "Add to Contacts"
@@ -918,25 +917,23 @@ msgid ""
 msgstr "抱歉，运行指令时出错。详细信息请查看开发者主控台"
 
 #: dist/converse-no-dependencies.js:78102
-#, fuzzy
 msgid "Executing"
-msgstr "运行"
+msgstr "执行中"
 
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "完毕"
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
-msgstr "抱歉，运行指令时出错。详细信息请查看开发者主控台"
+msgstr "取消指令时出错。详细信息请查看开发者主控台"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "错误：异常结果"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"

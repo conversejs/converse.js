@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2023-02-10 18:37+0000\n"
+"PO-Revision-Date: 2023-02-19 20:17+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -622,14 +622,12 @@ msgstr ""
 "zurückgegeben. Sie können die Seite neu laden, um sie erneut anzufordern."
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
-"Leider ist beim Senden des Konfigurationsformulars ein Fehler aufgetreten."
+msgstr "Leider ist beim Abruf des Befehlsformulars ein Fehler aufgetreten"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Eine Zeitüberschreitung ist aufgetreten"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -695,15 +693,15 @@ msgstr "Ausführen"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Vorheriger"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Nächster"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "Fertig"
 
 #: dist/converse-no-dependencies.js:74520
 msgid "Add to Contacts"
@@ -992,27 +990,25 @@ msgstr ""
 "Informationen finden Sie in der Entwicklerkonsole"
 
 #: dist/converse-no-dependencies.js:78102
-#, fuzzy
 msgid "Executing"
 msgstr "Ausführen"
 
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "Abgeschlossen"
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Leider ist ein Fehler beim Ausführen des Befehls aufgetreten. Weitere "
+"Leider ist ein Fehler beim Abbruch des Befehls aufgetreten. Weitere "
 "Informationen finden Sie in der Entwicklerkonsole"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Fehler: unerwartetes Ergebnis"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"

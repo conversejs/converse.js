@@ -239,7 +239,7 @@ export function showOccupantModal (ev, occupant) {
 }
 
 
-export function parseMessageForMUCCommands (data, handled) {
+export async function parseMessageForMUCCommands (data, handled) {
     const model = data.model;
     if (handled ||
             model.get('type') !== _converse.CHATROOMS_TYPE || (
@@ -257,7 +257,7 @@ export function parseMessageForMUCCommands (data, handled) {
     }
 
     const args = text.slice(('/' + command).length + 1).trim();
-    const allowed_commands = model.getAllowedCommands() ?? [];
+    const allowed_commands = await model.getAllowedCommands() ?? [];
 
     if (command === 'admin' && allowed_commands.includes(command)) {
         verifyAndSetAffiliation(model, command, args, ['owner']);

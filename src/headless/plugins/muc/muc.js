@@ -1337,28 +1337,34 @@ const ChatRoomMixin = {
         return true;
     },
 
-    getAllowedCommands () {
+    async getAllowedCommands () {
         let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
+
         // Only allow blocking commands when server supports it and we also support it
-        if ( _converse.disco_entities.get(_converse.domain, true)?.features?.findWhere({'var': Strophe.NS.BLOCKING}) &&
-             ( _converse.pluggable.plugins['converse-blocking']?.enabled(_converse) )
-           ) {
+        if (
+            await api.disco.supports(Strophe.NS.BLOCKING, _converse.domain) &&
+            _converse.pluggable.plugins['converse-blocking']?.enabled(_converse)
+        ) {
             allowed_commands = [...allowed_commands, ...['block', 'unblock']];
         }
+
         if (this.config.get('changesubject') || ['owner', 'admin'].includes(this.getOwnAffiliation())) {
             allowed_commands = [...allowed_commands, ...['subject', 'topic']];
         }
+
         const occupant = this.occupants.findWhere({ 'jid': _converse.bare_jid });
         if (this.verifyAffiliations(['owner'], occupant, false)) {
             allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
         } else if (this.verifyAffiliations(['admin'], occupant, false)) {
             allowed_commands = allowed_commands.concat(ADMIN_COMMANDS);
         }
+
         if (this.verifyRoles(['moderator'], occupant, false)) {
             allowed_commands = allowed_commands.concat(MODERATOR_COMMANDS).concat(VISITOR_COMMANDS);
         } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
             allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
         }
+
         allowed_commands.sort();
 
         if (Array.isArray(api.settings.get('muc_disable_slash_commands'))) {

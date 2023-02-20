@@ -1,6 +1,7 @@
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 import { showOccupantModal, setRole, verifyAndSetAffiliation } from "../../utils.js"
 
 
@@ -32,7 +33,7 @@ export default (el) => {
     const handleOwner = async (ev) => {
         const confirmed = await _converse.api.confirm(
             __(`Are you sure you want to promote %1$s?`, jid),
-            [ __("Promoting a user to owner may be irreversible."+
+            [ __("Promoting a user to owner may be irreversible. "+
                 "Only server administrators may demote an owner of a Multi User Chat.")],
             []).then((x) => x.length === 0);
 
@@ -142,7 +143,7 @@ export default (el) => {
         }
     };
 
-    const applicable_buttons = (muc?.getAllowedCommands() ?? []).map(determineApplicable).filter(x => x);
+    const buttons = muc?.getAllowedCommands()?.then(commands => commands.map(determineApplicable).filter(x => x));
 
-    return applicable_buttons ? html`<div class="modal-footer">${applicable_buttons}</div>` : null;
+    return html`${until(buttons?.then((buttons) => buttons ? html`<div class="modal-footer">${buttons}</div>` : ''), '')}`;
 }

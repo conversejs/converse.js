@@ -41,6 +41,11 @@ export default class OccupantModal extends BaseModal {
         const jid = model.get('jid');
         if (jid) api.modal.show('converse-add-contact-modal', {'model': new Model({ jid })});
     }
+
+    toggleForm () {
+        this.show_affiliation_form = !this.show_affiliation_form;
+        this.render();
+    }
 }
 
 api.elements.define('converse-muc-occupant-modal', OccupantModal);

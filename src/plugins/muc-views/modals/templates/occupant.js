@@ -43,7 +43,18 @@ export default (el) => {
                         ${ jid ? html`<div class="row"><strong>${__('XMPP Address')}:</strong></div><div class="row">${jid}</div>` : '' }
                     </li>
                     <li>
-                        ${ affiliation ? html`<div class="row"><strong>${__('Affiliation')}:</strong></div><div class="row">${affiliation}</div>` : '' }
+                        <div class="row"><strong>${__('Affiliation')}:</strong></div>
+                        <div class="row">${affiliation}&nbsp;
+                            <a href="#"
+                               data-form="affiliation-form"
+                               class="toggle-form right"
+                               color="var(--subdued-color)"
+                               @click=${() => el.toggleForm()}>
+
+                                <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+                            </a>
+                            ${ el.show_affiliation_form ? html`<converse-muc-affiliation-form jid=${jid} .muc=${muc} affiliation=${affiliation}></converse-muc-affiliation-form>` : '' }
+                        </div>
                     </li>
                     <li>
                         ${ role ? html`<div class="row"><strong>${__('Role')}:</strong></div><div class="row">${role}</div>` : '' }

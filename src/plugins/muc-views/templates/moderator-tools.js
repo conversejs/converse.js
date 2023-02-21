@@ -61,7 +61,9 @@ const tplSetRoleForm = (o) => {
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
+                <div class="col">
+                    <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
+                </div>
             </div>
         </form>
     `;
@@ -115,7 +117,9 @@ const tplSetAffiliationForm = (o) => {
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
+                <div class="col">
+                    <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
+                </div>
             </div>
         </form>
     `;

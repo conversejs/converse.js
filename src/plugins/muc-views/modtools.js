@@ -12,6 +12,8 @@ import {
     setAffiliation,
 } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
+import './styles/moderator-tools.scss';
+
 const { Strophe, sizzle, u } = converse.env;
 
 export default class ModeratorTools extends CustomElement {

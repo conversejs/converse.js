@@ -16,6 +16,8 @@ class BaseModal extends ElementView {
         // Allow properties to be set via passed in options
         Object.assign(this, options);
         setTimeout(() => this.insertIntoDOM());
+
+        this.addEventListener('hide.bs.modal', () => this.onHide(), false);
     }
 
     initialize () {
@@ -23,7 +25,6 @@ class BaseModal extends ElementView {
             backdrop: true,
             keyboard: true
         });
-        this.addEventListener('hide.bs.modal', () => this.onHide(), false);
         this.initialized.resolve();
         this.render()
     }

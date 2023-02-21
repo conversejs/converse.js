@@ -38,45 +38,13 @@ const affiliation_option = (o) => html`
 `;
 
 
-const tplSetRoleForm = (o) => {
-    const i18n_change_role = __('Change role');
-    const i18n_new_role = __('New Role');
-    const i18n_reason = __('Reason');
-    return html`
-        <form class="role-form hidden" @submit=${o.assignRole}>
-            <div class="form-group">
-                <input type="hidden" name="jid" value="${o.item.jid}"/>
-                <input type="hidden" name="nick" value="${o.item.nick}"/>
-                <div class="row">
-                    <div class="col">
-                        <label><strong>${i18n_new_role}:</strong></label>
-                        <select class="custom-select select-role" name="role">
-                            ${ o.assignable_roles.map(role => html`<option value="${role}" ?selected=${role === o.item.role}>${role}</option>`) }
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label><strong>${i18n_reason}:</strong></label>
-                        <input class="form-control" type="text" name="reason"/>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col">
-                    <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
-                </div>
-            </div>
-        </form>
-    `;
-}
-
-
-const role_form_toggle = (o) => html`
-    <a href="#" data-form="role-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+const tplRoleFormToggle = (o) => html`
+    <a href="#" data-form="converse-muc-role-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
         <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
     </a>`;
 
 
-const role_list_item = (o) => html`
+const tplRoleListItem = (el, o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
             <li class="list-group-item active">
@@ -86,8 +54,10 @@ const role_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? role_form_toggle(o) : ''}</div>
-                ${o.assignable_roles.length ? tplSetRoleForm(o) : ''}
+                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? tplRoleFormToggle(o) : ''}</div>
+                ${o.assignable_roles.length ?
+                    html`<converse-muc-role-form class="hidden" .muc=${el.muc} jid=${o.item.jid} role=${o.item.role}></converse-muc-role-form>` : ''
+                }
             </li>
         </ul>
     </li>
@@ -240,7 +210,7 @@ export default (el, o) => {
                     <ul class="list-group list-group--users">
                         ${ o.loading_users_with_role ? html`<li class="list-group-item"> ${spinner()} </li>` : '' }
                         ${ (o.users_with_role && o.users_with_role.length === 0) ? html`<li class="list-group-item">${i18n_no_users_with_role}</li>` : '' }
-                        ${ (o.users_with_role || []).map(item => (item.nick.match(o.roles_filter) ? role_list_item(Object.assign({item}, o)) : '')) }
+                        ${ (o.users_with_role || []).map(item => (item.nick.match(o.roles_filter) ? tplRoleListItem(el, Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
             </div>`: '' }

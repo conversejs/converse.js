@@ -183,7 +183,7 @@ u.isChatRoom = function (model) {
     return model && (model.get('type') === 'chatroom');
 }
 
-u.isErrorObject = function (o) {
+export function isErrorObject (o) {
     return o instanceof Error;
 }
 
@@ -620,6 +620,7 @@ export function saveWindowState (ev) {
 
 
 export default Object.assign({
+    isErrorObject,
     getRandomInt,
     getUniqueId,
     isElement,

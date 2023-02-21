@@ -1,4 +1,3 @@
-import log from '@converse/headless/log.js';
 import tplModeratorTools from './templates/moderator-tools.js';
 import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -10,7 +9,7 @@ import { getOpenPromise } from '@converse/openpromise';
 
 import './styles/moderator-tools.scss';
 
-const { Strophe, sizzle, u } = converse.env;
+const { u } = converse.env;
 
 export default class ModeratorTools extends CustomElement {
     static get properties () {
@@ -40,6 +39,11 @@ export default class ModeratorTools extends CustomElement {
         this.addEventListener("affiliationChanged", () => {
             this.alert(__('Affiliation changed'), 'primary');
             this.onSearchAffiliationChange();
+            this.requestUpdate()
+        });
+
+        this.addEventListener("roleChanged", () => {
+            this.alert(__('Role changed'), 'primary');
             this.requestUpdate()
         });
     }
@@ -191,36 +195,6 @@ export default class ModeratorTools extends CustomElement {
         this.alert_type = undefined;
     }
 
-    assignRole (ev) {
-        ev.stopPropagation();
-        ev.preventDefault();
-        this.clearAlert();
-        const data = new FormData(ev.target);
-        const occupant = this.muc.getOccupant(data.get('jid') || data.get('nick'));
-        const role = data.get('role');
-        const reason = data.get('reason');
-        const current_role = this.role;
-        this.muc.setRole(
-            occupant,
-            role,
-            reason,
-            () => {
-                this.alert(__('Role changed'), 'primary');
-                this.role = null;
-                this.role = current_role;
-            },
-            e => {
-                if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
-                    this.alert(__("You're not allowed to make that change"), 'danger');
-                } else {
-                    this.alert(__('Sorry, something went wrong while trying to set the role'), 'danger');
-                    if (u.isErrorObject(e)) {
-                        log.error(e);
-                    }
-                }
-            }
-        );
-    }
 }
 
 api.elements.define('converse-modtools', ModeratorTools);

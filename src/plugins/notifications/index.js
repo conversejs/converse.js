@@ -22,7 +22,7 @@ converse.plugins.add('converse-notification', {
             // ^ a list of JIDs to ignore concerning chat state notifications
             chatstate_notification_blacklist: [],
             notification_delay: 5000,
-            notification_icon: 'logo/conversejs-filled.svg',
+            notification_icon: '/images/logo/conversejs-filled.svg',
             notify_all_room_messages: false,
             notify_nicknames_without_references: false,
             play_sounds: true,

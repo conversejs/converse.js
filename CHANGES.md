@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.3 (Unreleased)
+
+- Add the ability to set roles and affiliations via the MUC occupant modal
+
 ## 10.1.2 (2023-02-17)
 
 - #1490: Busy-loop when fetching registration form fails

@@ -49,15 +49,23 @@ export default (el) => {
                                data-form="affiliation-form"
                                class="toggle-form right"
                                color="var(--subdued-color)"
-                               @click=${() => el.toggleForm()}>
-
-                                <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+                               @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
                             </a>
                             ${ el.show_affiliation_form ? html`<converse-muc-affiliation-form jid=${jid} .muc=${muc} affiliation=${affiliation}></converse-muc-affiliation-form>` : '' }
                         </div>
                     </li>
                     <li>
-                        ${ role ? html`<div class="row"><strong>${__('Role')}:</strong></div><div class="row">${role}</div>` : '' }
+                        <div class="row"><strong>${__('Role')}:</strong></div>
+                        <div class="row">${role}&nbsp;
+                            ${ role ? html`
+                                <a href="#"
+                                   data-form="row-form"
+                                   class="toggle-form right"
+                                   color="var(--subdued-color)"
+                                   @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+                                </a>
+                                ${ el.show_role_form ? html`<converse-muc-role-form jid=${jid} .muc=${muc} role=${role}></converse-muc-role-form>` : '' }` : '' }
+                        </div>
                     </li>
                     <li>
                         ${ hats ? html`<div class="row"><strong>${__('Hats')}:</strong></div><div class="row">${hats}</div>` : '' }

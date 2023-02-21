@@ -94,45 +94,13 @@ const role_list_item = (o) => html`
 `;
 
 
-const tplSetAffiliationForm = (o) => {
-    const i18n_change_affiliation = __('Change affiliation');
-    const i18n_new_affiliation = __('New affiliation');
-    const i18n_reason = __('Reason');
-    return html`
-        <form class="affiliation-form hidden" @submit=${o.assignAffiliation}>
-            <div class="form-group">
-                <input type="hidden" name="jid" value="${o.item.jid}"/>
-                <input type="hidden" name="nick" value="${o.item.nick}"/>
-                <div class="row">
-                    <div class="col">
-                        <label><strong>${i18n_new_affiliation}:</strong></label>
-                        <select class="custom-select select-affiliation" name="affiliation">
-                            ${ o.assignable_affiliations.map(aff => html`<option value="${aff}" ?selected=${aff === o.item.affiliation}>${aff}</option>`) }
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label><strong>${i18n_reason}:</strong></label>
-                        <input class="form-control" type="text" name="reason"/>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col">
-                    <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
-                </div>
-            </div>
-        </form>
-    `;
-}
-
-
 const affiliation_form_toggle = (o) => html`
-    <a href="#" data-form="affiliation-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+    <a href="#" data-form="converse-muc-affiliation-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
         <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
     </a>`;
 
 
-const affiliation_list_item = (o) => html`
+const affiliation_list_item = (el, o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
             <li class="list-group-item active">
@@ -143,7 +111,9 @@ const affiliation_list_item = (o) => html`
             </li>
             <li class="list-group-item">
                 <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? affiliation_form_toggle(o) : ''}</div>
-                ${o.assignable_affiliations.length ? tplSetAffiliationForm(o) : ''}
+                ${o.assignable_affiliations.length ?
+                    html`<converse-muc-affiliation-form class="hidden" .muc=${el.muc} jid=${o.item.jid} affiliation=${o.item.affiliation}></converse-muc-affiliation-form>` : ''
+                }
             </li>
         </ul>
     </li>
@@ -174,7 +144,7 @@ const tplNavigation = (o) => html`
 `;
 
 
-export default (o) => {
+export default (el, o) => {
     const i18n_affiliation = __('Affiliation');
     const i18n_no_users_with_aff = __('No users with that affiliation found.')
     const i18n_no_users_with_role = __('No users with that role found.');
@@ -235,7 +205,7 @@ export default (o) => {
 
                         ${ (o.users_with_affiliation instanceof Error) ?
                                 html`<li class="list-group-item">${o.users_with_affiliation.message}</li>` :
-                                (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(new RegExp(o.affiliations_filter, 'i')) ? affiliation_list_item(Object.assign({item}, o)) : '')) }
+                                (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(new RegExp(o.affiliations_filter, 'i')) ? affiliation_list_item(el, Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
             </div>` : '' }

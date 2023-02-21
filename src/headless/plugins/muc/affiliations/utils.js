@@ -45,7 +45,7 @@ export async function getAffiliationList (affiliation, muc_jid) {
 }
 
 /**
- * Given an occupant model, see which affiliations may be assigned to that user.
+ * Given an occupant model, see which affiliations may be assigned by that user
  * @param { Model } occupant
  * @returns { Array<('owner'|'admin'|'member'|'outcast'|'none')> } - An array of assignable affiliations
  */
@@ -54,9 +54,9 @@ export function getAssignableAffiliations (occupant) {
     if (!Array.isArray(disabled)) {
         disabled = disabled ? AFFILIATIONS : [];
     }
-    if (occupant.get('affiliation') === 'owner') {
+    if (occupant?.get('affiliation') === 'owner') {
         return AFFILIATIONS.filter(a => !disabled.includes(a));
-    } else if (occupant.get('affiliation') === 'admin') {
+    } else if (occupant?.get('affiliation') === 'admin') {
         return AFFILIATIONS.filter(a => !['owner', 'admin', ...disabled].includes(a));
     } else {
         return [];

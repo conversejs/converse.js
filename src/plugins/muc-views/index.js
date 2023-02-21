@@ -4,6 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../chatboxviews/index.js';
+import './affiliation-form.js';
 import MUCView from './muc.js';
 import { api, converse } from '@converse/headless/core.js';
 import { clearHistory, parseMessageForMUCCommands } from './utils.js';

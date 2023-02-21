@@ -3,14 +3,10 @@ import tplModeratorTools from './templates/moderator-tools.js';
 import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { api, converse } from '@converse/headless/core.js';
+import { getAffiliationList, getAssignableAffiliations } from '@converse/headless/plugins/muc/affiliations/utils.js';
 import { getAssignableRoles, getAutoFetchedAffiliationLists } from '@converse/headless/plugins/muc/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
-import {
-    getAffiliationList,
-    getAssignableAffiliations,
-    setAffiliation,
-} from '@converse/headless/plugins/muc/affiliations/utils.js';
 
 import './styles/moderator-tools.scss';
 
@@ -40,6 +36,12 @@ export default class ModeratorTools extends CustomElement {
         this.affiliations_filter = '';
         this.role = '';
         this.roles_filter = '';
+
+        this.addEventListener("affiliationChanged", () => {
+            this.alert(__('Affiliation changed'), 'primary');
+            this.onSearchAffiliationChange();
+            this.requestUpdate()
+        });
     }
 
     updated (changed) {
@@ -58,12 +60,11 @@ export default class ModeratorTools extends CustomElement {
 
     render () {
         if (this.muc?.occupants) {
-            const occupant = this.muc.occupants.findWhere({ 'jid': _converse.bare_jid });
-            return tplModeratorTools({
+            const occupant = this.muc.occupants.getOwnOccupant();
+            return tplModeratorTools(this, {
                 'affiliations_filter': this.affiliations_filter,
                 'alert_message': this.alert_message,
                 'alert_type': this.alert_type,
-                'assignAffiliation': ev => this.assignAffiliation(ev),
                 'assignRole': ev => this.assignRole(ev),
                 'assignable_affiliations': getAssignableAffiliations(occupant),
                 'assignable_roles': getAssignableRoles(occupant),
@@ -72,7 +73,9 @@ export default class ModeratorTools extends CustomElement {
                 'loading_users_with_affiliation': this.loading_users_with_affiliation,
                 'queryAffiliation': ev => this.queryAffiliation(ev),
                 'queryRole': ev => this.queryRole(ev),
-                'queryable_affiliations': AFFILIATIONS.filter(a => !api.settings.get('modtools_disable_query').includes(a)),
+                'queryable_affiliations': AFFILIATIONS.filter(
+                    a => !api.settings.get('modtools_disable_query').includes(a)
+                ),
                 'queryable_roles': ROLES.filter(a => !api.settings.get('modtools_disable_query').includes(a)),
                 'roles_filter': this.roles_filter,
                 'switchTab': ev => this.switchTab(ev),
@@ -80,7 +83,7 @@ export default class ModeratorTools extends CustomElement {
                 'toggleForm': ev => this.toggleForm(ev),
                 'users_with_affiliation': this.users_with_affiliation,
                 'users_with_role': this.users_with_role,
-            })
+            });
         } else {
             return '';
         }
@@ -94,9 +97,8 @@ export default class ModeratorTools extends CustomElement {
     }
 
     async onSearchAffiliationChange () {
-        if (!this.affiliation) {
-            return;
-        }
+        if (!this.affiliation) return;
+
         await this.initialized;
         this.clearAlert();
         this.loading_users_with_affiliation = true;
@@ -138,12 +140,13 @@ export default class ModeratorTools extends CustomElement {
         }
     }
 
-    toggleForm (ev) { // eslint-disable-line class-methods-use-this
+    // eslint-disable-next-line class-methods-use-this
+    toggleForm (ev) {
         ev.stopPropagation();
         ev.preventDefault();
         const toggle = u.ancestor(ev.target, '.toggle-form');
-        const form_class = toggle.getAttribute('data-form');
-        const form = u.ancestor(toggle, '.list-group-item').querySelector(`.${form_class}`);
+        const sel = toggle.getAttribute('data-form');
+        const form = u.ancestor(toggle, '.list-group-item').querySelector(sel);
         if (u.hasClass('hidden', form)) {
             u.removeClass('hidden', form);
         } else {
@@ -186,37 +189,6 @@ export default class ModeratorTools extends CustomElement {
     clearAlert () {
         this.alert_message = undefined;
         this.alert_type = undefined;
-    }
-
-    async assignAffiliation (ev) {
-        ev.stopPropagation();
-        ev.preventDefault();
-        this.clearAlert();
-        const data = new FormData(ev.target);
-        const affiliation = data.get('affiliation');
-        const attrs = {
-            'jid': data.get('jid'),
-            'reason': data.get('reason'),
-        };
-        const current_affiliation = this.affiliation;
-        const muc_jid = this.muc.get('jid');
-        try {
-            await setAffiliation(affiliation, muc_jid, [attrs]);
-        } catch (e) {
-            if (e === null) {
-                this.alert(__('Timeout error while trying to set the affiliation'), 'danger');
-            } else if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
-                this.alert(__("Sorry, you're not allowed to make that change"), 'danger');
-            } else {
-                this.alert(__('Sorry, something went wrong while trying to set the affiliation'), 'danger');
-            }
-            log.error(e);
-            return;
-        }
-        await this.muc.occupants.fetchMembers();
-        this.affiliation = null;
-        this.affiliation = current_affiliation;
-        this.alert(__('Affiliation changed'), 'primary');
     }
 
     assignRole (ev) {

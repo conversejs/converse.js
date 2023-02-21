@@ -1,9 +1,15 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplOccupantModal from "./templates/occupant.js";
-import { _converse, api } from "@converse/headless/core";
 import { Model } from '@converse/skeletor/src/model.js';
+import { __ } from 'i18n';
+import { _converse, api } from "@converse/headless/core";
 
 export default class OccupantModal extends BaseModal {
+
+    constructor () {
+        super();
+        this.addEventListener("affiliationChanged", () => this.alert(__('Affiliation changed')));
+    }
 
     initialize () {
         super.initialize()

@@ -88,7 +88,6 @@ export async function openChatRoom (jid, settings) {
  * @param { XMLElement } message - The message stanza containing the invitation.
  */
 export async function onDirectMUCInvitation (message) {
-    const { __ } = _converse;
     const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
         from = Strophe.getBareJidFromJid(message.getAttribute('from')),
         room_jid = x_el.getAttribute('jid'),
@@ -99,21 +98,20 @@ export async function onDirectMUCInvitation (message) {
         result = true;
     } else {
         // Invite request might come from someone not your roster list
-        let contact = _converse.roster.get(from);
-        contact = contact ? contact.getDisplayName() : from;
-        if (!reason) {
-            result = await api.confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, room_jid));
-        } else {
-            result = await api.confirm(
-                __(
-                    '%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"',
-                    contact,
-                    room_jid,
-                    reason
-                )
-            );
-        }
+        const contact = _converse.roster.get(from)?.getDisplayName() ?? from;
+
+        /**
+         * *Hook* which is used to gather confirmation whether a direct MUC
+         * invitation should be accepted or not.
+         *
+         * It's meant for consumers of `@converse/headless` to subscribe to
+         * this hook and then ask the user to confirm.
+         *
+         * @event _converse#confirmDirectMUCInvitation
+         */
+        result = await api.hook('confirmDirectMUCInvitation', { contact, reason, jid: room_jid }, false);
     }
+
     if (result) {
         const chatroom = await openChatRoom(room_jid, { 'password': x_el.getAttribute('password') });
         if (chatroom.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {

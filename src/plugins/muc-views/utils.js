@@ -24,6 +24,26 @@ const COMMAND_TO_ROLE = {
     'voice': 'participant'
 };
 
+/**
+ * @async
+ * Presents a confirmation modal to the user asking them to accept or decline a
+ * MUC invitation.
+ */
+export function confirmDirectMUCInvitation ({ contact, jid, reason }) {
+    if (!reason) {
+        return api.confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, jid));
+    } else {
+       return api.confirm(
+            __(
+                '%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"',
+                contact,
+                jid,
+                reason
+            )
+        );
+    }
+}
+
 export function clearHistory (jid) {
     if (_converse.router.history.getFragment() === `converse/room?jid=${jid}`) {
         _converse.router.navigate('');

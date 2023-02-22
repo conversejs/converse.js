@@ -3,6 +3,7 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './utils.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
 import { getOpenPromise } from '@converse/openpromise';

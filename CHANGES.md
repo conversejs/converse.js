@@ -5,7 +5,6 @@
 - Add the ability to set roles and affiliations via the MUC occupant modal
 - Fix `isOnlyEmojis is not a function` when using only `@converse/headless`
 
-
 ## 10.1.2 (2023-02-17)
 
 - #1490: Busy-loop when fetching registration form fails

@@ -21,6 +21,7 @@ const plugins = [
             {from: 'logo/conversejs-filled-192.svg', to: 'images/logo'},
             {from: 'logo/conversejs-filled-512.svg', to: 'images/logo'},
             {from: 'logo/conversejs-filled.svg', to: 'images/logo'},
+            {from: 'logo/conversejs-gold-gradient.svg', to: 'images/logo'},
             {from: 'src/shared/styles/webfonts', to: 'webfonts'}
         ]
     }),

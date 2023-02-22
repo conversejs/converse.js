@@ -4,6 +4,7 @@
 
 - Add the ability to set roles and affiliations via the MUC occupant modal
 - Fix `isOnlyEmojis is not a function` when using only `@converse/headless`
+- Fix `autojoin` checkbox state in MUC bookmark form
 
 ## 10.1.2 (2023-02-17)
 

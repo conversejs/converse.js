@@ -25,7 +25,7 @@ class MUCBookmarkForm extends CustomElement {
     onBookmarkFormSubmitted (ev) {
         ev.preventDefault();
         _converse.bookmarks.createBookmark({
-            'jid': this.model.get('jid'),
+            'jid': this.jid,
             'autojoin': ev.target.querySelector('input[name="autojoin"]')?.checked || false,
             'name': ev.target.querySelector('input[name=name]')?.value,
             'nick': ev.target.querySelector('input[name=nick]')?.value

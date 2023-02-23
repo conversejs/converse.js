@@ -112,7 +112,7 @@
   "dependencies": {
     "@converse/openpromise": "^0.0.1",
     "@converse/skeletor": "0.0.8",
-    "bootstrap": "^4.6.0",
+    "bootstrap": "^5.2.3",
     "bootstrap.native": "^2.0.27",
     "client-compress": "^2.2.2",
     "dayjs": "1.11.6",

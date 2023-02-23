@@ -22,8 +22,8 @@ export default {
          * for the passed in JID.
          *
          * @method _converse.api.vcard.set
-         * @param {string} jid The JID for which the VCard should be set
-         * @param {object} data A map of VCard keys and values
+         * @param { string } jid The JID for which the VCard should be set
+         * @param { object } data A map of VCard keys and values
          * @example
          * let jid = _converse.bare_jid;
          * _converse.api.vcard.set( jid, {
@@ -67,7 +67,7 @@ export default {
          * @param {Model|string} model Either a `Model` instance, or a string JID.
          *     If a `Model` instance is passed in, then it must have either a `jid`
          *     attribute or a `muc_jid` attribute.
-         * @param {boolean} [force] A boolean indicating whether the vcard should be
+         * @param { boolean } [force] A boolean indicating whether the vcard should be
          *     fetched from the server even if it's been fetched before.
          * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
          *     a `Model` instance which represents an entity with a JID (such as a roster contact,
@@ -106,8 +106,8 @@ export default {
          * returned VCard data.
          *
          * @method _converse.api.vcard.update
-         * @param {Model} model A `Model` instance
-         * @param {boolean} [force] A boolean indicating whether the vcard should be
+         * @param { Model } model A `Model` instance
+         * @param { boolean } [force] A boolean indicating whether the vcard should be
          *     fetched again even if it's been fetched before.
          * @returns {promise} A promise which resolves once the update has completed.
          * @example

@@ -27,7 +27,7 @@ const { NS } = Strophe;
 
 /**
  * Parses a message stanza for XEP-0317 MEP notification data
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @returns { Array } Returns an array of objects representing <activity> elements.
  */
 export function getMEPActivities (stanza) {
@@ -61,7 +61,7 @@ export function getMEPActivities (stanza) {
  * Note, this function doesn't check whether this is actually a MAM archived stanza.
  *
  * @private
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @returns { Object }
  */
 function getJIDFromMUCUserData (stanza) {
@@ -71,8 +71,8 @@ function getJIDFromMUCUserData (stanza) {
 
 /**
  * @private
- * @param { XMLElement } stanza - The message stanza
- * @param { XMLElement } original_stanza - The original stanza, that contains the
+ * @param { Element } stanza - The message stanza
+ * @param { Element } original_stanza - The original stanza, that contains the
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns { Object }
  */
@@ -140,8 +140,8 @@ function getSender (attrs, chatbox) {
 
 /**
  * Parses a passed in message stanza and returns an object of attributes.
- * @param { XMLElement } stanza - The message stanza
- * @param { XMLElement } original_stanza - The original stanza, that contains the
+ * @param { Element } stanza - The message stanza
+ * @param { Element } original_stanza - The original stanza, that contains the
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @param { _converse.ChatRoom } chatbox
  * @param { _converse } _converse
@@ -342,7 +342,7 @@ export function parseMemberListIQ (iq) {
 /**
  * Parses a passed in MUC presence stanza and returns an object of attributes.
  * @method parseMUCPresence
- * @param { XMLElement } stanza - The presence stanza
+ * @param { Element } stanza - The presence stanza
  * @param { _converse.ChatRoom } chatbox
  * @returns { MUCPresenceAttributes }
  */

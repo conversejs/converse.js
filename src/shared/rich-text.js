@@ -55,7 +55,7 @@ export class RichText extends String {
     /**
      * Create a new {@link RichText} instance.
      * @param { String } text - The text to be annotated
-     * @param { Integer } offset - The offset of this particular piece of text
+     * @param { number } offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
      *  RichText instances can be nested when templates call directives
      *  which create new RichText instances (as happens with XEP-393 styling directives).
@@ -118,7 +118,7 @@ export class RichText extends String {
     /**
      * Look for `http` URIs and return templates that render them as URL links
      * @param { String } text
-     * @param { Integer } local_offset - The index of the passed in text relative to
+     * @param { number } local_offset - The index of the passed in text relative to
      *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
@@ -155,7 +155,7 @@ export class RichText extends String {
     /**
      * Look for `geo` URIs and return templates that render them as URL links
      * @param { String } text
-     * @param { Integer } offset - The index of the passed in text relative to
+     * @param { number } offset - The index of the passed in text relative to
      *  the start of the message body text.
      */
     addMapURLs (text, offset) {
@@ -173,7 +173,7 @@ export class RichText extends String {
     /**
      * Look for emojis (shortnames or unicode) and add templates for rendering them.
      * @param { String } text
-     * @param { Integer } offset - The index of the passed in text relative to
+     * @param { number } offset - The index of the passed in text relative to
      *  the start of the message body text.
      */
     addEmojis (text, offset) {
@@ -187,7 +187,7 @@ export class RichText extends String {
      * Look for mentions included as XEP-0372 references and add templates for
      * rendering them.
      * @param { String } text
-     * @param { Integer } local_offset - The index of the passed in text relative to
+     * @param { number } local_offset - The index of the passed in text relative to
      *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */

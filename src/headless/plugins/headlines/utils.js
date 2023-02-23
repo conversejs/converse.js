@@ -4,7 +4,7 @@ import { parseMessage } from '@converse/headless/plugins/chat/parsers';
 
 /**
  * Handler method for all incoming messages of type "headline".
- * @param { XMLElement } stanza
+ * @param { Element } stanza
  */
 export async function onHeadlineMessage (stanza) {
     if (isHeadline(stanza) || isServerMessage(stanza)) {

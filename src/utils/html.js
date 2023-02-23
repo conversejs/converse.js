@@ -78,8 +78,8 @@ const serializer = new XMLSerializer();
 
 /**
  * Given two XML or HTML elements, determine if they're equal
- * @param { XMLElement | HTMLElement } actual
- * @param { XMLElement | HTMLElement } expected
+ * @param { Element } actual
+ * @param { Element } expected
  * @returns { Boolean }
  */
 function isEqualNode (actual, expected) {
@@ -176,7 +176,7 @@ export function getFileName (url) {
  * (such as a video, image or audio file).
  * @method u#getOOBURLMarkup
  * @param { String } url
- * @returns { String }
+ * @returns { TemplateResult }
  */
 export function getOOBURLMarkup (url) {
     const uri = getURI(url);
@@ -198,8 +198,8 @@ export function getOOBURLMarkup (url) {
  * Return the height of the passed in DOM element,
  * based on the heights of its children.
  * @method u#calculateElementHeight
- * @param {HTMLElement} el
- * @returns {integer}
+ * @param { HTMLElement } el
+ * @returns {number}
  */
 u.calculateElementHeight = function (el) {
     return Array.from(el.children).reduce((result, child) => result + child.offsetHeight, 0);
@@ -248,8 +248,8 @@ u.toggleClass = function (className, el) {
 /**
  * Add a class to an element.
  * @method u#addClass
- * @param {string} className
- * @param {Element} el
+ * @param { string } className
+ * @param { Element } el
  */
 u.addClass = function (className, el) {
     el instanceof Element && el.classList.add(className);
@@ -259,8 +259,8 @@ u.addClass = function (className, el) {
 /**
  * Remove a class from an element.
  * @method u#removeClass
- * @param {string} className
- * @param {Element} el
+ * @param { string } className
+ * @param { Element } el
  */
 u.removeClass = function (className, el) {
     el instanceof Element && el.classList.remove(className);
@@ -386,7 +386,7 @@ export function slideOut (el, duration = 200) {
         const marker = el.getAttribute('data-slider-marker');
         if (marker) {
             el.removeAttribute('data-slider-marker');
-            window.cancelAnimationFrame(marker);
+            cancelAnimationFrame(marker);
         }
         const end_height = u.calculateElementHeight(el);
         if (window.converse_disable_effects) {
@@ -408,7 +408,7 @@ export function slideOut (el, duration = 200) {
             height += end_height / steps;
             if (height < end_height) {
                 el.style.height = height + 'px';
-                el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+                el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
             } else {
                 // We recalculate the height to work around an apparent
                 // browser bug where browsers don't know the correct
@@ -424,7 +424,7 @@ export function slideOut (el, duration = 200) {
         el.style.overflow = 'hidden';
         el.classList.remove('hidden');
         el.classList.remove('collapsed');
-        el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+        el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
     });
 }
 
@@ -451,7 +451,7 @@ export function slideIn (el, duration = 200) {
         const marker = el.getAttribute('data-slider-marker');
         if (marker) {
             el.removeAttribute('data-slider-marker');
-            window.cancelAnimationFrame(marker);
+            cancelAnimationFrame(marker);
         }
         const original_height = el.offsetHeight,
             steps = duration / 17; // We assume 17ms per animation which is ~60FPS
@@ -463,7 +463,7 @@ export function slideIn (el, duration = 200) {
             height -= original_height / steps;
             if (height > 0) {
                 el.style.height = height + 'px';
-                el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+                el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
             } else {
                 el.removeAttribute('data-slider-marker');
                 el.classList.add('collapsed');
@@ -471,7 +471,7 @@ export function slideIn (el, duration = 200) {
                 resolve(el);
             }
         }
-        el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+        el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
     });
 }
 
@@ -520,8 +520,8 @@ u.fadeIn = function (el, callback) {
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
  * @method u#xForm2TemplateResult
- * @param { XMLElement } field - the field to convert
- * @param { XMLElement } stanza - the containing stanza
+ * @param { Element } field - the field to convert
+ * @param { Element } stanza - the containing stanza
  * @param { Object } options
  * @returns { TemplateResult }
  */

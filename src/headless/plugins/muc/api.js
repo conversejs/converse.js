@@ -23,7 +23,7 @@ export default {
          * @method api.rooms.create
          * @param {(string[]|string)} jid|jids The JID or array of
          *     JIDs of the chatroom(s) to create
-         * @param {object} [attrs] attrs The room attributes
+         * @param { object } [attrs] attrs The room attributes
          * @returns {Promise} Promise which resolves with the Model representing the chat.
          */
         create (jids, attrs = {}) {
@@ -45,24 +45,24 @@ export default {
          * Similar to {@link api.chats.open}, but for groupchats.
          *
          * @method api.rooms.open
-         * @param {string} jid The room JID or JIDs (if not specified, all
+         * @param { string } jid The room JID or JIDs (if not specified, all
          *     currently open rooms will be returned).
-         * @param {string} attrs A map  containing any extra room attributes.
-         * @param {string} [attrs.nick] The current user's nickname for the MUC
-         * @param {boolean} [attrs.auto_configure] A boolean, indicating
+         * @param { string } attrs A map  containing any extra room attributes.
+         * @param { string } [attrs.nick] The current user's nickname for the MUC
+         * @param { boolean } [attrs.auto_configure] A boolean, indicating
          *     whether the room should be configured automatically or not.
          *     If set to `true`, then it makes sense to pass in configuration settings.
-         * @param {object} [attrs.roomconfig] A map of configuration settings to be used when the room gets
+         * @param { object } [attrs.roomconfig] A map of configuration settings to be used when the room gets
          *     configured automatically. Currently it doesn't make sense to specify
          *     `roomconfig` values if `auto_configure` is set to `false`.
          *     For a list of configuration values that can be passed in, refer to these values
          *     in the [XEP-0045 MUC specification](https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
          *     The values should be named without the `muc#roomconfig_` prefix.
-         * @param {boolean} [attrs.minimized] A boolean, indicating whether the room should be opened minimized or not.
-         * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
+         * @param { boolean } [attrs.minimized] A boolean, indicating whether the room should be opened minimized or not.
+         * @param { boolean } [attrs.bring_to_foreground] A boolean indicating whether the room should be
          *     brought to the foreground and therefore replace the currently shown chat.
          *     If there is no chat currently open, then this option is ineffective.
-         * @param {Boolean} [force=false] - By default, a minimized
+         * @param { Boolean } [force=false] - By default, a minimized
          *   room won't be maximized (in `overlayed` view mode) and in
          *   `fullscreen` view mode a newly opened room won't replace
          *   another chat already in the foreground.

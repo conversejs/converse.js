@@ -126,7 +126,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Handler for {@link _converse.RegisterPanel#getRegistrationFields}
      * @method _converse.RegisterPanel#onRegistrationFields
-     * @param { XMLElement } stanza - The query stanza.
+     * @param { Element } stanza - The query stanza.
      */
     onRegistrationFields (stanza) {
         if (stanza.getAttribute("type") === "error") {
@@ -207,7 +207,7 @@ class RegisterPanel extends CustomElement {
      * Callback function called by Strophe whenever the connection status changes.
      * Passed to Strophe specifically during a registration attempt.
      * @method _converse.RegisterPanel#onConnectStatusChanged
-     * @param { integer } status_code - The Strophe.Status status code
+     * @param { number } status_code - The Strophe.Status status code
      */
     onConnectStatusChanged(status_code) {
         log.debug('converse-register: onConnectStatusChanged');
@@ -286,7 +286,7 @@ class RegisterPanel extends CustomElement {
      * Renders the registration form based on the XForm fields
      * received from the XMPP server.
      * @method _converse.RegisterPanel#renderRegistrationForm
-     * @param { XMLElement } stanza - The IQ stanza received from the XMPP server.
+     * @param { Element } stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm (stanza) {
         this.form_fields = this.getFormFields(stanza);
@@ -297,7 +297,7 @@ class RegisterPanel extends CustomElement {
      * Report back to the user any error messages received from the
      * XMPP server after attempted registration.
      * @method _converse.RegisterPanel#reportErrors
-     * @param { XMLElement } stanza - The IQ stanza received from the XMPP server
+     * @param { Element } stanza - The IQ stanza received from the XMPP server
      */
     reportErrors (stanza) {
         const errors = Array.from(stanza.querySelectorAll('error'));
@@ -355,7 +355,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Stores the values that will be sent to the XMPP server during attempted registration.
      * @method _converse.RegisterPanel#setFields
-     * @param { XMLElement } stanza - the IQ stanza that will be sent to the XMPP server.
+     * @param { Element } stanza - the IQ stanza that will be sent to the XMPP server.
      */
     setFields (stanza) {
         const query = stanza.querySelector('query');
@@ -403,7 +403,7 @@ class RegisterPanel extends CustomElement {
      * is received from the XMPP server, after attempting to
      * register a new user.
      * @method _converse.RegisterPanel#reportErrors
-     * @param { XMLElement } stanza - The IQ stanza.
+     * @param { Element } stanza - The IQ stanza.
      */
     _onRegisterIQ (stanza) {
         if (stanza.getAttribute("type") === "error") {

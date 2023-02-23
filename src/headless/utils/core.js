@@ -256,7 +256,7 @@ u.stringToElement = function (s) {
  * Checks whether the DOM element matches the given selector.
  * @private
  * @method u#matchesSelector
- * @param { DOMElement } el - The DOM element
+ * @param { Element } el - The DOM element
  * @param { String } selector - The selector
  */
 u.matchesSelector = function (el, selector) {
@@ -275,7 +275,7 @@ u.matchesSelector = function (el, selector) {
  * Returns a list of children of the DOM element that match the selector.
  * @private
  * @method u#queryChildren
- * @param { DOMElement } el - the DOM element
+ * @param { Element } el - the DOM element
  * @param { String } selector - the selector they should be matched against
  */
 u.queryChildren = function (el, selector) {
@@ -394,10 +394,10 @@ u.siblingIndex = function (el) {
 /**
  * Returns the current word being written in the input element
  * @method u#getCurrentWord
- * @param {HTMLElement} input - The HTMLElement in which text is being entered
- * @param {integer} [index] - An optional rightmost boundary index. If given, the text
+ * @param { HTMLElement } input - The HTMLElement in which text is being entered
+ * @param { number } [index] - An optional rightmost boundary index. If given, the text
  *  value of the input element will only be considered up until this index.
- * @param {string} [delineator] - An optional string delineator to
+ * @param { string } [delineator] - An optional string delineator to
  *  differentiate between words.
  * @private
  */
@@ -477,8 +477,8 @@ export function getUniqueId (suffix) {
 /**
  * Clears the specified timeout and interval.
  * @method u#clearTimers
- * @param {number} timeout - Id if the timeout to clear.
- * @param {number} interval - Id of the interval to clear.
+ * @param { number } timeout - Id if the timeout to clear.
+ * @param { number } interval - Id of the interval to clear.
  * @private
  * @copyright Simen Bekkhus 2016
  * @license MIT
@@ -493,10 +493,10 @@ function clearTimers(timeout, interval) {
  * Creates a {@link Promise} that resolves if the passed in function returns a truthy value.
  * Rejects if it throws or does not return truthy within the given max_wait.
  * @method u#waitUntil
- * @param {Function} func - The function called every check_delay,
+ * @param { Function } func - The function called every check_delay,
  *  and the result of which is the resolved value of the promise.
- * @param {number} [max_wait=300] - The time to wait before rejecting the promise.
- * @param {number} [check_delay=3] - The time to wait before each invocation of {func}.
+ * @param { number } [max_wait=300] - The time to wait before rejecting the promise.
+ * @param { number } [check_delay=3] - The time to wait before each invocation of {func}.
  * @returns {Promise} A promise resolved with the value of func,
  *  or rejected with the exception thrown by it or it times out.
  * @copyright Simen Bekkhus 2016

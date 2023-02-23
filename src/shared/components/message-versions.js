@@ -1,7 +1,7 @@
 import { CustomElement } from './element.js';
 import { api, converse } from '@converse/headless/core';
 import { html } from 'lit';
-import { __ } from 'i18n';
+import { __ } from 'i18n/index.js';
 import './styles/message-versions.scss';
 
 const { dayjs } = converse.env;
@@ -13,8 +13,13 @@ export class MessageVersions extends CustomElement {
 
     static get properties () {
         return {
-            'model': { type: Object }
+            model: { type: Object }
         }
+    }
+
+    constructor () {
+        super();
+        this.model = null;
     }
 
     render () {

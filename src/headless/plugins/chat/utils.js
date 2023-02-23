@@ -113,7 +113,7 @@ export async function handleMessageStanza (stanza) {
      * @typedef { Object } MessageData
      * An object containing the original message stanza, as well as the
      * parsed attributes.
-     * @property { XMLElement } stanza
+     * @property { Element } stanza
      * @property { MessageAttributes } stanza
      * @property { ChatBox } chatbox
      */

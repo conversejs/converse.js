@@ -15,7 +15,7 @@ const u = converse.env.utils;
 /* Insert groupchat info (based on returned #disco IQ stanza)
  * @function insertRoomInfo
  * @param { HTMLElement } el - The HTML DOM element that contains the info.
- * @param { XMLElement } stanza - The IQ stanza containing the groupchat info.
+ * @param { Element } stanza - The IQ stanza containing the groupchat info.
  */
 function insertRoomInfo (el, stanza) {
     // All MUC features found here: https://xmpp.org/registrar/disco-features.html

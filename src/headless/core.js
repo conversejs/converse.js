@@ -113,10 +113,10 @@ export const api = _converse.api = {
      * Some events also double as promises and can be waited on via {@link _converse.api.waitUntil}.
      *
      * @method _converse.api.trigger
-     * @param {string} name - The event name
+     * @param { string } name - The event name
      * @param {...any} [argument] - Argument to be passed to the event handler
-     * @param {object} [options]
-     * @param {boolean} [options.synchronous] - Whether the event is synchronous or not.
+     * @param { object } [options]
+     * @param { boolean } [options.synchronous] - Whether the event is synchronous or not.
      *  When a synchronous event is fired, a promise will be returned
      *  by {@link _converse.api.trigger} which resolves once all the
      *  event handlers' promises have been resolved.
@@ -147,7 +147,7 @@ export const api = _converse.api = {
      * A hook is a special kind of event which allows you to intercept a data
      * structure in order to modify it, before passing it back.
      * @async
-     * @param {string} name - The hook name
+     * @param { string } name - The hook name
      * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox)).
      * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
      * @returns {Promise<any>} - A promise that resolves with the modified data structure.
@@ -190,9 +190,9 @@ export const api = _converse.api = {
          * on whether prebinding is used or not.
          *
          * @method _converse.api.user.login
-         * @param {string} [jid]
-         * @param {string} [password]
-         * @param {boolean} [automatic=false] - An internally used flag that indicates whether
+         * @param { string } [jid]
+         * @param { string } [password]
+         * @param { boolean } [automatic=false] - An internally used flag that indicates whether
          *  this method was called automatically once the connection has been
          *  initialized. It's used together with the `auto_login` configuration flag
          *  to determine whether Converse should try to log the user in if it
@@ -306,7 +306,7 @@ export const api = _converse.api = {
          *
          * @method _converse.api.promises.add
          * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
-         * @param {boolean} [replace=true] Whether this promise should be replaced with a new one when the user logs out.
+         * @param { boolean } [replace=true] Whether this promise should be replaced with a new one when the user logs out.
          * @example _converse.api.promises.add('foo-completed');
          */
         add (promises, replace=true) {
@@ -332,9 +332,9 @@ export const api = _converse.api = {
         /**
          * Lets you listen to an event exactly once.
          * @method _converse.api.listen.once
-         * @param {string} name The event's name
-         * @param {function} callback The callback method to be called when the event is emitted.
-         * @param {object} [context] The value of the `this` parameter for the callback.
+         * @param { string } name The event's name
+         * @param { function } callback The callback method to be called when the event is emitted.
+         * @param { object } [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.once('message', function (messageXML) { ... });
          */
         once: _converse.once.bind(_converse),
@@ -343,9 +343,9 @@ export const api = _converse.api = {
          * Lets you subscribe to an event.
          * Every time the event fires, the callback method specified by `callback` will be called.
          * @method _converse.api.listen.on
-         * @param {string} name The event's name
-         * @param {function} callback The callback method to be called when the event is emitted.
-         * @param {object} [context] The value of the `this` parameter for the callback.
+         * @param { string } name The event's name
+         * @param { function } callback The callback method to be called when the event is emitted.
+         * @param { object } [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.on('message', function (messageXML) { ... });
          */
         on: _converse.on.bind(_converse),
@@ -353,8 +353,8 @@ export const api = _converse.api = {
         /**
          * To stop listening to an event, you can use the `not` method.
          * @method _converse.api.listen.not
-         * @param {string} name The event's name
-         * @param {function} callback The callback method that is to no longer be called when the event fires
+         * @param { string } name The event's name
+         * @param { function } callback The callback method that is to no longer be called when the event fires
          * @example _converse.api.listen.not('message', function (messageXML);
          */
         not: _converse.off.bind(_converse),
@@ -364,9 +364,9 @@ export const api = _converse.api = {
          * Every a matched stanza is received, the callback method specified by
          * `callback` will be called.
          * @method _converse.api.listen.stanza
-         * @param {string} name The stanza's name
-         * @param {object} options Matching options (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
-         * @param {function} handler The callback method to be called when the stanza appears
+         * @param { string } name The stanza's name
+         * @param { object } options Matching options (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
+         * @param { function } handler The callback method to be called when the stanza appears
          */
         stanza (name, options, handler) {
             if (isFunction(options)) {
@@ -410,7 +410,7 @@ export const api = _converse.api = {
     /**
      * Allows you to send XML stanzas.
      * @method _converse.api.send
-     * @param {XMLElement} stanza
+     * @param { Element } stanza
      * @return {void}
      * @example
      * const msg = converse.env.$msg({
@@ -443,9 +443,9 @@ export const api = _converse.api = {
     /**
      * Send an IQ stanza
      * @method _converse.api.sendIQ
-     * @param {XMLElement} stanza
-     * @param {Integer} [timeout=_converse.STANZA_TIMEOUT]
-     * @param {Boolean} [reject=true] - Whether an error IQ should cause the promise
+     * @param { Element } stanza
+     * @param { number } [timeout=_converse.STANZA_TIMEOUT]
+     * @param { Boolean } [reject=true] - Whether an error IQ should cause the promise
      *  to be rejected. If `false`, the promise will resolve instead of being rejected.
      * @returns {Promise} A promise which resolves (or potentially rejected) once we
      *  receive a `result` or `error` stanza or once a timeout is reached.
@@ -500,9 +500,6 @@ _converse.ConnectionFeedback = Model.extend({
 });
 
 
-export const converse = window.converse || {};
-
-
 /**
  * ### The Public API
  *
@@ -516,7 +513,7 @@ export const converse = window.converse || {};
  * @global
  * @namespace converse
  */
-Object.assign(converse, {
+export const converse = Object.assign(window.converse || {}, {
 
     CHAT_STATES,
 
@@ -528,7 +525,7 @@ Object.assign(converse, {
      * @async
      * @memberOf converse
      * @method initialize
-     * @param {object} config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
+     * @param { object } config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
      * @example
      * converse.initialize({
      *     auto_list_rooms: false,
@@ -618,8 +615,8 @@ Object.assign(converse, {
         /**
          * Registers a new plugin.
          * @method converse.plugins.add
-         * @param {string} name The name of the plugin
-         * @param {object} plugin The plugin object
+         * @param { string } name The name of the plugin
+         * @param { object } plugin The plugin object
          * @example
          *  const plugin = {
          *      initialize: function () {

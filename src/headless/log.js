@@ -8,12 +8,14 @@ const LEVELS = {
     'fatal': 4
 }
 
+/* eslint-disable @typescript-eslint/no-empty-function */
 const logger = Object.assign({
     'debug': console?.log ? console.log.bind(console) : function noop () {},
     'error': console?.log ? console.log.bind(console) : function noop () {},
     'info': console?.log ? console.log.bind(console) : function noop () {},
     'warn': console?.log ? console.log.bind(console) : function noop () {}
 }, console);
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 
 /**
@@ -25,7 +27,7 @@ const log = {
     /**
      * The the log-level, which determines how verbose the logging is.
      * @method log#setLogLevel
-     * @param { integer } level - The loglevel which allows for filtering of log messages
+     * @param { number } level - The loglevel which allows for filtering of log messages
      */
     setLogLevel (level) {
         if (!['debug', 'info', 'warn', 'error', 'fatal'].includes(level)) {
@@ -42,7 +44,7 @@ const log = {
      * logged as well.
      * @method log#log
      * @param { string | Error } message - The message to be logged
-     * @param { integer } level - The loglevel which allows for filtering of log messages
+     * @param { number } level - The loglevel which allows for filtering of log messages
      */
     log (message, level, style='') {
         if (LEVELS[level] < LEVELS[this.loglevel]) {

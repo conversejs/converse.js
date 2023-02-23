@@ -32,12 +32,12 @@ converse.plugins.add('converse-pubsub', {
                  * Publshes an item to a PubSub node
                  *
                  * @method _converse.api.pubsub.publish
-                 * @param {string} jid The JID of the pubsub service where the node resides.
-                 * @param {string} node The node being published to
+                 * @param { string } jid The JID of the pubsub service where the node resides.
+                 * @param { string } node The node being published to
                  * @param {Strophe.Builder} item The Strophe.Builder representation of the XML element being published
-                 * @param {object} options An object representing the publisher options
+                 * @param { object } options An object representing the publisher options
                  *      (see https://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
-                 * @param {boolean} strict_options Indicates whether the publisher
+                 * @param { boolean } strict_options Indicates whether the publisher
                  *      options are a strict requirement or not. If they're NOT
                  *      strict, then Converse will publish to the node even if
                  *      the publish options precondication cannot be met.

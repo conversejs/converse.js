@@ -48,12 +48,12 @@ export default class MessageForm extends ElementView {
 
     /**
      * Insert a particular string value into the textarea of this chat box.
-     * @param {string} value - The value to be inserted.
+     * @param { string } value - The value to be inserted.
      * @param {(boolean|string)} [replace] - Whether an existing value
      *  should be replaced. If set to `true`, the entire textarea will
      *  be replaced with the new value. If set to a string, then only
      *  that string will be replaced *if* a position is also specified.
-     * @param {integer} [position] - The end index of the string to be
+     * @param { number } [position] - The end index of the string to be
      *  replaced with the new value.
      */
     insertIntoTextArea (value, replace = false, correcting = false, position) {

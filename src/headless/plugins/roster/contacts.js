@@ -190,7 +190,7 @@ const RosterContacts = Collection.extend({
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
      * @method _converse.RosterContacts#onRosterPush
-     * @param { XMLElement } IQ - The IQ stanza received from the XMPP server.
+     * @param { Element } IQ - The IQ stanza received from the XMPP server.
      */
     onRosterPush (iq) {
         const id = iq.getAttribute('id');
@@ -226,7 +226,7 @@ const RosterContacts = Collection.extend({
         /**
          * When the roster receives a push event from server (i.e. new entry in your contacts roster).
          * @event _converse#rosterPush
-         * @type { XMLElement }
+         * @type { Element }
          * @example _converse.api.listen.on('rosterPush', iq => { ... });
          */
         api.trigger('rosterPush', iq);
@@ -279,7 +279,7 @@ const RosterContacts = Collection.extend({
          * See also the `cachedRoster` event further up, which gets called instead of
          * `roster` if its already in `sessionStorage`.
          * @event _converse#roster
-         * @type { XMLElement }
+         * @type { Element }
          * @example _converse.api.listen.on('roster', iq => { ... });
          * @example _converse.api.waitUntil('roster').then(iq => { ... });
          */
@@ -289,7 +289,7 @@ const RosterContacts = Collection.extend({
     /**
      * Update or create RosterContact models based on the given `item` XML
      * node received in the resulting IQ stanza from the server.
-     * @param { XMLElement } item
+     * @param { Element } item
      */
     updateContact (item) {
         const jid = item.getAttribute('jid');

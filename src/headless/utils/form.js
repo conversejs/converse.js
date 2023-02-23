@@ -13,7 +13,7 @@ const tplXformValue = (value) => `<value>${value}</value>`;
  * Takes an HTML DOM and turns it into an XForm field.
  * @private
  * @method u#webForm2xForm
- * @param { DOMElement } field - the field to convert
+ * @param { Element } field - the field to convert
  */
 export function webForm2xForm (field) {
     const name = field.getAttribute('name');

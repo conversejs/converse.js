@@ -100,7 +100,7 @@ export async function handleMAMResult (model, result, query, options, should_pag
 /**
  * @typedef { Object } MAMOptions
  * A map of MAM related options that may be passed to fetchArchivedMessages
- * @param { integer } [options.max] - The maximum number of items to return.
+ * @param { number } [options.max] - The maximum number of items to return.
  *  Defaults to "archived_messages_page_size"
  * @param { string } [options.after] - The XEP-0359 stanza ID of a message
  *  after which messages should be returned. Implies forward paging.
@@ -117,7 +117,7 @@ export async function handleMAMResult (model, result, query, options, should_pag
 
 /**
  * Fetch XEP-0313 archived messages based on the passed in criteria.
- * @param { _converse.ChatBox | _converse.ChatRoom } model
+ * @param { ChatBox | ChatRoom } model
  * @param { MAMOptions } [options]
  * @param { ('forwards'|'backwards'|null)} [should_page=null] - Determines whether
  *  this function should recursively page through the entire result set if a limited

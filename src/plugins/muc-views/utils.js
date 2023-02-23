@@ -25,9 +25,9 @@ const COMMAND_TO_ROLE = {
 };
 
 /**
- * @async
  * Presents a confirmation modal to the user asking them to accept or decline a
  * MUC invitation.
+ * @async
  */
 export function confirmDirectMUCInvitation ({ contact, jid, reason }) {
     if (!reason) {

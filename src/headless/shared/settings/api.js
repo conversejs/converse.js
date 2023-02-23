@@ -29,7 +29,7 @@ export const settings_api = {
      * `converse.initialize`.
      *
      * @method _converse.api.settings.extend
-     * @param {object} settings The configuration settings
+     * @param { object } settings The configuration settings
      * @example
      * _converse.api.settings.extend({
      *    'enable_foo': true
@@ -70,9 +70,9 @@ export const settings_api = {
      * running and you want to change the configuration on-the-fly.
      *
      * @method _converse.api.settings.set
-     * @param {Object} [settings] An object containing configuration settings.
-     * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
-     * @param {string} [value]
+     * @param { Object } [settings] An object containing configuration settings.
+     * @param { string } [key] Alternatively to passing in an object, you can pass in a key and a value.
+     * @param { string } [value]
      * @example _converse.api.settings.set("play_sounds", true);
      * @example
      * _converse.api.settings.set({
@@ -142,7 +142,7 @@ export const user_settings_api = {
     /**
      * Get the value of a particular user setting.
      * @method _converse.api.user.settings.get
-     * @param {String} key - The setting name
+     * @param { String } key - The setting name
      * @param {*} [fallback] - An optional fallback value if the user setting is undefined
      * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
      * @example _converse.api.user.settings.get("foo");
@@ -156,9 +156,9 @@ export const user_settings_api = {
      * Set one or many user settings.
      * @async
      * @method _converse.api.user.settings.set
-     * @param {Object} [settings] An object containing configuration settings.
-     * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
-     * @param {string} [value]
+     * @param { Object } [settings] An object containing configuration settings.
+     * @param { string } [key] Alternatively to passing in an object, you can pass in a key and a value.
+     * @param { string } [value]
      * @example _converse.api.user.settings.set("foo", "bar");
      * @example
      * _converse.api.user.settings.set({

@@ -85,7 +85,7 @@ export async function openChatRoom (jid, settings) {
  * See XEP-0249: Direct MUC invitations.
  * @private
  * @method _converse.ChatRoom#onDirectMUCInvitation
- * @param { XMLElement } message - The message stanza containing the invitation.
+ * @param { Element } message - The message stanza containing the invitation.
  */
 export async function onDirectMUCInvitation (message) {
     const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),

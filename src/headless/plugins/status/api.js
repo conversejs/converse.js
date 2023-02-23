@@ -55,8 +55,8 @@ export default {
          *
          * @async
          * @method _converse.api.user.status.set
-         * @param {string} value The user's chat status (e.g. 'away', 'dnd', 'offline', 'online', 'unavailable' or 'xa')
-         * @param {string} [message] A custom status message
+         * @param { string } value The user's chat status (e.g. 'away', 'dnd', 'offline', 'online', 'unavailable' or 'xa')
+         * @param { string } [message] A custom status message
          *
          * @example _converse.api.user.status.set('dnd');
          * @example _converse.api.user.status.set('dnd', 'In a meeting');
@@ -95,7 +95,7 @@ export default {
             /**
              * @async
              * @method _converse.api.user.status.message.set
-             * @param {string} status The status message
+             * @param { string } status The status message
              * @example _converse.api.user.status.message.set('In a meeting');
              */
             async set (status) {

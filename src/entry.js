@@ -49,7 +49,7 @@ const converse = {
      *
      * @memberOf converse
      * @method load
-     * @param {object} settings A map of configuration-settings that are needed at load time.
+     * @param { object } settings A map of configuration-settings that are needed at load time.
      * @example
      * converse.load({assets_path: '/path/to/assets/'});
      */

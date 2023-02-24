@@ -2,9 +2,11 @@
 
 // See: https://xmpp.org/rfcs/rfc3921.html
 
-const Strophe = converse.env.Strophe;
+const { Strophe, stx } = converse.env;
 
 describe("The Protocol", function () {
+
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     describe("Integration of Roster Items and Presence Subscriptions", function () {
         /* Some level of integration between roster items and presence
@@ -163,11 +165,13 @@ describe("The Protocol", function () {
              *  <presence to='contact@example.org' type='subscribe'/>
              */
             const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence')).pop());
-            expect(Strophe.serialize(sent_presence)).toBe(
-                `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client">`+
-                    `<nick xmlns="http://jabber.org/protocol/nick">Romeo Montague</nick>`+
-                `</presence>`
-            );
+            expect(sent_presence).toEqualStanza(stx`
+                <presence to="contact@example.org" type="subscribe" xmlns="jabber:client">
+                    <nick xmlns="http://jabber.org/protocol/nick">Romeo</nick>
+                    <priority>0</priority>
+                    <c hash="sha-1" node="https://conversejs.org" ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ=" xmlns="http://jabber.org/protocol/caps"/>
+                </presence>
+            `);
 
             /* As a result, the user's server MUST initiate a second roster
              * push to all of the user's available resources that have

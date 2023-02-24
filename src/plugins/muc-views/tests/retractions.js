@@ -308,7 +308,7 @@ describe("Message Retractions", function () {
 
     describe("A Sent Chat Message", function () {
 
-        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], { vcard: { nickname: ''} }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);

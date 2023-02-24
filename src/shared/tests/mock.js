@@ -12,7 +12,9 @@ jasmine.toEqualStanza = function toEqualStanza () {
         compare (actual, expected) {
             const result = { pass: u.isEqualNode(actual, expected) };
             if (!result.pass) {
-                result.message = `Stanzas don't match:\nActual:\n${actual.outerHTML}\nExpected:\n${expected.outerHTML}`;
+                result.message = `Stanzas don't match:\n`+
+                    `Actual:\n${(actual.tree?.() ?? actual).outerHTML}\n`+
+                    `Expected:\n${expected.tree().outerHTML}`;
             }
             return result;
         }
@@ -672,10 +674,13 @@ async function _initConverse (settings) {
         } else if (!model.get('vcard_updated') || force) {
             jid = model.get('jid') || model.get('muc_jid');
         }
+
         let fullname;
+        let nickname;
         if (!jid || jid == 'romeo@montague.lit') {
-            jid = 'romeo@montague.lit';
-            fullname = 'Romeo Montague' ;
+            jid = settings?.vcard?.jid ?? 'romeo@montague.lit';
+            fullname = settings?.vcard?.display_name ?? 'Romeo Montague' ;
+            nickname = settings?.vcard?.nickname ?? 'Romeo';
         } else {
             const name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
             const last = name.length-1;
@@ -683,13 +688,17 @@ async function _initConverse (settings) {
             name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
             fullname = name.join(' ');
         }
-        const vcard = $iq().c('vCard').c('FN').t(fullname).tree();
+        const vcard = $iq().c('vCard').c('FN').t(fullname).up();
+        if (nickname) vcard.c('NICKNAME').t(nickname);
+        const vcard_el = vcard.tree();
+
         return {
-            'stanza': vcard,
-            'fullname': vcard.querySelector('FN')?.textContent,
-            'image': vcard.querySelector('PHOTO BINVAL')?.textContent,
-            'image_type': vcard.querySelector('PHOTO TYPE')?.textContent,
-            'url': vcard.querySelector('URL')?.textContent,
+            'stanza': vcard_el,
+            'fullname': vcard_el.querySelector('FN')?.textContent,
+            'nickname': vcard_el.querySelector('NICKNAME')?.textContent,
+            'image': vcard_el.querySelector('PHOTO BINVAL')?.textContent,
+            'image_type': vcard_el.querySelector('PHOTO TYPE')?.textContent,
+            'url': vcard_el.querySelector('URL')?.textContent,
             'vcard_updated': dayjs().format(),
             'vcard_error': undefined
         };

@@ -112,7 +112,7 @@ const RosterContacts = Collection.extend({
      * @method _converse.RosterContacts#addAndSubscribe
      * @param { String } jid - The Jabber ID of the user being added and subscribed to.
      * @param { String } name - The name of that user
-     * @param { Array.String } groups - Any roster groups the user might belong to
+     * @param { Array<String> } groups - Any roster groups the user might belong to
      * @param { String } message - An optional message to explain the reason for the subscription request.
      * @param { Object } attributes - Any additional attributes to be stored on the user's model.
      */
@@ -128,9 +128,7 @@ const RosterContacts = Collection.extend({
      * @method _converse.RosterContacts#sendContactAddIQ
      * @param { String } jid - The Jabber ID of the user being added
      * @param { String } name - The name of that user
-     * @param { Array.String } groups - Any roster groups the user might belong to
-     * @param { Function } callback - A function to call once the IQ is returned
-     * @param { Function } errback - A function to call if an error occurred
+     * @param { Array<String> } groups - Any roster groups the user might belong to
      */
     sendContactAddIQ (jid, name, groups) {
         name = name ? name : null;
@@ -148,7 +146,7 @@ const RosterContacts = Collection.extend({
      * @method _converse.RosterContacts#addContactToRoster
      * @param { String } jid - The Jabber ID of the user being added and subscribed to.
      * @param { String } name - The name of that user
-     * @param { Array.String } groups - Any roster groups the user might belong to
+     * @param { Array<String> } groups - Any roster groups the user might belong to
      * @param { Object } attributes - Any additional attributes to be stored on the user's model.
      */
     async addContactToRoster (jid, name, groups, attributes) {
@@ -190,7 +188,7 @@ const RosterContacts = Collection.extend({
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
      * @method _converse.RosterContacts#onRosterPush
-     * @param { Element } IQ - The IQ stanza received from the XMPP server.
+     * @param { Element } iq - The IQ stanza received from the XMPP server.
      */
     onRosterPush (iq) {
         const id = iq.getAttribute('id');

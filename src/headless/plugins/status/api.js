@@ -13,7 +13,7 @@ export default {
          * @param { String } type
          * @param { String } to
          * @param { String } [status] - An optional status message
-         * @param { Element[]|Strophe.Builder[]|Element|Strophe.Builder } [child_nodes]
+         * @param { Array<Element>|Array<Strophe.Builder>|Element|Strophe.Builder } [child_nodes]
          *  Nodes(s) to be added as child nodes of the `presence` XML element.
          */
         async send (type, to, status, child_nodes) {
@@ -85,7 +85,7 @@ export default {
             /**
              * @async
              * @method _converse.api.user.status.message.get
-             * @returns {string} The status message
+             * @returns { Promise<string> } The status message
              * @example const message = _converse.api.user.status.message.get()
              */
             async get () {

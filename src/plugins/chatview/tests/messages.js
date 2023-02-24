@@ -651,7 +651,7 @@ describe("A Chat Message", function () {
         const msg_object = chatbox.messages.models[0];
 
         const msg_author = view.querySelector('.chat-content .chat-msg:last-child .chat-msg__author');
-        expect(msg_author.textContent.trim()).toBe('Romeo Montague');
+        expect(msg_author.textContent.trim()).toBe('Romeo');
 
         const msg_time = view.querySelector('.chat-content .chat-msg:last-child .chat-msg__time');
         const time = dayjs(msg_object.get('time')).format(api.settings.get('time_format'));

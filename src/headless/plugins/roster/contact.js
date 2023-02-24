@@ -1,3 +1,4 @@
+import '@converse/headless/plugins/status/api.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getOpenPromise } from '@converse/openpromise';
@@ -93,21 +94,12 @@ const RosterContact = Model.extend({
 
     /**
      * Send a presence subscription request to this roster contact
-     * @private
      * @method _converse.RosterContacts#subscribe
      * @param { String } message - An optional message to explain the
      *      reason for the subscription request.
      */
     subscribe (message) {
-        const pres = $pres({to: this.get('jid'), type: "subscribe"});
-        if (message && message !== "") {
-            pres.c("status").t(message).up();
-        }
-        const nick = _converse.xmppstatus.getNickname() || _converse.xmppstatus.getFullname();
-        if (nick) {
-            pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
-        }
-        api.send(pres);
+        api.user.presence.send('subscribe', this.get('jid'), message);
         this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
         return this;
     },
@@ -135,7 +127,6 @@ const RosterContact = Model.extend({
      * send notification of the subscription state change to the user.
      * @private
      * @method _converse.RosterContacts#ackUnsubscribe
-     * @param { String } jid - The Jabber ID of the user who is unsubscribing
      */
     ackUnsubscribe () {
         api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));

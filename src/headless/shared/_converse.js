@@ -1,6 +1,7 @@
 import i18n from './i18n.js';
 import log from '../log.js';
-import { CONNECTION_STATUS } from './constants';
+import pluggable from 'pluggable.js/src/pluggable.js';
+import { CONNECTION_STATUS, VERSION_NAME } from './constants';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Router } from '@converse/skeletor/src/router.js';
 import { TimeoutError } from './errors.js';
@@ -18,6 +19,7 @@ import { getOpenPromise } from '@converse/openpromise';
 const _converse = {
     log,
     CONNECTION_STATUS,
+    VERSION_NAME,
     templates: {},
     promises: {
         'initialized': getOpenPromise()
@@ -113,6 +115,10 @@ const _converse = {
     '___': str => str
 }
 
+// Make _converse an event emitter
 Object.assign(_converse, Events);
+
+// Make _converse pluggable
+pluggable.enable(_converse, '_converse', 'pluggable');
 
 export default _converse;

@@ -1,6 +1,7 @@
 import { Strophe } from 'strophe.js/src/strophe';
 
 export const BOSH_WAIT = 59;
+export const VERSION_NAME = "v10.1.2";
 
 export const CONNECTION_STATUS = {};
 CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
@@ -14,6 +15,43 @@ CONNECTION_STATUS[Strophe.Status.DISCONNECTING] = 'DISCONNECTING';
 CONNECTION_STATUS[Strophe.Status.ERROR] = 'ERROR';
 CONNECTION_STATUS[Strophe.Status.RECONNECTING] = 'RECONNECTING';
 CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT';
+
+// Add Strophe Namespaces
+Strophe.addNamespace('ACTIVITY', 'http://jabber.org/protocol/activity');
+Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
+Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+Strophe.addNamespace('EME', 'urn:xmpp:eme:0');
+Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
+Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
+Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
+Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+Strophe.addNamespace('MARKERS', 'urn:xmpp:chat-markers:0');
+Strophe.addNamespace('MENTIONS', 'urn:xmpp:mmn:0');
+Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
+Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:0');
+Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+Strophe.addNamespace('OCCUPANTID', 'urn:xmpp:occupant-id:0');
+Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
+Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
+Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+Strophe.addNamespace('RAI', 'urn:xmpp:rai:0');
+Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
+Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
+Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:0');
+Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
+Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
+Strophe.addNamespace('STANZAS', 'urn:ietf:params:xml:ns:xmpp-stanzas');
+Strophe.addNamespace('STYLING', 'urn:xmpp:styling:0');
+Strophe.addNamespace('VCARD', 'vcard-temp');
+Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
+Strophe.addNamespace('XFORM', 'jabber:x:data');
+Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
 // Core plugins are whitelisted automatically
 // These are just the @converse/headless plugins, for the full converse,

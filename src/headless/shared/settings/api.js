@@ -70,8 +70,9 @@ export const settings_api = {
      * running and you want to change the configuration on-the-fly.
      *
      * @method _converse.api.settings.set
-     * @param { Object } [settings] An object containing configuration settings.
-     * @param { string } [key] Alternatively to passing in an object, you can pass in a key and a value.
+     * @param { Object | string } [settings_or_key]
+     *  An object containing configuration settings.
+     *  Alternatively to passing in an object, you can pass in a key and a value.
      * @param { string } [value]
      * @example _converse.api.settings.set("play_sounds", true);
      * @example
@@ -80,8 +81,8 @@ export const settings_api = {
      *     "hide_offline_users": true
      * });
      */
-    set (key, val) {
-        updateAppSettings(key, val);
+    set (settings_or_key, value) {
+        updateAppSettings(settings_or_key, value);
     },
 
     /**
@@ -110,7 +111,7 @@ export const settings_api = {
          * To stop listening to an event, you can use the `not` method.
          * @method _converse.api.settings.listen.not
          * @param { String } name The event's name
-         * @param { Function } callback The callback method that is to no longer be called when the event fires
+         * @param { Function } handler The callback method that is to no longer be called when the event fires
          * @example _converse.api.settings.listen.not('change', callback);
          */
         not (name, handler) {

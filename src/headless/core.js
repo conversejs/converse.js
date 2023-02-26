@@ -9,35 +9,32 @@ import connection_api from './shared/connection/api.js';
 import dayjs from 'dayjs';
 import i18n from './shared/i18n';
 import invoke from 'lodash-es/invoke';
-import isFunction from 'lodash-es/isFunction';
 import log from './log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import sizzle from 'sizzle';
-import u, { setUnloadEvent, replacePromise } from './utils/core.js';
+import u, { setUnloadEvent } from './utils/core.js';
 import { CHAT_STATES, KEYCODES } from './shared/constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
-import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
-import { TimeoutError } from './shared/errors';
-import { getOpenPromise } from '@converse/openpromise';
 import { html } from 'lit';
 import { initAppSettings } from './shared/settings/utils.js';
-import { settings_api, user_settings_api } from './shared/settings/api.js';
+import { settings_api } from './shared/settings/api.js';
 import { sprintf } from 'sprintf-js';
+import send_api from './shared/api/send.js';
+import user_api from './shared/api/user.js';
+import events_api from './shared/api/events.js';
+import promise_api from './shared/api/promise.js';
 
 export { _converse };
 export { i18n };
 
 import {
-    attemptNonPreboundSession,
     cleanup,
     initClientConfig,
-    initConnection,
     initPlugins,
     initSessionStorage,
     registerGlobalEventHandlers,
-    setUserJID,
 } from './utils/init.js';
 
 dayjs.extend(advancedFormat);
@@ -81,8 +78,6 @@ Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 
 _converse.VERSION_NAME = "v10.1.2";
 
-Object.assign(_converse, Events);
-
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
 
@@ -101,384 +96,12 @@ pluggable.enable(_converse, '_converse', 'pluggable');
  * @memberOf _converse
  */
 export const api = _converse.api = {
-
     connection: connection_api,
     settings: settings_api,
-
-    /**
-     * Lets you trigger events, which can be listened to via
-     * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}
-     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
-     *
-     * Some events also double as promises and can be waited on via {@link _converse.api.waitUntil}.
-     *
-     * @method _converse.api.trigger
-     * @param { string } name - The event name
-     * @param {...any} [argument] - Argument to be passed to the event handler
-     * @param { object } [options]
-     * @param { boolean } [options.synchronous] - Whether the event is synchronous or not.
-     *  When a synchronous event is fired, a promise will be returned
-     *  by {@link _converse.api.trigger} which resolves once all the
-     *  event handlers' promises have been resolved.
-     */
-    async trigger (name) {
-        if (!_converse._events) {
-            return;
-        }
-        const args = Array.from(arguments);
-        const options = args.pop();
-        if (options && options.synchronous) {
-            const events = _converse._events[name] || [];
-            const event_args = args.splice(1);
-            await Promise.all(events.map(e => e.callback.apply(e.ctx, event_args)));
-        } else {
-            _converse.trigger.apply(_converse, arguments);
-        }
-        const promise = _converse.promises[name];
-        if (promise !== undefined) {
-            promise.resolve();
-        }
-    },
-
-    /**
-     * Triggers a hook which can be intercepted by registered listeners via
-     * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}.
-     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
-     * A hook is a special kind of event which allows you to intercept a data
-     * structure in order to modify it, before passing it back.
-     * @async
-     * @param { string } name - The hook name
-     * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox)).
-     * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
-     * @returns {Promise<any>} - A promise that resolves with the modified data structure.
-     */
-    hook (name, context, data) {
-        const events = _converse._events[name] || [];
-        if (events.length) {
-            // Create a chain of promises, with each one feeding its output to
-            // the next. The first input is a promise with the original data
-            // sent to this hook.
-            return events.reduce((o, e) => o.then(d => e.callback(context, d)), Promise.resolve(data));
-        } else {
-            return data;
-        }
-    },
-
-    /**
-     * This grouping collects API functions related to the current logged in user.
-     *
-     * @namespace _converse.api.user
-     * @memberOf _converse.api
-     */
-    user: {
-        settings: user_settings_api,
-
-        /**
-         * @method _converse.api.user.jid
-         * @returns {string} The current user's full JID (Jabber ID)
-         * @example _converse.api.user.jid())
-         */
-        jid () {
-            return _converse.connection.jid;
-        },
-
-        /**
-         * Logs the user in.
-         *
-         * If called without any parameters, Converse will try
-         * to log the user in by calling the `prebind_url` or `credentials_url` depending
-         * on whether prebinding is used or not.
-         *
-         * @method _converse.api.user.login
-         * @param { string } [jid]
-         * @param { string } [password]
-         * @param { boolean } [automatic=false] - An internally used flag that indicates whether
-         *  this method was called automatically once the connection has been
-         *  initialized. It's used together with the `auto_login` configuration flag
-         *  to determine whether Converse should try to log the user in if it
-         *  fails to restore a previous auth'd session.
-         *  @returns  {void}
-         */
-        async login (jid, password, automatic=false) {
-            jid = jid || api.settings.get('jid');
-            if (!_converse.connection?.jid || (jid && !u.isSameDomain(_converse.connection.jid, jid))) {
-                initConnection();
-            }
-            if (api.settings.get("connection_options")?.worker && (await _converse.connection.restoreWorkerSession())) {
-                return;
-            }
-            if (jid) {
-                jid = await setUserJID(jid);
-            }
-
-            // See whether there is a BOSH session to re-attach to
-            const bosh_plugin = _converse.pluggable.plugins['converse-bosh'];
-            if (bosh_plugin?.enabled()) {
-                if (await _converse.restoreBOSHSession()) {
-                    return;
-                } else if (api.settings.get("authentication") === _converse.PREBIND && (!automatic || api.settings.get("auto_login"))) {
-                    return _converse.startNewPreboundBOSHSession();
-                }
-            }
-            password = password || api.settings.get("password");
-            const credentials = (jid && password) ? { jid, password } : null;
-            attemptNonPreboundSession(credentials, automatic);
-        },
-
-        /**
-         * Logs the user out of the current XMPP session.
-         * @method _converse.api.user.logout
-         * @example _converse.api.user.logout();
-         */
-        async logout () {
-            /**
-             * Triggered before the user is logged out
-             * @event _converse#beforeLogout
-             */
-            await api.trigger('beforeLogout', {'synchronous': true});
-
-            const promise = getOpenPromise();
-            const complete = () => {
-                // Recreate all the promises
-                Object.keys(_converse.promises).forEach(replacePromise);
-                delete _converse.jid
-
-                // Remove the session JID, otherwise the user would just be logged
-                // in again upon reload. See #2759
-                localStorage.removeItem('conversejs-session-jid');
-
-                /**
-                 * Triggered once the user has logged out.
-                 * @event _converse#logout
-                 */
-                api.trigger('logout');
-                promise.resolve();
-            }
-
-            _converse.connection.setDisconnectionCause(_converse.LOGOUT, undefined, true);
-            if (_converse.connection !== undefined) {
-                api.listen.once('disconnected', () => complete());
-                _converse.connection.disconnect();
-            } else {
-                complete();
-            }
-            return promise;
-        }
-    },
-
-    /**
-     * Converse and its plugins trigger various events which you can listen to via the
-     * {@link _converse.api.listen} namespace.
-     *
-     * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
-     * although not all of them could logically act as promises, since some events
-     * might be fired multpile times whereas promises are to be resolved (or
-     * rejected) only once.
-     *
-     * Events which are also promises include:
-     *
-     * * [cachedRoster](/docs/html/events.html#cachedroster)
-     * * [chatBoxesFetched](/docs/html/events.html#chatBoxesFetched)
-     * * [pluginsInitialized](/docs/html/events.html#pluginsInitialized)
-     * * [roster](/docs/html/events.html#roster)
-     * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
-     * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
-     * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
-     *
-     * The various plugins might also provide promises, and they do this by using the
-     * `promises.add` api method.
-     *
-     * @namespace _converse.api.promises
-     * @memberOf _converse.api
-     */
-    promises: {
-        /**
-         * By calling `promises.add`, a new [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-         * is made available for other code or plugins to depend on via the
-         * {@link _converse.api.waitUntil} method.
-         *
-         * Generally, it's the responsibility of the plugin which adds the promise to
-         * also resolve it.
-         *
-         * This is done by calling {@link _converse.api.trigger}, which not only resolves the
-         * promise, but also emits an event with the same name (which can be listened to
-         * via {@link _converse.api.listen}).
-         *
-         * @method _converse.api.promises.add
-         * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
-         * @param { boolean } [replace=true] Whether this promise should be replaced with a new one when the user logs out.
-         * @example _converse.api.promises.add('foo-completed');
-         */
-        add (promises, replace=true) {
-            promises = Array.isArray(promises) ? promises : [promises];
-            promises.forEach(name => {
-                const promise = getOpenPromise();
-                promise.replace = replace;
-                _converse.promises[name] = promise;
-            });
-        }
-    },
-
-    /**
-     * Converse emits events to which you can subscribe to.
-     *
-     * The `listen` namespace exposes methods for creating event listeners
-     * (aka handlers) for these events.
-     *
-     * @namespace _converse.api.listen
-     * @memberOf _converse
-     */
-    listen: {
-        /**
-         * Lets you listen to an event exactly once.
-         * @method _converse.api.listen.once
-         * @param { string } name The event's name
-         * @param { function } callback The callback method to be called when the event is emitted.
-         * @param { object } [context] The value of the `this` parameter for the callback.
-         * @example _converse.api.listen.once('message', function (messageXML) { ... });
-         */
-        once: _converse.once.bind(_converse),
-
-        /**
-         * Lets you subscribe to an event.
-         * Every time the event fires, the callback method specified by `callback` will be called.
-         * @method _converse.api.listen.on
-         * @param { string } name The event's name
-         * @param { function } callback The callback method to be called when the event is emitted.
-         * @param { object } [context] The value of the `this` parameter for the callback.
-         * @example _converse.api.listen.on('message', function (messageXML) { ... });
-         */
-        on: _converse.on.bind(_converse),
-
-        /**
-         * To stop listening to an event, you can use the `not` method.
-         * @method _converse.api.listen.not
-         * @param { string } name The event's name
-         * @param { function } callback The callback method that is to no longer be called when the event fires
-         * @example _converse.api.listen.not('message', function (messageXML);
-         */
-        not: _converse.off.bind(_converse),
-
-        /**
-         * Subscribe to an incoming stanza
-         * Every a matched stanza is received, the callback method specified by
-         * `callback` will be called.
-         * @method _converse.api.listen.stanza
-         * @param { string } name The stanza's name
-         * @param { object } options Matching options (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
-         * @param { function } handler The callback method to be called when the stanza appears
-         */
-        stanza (name, options, handler) {
-            if (isFunction(options)) {
-                handler = options;
-                options = {};
-            } else {
-                options = options || {};
-            }
-            _converse.connection.addHandler(
-                handler,
-                options.ns,
-                name,
-                options.type,
-                options.id,
-                options.from,
-                options
-            );
-        }
-    },
-
-    /**
-     * Wait until a promise is resolved or until the passed in function returns
-     * a truthy value.
-     * @method _converse.api.waitUntil
-     * @param {string|function} condition - The name of the promise to wait for,
-     * or a function which should eventually return a truthy value.
-     * @returns {Promise}
-     */
-    waitUntil (condition) {
-        if (isFunction(condition)) {
-            return u.waitUntil(condition);
-        } else {
-            const promise = _converse.promises[condition];
-            if (promise === undefined) {
-                return null;
-            }
-            return promise;
-        }
-    },
-
-    /**
-     * Allows you to send XML stanzas.
-     * @method _converse.api.send
-     * @param { Element } stanza
-     * @return {void}
-     * @example
-     * const msg = converse.env.$msg({
-     *     'from': 'juliet@example.com/balcony',
-     *     'to': 'romeo@example.net',
-     *     'type':'chat'
-     * });
-     * _converse.api.send(msg);
-     */
-    send (stanza) {
-        if (!api.connection.connected()) {
-            log.warn("Not sending stanza because we're not connected!");
-            log.warn(Strophe.serialize(stanza));
-            return;
-        }
-        if (typeof stanza === 'string') {
-            stanza = u.toStanza(stanza);
-        } else if (stanza?.tree) {
-            stanza = stanza.tree();
-        }
-
-        if (stanza.tagName === 'iq') {
-            return api.sendIQ(stanza);
-        } else {
-            _converse.connection.send(stanza);
-            api.trigger('send', stanza);
-        }
-    },
-
-    /**
-     * Send an IQ stanza
-     * @method _converse.api.sendIQ
-     * @param { Element } stanza
-     * @param { number } [timeout=_converse.STANZA_TIMEOUT]
-     * @param { Boolean } [reject=true] - Whether an error IQ should cause the promise
-     *  to be rejected. If `false`, the promise will resolve instead of being rejected.
-     * @returns {Promise} A promise which resolves (or potentially rejected) once we
-     *  receive a `result` or `error` stanza or once a timeout is reached.
-     *  If the IQ stanza being sent is of type `result` or `error`, there's
-     *  nothing to wait for, so an already resolved promise is returned.
-     */
-    sendIQ (stanza, timeout=_converse.STANZA_TIMEOUT, reject=true) {
-
-        const { connection } = _converse;
-
-        let promise;
-        stanza = stanza.tree?.() ?? stanza;
-        if (['get', 'set'].includes(stanza.getAttribute('type'))) {
-            timeout = timeout || _converse.STANZA_TIMEOUT;
-            if (reject) {
-                promise = new Promise((resolve, reject) => connection.sendIQ(stanza, resolve, reject, timeout));
-                promise.catch((e) => {
-                    if (e === null) {
-                        throw new TimeoutError(
-                            `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(stanza)}`
-                        );
-                    }
-                });
-            } else {
-                promise = new Promise((resolve) => connection.sendIQ(stanza, resolve, resolve, timeout));
-            }
-        } else {
-            _converse.connection.sendIQ(stanza);
-            promise = Promise.resolve();
-        }
-        api.trigger('send', stanza);
-        return promise;
-    }
+    ...send_api,
+    ...user_api,
+    ...events_api,
+    ...promise_api,
 };
 
 

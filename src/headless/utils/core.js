@@ -502,7 +502,7 @@ function clearTimers(timeout, interval) {
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */
-u.waitUntil = function (func, max_wait=300, check_delay=3) {
+export function waitUntil (func, max_wait=300, check_delay=3) {
     // Run the function once without setting up any listeners in case it's already true
     try {
         const result = func();
@@ -620,6 +620,7 @@ export function saveWindowState (ev) {
 
 
 export default Object.assign({
+    waitUntil, // TODO: remove. Only the API should be used
     isErrorObject,
     getRandomInt,
     getUniqueId,

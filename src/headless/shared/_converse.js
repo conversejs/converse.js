@@ -1,6 +1,7 @@
 import i18n from './i18n.js';
 import log from '../log.js';
 import { CONNECTION_STATUS } from './constants';
+import { Events } from '@converse/skeletor/src/events.js';
 import { Router } from '@converse/skeletor/src/router.js';
 import { TimeoutError } from './errors.js';
 import { createStore, getDefaultStore } from '../utils/storage.js';
@@ -111,5 +112,7 @@ const _converse = {
      */
     '___': str => str
 }
+
+Object.assign(_converse, Events);
 
 export default _converse;

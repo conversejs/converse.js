@@ -1,7 +1,8 @@
+import ConnectionFeedback from './../connection/feedback.js';
 import URI from 'urijs';
-import i18n from '../i18n';
 import _converse from '../_converse.js';
 import dayjs from 'dayjs';
+import i18n from '../i18n';
 import invoke from 'lodash-es/invoke';
 import log from '../../log.js';
 import sizzle from 'sizzle';
@@ -81,7 +82,7 @@ export const converse = Object.assign(window.converse || {}, {
             /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
             l => log.setLogLevel(l)
         );
-        _converse.connfeedback = new _converse.ConnectionFeedback();
+        _converse.connfeedback = new ConnectionFeedback();
 
         /* When reloading the page:
          * For new sessions, we need to send out a presence stanza to notify

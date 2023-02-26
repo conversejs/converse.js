@@ -8,8 +8,6 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import connection_api from './shared/connection/api.js';
 import dayjs from 'dayjs';
 import i18n from './shared/i18n';
-import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe } from 'strophe.js/src/strophe';
 import { settings_api } from './shared/settings/api.js';
 import send_api from './shared/api/send.js';
 import user_api from './shared/api/user.js';
@@ -50,14 +48,3 @@ _converse.shouldClearCache = () => (
     api.settings.get('clear_cache_on_logout') ||
     _converse.isTestEnv()
 );
-
-
-_converse.ConnectionFeedback = Model.extend({
-    defaults: {
-        'connection_status': Strophe.Status.DISCONNECTED,
-        'message': ''
-    },
-    initialize () {
-        this.on('change', () => api.trigger('connfeedback', _converse.connfeedback));
-    }
-});

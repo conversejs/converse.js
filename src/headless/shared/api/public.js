@@ -3,7 +3,6 @@ import URI from 'urijs';
 import _converse from '../_converse.js';
 import dayjs from 'dayjs';
 import i18n from '../i18n';
-import invoke from 'lodash-es/invoke';
 import log from '../../log.js';
 import sizzle from 'sizzle';
 import u, { setUnloadEvent } from '../../utils/core.js';
@@ -112,7 +111,7 @@ export const converse = Object.assign(window.converse || {}, {
         }
 
         const plugins = _converse.pluggable.plugins
-        if (api.settings.get("auto_login") || api.settings.get("keepalive") && invoke(plugins['converse-bosh'], 'enabled')) {
+        if (api.settings.get("auto_login") || api.settings.get("keepalive") && plugins['converse-bosh']?.enabled()) {
             await api.user.login(null, null, true);
         }
 

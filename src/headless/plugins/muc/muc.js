@@ -1,5 +1,4 @@
 import debounce from 'lodash-es/debounce';
-import invoke from 'lodash-es/invoke';
 import isElement from 'lodash-es/isElement';
 import log from '../../log';
 import p from '../../utils/parse-helpers';
@@ -2342,7 +2341,7 @@ const ChatRoomMixin = {
         // each <x/> element pertains to a single user.
         const item = x.querySelector('item');
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
-        const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
+        const actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
         const message = _converse.muc.disconnect_messages[codes[0]];
         const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);

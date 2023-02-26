@@ -8,6 +8,7 @@ import { TimeoutError } from './errors.js';
 import { createStore, getDefaultStore } from '../utils/storage.js';
 import { getInitSettings } from './settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { shouldClearCache } from '../utils/core.js';
 
 
 /**
@@ -18,8 +19,11 @@ import { getOpenPromise } from '@converse/openpromise';
  */
 const _converse = {
     log,
+    shouldClearCache, // TODO: Should be moved to utils with next major release
+
     CONNECTION_STATUS,
     VERSION_NAME,
+
     templates: {},
     promises: {
         'initialized': getOpenPromise()

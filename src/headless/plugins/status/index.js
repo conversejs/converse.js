@@ -5,6 +5,7 @@
 import XMPPStatus from './status.js';
 import status_api from './api.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { shouldClearCache } from '@converse/headless/utils/core.js';
 import {
     addStatusToMUCJoinPresence,
     initStatus,
@@ -52,7 +53,7 @@ converse.plugins.add('converse-status', {
         });
 
         api.listen.on('clearSession', () => {
-            if (_converse.shouldClearCache() && _converse.xmppstatus) {
+            if (shouldClearCache() && _converse.xmppstatus) {
                 _converse.xmppstatus.destroy();
                 delete _converse.xmppstatus;
                 api.promises.add(['statusInitialized']);

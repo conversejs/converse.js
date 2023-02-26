@@ -3,6 +3,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
+import { shouldClearCache } from '@converse/headless/utils/core.js';
 
 const { $pres } = converse.env;
 
@@ -88,7 +89,7 @@ async function clearPresences () {
  */
 export async function onClearSession () {
     await clearPresences();
-    if (_converse.shouldClearCache()) {
+    if (shouldClearCache()) {
         if (_converse.rostergroups) {
             await _converse.rostergroups.clearStore();
             delete _converse.rostergroups;

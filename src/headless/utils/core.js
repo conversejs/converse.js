@@ -48,6 +48,13 @@ export function isUniView () {
     return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
 }
 
+export function shouldClearCache () {
+    const { api } = _converse;
+    return !_converse.config.get('trusted') ||
+        api.settings.get('clear_cache_on_logout') ||
+        _converse.isTestEnv();
+}
+
 
 export async function tearDown () {
     await _converse.api.trigger('beforeTearDown', {'synchronous': true});
@@ -65,7 +72,7 @@ export async function tearDown () {
 export function clearSession () {
     _converse.session?.destroy();
     delete _converse.session;
-    _converse.shouldClearCache() && _converse.api.user.settings.clear();
+    shouldClearCache() && _converse.api.user.settings.clear();
     /**
      * Synchronouse event triggered once the user session has been cleared,
      * for example when the user has logged out or when Converse has
@@ -624,6 +631,7 @@ export function saveWindowState (ev) {
 
 
 export default Object.assign({
+    shouldClearCache,
     waitUntil, // TODO: remove. Only the API should be used
     isErrorObject,
     getRandomInt,

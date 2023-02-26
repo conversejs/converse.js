@@ -1,6 +1,7 @@
 import log from "@converse/headless/log";
 import { _converse, api, converse } from "../../core.js";
 import { initStorage } from '@converse/headless/utils/storage.js';
+import { shouldClearCache } from '@converse/headless/utils/core.js';
 
 const { Strophe, $iq, u } = converse.env;
 
@@ -163,7 +164,7 @@ export async function initVCardCollection () {
 
 
 export function clearVCardsSession () {
-    if (_converse.shouldClearCache()) {
+    if (shouldClearCache()) {
         api.promises.add('VCardsInitialized');
         if (_converse.vcards) {
             _converse.vcards.clearStore();

@@ -1,7 +1,8 @@
+import log from '@converse/headless/log.js';
 import { _converse, api, converse } from '@converse/headless/core.js';
 import { isArchived, isHeadline, isServerMessage, } from '@converse/headless/shared/parsers';
 import { parseMessage } from './parsers.js';
-import log from '@converse/headless/log.js';
+import { shouldClearCache } from '@converse/headless/utils/core.js';
 
 const { Strophe, u } = converse.env;
 
@@ -13,7 +14,7 @@ export function openChat (jid) {
 }
 
 export async function onClearSession () {
-    if (_converse.shouldClearCache()) {
+    if (shouldClearCache()) {
         await Promise.all(
             _converse.chatboxes.map(c => c.messages && c.messages.clearStore({ 'silent': true }))
         );

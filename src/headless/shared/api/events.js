@@ -1,6 +1,5 @@
 import _converse from '@converse/headless/shared/_converse.js';
-import isFunction from 'lodash-es/isFunction';
-import { Events } from '@converse/skeletor/src/events.js';
+import isFunction from '../../utils/core.js';
 
 
 export default {

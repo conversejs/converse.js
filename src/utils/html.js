@@ -3,7 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
  */
-import isFunction from 'lodash-es/isFunction';
 import log from '@converse/headless/log';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
@@ -477,9 +476,7 @@ export function slideIn (el, duration = 200) {
 
 function afterAnimationEnds (el, callback) {
     el.classList.remove('visible');
-    if (isFunction(callback)) {
-        callback();
-    }
+    callback?.();
 }
 
 u.isInDOM = function (el) {

@@ -24,6 +24,10 @@ export function isError (obj) {
     return Object.prototype.toString.call(obj) === "[object Error]";
 }
 
+export function isFunction (val) {
+    return typeof val === 'function';
+}
+
 export function isEmptyMessage (attrs) {
     if (attrs instanceof Model) {
         attrs = attrs.attributes;

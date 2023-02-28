@@ -22,7 +22,7 @@ const logger = Object.assign({
  * The log namespace
  * @namespace log
  */
-const log = {
+export default {
 
     /**
      * The the log-level, which determines how verbose the logging is.
@@ -95,5 +95,3 @@ const log = {
         this.log(message, 'fatal', style);
     }
 }
-
-export default log;

@@ -13,6 +13,7 @@ import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { html } from 'lit';
 import { initAppSettings } from '../settings/utils.js';
 import { sprintf } from 'sprintf-js';
+import { stx } from '../../utils/stanza.js';
 
 import {
     cleanup,
@@ -199,7 +200,7 @@ export const converse = Object.assign(window.converse || {}, {
         log,
         sizzle,
         sprintf,
-        stx: u.stx,
+        stx,
         u,
     }
 });

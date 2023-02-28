@@ -67,8 +67,26 @@ converse.plugins.add('converse-dragresize', {
             document.removeEventListener('mouseup', onMouseUp);
         }
 
+        function dragresizeOverIframeHandler (e) {
+            e.onmousedown = function () {
+                document.querySelector('iframe').style.pointerEvents  = 'none';
+            };
+            e.onmouseup = function () {
+                document.querySelector('iframe').style.pointerEvents  = 'initial';
+            };
+        }
+        
         api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
         api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
         api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
+        api.listen.on('startDiagonalResize', function (e) {
+            dragresizeOverIframeHandler(e);
+        });
+        api.listen.on('startHorizontalResize', function (e) {
+            dragresizeOverIframeHandler(e);
+        });
+        api.listen.on('startVerticalResize', function (e) {
+            dragresizeOverIframeHandler(e);
+        });
     }
 });

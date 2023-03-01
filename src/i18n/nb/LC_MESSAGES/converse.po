@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2022-10-30 09:42+0000\n"
+"PO-Revision-Date: 2023-03-02 11:38+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -1057,9 +1057,9 @@ msgid "Bookmarks"
 msgstr "Bokmerker"
 
 #: dist/converse-no-dependencies.js:79500
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Bokmerker"
+msgstr "Bokmerke for «%1$s»"
 
 #: dist/converse-no-dependencies.js:79501
 msgid "Would you like this groupchat to be automatically joined upon startup?"

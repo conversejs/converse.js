@@ -86,7 +86,7 @@ po:
 .PHONY: release
 release:
 	find ./src -name "*~" -exec rm {} \;
-	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/core.js
+	$(SED) -i '/^export const VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/shared/constants.js
 	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
 	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' src/i18n/converse.pot
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json

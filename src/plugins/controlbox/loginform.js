@@ -1,5 +1,6 @@
 import bootstrap from 'bootstrap.native';
 import tplLoginPanel from './templates/loginform.js';
+import { ANONYMOUS } from '@converse/headless/shared/constants';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from '@converse/headless/core.js';
 import { initConnection } from '@converse/headless/utils/init.js';
@@ -36,7 +37,7 @@ class LoginForm extends CustomElement {
     async onLoginFormSubmitted (ev) {
         ev?.preventDefault();
 
-        if (api.settings.get('authentication') === _converse.ANONYMOUS) {
+        if (api.settings.get('authentication') === ANONYMOUS) {
             return this.connect(_converse.jid);
         }
 

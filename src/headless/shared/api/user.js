@@ -4,6 +4,7 @@ import u, { replacePromise } from '../../utils/core.js';
 import { attemptNonPreboundSession, initConnection, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/api.js';
+import { LOGOUT, PREBIND } from '../constants.js';
 
 export default {
     /**
@@ -60,7 +61,7 @@ export default {
             if (bosh_plugin?.enabled()) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
-                } else if (api.settings.get("authentication") === _converse.PREBIND && (!automatic || api.settings.get("auto_login"))) {
+                } else if (api.settings.get("authentication") === PREBIND && (!automatic || api.settings.get("auto_login"))) {
                     return _converse.startNewPreboundBOSHSession();
                 }
             }
@@ -100,7 +101,7 @@ export default {
                 promise.resolve();
             }
 
-            _converse.connection.setDisconnectionCause(_converse.LOGOUT, undefined, true);
+            _converse.connection.setDisconnectionCause(LOGOUT, undefined, true);
             if (_converse.connection !== undefined) {
                 api.listen.once('disconnected', () => complete());
                 _converse.connection.disconnect();

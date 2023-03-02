@@ -7,6 +7,7 @@ import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor/src/model.js';
 import { ROOMSTATUS } from './constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
+import { TimeoutError } from '../../shared/errors.js';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
@@ -709,8 +710,8 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#sendTimedMessage
      * @param { _converse.Message|Element } message
-     * @returns { Promise<Element>|Promise<_converse.TimeoutError> } Returns a promise
-     *  which resolves with the reflected message stanza or with an error stanza or {@link _converse.TimeoutError}.
+     * @returns { Promise<Element>|Promise<TimeoutError> } Returns a promise
+     *  which resolves with the reflected message stanza or with an error stanza or {@link TimeoutError}.
      */
     sendTimedMessage (el) {
         if (typeof el.tree === 'function') {
@@ -726,7 +727,7 @@ const ChatRoomMixin = {
         const timeout = api.settings.get('stanza_timeout');
         const timeoutHandler = _converse.connection.addTimedHandler(timeout, () => {
             _converse.connection.deleteHandler(handler);
-            const err = new _converse.TimeoutError('Timeout Error: No response from server');
+            const err = new TimeoutError('Timeout Error: No response from server');
             promise.resolve(err);
             return false;
         });
@@ -776,7 +777,7 @@ const ChatRoomMixin = {
 
         if (u.isErrorStanza(result)) {
             log.error(result);
-        } else if (result instanceof _converse.TimeoutError) {
+        } else if (result instanceof TimeoutError) {
             log.error(result);
             message.save({
                 editable,

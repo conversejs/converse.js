@@ -9,6 +9,8 @@
 - Generate TypeScript declaration files into `dist/types`
 - #3156: Add function to prevent drag stutter effect over iframes when resize is called in overlay mode
 
+- New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#stanza-timeout)
+
 ## 10.1.2 (2023-02-17)
 
 - #1490: Busy-loop when fetching registration form fails

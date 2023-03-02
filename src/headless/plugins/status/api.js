@@ -1,4 +1,5 @@
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '../../core';
+import { STATUS_WEIGHTS } from '../../shared/constants';
 
 
 export default {
@@ -32,7 +33,7 @@ export default {
          */
         async set (value, message) {
             const data = {'status': value};
-            if (!Object.keys(_converse.STATUS_WEIGHTS).includes(value)) {
+            if (!Object.keys(STATUS_WEIGHTS).includes(value)) {
                 throw new Error(
                     'Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1'
                 );

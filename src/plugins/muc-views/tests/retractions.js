@@ -661,9 +661,7 @@ describe("Message Retractions", function () {
         }));
 
         it("can be retracted by its author, causing a timeout error in response",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
-            _converse.STANZA_TIMEOUT = 1;
+                mock.initConverse(['chatBoxesFetched'], { stanza_timeout: 1 }, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];

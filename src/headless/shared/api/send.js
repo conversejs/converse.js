@@ -1,4 +1,4 @@
-import _converse from '@converse/headless/shared/_converse.js';
+import _converse from '../../shared/_converse.js';
 import log from '../../log.js';
 import { Strophe } from 'strophe.js/src/strophe';
 import { TimeoutError } from '../errors.js';
@@ -43,7 +43,8 @@ export default {
      * Send an IQ stanza
      * @method _converse.api.sendIQ
      * @param { Element } stanza
-     * @param { number } [timeout=_converse.STANZA_TIMEOUT]
+     * @param { number } [timeout] - The default timeout value is taken from
+     *  the `stanza_timeout` configuration setting.
      * @param { Boolean } [reject=true] - Whether an error IQ should cause the promise
      *  to be rejected. If `false`, the promise will resolve instead of being rejected.
      * @returns { Promise } A promise which resolves (or potentially rejected) once we
@@ -51,13 +52,13 @@ export default {
      *  If the IQ stanza being sent is of type `result` or `error`, there's
      *  nothing to wait for, so an already resolved promise is returned.
      */
-    sendIQ (stanza, timeout=_converse.STANZA_TIMEOUT, reject=true) {
+    sendIQ (stanza, timeout, reject=true) {
         const { api, connection } = _converse;
 
         let promise;
         stanza = stanza.tree?.() ?? stanza;
         if (['get', 'set'].includes(stanza.getAttribute('type'))) {
-            timeout = timeout || _converse.STANZA_TIMEOUT;
+            timeout = timeout || api.settings.get('stanza_timeout');
             if (reject) {
                 promise = new Promise((resolve, reject) => connection.sendIQ(stanza, resolve, reject, timeout));
                 promise.catch((e) => {

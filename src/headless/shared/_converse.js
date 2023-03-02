@@ -1,7 +1,7 @@
 import i18n from './i18n.js';
 import log from '../log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
-import { CONNECTION_STATUS, VERSION_NAME } from './constants';
+import { VERSION_NAME } from './constants';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Router } from '@converse/skeletor/src/router.js';
 import { TimeoutError } from './errors.js';
@@ -21,7 +21,6 @@ const _converse = {
     log,
 
     shouldClearCache, // TODO: Should be moved to utils with next major release
-    CONNECTION_STATUS, // TODO: remove in next major release
     VERSION_NAME,
 
     templates: {},
@@ -29,15 +28,6 @@ const _converse = {
         'initialized': getOpenPromise()
     },
 
-    STATUS_WEIGHTS: {
-        'offline':      6,
-        'unavailable':  5,
-        'xa':           4,
-        'away':         3,
-        'dnd':          2,
-        'chat':         1, // We currently don't differentiate between "chat" and "online"
-        'online':       1
-    },
     ANONYMOUS: 'anonymous',
     CLOSED: 'closed',
     EXTERNAL: 'external',
@@ -45,12 +35,6 @@ const _converse = {
     LOGOUT: 'logout',
     OPENED: 'opened',
     PREBIND: 'prebind',
-
-    /**
-     * @constant
-     * @type { number }
-     */
-    STANZA_TIMEOUT: 20000,
 
     SUCCESS: 'success',
     FAILURE: 'failure',

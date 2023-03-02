@@ -1,7 +1,17 @@
 import { Strophe } from 'strophe.js/src/strophe';
 
 export const BOSH_WAIT = 59;
-export const VERSION_NAME = "v10.1.2";
+export const VERSION_NAME = 'v10.1.2';
+
+export const STATUS_WEIGHTS = {
+    offline: 6,
+    unavailable: 5,
+    xa: 4,
+    away: 3,
+    dnd: 2,
+    chat: 1, // We don't differentiate between "chat" and "online"
+    online: 1,
+};
 
 export const CONNECTION_STATUS = {};
 CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
@@ -73,7 +83,7 @@ export const CORE_PLUGINS = [
     'converse-roster',
     'converse-smacks',
     'converse-status',
-    'converse-vcard'
+    'converse-vcard',
 ];
 
 export const URL_PARSE_OPTIONS = { 'start': /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
@@ -94,5 +104,5 @@ export const KEYCODES = {
     FORWARD_SLASH: 47,
     AT: 50,
     META: 91,
-    META_RIGHT: 93
-}
+    META_RIGHT: 93,
+};

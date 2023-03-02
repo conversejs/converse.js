@@ -6,7 +6,7 @@ import i18n from '../i18n';
 import log from '../../log.js';
 import sizzle from 'sizzle';
 import u, { setUnloadEvent } from '../../utils/core.js';
-import { CHAT_STATES, KEYCODES } from '../constants.js';
+import { CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
@@ -185,6 +185,7 @@ export const converse = Object.assign(window.converse || {}, {
      * @memberOf converse
      */
     'env': {
+        VERSION_NAME,
         $build,
         $iq,
         $msg,

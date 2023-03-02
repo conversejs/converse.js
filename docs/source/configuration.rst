@@ -2089,6 +2089,13 @@ themselves).
 In order to support all browsers we need both an MP3 and an Ogg file. Make sure
 to name your files ``msg_received.ogg`` and ``msg_received.mp3``.
 
+stanza_timeout
+--------------
+
+* Default: ``20000`` (20 seconds)
+
+The time to wait, in milliseconds, for a response stanza (for example to an IQ
+request), before a timeout error is thrown and Converse stops waiting.
 
 sticky_controlbox
 -----------------

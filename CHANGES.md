@@ -8,6 +8,8 @@
 - Remove call to `api.confirm` in `@converse/headless`
 - Generate TypeScript declaration files into `dist/types`
 
+- New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#stanza-timeout)
+
 ## 10.1.2 (2023-02-17)
 
 - #1490: Busy-loop when fetching registration form fails

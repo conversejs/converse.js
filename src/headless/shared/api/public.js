@@ -6,10 +6,11 @@ import i18n from '../i18n';
 import log from '../../log.js';
 import sizzle from 'sizzle';
 import u, { setUnloadEvent } from '../../utils/core.js';
-import { CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
+import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
+import { TimeoutError } from '../errors.js';
 import { html } from 'lit';
 import { initAppSettings } from '../settings/utils.js';
 import { sprintf } from 'sprintf-js';
@@ -71,7 +72,7 @@ export const converse = Object.assign(window.converse || {}, {
         _converse.strict_plugin_dependencies = settings.strict_plugin_dependencies; // Needed by pluggable.js
         log.setLogLevel(api.settings.get("loglevel"));
 
-        if (api.settings.get("authentication") === _converse.ANONYMOUS) {
+        if (api.settings.get("authentication") === ANONYMOUS) {
             if (api.settings.get("auto_login") && !api.settings.get('jid')) {
                 throw new Error("Config Error: you need to provide the server's " +
                       "domain via the 'jid' option when using anonymous " +
@@ -170,22 +171,22 @@ export const converse = Object.assign(window.converse || {}, {
     /**
      * Utility methods and globals from bundled 3rd party libraries.
      * @typedef ConverseEnv
-     * @property {function} converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
-     * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
-     * @property {function} converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
-     * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
-     * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
-     * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
-     * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
-     * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
-     * @property {function} converse.env.sprintf
-     * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
-     * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
-     * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
+     * @property { Error } converse.env.TimeoutError
+     * @property { function } converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
+     * @property { function } converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
+     * @property { function } converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
+     * @property { function } converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
+     * @property { function } converse.env.Promise   - The Promise implementation used by Converse.
+     * @property { function } converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
+     * @property { function } converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
+     * @property { function } converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
+     * @property { function } converse.env.sprintf
+     * @property { object } converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
+     * @property { object } converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
+     * @property { object } converse.env.utils       - Module containing common utility methods used by Converse.
      * @memberOf converse
      */
     'env': {
-        VERSION_NAME,
         $build,
         $iq,
         $msg,
@@ -195,7 +196,9 @@ export const converse = Object.assign(window.converse || {}, {
         Model,
         Promise,
         Strophe,
+        TimeoutError,
         URI,
+        VERSION_NAME,
         dayjs,
         html,
         log,

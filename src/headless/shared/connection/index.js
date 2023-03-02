@@ -1,7 +1,7 @@
 import debounce from 'lodash-es/debounce';
 import log from "../../log.js";
 import sizzle from 'sizzle';
-import { BOSH_WAIT } from '../../shared/constants.js';
+import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants';
 import { Strophe } from 'strophe.js/src/core.js';
 import { _converse, api } from "../../core.js";
@@ -128,7 +128,7 @@ export class Connection extends Strophe.Connection {
             this._proto = new Strophe.Bosh(this);
             this.service = api.settings.get('bosh_service_url');
         } else if (api.connection.isType('bosh') && api.settings.get("websocket_url")) {
-            if (api.settings.get("authentication") === _converse.ANONYMOUS) {
+            if (api.settings.get("authentication") === ANONYMOUS) {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
@@ -150,7 +150,7 @@ export class Connection extends Strophe.Connection {
         const conn_status = _converse.connfeedback.get('connection_status');
         if (conn_status === Strophe.Status.CONNFAIL) {
             this.switchTransport();
-        } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === _converse.ANONYMOUS) {
+        } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === ANONYMOUS) {
             // When reconnecting anonymously, we need to connect with only
             // the domain, not the full JID that we had in our previous
             // (now failed) session.
@@ -164,7 +164,7 @@ export class Connection extends Strophe.Connection {
          */
         api.trigger('will-reconnect');
 
-        if (api.settings.get("authentication") === _converse.ANONYMOUS) {
+        if (api.settings.get("authentication") === ANONYMOUS) {
             await clearSession();
         }
         return api.user.login();
@@ -265,7 +265,7 @@ export class Connection extends Strophe.Connection {
         if (api.settings.get("auto_reconnect")) {
             const reason = this.disconnection_reason;
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
-                if (api.settings.get("credentials_url") || api.settings.get("authentication") === _converse.ANONYMOUS) {
+                if (api.settings.get("credentials_url") || api.settings.get("authentication") === ANONYMOUS) {
                     // If `credentials_url` is set, we reconnect, because we might
                     // be receiving expirable tokens from the credentials_url.
                     //
@@ -287,7 +287,7 @@ export class Connection extends Strophe.Connection {
                 );
                 return this.finishDisconnection();
             } else if (
-                this.disconnection_cause === _converse.LOGOUT ||
+                this.disconnection_cause === LOGOUT ||
                 reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed"

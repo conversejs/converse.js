@@ -1,14 +1,36 @@
 import i18n from './i18n.js';
 import log from '../log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
-import { VERSION_NAME } from './constants';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Router } from '@converse/skeletor/src/router.js';
-import { TimeoutError } from './errors.js';
 import { createStore, getDefaultStore } from '../utils/storage.js';
 import { getInitSettings } from './settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { shouldClearCache } from '../utils/core.js';
+
+import {
+    ACTIVE,
+    ANONYMOUS,
+    CHATROOMS_TYPE,
+    CLOSED,
+    COMPOSING,
+    CONTROLBOX_TYPE,
+    DEFAULT_IMAGE,
+    DEFAULT_IMAGE_TYPE,
+    EXTERNAL,
+    FAILURE,
+    GONE,
+    HEADLINES_TYPE,
+    INACTIVE,
+    LOGIN,
+    LOGOUT,
+    OPENED,
+    PAUSED,
+    PREBIND,
+    PRIVATE_CHAT_TYPE,
+    SUCCESS,
+    VERSION_NAME
+} from './constants';
 
 
 /**
@@ -28,45 +50,41 @@ const _converse = {
         'initialized': getOpenPromise()
     },
 
-    ANONYMOUS: 'anonymous',
-    CLOSED: 'closed',
-    EXTERNAL: 'external',
-    LOGIN: 'login',
-    LOGOUT: 'logout',
-    OPENED: 'opened',
-    PREBIND: 'prebind',
+    // TODO: remove constants in next major release
+    ANONYMOUS,
+    CLOSED,
+    EXTERNAL,
+    LOGIN,
+    LOGOUT,
+    OPENED,
+    PREBIND,
 
-    SUCCESS: 'success',
-    FAILURE: 'failure',
+    SUCCESS,
+    FAILURE,
 
-    // Generated from css/images/user.svg
-    DEFAULT_IMAGE_TYPE: 'image/svg+xml',
-    DEFAULT_IMAGE: "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==",
+    DEFAULT_IMAGE_TYPE,
+    DEFAULT_IMAGE,
 
+    INACTIVE,
+    ACTIVE,
+    COMPOSING,
+    PAUSED,
+    GONE,
+
+    PRIVATE_CHAT_TYPE,
+    CHATROOMS_TYPE,
+    HEADLINES_TYPE,
+    CONTROLBOX_TYPE,
+
+    // Set as module attr so that we can override in tests.
+    // TODO: replace with config settings
     TIMEOUTS: {
-        // Set as module attr so that we can override in tests.
         PAUSED: 10000,
         INACTIVE: 90000
     },
 
-    // XEP-0085 Chat states
-    // https://xmpp.org/extensions/xep-0085.html
-    INACTIVE: 'inactive',
-    ACTIVE: 'active',
-    COMPOSING: 'composing',
-    PAUSED: 'paused',
-    GONE: 'gone',
-
-    // Chat types
-    PRIVATE_CHAT_TYPE: 'chatbox',
-    CHATROOMS_TYPE: 'chatroom',
-    HEADLINES_TYPE: 'headline',
-    CONTROLBOX_TYPE: 'controlbox',
-
     default_connection_options: {'explicitResourceBinding': true},
     router: new Router(),
-
-    TimeoutError: TimeoutError,
 
     isTestEnv: () => {
         return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';

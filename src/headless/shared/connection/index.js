@@ -2,10 +2,11 @@ import debounce from 'lodash-es/debounce';
 import log from "../../log.js";
 import sizzle from 'sizzle';
 import { BOSH_WAIT } from '../../shared/constants.js';
+import { CONNECTION_STATUS } from '../constants';
 import { Strophe } from 'strophe.js/src/core.js';
 import { _converse, api } from "../../core.js";
-import { getOpenPromise } from '@converse/openpromise';
 import { clearSession, tearDown } from "../../utils/core.js";
+import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '../../utils/init.js';
 
 const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
@@ -308,7 +309,7 @@ export class Connection extends Strophe.Connection {
      */
     onConnectStatusChanged (status, message) {
         const { __ } = _converse;
-        log.debug(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
+        log.debug(`Status changed to: ${CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {
             this.setConnectionStatus(status);
             this.worker_attach_promise?.resolve(false);

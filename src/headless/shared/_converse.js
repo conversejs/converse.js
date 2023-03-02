@@ -19,9 +19,9 @@ import { shouldClearCache } from '../utils/core.js';
  */
 const _converse = {
     log,
-    shouldClearCache, // TODO: Should be moved to utils with next major release
 
-    CONNECTION_STATUS,
+    shouldClearCache, // TODO: Should be moved to utils with next major release
+    CONNECTION_STATUS, // TODO: remove in next major release
     VERSION_NAME,
 
     templates: {},

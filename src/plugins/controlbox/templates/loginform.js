@@ -1,5 +1,6 @@
 import 'shared/components/brand-heading.js';
 import tplSpinner from 'templates/spinner.js';
+import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { REPORTABLE_STATUSES, PRETTY_CONNECTION_STATUS, CONNECTION_STATUS_CSS_CLASS } from '../constants.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
@@ -139,6 +140,6 @@ export default (el) => {
                 <p class="feedback-subject">${ pretty_status }</p>
                 <p class="feedback-message ${ !conn_feedback_message ? 'hidden' : '' }">${conn_feedback_message}</p>
             </div>
-            ${ (_converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') ? tplSpinner({'classes': 'hor_centered'}) : form_fields(el) }
+            ${ (CONNECTION_STATUS[connection_status] === 'CONNECTING') ? tplSpinner({'classes': 'hor_centered'}) : form_fields(el) }
         </form>`;
 }

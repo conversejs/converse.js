@@ -3,7 +3,7 @@
   "version": "10.1.2",
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
-  "module": "src/converse.js",
+  "module": "src/index.js",
   "workspaces": [
     "src/headless"
   ],

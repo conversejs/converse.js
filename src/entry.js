@@ -57,7 +57,7 @@ const converse = {
         if (settings.assets_path) {
             __webpack_public_path__ = settings.assets_path; // eslint-disable-line no-undef
         }
-        require('./converse.js');
+        require('./index.js');
         Object.keys(plugins).forEach(name => converse.plugins.add(name, plugins[name]));
         return converse;
     }

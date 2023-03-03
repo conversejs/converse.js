@@ -3,6 +3,7 @@ import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
 import tplRegisterPanel from "./templates/register_panel.js";
+import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core.js";
@@ -219,7 +220,7 @@ class RegisterPanel extends CustomElement {
             ].includes(status_code)) {
 
             log.error(
-                `Problem during registration: Strophe.Status is ${_converse.CONNECTION_STATUS[status_code]}`
+                `Problem during registration: Strophe.Status is ${CONNECTION_STATUS[status_code]}`
             );
             this.abortRegistration();
         } else if (status_code === Strophe.Status.REGISTERED) {

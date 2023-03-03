@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import "@converse/headless/headless";
+import "@converse/headless";
 import "./i18n/index.js";
 import "shared/registry.js";
 import { CustomElement } from 'shared/components/element';

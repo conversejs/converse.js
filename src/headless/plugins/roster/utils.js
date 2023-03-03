@@ -1,6 +1,7 @@
 import log from "@converse/headless/log";
 import { Model } from '@converse/skeletor/src/model.js';
 import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
+import { STATUS_WEIGHTS } from "../../shared/constants";
 import { _converse, api, converse } from "@converse/headless/core";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { shouldClearCache } from '@converse/headless/utils/core.js';
@@ -198,12 +199,12 @@ export function rejectPresenceSubscription (jid, message) {
 export function contactsComparator (contact1, contact2) {
     const status1 = contact1.presence.get('show') || 'offline';
     const status2 = contact2.presence.get('show') || 'offline';
-    if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
+    if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
         const name1 = (contact1.getDisplayName()).toLowerCase();
         const name2 = (contact2.getDisplayName()).toLowerCase();
         return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
     } else  {
-        return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
+        return STATUS_WEIGHTS[status1] < STATUS_WEIGHTS[status2] ? -1 : 1;
     }
 }
 

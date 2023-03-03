@@ -13,5 +13,5 @@ It's also installable with NPM/Yarn as [@converse/headless](https://www.npmjs.co
 
 The main distribution of Converse relies on the headless build.
 
-The file [src/headless/headless.js](https://github.com/jcbrand/converse.js/blob/master/src/headless/headless.js)
+The file [src/headless/index.js](https://github.com/jcbrand/converse.js/blob/master/src/headless/index.js)
 is used to determine which plugins are included in the build.

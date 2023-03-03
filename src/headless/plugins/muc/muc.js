@@ -5,17 +5,18 @@ import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor/src/model.js';
+import { ROOMSTATUS } from './constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
+import { TimeoutError } from '../../shared/errors.js';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
-import { handleCorrection } from '../../shared/chat/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { handleCorrection } from '../../shared/chat/utils.js';
 import { initStorage } from '../../utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '../../shared/parsers.js';
 import { isUniView, getUniqueId, safeSave } from '../../utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import { ROOMSTATUS } from './constants.js';
 
 const { u } = converse.env;
 
@@ -709,8 +710,8 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#sendTimedMessage
      * @param { _converse.Message|Element } message
-     * @returns { Promise<Element>|Promise<_converse.TimeoutError> } Returns a promise
-     *  which resolves with the reflected message stanza or with an error stanza or {@link _converse.TimeoutError}.
+     * @returns { Promise<Element>|Promise<TimeoutError> } Returns a promise
+     *  which resolves with the reflected message stanza or with an error stanza or {@link TimeoutError}.
      */
     sendTimedMessage (el) {
         if (typeof el.tree === 'function') {
@@ -723,9 +724,10 @@ const ChatRoomMixin = {
             el.setAttribute('id', id);
         }
         const promise = getOpenPromise();
-        const timeoutHandler = _converse.connection.addTimedHandler(_converse.STANZA_TIMEOUT, () => {
+        const timeout = api.settings.get('stanza_timeout');
+        const timeoutHandler = _converse.connection.addTimedHandler(timeout, () => {
             _converse.connection.deleteHandler(handler);
-            const err = new _converse.TimeoutError('Timeout Error: No response from server');
+            const err = new TimeoutError('Timeout Error: No response from server');
             promise.resolve(err);
             return false;
         });
@@ -775,7 +777,7 @@ const ChatRoomMixin = {
 
         if (u.isErrorStanza(result)) {
             log.error(result);
-        } else if (result instanceof _converse.TimeoutError) {
+        } else if (result instanceof TimeoutError) {
             log.error(result);
             message.save({
                 editable,
@@ -1335,22 +1337,34 @@ const ChatRoomMixin = {
         return true;
     },
 
-    getAllowedCommands () {
+    async getAllowedCommands () {
         let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
+
+        // Only allow blocking commands when server supports it and we also support it
+        if (
+            await api.disco.supports(Strophe.NS.BLOCKING, _converse.domain) &&
+            _converse.pluggable.plugins['converse-blocking']?.enabled(_converse)
+        ) {
+            allowed_commands = [...allowed_commands, ...['block', 'unblock']];
+        }
+
         if (this.config.get('changesubject') || ['owner', 'admin'].includes(this.getOwnAffiliation())) {
             allowed_commands = [...allowed_commands, ...['subject', 'topic']];
         }
+
         const occupant = this.occupants.findWhere({ 'jid': _converse.bare_jid });
         if (this.verifyAffiliations(['owner'], occupant, false)) {
             allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
         } else if (this.verifyAffiliations(['admin'], occupant, false)) {
             allowed_commands = allowed_commands.concat(ADMIN_COMMANDS);
         }
+
         if (this.verifyRoles(['moderator'], occupant, false)) {
             allowed_commands = allowed_commands.concat(MODERATOR_COMMANDS).concat(VISITOR_COMMANDS);
         } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
             allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
         }
+
         allowed_commands.sort();
 
         if (Array.isArray(api.settings.get('muc_disable_slash_commands'))) {

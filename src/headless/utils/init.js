@@ -4,7 +4,7 @@ import debounce from 'lodash-es/debounce';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '../log.js';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
-import { CORE_PLUGINS } from '../shared/constants.js';
+import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN, PREBIND } from '../shared/constants.js';
 import { Connection, MockConnection } from '../shared/connection/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe';
@@ -43,7 +43,7 @@ export function initConnection () {
     const api = _converse.api;
 
     if (! api.settings.get('bosh_service_url')) {
-        if (api.settings.get("authentication") === _converse.PREBIND) {
+        if (api.settings.get("authentication") === PREBIND) {
             throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
         }
     }
@@ -182,7 +182,7 @@ function initPersistentStorage (_converse, store_name) {
 
 function saveJIDtoSession (_converse, jid) {
     jid = _converse.session.get('jid') || jid;
-    if (_converse.api.settings.get("authentication") !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
+    if (_converse.api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + Connection.generateResource();
     }
     _converse.jid = jid;
@@ -387,7 +387,7 @@ async function getLoginCredentialsFromSCRAMKeys () {
 export async function attemptNonPreboundSession (credentials, automatic) {
     const { api } = _converse;
 
-    if (api.settings.get("authentication") === _converse.LOGIN) {
+    if (api.settings.get("authentication") === LOGIN) {
         // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
         // ``authentication`` is set to ``login``, then Converse will try to log the user in,
         // since we don't have a way to distinguish between wether we're
@@ -417,7 +417,7 @@ export async function attemptNonPreboundSession (credentials, automatic) {
         if (!_converse.isTestEnv()) log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
 
     } else if (
-        [_converse.ANONYMOUS, _converse.EXTERNAL].includes(api.settings.get("authentication")) &&
+        [ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication")) &&
         (!automatic || api.settings.get("auto_login"))
     ) {
         connect();
@@ -446,7 +446,7 @@ export async function savedLoginInfo (jid) {
 
 async function connect (credentials) {
     const { api } = _converse;
-    if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(api.settings.get("authentication"))) {
+    if ([ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication"))) {
         if (!_converse.jid) {
             throw new Error("Config Error: when using anonymous login " +
                 "you need to provide the server's domain via the 'jid' option. " +
@@ -457,7 +457,7 @@ async function connect (credentials) {
             _converse.connection.reset();
         }
         _converse.connection.connect(_converse.jid.toLowerCase());
-    } else if (api.settings.get("authentication") === _converse.LOGIN) {
+    } else if (api.settings.get("authentication") === LOGIN) {
         const password = credentials?.password ?? (_converse.connection?.pass || api.settings.get("password"));
         if (!password) {
             if (api.settings.get("auto_login")) {

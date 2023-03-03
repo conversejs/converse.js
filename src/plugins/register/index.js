@@ -10,6 +10,7 @@ import './panel.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import { setActiveForm } from './utils.js';
+import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 
 // Strophe methods for building stanzas
 const { Strophe } = converse.env;
@@ -35,10 +36,10 @@ converse.plugins.add('converse-register', {
     initialize () {
         const { router } = _converse;
 
-        _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
-        _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
-        _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
-        _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
+        CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
+        CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
+        CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
+        CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
         api.settings.extend({
             'allow_registration': true,

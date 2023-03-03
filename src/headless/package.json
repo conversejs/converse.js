@@ -10,7 +10,7 @@
   "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
   "main": "dist/converse-headless.js",
-  "module": "headless.js",
+  "module": "index.js",
   "keywords": [
     "converse.js",
     "XMPP",

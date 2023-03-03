@@ -1,4 +1,4 @@
-import { api } from "@converse/headless/core";
+import api from "@converse/headless/shared/api/index.js";
 
 const registry = {};
 

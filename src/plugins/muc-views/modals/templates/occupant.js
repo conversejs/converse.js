@@ -4,7 +4,6 @@ import { html } from "lit";
 import { until } from 'lit/directives/until.js';
 import { _converse, api } from "@converse/headless/core";
 
-
 export default (el) => {
     const model = el.model ?? el.message;
     const jid = model?.get('jid');

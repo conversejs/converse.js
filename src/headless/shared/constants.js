@@ -1,7 +1,46 @@
 import { Strophe } from 'strophe.js/src/strophe';
 
 export const BOSH_WAIT = 59;
-export const VERSION_NAME = "v10.1.2";
+export const VERSION_NAME = 'v10.1.2';
+
+export const STATUS_WEIGHTS = {
+    offline: 6,
+    unavailable: 5,
+    xa: 4,
+    away: 3,
+    dnd: 2,
+    chat: 1, // We don't differentiate between "chat" and "online"
+    online: 1,
+};
+
+export const ANONYMOUS = 'anonymous';
+export const CLOSED = 'closed';
+export const EXTERNAL = 'external';
+export const LOGIN = 'login';
+export const LOGOUT = 'logout';
+export const OPENED = 'opened';
+export const PREBIND = 'prebind';
+export const SUCCESS = 'success';
+export const FAILURE = 'failure';
+
+// Generated from css/images/user.svg
+export const DEFAULT_IMAGE_TYPE = 'image/svg+xml';
+export const DEFAULT_IMAGE =
+    'PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==';
+
+// XEP-0085 Chat states
+// https =//xmpp.org/extensions/xep-0085.html
+export const INACTIVE = 'inactive';
+export const ACTIVE = 'active';
+export const COMPOSING = 'composing';
+export const PAUSED = 'paused';
+export const GONE = 'gone';
+
+// Chat types
+export const PRIVATE_CHAT_TYPE = 'chatbox';
+export const CHATROOMS_TYPE = 'chatroom';
+export const HEADLINES_TYPE = 'headline';
+export const CONTROLBOX_TYPE = 'controlbox';
 
 export const CONNECTION_STATUS = {};
 CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
@@ -73,7 +112,8 @@ export const CORE_PLUGINS = [
     'converse-roster',
     'converse-smacks',
     'converse-status',
-    'converse-vcard'
+    'converse-vcard',
+    'converse-blocking',
 ];
 
 export const URL_PARSE_OPTIONS = { 'start': /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
@@ -94,5 +134,5 @@ export const KEYCODES = {
     FORWARD_SLASH: 47,
     AT: 50,
     META: 91,
-    META_RIGHT: 93
-}
+    META_RIGHT: 93,
+};

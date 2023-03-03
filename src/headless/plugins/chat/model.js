@@ -5,6 +5,7 @@ import isObject from "lodash-es/isObject";
 import log from '@converse/headless/log';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
+import { TimeoutError } from '../../shared/errors.js';
 import { _converse, api, converse } from "../../core.js";
 import { debouncedPruneHistory, handleCorrection } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
@@ -368,7 +369,7 @@ const ChatBox = ModelWithContact.extend({
     },
 
     async createMessageFromError (error) {
-        if (error instanceof _converse.TimeoutError) {
+        if (error instanceof TimeoutError) {
             const msg = await this.createMessage({
                 'type': 'error',
                 'message': error.message,
@@ -1089,9 +1090,10 @@ const ChatBox = ModelWithContact.extend({
      * @param {_converse.Message} message
      */
     handleUnreadMessage (message) {
-        if (!message?.get('body')) {
-            return
-        }
+        if (!message?.get('body')) return
+
+        const { pluggable } = _converse;
+
         if (u.isNewMessage(message)) {
             if (message.get('sender') === 'me') {
                 // We remove the "scrolled" flag so that the chat area
@@ -1099,7 +1101,12 @@ const ChatBox = ModelWithContact.extend({
                 // when the user writes a message as opposed to when a
                 // message is received.
                 this.ui.set('scrolled', false);
-            } else if (this.isHidden()) {
+            } else if (
+                this.isHidden() || (
+                    pluggable.plugins['converse-blocking'] &&
+                    api.blockedUsers()?.has(message?.get('from_real_jid'))
+                )
+            ) {
                 this.incrementUnreadMsgsCounter(message);
             } else {
                 this.sendMarkerForMessage(message);

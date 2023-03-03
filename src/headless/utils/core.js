@@ -8,13 +8,19 @@ import _converse from '@converse/headless/shared/_converse.js';
 import compact from "lodash-es/compact";
 import isObject from "lodash-es/isObject";
 import last from "lodash-es/last";
-import log from '@converse/headless/log.js';
+import log from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { settings_api } from '@converse/headless/shared/settings/api.js';
+import { settings_api } from '../shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
+
+/**
+ * The utils object
+ * @namespace u
+ */
+const u = {};
 
 export function isElement (el) {
     return el instanceof Element || el instanceof HTMLDocument;
@@ -57,14 +63,15 @@ export function shouldClearCache () {
 
 
 export async function tearDown () {
-    await _converse.api.trigger('beforeTearDown', {'synchronous': true});
+    const { api } = _converse;
+    await api.trigger('beforeTearDown', {'synchronous': true});
     window.removeEventListener('click', _converse.onUserActivity);
     window.removeEventListener('focus', _converse.onUserActivity);
     window.removeEventListener('keypress', _converse.onUserActivity);
     window.removeEventListener('mousemove', _converse.onUserActivity);
     window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
     window.clearInterval(_converse.everySecondTrigger);
-    _converse.api.trigger('afterTearDown');
+    api.trigger('afterTearDown');
     return _converse;
 }
 
@@ -96,13 +103,6 @@ export function prefixMentions (message) {
         });
     return text;
 }
-
-
-/**
- * The utils object
- * @namespace u
- */
-const u = {};
 
 u.isTagEqual = function (stanza, name) {
     if (stanza.tree?.()) {

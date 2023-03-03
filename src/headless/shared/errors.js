@@ -1,5 +1,5 @@
 /**
  * Custom error for indicating timeouts
- * @namespace _converse
+ * @namespace converse.env
  */
 export class TimeoutError extends Error {}

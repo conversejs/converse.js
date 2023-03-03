@@ -1,6 +1,7 @@
-import { RSM } from '@converse/headless/shared/rsm';
 import log from '@converse/headless/log';
 import sizzle from "sizzle";
+import { RSM } from '@converse/headless/shared/rsm';
+import { TimeoutError } from '../../shared/errors.js';
 import { _converse, api, converse } from "@converse/headless/core";
 
 const { Strophe, $iq, dayjs } = converse.env;
@@ -270,7 +271,7 @@ export default {
                 const { __ } = _converse;
                 const err_msg = __("Timeout while trying to fetch archived messages.");
                 log.error(err_msg);
-                error = new _converse.TimeoutError(err_msg);
+                error = new TimeoutError(err_msg);
                 return { messages, error };
 
             } else if (u.isErrorStanza(iq_result)) {

@@ -241,7 +241,7 @@ u.hasClass = function (className, el) {
 };
 
 u.toggleClass = function (className, el) {
-    u.hasClass(className, el) ? u.removeClass(className, el) : u.addClass(className, el);
+    u.hasClass(className, el) ? removeClass(className, el) : addClass(className, el);
 };
 
 /**
@@ -250,10 +250,10 @@ u.toggleClass = function (className, el) {
  * @param { string } className
  * @param { Element } el
  */
-u.addClass = function (className, el) {
+export function addClass (className, el) {
     el instanceof Element && el.classList.add(className);
     return el;
-};
+}
 
 /**
  * Remove a class from an element.
@@ -261,15 +261,20 @@ u.addClass = function (className, el) {
  * @param { string } className
  * @param { Element } el
  */
-u.removeClass = function (className, el) {
+export function removeClass (className, el) {
     el instanceof Element && el.classList.remove(className);
     return el;
-};
+}
 
-u.removeElement = function (el) {
+/**
+ * Remove an element from its parent
+ * @method u#removeElement
+ * @param { Element } el
+ */
+export function removeElement (el) {
     el instanceof Element && el.parentNode && el.parentNode.removeChild(el);
     return el;
-};
+}
 
 u.getElementFromTemplateResult = function (tr) {
     const div = document.createElement('div');
@@ -278,8 +283,8 @@ u.getElementFromTemplateResult = function (tr) {
 };
 
 u.showElement = el => {
-    u.removeClass('collapsed', el);
-    u.removeClass('hidden', el);
+    removeClass('collapsed', el);
+    removeClass('hidden', el);
 };
 
 u.hideElement = function (el) {
@@ -609,6 +614,15 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
     }
 };
 
-Object.assign(u, { getOOBURLMarkup, ancestor, slideIn, slideOut, isEqualNode });
+Object.assign(u, {
+    addClass,
+    ancestor,
+    getOOBURLMarkup,
+    isEqualNode,
+    removeClass,
+    removeElement,
+    slideIn,
+    slideOut,
+});
 
 export default u;

@@ -79,7 +79,7 @@ export default class MUCHeading extends CustomElement {
      * Returns a list of objects which represent buttons for the groupchat header.
      * @emits _converse#getHeadingButtons
      */
-    getHeadingButtons (subject_hidden) {
+    async getHeadingButtons (subject_hidden) {
         const buttons = [];
         buttons.push({
             'i18n_text': __('Details'),
@@ -137,7 +137,7 @@ export default class MUCHeading extends CustomElement {
 
         const conn_status = this.model.session.get('connection_status');
         if (conn_status === converse.ROOMSTATUS.ENTERED) {
-            const allowed_commands = this.model.getAllowedCommands();
+            const allowed_commands = await this.model.getAllowedCommands();
             if (allowed_commands.includes('modtools')) {
                 buttons.push({
                     'i18n_text': __('Moderate'),

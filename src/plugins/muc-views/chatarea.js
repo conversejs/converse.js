@@ -49,9 +49,11 @@ export default class MUCChatArea extends CustomElement {
         );
     }
 
-    getHelpMessages () {
+    async getHelpMessages () {
         const setting = api.settings.get('muc_disable_slash_commands');
         const disabled_commands = Array.isArray(setting) ? setting : [];
+        const allowed_commands = await this.model.getAllowedCommands();
+
         return [
             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
             `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
@@ -75,7 +77,7 @@ export default class MUCChatArea extends CustomElement {
             `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
         ]
             .filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9)))
-            .filter(line => this.model.getAllowedCommands().some(c => line.startsWith(c + '<', 9)));
+            .filter(line => allowed_commands.some(c => line.startsWith(c + '<', 9)));
     }
 
     onMousedown (ev) {

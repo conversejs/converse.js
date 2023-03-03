@@ -153,7 +153,7 @@ export async function getAutoCompleteList () {
     return jids;
 }
 
-function setRole (muc, command, args, required_affiliations = [], required_roles = []) {
+export function setRole (muc, command, args, required_affiliations = [], required_roles = []) {
     const role = COMMAND_TO_ROLE[command];
     if (!role) {
         throw Error(`ChatRoomView#setRole called with invalid command: ${command}`);
@@ -176,7 +176,7 @@ function setRole (muc, command, args, required_affiliations = [], required_roles
 }
 
 
-function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
+export function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
     const affiliation = COMMAND_TO_AFFILIATION[command];
     if (!affiliation) {
         throw Error(`verifyAffiliations called with invalid command: ${command}`);
@@ -239,7 +239,7 @@ export function showOccupantModal (ev, occupant) {
 }
 
 
-export function parseMessageForMUCCommands (data, handled) {
+export async function parseMessageForMUCCommands (data, handled) {
     const model = data.model;
     if (handled ||
             model.get('type') !== _converse.CHATROOMS_TYPE || (
@@ -257,7 +257,7 @@ export function parseMessageForMUCCommands (data, handled) {
     }
 
     const args = text.slice(('/' + command).length + 1).trim();
-    const allowed_commands = model.getAllowedCommands() ?? [];
+    const allowed_commands = await model.getAllowedCommands() ?? [];
 
     if (command === 'admin' && allowed_commands.includes(command)) {
         verifyAndSetAffiliation(model, command, args, ['owner']);
@@ -334,6 +334,12 @@ export function parseMessageForMUCCommands (data, handled) {
         return true;
     } else if (command === 'voice' && allowed_commands.includes(command)) {
         setRole(model, command, args, [], ['moderator']);
+        return true;
+    } else if ((command === 'ignore' || command === 'block') && allowed_commands.includes('block')) {
+        api.blockUser(args);
+        return true;
+    } else if ((command === 'unignore' || command === 'block') && allowed_commands.includes('unblock')) {
+        api.unblockUser(args);
         return true;
     } else {
         return false;

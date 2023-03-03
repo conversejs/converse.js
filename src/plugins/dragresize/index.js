@@ -67,26 +67,31 @@ converse.plugins.add('converse-dragresize', {
             document.removeEventListener('mouseup', onMouseUp);
         }
 
+        /**
+         * This function registers mousedown and mouseup events hadlers to 
+         * all iframes in the DOM when converse UI resizing events are called
+         * to prevent mouse drag stutter effect which is bad user experience.
+         * @function dragresizeOverIframeHandler
+         * @param {Object} e - dragging node element.
+         */
         function dragresizeOverIframeHandler (e) {
-            e.onmousedown = function () {
-                document.querySelector('iframe').style.pointerEvents  = 'none';
-            };
-            e.onmouseup = function () {
-                document.querySelector('iframe').style.pointerEvents  = 'initial';
-            };
+          const iframes = document.getElementsByTagName('iframe');
+          for (let iframe of iframes) {
+            e.addEventListener('mousedown', () => {
+                iframe.style.pointerEvents  = 'none';
+            }, { once: true });
+            
+            e.addEventListener('mouseup', () => {
+                iframe.style.pointerEvents  = 'initial';
+            }, { once: true });
+          }
         }
         
         api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
         api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
         api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
-        api.listen.on('startDiagonalResize', function (e) {
-            dragresizeOverIframeHandler(e);
-        });
-        api.listen.on('startHorizontalResize', function (e) {
-            dragresizeOverIframeHandler(e);
-        });
-        api.listen.on('startVerticalResize', function (e) {
-            dragresizeOverIframeHandler(e);
-        });
+        api.listen.on('startDiagonalResize', dragresizeOverIframeHandler);
+        api.listen.on('startHorizontalResize', dragresizeOverIframeHandler);
+        api.listen.on('startVerticalResize', dragresizeOverIframeHandler);
     }
 });

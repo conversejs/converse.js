@@ -7,6 +7,7 @@
 - Fix `autojoin` checkbox state in MUC bookmark form
 - Remove call to `api.confirm` in `@converse/headless`
 - Generate TypeScript declaration files into `dist/types`
+- #3156: Add function to prevent drag stutter effect over iframes when resize is called in overlay mode
 
 ## 10.1.2 (2023-02-17)
 

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 7.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2022-09-10 17:57+0000\n"
-"Last-Translator: Fotios Kolytoumpas <fotis.kolytoumpas@gmail.com>\n"
+"PO-Revision-Date: 2023-03-09 15:46+0000\n"
+"Last-Translator: Ze-oZ <zeoz_olikis@proton.me>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/conversejs/"
 "translations/el/>\n"
 "Language: el\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
@@ -627,13 +627,12 @@ msgstr ""
 "χρόνου. Μπορείτε να φορτώσετε ξανά τη σελίδα για να τα ζητήσετε ξανά."
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr "Παρουσιάστηκε σφάλμα κατά τη σύνδεση στον διακομιστή συνομιλίας."
+msgstr "Παρουσιάστηκε σφάλμα κατά την προσπάθεια λήψης της φόρμας εντολής"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Σημειώθηκε υπέρβαση χρόνου"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -701,11 +700,11 @@ msgstr "Εκτέλεση"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Προηγούμενο"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Επόμενο"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
@@ -1780,7 +1779,7 @@ msgstr "Πρόσκληση"
 
 #: dist/converse-no-dependencies.js:107759
 msgid "user@example.org"
-msgstr ""
+msgstr "user@example.org"
 
 #: dist/converse-no-dependencies.js:107762
 msgid "Optional reason for the invitation"

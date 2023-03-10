@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2022-05-11 02:17+0000\n"
-"Last-Translator: eapo <e@eaposztrof.com>\n"
+"PO-Revision-Date: 2023-03-11 19:38+0000\n"
+"Last-Translator: Zoltán Tóth <zombee@amigaspirit.hu>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
 "Language: hu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 "domain: converse\n"
 "lang: hu\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -601,7 +601,7 @@ msgstr "Sajnáljuk, hiba történt a beállítási űrlap elküldésekor."
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Időtúllépés történt"
 
 #: dist/converse-no-dependencies.js:59488
 #, fuzzy
@@ -668,15 +668,15 @@ msgstr "Végrehajtás"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Előző"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Következő"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "Kész"
 
 #: dist/converse-no-dependencies.js:74520
 #, fuzzy
@@ -966,7 +966,7 @@ msgstr "Végrehajtás"
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "Elkészült"
 
 #: dist/converse-no-dependencies.js:78155
 #, fuzzy
@@ -979,7 +979,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Hiba: Váratlan eredmény"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"
@@ -1141,7 +1141,7 @@ msgstr "Távoli kiszolgáló nem található"
 
 #: dist/converse-no-dependencies.js:88793
 msgid "Current version"
-msgstr ""
+msgstr "Jelenlegi verzió"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88954
@@ -1352,11 +1352,11 @@ msgstr "Kapcsolódás"
 
 #: dist/converse-no-dependencies.js:98349
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
-msgstr ""
+msgstr "Az XMPP szerver HTTP vagy websocket elérési útja"
 
 #: dist/converse-no-dependencies.js:98350
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "pl. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:98355
 msgid "Password"
@@ -1462,7 +1462,7 @@ msgstr "Ez a felhasználó NEM küldhet üzeneteket a konferenciában."
 
 #: dist/converse-no-dependencies.js:105029
 msgid "Admin"
-msgstr "Adminisztrátor"
+msgstr "Admin"
 
 #: dist/converse-no-dependencies.js:105030
 msgid "Member"
@@ -1571,7 +1571,7 @@ msgstr "Elnémított felhasználók is küldhetnek üzeneteket"
 
 #: dist/converse-no-dependencies.js:106095
 msgid "Loading configuration form"
-msgstr ""
+msgstr "Konfigurációs űrlap betöltése"
 
 #: dist/converse-no-dependencies.js:106663
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1940,9 +1940,8 @@ msgid "Change chat status"
 msgstr "Chat-állapot módosítása"
 
 #: dist/converse-no-dependencies.js:112735
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Saját profil"
+msgstr "A profilképed"
 
 #: dist/converse-no-dependencies.js:112873
 msgid "Save and close"
@@ -1965,23 +1964,20 @@ msgid "Profile"
 msgstr "Profil"
 
 #: dist/converse-no-dependencies.js:112878
-#, fuzzy
 msgid "Reset Password"
-msgstr "Jelszó"
+msgstr "Új jelszó"
 
 #: dist/converse-no-dependencies.js:112916
 msgid "The new passwords must match"
-msgstr ""
+msgstr "Az új jelszavak nem egyeznek"
 
 #: dist/converse-no-dependencies.js:112917
-#, fuzzy
 msgid "New password"
-msgstr "Nincs jelszó"
+msgstr "Új jelszó"
 
 #: dist/converse-no-dependencies.js:112918
-#, fuzzy
 msgid "Confirm new password"
-msgstr "Nincs jelszó"
+msgstr "Új jelszó megerősítése"
 
 #: dist/converse-no-dependencies.js:113440
 #, fuzzy
@@ -1995,7 +1991,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:113454
 msgid ""
 "Your server responded with an unknown error, check the console for details"
-msgstr ""
+msgstr "A szerver ismeretlen hibával válaszolt, részletekért nézd meg a konzolt"
 
 #: dist/converse-no-dependencies.js:113473
 #, fuzzy
@@ -2014,12 +2010,11 @@ msgstr "Nem hozhatsz létre új csevegőszobát."
 
 #: dist/converse-no-dependencies.js:113481
 msgid "Success"
-msgstr ""
+msgstr "Sikeres"
 
 #: dist/converse-no-dependencies.js:113481
-#, fuzzy
 msgid "Your new password has been set"
-msgstr "Létrejött egy új csevegőszoba"
+msgstr "Az új jelszó létrejött"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:114026
@@ -2139,6 +2134,7 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Hiba: nem lehet dekriptálni a titkosított fájlt, mert nem lehet letölteni"
 
 #: dist/converse-no-dependencies.js:115956
 #, fuzzy
@@ -2198,7 +2194,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:116737
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "OMEMO titkosítás nem támogatott"
 
 #: dist/converse-no-dependencies.js:116761
 msgid ""

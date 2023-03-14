@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 7.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2021-09-23 12:34+0000\n"
-"Last-Translator: Ali Frh <saintalifrh@disroot.org>\n"
+"PO-Revision-Date: 2023-03-14 18:11+0000\n"
+"Last-Translator: Sam Mendes <hessam199700@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/conversejs/"
 "translations/fa/>\n"
 "Language: fa\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
@@ -63,12 +63,12 @@ msgstr "%1$s رفت"
 #: dist/converse-no-dependencies.js:38597
 #: dist/converse-no-dependencies.js:47709
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "شما دسترسی حذف کردن پیام‌های خود را ندارید."
 
 #: dist/converse-no-dependencies.js:38599
 #: dist/converse-no-dependencies.js:47713
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr ""
+msgstr "متاسفانه خطایی هنگام حذف کردن پیام به وجود آمده است."
 
 #: dist/converse-no-dependencies.js:38604
 msgid "You're not allowed to send a message."

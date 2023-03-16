@@ -5,7 +5,7 @@ import { html } from "lit";
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 
-const tpl_navigation = (el) => {
+const tplNavigation = (el) => {
     const i18n_about = __('About');
     const i18n_commands = __('Commands');
     return html`
@@ -53,7 +53,7 @@ export default (el) => {
     const show_both_tabs = show_client_info && allow_adhoc_commands;
 
     return html`
-        ${ show_both_tabs ? tpl_navigation(el) : '' }
+        ${ show_both_tabs ? tplNavigation(el) : '' }
 
         <div class="tab-content">
             ${ show_client_info ? html`

@@ -1,5 +1,5 @@
 import { html } from "lit";
-import tpl_command_form from './ad-hoc-command-form.js';
+import tplCommandForm from './ad-hoc-command-form.js';
 
 export default (el, command) => html`
     <li class="room-item list-group-item">
@@ -12,6 +12,6 @@ export default (el, command) => html`
                title="${command.name}"
                href="#">${command.name || command.jid}</a>
         </div>
-        ${ command.node === el.showform ? tpl_command_form(el, command) : '' }
+        ${ command.node === el.showform ? tplCommandForm(el, command) : '' }
     </li>
 `;

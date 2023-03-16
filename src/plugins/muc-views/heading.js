@@ -1,7 +1,7 @@
 import './modals/muc-details.js';
 import './modals/muc-invite.js';
 import './modals/nickname.js';
-import tpl_muc_head from './templates/muc-head.js';
+import tplMUCHead from './templates/muc-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
@@ -31,7 +31,7 @@ export default class MUCHeading extends CustomElement {
     }
 
     render () {
-        return (this.model && this.user_settings) ? tpl_muc_head(this) : '';
+        return (this.model && this.user_settings) ? tplMUCHead(this) : '';
     }
 
     onOccupantAdded (occupant) {

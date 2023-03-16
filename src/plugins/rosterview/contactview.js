@@ -1,6 +1,6 @@
 import log from "@converse/headless/log.js";
-import tpl_requesting_contact from "./templates/requesting_contact.js";
-import tpl_roster_item from "./templates/roster_item.js";
+import tplRequestingContact from "./templates/requesting_contact.js";
+import tplRosterItem from "./templates/roster_item.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
@@ -24,7 +24,7 @@ export default class RosterContact extends CustomElement {
     render () {
         if (this.model.get('requesting') === true) {
             const display_name = this.model.getDisplayName();
-            return tpl_requesting_contact(
+            return tplRequestingContact(
                 Object.assign(this.model.toJSON(), {
                     display_name,
                     'openChat': ev => this.openChat(ev),
@@ -35,7 +35,7 @@ export default class RosterContact extends CustomElement {
                 })
             );
         } else {
-            return tpl_roster_item(this, this.model);
+            return tplRosterItem(this, this.model);
         }
     }
 

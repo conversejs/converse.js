@@ -1,11 +1,36 @@
 import i18n from './i18n.js';
 import log from '../log.js';
-import { CONNECTION_STATUS } from './constants';
+import pluggable from 'pluggable.js/src/pluggable.js';
+import { Events } from '@converse/skeletor/src/events.js';
 import { Router } from '@converse/skeletor/src/router.js';
-import { TimeoutError } from './errors.js';
 import { createStore, getDefaultStore } from '../utils/storage.js';
 import { getInitSettings } from './settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { shouldClearCache } from '../utils/core.js';
+
+import {
+    ACTIVE,
+    ANONYMOUS,
+    CHATROOMS_TYPE,
+    CLOSED,
+    COMPOSING,
+    CONTROLBOX_TYPE,
+    DEFAULT_IMAGE,
+    DEFAULT_IMAGE_TYPE,
+    EXTERNAL,
+    FAILURE,
+    GONE,
+    HEADLINES_TYPE,
+    INACTIVE,
+    LOGIN,
+    LOGOUT,
+    OPENED,
+    PAUSED,
+    PREBIND,
+    PRIVATE_CHAT_TYPE,
+    SUCCESS,
+    VERSION_NAME
+} from './constants';
 
 
 /**
@@ -16,66 +41,50 @@ import { getOpenPromise } from '@converse/openpromise';
  */
 const _converse = {
     log,
-    CONNECTION_STATUS,
+
+    shouldClearCache, // TODO: Should be moved to utils with next major release
+    VERSION_NAME,
+
     templates: {},
     promises: {
         'initialized': getOpenPromise()
     },
 
-    STATUS_WEIGHTS: {
-        'offline':      6,
-        'unavailable':  5,
-        'xa':           4,
-        'away':         3,
-        'dnd':          2,
-        'chat':         1, // We currently don't differentiate between "chat" and "online"
-        'online':       1
-    },
-    ANONYMOUS: 'anonymous',
-    CLOSED: 'closed',
-    EXTERNAL: 'external',
-    LOGIN: 'login',
-    LOGOUT: 'logout',
-    OPENED: 'opened',
-    PREBIND: 'prebind',
+    // TODO: remove constants in next major release
+    ANONYMOUS,
+    CLOSED,
+    EXTERNAL,
+    LOGIN,
+    LOGOUT,
+    OPENED,
+    PREBIND,
 
-    /**
-     * @constant
-     * @type { integer }
-     */
-    STANZA_TIMEOUT: 20000,
+    SUCCESS,
+    FAILURE,
 
-    SUCCESS: 'success',
-    FAILURE: 'failure',
+    DEFAULT_IMAGE_TYPE,
+    DEFAULT_IMAGE,
 
-    // Generated from css/images/user.svg
-    DEFAULT_IMAGE_TYPE: 'image/svg+xml',
-    DEFAULT_IMAGE: "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==",
+    INACTIVE,
+    ACTIVE,
+    COMPOSING,
+    PAUSED,
+    GONE,
 
+    PRIVATE_CHAT_TYPE,
+    CHATROOMS_TYPE,
+    HEADLINES_TYPE,
+    CONTROLBOX_TYPE,
+
+    // Set as module attr so that we can override in tests.
+    // TODO: replace with config settings
     TIMEOUTS: {
-        // Set as module attr so that we can override in tests.
         PAUSED: 10000,
         INACTIVE: 90000
     },
 
-    // XEP-0085 Chat states
-    // https://xmpp.org/extensions/xep-0085.html
-    INACTIVE: 'inactive',
-    ACTIVE: 'active',
-    COMPOSING: 'composing',
-    PAUSED: 'paused',
-    GONE: 'gone',
-
-    // Chat types
-    PRIVATE_CHAT_TYPE: 'chatbox',
-    CHATROOMS_TYPE: 'chatroom',
-    HEADLINES_TYPE: 'headline',
-    CONTROLBOX_TYPE: 'controlbox',
-
     default_connection_options: {'explicitResourceBinding': true},
     router: new Router(),
-
-    TimeoutError: TimeoutError,
 
     isTestEnv: () => {
         return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
@@ -111,5 +120,11 @@ const _converse = {
      */
     '___': str => str
 }
+
+// Make _converse an event emitter
+Object.assign(_converse, Events);
+
+// Make _converse pluggable
+pluggable.enable(_converse, '_converse', 'pluggable');
 
 export default _converse;

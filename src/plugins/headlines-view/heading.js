@@ -1,4 +1,4 @@
-import tpl_chat_head from './templates/chat-head.js';
+import tplChatHead from './templates/chat-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core.js";
@@ -19,7 +19,7 @@ export default class HeadlinesHeading extends CustomElement {
     }
 
     render () {
-        return tpl_chat_head({
+        return tplChatHead({
             ...this.model.toJSON(),
             ...{
                 'display_name': this.model.getDisplayName(),

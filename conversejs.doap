@@ -10,6 +10,9 @@
     <category rdf:resource="https://linkmauve.fr/ns/xmpp-doap#category-client"/>
     <programming-language>JavaScript</programming-language>
     <os>Browser</os>
+    <os>Linux</os>
+    <os>macOS</os>
+    <os>Windows</os>
     <schema:logo rdf:resource="https://raw.githubusercontent.com/conversejs/converse.js/master/logo/conversejs-filled.svg"/>
     <repository>
       <GitRepository>

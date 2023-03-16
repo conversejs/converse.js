@@ -5,15 +5,15 @@
  */
 import u from "./core";
 
-const tpl_xform_field = (name, value) => `<field var="${name}">${ value }</field>`;
+const tplXformField = (name, value) => `<field var="${name}">${ value }</field>`;
 
-const tpl_xform_value = (value) => `<value>${value}</value>`;
+const tplXformValue = (value) => `<value>${value}</value>`;
 
 /**
  * Takes an HTML DOM and turns it into an XForm field.
  * @private
  * @method u#webForm2xForm
- * @param { DOMElement } field - the field to convert
+ * @param { Element } field - the field to convert
  */
 export function webForm2xForm (field) {
     const name = field.getAttribute('name');
@@ -30,9 +30,9 @@ export function webForm2xForm (field) {
     } else {
         value = field.value;
     }
-    return u.toStanza(tpl_xform_field(
+    return u.toStanza(tplXformField(
         name,
-        Array.isArray(value) ? value.map(tpl_xform_value) : tpl_xform_value(value),
+        Array.isArray(value) ? value.map(tplXformValue) : tplXformValue(value),
     ));
 }
 

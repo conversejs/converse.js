@@ -32,6 +32,17 @@
             word-spacing: 5px;
         }
     }
+
+    @media screen and (max-width: $mobile-portrait-length) {
+        .converse-brand {
+            display: none;
+        }
+    }
+    @include media-breakpoint-down(sm) {
+        .converse-brand {
+            display: none;
+        }
+    }
 }
 
 .converse-fullscreen {
@@ -112,14 +123,6 @@
             svg {
                 margin-top: 0.3em;
             }
-        }
-    }
-}
-
-@include media-breakpoint-down(m) {
-    #conversejs-bg {
-        .converse-brand {
-            display: none;
         }
     }
 }

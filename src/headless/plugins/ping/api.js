@@ -10,7 +10,7 @@ export default {
      * @method api.ping
      * @param { String } [jid] - The JID of the service to ping
      *  If the ping is sent out to the user's bare JID and no response is received it will attempt to reconnect.
-     * @param { Integer } [timeout] - The amount of time in
+     * @param { number } [timeout] - The amount of time in
      *  milliseconds to wait for a response. The default is 10000;
      * @returns { Boolean | null }
      *  Whether the pinged entity responded with a non-error IQ stanza.

@@ -1,7 +1,7 @@
 /*global mock, converse */
 
-const { Promise, Strophe, $msg, $pres, sizzle,u } = converse.env;
-const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    const { Promise, Strophe, $msg, $pres, sizzle,u } = converse.env;
+    const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("A Groupchat Message", function () {
 
@@ -214,7 +214,6 @@ describe("A Groupchat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(3);
         await u.waitUntil(() => sizzle('.chat-msg', view).pop().classList.value.trim() === 'message chat-msg groupchat chat-msg--with-avatar moderator owner');
 
-        const add_events = view.model.occupants._events.add.length;
         msg = $msg({
             from: 'lounge@montague.lit/some1',
             id: u.getUniqueId(),
@@ -223,9 +222,9 @@ describe("A Groupchat Message", function () {
         }).c('body').t('Message from someone not in the MUC right now').tree();
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 4);
-        expect(view.model.messages.last().occupant).toBeUndefined();
-        // Check that there's a new "add" event handler, for when the occupant appears.
-        expect(view.model.occupants._events.add.length).toBe(add_events+1);
+
+        expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
+        expect(view.model.messages.last().occupant.get('jid')).toBe(undefined);
 
         // Check that the occupant gets added/removed to the message as it
         // gets removed or added.
@@ -239,8 +238,7 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.model.messages.last().occupant);
         expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
         expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
-        // Check that the "add" event handler was removed.
-        expect(view.model.occupants._events.add.length).toBe(add_events);
+        expect(view.model.messages.last().occupant.get('jid')).toBe('some1@montague.lit');
 
         presence = $pres({
                 to:'romeo@montague.lit/orchard',
@@ -253,8 +251,6 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => !view.model.messages.last().occupant);
         expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
         expect(view.model.messages.last().occupant).toBeUndefined();
-        // Check that there's a new "add" event handler, for when the occupant appears.
-        expect(view.model.occupants._events.add.length).toBe(add_events+1);
 
         presence = $pres({
                 to:'romeo@montague.lit/orchard',
@@ -266,8 +262,6 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.model.messages.last().occupant);
         expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
         expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
-        // Check that the "add" event handler was removed.
-        expect(view.model.occupants._events.add.length).toBe(add_events);
     }));
 
     it("will be shown as received upon MUC reflection",

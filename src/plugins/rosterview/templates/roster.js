@@ -1,4 +1,4 @@
-import tpl_group from "./group.js";
+import tplGroup from "./group.js";
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
@@ -50,7 +50,7 @@ export default (el) => {
             ${ repeat(groupnames, (n) => n, (name) => {
                 const contacts = contacts_map[name].filter(c => shouldShowContact(c, name));
                 contacts.sort(contactsComparator);
-                return contacts.length ? tpl_group({ contacts, name }) : '';
+                return contacts.length ? tplGroup({ contacts, name }) : '';
             }) }
         </div>
     `;

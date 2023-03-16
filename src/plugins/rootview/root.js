@@ -1,4 +1,4 @@
-import tpl_root from "./templates/root.js";
+import tplRoot from "./templates/root.js";
 import { api } from '@converse/headless/core';
 import { CustomElement } from 'shared/components/element.js';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
@@ -17,7 +17,7 @@ import './styles/root.scss';
 export default class ConverseRoot extends CustomElement {
 
     render () { // eslint-disable-line class-methods-use-this
-        return tpl_root();
+        return tplRoot();
     }
 
     initialize () {

@@ -28,7 +28,7 @@ export class StanzaParseError extends Error {
  * Extract the XEP-0359 stanza IDs from the passed in stanza
  * and return a map containing them.
  * @private
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @returns { Object }
  */
 export function getStanzaIDs (stanza, original_stanza) {
@@ -72,8 +72,8 @@ export function getEncryptionAttributes (stanza) {
 
 /**
  * @private
- * @param { XMLElement } stanza - The message stanza
- * @param { XMLElement } original_stanza - The original stanza, that contains the
+ * @param { Element } stanza - The message stanza
+ * @param { Element } original_stanza - The original stanza, that contains the
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns { Object }
  */
@@ -222,7 +222,7 @@ export function getOutOfBandAttributes (stanza) {
 /**
  * Returns the human readable error message contained in a `groupchat` message stanza of type `error`.
  * @private
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  */
 export function getErrorAttributes (stanza) {
     if (stanza.getAttribute('type') === 'error') {
@@ -240,7 +240,7 @@ export function getErrorAttributes (stanza) {
 
 /**
  * Given a message stanza, find and return any XEP-0372 references
- * @param { XMLElement } stana - The message stanza
+ * @param { Element } stana - The message stanza
  * @returns { Reference }
  */
 export function getReferences (stanza) {
@@ -279,7 +279,7 @@ export function getReceiptId (stanza) {
 /**
  * Determines whether the passed in stanza is a XEP-0280 Carbon
  * @private
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @returns { Boolean }
  */
 export function isCarbon (stanza) {
@@ -293,7 +293,7 @@ export function isCarbon (stanza) {
 /**
  * Returns the XEP-0085 chat state contained in a message stanza
  * @private
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  */
 export function getChatState (stanza) {
     return sizzle(
@@ -319,7 +319,7 @@ export function isValidReceiptRequest (stanza, attrs) {
 /**
  * Check whether the passed-in stanza is a forwarded message that is "bare",
  * i.e. it's not forwarded as part of a larger protocol, like MAM.
- * @param { XMLElement } stanza
+ * @param { Element } stanza
  */
 export function throwErrorIfInvalidForward (stanza) {
     const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
@@ -334,7 +334,7 @@ export function throwErrorIfInvalidForward (stanza) {
  * Determines whether the passed in stanza is a XEP-0333 Chat Marker
  * @private
  * @method getChatMarker
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @returns { Boolean }
  */
 export function getChatMarker (stanza) {
@@ -371,7 +371,7 @@ export function isServerMessage (stanza) {
  * Determines whether the passed in stanza is a XEP-0313 MAM stanza
  * @private
  * @method isArchived
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @returns { Boolean }
  */
 export function isArchived (original_stanza) {
@@ -382,7 +382,7 @@ export function isArchived (original_stanza) {
 /**
  * Returns an object containing all attribute names and values for a particular element.
  * @method getAttributes
- * @param { XMLElement } stanza
+ * @param { Element } stanza
  * @returns { Object }
  */
 export function getAttributes (stanza) {

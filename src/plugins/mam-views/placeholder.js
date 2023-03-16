@@ -1,5 +1,5 @@
 import { CustomElement } from 'shared/components/element.js';
-import tpl_placeholder from './templates/placeholder.js';
+import tplPlaceholder from './templates/placeholder.js';
 import { api } from "@converse/headless/core";
 import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils.js';
 
@@ -15,7 +15,7 @@ class Placeholder extends CustomElement {
     }
 
     render () {
-        return tpl_placeholder(this);
+        return tplPlaceholder(this);
     }
 
     async fetchMissingMessages (ev) {

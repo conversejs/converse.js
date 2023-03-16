@@ -1,4 +1,4 @@
-import tpl_muc_disconnect from './templates/muc-disconnect.js';
+import tplMUCDisconnect from './templates/muc-disconnect.js';
 import { CustomElement } from 'shared/components/element';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
@@ -31,7 +31,7 @@ class MUCDisconnected extends CustomElement {
         if (reason) {
             messages.push(__('The reason given is: "%1$s".', reason));
         }
-        return tpl_muc_disconnect(messages);
+        return tplMUCDisconnect(messages);
     }
 }
 

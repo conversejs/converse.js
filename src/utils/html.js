@@ -3,20 +3,19 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
  */
-import isFunction from 'lodash-es/isFunction';
 import log from '@converse/headless/log';
-import tpl_audio from 'templates/audio.js';
-import tpl_file from 'templates/file.js';
-import tpl_form_captcha from '../templates/form_captcha.js';
-import tpl_form_checkbox from '../templates/form_checkbox.js';
-import tpl_form_help from '../templates/form_help.js';
-import tpl_form_input from '../templates/form_input.js';
-import tpl_form_select from '../templates/form_select.js';
-import tpl_form_textarea from '../templates/form_textarea.js';
-import tpl_form_url from '../templates/form_url.js';
-import tpl_form_username from '../templates/form_username.js';
-import tpl_hyperlink from 'templates/hyperlink.js';
-import tpl_video from 'templates/video.js';
+import tplAudio from 'templates/audio.js';
+import tplFile from 'templates/file.js';
+import tplFormCaptcha from '../templates/form_captcha.js';
+import tplFormCheckbox from '../templates/form_checkbox.js';
+import tplFormHelp from '../templates/form_help.js';
+import tplFormInput from '../templates/form_input.js';
+import tplFormSelect from '../templates/form_select.js';
+import tplFormTextarea from '../templates/form_textarea.js';
+import tplFormUrl from '../templates/form_url.js';
+import tplFormUsername from '../templates/form_username.js';
+import tplHyperlink from 'templates/hyperlink.js';
+import tplVideo from 'templates/video.js';
 import u from '../headless/utils/core';
 import { converse } from '@converse/headless/core';
 import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
@@ -78,8 +77,8 @@ const serializer = new XMLSerializer();
 
 /**
  * Given two XML or HTML elements, determine if they're equal
- * @param { XMLElement | HTMLElement } actual
- * @param { XMLElement | HTMLElement } expected
+ * @param { Element } actual
+ * @param { Element } expected
  * @returns { Boolean }
  */
 function isEqualNode (actual, expected) {
@@ -176,7 +175,7 @@ export function getFileName (url) {
  * (such as a video, image or audio file).
  * @method u#getOOBURLMarkup
  * @param { String } url
- * @returns { String }
+ * @returns { TemplateResult }
  */
 export function getOOBURLMarkup (url) {
     const uri = getURI(url);
@@ -184,13 +183,13 @@ export function getOOBURLMarkup (url) {
         return url;
     }
     if (isVideoURL(uri)) {
-        return tpl_video(url);
+        return tplVideo(url);
     } else if (isAudioURL(uri)) {
-        return tpl_audio(url);
+        return tplAudio(url);
     } else if (isImageURL(uri)) {
-        return tpl_file(uri.toString(), getFileName(uri));
+        return tplFile(uri.toString(), getFileName(uri));
     } else {
-        return tpl_file(uri.toString(), getFileName(uri));
+        return tplFile(uri.toString(), getFileName(uri));
     }
 }
 
@@ -198,8 +197,8 @@ export function getOOBURLMarkup (url) {
  * Return the height of the passed in DOM element,
  * based on the heights of its children.
  * @method u#calculateElementHeight
- * @param {HTMLElement} el
- * @returns {integer}
+ * @param { HTMLElement } el
+ * @returns {number}
  */
 u.calculateElementHeight = function (el) {
     return Array.from(el.children).reduce((result, child) => result + child.offsetHeight, 0);
@@ -242,35 +241,40 @@ u.hasClass = function (className, el) {
 };
 
 u.toggleClass = function (className, el) {
-    u.hasClass(className, el) ? u.removeClass(className, el) : u.addClass(className, el);
+    u.hasClass(className, el) ? removeClass(className, el) : addClass(className, el);
 };
 
 /**
  * Add a class to an element.
  * @method u#addClass
- * @param {string} className
- * @param {Element} el
+ * @param { string } className
+ * @param { Element } el
  */
-u.addClass = function (className, el) {
+export function addClass (className, el) {
     el instanceof Element && el.classList.add(className);
     return el;
-};
+}
 
 /**
  * Remove a class from an element.
  * @method u#removeClass
- * @param {string} className
- * @param {Element} el
+ * @param { string } className
+ * @param { Element } el
  */
-u.removeClass = function (className, el) {
+export function removeClass (className, el) {
     el instanceof Element && el.classList.remove(className);
     return el;
-};
+}
 
-u.removeElement = function (el) {
+/**
+ * Remove an element from its parent
+ * @method u#removeElement
+ * @param { Element } el
+ */
+export function removeElement (el) {
     el instanceof Element && el.parentNode && el.parentNode.removeChild(el);
     return el;
-};
+}
 
 u.getElementFromTemplateResult = function (tr) {
     const div = document.createElement('div');
@@ -279,8 +283,8 @@ u.getElementFromTemplateResult = function (tr) {
 };
 
 u.showElement = el => {
-    u.removeClass('collapsed', el);
-    u.removeClass('hidden', el);
+    removeClass('collapsed', el);
+    removeClass('hidden', el);
 };
 
 u.hideElement = function (el) {
@@ -352,7 +356,7 @@ export function getHyperlinkTemplate (url) {
     const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
     const uri = getURI(url);
     if (uri !== null && isUrlValid(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
-        return tpl_hyperlink(uri, url);
+        return tplHyperlink(uri, url);
     }
     return url;
 }
@@ -386,7 +390,7 @@ export function slideOut (el, duration = 200) {
         const marker = el.getAttribute('data-slider-marker');
         if (marker) {
             el.removeAttribute('data-slider-marker');
-            window.cancelAnimationFrame(marker);
+            cancelAnimationFrame(marker);
         }
         const end_height = u.calculateElementHeight(el);
         if (window.converse_disable_effects) {
@@ -408,7 +412,7 @@ export function slideOut (el, duration = 200) {
             height += end_height / steps;
             if (height < end_height) {
                 el.style.height = height + 'px';
-                el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+                el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
             } else {
                 // We recalculate the height to work around an apparent
                 // browser bug where browsers don't know the correct
@@ -424,7 +428,7 @@ export function slideOut (el, duration = 200) {
         el.style.overflow = 'hidden';
         el.classList.remove('hidden');
         el.classList.remove('collapsed');
-        el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+        el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
     });
 }
 
@@ -451,7 +455,7 @@ export function slideIn (el, duration = 200) {
         const marker = el.getAttribute('data-slider-marker');
         if (marker) {
             el.removeAttribute('data-slider-marker');
-            window.cancelAnimationFrame(marker);
+            cancelAnimationFrame(marker);
         }
         const original_height = el.offsetHeight,
             steps = duration / 17; // We assume 17ms per animation which is ~60FPS
@@ -463,7 +467,7 @@ export function slideIn (el, duration = 200) {
             height -= original_height / steps;
             if (height > 0) {
                 el.style.height = height + 'px';
-                el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+                el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
             } else {
                 el.removeAttribute('data-slider-marker');
                 el.classList.add('collapsed');
@@ -471,15 +475,13 @@ export function slideIn (el, duration = 200) {
                 resolve(el);
             }
         }
-        el.setAttribute('data-slider-marker', window.requestAnimationFrame(draw));
+        el.setAttribute('data-slider-marker', requestAnimationFrame(draw).toString());
     });
 }
 
 function afterAnimationEnds (el, callback) {
     el.classList.remove('visible');
-    if (isFunction(callback)) {
-        callback();
-    }
+    callback?.();
 }
 
 u.isInDOM = function (el) {
@@ -520,8 +522,8 @@ u.fadeIn = function (el, callback) {
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
  * @method u#xForm2TemplateResult
- * @param { XMLElement } field - the field to convert
- * @param { XMLElement } stanza - the containing stanza
+ * @param { Element } field - the field to convert
+ * @param { Element } stanza - the containing stanza
  * @param { Object } options
  * @returns { TemplateResult }
  */
@@ -537,7 +539,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
                 'required': !!field.querySelector('required')
             };
         });
-        return tpl_form_select({
+        return tplFormSelect({
             options,
             'id': u.getUniqueId(),
             'label': field.getAttribute('label'),
@@ -547,9 +549,9 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         });
     } else if (field.getAttribute('type') === 'fixed') {
         const text = field.querySelector('value')?.textContent;
-        return tpl_form_help({ text });
+        return tplFormHelp({ text });
     } else if (field.getAttribute('type') === 'jid-multi') {
-        return tpl_form_textarea({
+        return tplFormTextarea({
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent,
@@ -557,19 +559,19 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         });
     } else if (field.getAttribute('type') === 'boolean') {
         const value = field.querySelector('value')?.textContent;
-        return tpl_form_checkbox({
+        return tplFormCheckbox({
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
             'checked': ((value === '1' || value === 'true') && 'checked="1"') || ''
         });
     } else if (field.getAttribute('var') === 'url') {
-        return tpl_form_url({
+        return tplFormUrl({
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent
         });
     } else if (field.getAttribute('var') === 'username') {
-        return tpl_form_username({
+        return tplFormUsername({
             'domain': ' @' + options.domain,
             'name': field.getAttribute('var'),
             'type': getInputType(field),
@@ -578,7 +580,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'password') {
-        return tpl_form_input({
+        return tplFormInput({
             'name': field.getAttribute('var'),
             'type': 'password',
             'label': field.getAttribute('label') || '',
@@ -589,7 +591,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         // Captcha
         const uri = field.querySelector('uri');
         const el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
-        return tpl_form_captcha({
+        return tplFormCaptcha({
             'label': field.getAttribute('label'),
             'name': field.getAttribute('var'),
             'data': el?.textContent,
@@ -598,7 +600,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
         });
     } else {
         const name = field.getAttribute('var');
-        return tpl_form_input({
+        return tplFormInput({
             'id': u.getUniqueId(),
             'label': field.getAttribute('label') || '',
             'name': name,
@@ -612,6 +614,15 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
     }
 };
 
-Object.assign(u, { getOOBURLMarkup, ancestor, slideIn, slideOut, isEqualNode });
+Object.assign(u, {
+    addClass,
+    ancestor,
+    getOOBURLMarkup,
+    isEqualNode,
+    removeClass,
+    removeElement,
+    slideIn,
+    slideOut,
+});
 
 export default u;

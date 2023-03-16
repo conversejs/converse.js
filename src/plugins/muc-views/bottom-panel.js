@@ -1,6 +1,6 @@
 import 'shared/autocomplete/index.js';
 import BottomPanel from 'plugins/chatview/bottom-panel.js';
-import tpl_muc_bottom_panel from './templates/muc-bottom-panel.js';
+import tplMUCBottomPanel from './templates/muc-bottom-panel.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { render } from 'lit';
 
@@ -27,7 +27,7 @@ export default class MUCBottomPanel extends BottomPanel {
     render () {
         const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
         const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
-        render(tpl_muc_bottom_panel({
+        render(tplMUCBottomPanel({
             can_edit, entered,
             'model': this.model,
             'is_groupchat': true,

@@ -68,9 +68,9 @@ export function onStartDiagonalResize (ev) {
  * Applies some resistance to `value` around the `default_value`.
  * If value is close enough to `default_value`, then it is returned, otherwise
  * `value` is returned.
- * @param { Integer } value
- * @param { Integer } default_value
- * @returns { Integer }
+ * @param { number } value
+ * @param { number } default_value
+ * @returns { number }
  */
 export function applyDragResistance (value, default_value) {
     if (value === undefined) {

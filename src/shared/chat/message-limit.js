@@ -1,4 +1,4 @@
-import tpl_message_limit from './templates/message-limit.js';
+import tplMessageLimit from './templates/message-limit.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless/core';
 
@@ -19,7 +19,7 @@ export default class MessageLimitIndicator extends CustomElement {
         const limit = api.settings.get('message_limit');
         if (!limit) return '';
         const chars = this.model.get('draft') || '';
-        return tpl_message_limit(limit - chars.length);
+        return tplMessageLimit(limit - chars.length);
     }
 }
 

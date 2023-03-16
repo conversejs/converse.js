@@ -1,27 +1,27 @@
-import tpl_registration_form from './registration_form.js';
-import tpl_spinner from 'templates/spinner.js';
+import tplRegistrationForm from './registration_form.js';
+import tplSpinner from 'templates/spinner.js';
+import tplSwitchForm from './switch_form.js';
 import { __ } from 'i18n';
 import { api } from '@converse/headless/core';
 import { html } from 'lit';
 
-const tpl_form_request = () => {
+const tplFormRequest = (el) => {
     const default_domain = api.settings.get('registration_domain');
-    const i18n_fetch_form = __("Hold tight, we're fetching the registration form…");
     const i18n_cancel = __('Cancel');
     return html`
-        <form id="converse-register" class="converse-form no-scrolling">
-            ${tpl_spinner({ 'classes': 'hor_centered' })}
-            <p class="info">${i18n_fetch_form}</p>
+        <form id="converse-register" class="converse-form no-scrolling" @submit=${ev => el.onFormSubmission(ev)}>
+            ${tplSpinner({ 'classes': 'hor_centered' })}
             ${default_domain
                 ? ''
                 : html`
-                      <button class="btn btn-secondary button-cancel hor_centered">${i18n_cancel}</button>
+                    <button class="btn btn-secondary button-cancel hor_centered"
+                            @click=${ev => el.renderProviderChoiceForm(ev)}>${i18n_cancel}</button>
                   `}
         </form>
     `;
 };
 
-const tpl_domain_input = () => {
+const tplDomainInput = () => {
     const domain_placeholder = api.settings.get('domain_placeholder');
     const i18n_providers = __('Tip: A list of public XMPP providers is available');
     const i18n_providers_link = __('here');
@@ -35,7 +35,7 @@ const tpl_domain_input = () => {
     `;
 };
 
-const tpl_fetch_form_buttons = () => {
+const tplFetchFormButtons = () => {
     const i18n_register = __('Fetch registration form');
     const i18n_existing_account = __('Already have a chat account?');
     const i18n_login = __('Log in here');
@@ -50,19 +50,21 @@ const tpl_fetch_form_buttons = () => {
     `;
 };
 
-const tpl_choose_provider = () => {
+const tplChooseProvider = (el) => {
     const default_domain = api.settings.get('registration_domain');
     const i18n_create_account = __('Create your account');
     const i18n_choose_provider = __('Please enter the XMPP provider to register with:');
+    const show_form_buttons = !default_domain && el.status === CHOOSE_PROVIDER;
+
     return html`
-        <form id="converse-register" class="converse-form">
+        <form id="converse-register" class="converse-form" @submit=${ev => el.onFormSubmission(ev)}>
             <legend class="col-form-label">${i18n_create_account}</legend>
             <div class="form-group">
                 <label>${i18n_choose_provider}</label>
-                <div class="form-errors hidden"></div>
-                ${default_domain ? default_domain : tpl_domain_input()}
+
+                ${default_domain ? default_domain : tplDomainInput()}
             </div>
-            ${default_domain ? '' : tpl_fetch_form_buttons()}
+            ${show_form_buttons ? tplFetchFormButtons() : ''}
         </form>
     `;
 };
@@ -70,12 +72,15 @@ const tpl_choose_provider = () => {
 const CHOOSE_PROVIDER = 0;
 const FETCHING_FORM = 1;
 const REGISTRATION_FORM = 2;
+const REGISTRATION_FORM_ERROR = 3;
 
-export default o => {
+export default (el) => {
     return html`
         <converse-brand-logo></converse-brand-logo>
-        ${o.model.get('registration_status') === CHOOSE_PROVIDER ? tpl_choose_provider() : ''}
-        ${o.model.get('registration_status') === FETCHING_FORM ? tpl_form_request() : ''}
-        ${o.model.get('registration_status') === REGISTRATION_FORM ? tpl_registration_form(o) : ''}
+        ${ el.alert_message ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>` : '' }
+        ${el.status === CHOOSE_PROVIDER ? tplChooseProvider(el) : ''}
+        ${el.status === FETCHING_FORM ? tplFormRequest(el) : ''}
+        ${el.status === REGISTRATION_FORM ? tplRegistrationForm(el) : ''}
+        ${el.status === REGISTRATION_FORM_ERROR ? tplSwitchForm() : '' }
     `;
 };

@@ -2,10 +2,10 @@
 import concat from 'lodash-es/concat';
 import difference from 'lodash-es/difference';
 import log from '@converse/headless/log';
-import tpl_audio from 'templates/audio.js';
-import tpl_file from 'templates/file.js';
-import tpl_image from 'templates/image.js';
-import tpl_video from 'templates/video.js';
+import tplAudio from 'templates/audio.js';
+import tplFile from 'templates/file.js';
+import tplImage from 'templates/image.js';
+import tplVideo from 'templates/video.js';
 import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
 import { MIMETYPES_MAP } from 'utils/file.js';
 import { __ } from 'i18n';
@@ -204,17 +204,17 @@ function getTemplateForObjectURL (uri, obj_url, richtext) {
 
     const file_url = uri.toString();
     if (isImageURL(file_url)) {
-        return tpl_image({
+        return tplImage({
             'src': obj_url,
             'onClick': richtext.onImgClick,
             'onLoad': richtext.onImgLoad
         });
     } else if (isAudioURL(file_url)) {
-        return tpl_audio(obj_url);
+        return tplAudio(obj_url);
     } else if (isVideoURL(file_url)) {
-        return tpl_video(obj_url);
+        return tplVideo(obj_url);
     } else {
-        return tpl_file(obj_url, uri.filename());
+        return tplFile(obj_url, uri.filename());
     }
 
 }
@@ -256,7 +256,7 @@ export function handleEncryptedFiles (richtext) {
  * Hook handler for { @link parseMessage } and { @link parseMUCMessage }, which
  * parses the passed in `message` stanza for OMEMO attributes and then sets
  * them on the attrs object.
- * @param { XMLElement } stanza - The message stanza
+ * @param { Element } stanza - The message stanza
  * @param { (MUCMessageAttributes|MessageAttributes) } attrs
  * @returns (MUCMessageAttributes|MessageAttributes)
  */
@@ -608,7 +608,7 @@ async function updateDevicesFromStanza (stanza) {
 export function registerPEPPushHandler () {
     // Add a handler for devices pushed from other connected clients
     _converse.connection.addHandler(
-        async message => {
+        async (message) => {
             try {
                 if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
                     await api.waitUntil('OMEMOInitialized');

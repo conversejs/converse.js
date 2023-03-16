@@ -1,6 +1,6 @@
 import log from '@converse/headless/log';
-import tpl_profile from './templates/profile.js';
-import tpl_spinner from "templates/spinner.js";
+import tplProfile from './templates/profile.js';
+import tplSpinner from "templates/spinner.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -28,7 +28,7 @@ export class Profile extends CustomElement {
     }
 
     render () {
-        return this.devicelist ? tpl_profile(this) : tpl_spinner();
+        return this.devicelist ? tplProfile(this) : tplSpinner();
     }
 
     selectAll (ev) {  // eslint-disable-line class-methods-use-this

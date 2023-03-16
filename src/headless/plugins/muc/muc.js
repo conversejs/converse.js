@@ -1,22 +1,22 @@
 import debounce from 'lodash-es/debounce';
-import invoke from 'lodash-es/invoke';
 import isElement from 'lodash-es/isElement';
 import log from '../../log';
 import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor/src/model.js';
+import { ROOMSTATUS } from './constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
+import { TimeoutError } from '../../shared/errors.js';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
-import { handleCorrection } from '../../shared/chat/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { handleCorrection } from '../../shared/chat/utils.js';
 import { initStorage } from '../../utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '../../shared/parsers.js';
 import { isUniView, getUniqueId, safeSave } from '../../utils/core.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import { ROOMSTATUS } from './constants.js';
 
 const { u } = converse.env;
 
@@ -131,24 +131,38 @@ const ChatRoomMixin = {
     },
 
     /**
+     * Checks whether this MUC qualifies for subscribing to XEP-0437 Room Activity Indicators (RAI)
+     * @method _converse.ChatRoom#isRAICandidate
+     * @returns { Boolean }
+     */
+    isRAICandidate () {
+        return this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none';
+    },
+
+    /**
      * Checks whether we're still joined and if so, restores the MUC state from cache.
      * @private
      * @method _converse.ChatRoom#restoreFromCache
      * @returns { Boolean } Returns `true` if we're still joined, otherwise returns `false`.
      */
     async restoreFromCache () {
-        if (this.isEntered() && (await this.isJoined())) {
-            // We've restored the room from cache and we're still joined.
-            await new Promise(r => this.features.fetch({ 'success': r, 'error': r }));
-            await new Promise(r => this.config.fetch({ 'success': r, 'error': r }));
+        if (this.isEntered()) {
             await this.fetchOccupants().catch(e => log.error(e));
-            await this.fetchMessages().catch(e => log.error(e));
-            return true;
-        } else {
-            this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
-            this.clearOccupantsCache();
-            return false;
+
+            if (this.isRAICandidate()) {
+                this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                this.enableRAI();
+                return true;
+            } else if (await this.isJoined()) {
+                await new Promise(r => this.config.fetch({ 'success': r, 'error': r }));
+                await new Promise(r => this.features.fetch({ 'success': r, 'error': r }));
+                await this.fetchMessages().catch(e => log.error(e));
+                return true;
+            }
         }
+        this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
+        this.clearOccupantsCache();
+        return false;
     },
 
     /**
@@ -212,7 +226,7 @@ const ChatRoomMixin = {
           * *Hook* which allows plugins to update an outgoing MUC join presence stanza
           * @event _converse#constructedMUCPresence
           * @param { _converse.ChatRoom } - The MUC from which this message stanza is being sent.
-          * @param { XMLElement } stanza - The stanza which will be sent out
+          * @param { Element } stanza - The stanza which will be sent out
           */
         stanza = await api.hook('constructedMUCPresence', this, stanza);
         return stanza;
@@ -277,10 +291,7 @@ const ChatRoomMixin = {
         const roomstatus = ROOMSTATUS;
         const conn_status = this.session.get('connection_status');
         if (this.get('hidden')) {
-            if (conn_status === roomstatus.ENTERED &&
-                    api.settings.get('muc_subscribe_to_rai') &&
-                    this.getOwnAffiliation() !== 'none') {
-
+            if (conn_status === roomstatus.ENTERED && this.isRAICandidate()) {
                 this.sendMarkerForLastMessage('received', true);
                 await this.leave();
                 this.enableRAI();
@@ -348,7 +359,7 @@ const ChatRoomMixin = {
 
     async onConnectionStatusChanged () {
         if (this.isEntered()) {
-            if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
+            if (this.isRAICandidate()) {
                 try {
                     await this.leave();
                 } catch (e) {
@@ -496,7 +507,7 @@ const ChatRoomMixin = {
      * Handles incoming message stanzas from the service that hosts this MUC
      * @private
      * @method _converse.ChatRoom#handleMessageFromMUCHost
-     * @param { XMLElement } stanza
+     * @param { Element } stanza
      */
     handleMessageFromMUCHost (stanza) {
         if (this.isEntered()) {
@@ -517,7 +528,7 @@ const ChatRoomMixin = {
      * Handles XEP-0452 MUC Mention Notification messages
      * @private
      * @method _converse.ChatRoom#handleForwardedMentions
-     * @param { XMLElement } stanza
+     * @param { Element } stanza
      */
     handleForwardedMentions (stanza) {
         if (this.isEntered()) {
@@ -547,7 +558,7 @@ const ChatRoomMixin = {
      * Parses an incoming message stanza and queues it for processing.
      * @private
      * @method _converse.ChatRoom#handleMessageStanza
-     * @param { XMLElement } stanza
+     * @param { Element } stanza
      */
     async handleMessageStanza (stanza) {
         stanza = stanza.tree?.() ?? stanza;
@@ -698,9 +709,9 @@ const ChatRoomMixin = {
      * or error message within a specific timeout period.
      * @private
      * @method _converse.ChatRoom#sendTimedMessage
-     * @param { _converse.Message|XMLElement } message
-     * @returns { Promise<XMLElement>|Promise<_converse.TimeoutError> } Returns a promise
-     *  which resolves with the reflected message stanza or with an error stanza or {@link _converse.TimeoutError}.
+     * @param { _converse.Message|Element } message
+     * @returns { Promise<Element>|Promise<TimeoutError> } Returns a promise
+     *  which resolves with the reflected message stanza or with an error stanza or {@link TimeoutError}.
      */
     sendTimedMessage (el) {
         if (typeof el.tree === 'function') {
@@ -713,9 +724,10 @@ const ChatRoomMixin = {
             el.setAttribute('id', id);
         }
         const promise = getOpenPromise();
-        const timeoutHandler = _converse.connection.addTimedHandler(_converse.STANZA_TIMEOUT, () => {
+        const timeout = api.settings.get('stanza_timeout');
+        const timeoutHandler = _converse.connection.addTimedHandler(timeout, () => {
             _converse.connection.deleteHandler(handler);
-            const err = new _converse.TimeoutError('Timeout Error: No response from server');
+            const err = new TimeoutError('Timeout Error: No response from server');
             promise.resolve(err);
             return false;
         });
@@ -765,7 +777,7 @@ const ChatRoomMixin = {
 
         if (u.isErrorStanza(result)) {
             log.error(result);
-        } else if (result instanceof _converse.TimeoutError) {
+        } else if (result instanceof TimeoutError) {
             log.error(result);
             message.save({
                 editable,
@@ -782,7 +794,7 @@ const ChatRoomMixin = {
      * Retract someone else's message in this groupchat.
      * @private
      * @method _converse.ChatRoom#retractOtherMessage
-     * @param { _converse.Message } message - The message which we're retracting.
+     * @param { _converse.ChatRoomMessage } message - The message which we're retracting.
      * @param { string } [reason] - The reason for retracting the message.
      * @example
      *  const room = await api.rooms.get(jid);
@@ -817,7 +829,7 @@ const ChatRoomMixin = {
      * Sends an IQ stanza to the XMPP server to retract a message in this groupchat.
      * @private
      * @method _converse.ChatRoom#sendRetractionIQ
-     * @param { _converse.Message } message - The message which we're retracting.
+     * @param { _converse.ChatRoomMessage } message - The message which we're retracting.
      * @param { string } [reason] - The reason for retracting the message.
      */
     sendRetractionIQ (message, reason) {
@@ -1232,7 +1244,7 @@ const ChatRoomMixin = {
      * 'roomconfig' data.
      * @private
      * @method _converse.ChatRoom#autoConfigureChatRoom
-     * @returns { Promise<XMLElement> }
+     * @returns { Promise<Element> }
      * Returns a promise which resolves once a response IQ has
      * been received.
      */
@@ -1251,7 +1263,7 @@ const ChatRoomMixin = {
      * has been received.
      * @private
      * @method _converse.ChatRoom#fetchRoomConfiguration
-     * @returns { Promise<XMLElement> }
+     * @returns { Promise<Element> }
      */
     fetchRoomConfiguration () {
         return api.sendIQ($iq({ 'to': this.get('jid'), 'type': 'get' }).c('query', { xmlns: Strophe.NS.MUC_OWNER }));
@@ -1262,7 +1274,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#sendConfiguration
      * @param { Array } config - The groupchat configuration
-     * @returns { Promise<XMLElement> } - A promise which resolves with
+     * @returns { Promise<Element> } - A promise which resolves with
      * the `result` stanza received from the XMPP server.
      */
     sendConfiguration (config = []) {
@@ -1704,7 +1716,7 @@ const ChatRoomMixin = {
      * Given a presence stanza, update the occupant model based on its contents.
      * @private
      * @method _converse.ChatRoom#updateOccupantsOnPresence
-     * @param { XMLElement } pres - The presence stanza
+     * @param { Element } pres - The presence stanza
      */
     updateOccupantsOnPresence (pres) {
         const data = parseMUCPresence(pres, this);
@@ -1891,7 +1903,7 @@ const ChatRoomMixin = {
      * the `from` attribute. Doesn't check the `type` attribute.
      * @private
      * @method _converse.ChatRoom#isOwnMessage
-     * @param { Object|XMLElement|_converse.Message } msg
+     * @param { Object|Element|_converse.Message } msg
      * @returns { boolean }
      */
     isOwnMessage (msg) {
@@ -1931,6 +1943,10 @@ const ChatRoomMixin = {
      * @returns {Promise<boolean>}
      */
     async isJoined () {
+        if (!this.isEntered()) {
+            log.info(`isJoined: not pinging MUC ${this.get('jid')} since we're not entered`);
+            return false;
+        }
         if (!api.connection.connected()) {
             await new Promise(resolve => api.listen.once('reconnected', resolve));
         }
@@ -1955,10 +1971,14 @@ const ChatRoomMixin = {
 
     /**
      * Check whether we're still joined and re-join if not
-     * @async
      * @method _converse.ChatRoom#rejoinIfNecessary
      */
     async rejoinIfNecessary () {
+        if (this.isRAICandidate()) {
+            log.debug(`rejoinIfNecessary: not rejoining hidden MUC "${this.get('jid')}" since we're using RAI`);
+            return true;
+        }
+
         if (!(await this.isJoined())) {
             this.rejoin();
             return true;
@@ -2131,7 +2151,7 @@ const ChatRoomMixin = {
     },
 
     /**
-     * @param {String} actor - The nickname of the actor that caused the notification
+     * @param { String } actor - The nickname of the actor that caused the notification
      * @param {String|Array<String>} states - The state or states representing the type of notificcation
      */
     removeNotification (actor, states) {
@@ -2155,8 +2175,8 @@ const ChatRoomMixin = {
      *
      * The state can be a XEP-0085 Chat State or a XEP-0045 join/leave
      * state.
-     * @param {String} actor - The nickname of the actor that causes the notification
-     * @param {String} state - The state representing the type of notificcation
+     * @param { String } actor - The nickname of the actor that causes the notification
+     * @param { String } state - The state representing the type of notificcation
      */
     updateNotifications (actor, state) {
         const actors_per_state = this.notifications.toJSON();
@@ -2204,7 +2224,7 @@ const ChatRoomMixin = {
     /**
      * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
      * messages for them.
-     * @param { XMLElement } stanza
+     * @param { Element } stanza
      */
     handleMEPNotification (attrs) {
         if (attrs.from !== this.get('jid') || !attrs.activities) {
@@ -2301,7 +2321,7 @@ const ChatRoomMixin = {
 
     /**
      * Handle a presence stanza that disconnects the user from the MUC
-     * @param { XMLElement } stanza
+     * @param { Element } stanza
      */
     handleDisconnection (stanza) {
         const is_self = stanza.querySelector("status[code='110']") !== null;
@@ -2323,7 +2343,7 @@ const ChatRoomMixin = {
         // each <x/> element pertains to a single user.
         const item = x.querySelector('item');
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
-        const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
+        const actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
         const message = _converse.muc.disconnect_messages[codes[0]];
         const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);
@@ -2436,7 +2456,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#createInfoMessage
      * @param { string } code - The MUC status code
-     * @param { XMLElement } stanza - The original stanza that contains the code
+     * @param { Element } stanza - The original stanza that contains the code
      * @param { Boolean } is_self - Whether this stanza refers to our own presence
      */
     createInfoMessage (code, stanza, is_self) {
@@ -2479,7 +2499,7 @@ const ChatRoomMixin = {
      * Create info messages based on a received presence or message stanza
      * @private
      * @method _converse.ChatRoom#createInfoMessages
-     * @param { XMLElement } stanza
+     * @param { Element } stanza
      */
     createInfoMessages (stanza) {
         const codes = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] status`, stanza).map(s => s.getAttribute('code'));
@@ -2498,7 +2518,7 @@ const ChatRoomMixin = {
      *  implied by) the server.
      * @param { String } reason - The reason provided for the disconnection
      * @param { String } actor - The person (if any) responsible for this disconnection
-     * @param { Integer } status - The status code (see `ROOMSTATUS`)
+     * @param { number } status - The status code (see `ROOMSTATUS`)
      */
     setDisconnectionState (message, reason, actor, status=ROOMSTATUS.DISCONNECTED) {
         this.session.save({
@@ -2535,7 +2555,7 @@ const ChatRoomMixin = {
      * `connection_status` value for this {@link _converse.ChatRoom} as
      * well as any additional output that can be shown to the user.
      * @private
-     * @param { XMLElement } stanza - The presence stanza
+     * @param { Element } stanza - The presence stanza
      */
     onErrorPresence (stanza) {
         const __ = _converse.__;
@@ -2600,7 +2620,7 @@ const ChatRoomMixin = {
      * Listens for incoming presence stanzas from the service that hosts this MUC
      * @private
      * @method _converse.ChatRoom#onPresenceFromMUCHost
-     * @param { XMLElement } stanza - The presence stanza
+     * @param { Element } stanza - The presence stanza
      */
     onPresenceFromMUCHost (stanza) {
         if (stanza.getAttribute('type') === 'error') {
@@ -2619,7 +2639,7 @@ const ChatRoomMixin = {
      * Handles incoming presence stanzas coming from the MUC
      * @private
      * @method _converse.ChatRoom#onPresence
-     * @param { XMLElement } stanza
+     * @param { Element } stanza
      */
     onPresence (stanza) {
         if (stanza.getAttribute('type') === 'error') {
@@ -2652,7 +2672,7 @@ const ChatRoomMixin = {
      * user is the groupchat's owner.
      * @private
      * @method _converse.ChatRoom#onOwnPresence
-     * @param { XMLElement } pres - The stanza
+     * @param { Element } pres - The stanza
      */
     async onOwnPresence (stanza) {
         await this.occupants.fetched;

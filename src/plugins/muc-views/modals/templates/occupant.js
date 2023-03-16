@@ -16,6 +16,9 @@ export default (el) => {
     const hats = el.model?.get('hats')?.length ? el.model.get('hats') : null;
     const muc = el.model.collection.chatroom;
 
+    const allowed_commands = muc.getAllowedCommands();
+    const may_moderate = allowed_commands.includes('modtools');
+
     const i18n_add_to_contacts = __('Add to Contacts');
 
     const can_see_real_jids = muc.features.get('nonanonymous') || muc.getOwnRole() === 'moderator';
@@ -43,10 +46,32 @@ export default (el) => {
                         ${ jid ? html`<div class="row"><strong>${__('XMPP Address')}:</strong></div><div class="row">${jid}</div>` : '' }
                     </li>
                     <li>
-                        ${ affiliation ? html`<div class="row"><strong>${__('Affiliation')}:</strong></div><div class="row">${affiliation}</div>` : '' }
+                        <div class="row"><strong>${__('Affiliation')}:</strong></div>
+                        <div class="row">${affiliation}&nbsp;
+                            ${ may_moderate ? html`
+                                <a href="#"
+                                data-form="affiliation-form"
+                                class="toggle-form right"
+                                color="var(--subdued-color)"
+                                @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+                                </a>
+                                ${ el.show_affiliation_form ? html`<converse-muc-affiliation-form jid=${jid} .muc=${muc} affiliation=${affiliation}></converse-muc-affiliation-form>` : '' }` : ''
+                            }
+                        </div>
                     </li>
                     <li>
-                        ${ role ? html`<div class="row"><strong>${__('Roles')}:</strong></div><div class="row">${role}</div>` : '' }
+                        <div class="row"><strong>${__('Role')}:</strong></div>
+                        <div class="row">${role}&nbsp;
+                            ${ may_moderate && role ? html`
+                                <a href="#"
+                                   data-form="row-form"
+                                   class="toggle-form right"
+                                   color="var(--subdued-color)"
+                                   @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
+                                </a>
+                                ${ el.show_role_form ? html`<converse-muc-role-form jid=${jid} .muc=${muc} role=${role}></converse-muc-role-form>` : '' }` : ''
+                            }
+                        </div>
                     </li>
                     <li>
                         ${ hats ? html`<div class="row"><strong>${__('Hats')}:</strong></div><div class="row">${hats}</div>` : '' }

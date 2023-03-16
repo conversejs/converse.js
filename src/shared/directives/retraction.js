@@ -3,7 +3,7 @@ import { directive, html } from "lit";
 
 
 const i18n_retract_message = __('Retract this message');
-const tpl_retract = (o) => html`
+const tplRetract = (o) => html`
     <button class="chat-msg__action chat-msg__action-retract" title="${i18n_retract_message}" @click=${o.onMessageRetractButtonClicked}>
         <converse-icon
             class="fas fa-trash-alt"
@@ -19,7 +19,7 @@ export const renderRetractionLink = directive(o => async part => {
     const retractable = !o.is_retracted && (o.model.mayBeRetracted() || may_be_moderated);
 
     if (retractable) {
-        part.setValue(tpl_retract(o));
+        part.setValue(tplRetract(o));
     } else {
         part.setValue('');
     }

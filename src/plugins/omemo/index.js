@@ -13,7 +13,8 @@ import Devices from './devices.js';
 import OMEMOStore from './store.js';
 import log from '@converse/headless/log';
 import omemo_api from './api.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless/core.js';
+import { shouldClearCache } from '@converse/headless/utils/core.js';
 import {
     createOMEMOMessageStanza,
     encryptFile,
@@ -109,7 +110,7 @@ converse.plugins.add('converse-omemo', {
 
         api.listen.on('clearSession', () => {
             delete _converse.omemo_store
-            if (_converse.shouldClearCache() && _converse.devicelists) {
+            if (shouldClearCache() && _converse.devicelists) {
                 _converse.devicelists.clearStore();
                 delete _converse.devicelists;
             }

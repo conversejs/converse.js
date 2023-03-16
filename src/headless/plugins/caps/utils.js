@@ -37,7 +37,7 @@ async function createCapsNode () {
 
 /**
  * Given a stanza, adds a XEP-0115 CAPS element
- * @param { XMLElement } stanza
+ * @param { Element } stanza
  */
 export async function addCapsNode (stanza) {
     const caps_el = await createCapsNode();

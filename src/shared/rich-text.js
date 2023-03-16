@@ -1,7 +1,7 @@
-import tpl_audio from 'templates/audio.js';
-import tpl_gif from 'templates/gif.js';
-import tpl_image from 'templates/image.js';
-import tpl_video from 'templates/video.js';
+import tplAudio from 'templates/audio.js';
+import tplGif from 'templates/gif.js';
+import tplImage from 'templates/image.js';
+import tplVideo from 'templates/video.js';
 import { api } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import { getEmojiMarkup } from './chat/utils.js';
@@ -31,8 +31,8 @@ const isString = s => typeof s === 'string';
 // the zero-width whitespace character
 const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${'\u200B'.repeat(m.length - 2)}\n`);
 
-const tpl_mention_with_nick = o => html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
-const tpl_mention = o => html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
+const tplMentionWithNick = o => html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
+const tplMention = o => html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
 
 /**
  * @class RichText
@@ -55,7 +55,7 @@ export class RichText extends String {
     /**
      * Create a new {@link RichText} instance.
      * @param { String } text - The text to be annotated
-     * @param { Integer } offset - The offset of this particular piece of text
+     * @param { number } offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
      *  RichText instances can be nested when templates call directives
      *  which create new RichText instances (as happens with XEP-393 styling directives).
@@ -118,7 +118,7 @@ export class RichText extends String {
     /**
      * Look for `http` URIs and return templates that render them as URL links
      * @param { String } text
-     * @param { Integer } local_offset - The index of the passed in text relative to
+     * @param { number } local_offset - The index of the passed in text relative to
      *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
@@ -132,9 +132,9 @@ export class RichText extends String {
             const filtered_url = filterQueryParamsFromURL(url_text);
             let template;
             if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
-                template = tpl_gif(filtered_url, this.hide_media_urls);
+                template = tplGif(filtered_url, this.hide_media_urls);
             } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
-                template = tpl_image({
+                template = tplImage({
                     'src': filtered_url,
                     // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
                     'href': this.hide_media_urls ? null : filtered_url,
@@ -142,9 +142,9 @@ export class RichText extends String {
                     'onLoad': this.onImgLoad
                 });
             } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, 'video')) {
-                template = tpl_video(filtered_url, this.hide_media_urls);
+                template = tplVideo(filtered_url, this.hide_media_urls);
             } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
-                template = tpl_audio(filtered_url, this.hide_media_urls);
+                template = tplAudio(filtered_url, this.hide_media_urls);
             } else {
                 template = getHyperlinkTemplate(filtered_url);
             }
@@ -155,7 +155,7 @@ export class RichText extends String {
     /**
      * Look for `geo` URIs and return templates that render them as URL links
      * @param { String } text
-     * @param { Integer } offset - The index of the passed in text relative to
+     * @param { number } offset - The index of the passed in text relative to
      *  the start of the message body text.
      */
     addMapURLs (text, offset) {
@@ -173,7 +173,7 @@ export class RichText extends String {
     /**
      * Look for emojis (shortnames or unicode) and add templates for rendering them.
      * @param { String } text
-     * @param { Integer } offset - The index of the passed in text relative to
+     * @param { number } offset - The index of the passed in text relative to
      *  the start of the message body text.
      */
     addEmojis (text, offset) {
@@ -187,7 +187,7 @@ export class RichText extends String {
      * Look for mentions included as XEP-0372 references and add templates for
      * rendering them.
      * @param { String } text
-     * @param { Integer } local_offset - The index of the passed in text relative to
+     * @param { number } local_offset - The index of the passed in text relative to
      *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
@@ -201,9 +201,9 @@ export class RichText extends String {
             const end = Number(ref.end) - full_offset;
             const mention = text.slice(begin, end);
             if (mention === this.nick) {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention_with_nick({...ref, mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tplMentionWithNick({...ref, mention }));
             } else {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tpl_mention({...ref, mention }));
+                this.addTemplateResult(begin + local_offset, end + local_offset, tplMention({...ref, mention }));
             }
         });
     }

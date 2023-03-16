@@ -1,5 +1,5 @@
 import MessageForm from 'plugins/chatview/message-form.js';
-import tpl_muc_message_form from './templates/message-form.js';
+import tplMUCMessageForm from './templates/message-form.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getAutoCompleteListItem } from './utils.js';
 
@@ -12,7 +12,7 @@ export default class MUCMessageForm extends MessageForm {
     }
 
     toHTML () {
-        return tpl_muc_message_form(
+        return tplMUCMessageForm(
             Object.assign(this.model.toJSON(), {
                 'hint_value': this.querySelector('.spoiler-hint')?.value,
                 'message_value': this.querySelector('.chat-textarea')?.value,

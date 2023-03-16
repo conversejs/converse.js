@@ -7,7 +7,7 @@ describe("Groupchats", function () {
     describe("An instant groupchat", function () {
 
         it("will be created when muc_instant_rooms is set to true",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                mock.initConverse(['chatBoxesFetched'], { vcard: { nickname: '' } }, async function (_converse) {
 
             let IQ_stanzas = _converse.connection.IQ_stanzas;
             const muc_jid = 'lounge@montague.lit';
@@ -110,10 +110,11 @@ describe("Groupchats", function () {
         it("Can be configured to show cached messages before being joined",
             mock.initConverse(['discoInitialized'],
                 {
-                    'muc_show_logs_before_join': true,
-                    'archived_messages_page_size': 2,
-                    'muc_nickname_from_jid': false,
-                    'muc_clear_messages_on_leave': false,
+                    muc_show_logs_before_join: true,
+                    archived_messages_page_size: 2,
+                    muc_nickname_from_jid: false,
+                    muc_clear_messages_on_leave: false,
+                    vcard: { nickname: '' },
                 }, async function (_converse) {
 
             const { api } = _converse;

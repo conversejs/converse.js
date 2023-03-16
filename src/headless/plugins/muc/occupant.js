@@ -10,9 +10,9 @@ class ChatRoomOccupant extends Model {
 
     defaults () { // eslint-disable-line class-methods-use-this
         return {
-            'hats': [],
-            'show': 'offline',
-            'states': []
+            hats: [],
+            show: 'offline',
+            states: []
         }
     }
 

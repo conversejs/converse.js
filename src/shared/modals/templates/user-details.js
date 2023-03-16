@@ -18,7 +18,7 @@ const remove_button = (el) => {
     `;
 }
 
-export const tpl_footer = (el) => {
+export const tplFooter = (el) => {
     const is_roster_contact = el.model.contact !== undefined;
     const i18n_refresh = __('Refresh');
     const allow_contact_removal = api.settings.get('allow_contact_removal');
@@ -38,7 +38,7 @@ export const tpl_footer = (el) => {
 }
 
 
-export const tpl_user_details_modal = (el) => {
+export const tplUserDetailsModal = (el) => {
     const vcard = el.model?.vcard;
     const vcard_json = vcard ? vcard.toJSON() : {};
     const o = { ...el.model.toJSON(), ...vcard_json };

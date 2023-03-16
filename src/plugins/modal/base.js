@@ -1,14 +1,14 @@
+import api from "@converse/headless/shared/api/index.js";
 import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
-import tpl_alert_component from "./templates/modal-alert.js";
+import sizzle from 'sizzle';
+import tplAlertComponent from "./templates/modal-alert.js";
 import { View } from '@converse/skeletor/src/view.js';
-import { api, converse } from "@converse/headless/core";
+import { addClass, removeElement } from '../../utils/html.js';
 import { render } from 'lit';
 
 import './styles/_modal.scss';
 
-const { sizzle } = converse.env;
-const u = converse.env.utils;
 
 
 const BaseModal = View.extend({
@@ -56,11 +56,11 @@ const BaseModal = View.extend({
         ev.stopPropagation();
         ev.preventDefault();
         sizzle('.nav-link.active', this.el).forEach(el => {
-            u.removeClass('active', this.el.querySelector(el.getAttribute('href')));
-            u.removeClass('active', el);
+            removeClass('active', this.el.querySelector(el.getAttribute('href')));
+            removeClass('active', el);
         });
-        u.addClass('active', ev.target);
-        u.addClass('active', this.el.querySelector(ev.target.getAttribute('href')))
+        addClass('active', ev.target);
+        addClass('active', this.el.querySelector(ev.target.getAttribute('href')))
     },
 
     alert (message, type='primary') {
@@ -71,11 +71,11 @@ const BaseModal = View.extend({
         }
         // FIXME: Instead of adding the alert imperatively, we should
         // find a way to let the modal rerender with an alert message
-        render(tpl_alert_component({'type': `alert-${type}`, 'message': message}), body);
+        render(tplAlertComponent({'type': `alert-${type}`, 'message': message}), body);
         const el = body.firstElementChild;
         setTimeout(() => {
-            u.addClass('fade-out', el);
-            setTimeout(() => u.removeElement(el), 600);
+            addClass('fade-out', el);
+            setTimeout(() => removeElement(el), 600);
         }, 5000);
     },
 
@@ -83,7 +83,7 @@ const BaseModal = View.extend({
         if (ev) {
             ev.preventDefault();
             this.trigger_el = ev.target;
-            !u.hasClass('chat-image', this.trigger_el) && u.addClass('selected', this.trigger_el);
+            !hasClass('chat-image', this.trigger_el) && addClass('selected', this.trigger_el);
         }
         this.modal.show();
     }

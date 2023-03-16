@@ -1,5 +1,5 @@
 import log from '@converse/headless/log';
-import tpl_password_reset from './templates/password-reset.js';
+import tplPasswordReset from './templates/password-reset.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
@@ -22,7 +22,7 @@ class PasswordReset extends CustomElement {
     }
 
     render () {
-        return tpl_password_reset(this);
+        return tplPasswordReset(this);
     }
 
     checkPasswordsMatch (ev) {

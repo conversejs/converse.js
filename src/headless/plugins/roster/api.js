@@ -55,8 +55,8 @@ export default {
          * Add a contact.
          *
          * @method _converse.api.contacts.add
-         * @param {string} jid The JID of the contact to be added
-         * @param {string} [name] A custom name to show the user by in the roster
+         * @param { string } jid The JID of the contact to be added
+         * @param { string } [name] A custom name to show the user by in the roster
          * @example
          *     _converse.api.contacts.add('buddy@example.com')
          * @example

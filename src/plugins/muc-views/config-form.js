@@ -1,5 +1,5 @@
 import log from "@converse/headless/log";
-import tpl_muc_config_form from "./templates/muc-config-form.js";
+import tplMUCConfigForm from "./templates/muc-config-form.js";
 import { CustomElement } from 'shared/components/element';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -25,7 +25,7 @@ class MUCConfigForm extends CustomElement {
     }
 
     render () {
-        return tpl_muc_config_form({
+        return tplMUCConfigForm({
             'model': this.model,
             'closeConfigForm': ev => this.closeForm(ev),
             'submitConfigForm': ev => this.submitConfigForm(ev),

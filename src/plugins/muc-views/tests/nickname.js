@@ -281,7 +281,7 @@ describe("A MUC", function () {
         }));
 
         it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false",
-                mock.initConverse([], {}, async function (_converse) {
+                mock.initConverse([], { vcard: { nickname: '' }}, async function (_converse) {
 
             const muc_jid = 'conflicted@muc.montague.lit';
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
@@ -322,7 +322,7 @@ describe("A MUC", function () {
 
 
         it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                mock.initConverse(['chatBoxesFetched'], {vcard: { nickname: '' }}, async function (_converse) {
 
             const { api } = _converse;
             const muc_jid = 'conflicting@muc.montague.lit'
@@ -417,7 +417,11 @@ describe("A MUC", function () {
         }));
 
         it("doesn't show the nickname field if locked_muc_nickname is true",
-                mock.initConverse(['chatBoxesFetched'], {'locked_muc_nickname': true, 'muc_nickname_from_jid': true}, async function (_converse) {
+            mock.initConverse(['chatBoxesFetched'], {
+                locked_muc_nickname: true,
+                muc_nickname_from_jid: true,
+                vcard: { nickname: '' },
+            }, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);

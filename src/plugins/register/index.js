@@ -9,6 +9,8 @@
 import './panel.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
+import { setActiveForm } from './utils.js';
+import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 
 // Strophe methods for building stanzas
 const { Strophe } = converse.env;
@@ -32,10 +34,12 @@ converse.plugins.add('converse-register', {
     },
 
     initialize () {
-        _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
-        _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
-        _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
-        _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
+        const { router } = _converse;
+
+        CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
+        CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
+        CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
+        CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
         api.settings.extend({
             'allow_registration': true,
@@ -44,17 +48,7 @@ converse.plugins.add('converse-register', {
             'registration_domain': ''
         });
 
-        async function setActiveForm (value) {
-            await api.waitUntil('controlBoxInitialized');
-            const controlbox = _converse.chatboxes.get('controlbox');
-            controlbox.set({ 'active-form': value });
-        }
-        _converse.router.route('converse/login', () => setActiveForm('login'));
-        _converse.router.route('converse/register', () => setActiveForm('register'));
-
-
-        api.listen.on('controlBoxInitialized', view => {
-            view.model.on('change:active-form', view.showLoginOrRegisterForm, view);
-        });
+        router.route('converse/login', () => setActiveForm('login'));
+        router.route('converse/register', () => setActiveForm('register'));
     }
 });

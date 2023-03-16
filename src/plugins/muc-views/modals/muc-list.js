@@ -1,9 +1,9 @@
 import BaseModal from "plugins/modal/modal.js";
 import head from "lodash-es/head";
 import log from "@converse/headless/log";
-import tpl_muc_description from "../templates/muc-description.js";
-import tpl_muc_list from "../templates/muc-list.js";
-import tpl_spinner from "templates/spinner.js";
+import tplMUCDescription from "../templates/muc-description.js";
+import tplMUCList from "../templates/muc-list.js";
+import tplSpinner from "templates/spinner.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getAttributes } from '@converse/headless/shared/parsers';
@@ -15,7 +15,7 @@ const u = converse.env.utils;
 /* Insert groupchat info (based on returned #disco IQ stanza)
  * @function insertRoomInfo
  * @param { HTMLElement } el - The HTML DOM element that contains the info.
- * @param { XMLElement } stanza - The IQ stanza containing the groupchat info.
+ * @param { Element } stanza - The IQ stanza containing the groupchat info.
  */
 function insertRoomInfo (el, stanza) {
     // All MUC features found here: https://xmpp.org/registrar/disco-features.html
@@ -23,7 +23,7 @@ function insertRoomInfo (el, stanza) {
     el.querySelector('a.room-info').classList.add('selected');
     el.insertAdjacentHTML(
         'beforeEnd',
-        u.getElementFromTemplateResult(tpl_muc_description({
+        u.getElementFromTemplateResult(tplMUCDescription({
             'jid': stanza.getAttribute('from'),
             'desc': head(sizzle('field[var="muc#roominfo_description"] value', stanza))?.textContent,
             'occ': head(sizzle('field[var="muc#roominfo_occupants"] value', stanza))?.textContent,
@@ -56,7 +56,7 @@ function toggleRoomInfo (ev) {
     } else {
         parent_el.insertAdjacentElement(
             'beforeend',
-            u.getElementFromTemplateResult(tpl_spinner())
+            u.getElementFromTemplateResult(tplSpinner())
         );
         api.disco.info(ev.target.getAttribute('data-room-jid'), null)
             .then(stanza => insertRoomInfo(parent_el, stanza))
@@ -84,7 +84,7 @@ export default class MUCListModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_muc_list(
+        return tplMUCList(
             Object.assign(this.model.toJSON(), {
                 'show_form': !api.settings.get('locked_muc_domain'),
                 'server_placeholder': this.model.get('muc_domain') || __('conference.example.org'),

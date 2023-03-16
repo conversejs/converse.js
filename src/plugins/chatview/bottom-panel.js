@@ -1,6 +1,6 @@
 import './message-form.js';
 import debounce from 'lodash-es/debounce';
-import tpl_bottom_panel from './templates/bottom-panel.js';
+import tplBottomPanel from './templates/bottom-panel.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api } from '@converse/headless/core';
 import { clearMessages } from './utils.js';
@@ -38,7 +38,7 @@ export default class ChatBottomPanel extends ElementView {
     }
 
     render () {
-        render(tpl_bottom_panel({
+        render(tplBottomPanel({
             'model': this.model,
             'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
         }), this);

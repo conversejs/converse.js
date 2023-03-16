@@ -1,6 +1,6 @@
 import debounce from "lodash-es/debounce";
-import tpl_bookmarks_list from './templates/list.js';
-import tpl_spinner from "templates/spinner.js";
+import tplBookmarksList from './templates/list.js';
+import tplSpinner from "templates/spinner.js";
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from '@converse/headless/core.js';
@@ -36,7 +36,7 @@ export default class BookmarksView extends CustomElement {
     }
 
     render () {
-        return _converse.bookmarks && this.model ? tpl_bookmarks_list(this) : tpl_spinner();
+        return _converse.bookmarks && this.model ? tplBookmarksList(this) : tplSpinner();
     }
 
     clearFilter (ev) {

@@ -21,6 +21,7 @@ const plugins = [
             {from: 'logo/conversejs-filled-192.svg', to: 'images/logo'},
             {from: 'logo/conversejs-filled-512.svg', to: 'images/logo'},
             {from: 'logo/conversejs-filled.svg', to: 'images/logo'},
+            {from: 'logo/conversejs-gold-gradient.svg', to: 'images/logo'},
             {from: 'src/shared/styles/webfonts', to: 'webfonts'}
         ]
     }),
@@ -50,10 +51,12 @@ module.exports = merge(common, {
                     options: {
                         url: false,
                         sourceMap: true
-
                     }
                 },
-                'postcss-loader',
+                {
+                    loader: "postcss-loader",
+                    options: { sourceMap: true }
+                },
                 {
                     loader: 'sass-loader',
                     options: {
@@ -65,7 +68,7 @@ module.exports = merge(common, {
                         },
                         sourceMap: true
                     }
-                }
+                },
             ]
         }]
     }

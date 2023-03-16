@@ -37,7 +37,7 @@ describe("The groupchat moderator tool", function () {
         await u.waitUntil(() => (view.model.occupants.length === 5), 1000);
 
         const modal = await openModtools(_converse, view);
-        let tab = modal.querySelector('#affiliations-tab');
+        const tab = modal.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
         tab.click();
@@ -70,10 +70,12 @@ describe("The groupchat moderator tool", function () {
         expect(user_els[1].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe('Affiliation: owner');
 
         const toggle = user_els[1].querySelector('.list-group-item:nth-child(3n) .toggle-form');
-        const form = user_els[1].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
-        expect(u.hasClass('hidden', form)).toBeTruthy();
+        const component = user_els[1].querySelector('.list-group-item:nth-child(3n) converse-muc-affiliation-form');
+        expect(u.hasClass('hidden', component)).toBeTruthy();
         toggle.click();
-        expect(u.hasClass('hidden', form)).toBeFalsy();
+        expect(u.hasClass('hidden', component)).toBeFalsy();
+
+        const form = user_els[1].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
         select = form.querySelector('.select-affiliation');
         expect(select.value).toBe('owner');
         select.value = 'admin';
@@ -372,10 +374,12 @@ describe("The groupchat moderator tool", function () {
 
         const user_els = modal.querySelectorAll('.list-group--users > li');
         const toggle = user_els[0].querySelector('.list-group-item:nth-child(3n) .toggle-form');
-        const form = user_els[0].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
-        expect(u.hasClass('hidden', form)).toBeTruthy();
+        const component = user_els[0].querySelector('.list-group-item:nth-child(3n) converse-muc-affiliation-form');
+        expect(u.hasClass('hidden', component)).toBeTruthy();
         toggle.click();
-        expect(u.hasClass('hidden', form)).toBeFalsy();
+        expect(u.hasClass('hidden', component)).toBeFalsy();
+
+        const form = user_els[0].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
         const change_affiliation_dropdown = form.querySelector('.select-affiliation');
         expect(change_affiliation_dropdown.value).toBe('member');
         change_affiliation_dropdown.value = 'admin';

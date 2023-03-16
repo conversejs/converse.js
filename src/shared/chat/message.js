@@ -5,14 +5,14 @@ import 'shared/modals/message-versions.js';
 import 'shared/modals/user-details.js';
 import 'shared/registry';
 import 'plugins/muc-views/modals/occupant.js';
-import tpl_file_progress from './templates/file-progress.js';
+import tplFileProgress from './templates/file-progress.js';
 import log from '@converse/headless/log';
-import tpl_info_message from './templates/info-message.js';
-import tpl_mep_message from 'plugins/muc-views/templates/mep-message.js';
-import tpl_message from './templates/message.js';
-import tpl_message_text from './templates/message-text.js';
-import tpl_retraction from './templates/retraction.js';
-import tpl_spinner from 'templates/spinner.js';
+import tplInfoMessage from './templates/info-message.js';
+import tplMepMessage from 'plugins/muc-views/templates/mep-message.js';
+import tplMessage from './templates/message.js';
+import tplMessageText from './templates/message-text.js';
+import tplRetraction from './templates/retraction.js';
+import tplSpinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
@@ -74,7 +74,7 @@ export default class Message extends CustomElement {
         if (!this.model) {
             return '';
         } else if (this.show_spinner) {
-            return tpl_spinner();
+            return tplSpinner();
         } else if (this.model.get('file') && this.model.get('upload') !== _converse.SUCCESS) {
             return this.renderFileProgress();
         } else if (['mep'].includes(this.model.get('type'))) {
@@ -94,19 +94,19 @@ export default class Message extends CustomElement {
     }
 
     renderRetraction () {
-        return tpl_retraction(this);
+        return tplRetraction(this);
     }
 
     renderMessageText () {
-        return tpl_message_text(this);
+        return tplMessageText(this);
     }
 
     renderMEPMessage () {
-        return tpl_mep_message(this);
+        return tplMepMessage(this);
     }
 
     renderInfoMessage () {
-        return tpl_info_message(this);
+        return tplInfoMessage(this);
     }
 
     renderFileProgress () {
@@ -114,11 +114,11 @@ export default class Message extends CustomElement {
             // Can happen when file upload failed and page was reloaded
             return '';
         }
-        return tpl_file_progress(this);
+        return tplFileProgress(this);
     }
 
     renderChatMessage () {
-        return tpl_message(this, this.getProps());
+        return tplMessage(this, this.getProps());
     }
 
     shouldShowAvatar () {
@@ -217,7 +217,7 @@ export default class Message extends CustomElement {
             api.modal.show('converse-profile-modal', {model: this.model}, ev);
         } else if (this.model.get('type') === 'groupchat') {
             ev.preventDefault();
-            api.modal.show('converse-muc-occupant-modal', { 'model': this.model.occupant, 'message': this.model }, ev);
+            api.modal.show('converse-muc-occupant-modal', { 'model': this.model.getOccupant(), 'message': this.model }, ev);
         } else {
             ev.preventDefault();
             const chatbox = this.model.collection.chatbox;

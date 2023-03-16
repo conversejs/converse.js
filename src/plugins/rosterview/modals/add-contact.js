@@ -1,13 +1,13 @@
 import 'shared/autocomplete/index.js';
 import BaseModal from "plugins/modal/modal.js";
+import api from '@converse/headless/shared/api';
 import compact from 'lodash-es/compact';
 import debounce from 'lodash-es/debounce';
-import tpl_add_contact_modal from "./templates/add-contact.js";
+import tplAddContactModal from "./templates/add-contact.js";
+import { Strophe } from 'strophe.js/src/core.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
-
-const { Strophe } = converse.env;
-const u = converse.env.utils;
+import { _converse } from "@converse/headless/core";
+import { addClass, removeClass } from 'utils/html.js';
 
 export default class AddContactModal extends BaseModal {
 
@@ -19,7 +19,7 @@ export default class AddContactModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_add_contact_modal(this);
+        return tplAddContactModal(this);
     }
 
     getModalTitle () { // eslint-disable-line class-methods-use-this
@@ -98,7 +98,7 @@ export default class AddContactModal extends BaseModal {
                 if (list.length !== 1) {
                     const el = this.querySelector('.invalid-feedback');
                     el.textContent = __('Sorry, could not find a contact with that name')
-                    u.addClass('d-block', el);
+                    addClass('d-block', el);
                     return;
                 }
                 const jid = list[0].value;
@@ -114,15 +114,15 @@ export default class AddContactModal extends BaseModal {
     validateSubmission (jid) {
         const el = this.querySelector('.invalid-feedback');
         if (!jid || compact(jid.split('@')).length < 2) {
-            u.addClass('is-invalid', this.querySelector('input[name="jid"]'));
-            u.addClass('d-block', el);
+            addClass('is-invalid', this.querySelector('input[name="jid"]'));
+            addClass('d-block', el);
             return false;
         } else if (_converse.roster.get(Strophe.getBareJidFromJid(jid))) {
             el.textContent = __('This contact has already been added')
-            u.addClass('d-block', el);
+            addClass('d-block', el);
             return false;
         }
-        u.removeClass('d-block', el);
+        removeClass('d-block', el);
         return true;
     }
 

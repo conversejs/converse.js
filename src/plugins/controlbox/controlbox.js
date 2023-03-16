@@ -1,6 +1,7 @@
-import tpl_controlbox from './templates/controlbox.js';
+import tplControlbox from './templates/controlbox.js';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from '@converse/headless/core.js';
+import { LOGOUT } from '@converse/headless/shared/constants.js';
 
 const u = converse.env.utils;
 
@@ -42,14 +43,14 @@ class ControlBox extends CustomElement {
     }
 
     render () {
-        return this.model ? tpl_controlbox(this) : '';
+        return this.model ? tplControlbox(this) : '';
     }
 
     close (ev) {
         ev?.preventDefault?.();
         if (
             ev?.name === 'closeAllChatBoxes' &&
-            (_converse.disconnection_cause !== _converse.LOGOUT ||
+            (_converse.disconnection_cause !== LOGOUT ||
                 api.settings.get('show_controlbox_by_default'))
         ) {
             return;

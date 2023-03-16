@@ -1,5 +1,5 @@
 import MinimizedChatsToggle from './toggle.js';
-import tpl_chats_panel from './templates/chats-panel.js';
+import tplChatsPanel from './templates/chats-panel.js';
 import { CustomElement } from 'shared/components/element';
 import { _converse, api } from '@converse/headless/core';
 import { initStorage } from '@converse/headless/utils/storage.js';
@@ -31,7 +31,7 @@ export default class MinimizedChats extends CustomElement {
         const collapsed = this.minchats.get('collapsed');
         const data = { chats, num_unread, num_minimized, collapsed };
         data.toggle = ev => this.toggle(ev);
-        return tpl_chats_panel(data);
+        return tplChatsPanel(data);
     }
 
     async initToggle () {

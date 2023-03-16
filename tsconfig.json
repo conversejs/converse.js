@@ -1,0 +1,31 @@
+{
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+      "src/**/tests/*",
+      "src/headless/dist/",
+      "src/website.js"
+  ],
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "esnext",
+
+    "allowJs": true,
+    "checkJs": true,
+
+    "rootDir": "./src",
+    "outDir": "./dist/types/",
+    "baseUrl": "./src/",
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "strict": false,
+    "noImplicitAny": false,
+
+    "skipLibCheck": true,
+
+    "moduleResolution": "node"
+  }
+}

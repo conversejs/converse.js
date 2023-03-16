@@ -4,9 +4,11 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../chatboxviews/index.js';
+import './affiliation-form.js';
+import './role-form.js';
 import MUCView from './muc.js';
 import { api, converse } from '@converse/headless/core.js';
-import { clearHistory, parseMessageForMUCCommands } from './utils.js';
+import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;
 
@@ -90,5 +92,6 @@ converse.plugins.add('converse-muc-views', {
         });
 
         api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
+        api.listen.on('confirmDirectMUCInvitation', confirmDirectMUCInvitation);
     }
 });

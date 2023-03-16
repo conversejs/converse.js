@@ -13,7 +13,7 @@ export default {
         /**
          * @method api.chats.create
          * @param {string|string[]} jid|jids An jid or array of jids
-         * @param {object} [attrs] An object containing configuration attributes.
+         * @param { object } [attrs] An object containing configuration attributes.
          */
         async create (jids, attrs) {
             if (typeof jids === 'string') {
@@ -44,9 +44,9 @@ export default {
          *
          * @method api.chats.open
          * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
-         * @param {Boolean} [attrs.minimized] - Should the chat be created in minimized state.
-         * @param {Boolean} [force=false] - By default, a minimized
+         * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
+         * @param { Boolean } [attrs.minimized] - Should the chat be created in minimized state.
+         * @param { Boolean } [force=false] - By default, a minimized
          *   chat won't be maximized (in `overlayed` view mode) and in
          *   `fullscreen` view mode a newly opened chat won't replace
          *   another chat already in the foreground.
@@ -102,8 +102,8 @@ export default {
          *
          * @method api.chats.get
          * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
-         * @param {Boolean} [create=false] - Whether the chat should be created if it's not found.
+         * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
+         * @param { Boolean } [create=false] - Whether the chat should be created if it's not found.
          * @returns { Promise<_converse.ChatBox> }
          *
          * @example

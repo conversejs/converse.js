@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 11:16+0100\n"
+"POT-Creation-Date: 2023-02-15 15:11+0100\n"
 "PO-Revision-Date: 2022-07-26 12:21+0000\n"
 "Last-Translator: Artem <artem@molotov.work>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
@@ -22,89 +22,89 @@ msgstr ""
 "domain: converse\n"
 "lang: uk\n"
 
-#: dist/converse-no-dependencies.js:29478
+#: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
 msgstr "З'єднання втрачено, спроба відновити зв'язок."
 
-#: dist/converse-no-dependencies.js:33029
-#: dist/converse-no-dependencies.js:33086
+#: dist/converse-no-dependencies.js:33446
+#: dist/converse-no-dependencies.js:33503
 msgid "An error occurred while connecting to the chat server."
 msgstr "Під час підключення до сервера чату сталася помилка."
 
-#: dist/converse-no-dependencies.js:33093
+#: dist/converse-no-dependencies.js:33510
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
 "Ваша XMPP-адреса та/або пароль неправильні. Будь ласка спробуйте ще раз."
 
-#: dist/converse-no-dependencies.js:33102
+#: dist/converse-no-dependencies.js:33519
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr "На жаль, не вдалося підключитися до хоста XMPP з доменом: %1$s"
 
-#: dist/converse-no-dependencies.js:33104
+#: dist/converse-no-dependencies.js:33521
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "Сервер XMPP не пропонує підтримуваний механізм автентифікації"
 
-#: dist/converse-no-dependencies.js:38520
-#: dist/converse-no-dependencies.js:49824
+#: dist/converse-no-dependencies.js:38521
+#: dist/converse-no-dependencies.js:49817
 #, javascript-format
 msgid "%1$s is typing"
 msgstr "%1$s друкує"
 
-#: dist/converse-no-dependencies.js:38522
-#: dist/converse-no-dependencies.js:49826
+#: dist/converse-no-dependencies.js:38523
+#: dist/converse-no-dependencies.js:49819
 #, fuzzy, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s припинив друкувати"
 
-#: dist/converse-no-dependencies.js:38524
-#: dist/converse-no-dependencies.js:38869
-#: dist/converse-no-dependencies.js:49828
+#: dist/converse-no-dependencies.js:38525
+#: dist/converse-no-dependencies.js:38870
+#: dist/converse-no-dependencies.js:49821
 #, fuzzy, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s пішов геть"
 
-#: dist/converse-no-dependencies.js:38596
-#: dist/converse-no-dependencies.js:47718
+#: dist/converse-no-dependencies.js:38597
+#: dist/converse-no-dependencies.js:47709
 msgid "You're not allowed to retract your message."
 msgstr "Вам не дозволено відкликати своє повідомлення."
 
-#: dist/converse-no-dependencies.js:38598
-#: dist/converse-no-dependencies.js:47722
+#: dist/converse-no-dependencies.js:38599
+#: dist/converse-no-dependencies.js:47713
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "На жаль, сталася помилка під час спроби відкликати ваше повідомлення."
 
-#: dist/converse-no-dependencies.js:38603
+#: dist/converse-no-dependencies.js:38604
 msgid "You're not allowed to send a message."
 msgstr "Вам не дозволяється надсилати повідомлення в цій кімнаті."
 
-#: dist/converse-no-dependencies.js:38605
-#: dist/converse-no-dependencies.js:47731
+#: dist/converse-no-dependencies.js:38606
+#: dist/converse-no-dependencies.js:47722
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr "Трапилася помилка при спробі вiдправити ваше повiдомлення."
 
-#: dist/converse-no-dependencies.js:38867
+#: dist/converse-no-dependencies.js:38868
 #, javascript-format
 msgid "%1$s has gone offline"
 msgstr "%1$s вiдключився"
 
-#: dist/converse-no-dependencies.js:38871
+#: dist/converse-no-dependencies.js:38872
 #, javascript-format
 msgid "%1$s is busy"
 msgstr "%1$s зайнятий"
 
-#: dist/converse-no-dependencies.js:38873
+#: dist/converse-no-dependencies.js:38874
 #, javascript-format
 msgid "%1$s is online"
 msgstr "%1$s на зв'язку"
 
-#: dist/converse-no-dependencies.js:39687
-#: dist/converse-no-dependencies.js:39706
+#: dist/converse-no-dependencies.js:39688
+#: dist/converse-no-dependencies.js:39707
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
 "На жаль, схоже, що завантаження файлів не підтримується вашим сервером."
 
-#: dist/converse-no-dependencies.js:39727
+#: dist/converse-no-dependencies.js:39728
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
@@ -113,19 +113,19 @@ msgstr ""
 "Розмір вашого файлу, %1$s, перевищує щонайбільш дозволений вашим сервером, "
 "який становить %2$s."
 
-#: dist/converse-no-dependencies.js:40374
+#: dist/converse-no-dependencies.js:40375
 msgid "Undecryptable OMEMO message"
 msgstr "Нешифроване повідомлення OMEMO"
 
-#: dist/converse-no-dependencies.js:40440
+#: dist/converse-no-dependencies.js:40441
 msgid "Sorry, could not determine upload URL."
 msgstr "На жаль, не вдалося визначити URL-адресу для завантаження."
 
-#: dist/converse-no-dependencies.js:40459
+#: dist/converse-no-dependencies.js:40460
 msgid "Sorry, could not determine file upload URL."
 msgstr "На жаль, не вдалося визначити URL-адресу для завантаження файлу."
 
-#: dist/converse-no-dependencies.js:40522
+#: dist/converse-no-dependencies.js:40523
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
@@ -133,61 +133,61 @@ msgid ""
 msgstr ""
 "На жаль, не вдалося завантажити файл. Відповідь вашого сервера: \"%1$s\""
 
-#: dist/converse-no-dependencies.js:40524
+#: dist/converse-no-dependencies.js:40525
 msgid "Sorry, could not succesfully upload your file."
 msgstr "На жаль, не вдалося завантажити файл."
 
-#: dist/converse-no-dependencies.js:44776
+#: dist/converse-no-dependencies.js:44779
 msgid "Smileys and emotions"
 msgstr "Усмішки та почуття"
 
-#: dist/converse-no-dependencies.js:44777
+#: dist/converse-no-dependencies.js:44780
 msgid "People"
 msgstr "Люди"
 
-#: dist/converse-no-dependencies.js:44778
+#: dist/converse-no-dependencies.js:44781
 msgid "Activities"
 msgstr "Діяльності"
 
-#: dist/converse-no-dependencies.js:44779
+#: dist/converse-no-dependencies.js:44782
 msgid "Travel"
 msgstr "Подорожі"
 
-#: dist/converse-no-dependencies.js:44780
+#: dist/converse-no-dependencies.js:44783
 msgid "Objects"
 msgstr "Речі"
 
-#: dist/converse-no-dependencies.js:44781
+#: dist/converse-no-dependencies.js:44784
 msgid "Animals and nature"
 msgstr "Тварини та природа"
 
-#: dist/converse-no-dependencies.js:44782
+#: dist/converse-no-dependencies.js:44785
 msgid "Food and drink"
 msgstr "Їжа та напої"
 
-#: dist/converse-no-dependencies.js:44783
+#: dist/converse-no-dependencies.js:44786
 msgid "Symbols"
 msgstr "Знаки"
 
-#: dist/converse-no-dependencies.js:44784
+#: dist/converse-no-dependencies.js:44787
 msgid "Flags"
 msgstr "Прапори"
 
-#: dist/converse-no-dependencies.js:44785
+#: dist/converse-no-dependencies.js:44788
 msgid "Stickers"
 msgstr "Наліпки"
 
-#: dist/converse-no-dependencies.js:46367
+#: dist/converse-no-dependencies.js:46358
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:46376
+#: dist/converse-no-dependencies.js:46367
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:47720
+#: dist/converse-no-dependencies.js:47711
 #, fuzzy
 msgid ""
 "Your retraction was not delivered because you're not present in the "
@@ -196,294 +196,294 @@ msgstr ""
 "Ваше повідомлення не було доставлено, оскільки ви не присутні в гуртовій "
 "бесіді."
 
-#: dist/converse-no-dependencies.js:47727
+#: dist/converse-no-dependencies.js:47718
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
 "Ваше повідомлення не було доставлено, оскільки вам не дозволили його "
 "надіслати."
 
-#: dist/converse-no-dependencies.js:47729
+#: dist/converse-no-dependencies.js:47720
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr ""
 "Ваше повідомлення не було доставлено, оскільки ви не присутні в гуртовій "
 "бесіді."
 
-#: dist/converse-no-dependencies.js:48044
+#: dist/converse-no-dependencies.js:48037
 msgid "A timeout happened while while trying to retract your message."
 msgstr "Трапилася помилка при спробі змiнити ваше повiдомлення."
 
-#: dist/converse-no-dependencies.js:48711
+#: dist/converse-no-dependencies.js:48704
 msgid "Sorry, an error happened while running the command."
 msgstr "Вибачте, потрапилась помилка коли виповнювалась комманда"
 
-#: dist/converse-no-dependencies.js:48711
-#: dist/converse-no-dependencies.js:106324
+#: dist/converse-no-dependencies.js:48704
+#: dist/converse-no-dependencies.js:106663
 msgid "Check your browser's developer console for details."
 msgstr "Вiдкрийте консоль розоробiтника в вашому браузерi для деталiв."
 
-#: dist/converse-no-dependencies.js:48730
-#: dist/converse-no-dependencies.js:48748
+#: dist/converse-no-dependencies.js:48723
+#: dist/converse-no-dependencies.js:48741
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr "Помилка: людини в гуртовому чатi з вашими аргументами не найдено"
 
-#: dist/converse-no-dependencies.js:48738
+#: dist/converse-no-dependencies.js:48731
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:48760
+#: dist/converse-no-dependencies.js:48753
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:48815
+#: dist/converse-no-dependencies.js:48808
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:48842
+#: dist/converse-no-dependencies.js:48835
 msgid "Forbidden: you do not have the necessary role in order to do that."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:48920
+#: dist/converse-no-dependencies.js:48913
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49193
+#: dist/converse-no-dependencies.js:49186
 #, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:49195
+#: dist/converse-no-dependencies.js:49188
 #, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:49231
+#: dist/converse-no-dependencies.js:49224
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49233
+#: dist/converse-no-dependencies.js:49226
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49475
+#: dist/converse-no-dependencies.js:49468
 #, fuzzy, javascript-format
 msgid "Topic set by %1$s"
 msgstr "Тема встановлена %1$s: %2$s"
 
-#: dist/converse-no-dependencies.js:49475
+#: dist/converse-no-dependencies.js:49468
 #, fuzzy, javascript-format
 msgid "Topic cleared by %1$s"
 msgstr "Тема встановлена %1$s: %2$s"
 
-#: dist/converse-no-dependencies.js:49830
+#: dist/converse-no-dependencies.js:49823
 #, fuzzy, javascript-format
 msgid "%1$s has entered the groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:49832
+#: dist/converse-no-dependencies.js:49825
 #, fuzzy, javascript-format
 msgid "%1$s has left the groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:49834
+#: dist/converse-no-dependencies.js:49827
 #, fuzzy, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "Цей користувач є модератором"
 
-#: dist/converse-no-dependencies.js:49836
+#: dist/converse-no-dependencies.js:49829
 #, fuzzy, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "Цей користувач є модератором"
 
-#: dist/converse-no-dependencies.js:49838
+#: dist/converse-no-dependencies.js:49831
 #, fuzzy, javascript-format
 msgid "%1$s has been given a voice"
 msgstr "%1$s було викинуто звідси"
 
-#: dist/converse-no-dependencies.js:49840
+#: dist/converse-no-dependencies.js:49833
 #, fuzzy, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s заблоковано"
 
-#: dist/converse-no-dependencies.js:49848
+#: dist/converse-no-dependencies.js:49841
 #, javascript-format
 msgid "%1$s and %2$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49851
+#: dist/converse-no-dependencies.js:49844
 #, fuzzy, javascript-format
 msgid "%1$s are typing"
 msgstr "друкує"
 
-#: dist/converse-no-dependencies.js:49853
+#: dist/converse-no-dependencies.js:49846
 #, fuzzy, javascript-format
 msgid "%1$s have stopped typing"
 msgstr "припинив друкувати"
 
-#: dist/converse-no-dependencies.js:49855
+#: dist/converse-no-dependencies.js:49848
 #, fuzzy, javascript-format
 msgid "%1$s have gone away"
 msgstr "пішов геть"
 
-#: dist/converse-no-dependencies.js:49857
+#: dist/converse-no-dependencies.js:49850
 #, fuzzy, javascript-format
 msgid "%1$s have entered the groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:49859
+#: dist/converse-no-dependencies.js:49852
 #, fuzzy, javascript-format
 msgid "%1$s have left the groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:49861
+#: dist/converse-no-dependencies.js:49854
 #, fuzzy, javascript-format
 msgid "%1$s are now moderators"
 msgstr "Цей користувач є модератором"
 
-#: dist/converse-no-dependencies.js:49863
+#: dist/converse-no-dependencies.js:49856
 #, fuzzy, javascript-format
 msgid "%1$s are no longer moderators"
 msgstr "Цей користувач є модератором"
 
-#: dist/converse-no-dependencies.js:49865
+#: dist/converse-no-dependencies.js:49858
 #, fuzzy, javascript-format
 msgid "%1$s have been given voices"
 msgstr "%1$s було викинуто звідси"
 
-#: dist/converse-no-dependencies.js:49867
+#: dist/converse-no-dependencies.js:49860
 #, fuzzy, javascript-format
 msgid "%1$s have been muted"
 msgstr "%1$s заблоковано"
 
-#: dist/converse-no-dependencies.js:50166
+#: dist/converse-no-dependencies.js:50159
 #, fuzzy, javascript-format
 msgid "%1$s has been banned by %2$s"
 msgstr "%1$s заблоковано"
 
-#: dist/converse-no-dependencies.js:50166
+#: dist/converse-no-dependencies.js:50159
 #, fuzzy, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s заблоковано"
 
-#: dist/converse-no-dependencies.js:50168
+#: dist/converse-no-dependencies.js:50161
 #, fuzzy, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "Прізвисько %1$s змінено"
 
-#: dist/converse-no-dependencies.js:50170
+#: dist/converse-no-dependencies.js:50163
 #, fuzzy, javascript-format
 msgid "%1$s has been kicked out by %2$s"
 msgstr "%1$s було викинуто звідси"
 
-#: dist/converse-no-dependencies.js:50170
+#: dist/converse-no-dependencies.js:50163
 #, fuzzy, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s було викинуто звідси"
 
-#: dist/converse-no-dependencies.js:50172
+#: dist/converse-no-dependencies.js:50165
 #, fuzzy, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s було видалено через зміни власності кімнати"
 
-#: dist/converse-no-dependencies.js:50174
+#: dist/converse-no-dependencies.js:50167
 #, fuzzy, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s було виделано через відсутність членства"
 
-#: dist/converse-no-dependencies.js:50192
+#: dist/converse-no-dependencies.js:50185
 #, fuzzy, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:50197
+#: dist/converse-no-dependencies.js:50190
 #, fuzzy, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "Передати у власність цю кімнату"
 
-#: dist/converse-no-dependencies.js:50202
+#: dist/converse-no-dependencies.js:50195
 #, fuzzy, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "Вам заблокували доступ до цієї кімнати"
 
-#: dist/converse-no-dependencies.js:50208
+#: dist/converse-no-dependencies.js:50201
 #, fuzzy, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
 msgstr "Передати у власність цю кімнату"
 
-#: dist/converse-no-dependencies.js:50214
+#: dist/converse-no-dependencies.js:50207
 #, fuzzy, javascript-format
 msgid "%1$s is now a member of this groupchat"
 msgstr "Ви не є у списку членів цієї кімнати"
 
-#: dist/converse-no-dependencies.js:50220
+#: dist/converse-no-dependencies.js:50213
 #, fuzzy, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:50342
+#: dist/converse-no-dependencies.js:50335
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:50367
+#: dist/converse-no-dependencies.js:50360
 #, fuzzy
 msgid "Password incorrect"
 msgstr "Пароль:"
 
-#: dist/converse-no-dependencies.js:50374
+#: dist/converse-no-dependencies.js:50367
 #, fuzzy
 msgid "You are not on the member list of this groupchat."
 msgstr "Ви не є у списку членів цієї кімнати"
 
-#: dist/converse-no-dependencies.js:50381
+#: dist/converse-no-dependencies.js:50374
 #, fuzzy
 msgid "You are not allowed to create new groupchats."
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:50384
+#: dist/converse-no-dependencies.js:50377
 #, fuzzy
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Ваше прізвисько не відповідає політиці кімнати"
 
-#: dist/converse-no-dependencies.js:50399
+#: dist/converse-no-dependencies.js:50392
 #, fuzzy
 msgid "This groupchat does not (yet) exist."
 msgstr "Такої кімнати (поки) не існує"
 
-#: dist/converse-no-dependencies.js:50402
+#: dist/converse-no-dependencies.js:50395
 #, fuzzy
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "Ця кімната досягнула максимуму учасників"
 
-#: dist/converse-no-dependencies.js:50405
+#: dist/converse-no-dependencies.js:50398
 msgid "Remote server not found"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:50408
+#: dist/converse-no-dependencies.js:50401
 #, fuzzy
 msgid "You're not allowed to enter this groupchat"
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:50411
+#: dist/converse-no-dependencies.js:50404
 #, fuzzy
 msgid "An error happened while trying to enter this groupchat"
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:51356
+#: dist/converse-no-dependencies.js:51349
 #, fuzzy, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s запрошує вас приєднатись до чату: %2$s"
 
-#: dist/converse-no-dependencies.js:51363
+#: dist/converse-no-dependencies.js:51356
 #, fuzzy, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
@@ -491,76 +491,76 @@ msgid ""
 msgstr ""
 "%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \"%3$s\""
 
-#: dist/converse-no-dependencies.js:53003
+#: dist/converse-no-dependencies.js:52996
 msgid "This groupchat is not anonymous"
 msgstr "Ця бесіда не таємна"
 
-#: dist/converse-no-dependencies.js:53004
+#: dist/converse-no-dependencies.js:52997
 msgid "This groupchat now shows unavailable members"
 msgstr "Тепер бесіда показує недоступних членів"
 
-#: dist/converse-no-dependencies.js:53005
+#: dist/converse-no-dependencies.js:52998
 msgid "This groupchat does not show unavailable members"
 msgstr "Ця кімната не показує недоступних членів"
 
-#: dist/converse-no-dependencies.js:53006
+#: dist/converse-no-dependencies.js:52999
 msgid "The groupchat configuration has changed"
 msgstr "Змінено конфігурацію кімнати"
 
-#: dist/converse-no-dependencies.js:53007
+#: dist/converse-no-dependencies.js:53000
 msgid "Groupchat logging is now enabled"
 msgstr "Часопис кімнати тепер увімкнено"
 
-#: dist/converse-no-dependencies.js:53008
+#: dist/converse-no-dependencies.js:53001
 msgid "Groupchat logging is now disabled"
 msgstr "Часопис кімнати тепер вимкнено"
 
-#: dist/converse-no-dependencies.js:53009
+#: dist/converse-no-dependencies.js:53002
 msgid "This groupchat is now no longer anonymous"
 msgstr "Ця кімната тепер не таємна"
 
-#: dist/converse-no-dependencies.js:53010
+#: dist/converse-no-dependencies.js:53003
 msgid "This groupchat is now semi-anonymous"
 msgstr "Ця кімната тепер напівтаємна"
 
-#: dist/converse-no-dependencies.js:53011
+#: dist/converse-no-dependencies.js:53004
 msgid "This groupchat is now fully-anonymous"
 msgstr "Ця кімната тепер повністю таємна"
 
-#: dist/converse-no-dependencies.js:53012
+#: dist/converse-no-dependencies.js:53005
 msgid "A new groupchat has been created"
 msgstr "Створено нову кімнату"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:53016
+#: dist/converse-no-dependencies.js:53009
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "Ваше прізвисько було самочинно змінене на: %1$s"
 
-#: dist/converse-no-dependencies.js:53017
+#: dist/converse-no-dependencies.js:53010
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Ваше прізвисько було змінене на: %1$s"
 
-#: dist/converse-no-dependencies.js:53020
+#: dist/converse-no-dependencies.js:53013
 msgid "You have been banned from this groupchat"
 msgstr "Вам заблокували доступ до цієї кімнати"
 
-#: dist/converse-no-dependencies.js:53021
+#: dist/converse-no-dependencies.js:53014
 #, fuzzy
 msgid "You have exited this groupchat due to a technical problem"
 msgstr "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
 
-#: dist/converse-no-dependencies.js:53022
+#: dist/converse-no-dependencies.js:53015
 msgid "You have been kicked from this groupchat"
 msgstr "Вас викинули з цієї кімнати"
 
-#: dist/converse-no-dependencies.js:53023
+#: dist/converse-no-dependencies.js:53016
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
 
-#: dist/converse-no-dependencies.js:53024
+#: dist/converse-no-dependencies.js:53017
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
@@ -568,231 +568,249 @@ msgstr ""
 "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним "
 "не є її членом"
 
-#: dist/converse-no-dependencies.js:53025
+#: dist/converse-no-dependencies.js:53018
 #, fuzzy
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."
 
-#: dist/converse-no-dependencies.js:53563
-#: dist/converse-no-dependencies.js:80333
-#: dist/converse-no-dependencies.js:80337
-#: dist/converse-no-dependencies.js:80424
-#: dist/converse-no-dependencies.js:88816
-#: dist/converse-no-dependencies.js:95790
-#: dist/converse-no-dependencies.js:106325
-#: dist/converse-no-dependencies.js:115170
-#: dist/converse-no-dependencies.js:115172
-#: dist/converse-no-dependencies.js:116381
-#: dist/converse-no-dependencies.js:117772
-#: dist/converse-no-dependencies.js:127075
+#: dist/converse-no-dependencies.js:53556
+#: dist/converse-no-dependencies.js:81413
+#: dist/converse-no-dependencies.js:81417
+#: dist/converse-no-dependencies.js:81504
+#: dist/converse-no-dependencies.js:89155
+#: dist/converse-no-dependencies.js:96129
+#: dist/converse-no-dependencies.js:106664
+#: dist/converse-no-dependencies.js:115509
+#: dist/converse-no-dependencies.js:115511
+#: dist/converse-no-dependencies.js:116720
+#: dist/converse-no-dependencies.js:118111
+#: dist/converse-no-dependencies.js:127433
 msgid "Error"
 msgstr "Помилка"
 
-#: dist/converse-no-dependencies.js:53563
+#: dist/converse-no-dependencies.js:53556
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53618
+#: dist/converse-no-dependencies.js:53611
 msgid "Timeout Error"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53618
+#: dist/converse-no-dependencies.js:53611
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:58897
+#: dist/converse-no-dependencies.js:57007
+#, fuzzy
+msgid "An error occurred while trying to fetch the command form"
+msgstr "Трапилася помилка при спробі зберегти форму."
+
+#: dist/converse-no-dependencies.js:57049
+msgid "A timeout occurred"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:59488
 #, fuzzy
 msgid "Timeout while trying to fetch archived messages."
 msgstr "Трапилася помилка при спробі зберегти форму."
 
-#: dist/converse-no-dependencies.js:58910
+#: dist/converse-no-dependencies.js:59501
 #, fuzzy
 msgid "An error occurred while querying for archived messages."
 msgstr "Трапилася помилка при спробі зберегти форму."
 
-#: dist/converse-no-dependencies.js:63778
+#: dist/converse-no-dependencies.js:64369
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:64025
+#: dist/converse-no-dependencies.js:64616
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:64691
+#: dist/converse-no-dependencies.js:65282
 msgid "My contacts"
 msgstr "Мої контакти"
 
-#: dist/converse-no-dependencies.js:64692
+#: dist/converse-no-dependencies.js:65283
 msgid "Pending contacts"
 msgstr "Контакти в очікуванні"
 
-#: dist/converse-no-dependencies.js:64693
+#: dist/converse-no-dependencies.js:65284
 msgid "Contact requests"
 msgstr "Запити контакту"
 
-#: dist/converse-no-dependencies.js:64694
+#: dist/converse-no-dependencies.js:65285
 msgid "Ungrouped"
 msgstr "Негруповані"
 
-#: dist/converse-no-dependencies.js:64695
-#: dist/converse-no-dependencies.js:90033
+#: dist/converse-no-dependencies.js:65286
+#: dist/converse-no-dependencies.js:90372
 #, fuzzy
 msgid "New messages"
 msgstr "Видалити повідомлення"
 
-#: dist/converse-no-dependencies.js:67873
-#: dist/converse-no-dependencies.js:67874
-#: dist/converse-no-dependencies.js:94534
-#: dist/converse-no-dependencies.js:100862
+#: dist/converse-no-dependencies.js:68464
+#: dist/converse-no-dependencies.js:68465
+#: dist/converse-no-dependencies.js:94873
+#: dist/converse-no-dependencies.js:101201
 msgid "Close"
 msgstr "Закрити"
 
-#: dist/converse-no-dependencies.js:69054
+#: dist/converse-no-dependencies.js:69645
 msgid "OK"
 msgstr "ОК"
 
-#: dist/converse-no-dependencies.js:69054
-#: dist/converse-no-dependencies.js:105759
-#: dist/converse-no-dependencies.js:121796
+#. harmony default export
+#: dist/converse-no-dependencies.js:69645
+#: dist/converse-no-dependencies.js:71872
+#: dist/converse-no-dependencies.js:106098
+#: dist/converse-no-dependencies.js:122135
 msgid "Cancel"
 msgstr "Скасувати"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:71275
-msgid "Hide"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:71276
+#: dist/converse-no-dependencies.js:71866
 msgid "Execute"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:73916
+#: dist/converse-no-dependencies.js:71867
+msgid "Previous"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:71868
+msgid "Next"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:71869
+msgid "Complete"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:74520
 #, fuzzy
 msgid "Add to Contacts"
 msgstr "Додати контакт"
 
-#: dist/converse-no-dependencies.js:73926
-#: dist/converse-no-dependencies.js:88719
-#: dist/converse-no-dependencies.js:103753
-#: dist/converse-no-dependencies.js:108714
-#: dist/converse-no-dependencies.js:112532
-#: dist/converse-no-dependencies.js:123475
+#: dist/converse-no-dependencies.js:74530
+#: dist/converse-no-dependencies.js:89058
+#: dist/converse-no-dependencies.js:104092
+#: dist/converse-no-dependencies.js:109053
+#: dist/converse-no-dependencies.js:112871
+#: dist/converse-no-dependencies.js:123855
 msgid "Nickname"
 msgstr "Прізвисько"
 
-#: dist/converse-no-dependencies.js:73926
-#: dist/converse-no-dependencies.js:76018
-#: dist/converse-no-dependencies.js:88716
-#: dist/converse-no-dependencies.js:98031
-#: dist/converse-no-dependencies.js:107422
-#: dist/converse-no-dependencies.js:112531
-#: dist/converse-no-dependencies.js:125383
+#: dist/converse-no-dependencies.js:74530
+#: dist/converse-no-dependencies.js:76622
+#: dist/converse-no-dependencies.js:89055
+#: dist/converse-no-dependencies.js:98370
+#: dist/converse-no-dependencies.js:107761
+#: dist/converse-no-dependencies.js:112870
+#: dist/converse-no-dependencies.js:125741
 msgid "XMPP Address"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:73926
-#: dist/converse-no-dependencies.js:74210
+#: dist/converse-no-dependencies.js:74530
+#: dist/converse-no-dependencies.js:74814
 msgid "Affiliation"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:73926
+#: dist/converse-no-dependencies.js:74530
 #, fuzzy
 msgid "Roles"
 msgstr "Роля:"
 
-#: dist/converse-no-dependencies.js:73926
+#: dist/converse-no-dependencies.js:74530
 msgid "Hats"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:73926
+#: dist/converse-no-dependencies.js:74530
 msgid "Occupant Id"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74156
+#: dist/converse-no-dependencies.js:74760
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74158
+#: dist/converse-no-dependencies.js:74762
 msgid "The default role, implies that you can read and write messages."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74160
+#: dist/converse-no-dependencies.js:74764
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74165
+#: dist/converse-no-dependencies.js:74769
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74167
+#: dist/converse-no-dependencies.js:74771
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74169
+#: dist/converse-no-dependencies.js:74773
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74179
+#: dist/converse-no-dependencies.js:74783
 msgid "Change role"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74180
+#: dist/converse-no-dependencies.js:74784
 msgid "New Role"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74181
-#: dist/converse-no-dependencies.js:74195
-#: dist/converse-no-dependencies.js:75681
+#: dist/converse-no-dependencies.js:74785
+#: dist/converse-no-dependencies.js:74799
+#: dist/converse-no-dependencies.js:76285
 msgid "Reason"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74193
+#: dist/converse-no-dependencies.js:74797
 #, fuzzy
 msgid "Change affiliation"
 msgstr "Призначити користувача адміністратором"
 
-#: dist/converse-no-dependencies.js:74194
+#: dist/converse-no-dependencies.js:74798
 msgid "New affiliation"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74211
+#: dist/converse-no-dependencies.js:74815
 msgid "No users with that affiliation found."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74212
+#: dist/converse-no-dependencies.js:74816
 #, fuzzy
 msgid "No users with that role found."
 msgstr "Жодного користувача не знайдено"
 
-#: dist/converse-no-dependencies.js:74213
+#: dist/converse-no-dependencies.js:74817
 msgid "Type here to filter the search results"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74214
-#: dist/converse-no-dependencies.js:88721
-#: dist/converse-no-dependencies.js:112533
+#: dist/converse-no-dependencies.js:74818
+#: dist/converse-no-dependencies.js:89060
+#: dist/converse-no-dependencies.js:112872
 msgid "Role"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74215
+#: dist/converse-no-dependencies.js:74819
 #, fuzzy
 msgid "Show users"
 msgstr "Показати кімнати"
 
-#: dist/converse-no-dependencies.js:74216
+#: dist/converse-no-dependencies.js:74820
 msgid ""
 "Roles are assigned to users to grant or deny them certain abilities in a "
 "multi-user chat. They're assigned either explicitly or implicitly as part of "
@@ -800,254 +818,279 @@ msgid ""
 "the duration of the user's session."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74217
+#: dist/converse-no-dependencies.js:74821
 msgid ""
 "An affiliation is a long-lived entitlement which typically implies a certain "
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74992
+#: dist/converse-no-dependencies.js:75596
 #, fuzzy
 msgid "Timeout error while trying to set the affiliation"
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:74994
+#: dist/converse-no-dependencies.js:75598
 #, fuzzy
 msgid "Sorry, you're not allowed to make that change"
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:74996
+#: dist/converse-no-dependencies.js:75600
 #, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:75006
+#: dist/converse-no-dependencies.js:75610
 msgid "Affiliation changed"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:75031
+#: dist/converse-no-dependencies.js:75635
 #, fuzzy
 msgid "Role changed"
 msgstr "Включити чат"
 
-#: dist/converse-no-dependencies.js:75036
+#: dist/converse-no-dependencies.js:75640
 #, fuzzy
 msgid "You're not allowed to make that change"
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:75038
+#: dist/converse-no-dependencies.js:75642
 #, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
 msgstr "Клацніть, щоб видалити цей контакт"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:75245
+#: dist/converse-no-dependencies.js:75849
 #, fuzzy
 msgid "Moderator Tools"
 msgstr "Модерована"
 
-#: dist/converse-no-dependencies.js:75671
+#: dist/converse-no-dependencies.js:76275
 #, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
 msgstr "Ви впевнені, що хочете залишити кімнату \"%1$s\"?"
 
-#: dist/converse-no-dependencies.js:75674
+#: dist/converse-no-dependencies.js:76278
 #, fuzzy
 msgid "Please enter the XMPP address of this groupchat to confirm"
 msgstr "Введіть постачальника XMPP, щоб зареєструватися:"
 
-#: dist/converse-no-dependencies.js:75676
-#: dist/converse-no-dependencies.js:125379
+#: dist/converse-no-dependencies.js:76280
+#: dist/converse-no-dependencies.js:125737
 msgid "name@example.org"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:75680
+#: dist/converse-no-dependencies.js:76284
 #, fuzzy
 msgid "Optional reason for destroying this groupchat"
 msgstr "Ви впевнені, що хочете залишити кімнату \"%1$s\"?"
 
-#: dist/converse-no-dependencies.js:75684
+#: dist/converse-no-dependencies.js:76288
 msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:75685
+#: dist/converse-no-dependencies.js:76289
 msgid "replacement@example.org"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:75689
-#: dist/converse-no-dependencies.js:80294
-#: dist/converse-no-dependencies.js:80370
-#: dist/converse-no-dependencies.js:80398
-#: dist/converse-no-dependencies.js:108791
+#: dist/converse-no-dependencies.js:76293
+#: dist/converse-no-dependencies.js:81374
+#: dist/converse-no-dependencies.js:81450
+#: dist/converse-no-dependencies.js:81478
+#: dist/converse-no-dependencies.js:109130
 msgid "Confirm"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:75847
+#: dist/converse-no-dependencies.js:76451
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
 msgstr ""
 
 #. e.g. Your nickname is "coolguy69"
-#: dist/converse-no-dependencies.js:75953
+#: dist/converse-no-dependencies.js:76557
 #, fuzzy, javascript-format
 msgid "Your nickname is \"%1$s\""
 msgstr "Ваше прізвисько було змінене на: %1$s"
 
-#: dist/converse-no-dependencies.js:75971
+#: dist/converse-no-dependencies.js:76575
 msgid "Error: invalid number of arguments"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:76014
+#: dist/converse-no-dependencies.js:76618
 msgid "On which entity do you want to run commands?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:76015
+#: dist/converse-no-dependencies.js:76619
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:76016
+#: dist/converse-no-dependencies.js:76620
 #, fuzzy
 msgid "Commands found"
 msgstr "Кімнати на %1$s"
 
-#: dist/converse-no-dependencies.js:76017
+#: dist/converse-no-dependencies.js:76621
 msgid "List available commands"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:76019
+#: dist/converse-no-dependencies.js:76623
 #, fuzzy
 msgid "No commands found"
 msgstr "Кімнати на %1$s"
 
-#: dist/converse-no-dependencies.js:76964
+#. harmony default export
+#: dist/converse-no-dependencies.js:76659
+#, javascript-format
+msgid "Download file \"%1$s\""
+msgstr ""
+
+#: dist/converse-no-dependencies.js:77982
 #, fuzzy
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr "Трапилася помилка при спробі зберегти форму."
 
-#: dist/converse-no-dependencies.js:76973
+#: dist/converse-no-dependencies.js:77991
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:77073
+#: dist/converse-no-dependencies.js:78098
 #, fuzzy
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
 msgstr "Трапилася помилка при спробі зберегти форму."
 
-#: dist/converse-no-dependencies.js:77560
-#: dist/converse-no-dependencies.js:124234
+#: dist/converse-no-dependencies.js:78102
+msgid "Executing"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:78109
+#: dist/converse-no-dependencies.js:78114
+msgid "Completed"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:78155
+#, fuzzy
+msgid ""
+"An error occurred while trying to cancel the command. See the developer "
+"console for details"
+msgstr "Трапилася помилка при спробі зберегти форму."
+
+#: dist/converse-no-dependencies.js:78162
+msgid "Error: unexpected result"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:78640
 #, fuzzy
 msgid "Bookmark this groupchat"
 msgstr "Додати цю кімнату в закладки"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:77561
-#: dist/converse-no-dependencies.js:78757
+#: dist/converse-no-dependencies.js:78641
+#: dist/converse-no-dependencies.js:79837
+#: dist/converse-no-dependencies.js:124621
 #, fuzzy
 msgid "Bookmark"
 msgstr "Закладки"
 
-#: dist/converse-no-dependencies.js:77593
+#: dist/converse-no-dependencies.js:78673
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Ви впевнені, що хочете видалити закладку \"%1$s\"?"
 
-#: dist/converse-no-dependencies.js:77643
-#: dist/converse-no-dependencies.js:124235
+#: dist/converse-no-dependencies.js:78723
 #, fuzzy
 msgid "Unbookmark this groupchat"
 msgstr "Видалити цю кімнату з закладок"
 
-#: dist/converse-no-dependencies.js:77644
-#: dist/converse-no-dependencies.js:123848
-#: dist/converse-no-dependencies.js:124251
+#: dist/converse-no-dependencies.js:78724
+#: dist/converse-no-dependencies.js:124228
+#: dist/converse-no-dependencies.js:124635
 #, fuzzy
 msgid "Click to open this groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:77668
-#: dist/converse-no-dependencies.js:127171
+#: dist/converse-no-dependencies.js:78748
+#: dist/converse-no-dependencies.js:127529
 msgid "Filter"
 msgstr ""
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:78395
+#: dist/converse-no-dependencies.js:79475
 msgid "Bookmarks"
 msgstr "Закладки"
 
-#: dist/converse-no-dependencies.js:78420
+#: dist/converse-no-dependencies.js:79500
 #, fuzzy, javascript-format
 msgid "Bookmark for \"%1$s\""
 msgstr "Закладки"
 
-#: dist/converse-no-dependencies.js:78421
+#: dist/converse-no-dependencies.js:79501
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:78422
+#: dist/converse-no-dependencies.js:79502
 msgid "Remove"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:78423
+#: dist/converse-no-dependencies.js:79503
 msgid "The name for this bookmark:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:78424
+#: dist/converse-no-dependencies.js:79504
 msgid "What should your nickname for this groupchat be?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:78425
+#: dist/converse-no-dependencies.js:79505
 msgid "Update"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:78425
-#: dist/converse-no-dependencies.js:105758
-#: dist/converse-no-dependencies.js:112059
+#: dist/converse-no-dependencies.js:79505
+#: dist/converse-no-dependencies.js:106097
+#: dist/converse-no-dependencies.js:112398
 msgid "Save"
 msgstr "Зберегти"
 
-#: dist/converse-no-dependencies.js:80248
+#: dist/converse-no-dependencies.js:81328
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80288
-#: dist/converse-no-dependencies.js:80360
+#: dist/converse-no-dependencies.js:81368
+#: dist/converse-no-dependencies.js:81440
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80289
-#: dist/converse-no-dependencies.js:80365
-#: dist/converse-no-dependencies.js:80393
+#: dist/converse-no-dependencies.js:81369
+#: dist/converse-no-dependencies.js:81445
+#: dist/converse-no-dependencies.js:81473
 #, fuzzy
 msgid "Are you sure you want to retract this message?"
 msgstr "Ви впевнені, що хочете видалити цей контакт?"
 
-#: dist/converse-no-dependencies.js:80332
+#: dist/converse-no-dependencies.js:81412
 #, fuzzy
 msgid "A timeout occurred while trying to retract the message"
 msgstr "Трапилася помилка при спробі зберегти форму."
 
-#: dist/converse-no-dependencies.js:80336
+#: dist/converse-no-dependencies.js:81416
 #, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:80410
+#: dist/converse-no-dependencies.js:81490
 #, fuzzy
 msgid "You are about to retract this message."
 msgstr "Видалити повідомлення"
 
-#: dist/converse-no-dependencies.js:80410
+#: dist/converse-no-dependencies.js:81490
 #, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
@@ -1055,261 +1098,255 @@ msgid ""
 msgstr ""
 "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
 
-#: dist/converse-no-dependencies.js:80415
+#: dist/converse-no-dependencies.js:81495
 #, fuzzy
 msgid "Message Retraction"
 msgstr "Видозміни повідомлення"
 
-#: dist/converse-no-dependencies.js:80415
+#: dist/converse-no-dependencies.js:81495
 msgid "Optional reason"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80423
+#: dist/converse-no-dependencies.js:81503
 #, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:80539
+#: dist/converse-no-dependencies.js:81619
 #, fuzzy
 msgid "Show media"
 msgstr "Показати кімнати"
 
-#: dist/converse-no-dependencies.js:80539
+#: dist/converse-no-dependencies.js:81619
 msgid "Hide media"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80570
+#: dist/converse-no-dependencies.js:81650
 msgid "Cancel Editing"
 msgstr "Скасувати редагування"
 
-#: dist/converse-no-dependencies.js:80570
+#: dist/converse-no-dependencies.js:81650
 msgid "Edit"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80593
+#: dist/converse-no-dependencies.js:81673
 msgid "Retract"
 msgstr ""
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:80705
-#, javascript-format
-msgid "Download file \"%1$s\""
-msgstr ""
-
-#: dist/converse-no-dependencies.js:81595
+#: dist/converse-no-dependencies.js:81934
 msgid "Image: "
 msgstr ""
 
-#: dist/converse-no-dependencies.js:88452
+#: dist/converse-no-dependencies.js:88791
 #, fuzzy
 msgid "Older versions"
 msgstr "Видозміни повідомлення"
 
-#: dist/converse-no-dependencies.js:88454
+#: dist/converse-no-dependencies.js:88793
 #, fuzzy
 msgid "No older versions found"
 msgstr "Кімнати на %1$s"
 
-#: dist/converse-no-dependencies.js:88454
+#: dist/converse-no-dependencies.js:88793
 msgid "Current version"
 msgstr ""
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:88615
+#: dist/converse-no-dependencies.js:88954
 msgid "Message versions"
 msgstr "Видозміни повідомлення"
 
-#: dist/converse-no-dependencies.js:88698
+#: dist/converse-no-dependencies.js:89037
 msgid "Remove as contact"
 msgstr "Видалити з контактів"
 
-#: dist/converse-no-dependencies.js:88705
+#: dist/converse-no-dependencies.js:89044
 msgid "Refresh"
 msgstr "Оновити"
 
-#: dist/converse-no-dependencies.js:88717
-#: dist/converse-no-dependencies.js:112529
+#: dist/converse-no-dependencies.js:89056
+#: dist/converse-no-dependencies.js:112868
 msgid "Email"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:88718
-#: dist/converse-no-dependencies.js:112530
+#: dist/converse-no-dependencies.js:89057
+#: dist/converse-no-dependencies.js:112869
 msgid "Full Name"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:88720
-#: dist/converse-no-dependencies.js:94277
+#: dist/converse-no-dependencies.js:89059
+#: dist/converse-no-dependencies.js:94616
 msgid "The User's Profile Image"
 msgstr "Зображення користувача"
 
-#: dist/converse-no-dependencies.js:88722
-#: dist/converse-no-dependencies.js:112536
+#: dist/converse-no-dependencies.js:89061
+#: dist/converse-no-dependencies.js:112875
 msgid "URL"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:88816
-#: dist/converse-no-dependencies.js:127075
+#: dist/converse-no-dependencies.js:89155
+#: dist/converse-no-dependencies.js:127433
 #, fuzzy, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:89473
+#: dist/converse-no-dependencies.js:89812
 #, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:89505
-#: dist/converse-no-dependencies.js:127057
+#: dist/converse-no-dependencies.js:89844
+#: dist/converse-no-dependencies.js:127415
 msgid "Are you sure you want to remove this contact?"
 msgstr "Ви впевнені, що хочете видалити цей контакт?"
 
-#: dist/converse-no-dependencies.js:89551
+#: dist/converse-no-dependencies.js:89890
 msgid "Uploading file:"
 msgstr "Завантажуваний файл:"
 
-#: dist/converse-no-dependencies.js:89574
+#: dist/converse-no-dependencies.js:89913
 msgid "Retry"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:90064
+#: dist/converse-no-dependencies.js:90403
 msgid "This message has been edited"
 msgstr "Це повідомлення було відредаговано"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:90071
+#: dist/converse-no-dependencies.js:90410
 #, fuzzy
 msgid "Show more"
 msgstr "Показати кімнати"
 
-#: dist/converse-no-dependencies.js:90073
+#: dist/converse-no-dependencies.js:90412
 #, fuzzy
 msgid "Show less"
 msgstr "Показати кімнати"
 
-#: dist/converse-no-dependencies.js:90866
-#: dist/converse-no-dependencies.js:90868
+#: dist/converse-no-dependencies.js:91205
+#: dist/converse-no-dependencies.js:91207
 #, fuzzy, javascript-format
 msgid "%1$s has removed this message"
 msgstr "%1$s було виделано через відсутність членства"
 
-#: dist/converse-no-dependencies.js:92198
+#: dist/converse-no-dependencies.js:92537
 msgid "Search results"
 msgstr "Підсумки пошуку"
 
-#: dist/converse-no-dependencies.js:92224
+#: dist/converse-no-dependencies.js:92563
 msgid "Search"
 msgstr "Пошук"
 
-#: dist/converse-no-dependencies.js:93042
+#: dist/converse-no-dependencies.js:93381
 msgid "Insert emojis"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:93662
+#: dist/converse-no-dependencies.js:94001
 msgid "Message characters remaining"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:93859
+#: dist/converse-no-dependencies.js:94198
 msgid "Send the message"
 msgstr "Надіслати повідомлення"
 
-#: dist/converse-no-dependencies.js:94098
+#: dist/converse-no-dependencies.js:94437
 msgid "Start a call"
 msgstr "Почати виклик"
 
-#: dist/converse-no-dependencies.js:94113
+#: dist/converse-no-dependencies.js:94452
 #, fuzzy
 msgid "Hide participants"
 msgstr "Сховати список учасників"
 
-#: dist/converse-no-dependencies.js:94114
+#: dist/converse-no-dependencies.js:94453
 #, fuzzy
 msgid "Show participants"
 msgstr "Присутні:"
 
-#: dist/converse-no-dependencies.js:94135
+#: dist/converse-no-dependencies.js:94474
 msgid "Choose a file to send"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:94152
+#: dist/converse-no-dependencies.js:94491
 #, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
 msgstr "Клацніть тут, щоб створити власний статус"
 
-#: dist/converse-no-dependencies.js:94154
+#: dist/converse-no-dependencies.js:94493
 #, fuzzy
 msgid "Click to write your message as a spoiler"
 msgstr "Клацніть тут, щоб створити власний статус"
 
-#: dist/converse-no-dependencies.js:94522
-#: dist/converse-no-dependencies.js:108692
+#: dist/converse-no-dependencies.js:94861
+#: dist/converse-no-dependencies.js:109031
 msgid "Details"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:94523
+#: dist/converse-no-dependencies.js:94862
 #, fuzzy
 msgid "See more information about this person"
 msgstr "Показати більше інформації про цю кімату"
 
-#: dist/converse-no-dependencies.js:94535
+#: dist/converse-no-dependencies.js:94874
 #, fuzzy
 msgid "Close and end this conversation"
 msgstr "Завершити криптовану розмову"
 
-#: dist/converse-no-dependencies.js:94948
+#: dist/converse-no-dependencies.js:95287
 #, fuzzy
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "Ви впевнені, що хочете очистити повідомлення з цього вікна чату?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:95072
-#: dist/converse-no-dependencies.js:103137
+#: dist/converse-no-dependencies.js:95411
+#: dist/converse-no-dependencies.js:103476
 #, fuzzy
 msgid "Hidden message"
 msgstr "Персональна вісточка"
 
-#: dist/converse-no-dependencies.js:95072
-#: dist/converse-no-dependencies.js:103137
+#: dist/converse-no-dependencies.js:95411
+#: dist/converse-no-dependencies.js:103476
 msgid "Message"
 msgstr "Повідомлення"
 
-#: dist/converse-no-dependencies.js:95073
-#: dist/converse-no-dependencies.js:103138
+#: dist/converse-no-dependencies.js:95412
+#: dist/converse-no-dependencies.js:103477
 msgid "Optional hint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:95789
+#: dist/converse-no-dependencies.js:96128
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:95885
-#: dist/converse-no-dependencies.js:104006
-#: dist/converse-no-dependencies.js:104018
+#: dist/converse-no-dependencies.js:96224
+#: dist/converse-no-dependencies.js:104345
+#: dist/converse-no-dependencies.js:104357
 #, fuzzy
 msgid "You have unread messages"
 msgstr "Видалити повідомлення"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:97430
+#: dist/converse-no-dependencies.js:97769
 msgid "Remove messages"
 msgstr "Видалити повідомлення"
 
-#: dist/converse-no-dependencies.js:97430
+#: dist/converse-no-dependencies.js:97769
 #, fuzzy
 msgid "Close this chat"
 msgstr "Клацніть, щоб відновити цей чат"
 
-#: dist/converse-no-dependencies.js:97430
+#: dist/converse-no-dependencies.js:97769
 msgid "Write in the third person"
 msgstr "Писати від третьої особи"
 
-#: dist/converse-no-dependencies.js:97430
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:97769
+#: dist/converse-no-dependencies.js:105939
 msgid "Show this menu"
 msgstr "Показати це меню"
 
-#: dist/converse-no-dependencies.js:98004
+#: dist/converse-no-dependencies.js:98343
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1323,954 +1360,954 @@ msgstr ""
 "системи, інакше не всі кешовані дані можуть бути видалені. Запримітьте, що "
 "при використанні ненадійного пристрою шифрування OMEMO НЕ доступне."
 
-#: dist/converse-no-dependencies.js:98005
+#: dist/converse-no-dependencies.js:98344
 msgid "This is a trusted device"
 msgstr "Це надійний пристрій"
 
-#: dist/converse-no-dependencies.js:98009
+#: dist/converse-no-dependencies.js:98348
 #, fuzzy
 msgid "Connection URL"
 msgstr "Під'єднуюсь"
 
-#: dist/converse-no-dependencies.js:98010
+#: dist/converse-no-dependencies.js:98349
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:98011
+#: dist/converse-no-dependencies.js:98350
 msgid "e.g. wss://example.org/xmpp-websocket"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:98016
+#: dist/converse-no-dependencies.js:98355
 #, fuzzy
 msgid "Password"
 msgstr "Пароль:"
 
-#: dist/converse-no-dependencies.js:98020
+#: dist/converse-no-dependencies.js:98359
 msgid "Create an account"
 msgstr "Створити обліковий запис"
 
-#: dist/converse-no-dependencies.js:98021
+#: dist/converse-no-dependencies.js:98360
 msgid "Don't have a chat account?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:98030
+#: dist/converse-no-dependencies.js:98369
 msgid "Log in"
 msgstr "Увійти"
 
-#: dist/converse-no-dependencies.js:98034
+#: dist/converse-no-dependencies.js:98373
 #, fuzzy
 msgid "Username"
 msgstr "XMPP адреса:"
 
-#: dist/converse-no-dependencies.js:98034
+#: dist/converse-no-dependencies.js:98373
 msgid "user@domain"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:98044
+#: dist/converse-no-dependencies.js:98383
 msgid "Disconnected"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:98045
+#: dist/converse-no-dependencies.js:98384
 msgid "Click here to log in anonymously"
 msgstr "Натисніть тут, щоб увійти таємно"
 
-#: dist/converse-no-dependencies.js:98156
-#: dist/converse-no-dependencies.js:107421
-#: dist/converse-no-dependencies.js:125380
+#: dist/converse-no-dependencies.js:98495
+#: dist/converse-no-dependencies.js:107760
+#: dist/converse-no-dependencies.js:125738
 msgid "Please enter a valid XMPP address"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:98997
+#: dist/converse-no-dependencies.js:99336
 #, fuzzy
 msgid "Chat Contacts"
 msgstr "Контакти"
 
-#: dist/converse-no-dependencies.js:98997
+#: dist/converse-no-dependencies.js:99336
 msgid "Toggle chat"
 msgstr "Включити чат"
 
-#: dist/converse-no-dependencies.js:100863
+#: dist/converse-no-dependencies.js:101202
 #, fuzzy
 msgid "Close these announcements"
 msgstr "Залишити цю кімнату"
 
-#: dist/converse-no-dependencies.js:101478
+#: dist/converse-no-dependencies.js:101817
 #, fuzzy
 msgid "Click to open this server message"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:101487
+#: dist/converse-no-dependencies.js:101826
 msgid "Announcements"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:102127
+#: dist/converse-no-dependencies.js:102466
 #, fuzzy
 msgid "Click to load missing messages"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:103754
+#: dist/converse-no-dependencies.js:104093
 #, fuzzy
 msgid "Change nickname"
 msgstr "Змінити Ваше прізвисько"
 
-#: dist/converse-no-dependencies.js:103754
+#: dist/converse-no-dependencies.js:104093
 #, fuzzy
 msgid "Enter groupchat"
 msgstr "Увійти в кімнату"
 
-#: dist/converse-no-dependencies.js:103755
+#: dist/converse-no-dependencies.js:104094
 #, fuzzy
 msgid "Choose a nickname to enter"
 msgstr "Виберіть іншого провайдера"
 
-#: dist/converse-no-dependencies.js:103755
+#: dist/converse-no-dependencies.js:104094
 #, fuzzy
 msgid "Please choose your nickname"
 msgstr "Змінити Ваше прізвисько"
 
-#: dist/converse-no-dependencies.js:104020
+#: dist/converse-no-dependencies.js:104359
 msgid "You're not allowed to send messages in this room"
 msgstr "Вам не дозволяється надсилати повідомлення в цій кімнаті"
 
-#: dist/converse-no-dependencies.js:104667
+#: dist/converse-no-dependencies.js:105006
 #, fuzzy, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:104672
+#: dist/converse-no-dependencies.js:105011
 #, fuzzy
 msgid "This user is a moderator."
 msgstr "Цей користувач є модератором"
 
-#: dist/converse-no-dependencies.js:104673
+#: dist/converse-no-dependencies.js:105012
 #, fuzzy
 msgid "This user can send messages in this groupchat."
 msgstr "Цей користувач може слати повідомлення в цій кімнаті"
 
-#: dist/converse-no-dependencies.js:104674
+#: dist/converse-no-dependencies.js:105013
 #, fuzzy
 msgid "This user can NOT send messages in this groupchat."
 msgstr "Цей користувач НЕ МОЖЕ слати повідомлення в цій кімнаті"
 
-#: dist/converse-no-dependencies.js:104690
+#: dist/converse-no-dependencies.js:105029
 msgid "Admin"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:104691
+#: dist/converse-no-dependencies.js:105030
 msgid "Member"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:104692
+#: dist/converse-no-dependencies.js:105031
 #, fuzzy
 msgid "Moderator"
 msgstr "Модерована"
 
-#: dist/converse-no-dependencies.js:104693
+#: dist/converse-no-dependencies.js:105032
 msgid "Owner"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:104694
+#: dist/converse-no-dependencies.js:105033
 msgid "Visitor"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:104732
+#: dist/converse-no-dependencies.js:105071
 #, fuzzy
 msgid "Participant"
 msgstr "Присутні:"
 
-#: dist/converse-no-dependencies.js:104732
+#: dist/converse-no-dependencies.js:105071
 msgid "Participants"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Change user's affiliation to admin"
 msgstr "Призначити користувача адміністратором"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Ban user by changing their affiliation to outcast"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 #, fuzzy
 msgid "Clear the chat area"
 msgstr "Клацніть, щоб відновити цей чат"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 #, fuzzy
 msgid "Close this groupchat"
 msgstr "Залишити цю кімнату"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 #, fuzzy
 msgid "Change user role to participant"
 msgstr "Зробити користувача учасником"
 
-#: dist/converse-no-dependencies.js:105600
-#: dist/converse-no-dependencies.js:108768
+#: dist/converse-no-dependencies.js:105939
+#: dist/converse-no-dependencies.js:109107
 #, fuzzy
 msgid "Remove this groupchat"
 msgstr "Залишити цю кімнату"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 #, fuzzy
 msgid "Kick user from groupchat"
 msgstr "Викинути з кімнати"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Write in 3rd person"
 msgstr "Писати в 3-й особі"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Grant membership to a user"
 msgstr "Надати членство користувачу"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Opens up the moderator tools GUI"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Remove user's ability to post messages"
 msgstr "Забрати можливість слати повідомлення"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:105600
-#: dist/converse-no-dependencies.js:107780
+#: dist/converse-no-dependencies.js:105939
+#: dist/converse-no-dependencies.js:108119
 msgid "Change your nickname"
 msgstr "Змінити Ваше прізвисько"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Grant moderator role to user"
 msgstr "Надати права модератора"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 #, fuzzy
 msgid "Grant ownership of this groupchat"
 msgstr "Передати у власність цю кімнату"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 #, fuzzy
 msgid "Register your nickname"
 msgstr "Змінити Ваше прізвисько"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Revoke the user's current affiliation"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 #, fuzzy
 msgid "Set groupchat subject"
 msgstr "Встановити тему кімнати"
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Set groupchat subject (alias for /subject)"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:105600
+#: dist/converse-no-dependencies.js:105939
 msgid "Allow muted user to post messages"
 msgstr "Дозволити безголосому користувачу слати повідомлення"
 
-#: dist/converse-no-dependencies.js:105756
+#: dist/converse-no-dependencies.js:106095
 msgid "Loading configuration form"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:106324
+#: dist/converse-no-dependencies.js:106663
 #, fuzzy
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "Трапилася помилка при спробі зберегти форму."
 
-#: dist/converse-no-dependencies.js:106378
+#: dist/converse-no-dependencies.js:106717
 #, fuzzy
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
 msgstr "Бесіду переміщено. Натисніть нижче, щоб увійти."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:106384
+#: dist/converse-no-dependencies.js:106723
 msgid "This groupchat no longer exists"
 msgstr "Ця кімната більше не існує"
 
-#: dist/converse-no-dependencies.js:106385
+#: dist/converse-no-dependencies.js:106724
 #, fuzzy, javascript-format
 msgid "The following reason was given: \"%1$s\""
 msgstr "Причиною вказано: \""
 
-#: dist/converse-no-dependencies.js:107111
+#: dist/converse-no-dependencies.js:107450
 #, fuzzy, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Ваше прізвисько було змінене на: %1$s"
 
-#: dist/converse-no-dependencies.js:107115
+#: dist/converse-no-dependencies.js:107454
 #, fuzzy, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "Причиною вказано: \""
 
-#: dist/converse-no-dependencies.js:107147
+#: dist/converse-no-dependencies.js:107486
 msgid "Topic"
 msgstr "Тема"
 
-#: dist/converse-no-dependencies.js:107148
+#: dist/converse-no-dependencies.js:107487
 msgid "Topic author"
 msgstr "Творець теми"
 
-#: dist/converse-no-dependencies.js:107158
+#: dist/converse-no-dependencies.js:107497
 #, fuzzy
 msgid "XMPP address"
 msgstr "XMPP адреса:"
 
-#: dist/converse-no-dependencies.js:107159
+#: dist/converse-no-dependencies.js:107498
 msgid "Message archiving"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107160
+#: dist/converse-no-dependencies.js:107499
 msgid "Messages are archived on the server"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107161
+#: dist/converse-no-dependencies.js:107500
 msgid "Description"
 msgstr "Опис"
 
-#: dist/converse-no-dependencies.js:107162
+#: dist/converse-no-dependencies.js:107501
 msgid "Features"
 msgstr "Особливості"
 
-#: dist/converse-no-dependencies.js:107163
-#: dist/converse-no-dependencies.js:123813
+#: dist/converse-no-dependencies.js:107502
+#: dist/converse-no-dependencies.js:124193
 msgid "Hidden"
 msgstr "Прихована"
 
-#: dist/converse-no-dependencies.js:107164
+#: dist/converse-no-dependencies.js:107503
 msgid "This groupchat is not publicly searchable"
 msgstr "Ця кімната не для прилюдного пошуку"
 
-#: dist/converse-no-dependencies.js:107165
+#: dist/converse-no-dependencies.js:107504
 msgid "This groupchat is restricted to members only"
 msgstr "Ця кімната тільки для учасників"
 
-#: dist/converse-no-dependencies.js:107166
+#: dist/converse-no-dependencies.js:107505
 msgid "Members only"
 msgstr "Тільки для учасників"
 
-#: dist/converse-no-dependencies.js:107167
-#: dist/converse-no-dependencies.js:123815
+#: dist/converse-no-dependencies.js:107506
+#: dist/converse-no-dependencies.js:124195
 msgid "Moderated"
 msgstr "Модерована"
 
-#: dist/converse-no-dependencies.js:107168
+#: dist/converse-no-dependencies.js:107507
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107169
-#: dist/converse-no-dependencies.js:125382
+#: dist/converse-no-dependencies.js:107508
+#: dist/converse-no-dependencies.js:125740
 msgid "Name"
 msgstr "Ім'я"
 
-#: dist/converse-no-dependencies.js:107170
+#: dist/converse-no-dependencies.js:107509
 msgid "This groupchat does not require a password upon entry"
 msgstr "Ця кімната не вимагає пароль при вході"
 
-#: dist/converse-no-dependencies.js:107171
+#: dist/converse-no-dependencies.js:107510
 msgid "No password required"
 msgstr "Пароль не потрібен"
 
-#: dist/converse-no-dependencies.js:107172
+#: dist/converse-no-dependencies.js:107511
 #, fuzzy
 msgid "Not anonymous"
 msgstr "Не-анонімні"
 
-#: dist/converse-no-dependencies.js:107173
+#: dist/converse-no-dependencies.js:107512
 msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107174
+#: dist/converse-no-dependencies.js:107513
 #, fuzzy
 msgid "Not moderated"
 msgstr "Немодерована"
 
-#: dist/converse-no-dependencies.js:107175
+#: dist/converse-no-dependencies.js:107514
 msgid "Participants entering this groupchat can write right away"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107176
+#: dist/converse-no-dependencies.js:107515
 msgid "Online users"
 msgstr "Присутні"
 
-#: dist/converse-no-dependencies.js:107177
-#: dist/converse-no-dependencies.js:123817
+#: dist/converse-no-dependencies.js:107516
+#: dist/converse-no-dependencies.js:124197
 #, fuzzy
 msgid "Open"
 msgstr "Увійти в кімнату"
 
-#: dist/converse-no-dependencies.js:107178
+#: dist/converse-no-dependencies.js:107517
 msgid "Anyone can join this groupchat"
 msgstr "Будь-хто може приєднатися до цієї кімнати"
 
-#: dist/converse-no-dependencies.js:107179
+#: dist/converse-no-dependencies.js:107518
 msgid "This groupchat requires a password before entry"
 msgstr "Ця кімната потребує пароль перед входом"
 
-#: dist/converse-no-dependencies.js:107180
+#: dist/converse-no-dependencies.js:107519
 msgid "Password protected"
 msgstr "Пароль захищено"
 
-#: dist/converse-no-dependencies.js:107181
+#: dist/converse-no-dependencies.js:107520
 msgid "Persistent"
 msgstr "Стійкий"
 
-#: dist/converse-no-dependencies.js:107182
+#: dist/converse-no-dependencies.js:107521
 msgid "This groupchat persists even if it's unoccupied"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107183
-#: dist/converse-no-dependencies.js:123819
+#: dist/converse-no-dependencies.js:107522
+#: dist/converse-no-dependencies.js:124199
 msgid "Public"
 msgstr "Публічна"
 
-#: dist/converse-no-dependencies.js:107184
-#: dist/converse-no-dependencies.js:123820
+#: dist/converse-no-dependencies.js:107523
+#: dist/converse-no-dependencies.js:124200
 msgid "Semi-anonymous"
 msgstr "Напів-анонімна"
 
-#: dist/converse-no-dependencies.js:107185
+#: dist/converse-no-dependencies.js:107524
 msgid "Only moderators can see your XMPP address"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107186
-#: dist/converse-no-dependencies.js:123821
+#: dist/converse-no-dependencies.js:107525
+#: dist/converse-no-dependencies.js:124201
 #, fuzzy
 msgid "Temporary"
 msgstr "Тимчасова кімната"
 
-#: dist/converse-no-dependencies.js:107187
+#: dist/converse-no-dependencies.js:107526
 msgid "This groupchat will disappear once the last person leaves"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107188
+#: dist/converse-no-dependencies.js:107527
 msgid "This groupchat is publicly searchable"
 msgstr "Ця кімната доступна для прилюдного пошуку"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:107397
+#: dist/converse-no-dependencies.js:107736
 #, fuzzy, javascript-format
 msgid "Groupchat info for %1$s"
 msgstr "Сповіщення від %1$s"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:107419
-#: dist/converse-no-dependencies.js:108727
+#: dist/converse-no-dependencies.js:107758
+#: dist/converse-no-dependencies.js:109066
 msgid "Invite"
 msgstr "Запросіть"
 
-#: dist/converse-no-dependencies.js:107420
+#: dist/converse-no-dependencies.js:107759
 msgid "user@example.org"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:107423
+#: dist/converse-no-dependencies.js:107762
 msgid "Optional reason for the invitation"
 msgstr ""
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:107598
+#: dist/converse-no-dependencies.js:107937
 #, fuzzy
 msgid "Invite someone to this groupchat"
 msgstr "Залишити цю кімнату"
 
-#: dist/converse-no-dependencies.js:108070
+#: dist/converse-no-dependencies.js:108409
 #, fuzzy
 msgid "Hide the groupchat topic"
 msgstr "Увійти в кімнату"
 
-#: dist/converse-no-dependencies.js:108071
+#: dist/converse-no-dependencies.js:108410
 #, fuzzy
 msgid "This groupchat is bookmarked"
 msgstr "Цей користувач є модератором"
 
-#: dist/converse-no-dependencies.js:108693
+#: dist/converse-no-dependencies.js:109032
 #, fuzzy
 msgid "Show more information about this groupchat"
 msgstr "Показати більше інформації про цю кімату"
 
-#: dist/converse-no-dependencies.js:108703
+#: dist/converse-no-dependencies.js:109042
 msgid "Configure"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:108704
+#: dist/converse-no-dependencies.js:109043
 #, fuzzy
 msgid "Configure this groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
-#: dist/converse-no-dependencies.js:108715
+#: dist/converse-no-dependencies.js:109054
 #, fuzzy
 msgid "Change the nickname you're using in this groupchat"
 msgstr "Вас викинули з цієї кімнати"
 
-#: dist/converse-no-dependencies.js:108728
+#: dist/converse-no-dependencies.js:109067
 #, fuzzy
 msgid "Invite someone to join this groupchat"
 msgstr "Будь-хто може приєднатися до цієї кімнати"
 
-#: dist/converse-no-dependencies.js:108740
+#: dist/converse-no-dependencies.js:109079
 #, fuzzy
 msgid "Show topic"
 msgstr "Групи"
 
-#: dist/converse-no-dependencies.js:108740
+#: dist/converse-no-dependencies.js:109079
 msgid "Hide topic"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:108741
+#: dist/converse-no-dependencies.js:109080
 msgid "Show the topic message in the heading"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:108741
+#: dist/converse-no-dependencies.js:109080
 msgid "Hide the topic in the heading"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:108755
+#: dist/converse-no-dependencies.js:109094
 #, fuzzy
 msgid "Moderate"
 msgstr "Модерована"
 
-#: dist/converse-no-dependencies.js:108756
+#: dist/converse-no-dependencies.js:109095
 #, fuzzy
 msgid "Moderate this groupchat"
 msgstr "Залишити цю кімнату"
 
-#: dist/converse-no-dependencies.js:108767
+#: dist/converse-no-dependencies.js:109106
 #, fuzzy
 msgid "Destroy"
 msgstr "Тимчасова кімната"
 
-#: dist/converse-no-dependencies.js:108780
+#: dist/converse-no-dependencies.js:109119
 msgid "Leave"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:108781
+#: dist/converse-no-dependencies.js:109120
 #, fuzzy
 msgid "Leave and close this groupchat"
 msgstr "Залишити цю кімнату"
 
-#: dist/converse-no-dependencies.js:108789
+#: dist/converse-no-dependencies.js:109128
 #, fuzzy
 msgid "Are you sure you want to leave this groupchat?"
 msgstr "Ви впевнені, що хочете залишити кімнату \"%1$s\"?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:108841
+#: dist/converse-no-dependencies.js:109180
 #, fuzzy
 msgid "This groupchat requires a password"
 msgstr "Ця кімната вимагає пароль"
 
-#: dist/converse-no-dependencies.js:108842
+#: dist/converse-no-dependencies.js:109181
 msgid "Password: "
 msgstr "Пароль:"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:108843
-#: dist/converse-no-dependencies.js:112576
+#: dist/converse-no-dependencies.js:109182
+#: dist/converse-no-dependencies.js:112915
 msgid "Submit"
 msgstr "Надіслати"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:110111
+#: dist/converse-no-dependencies.js:110450
 msgid "Minimized"
 msgstr "Мінімізовано"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:110716
+#: dist/converse-no-dependencies.js:111055
 msgid "Click to restore this chat"
 msgstr "Клацніть, щоб відновити цей чат"
 
-#: dist/converse-no-dependencies.js:110865
-#: dist/converse-no-dependencies.js:110883
+#: dist/converse-no-dependencies.js:111204
+#: dist/converse-no-dependencies.js:111222
 #, fuzzy
 msgid "Minimize"
 msgstr "Мінімізовано"
 
-#: dist/converse-no-dependencies.js:110866
+#: dist/converse-no-dependencies.js:111205
 #, fuzzy
 msgid "Minimize this chat"
 msgstr "Згорнути це вікно чату"
 
-#: dist/converse-no-dependencies.js:110884
+#: dist/converse-no-dependencies.js:111223
 #, fuzzy
 msgid "Minimize this groupchat"
 msgstr "Згорнути це вікно чату"
 
-#: dist/converse-no-dependencies.js:111811
+#: dist/converse-no-dependencies.js:112150
 msgid "has gone offline"
 msgstr "тепер поза мережею"
 
-#: dist/converse-no-dependencies.js:111813
+#: dist/converse-no-dependencies.js:112152
 msgid "has gone away"
 msgstr "пішов геть"
 
-#: dist/converse-no-dependencies.js:111815
+#: dist/converse-no-dependencies.js:112154
 msgid "is busy"
 msgstr "зайнятий"
 
-#: dist/converse-no-dependencies.js:111817
+#: dist/converse-no-dependencies.js:112156
 msgid "has come online"
 msgstr "зʼявився в мережі"
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:111852
-#: dist/converse-no-dependencies.js:111858
+#: dist/converse-no-dependencies.js:112191
+#: dist/converse-no-dependencies.js:112197
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "Сповіщення від %1$s"
 
-#: dist/converse-no-dependencies.js:111860
-#: dist/converse-no-dependencies.js:111868
-#: dist/converse-no-dependencies.js:111871
+#: dist/converse-no-dependencies.js:112199
+#: dist/converse-no-dependencies.js:112207
+#: dist/converse-no-dependencies.js:112210
 #, javascript-format
 msgid "%1$s says"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:111979
+#: dist/converse-no-dependencies.js:112318
 msgid "wants to be your contact"
 msgstr "хоче бути у вашому списку контактів"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:112056
-#: dist/converse-no-dependencies.js:127180
+#: dist/converse-no-dependencies.js:112395
+#: dist/converse-no-dependencies.js:127538
 msgid "Away"
 msgstr "Далеко"
 
-#: dist/converse-no-dependencies.js:112057
-#: dist/converse-no-dependencies.js:127179
+#: dist/converse-no-dependencies.js:112396
+#: dist/converse-no-dependencies.js:127537
 msgid "Busy"
 msgstr "Зайнятий"
 
-#: dist/converse-no-dependencies.js:112058
-#: dist/converse-no-dependencies.js:127177
+#: dist/converse-no-dependencies.js:112397
+#: dist/converse-no-dependencies.js:127535
 msgid "Online"
 msgstr "На зв'язку"
 
-#: dist/converse-no-dependencies.js:112060
+#: dist/converse-no-dependencies.js:112399
 #, fuzzy
 msgid "Away for long"
 msgstr "давно відсутній"
 
-#: dist/converse-no-dependencies.js:112061
+#: dist/converse-no-dependencies.js:112400
 #, fuzzy
 msgid "Personal status message"
 msgstr "Персональна вісточка"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:112238
+#: dist/converse-no-dependencies.js:112577
 #, fuzzy
 msgid "Change chat status"
 msgstr "Клацніть, щоб змінити статус в чаті"
 
-#: dist/converse-no-dependencies.js:112396
+#: dist/converse-no-dependencies.js:112735
 msgid "Your profile picture"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:112534
+#: dist/converse-no-dependencies.js:112873
 msgid "Save and close"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:112535
+#: dist/converse-no-dependencies.js:112874
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:112537
+#: dist/converse-no-dependencies.js:112876
 msgid "OMEMO"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:112538
+#: dist/converse-no-dependencies.js:112877
 msgid "Profile"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:112539
+#: dist/converse-no-dependencies.js:112878
 #, fuzzy
 msgid "Reset Password"
 msgstr "Пароль:"
 
-#: dist/converse-no-dependencies.js:112577
+#: dist/converse-no-dependencies.js:112916
 msgid "The new passwords must match"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:112578
+#: dist/converse-no-dependencies.js:112917
 #, fuzzy
 msgid "New password"
 msgstr "Пароль:"
 
-#: dist/converse-no-dependencies.js:112579
+#: dist/converse-no-dependencies.js:112918
 #, fuzzy
 msgid "Confirm new password"
 msgstr "Пароль:"
 
-#: dist/converse-no-dependencies.js:113101
+#: dist/converse-no-dependencies.js:113440
 msgid "Timeout error"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113108
+#: dist/converse-no-dependencies.js:113447
 msgid "Your server does not support in-band password reset"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113115
+#: dist/converse-no-dependencies.js:113454
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113134
+#: dist/converse-no-dependencies.js:113473
 #, fuzzy
 msgid "Timeout error while trying to set your password"
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:113136
+#: dist/converse-no-dependencies.js:113475
 msgid "Your server does not allow in-band password reset"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113138
-#: dist/converse-no-dependencies.js:113140
+#: dist/converse-no-dependencies.js:113477
+#: dist/converse-no-dependencies.js:113479
 #, fuzzy
 msgid "You are not allowed to change your password"
 msgstr "Вам не дозволено створювати нові кімнати"
 
-#: dist/converse-no-dependencies.js:113142
+#: dist/converse-no-dependencies.js:113481
 msgid "Success"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113142
+#: dist/converse-no-dependencies.js:113481
 #, fuzzy
 msgid "Your new password has been set"
 msgstr "Створено нову кімнату"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:113687
+#: dist/converse-no-dependencies.js:114026
 msgid "Your Profile"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113706
+#: dist/converse-no-dependencies.js:114045
 #, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:113706
+#: dist/converse-no-dependencies.js:114045
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113780
+#: dist/converse-no-dependencies.js:114119
 msgid "About"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113781
+#: dist/converse-no-dependencies.js:114120
 msgid "Commands"
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:113789
+#: dist/converse-no-dependencies.js:114128
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:113790
+#: dist/converse-no-dependencies.js:114129
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr ""
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:113940
+#: dist/converse-no-dependencies.js:114279
 msgid "Settings"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:114300
-#: dist/converse-no-dependencies.js:114310
+#: dist/converse-no-dependencies.js:114639
+#: dist/converse-no-dependencies.js:114649
 msgid "online"
 msgstr "на зв'язку"
 
-#: dist/converse-no-dependencies.js:114302
+#: dist/converse-no-dependencies.js:114641
 msgid "busy"
 msgstr "зайнятий"
 
-#: dist/converse-no-dependencies.js:114304
+#: dist/converse-no-dependencies.js:114643
 msgid "away for long"
 msgstr "давно відсутній"
 
-#: dist/converse-no-dependencies.js:114306
+#: dist/converse-no-dependencies.js:114645
 msgid "away"
 msgstr "відсутній"
 
-#: dist/converse-no-dependencies.js:114308
+#: dist/converse-no-dependencies.js:114647
 #, fuzzy
 msgid "offline"
 msgstr "Поза мережею"
 
-#: dist/converse-no-dependencies.js:114324
+#: dist/converse-no-dependencies.js:114663
 #, fuzzy
 msgid "Are you sure you want to log out?"
 msgstr "Ви впевнені, що хочете видалити цей контакт?"
 
-#: dist/converse-no-dependencies.js:114356
+#: dist/converse-no-dependencies.js:114695
 msgid "Log out"
 msgstr "Вийти"
 
-#: dist/converse-no-dependencies.js:114360
+#: dist/converse-no-dependencies.js:114699
 #, fuzzy
 msgid "Show details about this chat client"
 msgstr "Показати більше інформації про цю кімату"
 
-#: dist/converse-no-dependencies.js:114367
+#: dist/converse-no-dependencies.js:114706
 #, javascript-format
 msgid "I am %1$s"
 msgstr "Я %1$s"
 
-#: dist/converse-no-dependencies.js:114368
+#: dist/converse-no-dependencies.js:114707
 msgid "Click to change your chat status"
 msgstr "Клацніть, щоб змінити статус в чаті"
 
-#: dist/converse-no-dependencies.js:115163
+#: dist/converse-no-dependencies.js:115502
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115165
+#: dist/converse-no-dependencies.js:115504
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115167
+#: dist/converse-no-dependencies.js:115506
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115180
+#: dist/converse-no-dependencies.js:115519
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115411
+#: dist/converse-no-dependencies.js:115750
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115617
+#: dist/converse-no-dependencies.js:115956
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115682
+#: dist/converse-no-dependencies.js:116021
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116313
+#: dist/converse-no-dependencies.js:116652
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116377
+#: dist/converse-no-dependencies.js:116716
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116379
+#: dist/converse-no-dependencies.js:116718
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116392
+#: dist/converse-no-dependencies.js:116731
 msgid "Messages are being sent in plaintext"
 msgstr "Повідомлення надсилаються в простому тексті"
 
-#: dist/converse-no-dependencies.js:116393
+#: dist/converse-no-dependencies.js:116732
 #, fuzzy
 msgid "Messages are sent encrypted"
 msgstr "Ваші повідомлення більше не криптуються"
 
-#: dist/converse-no-dependencies.js:116396
+#: dist/converse-no-dependencies.js:116735
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116398
+#: dist/converse-no-dependencies.js:116737
 msgid "OMEMO encryption is not supported"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116422
+#: dist/converse-no-dependencies.js:116761
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:116612
+#: dist/converse-no-dependencies.js:116951
 msgid "Trusted"
 msgstr "Надійний"
 
-#: dist/converse-no-dependencies.js:116613
+#: dist/converse-no-dependencies.js:116952
 msgid "Untrusted"
 msgstr "Ненадійний"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:116621
+#: dist/converse-no-dependencies.js:116960
 msgid "OMEMO Fingerprints"
 msgstr "Відбитки OMEMO"
 
-#: dist/converse-no-dependencies.js:116622
+#: dist/converse-no-dependencies.js:116961
 msgid "No OMEMO-enabled devices found"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117170
+#: dist/converse-no-dependencies.js:117509
 msgid "Checkbox for selecting the following fingerprint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117174
+#: dist/converse-no-dependencies.js:117513
 #, fuzzy
 msgid "Device without a fingerprint"
 msgstr "Перевірити за відбитками"
 
-#: dist/converse-no-dependencies.js:117175
+#: dist/converse-no-dependencies.js:117514
 msgid "Checkbox for selecting the following device"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117183
+#: dist/converse-no-dependencies.js:117522
 msgid "Other OMEMO-enabled devices"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117184
+#: dist/converse-no-dependencies.js:117523
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117185
+#: dist/converse-no-dependencies.js:117524
 msgid "Remove checked devices and close"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117186
+#: dist/converse-no-dependencies.js:117525
 msgid "Select all"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117195
+#: dist/converse-no-dependencies.js:117534
 msgid "This device's OMEMO fingerprint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117196
+#: dist/converse-no-dependencies.js:117535
 msgid "Generate new keys and fingerprint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117772
+#: dist/converse-no-dependencies.js:118111
 #, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Трапилася помилка при спробі зберегти форму."
 
-#: dist/converse-no-dependencies.js:117799
+#: dist/converse-no-dependencies.js:118138
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -2278,57 +2315,57 @@ msgid ""
 msgstr ""
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:121768
+#: dist/converse-no-dependencies.js:122107
 msgid "Choose a different provider"
 msgstr "Виберіть іншого провайдера"
 
-#: dist/converse-no-dependencies.js:121769
-#: dist/converse-no-dependencies.js:121810
+#: dist/converse-no-dependencies.js:122108
+#: dist/converse-no-dependencies.js:122149
 msgid "Already have a chat account?"
 msgstr "У вас вже є обліківка бесіди?"
 
-#: dist/converse-no-dependencies.js:121770
+#: dist/converse-no-dependencies.js:122109
 msgid "Account Registration:"
 msgstr "Реєстрація облікового запису:"
 
-#: dist/converse-no-dependencies.js:121771
-#: dist/converse-no-dependencies.js:121811
+#: dist/converse-no-dependencies.js:122110
+#: dist/converse-no-dependencies.js:122150
 msgid "Log in here"
 msgstr "Увійти тут"
 
-#: dist/converse-no-dependencies.js:121772
+#: dist/converse-no-dependencies.js:122111
 msgid "Register"
 msgstr "Реєстрація"
 
-#: dist/converse-no-dependencies.js:121795
+#: dist/converse-no-dependencies.js:122134
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Хвильку, ми отримуємо реєстраційну форму…"
 
-#: dist/converse-no-dependencies.js:121803
+#: dist/converse-no-dependencies.js:122142
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Порада: доступний перелік публічних XMPP-провайдерів"
 
-#: dist/converse-no-dependencies.js:121804
+#: dist/converse-no-dependencies.js:122143
 msgid "here"
 msgstr "тут"
 
-#: dist/converse-no-dependencies.js:121809
+#: dist/converse-no-dependencies.js:122148
 msgid "Fetch registration form"
 msgstr "Отримати форму реєстрації"
 
-#: dist/converse-no-dependencies.js:121816
+#: dist/converse-no-dependencies.js:122155
 msgid "Create your account"
 msgstr "Створити свій обліковий запис"
 
-#: dist/converse-no-dependencies.js:121817
+#: dist/converse-no-dependencies.js:122156
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Введіть постачальника XMPP, щоб зареєструватися:"
 
-#: dist/converse-no-dependencies.js:122121
+#: dist/converse-no-dependencies.js:122501
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "На жаль, ми не можемо підключитися до обраного вами провайдера."
 
-#: dist/converse-no-dependencies.js:122132
+#: dist/converse-no-dependencies.js:122512
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -2336,7 +2373,7 @@ msgstr ""
 "Вибачте, вказаний провайдер не підтримує реєстрації онлайн. Спробуйте іншого "
 "провайдера."
 
-#: dist/converse-no-dependencies.js:122158
+#: dist/converse-no-dependencies.js:122538
 #, fuzzy, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -2345,15 +2382,15 @@ msgstr ""
 "Щось пішло не так при встановленні зв'язку з \"%1$s\". Ви впевнені, що такий "
 "існує?"
 
-#: dist/converse-no-dependencies.js:122302
+#: dist/converse-no-dependencies.js:122682
 msgid "Now logging you in"
 msgstr "Входимо"
 
-#: dist/converse-no-dependencies.js:122304
+#: dist/converse-no-dependencies.js:122684
 msgid "Registered successfully"
 msgstr "Успішно зареєстровано"
 
-#: dist/converse-no-dependencies.js:122407
+#: dist/converse-no-dependencies.js:122787
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -2361,282 +2398,281 @@ msgstr ""
 "Провайдер відхилив вашу спробу реєстрації. Будь ласка, перевірте введені "
 "значення на коректність."
 
-#: dist/converse-no-dependencies.js:122960
+#: dist/converse-no-dependencies.js:123340
 msgid " e.g. conversejs.org"
 msgstr " напр. conversejs.org"
 
-#: dist/converse-no-dependencies.js:123476
+#: dist/converse-no-dependencies.js:123856
 msgid "This field is required"
 msgstr "Це поле обов'язкове"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:123480
+#: dist/converse-no-dependencies.js:123860
 msgid "Join"
 msgstr "Приєднатися"
 
-#: dist/converse-no-dependencies.js:123484
+#: dist/converse-no-dependencies.js:123864
 msgid "name@conference.example.org"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:123486
+#: dist/converse-no-dependencies.js:123866
 #, fuzzy
 msgid "Groupchat name"
 msgstr "Назва кімнати"
 
-#: dist/converse-no-dependencies.js:123486
+#: dist/converse-no-dependencies.js:123866
 #, fuzzy
 msgid "Groupchat address"
 msgstr "Назва кімнати"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:123700
+#: dist/converse-no-dependencies.js:124080
 msgid "Enter a new Groupchat"
 msgstr "Увійти в нову кімнату"
 
-#: dist/converse-no-dependencies.js:123759
+#: dist/converse-no-dependencies.js:124139
 #, fuzzy
 msgid "Groupchat id is invalid."
 msgstr "Журналювання кімнати тепер ввімкнено"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:123808
+#: dist/converse-no-dependencies.js:124188
 msgid "Description:"
 msgstr "Опис:"
 
-#: dist/converse-no-dependencies.js:123809
+#: dist/converse-no-dependencies.js:124189
 #, fuzzy
 msgid "Groupchat XMPP Address:"
 msgstr "Назва кімнати"
 
-#: dist/converse-no-dependencies.js:123810
+#: dist/converse-no-dependencies.js:124190
 #, fuzzy
 msgid "Participants:"
 msgstr "Присутні:"
 
-#: dist/converse-no-dependencies.js:123811
+#: dist/converse-no-dependencies.js:124191
 msgid "Features:"
 msgstr "Особливості:"
 
-#: dist/converse-no-dependencies.js:123812
+#: dist/converse-no-dependencies.js:124192
 msgid "Requires authentication"
 msgstr "Вимагає автентикації"
 
-#: dist/converse-no-dependencies.js:123814
+#: dist/converse-no-dependencies.js:124194
 msgid "Requires an invitation"
 msgstr "Вимагає запрошення"
 
-#: dist/converse-no-dependencies.js:123816
+#: dist/converse-no-dependencies.js:124196
 msgid "Non-anonymous"
 msgstr "Не-анонімні"
 
-#: dist/converse-no-dependencies.js:123818
+#: dist/converse-no-dependencies.js:124198
 #, fuzzy
 msgid "Permanent"
 msgstr "Постійна кімната"
 
-#: dist/converse-no-dependencies.js:123822
+#: dist/converse-no-dependencies.js:124202
 msgid "Unmoderated"
 msgstr "Немодерована"
 
-#: dist/converse-no-dependencies.js:123842
+#: dist/converse-no-dependencies.js:124222
 #, fuzzy
 msgid "Show groupchats"
 msgstr "Групи"
 
-#: dist/converse-no-dependencies.js:123843
+#: dist/converse-no-dependencies.js:124223
 #, fuzzy
 msgid "Server address"
 msgstr "Сервер"
 
-#: dist/converse-no-dependencies.js:123847
-#: dist/converse-no-dependencies.js:124251
+#: dist/converse-no-dependencies.js:124227
+#: dist/converse-no-dependencies.js:124637
 #, fuzzy
 msgid "Show more information on this groupchat"
 msgstr "Показати більше інформації про цю кімату"
 
-#: dist/converse-no-dependencies.js:124089
+#: dist/converse-no-dependencies.js:124469
 msgid "conference.example.org"
 msgstr ""
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:124110
+#: dist/converse-no-dependencies.js:124490
 #, fuzzy
 msgid "Query for Groupchats"
 msgstr "Заблокувати і викинути з кімнати"
 
-#: dist/converse-no-dependencies.js:124150
+#: dist/converse-no-dependencies.js:124530
 #, fuzzy
 msgid "Groupchats found"
 msgstr "Групи"
 
-#: dist/converse-no-dependencies.js:124158
+#: dist/converse-no-dependencies.js:124538
 #, fuzzy
 msgid "No groupchats found"
 msgstr "Жодного користувача не знайдено"
 
-#: dist/converse-no-dependencies.js:124249
+#: dist/converse-no-dependencies.js:124633
 #, fuzzy
 msgid "Leave this groupchat"
 msgstr "Залишити цю кімнату"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:124254
+#: dist/converse-no-dependencies.js:124653
 #, fuzzy
 msgid "Click to toggle the list of open groupchats"
 msgstr "Натисніть, щоб переключити список кімнат"
 
-#: dist/converse-no-dependencies.js:124255
+#: dist/converse-no-dependencies.js:124654
 #, fuzzy
 msgid "Groupchats"
 msgstr "Групи"
 
-#: dist/converse-no-dependencies.js:124256
+#: dist/converse-no-dependencies.js:124655
 #, fuzzy
 msgid "Query for groupchats"
 msgstr "Заблокувати і викинути з кімнати"
 
-#: dist/converse-no-dependencies.js:124257
+#: dist/converse-no-dependencies.js:124656
 #, fuzzy
 msgid "Add a new groupchat"
 msgstr "Увійти в кімнату"
 
-#: dist/converse-no-dependencies.js:124258
+#: dist/converse-no-dependencies.js:124657
 #, fuzzy
 msgid "Show bookmarked groupchats"
 msgstr "Групи"
 
-#: dist/converse-no-dependencies.js:124864
+#: dist/converse-no-dependencies.js:125234
 #, fuzzy, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Ви впевнені, що хочете залишити кімнату \"%1$s\"?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125378
+#: dist/converse-no-dependencies.js:125736
 msgid "Add"
 msgstr "Додати"
 
-#: dist/converse-no-dependencies.js:125381
+#: dist/converse-no-dependencies.js:125739
 #, fuzzy
 msgid "Group"
 msgstr "Групи"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:125589
+#: dist/converse-no-dependencies.js:125947
 #, fuzzy
 msgid "Add a Contact"
 msgstr "Додати контакт"
 
-#: dist/converse-no-dependencies.js:125688
+#: dist/converse-no-dependencies.js:126046
 msgid "Sorry, could not find a contact with that name"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:125710
+#: dist/converse-no-dependencies.js:126068
 #, fuzzy
 msgid "This contact has already been added"
 msgstr "Цей контакт відсутній тривалий час"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125803
+#: dist/converse-no-dependencies.js:126161
 msgid "Click to hide these contacts"
 msgstr "Клацніть, щоб приховати ці контакти"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125831
+#: dist/converse-no-dependencies.js:126189
 msgid "Contacts"
 msgstr "Контакти"
 
-#: dist/converse-no-dependencies.js:125832
+#: dist/converse-no-dependencies.js:126190
 #, fuzzy
 msgid "Click to toggle contacts"
 msgstr "Клацніть, щоб приховати ці контакти"
 
-#: dist/converse-no-dependencies.js:125833
+#: dist/converse-no-dependencies.js:126191
 msgid "Add a contact"
 msgstr "Додати контакт"
 
-#: dist/converse-no-dependencies.js:125834
+#: dist/converse-no-dependencies.js:126192
 #, fuzzy
 msgid "Re-sync your contacts"
 msgstr "Мої контакти"
 
-#: dist/converse-no-dependencies.js:126480
+#: dist/converse-no-dependencies.js:126838
 msgid "This contact is busy"
 msgstr "Цей контакт зайнятий"
 
-#: dist/converse-no-dependencies.js:126481
+#: dist/converse-no-dependencies.js:126839
 msgid "This contact is online"
 msgstr "Цей контакт на зв'язку"
 
-#: dist/converse-no-dependencies.js:126482
+#: dist/converse-no-dependencies.js:126840
 msgid "This contact is offline"
 msgstr "Цей контакт поза мережею"
 
-#: dist/converse-no-dependencies.js:126483
+#: dist/converse-no-dependencies.js:126841
 msgid "This contact is unavailable"
 msgstr "Цей контакт недоступний"
 
-#: dist/converse-no-dependencies.js:126484
+#: dist/converse-no-dependencies.js:126842
 msgid "This contact is away for an extended period"
 msgstr "Цей контакт відсутній тривалий час"
 
-#: dist/converse-no-dependencies.js:126485
+#: dist/converse-no-dependencies.js:126843
 msgid "This contact is away"
 msgstr "Цей контакт відсутній"
 
-#: dist/converse-no-dependencies.js:126505
+#: dist/converse-no-dependencies.js:126863
 #, fuzzy, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Клацніть, щоб видалити цей контакт"
 
-#: dist/converse-no-dependencies.js:126528
+#: dist/converse-no-dependencies.js:126886
 #, fuzzy, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "Клацніть, щоб почати розмову з цим контактом"
 
-#: dist/converse-no-dependencies.js:127026
+#: dist/converse-no-dependencies.js:127384
 #, fuzzy, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Клацніть, щоб прийняти цей запит контакту"
 
-#: dist/converse-no-dependencies.js:127027
+#: dist/converse-no-dependencies.js:127385
 #, fuzzy, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Клацніть, щоб відхилити цей запит контакту"
 
-#: dist/converse-no-dependencies.js:127124
+#: dist/converse-no-dependencies.js:127482
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Ви впевнені, що хочете відхилити цей запит контакту?"
 
-#: dist/converse-no-dependencies.js:127172
+#: dist/converse-no-dependencies.js:127530
 #, fuzzy
 msgid "Filter by contact name"
 msgstr "Назва контакту"
 
-#: dist/converse-no-dependencies.js:127173
+#: dist/converse-no-dependencies.js:127531
 msgid "Filter by group name"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127174
+#: dist/converse-no-dependencies.js:127532
 msgid "Filter by status"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127175
+#: dist/converse-no-dependencies.js:127533
 msgid "Any"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127176
+#: dist/converse-no-dependencies.js:127534
 msgid "Unread"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127178
+#: dist/converse-no-dependencies.js:127536
 msgid "Chatty"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127181
+#: dist/converse-no-dependencies.js:127539
 msgid "Extended Away"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:127182
+#: dist/converse-no-dependencies.js:127540
 msgid "Offline"
 msgstr "Поза мережею"
 

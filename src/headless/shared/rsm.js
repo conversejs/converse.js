@@ -19,8 +19,8 @@ Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
  * [XEP-0059 RSM](https://xmpp.org/extensions/xep-0059.html) Attributes that can be used to filter query results
  * @property { String } [after] - The XEP-0359 stanza ID of a message after which messages should be returned. Implies forward paging.
  * @property { String } [before] - The XEP-0359 stanza ID of a message before which messages should be returned. Implies backward paging.
- * @property { Integer } [index=0] - The index of the results page to return.
- * @property { Integer } [max] - The maximum number of items to return.
+ * @property { number } [index=0] - The index of the results page to return.
+ * @property { number } [max] - The maximum number of items to return.
  */
 
 const RSM_QUERY_PARAMETERS = ['after', 'before', 'index', 'max'];
@@ -84,7 +84,7 @@ export class RSM {
      * Returns a `<set>` XML element that confirms to XEP-0059 Result Set Management.
      * The element is constructed based on the {@link module:converse-rsm~RSMQueryParameters}
      * that are set on this RSM instance.
-     * @returns { XMLElement }
+     * @returns { Element }
      */
     toXML () {
         const xml = $build('set', {xmlns: Strophe.NS.RSM});

@@ -3,7 +3,7 @@ import { api } from "@converse/headless/core.js";
 import { html } from "lit";
 import { STATUSES } from '../constants.js';
 
-const tpl_remove_link = (el, item) => {
+const tplRemoveLink = (el, item) => {
    const display_name = item.getDisplayName();
    const i18n_remove = __('Click to remove %1$s as a contact', display_name);
    return html`
@@ -46,5 +46,5 @@ export default  (el, item) => {
       ${ num_unread ? html`<span class="msgs-indicator">${ num_unread }</span>` : '' }
       <span class="contact-name contact-name--${el.show} ${ num_unread ? 'unread-msgs' : ''}">${display_name}</span>
    </a>
-   ${ api.settings.get('allow_contact_removal') ? tpl_remove_link(el, item) : '' }`;
+   ${ api.settings.get('allow_contact_removal') ? tplRemoveLink(el, item) : '' }`;
 }

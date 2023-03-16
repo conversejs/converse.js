@@ -38,43 +38,13 @@ const affiliation_option = (o) => html`
 `;
 
 
-const tpl_set_role_form = (o) => {
-    const i18n_change_role = __('Change role');
-    const i18n_new_role = __('New Role');
-    const i18n_reason = __('Reason');
-    return html`
-        <form class="role-form hidden" @submit=${o.assignRole}>
-            <div class="form-group">
-                <input type="hidden" name="jid" value="${o.item.jid}"/>
-                <input type="hidden" name="nick" value="${o.item.nick}"/>
-                <div class="row">
-                    <div class="col">
-                        <label><strong>${i18n_new_role}:</strong></label>
-                        <select class="custom-select select-role" name="role">
-                            ${ o.assignable_roles.map(role => html`<option value="${role}" ?selected=${role === o.item.role}>${role}</option>`) }
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label><strong>${i18n_reason}:</strong></label>
-                        <input class="form-control" type="text" name="reason"/>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
-            </div>
-        </form>
-    `;
-}
-
-
-const role_form_toggle = (o) => html`
-    <a href="#" data-form="role-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+const tplRoleFormToggle = (o) => html`
+    <a href="#" data-form="converse-muc-role-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
         <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
     </a>`;
 
 
-const role_list_item = (o) => html`
+const tplRoleListItem = (el, o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
             <li class="list-group-item active">
@@ -84,51 +54,23 @@ const role_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? role_form_toggle(o) : ''}</div>
-                ${o.assignable_roles.length ? tpl_set_role_form(o) : ''}
+                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? tplRoleFormToggle(o) : ''}</div>
+                ${o.assignable_roles.length ?
+                    html`<converse-muc-role-form class="hidden" .muc=${el.muc} jid=${o.item.jid} role=${o.item.role}></converse-muc-role-form>` : ''
+                }
             </li>
         </ul>
     </li>
 `;
 
 
-const tpl_set_affiliation_form = (o) => {
-    const i18n_change_affiliation = __('Change affiliation');
-    const i18n_new_affiliation = __('New affiliation');
-    const i18n_reason = __('Reason');
-    return html`
-        <form class="affiliation-form hidden" @submit=${o.assignAffiliation}>
-            <div class="form-group">
-                <input type="hidden" name="jid" value="${o.item.jid}"/>
-                <input type="hidden" name="nick" value="${o.item.nick}"/>
-                <div class="row">
-                    <div class="col">
-                        <label><strong>${i18n_new_affiliation}:</strong></label>
-                        <select class="custom-select select-affiliation" name="affiliation">
-                            ${ o.assignable_affiliations.map(aff => html`<option value="${aff}" ?selected=${aff === o.item.affiliation}>${aff}</option>`) }
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label><strong>${i18n_reason}:</strong></label>
-                        <input class="form-control" type="text" name="reason"/>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
-            </div>
-        </form>
-    `;
-}
-
-
 const affiliation_form_toggle = (o) => html`
-    <a href="#" data-form="affiliation-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+    <a href="#" data-form="converse-muc-affiliation-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
         <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
     </a>`;
 
 
-const affiliation_list_item = (o) => html`
+const affiliation_list_item = (el, o) => html`
     <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
             <li class="list-group-item active">
@@ -139,14 +81,16 @@ const affiliation_list_item = (o) => html`
             </li>
             <li class="list-group-item">
                 <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? affiliation_form_toggle(o) : ''}</div>
-                ${o.assignable_affiliations.length ? tpl_set_affiliation_form(o) : ''}
+                ${o.assignable_affiliations.length ?
+                    html`<converse-muc-affiliation-form class="hidden" .muc=${el.muc} jid=${o.item.jid} affiliation=${o.item.affiliation}></converse-muc-affiliation-form>` : ''
+                }
             </li>
         </ul>
     </li>
 `;
 
 
-const tpl_navigation = (o) => html`
+const tplNavigation = (o) => html`
     <ul class="nav nav-pills justify-content-center">
         <li role="presentation" class="nav-item">
             <a class="nav-link ${o.tab === "affiliations" ? "active" : ""}"
@@ -170,7 +114,7 @@ const tpl_navigation = (o) => html`
 `;
 
 
-export default (o) => {
+export default (el, o) => {
     const i18n_affiliation = __('Affiliation');
     const i18n_no_users_with_aff = __('No users with that affiliation found.')
     const i18n_no_users_with_role = __('No users with that role found.');
@@ -190,7 +134,7 @@ export default (o) => {
     const show_both_tabs = o.queryable_roles.length && o.queryable_affiliations.length;
     return html`
         ${o.alert_message ? html`<div class="alert alert-${o.alert_type}" role="alert">${o.alert_message}</div>` : '' }
-        ${ show_both_tabs ? tpl_navigation(o) : '' }
+        ${ show_both_tabs ? tplNavigation(o) : '' }
 
         <div class="tab-content">
 
@@ -231,7 +175,7 @@ export default (o) => {
 
                         ${ (o.users_with_affiliation instanceof Error) ?
                                 html`<li class="list-group-item">${o.users_with_affiliation.message}</li>` :
-                                (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(new RegExp(o.affiliations_filter, 'i')) ? affiliation_list_item(Object.assign({item}, o)) : '')) }
+                                (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(new RegExp(o.affiliations_filter, 'i')) ? affiliation_list_item(el, Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
             </div>` : '' }
@@ -266,7 +210,7 @@ export default (o) => {
                     <ul class="list-group list-group--users">
                         ${ o.loading_users_with_role ? html`<li class="list-group-item"> ${spinner()} </li>` : '' }
                         ${ (o.users_with_role && o.users_with_role.length === 0) ? html`<li class="list-group-item">${i18n_no_users_with_role}</li>` : '' }
-                        ${ (o.users_with_role || []).map(item => (item.nick.match(o.roles_filter) ? role_list_item(Object.assign({item}, o)) : '')) }
+                        ${ (o.users_with_role || []).map(item => (item.nick.match(o.roles_filter) ? tplRoleListItem(el, Object.assign({item}, o)) : '')) }
                     </ul>
                 </div>
             </div>`: '' }

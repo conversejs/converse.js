@@ -1,4 +1,4 @@
-import tpl_roster from "./templates/roster.js";
+import tplRoster from "./templates/roster.js";
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api } from "@converse/headless/core";
@@ -40,7 +40,7 @@ export default class RosterView extends CustomElement {
     }
 
     render () {
-        return tpl_roster(this);
+        return tplRoster(this);
     }
 
     showAddContactModal (ev) { // eslint-disable-line class-methods-use-this

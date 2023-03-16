@@ -1,4 +1,4 @@
-import tpl_muc_bookmark_form from './templates/form.js';
+import tplMUCBookmarkForm from './templates/form.js';
 import { CustomElement } from 'shared/components/element';
 import { _converse, api } from "@converse/headless/core";
 
@@ -19,13 +19,13 @@ class MUCBookmarkForm extends CustomElement {
     }
 
     render () {
-        return tpl_muc_bookmark_form(this)
+        return tplMUCBookmarkForm(this)
     }
 
     onBookmarkFormSubmitted (ev) {
         ev.preventDefault();
         _converse.bookmarks.createBookmark({
-            'jid': this.model.get('jid'),
+            'jid': this.jid,
             'autojoin': ev.target.querySelector('input[name="autojoin"]')?.checked || false,
             'name': ev.target.querySelector('input[name=name]')?.value,
             'nick': ev.target.querySelector('input[name=nick]')?.value

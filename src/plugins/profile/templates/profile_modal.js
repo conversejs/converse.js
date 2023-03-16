@@ -4,7 +4,7 @@ import { _converse } from  "@converse/headless/core";
 import { html } from "lit";
 
 
-const tpl_omemo_page = (el) => html`
+const tplOmemoPage = (el) => html`
     <div class="tab-pane ${ el.tab === 'omemo' ? 'active' : ''}" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
         ${ el.tab === 'omemo' ? html`<converse-omemo-profile></converse-omemo-profile>` : '' }
     </div>`;
@@ -114,7 +114,7 @@ export default (el) => {
                 ${ el.tab === 'passwordreset' ? html`<converse-change-password-form></converse-change-password-form>` : '' }
             </div>
 
-            ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? tpl_omemo_page(el) : '' }
+            ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? tplOmemoPage(el) : '' }
         </div>
     </div>`;
 }

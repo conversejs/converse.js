@@ -1,4 +1,4 @@
-import tpl_alert_component from "./modal-alert.js";
+import tplAlertComponent from "./modal-alert.js";
 import { html } from "lit";
 import { modal_close_button, modal_header_close_button } from "plugins/modal/templates/buttons.js";
 
@@ -15,7 +15,7 @@ export default (el) => {
                 </div>
                 <div class="modal-body">
                     <span class="modal-alert">
-                        ${ alert ? tpl_alert_component({'type': `alert-${alert.type}`, 'message': alert.message}) :  ''}
+                        ${ alert ? tplAlertComponent({'type': `alert-${alert.type}`, 'message': alert.message}) :  ''}
                     </span>
                     ${ el.renderModal?.() ?? '' }
                 </div>

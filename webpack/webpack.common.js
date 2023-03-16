@@ -59,10 +59,15 @@ module.exports = {
                 {
                     loader: 'css-loader',
                     options: {
+                        url: false,
                         sourceMap: true
+
                     }
                 },
-                'postcss-loader',
+                {
+                    loader: "postcss-loader",
+                    options: { sourceMap: true }
+                },
                 {
                     loader: 'sass-loader',
                     options: {
@@ -74,7 +79,7 @@ module.exports = {
                         },
                         sourceMap: true
                     }
-                }
+                },
             ]
         }, {
             test: /\.js$/,

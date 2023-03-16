@@ -1,4 +1,4 @@
-import tpl_unfurl from './templates/unfurl.js';
+import tplUnfurl from './templates/unfurl.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless/core";
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
@@ -25,7 +25,7 @@ export default class MessageUnfurl extends CustomElement {
     }
 
     render () {
-        return tpl_unfurl(Object.assign({
+        return tplUnfurl(Object.assign({
             'onload': () => this.onImageLoad()
         }, {
             description: this.description || '',

@@ -25,7 +25,7 @@ export default (el) => {
                 <input class="form-control" type="text" name="nick" value="${nick || ''}" id="converse_muc_bookmark_nick"/>
             </fieldset>
             <fieldset class="form-group form-check">
-                <input class="form-check-input" id="converse_muc_bookmark_autojoin" type="checkbox" name="autojoin"/>
+                <input class="form-check-input" id="converse_muc_bookmark_autojoin" type="checkbox" ?checked=${el.bookmark?.get('autojoin')} name="autojoin"/>
                 <label class="form-check-label" for="converse_muc_bookmark_autojoin">${i18n_autojoin}</label>
             </fieldset>
             <fieldset class="form-group">

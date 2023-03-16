@@ -66,7 +66,7 @@ serve_bg: node_modules
 dist/converse-no-dependencies.js: src webpack/webpack.common.js webpack/webpack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
-GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=10.1.0 dist/converse-no-dependencies.js -c
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=10.1.2 dist/converse-no-dependencies.js -c
 
 src/i18n/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
@@ -86,7 +86,7 @@ po:
 .PHONY: release
 release:
 	find ./src -name "*~" -exec rm {} \;
-	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/core.js
+	$(SED) -i '/^export const VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/shared/constants.js
 	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
 	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' src/i18n/converse.pot
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json
@@ -107,6 +107,12 @@ release:
 .PHONY: postrelease
 postrelease:
 	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/core.js
+
+.PHONY: deploy
+deploy:
+	git clone --branch v$(VERSION) git@github.com:conversejs/converse.js.git $(VERSION)
+	cd $(VERSION) && make node && ASSET_PATH=https://cdn.conversejs.org/$(VERSION)/dist/ make dist && make doc
+	cd .. && git pull && make node && ASSET_PATH=https://cdn.conversejs.org/dist/ make dist && make doc
 
 ########################################################################
 ## Install dependencies
@@ -194,6 +200,7 @@ src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_m
 dist:: node_modules src/* | dist/website.css dist/website.min.css
 	npm run headless
 	npm run build
+	make types
 
 .PHONY: install
 install:: dist
@@ -201,6 +208,10 @@ install:: dist
 .PHONY: cdn
 cdn:: node_modules
 	npm run cdn
+
+.PHONY: types
+types:: node_modules
+	npm run types
 
 ########################################################################
 ## Tests

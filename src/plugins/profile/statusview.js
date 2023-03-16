@@ -1,4 +1,4 @@
-import tpl_profile from './templates/profile.js';
+import tplProfile from './templates/profile.js';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless/core';
 
@@ -11,7 +11,7 @@ class Profile extends CustomElement {
     }
 
     render () {
-        return tpl_profile(this);
+        return tplProfile(this);
     }
 
     showProfileModal (ev) {

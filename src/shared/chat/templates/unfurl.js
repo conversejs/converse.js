@@ -11,12 +11,12 @@ function isValidImage (image) {
     return image && isDomainAllowed(image, 'allowed_image_domains') && isValidURL(image);
 }
 
-const tpl_url_wrapper = (o, wrapped_template) =>
+const tplUrlWrapper = (o, wrapped_template) =>
     o.url && isValidURL(o.url) && !isGIFURL(o.image)
         ? html`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>`
         : wrapped_template(o);
 
-const tpl_image = o =>
+const tplImage = o =>
     html`<converse-image class="card-img-top hor_centered" href="${o.url}" src="${o.image}" .onImgLoad=${o.onload}></converse-image>`;
 
 export default o => {
@@ -24,10 +24,10 @@ export default o => {
     const has_body_info = o.title || o.description || o.url;
     if (show_image || has_body_info) {
         return html`<div class="card card--unfurl">
-            ${show_image ? tpl_image(o) : ''}
+            ${show_image ? tplImage(o) : ''}
             ${has_body_info
                 ? html` <div class="card-body">
-                      ${o.title ? tpl_url_wrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}
+                      ${o.title ? tplUrlWrapper(o, o => html`<h5 class="card-title">${o.title}</h5>`) : ''}
                       ${o.description
                           ? html`<p class="card-text">
                                 <converse-rich-text text=${o.description}></converse-rich-text>

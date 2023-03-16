@@ -1,7 +1,26 @@
 # Changelog
 
-## 10.1.1 (Unreleased)
+## 10.1.3 (Unreleased)
 
+- Add the ability to set roles and affiliations via the MUC occupant modal
+- Fix `isOnlyEmojis is not a function` when using only `@converse/headless`
+- Fix `autojoin` checkbox state in MUC bookmark form
+- Remove call to `api.confirm` in `@converse/headless`
+- Generate TypeScript declaration files into `dist/types`
+- #3156: Add function to prevent drag stutter effect over iframes when resize is called in overlay mode
+
+- New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#stanza-timeout)
+
+## 10.1.2 (2023-02-17)
+
+- #1490: Busy-loop when fetching registration form fails
+- #1556: Can't switch to registration form afrer logout
+- #3137: Various UI/UX bugfixes regarding the registration form
+- XEP-0437: Room Activity Indicators (RAI) optimizations
+
+## 10.1.1 (2023-02-15)
+
+- #1851: Sort open groupchats alphabetically
 - #2240: Ad-Hoc command result form not shown
 - #3128: Second bookmarked room shows info of the first one
 - Bugfix. Uyghur translations weren't loading
@@ -14,7 +33,7 @@
 - #2925: File upload is not always enabled
 - #3001: Add option to save SCRAM details and to use them to stay logged in upon reload
 - Add a "Add to Contacts" button in MUC occupant modals
-- Updated tranlsations and new language Uyghur
+- Updated translations and add support for Uyghur
 
 - New config option [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys)
 

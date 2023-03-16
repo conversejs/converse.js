@@ -308,7 +308,7 @@ describe("Message Retractions", function () {
 
     describe("A Sent Chat Message", function () {
 
-        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        it("can be retracted by its author", mock.initConverse(['chatBoxesFetched'], { vcard: { nickname: ''} }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const view = await mock.openChatBoxFor(_converse, contact_jid);
@@ -661,9 +661,7 @@ describe("Message Retractions", function () {
         }));
 
         it("can be retracted by its author, causing a timeout error in response",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
-            _converse.STANZA_TIMEOUT = 1;
+                mock.initConverse(['chatBoxesFetched'], { stanza_timeout: 1 }, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];

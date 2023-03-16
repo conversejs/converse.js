@@ -1,20 +1,25 @@
 import { CustomElement } from './element.js';
 import { api, converse } from '@converse/headless/core';
 import { html } from 'lit';
-import { __ } from 'i18n';
+import { __ } from 'i18n/index.js';
 import './styles/message-versions.scss';
 
 const { dayjs } = converse.env;
 
-const tpl_older_version = (k, older_versions) => html`<p class="older-msg"><time>${dayjs(k).format('MMM D, YYYY, HH:mm:ss')}</time>: ${older_versions[k]}</p>`;
+const tplOlderVersion = (k, older_versions) => html`<p class="older-msg"><time>${dayjs(k).format('MMM D, YYYY, HH:mm:ss')}</time>: ${older_versions[k]}</p>`;
 
 
 export class MessageVersions extends CustomElement {
 
     static get properties () {
         return {
-            'model': { type: Object }
+            model: { type: Object }
         }
+    }
+
+    constructor () {
+        super();
+        this.model = null;
     }
 
     render () {
@@ -22,7 +27,7 @@ export class MessageVersions extends CustomElement {
         const keys = Object.keys(older_versions);
         return html`
             ${ keys.length ?
-                html`<h4>${__('Older versions')}</h4> ${keys.map(k => tpl_older_version(k, older_versions))}` :
+                html`<h4>${__('Older versions')}</h4> ${keys.map(k => tplOlderVersion(k, older_versions))}` :
                 html`<h4>${__('No older versions found')}</h4>`
             }
             <hr/>

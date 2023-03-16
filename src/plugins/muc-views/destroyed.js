@@ -1,4 +1,4 @@
-import tpl_muc_destroyed from './templates/muc-destroyed.js';
+import tplMUCDestroyed from './templates/muc-destroyed.js';
 import { CustomElement } from 'shared/components/element';
 import { _converse, api } from "@converse/headless/core";
 
@@ -19,7 +19,7 @@ class MUCDestroyed extends CustomElement {
     render () {
         const reason = this.model.get('destroyed_reason');
         const moved_jid = this.model.get('moved_jid');
-        return tpl_muc_destroyed({
+        return tplMUCDestroyed({
             moved_jid,
             reason,
             'onSwitch': ev => this.onSwitch(ev)

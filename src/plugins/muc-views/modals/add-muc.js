@@ -1,4 +1,4 @@
-import tpl_add_muc from "./templates/add-muc.js";
+import tplAddMuc from "./templates/add-muc.js";
 import BaseModal from "plugins/modal/modal.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -22,7 +22,7 @@ export default class AddMUCModal extends BaseModal {
     }
 
     renderModal () {
-        return tpl_add_muc(this);
+        return tplAddMuc(this);
     }
 
     getModalTitle () { // eslint-disable-line class-methods-use-this

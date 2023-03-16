@@ -1,5 +1,5 @@
 import { CustomElement } from 'shared/components/element.js';
-import tpl_avatar from './templates/avatar.js';
+import tplAvatar from './templates/avatar.js';
 import { _converse, api } from '@converse/headless/core';
 
 import './avatar.scss';
@@ -31,7 +31,7 @@ export default class Avatar extends CustomElement {
             const image_data = this.data?.image || _converse.DEFAULT_IMAGE;
             image = "data:" + image_type + ";base64," + image_data;
         }
-        return tpl_avatar({
+        return tplAvatar({
             'classes': this.getAttribute('class'),
             'height': this.height,
             'width': this.width,

@@ -49,7 +49,7 @@ const converse = {
      *
      * @memberOf converse
      * @method load
-     * @param {object} settings A map of configuration-settings that are needed at load time.
+     * @param { object } settings A map of configuration-settings that are needed at load time.
      * @example
      * converse.load({assets_path: '/path/to/assets/'});
      */
@@ -57,7 +57,7 @@ const converse = {
         if (settings.assets_path) {
             __webpack_public_path__ = settings.assets_path; // eslint-disable-line no-undef
         }
-        require('./converse.js');
+        require('./index.js');
         Object.keys(plugins).forEach(name => converse.plugins.add(name, plugins[name]));
         return converse;
     }

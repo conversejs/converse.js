@@ -1,4 +1,4 @@
-import tpl_message_form from './templates/message-form.js';
+import tplMessageForm from './templates/message-form.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core.js";
@@ -32,7 +32,7 @@ export default class MessageForm extends ElementView {
     }
 
     toHTML () {
-        return tpl_message_form(
+        return tplMessageForm(
             Object.assign(this.model.toJSON(), {
                 'onDrop': ev => this.onDrop(ev),
                 'hint_value': this.querySelector('.spoiler-hint')?.value,
@@ -48,12 +48,12 @@ export default class MessageForm extends ElementView {
 
     /**
      * Insert a particular string value into the textarea of this chat box.
-     * @param {string} value - The value to be inserted.
+     * @param { string } value - The value to be inserted.
      * @param {(boolean|string)} [replace] - Whether an existing value
      *  should be replaced. If set to `true`, the entire textarea will
      *  be replaced with the new value. If set to a string, then only
      *  that string will be replaced *if* a position is also specified.
-     * @param {integer} [position] - The end index of the string to be
+     * @param { number } [position] - The end index of the string to be
      *  replaced with the new value.
      */
     insertIntoTextArea (value, replace = false, correcting = false, position) {

@@ -1,7 +1,7 @@
 import 'plugins/chatview/heading.js';
 import 'plugins/chatview/bottom-panel.js';
 import BaseChatView from 'shared/chat/baseview.js';
-import tpl_chat from './templates/chat.js';
+import tplChat from './templates/chat.js';
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless/core';
 
@@ -33,7 +33,7 @@ export default class ChatView extends BaseChatView {
     }
 
     render () {
-        return tpl_chat(Object.assign({
+        return tplChat(Object.assign({
             'model': this.model,
             'help_messages': this.getHelpMessages(),
             'show_help_messages': this.model.get('show_help_messages'),

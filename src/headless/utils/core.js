@@ -8,13 +8,19 @@ import _converse from '@converse/headless/shared/_converse.js';
 import compact from "lodash-es/compact";
 import isObject from "lodash-es/isObject";
 import last from "lodash-es/last";
-import log from '@converse/headless/log.js';
+import log from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js/src/strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { settings_api } from '@converse/headless/shared/settings/api.js';
+import { settings_api } from '../shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
+
+/**
+ * The utils object
+ * @namespace u
+ */
+const u = {};
 
 export function isElement (el) {
     return el instanceof Element || el instanceof HTMLDocument;
@@ -22,6 +28,10 @@ export function isElement (el) {
 
 export function isError (obj) {
     return Object.prototype.toString.call(obj) === "[object Error]";
+}
+
+export function isFunction (val) {
+    return typeof val === 'function';
 }
 
 export function isEmptyMessage (attrs) {
@@ -44,16 +54,24 @@ export function isUniView () {
     return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
 }
 
+export function shouldClearCache () {
+    const { api } = _converse;
+    return !_converse.config.get('trusted') ||
+        api.settings.get('clear_cache_on_logout') ||
+        _converse.isTestEnv();
+}
+
 
 export async function tearDown () {
-    await _converse.api.trigger('beforeTearDown', {'synchronous': true});
+    const { api } = _converse;
+    await api.trigger('beforeTearDown', {'synchronous': true});
     window.removeEventListener('click', _converse.onUserActivity);
     window.removeEventListener('focus', _converse.onUserActivity);
     window.removeEventListener('keypress', _converse.onUserActivity);
     window.removeEventListener('mousemove', _converse.onUserActivity);
     window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
     window.clearInterval(_converse.everySecondTrigger);
-    _converse.api.trigger('afterTearDown');
+    api.trigger('afterTearDown');
     return _converse;
 }
 
@@ -61,7 +79,7 @@ export async function tearDown () {
 export function clearSession () {
     _converse.session?.destroy();
     delete _converse.session;
-    _converse.shouldClearCache() && _converse.api.user.settings.clear();
+    shouldClearCache() && _converse.api.user.settings.clear();
     /**
      * Synchronouse event triggered once the user session has been cleared,
      * for example when the user has logged out or when Converse has
@@ -85,13 +103,6 @@ export function prefixMentions (message) {
         });
     return text;
 }
-
-
-/**
- * The utils object
- * @namespace u
- */
-const u = {};
 
 u.isTagEqual = function (stanza, name) {
     if (stanza.tree?.()) {
@@ -183,7 +194,7 @@ u.isChatRoom = function (model) {
     return model && (model.get('type') === 'chatroom');
 }
 
-u.isErrorObject = function (o) {
+export function isErrorObject (o) {
     return o instanceof Error;
 }
 
@@ -256,7 +267,7 @@ u.stringToElement = function (s) {
  * Checks whether the DOM element matches the given selector.
  * @private
  * @method u#matchesSelector
- * @param { DOMElement } el - The DOM element
+ * @param { Element } el - The DOM element
  * @param { String } selector - The selector
  */
 u.matchesSelector = function (el, selector) {
@@ -275,7 +286,7 @@ u.matchesSelector = function (el, selector) {
  * Returns a list of children of the DOM element that match the selector.
  * @private
  * @method u#queryChildren
- * @param { DOMElement } el - the DOM element
+ * @param { Element } el - the DOM element
  * @param { String } selector - the selector they should be matched against
  */
 u.queryChildren = function (el, selector) {
@@ -394,10 +405,10 @@ u.siblingIndex = function (el) {
 /**
  * Returns the current word being written in the input element
  * @method u#getCurrentWord
- * @param {HTMLElement} input - The HTMLElement in which text is being entered
- * @param {integer} [index] - An optional rightmost boundary index. If given, the text
+ * @param { HTMLElement } input - The HTMLElement in which text is being entered
+ * @param { number } [index] - An optional rightmost boundary index. If given, the text
  *  value of the input element will only be considered up until this index.
- * @param {string} [delineator] - An optional string delineator to
+ * @param { string } [delineator] - An optional string delineator to
  *  differentiate between words.
  * @private
  */
@@ -477,8 +488,8 @@ export function getUniqueId (suffix) {
 /**
  * Clears the specified timeout and interval.
  * @method u#clearTimers
- * @param {number} timeout - Id if the timeout to clear.
- * @param {number} interval - Id of the interval to clear.
+ * @param { number } timeout - Id if the timeout to clear.
+ * @param { number } interval - Id of the interval to clear.
  * @private
  * @copyright Simen Bekkhus 2016
  * @license MIT
@@ -493,16 +504,16 @@ function clearTimers(timeout, interval) {
  * Creates a {@link Promise} that resolves if the passed in function returns a truthy value.
  * Rejects if it throws or does not return truthy within the given max_wait.
  * @method u#waitUntil
- * @param {Function} func - The function called every check_delay,
+ * @param { Function } func - The function called every check_delay,
  *  and the result of which is the resolved value of the promise.
- * @param {number} [max_wait=300] - The time to wait before rejecting the promise.
- * @param {number} [check_delay=3] - The time to wait before each invocation of {func}.
+ * @param { number } [max_wait=300] - The time to wait before rejecting the promise.
+ * @param { number } [check_delay=3] - The time to wait before each invocation of {func}.
  * @returns {Promise} A promise resolved with the value of func,
  *  or rejected with the exception thrown by it or it times out.
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */
-u.waitUntil = function (func, max_wait=300, check_delay=3) {
+export function waitUntil (func, max_wait=300, check_delay=3) {
     // Run the function once without setting up any listeners in case it's already true
     try {
         const result = func();
@@ -620,6 +631,9 @@ export function saveWindowState (ev) {
 
 
 export default Object.assign({
+    shouldClearCache,
+    waitUntil, // TODO: remove. Only the API should be used
+    isErrorObject,
     getRandomInt,
     getUniqueId,
     isElement,

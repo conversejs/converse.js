@@ -1,5 +1,5 @@
 import debounce from "lodash-es/debounce";
-import tpl_roster_filter from "./templates/roster_filter.js";
+import tplRosterFilter from "./templates/roster_filter.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from "@converse/headless/core";
 import { ancestor } from 'utils/html.js';
@@ -28,7 +28,7 @@ export class RosterFilterView extends CustomElement {
 
     render () {
         return this.model ?
-        tpl_roster_filter(
+        tplRosterFilter(
             Object.assign(this.model.toJSON(), {
                 visible: this.shouldBeVisible(),
                 changeChatStateFilter: ev => this.changeChatStateFilter(ev),

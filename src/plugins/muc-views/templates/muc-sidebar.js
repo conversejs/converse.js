@@ -1,4 +1,4 @@
-import tpl_occupant from "./occupant.js";
+import tplOccupant from "./occupant.js";
 import { __ } from 'i18n';
 import { html } from "lit";
 import { repeat } from 'lit/directives/repeat.js';
@@ -16,6 +16,6 @@ export default (o) => {
             </div>
         </div>
         <div class="dragresize dragresize-occupants-left"></div>
-        <ul class="occupant-list">${ repeat(o.occupants, (occ) => occ.get('jid'), (occ) => tpl_occupant(occ, o)) }</ul>
+        <ul class="occupant-list">${ repeat(o.occupants, (occ) => occ.get('jid'), (occ) => tplOccupant(occ, o)) }</ul>
     `;
 }

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 9.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2022-11-08 20:05+0000\n"
-"Last-Translator: K.Y. <keramyasina@gmail.com>\n"
+"PO-Revision-Date: 2023-03-19 16:41+0000\n"
+"Last-Translator: \"K.Y.\" <keramyasina@gmail.com>\n"
 "Language-Team: Uyghur <https://hosted.weblate.org/projects/conversejs/"
 "translations/ug/>\n"
 "Language: ug\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
@@ -1409,7 +1409,7 @@ msgstr "ئالاقىداشلار"
 
 #: dist/converse-no-dependencies.js:99336
 msgid "Toggle chat"
-msgstr "پاراڭنى ئۆزگەرتىش"
+msgstr "كىرىش"
 
 #: dist/converse-no-dependencies.js:101202
 msgid "Close these announcements"

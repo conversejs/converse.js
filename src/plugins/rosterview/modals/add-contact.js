@@ -27,12 +27,14 @@ export default class AddContactModal extends BaseModal {
     }
 
     afterRender () {
-        if (typeof api.settings.get('xhr_user_search_url') === 'string') {
-            this.initXHRAutoComplete();
-        } else {
-            this.initJIDAutoComplete();
-        }
-    }
+        const jid_input = this.el.querySelector('input[name="jid"]');
+        this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
+    },
+
+    getGroupsAutoCompleteList () {
+        return ['apple', 'pear', 'banana'];
+        // return [...new Set(_converse.roster.map(i => i.get('gruop')).filter(i => i))];
+    },
 
     initJIDAutoComplete () {
         if (!api.settings.get('autocomplete_add_contact')) {

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2021-11-02 12:35+0000\n"
+"PO-Revision-Date: 2023-04-02 13:39+0000\n"
 "Last-Translator: Kim Alvefur <zash@zash.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/conversejs/"
 "translations/sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
@@ -244,7 +244,7 @@ msgstr "Förbjudet: du har inte den nödvändiga rollen för att göra det."
 
 #: dist/converse-no-dependencies.js:48913
 msgid "Error: couldn't register new nickname in members only room"
-msgstr ""
+msgstr "Fel: kunde inte registrera smeknamn i rum som endast är för medlemmar"
 
 #: dist/converse-no-dependencies.js:49186
 msgid "You're not allowed to register yourself in this groupchat."
@@ -464,14 +464,12 @@ msgid "Remote server not found"
 msgstr "Fjärrserver ej funnen"
 
 #: dist/converse-no-dependencies.js:50401
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr "Du har inte tillåtelse att registrera dig i denna gruppchatt."
+msgstr "Du har inte tillåtelse att gå med i denna gruppchatt."
 
 #: dist/converse-no-dependencies.js:50404
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr "Ledsen, ett fel skedde när din profilinformation skulle sparas."
+msgstr "Något gick fel med att gå i gruppchatten"
 
 #: dist/converse-no-dependencies.js:51349
 #, javascript-format
@@ -604,14 +602,12 @@ msgstr ""
 "kan ladda om sidan för att efterfråga dom igen."
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
-"Ledsen, ett fel uppstod medans konfigurationsformuläret skulle skickas."
+msgstr "Det uppstod ett fel med att hämta kommandoformuläret"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "En timeout inträffade"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -676,20 +672,19 @@ msgstr "Utför"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Föregående"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Nästa"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "Färdigställ"
 
 #: dist/converse-no-dependencies.js:74520
-#, fuzzy
 msgid "Add to Contacts"
-msgstr "Lägg till en kontakt"
+msgstr "Lägg till i kontakter"
 
 #: dist/converse-no-dependencies.js:74530
 #: dist/converse-no-dependencies.js:89058
@@ -717,17 +712,16 @@ msgid "Affiliation"
 msgstr "Anknytning"
 
 #: dist/converse-no-dependencies.js:74530
-#, fuzzy
 msgid "Roles"
-msgstr "Roll"
+msgstr "Roller"
 
 #: dist/converse-no-dependencies.js:74530
 msgid "Hats"
-msgstr ""
+msgstr "Hattar"
 
 #: dist/converse-no-dependencies.js:74530
 msgid "Occupant Id"
-msgstr ""
+msgstr "Närvaro-id"
 
 #: dist/converse-no-dependencies.js:74760
 msgid ""
@@ -967,27 +961,25 @@ msgstr ""
 "för detaljer"
 
 #: dist/converse-no-dependencies.js:78102
-#, fuzzy
 msgid "Executing"
 msgstr "Utför"
 
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "Färdig"
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Ledsen, ett fel uppstod när kommandot skulle utföras. Se utvecklarkonsolen "
+"Ledsen, ett fel uppstod när kommandot skulle avbrytas. Se utvecklarkonsolen "
 "för detaljer"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Fel: oväntat resultat"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"
@@ -1027,9 +1019,9 @@ msgid "Bookmarks"
 msgstr "Bokmärken"
 
 #: dist/converse-no-dependencies.js:79500
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Bokmärken"
+msgstr "Bokmärke för \"%1$s\""
 
 #: dist/converse-no-dependencies.js:79501
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -1037,7 +1029,7 @@ msgstr "Vill du gå med i denna gruppchatt automatiskt vid uppstart?"
 
 #: dist/converse-no-dependencies.js:79502
 msgid "Remove"
-msgstr ""
+msgstr "Ta bort"
 
 #: dist/converse-no-dependencies.js:79503
 msgid "The name for this bookmark:"
@@ -1049,7 +1041,7 @@ msgstr "Vilket smeknamn vill du ha för den här gruppchatten?"
 
 #: dist/converse-no-dependencies.js:79505
 msgid "Update"
-msgstr ""
+msgstr "Uppdatera"
 
 #: dist/converse-no-dependencies.js:79505
 #: dist/converse-no-dependencies.js:106097
@@ -1135,18 +1127,16 @@ msgid "Image: "
 msgstr "Bild: "
 
 #: dist/converse-no-dependencies.js:88791
-#, fuzzy
 msgid "Older versions"
-msgstr "Meddelandeversioner"
+msgstr "Äldre versioner"
 
 #: dist/converse-no-dependencies.js:88793
-#, fuzzy
 msgid "No older versions found"
-msgstr "Fjärrserver ej funnen"
+msgstr "Inga äldre versioner hittade"
 
 #: dist/converse-no-dependencies.js:88793
 msgid "Current version"
-msgstr ""
+msgstr "Nuvarande version"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88954
@@ -1353,15 +1343,16 @@ msgstr "Detta är en betrodd enhet"
 
 #: dist/converse-no-dependencies.js:98348
 msgid "Connection URL"
-msgstr ""
+msgstr "Anslutnings-URL"
 
 #: dist/converse-no-dependencies.js:98349
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
+"HTTP- eller websocket-URL som används för att ansluta till din XMPP-server"
 
 #: dist/converse-no-dependencies.js:98350
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "t.ex. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:98355
 msgid "Password"
@@ -1427,9 +1418,8 @@ msgid "Click to load missing messages"
 msgstr "Klicka för att ladda saknade meddelanden"
 
 #: dist/converse-no-dependencies.js:104093
-#, fuzzy
 msgid "Change nickname"
-msgstr "Ändra ditt smeknamn"
+msgstr "Ändra smeknamn"
 
 #: dist/converse-no-dependencies.js:104093
 msgid "Enter groupchat"
@@ -1486,7 +1476,6 @@ msgstr "Besökare"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:105071
-#, fuzzy
 msgid "Participant"
 msgstr "Deltagare"
 
@@ -1618,7 +1607,6 @@ msgid "Topic author"
 msgstr "Ämnesupphovsman"
 
 #: dist/converse-no-dependencies.js:107497
-#, fuzzy
 msgid "XMPP address"
 msgstr "XMPP-adress"
 
@@ -1796,9 +1784,8 @@ msgid "Configure this groupchat"
 msgstr "Konfigurera den här gruppchatten"
 
 #: dist/converse-no-dependencies.js:109054
-#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr "Vilket smeknamn vill du ha för den här gruppchatten?"
+msgstr "Ändra smeknamnet du använder i den här gruppchatten"
 
 #: dist/converse-no-dependencies.js:109067
 msgid "Invite someone to join this groupchat"
@@ -1970,41 +1957,40 @@ msgid "Profile"
 msgstr "Profil"
 
 #: dist/converse-no-dependencies.js:112878
-#, fuzzy
 msgid "Reset Password"
-msgstr "Lösenord"
+msgstr "Återställ Lösenord"
 
 #: dist/converse-no-dependencies.js:112916
 msgid "The new passwords must match"
-msgstr ""
+msgstr "Lösenorden måste vara identiska"
 
 #: dist/converse-no-dependencies.js:112917
-#, fuzzy
 msgid "New password"
-msgstr "Lösenord"
+msgstr "Nytt lösenord"
 
 #: dist/converse-no-dependencies.js:112918
 msgid "Confirm new password"
-msgstr ""
+msgstr "Bekräfta nytt lösenord"
 
 #: dist/converse-no-dependencies.js:113440
-#, fuzzy
 msgid "Timeout error"
-msgstr "Tog för lång tid"
+msgstr "Timeout-fel"
 
 #: dist/converse-no-dependencies.js:113447
+#, fuzzy
 msgid "Your server does not support in-band password reset"
-msgstr ""
+msgstr "Din server stödjer inte lösenordsåterställning över anslutningen"
 
 #: dist/converse-no-dependencies.js:113454
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
+"Din server svarade med ett okänt fel, kan kolla webbläsares utvecklarkonsol "
+"för detaljer"
 
 #: dist/converse-no-dependencies.js:113473
-#, fuzzy
 msgid "Timeout error while trying to set your password"
-msgstr "Avbrottsfel när anknytningen skulle ställas in"
+msgstr "Timeoutfel när lösenordet skulle sättas"
 
 #: dist/converse-no-dependencies.js:113475
 msgid "Your server does not allow in-band password reset"

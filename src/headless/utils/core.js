@@ -485,6 +485,11 @@ export function getUniqueId (suffix) {
     }
 }
 
+u.httpToGeoUri = function(text) {
+    const replacement = 'geo:$<lat>,$<lon>;z=$<zoom>';
+    const geouri_regex = settings_api.get("geouri_regex");
+    return geouri_regex ? text.replace(geouri_regex, replacement) : text;
+};
 
 /**
  * Clears the specified timeout and interval.

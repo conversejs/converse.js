@@ -45,8 +45,8 @@ export const DEFAULT_SETTINGS = {
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
     discover_connection_methods: true,
-    geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
-    geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
+    geouri_regex: /https:\/\/www\.openstreetmap\.org\/\#map=(?<zoom>[0-9]+)\/(?<lat>[\-0-9.]+)\/(?<lon>[\-0-9.]+)/g,
+    geouri_replacement: 'https://www.openstreetmap.org/?mlat=$<lat>&mlon=$<lon>#map=$<zoom>/$<lat>/$<lon>',
     i18n: undefined,
     jid: undefined,
     keepalive: true,

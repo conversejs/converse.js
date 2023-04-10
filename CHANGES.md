@@ -11,6 +11,7 @@
 - Updated translations
 - #3123: Contacts do not show up online until chat is opened with them.
 - #3156: Add function to prevent drag stutter effect over iframes when resize is called in overlay mode
+- #3161: Re-add ability to convert OpenStreetMap URLs into `geo:` URIs in sent messages and fix issue #1850
 - #3165: Use configured nickname in profile view in the control box
 
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#stanza-timeout)

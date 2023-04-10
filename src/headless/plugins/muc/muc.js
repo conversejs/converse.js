@@ -1007,7 +1007,7 @@ const ChatRoomMixin = {
             [text, references] = this.parseTextForReferences(attrs.body);
         }
         const origin_id = getUniqueId();
-        const body = text ? u.shortnamesToUnicode(text) : undefined;
+        const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
         attrs = Object.assign({}, attrs, {
             body,
             is_spoiler,

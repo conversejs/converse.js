@@ -840,7 +840,7 @@ const ChatBox = ModelWithContact.extend({
         const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
         const text = attrs?.body;
-        const body = text ? u.shortnamesToUnicode(text) : undefined;
+        const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
         attrs = Object.assign({}, attrs, {
             'from': _converse.bare_jid,
             'fullname': _converse.xmppstatus.get('fullname'),

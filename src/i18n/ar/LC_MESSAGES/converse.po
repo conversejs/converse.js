@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2023-04-10 19:49+0000\n"
+"PO-Revision-Date: 2023-04-18 07:13+0000\n"
 "Last-Translator: Meno25 <meno25mail@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.17\n"
 
 #: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
@@ -457,14 +457,12 @@ msgid "Remote server not found"
 msgstr "لم يتم العثور على الخادم عن بُعد"
 
 #: dist/converse-no-dependencies.js:50401
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr "لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا."
+msgstr "لا يسمح لك بالدخول إلى هذه الدردشة الجماعية"
 
 #: dist/converse-no-dependencies.js:50404
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ ببيانات ملفك الشخصي."
+msgstr "حدث خطأ أثناء محاولة الدخول إلى هذه الدردشة الجماعية"
 
 #: dist/converse-no-dependencies.js:51349
 #, javascript-format
@@ -593,9 +591,8 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+msgstr "حدث خطأ أثناء محاولة جلب نموذج الأمر"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
@@ -1067,7 +1064,7 @@ msgstr "هل أنت متأكد أنك تريد سحب هذه الرسالة؟"
 
 #: dist/converse-no-dependencies.js:81412
 msgid "A timeout occurred while trying to retract the message"
-msgstr "لقد حدث انقطاع في الاتصال أثناء محاولة التراجع عن الرسالة."
+msgstr "حدثت مهلة أثناء محاولة سحب الرسالة"
 
 #: dist/converse-no-dependencies.js:81416
 #, fuzzy
@@ -1096,7 +1093,7 @@ msgstr "دليل اختياري"
 
 #: dist/converse-no-dependencies.js:81503
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "عذراً، لا يسمح لك بالتراجع عن هذه الرسالة."
+msgstr "عذرا، لا يسمح لك بسحب هذه الرسالة"
 
 #: dist/converse-no-dependencies.js:81619
 #, fuzzy
@@ -2021,9 +2018,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:113477
 #: dist/converse-no-dependencies.js:113479
-#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+msgstr "لا يسمح لك بتغيير كلمة المرور الخاصة بك"
 
 #: dist/converse-no-dependencies.js:113481
 msgid "Success"

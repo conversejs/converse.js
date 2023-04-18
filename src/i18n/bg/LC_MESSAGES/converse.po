@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2021-11-22 09:43+0000\n"
-"Last-Translator: Kiiryth X <kiirythx@gmail.com>\n"
+"PO-Revision-Date: 2023-04-18 07:13+0000\n"
+"Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
 "Language: bg\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10-dev\n"
+"X-Generator: Weblate 4.17\n"
 
 #: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
@@ -29,9 +29,8 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "Възникна грешка при свързване към сървъра за разговори."
 
 #: dist/converse-no-dependencies.js:33510
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr "Вашето джабер ID и/или парола са погрешни. Моля опитайте отново."
+msgstr "Вашият XMPP адрес и/или парола са грешни. Моля опитайте отново."
 
 #: dist/converse-no-dependencies.js:33519
 #, javascript-format
@@ -77,9 +76,8 @@ msgstr "Нямате права за изпращане на съобщение.
 
 #: dist/converse-no-dependencies.js:38606
 #: dist/converse-no-dependencies.js:47722
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Възникна грешка при свързване към сървъра за разговори."
+msgstr "Възникна грешка при опит за изпращане на вашето съобщение."
 
 #: dist/converse-no-dependencies.js:38868
 #, javascript-format
@@ -99,7 +97,7 @@ msgstr "%1$s е офлайн"
 #: dist/converse-no-dependencies.js:39688
 #: dist/converse-no-dependencies.js:39707
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Качването на файлове не се поддържа от вашия сървър."
 
 #: dist/converse-no-dependencies.js:39728
 #, javascript-format
@@ -107,25 +105,26 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Размерът на файла, %1$s, надвишава максимума, разрешен от сървъра - %2$s."
 
 #: dist/converse-no-dependencies.js:40375
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "Недешифрируемо OMEMO съобщение"
 
 #: dist/converse-no-dependencies.js:40441
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Не може да бъде определен URL адреса за качване."
 
 #: dist/converse-no-dependencies.js:40460
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Не може да се определи URL адреса за качване на файл."
 
 #: dist/converse-no-dependencies.js:40523
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
-msgstr ""
+msgstr "Файлът не можа да бъде качен. Отговорът на сървъра: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:40525
 msgid "Sorry, could not succesfully upload your file."
@@ -175,59 +174,57 @@ msgstr "Стикери"
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
 msgstr ""
+"Грешка: времето за изчакване при извличане на %1s списък за MUC %2s изтече"
 
 #: dist/converse-no-dependencies.js:46367
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Грешка: не е позволено да се извлече %1s списък за MUC %2s"
 
 #: dist/converse-no-dependencies.js:47711
-#, fuzzy
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
-msgstr "Нямате права за създаване на нови стаи."
+msgstr "Вашето оттегляне не осъществено, защото не присъствате в стаята."
 
 #: dist/converse-no-dependencies.js:47718
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr "Нямате права за създаване на нови стаи."
+msgstr ""
+"Вашето съобщение не беше доставено, защото Вие нямате разрешение за "
+"изпращането му."
 
 #: dist/converse-no-dependencies.js:47720
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Нямате права за създаване на нови стаи."
+msgstr "Вашето съобщение не е доставено, защото не присъствате в груповия чат."
 
 #: dist/converse-no-dependencies.js:48037
-#, fuzzy
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Възникна грешка при свързване към сървъра за разговори."
+msgstr ""
+"Времето за изчакване, докато се опитвахте да оттеглите съобщението си, "
+"изтече."
 
 #: dist/converse-no-dependencies.js:48704
-#, fuzzy
 msgid "Sorry, an error happened while running the command."
-msgstr "Извинете, нещо се обърка при опита за записване на отметката ви."
+msgstr "Настъпи грешка, при опит за изпълнение на командата."
 
 #: dist/converse-no-dependencies.js:48704
 #: dist/converse-no-dependencies.js:106663
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "За детайли, проверете конзолата за разработчици на вашия браузър."
 
 #: dist/converse-no-dependencies.js:48723
 #: dist/converse-no-dependencies.js:48741
-#, fuzzy
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
-"Всички други участници в стаята могат да виждат потребителското ви име за "
-"XMPP"
+"Грешка: Не можах да открия участник в груповия чат, въз основа на зададените "
+"параметри"
 
 #: dist/converse-no-dependencies.js:48731
-#, fuzzy
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
-"Всички други участници в стаята могат да виждат потребителското ви име за "
-"XMPP"
+"Грешка: Намерени са множество участници в групов чат въз основа на вашите "
+"параметри"
 
 #: dist/converse-no-dependencies.js:48753
 #, javascript-format
@@ -994,15 +991,16 @@ msgid "Completed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
-msgstr "Възникна грешка при свързване към сървъра за разговори."
+msgstr ""
+"Възникна грешка при опит за отмяна на командата. Вижте конзолата за "
+"разработчици за подробности"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Грешка: неочакван резултат"
 
 #: dist/converse-no-dependencies.js:78640
 #, fuzzy
@@ -1514,17 +1512,15 @@ msgstr "Този потребител НЕ може да праща съобще
 
 #: dist/converse-no-dependencies.js:105029
 msgid "Admin"
-msgstr ""
+msgstr "Администратор"
 
 #: dist/converse-no-dependencies.js:105030
-#, fuzzy
 msgid "Member"
-msgstr "Само за членове"
+msgstr "Член"
 
 #: dist/converse-no-dependencies.js:105031
-#, fuzzy
 msgid "Moderator"
-msgstr "Модерирана"
+msgstr "Модератор"
 
 #: dist/converse-no-dependencies.js:105032
 msgid "Owner"

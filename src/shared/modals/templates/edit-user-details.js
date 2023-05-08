@@ -1,10 +1,8 @@
-import avatar from 'shared/avatar/templates/avatar.js';
 import { __ } from 'i18n';
 import { api } from '@converse/headless/core';
 import { html } from 'lit';
 import { modal_close_button } from 'plugins/modal/templates/buttons.js';
 import { getGroupsAutoCompleteList } from '@converse/headless/plugins/roster/utils.js';
-import ModelWithContact from 'headless/plugins/chat/model-with-contact';
 
 export const tplFooter = (el) => {
     const is_roster_contact = el.model.contact !== undefined;

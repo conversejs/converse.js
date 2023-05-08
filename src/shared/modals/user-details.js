@@ -4,6 +4,7 @@ import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";
 import { __ } from 'i18n';
 import { api, converse } from "@converse/headless/core";
 import { removeContact } from 'plugins/rosterview/utils.js';
+import './edit-user-details.js';
 
 const u = converse.env.utils;
 
@@ -71,6 +72,11 @@ export default class UserDetailsModal extends BaseModal {
             setTimeout(() => removeContact(this.model.contact), 1);
             this.modal.hide();
         }
+    }
+
+    async editContact(ev) {
+        ev?.preventDefault?.();
+        api.modal.show('converse-edit-user-details-modal', { model: this.model });
     }
 }
 

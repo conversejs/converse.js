@@ -33,6 +33,9 @@ export const tplFooter = (el) => {
                 ></converse-icon>
                 ${i18n_refresh}</button>
             ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }
+            <button type="button" class="btn btn-info" data-dismiss="modal" @click=${(ev) => el.editContact(ev)}>
+                Edit
+            </button>
         </div>
     `;
 }

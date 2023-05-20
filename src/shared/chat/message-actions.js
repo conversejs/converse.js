@@ -27,6 +27,7 @@ class MessageActions extends CustomElement {
         this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.collection.chatbox, 'change:contact_blocked', () => this.requestUpdate());
     }
 
     render () {
@@ -258,6 +259,11 @@ class MessageActions extends CustomElement {
 
     async getActionButtons () {
         const buttons = [];
+        const chatbox = this.model.collection.chatbox;
+        if (chatbox.get('contact_blocked')) {
+          return buttons;
+        }
+
         if (this.model.get('editable')) {
             /**
              * @typedef { Object } MessageActionAttributes

@@ -30,8 +30,9 @@ export default class ChatBottomPanel extends ElementView {
     async initialize () {
         this.model = await api.chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
-        this.listenTo(this.model, 'change:num_unread', this.debouncedRender)
+        this.listenTo(this.model, 'change:num_unread', this.debouncedRender);
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
+        this.listenTo(this.model, 'change:contact_blocked', () => this.render());
 
         this.addEventListener('focusin', ev => this.emitFocused(ev));
         this.addEventListener('focusout', ev => this.emitBlurred(ev));

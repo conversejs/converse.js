@@ -14,7 +14,7 @@ export default (o) => {
     return html`
         ${ o.model.ui.get('scrolled') && o.model.get('num_unread') ?
                 html`<div class="new-msgs-indicator" @click=${ev => o.viewUnreadMessages(ev)}>▼ ${ unread_msgs } ▼</div>` : '' }
-        ${api.settings.get('show_toolbar') ? html`
+        ${api.settings.get('show_toolbar') && !o.model.get('contact_blocked') ? html`
             <converse-chat-toolbar
                 class="chat-toolbar no-text-select"
                 .model=${o.model}

@@ -5,20 +5,22 @@ import { html } from 'lit';
 import { modal_close_button } from "plugins/modal/templates/buttons.js";
 
 
-const block_button = (o) => {
-    const i18n_block = __("Unblock");
-    return html`<button @click=${() => api.blockUser([o.jid])}>${i18n_block}</button>`;
+const block_button = (el, o) => {
+    const i18n_block = __("Block");
+    return html`
+        <button type="button" class="btn btn-danger" @click=${() => el.blockContact(o.jid)}>${i18n_block}</button>
+    `;
 }
 
-const unblock_button = (o) => {
+const unblock_button = (el, o) => {
     const i18n_unblock = __("Unblock");
-    return html`<button @click=${() => api.unblockUser([o.jid])}>${i18n_unblock}</button>`;
+    return html`<button type="button" class="btn btn-success" @click=${() => el.unblockContact(o.jid)}>${i18n_unblock}</button>`;
 }
 
 const remove_button = (el) => {
     const i18n_remove_contact = __('Remove as contact');
     return html`
-        <button type="button" @click="${ev => el.removeContact(ev)}" class="btn btn-danger remove-contact">
+        <button type="button" @click="${ev => el.removeContact(ev)}" class="btn btn-warning remove-contact">
             <converse-icon
                 class="fas fa-trash-alt"
                 color="var(--text-color-lighten-15-percent)"
@@ -48,7 +50,7 @@ export const tplFooter = (el) => {
                 ></converse-icon>
                 ${i18n_refresh}</button>
             ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }
-            ${ api.blockedUsers ? ((api.blockedUsers()?.has(o.jid)) ? unblock_button(o) : block_button(o)) : '' }
+            ${ api.blockedUsers ? ((api.blockedUsers()?.has(o.jid)) ? unblock_button(el, o) : block_button(el, o)) : '' }
         </div>
     `;
 }

@@ -1,7 +1,8 @@
 /**
  * @description
- * Converse.js plugin which adds support for XEP-0191: Blocking
- * Allows users to block other users, which hides their messages.
+ * Converse.js plugin which adds support for XEP-0191: Blocking.
+ * Allows users to block communications with other users on the server side,
+ * so a user cannot receive messages from a blocked contact.
  */
 import blocking_api from './api.js';
 import { _converse, api, converse } from '@converse/headless/core.js';
@@ -28,6 +29,8 @@ converse.plugins.add('converse-blocking', {
 
     initialize () {
         _converse.blocked = new SetModel();
+        api.promises.add(["blockListFetched"]);
+
         Object.assign(api, blocking_api);
 
         api.listen.on('discoInitialized', onConnected);

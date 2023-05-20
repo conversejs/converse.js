@@ -47,6 +47,7 @@ export default class Message extends CustomElement {
         });
 
         this.listenTo(this.chatbox, 'change:first_unread_id', () => this.requestUpdate());
+        this.listenTo(this.chatbox, 'change:contact_blocked', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.model.vcard && this.listenTo(this.model.vcard, 'change', () => this.requestUpdate());
 
@@ -118,9 +119,8 @@ export default class Message extends CustomElement {
     }
 
     renderChatMessage () {
-        if ( _converse.pluggable.plugins['converse-blocking']?.enabled(_converse) &&
-             api.blockedUsers()?.has(this.getProps()?.properties?.jid)
-           ) {
+        // if contact is blocked, show old messages only.
+        if (this.chatbox.get('contact_blocked') && this.isFirstUnread()) {
             return;
         }
         return tplMessage(this, this.getProps());
@@ -187,13 +187,17 @@ export default class Message extends CustomElement {
         return extra_classes.filter(c => c).join(" ");
     }
 
+    isFirstUnread () {
+        return this.chatbox.get('first_unread_id') === this.model.get('id');
+    }
+
     getDerivedMessageProps () {
         const format = api.settings.get('time_format');
         return {
             'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
             'has_mentions': this.hasMentions(),
             'hats': getHats(this.model),
-            'is_first_unread': this.chatbox.get('first_unread_id') === this.model.get('id'),
+            'is_first_unread': this.isFirstUnread(),
             'is_me_message': this.model.isMeCommand(),
             'is_retracted': this.isRetracted(),
             'username': this.model.getDisplayName(),

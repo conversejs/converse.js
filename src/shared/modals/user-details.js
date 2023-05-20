@@ -72,6 +72,22 @@ export default class UserDetailsModal extends BaseModal {
             this.modal.hide();
         }
     }
+
+    async blockContact (jid) {
+        const result = await api.confirm(__("Are you sure you want to block this contact?"));
+        if (result) {
+            const bl_result = await api.blockUser([jid]);
+            if (bl_result) this.modal.hide();
+        }
+    }
+
+    async unblockContact (jid) {
+        const result = await api.confirm(__("Are you sure you want to unblock this contact?"));
+        if (result) {
+            const unbl_result = await api.unblockUser([jid]);
+            if (unbl_result) this.modal.hide();
+        }
+    }
 }
 
 api.elements.define('converse-user-details-modal', UserDetailsModal);

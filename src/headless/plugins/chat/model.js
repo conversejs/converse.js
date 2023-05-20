@@ -39,7 +39,8 @@ const ChatBox = ModelWithContact.extend({
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
             'time_sent': (new Date(0)).toISOString(),
             'type': _converse.PRIVATE_CHAT_TYPE,
-            'url': ''
+            'url': '',
+            'contact_blocked': false
         }
     },
 
@@ -78,7 +79,19 @@ const ChatBox = ModelWithContact.extend({
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
         await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
+        await api.waitUntil('blockListFetched');
+        if (api.blockedUsers) this.checkIfContactBlocked(api.blockedUsers());
+        api.listen.on('blockListUpdated', this.checkIfContactBlocked, this);
         this.initialized.resolve();
+    },
+
+    checkIfContactBlocked (jid_set) {
+        const contact_blocked = this.get('contact_blocked');
+        if (jid_set.has(this.get('jid')) && !contact_blocked) {
+            return this.set({'contact_blocked': true});
+        } else if (!jid_set.has(this.get('jid')) && contact_blocked) {
+            return this.set({'contact_blocked': false});
+        }
     },
 
     getMessagesCollection () {

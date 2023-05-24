@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2023-01-04 13:50+0000\n"
-"Last-Translator: Marco Marchiò <marcomarchi89@hotmail.com>\n"
+"PO-Revision-Date: 2023-05-25 15:54+0000\n"
+"Last-Translator: Daniele Bortoluzzi <daniele@elkos.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
 "Language: it\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -626,15 +626,12 @@ msgstr ""
 "Puoi ricaricare la pagina e richiederli ancora."
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
-"Scusa, si è verificato un errore durante il tentativo di inviare il modulo "
-"di configurazione."
+msgstr "Si è verificato un errore durante il recupero del form per il comando"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Si è verificato un errore di timeout"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -701,20 +698,19 @@ msgstr "Esegui"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Indietro"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Avanti"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "Fine"
 
 #: dist/converse-no-dependencies.js:74520
-#, fuzzy
 msgid "Add to Contacts"
-msgstr "Aggiungi un Contatto"
+msgstr "Aggiungi ai Contatti"
 
 #: dist/converse-no-dependencies.js:74530
 #: dist/converse-no-dependencies.js:89058
@@ -996,27 +992,25 @@ msgstr ""
 "Controlla la console del browser per i dettagli"
 
 #: dist/converse-no-dependencies.js:78102
-#, fuzzy
 msgid "Executing"
-msgstr "Esegui"
+msgstr "Esecuzione del comando in corso"
 
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "Esecuzione completata"
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Spiacente, si è verificato un errore tentando di eseguire il comando. "
-"Controlla la console del browser per i dettagli"
+"Si è verificato un errore nel tentativo di annullare il comando. Controlla "
+"la console del browser per i dettagli"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Errore: risultato inatteso"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"
@@ -2005,61 +1999,56 @@ msgid "Profile"
 msgstr "Profilo"
 
 #: dist/converse-no-dependencies.js:112878
-#, fuzzy
 msgid "Reset Password"
-msgstr "Password"
+msgstr "Reimposta password"
 
 #: dist/converse-no-dependencies.js:112916
 msgid "The new passwords must match"
-msgstr ""
+msgstr "Le nuove password devono corrispondere"
 
 #: dist/converse-no-dependencies.js:112917
-#, fuzzy
 msgid "New password"
-msgstr "Nessuna password"
+msgstr "Nuova password"
 
 #: dist/converse-no-dependencies.js:112918
-#, fuzzy
 msgid "Confirm new password"
-msgstr "Nessuna password"
+msgstr "Conferma nuova password"
 
 #: dist/converse-no-dependencies.js:113440
-#, fuzzy
 msgid "Timeout error"
-msgstr "Errore di Tempo Scaduto"
+msgstr "Errore di timeout"
 
 #: dist/converse-no-dependencies.js:113447
 msgid "Your server does not support in-band password reset"
-msgstr ""
+msgstr "Il tuo server non supporta la reimpostazione della password"
 
 #: dist/converse-no-dependencies.js:113454
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
+"Il server ha risposto con un errore sconosciuto, vedi la console del browser "
+"per i dettagli"
 
 #: dist/converse-no-dependencies.js:113473
-#, fuzzy
 msgid "Timeout error while trying to set your password"
-msgstr "Tempo scaduto tentando di impostare l'affiliazione"
+msgstr "Errore di timeout nel reimpostare la password"
 
 #: dist/converse-no-dependencies.js:113475
 msgid "Your server does not allow in-band password reset"
-msgstr ""
+msgstr "Il tuo server non ammette la reimpostazione della password"
 
 #: dist/converse-no-dependencies.js:113477
 #: dist/converse-no-dependencies.js:113479
-#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr "Non ti è permesso creare nuove conversazioni di gruppo."
+msgstr "Non ti è permesso cambiare password"
 
 #: dist/converse-no-dependencies.js:113481
 msgid "Success"
-msgstr ""
+msgstr "Completato"
 
 #: dist/converse-no-dependencies.js:113481
-#, fuzzy
 msgid "Your new password has been set"
-msgstr "Una nuova conversazione di gruppo è stata creata"
+msgstr "La tua nuova password è stata impostata"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:114026
@@ -2531,9 +2520,8 @@ msgid "Add a new groupchat"
 msgstr "Aggiungi una nuova conversazione di gruppo"
 
 #: dist/converse-no-dependencies.js:124657
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Mostra conversazioni di gruppo"
+msgstr "Mostra chat di gruppo nei segnalibri"
 
 #: dist/converse-no-dependencies.js:125234
 #, javascript-format
@@ -2573,9 +2561,8 @@ msgid "Contacts"
 msgstr "Contatti"
 
 #: dist/converse-no-dependencies.js:126190
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Clicca per nascondere questi contatti"
+msgstr "Clicca per mostrare/nascondere i contatti"
 
 #: dist/converse-no-dependencies.js:126191
 msgid "Add a contact"

@@ -11,7 +11,7 @@ export default {
     async isBlockingAvailable () {
         const has_feature = await api.disco.supports(Strophe.NS.BLOCKING, _converse.domain);
         if (!has_feature) {
-            log.warn("XEP-0191 not supported, no blocklist available");
+            log.info("XEP-0191 not supported, no blocklist available");
             return false;
         }
         log.debug("XEP-0191 available");

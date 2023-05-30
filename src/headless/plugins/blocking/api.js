@@ -22,9 +22,10 @@ export default {
      * @private
      * @method api.refreshBlocklist
      */
-    refreshBlocklist () {
+    async refreshBlocklist () {
         log.debug("refreshing blocklist");
-        if (!this.isBlockingAvailable()) {
+        const available = await this.isBlockingAvailable();
+        if (!available) {
             log.debug("XEP-0191 NOT available, not refreshing...");
             api.trigger('blockListFetched', []);
             return

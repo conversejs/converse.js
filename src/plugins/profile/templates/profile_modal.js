@@ -1,6 +1,6 @@
 import "shared/components/image-picker.js";
 import { __ } from 'i18n';
-import { _converse, api } from  "@converse/headless/core";
+import { _converse } from  "@converse/headless/core";
 import { html } from "lit";
 
 
@@ -57,9 +57,7 @@ export default (el) => {
         </li>`
     );
 
-    const blocking_available = (_converse.pluggable.plugins['converse-blocking']?.enabled(_converse) && api.isBlockingAvailable());
-
-    if (blocking_available) {
+    if (el.isBlockingAvailable()) {
         navigation_tabs.push(html`<li role="presentation" class="nav-item">
         <a class="nav-link ${el.tab === "blockedusers" ? "active" : ""}"
                id="blockedusers-tab"
@@ -135,7 +133,7 @@ export default (el) => {
                 ${ el.tab === 'passwordreset' ? html`<converse-change-password-form></converse-change-password-form>` : '' }
             </div>
 
-            ${blocking_available ? tplBlockUsersPage(el) : '' }
+            ${el.isBlockingAvailable() ? tplBlockUsersPage(el) : '' }
             ${ _converse.pluggable.plugins['converse-omemo']?.enabled(_converse) ? tplOmemoPage(el) : '' }
         </div>
     </div>`;

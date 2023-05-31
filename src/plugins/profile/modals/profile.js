@@ -87,6 +87,15 @@ export default class ProfileModal extends BaseModal {
             });
         }
     }
+
+    async isBlockingAvailable() {
+        if (_converse.pluggable.plugins['converse-blocking']?.enabled(_converse)) {
+          const is_available = await api.isBlockingAvailable();
+          return is_available;
+        }
+
+        return false;
+    }
 }
 
 api.elements.define('converse-profile-modal', ProfileModal);

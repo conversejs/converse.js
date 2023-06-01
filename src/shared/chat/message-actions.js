@@ -260,7 +260,7 @@ class MessageActions extends CustomElement {
     async getActionButtons () {
         const buttons = [];
         const chatbox = this.model.collection.chatbox;
-        if (chatbox.get('contact_blocked')) {
+        if (chatbox.get('contact_blocked') === true) {
           return buttons;
         }
 

@@ -120,7 +120,7 @@ export default class Message extends CustomElement {
 
     renderChatMessage () {
         // if contact is blocked, show old messages only.
-        if (this.chatbox.get('contact_blocked') && this.isFirstUnread()) {
+        if (this.chatbox.get('contact_blocked') === true && this.isFirstUnread()) {
             return;
         }
         return tplMessage(this, this.getProps());

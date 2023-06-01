@@ -28,7 +28,9 @@ converse.plugins.add('converse-blocking', {
     },
 
     initialize () {
-        _converse.blocked = new SetModel();
+        _converse.blocking = {
+            _blocked: new SetModel()
+        };
         api.promises.add(["blockListFetched"]);
 
         Object.assign(api, blocking_api);

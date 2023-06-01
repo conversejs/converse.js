@@ -76,7 +76,7 @@ export default class UserDetailsModal extends BaseModal {
     async blockContact (jid) {
         const result = await api.confirm(__("Are you sure you want to block this contact?"));
         if (result) {
-            const bl_result = await api.blockUser([jid]);
+            const bl_result = await api.blocking.block([jid]);
             if (bl_result) this.modal.hide();
         }
     }
@@ -84,7 +84,7 @@ export default class UserDetailsModal extends BaseModal {
     async unblockContact (jid) {
         const result = await api.confirm(__("Are you sure you want to unblock this contact?"));
         if (result) {
-            const unbl_result = await api.unblockUser([jid]);
+            const unbl_result = await api.blocking.unblock([jid]);
             if (unbl_result) this.modal.hide();
         }
     }

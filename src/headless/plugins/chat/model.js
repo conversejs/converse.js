@@ -40,7 +40,7 @@ const ChatBox = ModelWithContact.extend({
             'time_sent': (new Date(0)).toISOString(),
             'type': _converse.PRIVATE_CHAT_TYPE,
             'url': '',
-            'contact_blocked': false
+            'contact_blocked': undefined
         }
     },
 
@@ -79,19 +79,22 @@ const ChatBox = ModelWithContact.extend({
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
         await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
-        await api.waitUntil('blockListFetched');
-        if (api.blockedUsers) this.checkIfContactBlocked(api.blockedUsers());
-        api.listen.on('blockListUpdated', this.checkIfContactBlocked, this);
+
+        const blocking_supported = await api.blocking?.supported();
+        if (blocking_supported) {
+            await api.waitUntil("blockListFetched");
+            this.checkIfContactBlocked(api.blocking.blocklist());
+          api.listen.on('blockListUpdated', this.checkIfContactBlocked, this);
+        } else this.set({'contact_blocked': undefined});
+
         this.initialized.resolve();
     },
 
     checkIfContactBlocked (jid_set) {
-        const contact_blocked = this.get('contact_blocked');
-        if (jid_set.has(this.get('jid')) && !contact_blocked) {
+        if (jid_set.has(this.get('jid')))
             return this.set({'contact_blocked': true});
-        } else if (!jid_set.has(this.get('jid')) && contact_blocked) {
-            return this.set({'contact_blocked': false});
-        }
+
+        this.set({'contact_blocked': false});
     },
 
     getMessagesCollection () {
@@ -1117,7 +1120,7 @@ const ChatBox = ModelWithContact.extend({
             } else if (
                 this.isHidden() || (
                     pluggable.plugins['converse-blocking'] &&
-                    api.blockedUsers()?.has(message?.get('from_real_jid'))
+                    api.blocking?.blocklist().has(message?.get('from_real_jid'))
                 )
             ) {
                 this.incrementUnreadMsgsCounter(message);

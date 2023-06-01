@@ -50,7 +50,7 @@ export const tplFooter = (el) => {
                 ></converse-icon>
                 ${i18n_refresh}</button>
             ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }
-            ${ api.blockedUsers ? ((api.blockedUsers()?.has(o.jid)) ? unblock_button(el, o) : block_button(el, o)) : '' }
+            ${ api.blocking && el.model.get('contact_blocked') !== undefined ? ((api.blocking.blocklist().has(o.jid)) ? unblock_button(el, o) : block_button(el, o)) : '' }
         </div>
     `;
 }

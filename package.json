@@ -28,6 +28,8 @@
   ],
   "scripts": {
     "build": "webpack --config webpack/webpack.build.js",
+    "lint": "eslint src/**/*.js",
+    "test": "karma start karma.conf",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",
     "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
     "dev": "webpack --config webpack/webpack.build.js --mode=development",

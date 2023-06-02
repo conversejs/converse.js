@@ -3,7 +3,6 @@ BOOTSTRAP		= ./node_modules/
 BUILDDIR		= ./docs
 KARMA			?= ./node_modules/.bin/karma
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss
-ESLINT			?= ./node_modules/.bin/eslint
 HTTPSERVE	 	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT	?= 8000
 INKSCAPE		?= inkscape
@@ -218,15 +217,15 @@ types:: node_modules
 
 .PHONY: eslint
 eslint: node_modules
-	$(ESLINT) src/**/*.js
+	npm run lint
 
 .PHONY: check
 check: eslint | dist/converse.js dist/converse.css
-	$(KARMA) start karma.conf.js $(ARGS)
+	npm run test
 
 .PHONY: test
 test:
-	$(KARMA) start karma.conf.js $(ARGS)
+	npm run test
 
 ########################################################################
 ## Documentation

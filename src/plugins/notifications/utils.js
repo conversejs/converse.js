@@ -71,7 +71,7 @@ export async function shouldNotifyOfGroupMessage (attrs) {
 
     if (pluggable.plugins['converse-blocking']?.enabled(_converse)) {
         const real_jid = attrs.from_real_jid;
-        if (real_jid && api.blockedUsers()?.has(real_jid)) {
+        if (real_jid && api.blocking?.blocklist().has(real_jid)) {
             // Don't show notifications for blocked users
             return false;
         }

@@ -39,7 +39,8 @@ const ChatBox = ModelWithContact.extend({
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
             'time_sent': (new Date(0)).toISOString(),
             'type': _converse.PRIVATE_CHAT_TYPE,
-            'url': ''
+            'url': '',
+            'contact_blocked': undefined
         }
     },
 
@@ -78,7 +79,22 @@ const ChatBox = ModelWithContact.extend({
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
         await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
+
+        const blocking_supported = await api.blocking?.supported();
+        if (blocking_supported) {
+            await api.waitUntil("blockListFetched");
+            this.checkIfContactBlocked(api.blocking.blocklist());
+          api.listen.on('blockListUpdated', this.checkIfContactBlocked, this);
+        } else this.set({'contact_blocked': undefined});
+
         this.initialized.resolve();
+    },
+
+    checkIfContactBlocked (jid_set) {
+        if (jid_set.has(this.get('jid')))
+            return this.set({'contact_blocked': true});
+
+        this.set({'contact_blocked': false});
     },
 
     getMessagesCollection () {
@@ -1104,7 +1120,7 @@ const ChatBox = ModelWithContact.extend({
             } else if (
                 this.isHidden() || (
                     pluggable.plugins['converse-blocking'] &&
-                    api.blockedUsers()?.has(message?.get('from_real_jid'))
+                    api.blocking?.blocklist().has(message?.get('from_real_jid'))
                 )
             ) {
                 this.incrementUnreadMsgsCounter(message);

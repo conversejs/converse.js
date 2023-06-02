@@ -16,6 +16,7 @@ export default class MessageForm extends ElementView {
         await this.model.initialized;
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model, 'change:composing_spoiler', () => this.render());
+        this.listenTo(this.model, 'change:contact_blocked', () => this.render());
 
         this.handleEmojiSelection = ({ detail }) => {
             if (this.model.get('jid') === detail.jid) {

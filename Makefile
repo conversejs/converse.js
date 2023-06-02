@@ -221,11 +221,11 @@ eslint: node_modules
 
 .PHONY: check
 check: eslint | dist/converse.js dist/converse.css
-	npm run test
+	npm run test -- $(ARGS)
 
 .PHONY: test
 test:
-	npm run test
+	npm run test -- $(ARGS)
 
 ########################################################################
 ## Documentation

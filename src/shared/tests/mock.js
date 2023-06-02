@@ -643,31 +643,8 @@ function clearStores () {
     window.sessionStorage.removeItem(cache_key+'fetched');
 }
 
-const theme = ['dracula', 'classic', 'concord'][Math.floor(Math.random()*3)];
-
-async function _initConverse (settings) {
-    clearStores();
-    await clearIndexedDB();
-
-    _converse = await converse.initialize(Object.assign({
-        'animate': false,
-        'auto_subscribe': false,
-        'bosh_service_url': 'montague.lit/http-bind',
-        'discover_connection_methods': false,
-        'enable_smacks': false,
-        'i18n': 'en',
-        'loglevel': 'debug',
-        'no_trimming': true,
-        'persistent_store': 'localStorage',
-        'play_sounds': false,
-        'theme': theme,
-        'use_emojione': false,
-        'view_mode': view_mode
-    }, settings || {}));
-
-    window._converse = _converse;
-
-    _converse.api.vcard.get = function (model, force) {
+function getMockVcardFetcher (settings) {
+    return (model, force) => {
         let jid;
         if (typeof model === 'string' || model instanceof String) {
             jid = model;
@@ -702,7 +679,37 @@ async function _initConverse (settings) {
             'vcard_updated': dayjs().format(),
             'vcard_error': undefined
         };
-    };
+    }
+}
+
+const theme = ['dracula', 'classic', 'concord'][Math.floor(Math.random()*3)];
+
+async function _initConverse (settings) {
+    clearStores();
+    await clearIndexedDB();
+
+    _converse = await converse.initialize(Object.assign({
+        'animate': false,
+        'auto_subscribe': false,
+        'bosh_service_url': 'montague.lit/http-bind',
+        'discover_connection_methods': false,
+        'enable_smacks': false,
+        'i18n': 'en',
+        'loglevel': 'debug',
+        'no_trimming': true,
+        'persistent_store': 'localStorage',
+        'play_sounds': false,
+        'theme': theme,
+        'use_emojione': false,
+        'view_mode': view_mode
+    }, settings || {}));
+
+    window._converse = _converse;
+
+    if (_converse.api.vcard) {
+        _converse.api.vcard.get = getMockVcardFetcher(settings);
+    }
+
     if (settings?.auto_login !== false) {
         _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
         await _converse.api.waitUntil('afterResourceBinding');

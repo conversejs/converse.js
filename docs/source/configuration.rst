@@ -925,12 +925,6 @@ filter_url_query_params
 
 Accepts a string or array of strings. Any query strings from URLs that match this setting will be removed.
 
-fullname
---------
-
-If you are using prebinding, can specify the fullname of the currently
-logged in user, otherwise the user's vCard will be fetched.
-
 geouri_regex
 ------------
 

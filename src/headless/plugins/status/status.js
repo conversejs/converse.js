@@ -5,11 +5,11 @@ import { _converse, api, converse } from '@converse/headless/core';
 
 const { Strophe, $pres } = converse.env;
 
-const XMPPStatus = Model.extend({
+export default class XMPPStatus extends Model {
 
-    defaults () {
+    defaults () { // eslint-disable-line class-methods-use-this
         return { "status":  api.settings.get("default_state") }
-    },
+    }
 
     initialize () {
         this.on('change', item => {
@@ -20,16 +20,19 @@ const XMPPStatus = Model.extend({
                 api.user.presence.send(this.get('status'), null, this.get('status_message'));
             }
         });
-    },
+    }
 
-    getNickname () {
+    getDisplayName () {
+        return this.getFullname() || this.getNickname() || _converse.bare_jid;
+    }
+
+    getNickname () { // eslint-disable-line class-methods-use-this
         return api.settings.get('nickname');
-    },
+    }
 
-    getFullname () {
-        // Gets overridden in converse-vcard
-        return '';
-    },
+    getFullname () { // eslint-disable-line class-methods-use-this
+        return ''; // Gets overridden in converse-vcard
+    }
 
     /** Constructs a presence stanza
      * @param { string } [type]
@@ -85,6 +88,4 @@ const XMPPStatus = Model.extend({
         presence = await api.hook('constructedPresence', null, presence);
         return presence;
     }
-});
-
-export default XMPPStatus;
+}

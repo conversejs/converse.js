@@ -2091,7 +2091,7 @@ msgstr "ocupado"
 
 #: dist/converse-no-dependencies.js:114643
 msgid "away for long"
-msgstr "ausente a bastante tempo"
+msgstr "ausente há bastante tempo"
 
 #: dist/converse-no-dependencies.js:114645
 msgid "away"

@@ -45,7 +45,8 @@ export function isEmptyMessage (attrs) {
         !attrs['body'];
 }
 
-/* We distinguish between UniView and MultiView instances.
+/**
+ * We distinguish between UniView and MultiView instances.
  *
  * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
  * MultiView means that multiple chats may be visible simultaneously.

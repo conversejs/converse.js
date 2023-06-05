@@ -46,7 +46,7 @@ export default {
      * structure in order to modify it, before passing it back.
      * @async
      * @param { string } name - The hook name
-     * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox)).
+     * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox})).
      * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
      * @returns {Promise<any>} - A promise that resolves with the modified data structure.
      */

@@ -12,6 +12,7 @@
 - #3165: Use configured nickname in profile view in the control box
 
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#stanza-timeout)
+- Small fixes in pt_BR translation
 
 ## 10.1.2 (2023-02-17)
 

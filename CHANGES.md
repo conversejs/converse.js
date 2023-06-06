@@ -8,11 +8,11 @@
 - Remove call to `api.confirm` in `@converse/headless`
 - Generate TypeScript declaration files into `dist/types`
 - Removed documentation about the no longer implemented `fullname` option.
+- Updated translations
 - #3156: Add function to prevent drag stutter effect over iframes when resize is called in overlay mode
 - #3165: Use configured nickname in profile view in the control box
 
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#stanza-timeout)
-- Small fixes in pt_BR translation
 
 ## 10.1.2 (2023-02-17)
 

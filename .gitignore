@@ -1,6 +1,9 @@
 # Distribution directory
 dist
 
+# conversejs/media repo checkout
+media
+
 # Editor fluff
 *~
 .sw?

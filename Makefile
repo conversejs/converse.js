@@ -194,7 +194,6 @@ src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_m
 dist:: node_modules src/* | dist/website.css dist/website.min.css
 	npm run headless
 	npm run build
-	make types
 
 .PHONY: install
 install:: dist

@@ -163,7 +163,7 @@ function shortnamesToUnicode (str) {
  * Determines whether the passed in string is just a single emoji shortname;
  * @namespace u
  * @method u.isOnlyEmojis
- * @param { String } shortname - A string which migh be just an emoji shortname
+ * @param { String } text - A string which migh be just an emoji shortname
  * @returns { Boolean }
  */
 function isOnlyEmojis (text) {

@@ -268,7 +268,7 @@ msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
-"Não é possível registrar apelidos nesta sala, pois não suporta registro."
+"Não é possível registrar apelidos nesta sala pois não suporta registro."
 
 #: dist/converse-no-dependencies.js:49226
 msgid ""
@@ -2091,7 +2091,7 @@ msgstr "ocupado"
 
 #: dist/converse-no-dependencies.js:114643
 msgid "away for long"
-msgstr "ausente a bastante tempo"
+msgstr "ausente há bastante tempo"
 
 #: dist/converse-no-dependencies.js:114645
 msgid "away"

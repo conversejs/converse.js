@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2021-05-04 18:32+0000\n"
-"Last-Translator: bashl <esqueleto777@disroot.org>\n"
+"PO-Revision-Date: 2023-06-07 12:58+0000\n"
+"Last-Translator: Breno Peres <breno.dk@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,14 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
 #: dist/converse-no-dependencies.js:29896
 msgid "The connection has dropped, attempting to reconnect."
-msgstr "A conexão caiu, tentando se reconectar."
+msgstr "A conexão foi perdida, tentando se reconectar."
 
 #: dist/converse-no-dependencies.js:33446
 #: dist/converse-no-dependencies.js:33503
@@ -34,13 +34,14 @@ msgstr "Ocorreu um erro ao se conectar ao servidor de bate-papo."
 #: dist/converse-no-dependencies.js:33510
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
-"Seu endereço ID XMPP e/ou sua senha estão incorretas. Por favor, tente "
+"Seu endereço XMPP e/ou sua senha estão incorretas. Por favor, tente "
 "novamente."
 
 #: dist/converse-no-dependencies.js:33519
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "Desculpe, não conseguimos nos conectar ao host XMPP com domínio: %1$s"
+msgstr ""
+"Desculpe, não conseguimos nos conectar ao servidor XMPP com domínio: %1$s"
 
 #: dist/converse-no-dependencies.js:33521
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -68,12 +69,12 @@ msgstr "%1$s está ausente"
 #: dist/converse-no-dependencies.js:38597
 #: dist/converse-no-dependencies.js:47709
 msgid "You're not allowed to retract your message."
-msgstr "Você não está autorizado a retrair sua mensagem."
+msgstr "Você não está autorizado a retratar sua mensagem."
 
 #: dist/converse-no-dependencies.js:38599
 #: dist/converse-no-dependencies.js:47713
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Desculpe, ocorreu um erro ao tentar retrair sua mensagem."
+msgstr "Desculpe, ocorreu um erro ao tentar retratar sua mensagem."
 
 #: dist/converse-no-dependencies.js:38604
 msgid "You're not allowed to send a message."
@@ -183,12 +184,12 @@ msgstr "Adesivos"
 #: dist/converse-no-dependencies.js:46358
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Erro: tempo excedido ao tentar recuperar a lista %1s para o MUC %2s"
 
 #: dist/converse-no-dependencies.js:46367
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Erro: sem permissão para recuperar a lista %1s para o MUC %2s"
 
 #: dist/converse-no-dependencies.js:47711
 msgid ""
@@ -252,6 +253,8 @@ msgstr "Proibido: você não tem nas permissões necessárias para fazer isso."
 #: dist/converse-no-dependencies.js:48913
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
+"Erro: não foi possível registrar o novo apelido na sala exclusiva para "
+"membros"
 
 #: dist/converse-no-dependencies.js:49186
 msgid "You're not allowed to register yourself in this groupchat."
@@ -467,14 +470,12 @@ msgid "Remote server not found"
 msgstr "Servidor remoto não encontrado"
 
 #: dist/converse-no-dependencies.js:50401
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr "Você não tem permissão de se registrar nessa sala."
+msgstr "Você não tem permissão para se registrar nesta conferência"
 
 #: dist/converse-no-dependencies.js:50404
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr "Desculpe, aconteceu um erro ao tentar salvar seus dados de perfil."
+msgstr "Um erro aconteceu ao tentar entrar nessa conferência"
 
 #: dist/converse-no-dependencies.js:51349
 #, javascript-format
@@ -604,14 +605,12 @@ msgstr ""
 "recarregar a página para solicitá-los novamente."
 
 #: dist/converse-no-dependencies.js:57007
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
-"Desculpe, ocorreu um erro ao tentar enviar o formulário de configuração."
+msgstr "Ocorreu um erro ao tentar enviar o formulário de configuração"
 
 #: dist/converse-no-dependencies.js:57049
 msgid "A timeout occurred"
-msgstr ""
+msgstr "O tempo de espera se esgotou"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
@@ -676,20 +675,19 @@ msgstr "Executar"
 
 #: dist/converse-no-dependencies.js:71867
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: dist/converse-no-dependencies.js:71868
 msgid "Next"
-msgstr ""
+msgstr "Próximo"
 
 #: dist/converse-no-dependencies.js:71869
 msgid "Complete"
-msgstr ""
+msgstr "Completo"
 
 #: dist/converse-no-dependencies.js:74520
-#, fuzzy
 msgid "Add to Contacts"
-msgstr "Adicionar contato"
+msgstr "Adicionar aos Contatos"
 
 #: dist/converse-no-dependencies.js:74530
 #: dist/converse-no-dependencies.js:89058
@@ -717,17 +715,16 @@ msgid "Affiliation"
 msgstr "Afiliação"
 
 #: dist/converse-no-dependencies.js:74530
-#, fuzzy
 msgid "Roles"
-msgstr "Função"
+msgstr "Funções"
 
 #: dist/converse-no-dependencies.js:74530
 msgid "Hats"
-msgstr ""
+msgstr "Cargos"
 
 #: dist/converse-no-dependencies.js:74530
 msgid "Occupant Id"
-msgstr ""
+msgstr "Id do ocupante"
 
 #: dist/converse-no-dependencies.js:74760
 msgid ""
@@ -968,27 +965,25 @@ msgstr ""
 "desenvolvedor para obter mais detalhes"
 
 #: dist/converse-no-dependencies.js:78102
-#, fuzzy
 msgid "Executing"
-msgstr "Executar"
+msgstr "Executando"
 
 #: dist/converse-no-dependencies.js:78109
 #: dist/converse-no-dependencies.js:78114
 msgid "Completed"
-msgstr ""
+msgstr "Completo"
 
 #: dist/converse-no-dependencies.js:78155
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Desculpe, ocorreu um erro ao tentar executar o comando. Veja o console do "
+"Ocorreu um erro ao tentar cancelar o comando. Veja o console do "
 "desenvolvedor para obter mais detalhes"
 
 #: dist/converse-no-dependencies.js:78162
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Erro: resultado inesperado"
 
 #: dist/converse-no-dependencies.js:78640
 msgid "Bookmark this groupchat"
@@ -1028,9 +1023,9 @@ msgid "Bookmarks"
 msgstr "Favoritos"
 
 #: dist/converse-no-dependencies.js:79500
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Favoritos"
+msgstr "Favorito para \"%1s\""
 
 #: dist/converse-no-dependencies.js:79501
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -1038,7 +1033,7 @@ msgstr "Gostaria de entrar nessa sala automaticamente quando iniciar?"
 
 #: dist/converse-no-dependencies.js:79502
 msgid "Remove"
-msgstr ""
+msgstr "Remover"
 
 #: dist/converse-no-dependencies.js:79503
 msgid "The name for this bookmark:"
@@ -1050,7 +1045,7 @@ msgstr "Qual deve ser o seu apelido para esta sala?"
 
 #: dist/converse-no-dependencies.js:79505
 msgid "Update"
-msgstr ""
+msgstr "Atualizar"
 
 #: dist/converse-no-dependencies.js:79505
 #: dist/converse-no-dependencies.js:106097
@@ -1067,21 +1062,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:81368
 #: dist/converse-no-dependencies.js:81440
-#, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
 "Esteja ciente de que outros clientes de XMPP/Jabber (e servidores) podem "
-"ainda não suportar retrações e que esta mensagem pode não ser excluída em "
+"ainda não suportar retratações e que esta mensagem pode não ser excluída em "
 "todos os lugares."
 
 #: dist/converse-no-dependencies.js:81369
 #: dist/converse-no-dependencies.js:81445
 #: dist/converse-no-dependencies.js:81473
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Tem certeza que deseja retrair esta mensagem?"
+msgstr "Tem certeza que deseja retratar esta mensagem?"
 
 #: dist/converse-no-dependencies.js:81412
 msgid "A timeout occurred while trying to retract the message"
@@ -1096,37 +1089,32 @@ msgid "You are about to retract this message."
 msgstr "Você está a prestes a retirar esta mensagem."
 
 #: dist/converse-no-dependencies.js:81490
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
-"Opcionalmente, você pode incluir uma mensagem, explicando o motivo da "
-"retração."
+"Opcionalmente, você pode incluir uma mensagem explicando o motivo da "
+"retratação."
 
 #: dist/converse-no-dependencies.js:81495
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Versões de mensagem"
+msgstr "Retratação de mensagem"
 
 #: dist/converse-no-dependencies.js:81495
 msgid "Optional reason"
 msgstr "Motivo opcional"
 
 #: dist/converse-no-dependencies.js:81503
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Desculpe, você não está autorizado a retrair esta mensagem."
+msgstr "Desculpe, você não está autorizado a retratar esta mensagem"
 
 #: dist/converse-no-dependencies.js:81619
-#, fuzzy
 msgid "Show media"
-msgstr "Mostrar mais"
+msgstr "Mostrar mídia"
 
 #: dist/converse-no-dependencies.js:81619
-#, fuzzy
 msgid "Hide media"
-msgstr "Ocultar assunto"
+msgstr "Ocultar mídia"
 
 #: dist/converse-no-dependencies.js:81650
 msgid "Cancel Editing"
@@ -1145,18 +1133,16 @@ msgid "Image: "
 msgstr "Imagem: "
 
 #: dist/converse-no-dependencies.js:88791
-#, fuzzy
 msgid "Older versions"
-msgstr "Versões de mensagem"
+msgstr "Versões antigas"
 
 #: dist/converse-no-dependencies.js:88793
-#, fuzzy
 msgid "No older versions found"
-msgstr "Servidor remoto não encontrado"
+msgstr "Nenhuma versão anterior encontrada"
 
 #: dist/converse-no-dependencies.js:88793
 msgid "Current version"
-msgstr ""
+msgstr "Versão atual"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:88954
@@ -1360,17 +1346,17 @@ msgid "This is a trusted device"
 msgstr "Este é um dispositivo confiável"
 
 #: dist/converse-no-dependencies.js:98348
-#, fuzzy
 msgid "Connection URL"
-msgstr "Conectando"
+msgstr "URL de conexão"
 
 #: dist/converse-no-dependencies.js:98349
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
+"URL HTTP ou do websocket utilizada para se conectar ao seu servidor de XMPP"
 
 #: dist/converse-no-dependencies.js:98350
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "ex. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:98355
 msgid "Password"
@@ -1432,14 +1418,12 @@ msgid "Announcements"
 msgstr "Comunicados"
 
 #: dist/converse-no-dependencies.js:102466
-#, fuzzy
 msgid "Click to load missing messages"
-msgstr "Clique para abrir esta mensagem no servidor"
+msgstr "Clique para carregar as mensagens ausentes"
 
 #: dist/converse-no-dependencies.js:104093
-#, fuzzy
 msgid "Change nickname"
-msgstr "Escolha seu apelido"
+msgstr "Alterar apelido"
 
 #: dist/converse-no-dependencies.js:104093
 msgid "Enter groupchat"
@@ -1496,9 +1480,8 @@ msgstr "Visitante"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:105071
-#, fuzzy
 msgid "Participant"
-msgstr "Participantes"
+msgstr "Participante"
 
 #: dist/converse-no-dependencies.js:105071
 msgid "Participants"
@@ -1605,9 +1588,9 @@ msgid "This groupchat no longer exists"
 msgstr "Este grupo de conversa não existe mais"
 
 #: dist/converse-no-dependencies.js:106724
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "A razão dada é: \"%1$s\"."
+msgstr "A seguinte razão foi dada: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:107450
 #, javascript-format
@@ -1628,7 +1611,6 @@ msgid "Topic author"
 msgstr "Autor do tópico"
 
 #: dist/converse-no-dependencies.js:107497
-#, fuzzy
 msgid "XMPP address"
 msgstr "Endereço XMPP"
 
@@ -1807,9 +1789,8 @@ msgid "Configure this groupchat"
 msgstr "Configurar essa sala"
 
 #: dist/converse-no-dependencies.js:109054
-#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr "Registre um nome para esse bate-papo"
+msgstr "Alterar o apelido que você está usando neste bate-papo"
 
 #: dist/converse-no-dependencies.js:109067
 msgid "Invite someone to join this groupchat"
@@ -1957,9 +1938,8 @@ msgid "Change chat status"
 msgstr "Alterar o status do bate-papo"
 
 #: dist/converse-no-dependencies.js:112735
-#, fuzzy
 msgid "Your profile picture"
-msgstr "Seu perfil"
+msgstr "Sua imagem de perfil"
 
 #: dist/converse-no-dependencies.js:112873
 msgid "Save and close"
@@ -1982,61 +1962,56 @@ msgid "Profile"
 msgstr "Perfil"
 
 #: dist/converse-no-dependencies.js:112878
-#, fuzzy
 msgid "Reset Password"
-msgstr "Senha"
+msgstr "Resetar senha"
 
 #: dist/converse-no-dependencies.js:112916
 msgid "The new passwords must match"
-msgstr ""
+msgstr "As novas senhas devem corresponder"
 
 #: dist/converse-no-dependencies.js:112917
-#, fuzzy
 msgid "New password"
-msgstr "Sem senha"
+msgstr "Nova senha"
 
 #: dist/converse-no-dependencies.js:112918
-#, fuzzy
 msgid "Confirm new password"
-msgstr "Sem senha"
+msgstr "Confirme a nova senha"
 
 #: dist/converse-no-dependencies.js:113440
-#, fuzzy
 msgid "Timeout error"
-msgstr "Erro de tempo limite"
+msgstr "Erro de tempo de espera"
 
 #: dist/converse-no-dependencies.js:113447
 msgid "Your server does not support in-band password reset"
-msgstr ""
+msgstr "Seu servidor não suporta a redefinição de senha aqui"
 
 #: dist/converse-no-dependencies.js:113454
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
+"Seu servidor respondeu com um erro desconhecido, verifique o console de "
+"desenvolvedor para detalhes"
 
 #: dist/converse-no-dependencies.js:113473
-#, fuzzy
 msgid "Timeout error while trying to set your password"
-msgstr "O tempo esgotou ao tentar definir a afiliação"
+msgstr "O tempo esgotou ao tentar definir a sua senha"
 
 #: dist/converse-no-dependencies.js:113475
 msgid "Your server does not allow in-band password reset"
-msgstr ""
+msgstr "Seu servidor não suporta a redefinição de senha aqui"
 
 #: dist/converse-no-dependencies.js:113477
 #: dist/converse-no-dependencies.js:113479
-#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr "Você não tem permissão de criar novas salas."
+msgstr "Você não tem permissão para alterar a sua senha"
 
 #: dist/converse-no-dependencies.js:113481
 msgid "Success"
-msgstr ""
+msgstr "Sucesso"
 
 #: dist/converse-no-dependencies.js:113481
-#, fuzzy
 msgid "Your new password has been set"
-msgstr "Uma nova sala foi criada"
+msgstr "Sua nova senha foi definida"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:114026
@@ -2158,15 +2133,16 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Erro: não foi possível decriptografar o arquivo criptografado recebido "
+"porque ele não pode ser baixado"
 
 #: dist/converse-no-dependencies.js:115956
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Desculpe, não pude descriptografar um OMEMO recebido porque não temos o JID "
-"para esse usuário."
+"Desculpe, não foi possível decriptografar o OMEMO recebido porque não temos "
+"o endereço XMPP deste usuário."
 
 #: dist/converse-no-dependencies.js:116021
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -2218,7 +2194,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:116737
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "Criptografia OMEMO não é suportada"
 
 #: dist/converse-no-dependencies.js:116761
 msgid ""
@@ -2418,9 +2394,8 @@ msgid "Description:"
 msgstr "Descrição:"
 
 #: dist/converse-no-dependencies.js:124189
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Endereço da sala"
+msgstr "Endereço XMPP do bate-papo:"
 
 #: dist/converse-no-dependencies.js:124190
 msgid "Participants:"
@@ -2501,9 +2476,8 @@ msgid "Add a new groupchat"
 msgstr "Adicionar um novo grupo"
 
 #: dist/converse-no-dependencies.js:124657
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Mostrar Salas"
+msgstr "Mostrar bate-papos favoritos"
 
 #: dist/converse-no-dependencies.js:125234
 #, javascript-format
@@ -2516,9 +2490,8 @@ msgid "Add"
 msgstr "Adicionar"
 
 #: dist/converse-no-dependencies.js:125739
-#, fuzzy
 msgid "Group"
-msgstr "Grupos"
+msgstr "Grupo"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125947
@@ -2544,9 +2517,8 @@ msgid "Contacts"
 msgstr "Contatos"
 
 #: dist/converse-no-dependencies.js:126190
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Clique para esconder esses contatos"
+msgstr "Clique para mostrar/esconder os contatos"
 
 #: dist/converse-no-dependencies.js:126191
 msgid "Add a contact"

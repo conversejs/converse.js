@@ -391,7 +391,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     const messages = view.querySelectorAll('.message.chat-error');
                     expect(messages.length).toBe(1);
                     expect(messages[0].textContent.trim()).toBe(
-                        'The size of your file, my-juliet.jpg, exceeds the maximum allowed by your server, which is 5 MB.');
+                        'The size of your file, my-juliet.jpg, exceeds the maximum allowed by your server, which is 5.24 MB.');
                 }));
             });
         });
@@ -461,7 +461,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5');
                     message.set('progress', 1);
                     await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '1');
-                    expect(view.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
+                    expect(view.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 23.46 kB');
                     promise.resolve();
                 });
                 _converse.connection._dataRecv(mock.createRequest(stanza));

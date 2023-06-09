@@ -11,6 +11,7 @@ import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { TimeoutError } from '../errors.js';
+import { filesize } from 'filesize';
 import { html } from 'lit';
 import { initAppSettings } from '../settings/utils.js';
 import { sprintf } from 'sprintf-js';
@@ -200,6 +201,7 @@ export const converse = Object.assign(window.converse || {}, {
         URI,
         VERSION_NAME,
         dayjs,
+        filesize,
         html,
         log,
         sizzle,

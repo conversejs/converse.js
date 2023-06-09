@@ -1,7 +1,9 @@
 import 'shared/avatar/avatar.js';
-import filesize from 'filesize';
 import { __ } from 'i18n';
+import { converse } from '@converse/headless/core.js';
 import { html } from 'lit';
+
+const { filesize } = converse.env;
 
 export default (el) => {
     const i18n_uploading = __('Uploading file:');

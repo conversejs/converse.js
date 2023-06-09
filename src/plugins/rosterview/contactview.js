@@ -15,10 +15,11 @@ export default class RosterContact extends CustomElement {
     }
 
     initialize () {
-        this.listenTo(this.model, "change", () => this.requestUpdate());
-        this.listenTo(this.model, "highlight", () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(this.model, 'highlight', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
+        this.listenTo(this.model, 'presenceChanged', () => this.requestUpdate());
     }
 
     render () {

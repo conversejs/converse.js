@@ -9,6 +9,7 @@
 - Generate TypeScript declaration files into `dist/types`
 - Removed documentation about the no longer implemented `fullname` option.
 - Updated translations
+- #3123: Contacts do not show up online until chat is opened with them.
 - #3156: Add function to prevent drag stutter effect over iframes when resize is called in overlay mode
 - #3165: Use configured nickname in profile view in the control box
 

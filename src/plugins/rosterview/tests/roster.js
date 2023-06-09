@@ -812,6 +812,37 @@ describe("The Contacts Roster", function () {
             expect(true).toBe(true);
         }));
 
+        it("will have their online statuses shown correctly",
+            mock.initConverse(
+                [], {},
+                async function (_converse) {
+
+            await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+            const icon_el = document.querySelector('converse-roster-contact converse-icon');
+            expect(icon_el.getAttribute('color')).toBe('var(--subdued-color)');
+
+            let pres = $pres({from: 'mercutio@montague.lit/resource'});
+            _converse.connection._dataRecv(mock.createRequest(pres));
+            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-online)');
+
+            pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'away');
+            _converse.connection._dataRecv(mock.createRequest(pres));
+            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-away)');
+
+            pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'xa');
+            _converse.connection._dataRecv(mock.createRequest(pres));
+            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--subdued-color)');
+
+            pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'dnd');
+            _converse.connection._dataRecv(mock.createRequest(pres));
+            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-busy)');
+
+            pres = $pres({from: 'mercutio@montague.lit/resource', type: 'unavailable'});
+            _converse.connection._dataRecv(mock.createRequest(pres));
+            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--subdued-color)');
+        }));
+
         it("can be added to the roster and they will be sorted alphabetically",
             mock.initConverse(
                 [], {},

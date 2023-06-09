@@ -377,9 +377,7 @@ const RosterContacts = Collection.extend({
             _converse.xmppstatus.save({'status': show}, {'silent': true});
 
             const status_message = presence.querySelector('status')?.textContent;
-            if (status_message) {
-                _converse.xmppstatus.save({'status_message': status_message});
-            }
+            if (status_message) _converse.xmppstatus.save({ status_message });
         }
         if (_converse.jid === jid && presence_type === 'unavailable') {
             // XXX: We've received an "unavailable" presence from our
@@ -412,11 +410,11 @@ const RosterContacts = Collection.extend({
             return; // Ignore MUC
         }
 
-        const status_message = presence.querySelector('status')?.textContent;
         const contact = this.get(bare_jid);
 
-        if (contact && (status_message !== contact.get('status'))) {
-            contact.save({'status': status_message});
+        if (contact) {
+            const status = presence.querySelector('status')?.textContent;
+            if (contact.get('status') !== status) contact.save({status});
         }
 
         if (presence_type === 'subscribed' && contact) {

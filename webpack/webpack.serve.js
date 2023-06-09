@@ -12,7 +12,12 @@ module.exports = merge(common, {
     devtool: "inline-source-map",
     devServer: {
         static: [ path.resolve(__dirname, '../') ],
-        port: 3003
+        port: 3003,
+        // https: {
+        //     key: './certs/chat.example.org.key',
+        //     cert: './certs/chat.example.org.crt',
+        //     requestCert: true,
+        // },
     },
     plugins: [
         new HTMLWebpackPlugin({

@@ -357,7 +357,7 @@ async function getLoginCredentialsFromBrowser () {
     if (!jid) return null;
 
     try {
-        const creds = await navigator.credentials.get({'password': true});
+        const creds = await navigator.credentials.get({ password: true});
         if (creds && creds.type == 'password' && isValidJID(creds.id)) {
             // XXX: We don't actually compare `creds.id` with `jid` because
             // the user might have been presented a list of credentials with
@@ -431,7 +431,7 @@ export async function attemptNonPreboundSession (credentials, automatic) {
  * The user's plaintext password is not stored, nor any material from which
  * the user's plaintext password could be recovered.
  *
- * @param { String } JID - The XMPP address for which to fetch the SCRAM keys
+ * @param { String } jid - The XMPP address for which to fetch the SCRAM keys
  * @returns { Promise } A promise which resolves once we've fetched the previously
  *  used login keys.
  */
@@ -444,6 +444,13 @@ export async function savedLoginInfo (jid) {
 }
 
 
+/**
+ * @param { Object } [credentials]
+ * @param { string } credentials.password
+ * @param { Object } credentials.password
+ * @param { string } credentials.password.ck
+ * @returns { Promise<void> }
+ */
 async function connect (credentials) {
     const { api } = _converse;
     if ([ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication"))) {

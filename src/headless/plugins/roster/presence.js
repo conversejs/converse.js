@@ -30,7 +30,7 @@ export const Presence = Model.extend({
         const hpr = this.getHighestPriorityResource();
         const show = hpr?.attributes?.show || 'offline';
         if (this.get('show') !== show) {
-            this.save({'show': show});
+            this.save({ show });
         }
     },
 
@@ -51,17 +51,17 @@ export const Presence = Model.extend({
      * @param { Element } presence: The presence stanza
      */
     addResource (presence) {
-        const jid = presence.getAttribute('from'),
-                name = Strophe.getResourceFromJid(jid),
-                delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
-                priority = presence.querySelector('priority')?.textContent ?? 0,
-                resource = this.resources.get(name),
-                settings = {
-                    'name': name,
-                    'priority': isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
-                    'show': presence.querySelector('show')?.textContent ?? 'online',
-                    'timestamp': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString()
-                };
+        const jid = presence.getAttribute('from');
+        const name = Strophe.getResourceFromJid(jid);
+        const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop();
+        const priority = presence.querySelector('priority')?.textContent;
+        const resource = this.resources.get(name);
+        const settings = {
+            name,
+            'priority': isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
+            'show': presence.querySelector('show')?.textContent ?? 'online',
+            'timestamp': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString()
+        };
         if (resource) {
             resource.save(settings);
         } else {
@@ -78,9 +78,7 @@ export const Presence = Model.extend({
      */
     removeResource (name) {
         const resource = this.resources.get(name);
-        if (resource) {
-            resource.destroy();
-        }
+        resource?.destroy();
     }
 });
 

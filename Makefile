@@ -58,6 +58,10 @@ serve: node_modules dist
 serve_bg: node_modules
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1 -s &
 
+certs:
+	mkdir certs
+	cd certs && openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out chat.example.org.crt -keyout chat.example.org.key
+
 ########################################################################
 ## Translation machinery
 

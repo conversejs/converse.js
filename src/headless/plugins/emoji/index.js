@@ -86,8 +86,8 @@ converse.plugins.add('converse-emoji', {
                 async initialize () {
                     if (!converse.emojis.initialized) {
                         converse.emojis.initialized = true;
-                        const { default: json } = await import(/*webpackChunkName: "emojis" */ './emoji.json');
-                        converse.emojis.json = json;
+                        const module = await import(/*webpackChunkName: "emojis" */ './emoji.json');
+                        const json = converse.emojis.json = module.default;
                         converse.emojis.by_sn = Object.keys(json).reduce((result, cat) => Object.assign(result, json[cat]), {});
                         converse.emojis.list = Object.values(converse.emojis.by_sn);
                         converse.emojis.list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));

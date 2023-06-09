@@ -2,11 +2,10 @@
   "name": "@converse/headless",
   "version": "10.1.2",
   "description": "Converse.js Headless build",
-  "author": {
-    "name": "JC Brand",
-    "email": "jc@opkode.com"
-  },
-  "contributors": ["cmrd Senya <senya@riseup.net>"],
+  "author": "JC Brand <jc@opkode.com>",
+  "contributors": [
+    "cmrd Senya <senya@riseup.net>"
+  ],
   "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
   "main": "dist/converse-headless.js",
@@ -31,7 +30,6 @@
   "bugs": {
     "url": "https://github.com/conversejs/converse.js/issues"
   },
-  "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "dependencies": {
     "@converse/openpromise": "^0.0.1",
     "@converse/skeletor": "0.0.8",
@@ -45,5 +43,6 @@
     "sprintf-js": "^1.1.2",
     "strophe.js": "1.6.0",
     "urijs": "^1.19.10"
-  }
+  },
+  "devDependencies": {}
 }

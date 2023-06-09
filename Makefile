@@ -8,7 +8,6 @@ HTTPSERVE_PORT	?= 8000
 INKSCAPE		?= inkscape
 INSTALL			?= install
 JSDOC			?=	./node_modules/.bin/jsdoc
-LERNA			?= ./node_modules/.bin/lerna
 OXIPNG			?= oxipng
 PAPER		 	=
 RJS				?= ./node_modules/.bin/r.js
@@ -118,9 +117,6 @@ deploy:
 ########################################################################
 ## Install dependencies
 
-$(LERNA):
-	npm install lerna
-
 ${NVM_DIR}/nvm.sh:
 	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 	source ~/.bashrc
@@ -135,8 +131,7 @@ node: .nvmrc
 package-lock.json: package.json
 	npm install
 
-node_modules: $(LERNA) package.json package-lock.json src/headless/package.json src/headless/package-lock.json
-	npm run lerna
+node_modules: package.json package-lock.json src/headless/package.json src/headless/package-lock.json
 
 .PHONY: clean
 clean:

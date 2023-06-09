@@ -128,10 +128,8 @@ nvm: ${NVM_DIR}/nvm.sh
 node: .nvmrc
 	. $(HOME)/.nvm/nvm.sh && nvm install
 
-package-lock.json: package.json
+node_modules: package.json src/headless/package.json
 	npm install
-
-node_modules: package.json package-lock.json src/headless/package.json src/headless/package-lock.json
 
 .PHONY: clean
 clean:

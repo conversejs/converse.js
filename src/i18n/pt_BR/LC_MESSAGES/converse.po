@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-15 15:11+0100\n"
-"PO-Revision-Date: 2023-06-07 12:58+0000\n"
+"PO-Revision-Date: 2023-06-13 19:54+0000\n"
 "Last-Translator: Breno Peres <breno.dk@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
@@ -69,12 +69,12 @@ msgstr "%1$s está ausente"
 #: dist/converse-no-dependencies.js:38597
 #: dist/converse-no-dependencies.js:47709
 msgid "You're not allowed to retract your message."
-msgstr "Você não está autorizado a retratar sua mensagem."
+msgstr "Você não está autorizado a retirar sua mensagem."
 
 #: dist/converse-no-dependencies.js:38599
 #: dist/converse-no-dependencies.js:47713
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Desculpe, ocorreu um erro ao tentar retratar sua mensagem."
+msgstr "Desculpe, ocorreu um erro ao tentar retirar sua mensagem."
 
 #: dist/converse-no-dependencies.js:38604
 msgid "You're not allowed to send a message."
@@ -184,18 +184,19 @@ msgstr "Adesivos"
 #: dist/converse-no-dependencies.js:46358
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr "Erro: tempo excedido ao tentar recuperar a lista %1s para o MUC %2s"
+msgstr ""
+"Erro: tempo de espera excedido durante a busca da lista %1s para MUC %2s"
 
 #: dist/converse-no-dependencies.js:46367
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr "Erro: sem permissão para recuperar a lista %1s para o MUC %2s"
+msgstr "Erro: não autorizado a recuperar a lista %1s para o MUC %2s"
 
 #: dist/converse-no-dependencies.js:47711
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
-msgstr "Sua retração não foi entregue porque você não está presente no grupo."
+msgstr "Sua retirada não foi entregue porque você não está presente no grupo."
 
 #: dist/converse-no-dependencies.js:47718
 msgid "Your message was not delivered because you weren't allowed to send it."
@@ -209,7 +210,7 @@ msgstr "Sua mensagem não foi entregue porque você não está presente na sala.
 
 #: dist/converse-no-dependencies.js:48037
 msgid "A timeout happened while while trying to retract your message."
-msgstr "O tempo esgotou enquanto tentava retrair sua mensagem."
+msgstr "O tempo esgotou enquanto tentava retirar sua mensagem."
 
 #: dist/converse-no-dependencies.js:48704
 msgid "Sorry, an error happened while running the command."
@@ -471,7 +472,7 @@ msgstr "Servidor remoto não encontrado"
 
 #: dist/converse-no-dependencies.js:50401
 msgid "You're not allowed to enter this groupchat"
-msgstr "Você não tem permissão para se registrar nesta conferência"
+msgstr "Você não tem permissão para entrar neste grupo"
 
 #: dist/converse-no-dependencies.js:50404
 msgid "An error happened while trying to enter this groupchat"
@@ -614,7 +615,7 @@ msgstr "O tempo de espera se esgotou"
 
 #: dist/converse-no-dependencies.js:59488
 msgid "Timeout while trying to fetch archived messages."
-msgstr "O tempo esgotou enquanto tentava retrair a mensagem."
+msgstr "O tempo esgotou enquanto tentava retratar a mensagem."
 
 #: dist/converse-no-dependencies.js:59501
 msgid "An error occurred while querying for archived messages."
@@ -1025,7 +1026,7 @@ msgstr "Favoritos"
 #: dist/converse-no-dependencies.js:79500
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Favorito para \"%1s\""
+msgstr "Favorito para \"%1$s\""
 
 #: dist/converse-no-dependencies.js:79501
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -1067,22 +1068,22 @@ msgid ""
 "retractions and that this message may not be removed everywhere."
 msgstr ""
 "Esteja ciente de que outros clientes de XMPP/Jabber (e servidores) podem "
-"ainda não suportar retratações e que esta mensagem pode não ser excluída em "
+"ainda não suportar retiradas e que esta mensagem pode não ser excluída em "
 "todos os lugares."
 
 #: dist/converse-no-dependencies.js:81369
 #: dist/converse-no-dependencies.js:81445
 #: dist/converse-no-dependencies.js:81473
 msgid "Are you sure you want to retract this message?"
-msgstr "Tem certeza que deseja retratar esta mensagem?"
+msgstr "Tem certeza que deseja retirar esta mensagem?"
 
 #: dist/converse-no-dependencies.js:81412
 msgid "A timeout occurred while trying to retract the message"
-msgstr "O tempo esgotou enquanto tentava retrair a mensagem"
+msgstr "O tempo esgotou enquanto tentava retirar a mensagem"
 
 #: dist/converse-no-dependencies.js:81416
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "Desculpe, você não está autorizado a retrair esta mensagem."
+msgstr "Desculpe, você não está autorizado a retirar esta mensagem."
 
 #: dist/converse-no-dependencies.js:81490
 msgid "You are about to retract this message."
@@ -1094,11 +1095,11 @@ msgid ""
 "retraction."
 msgstr ""
 "Opcionalmente, você pode incluir uma mensagem explicando o motivo da "
-"retratação."
+"retirada."
 
 #: dist/converse-no-dependencies.js:81495
 msgid "Message Retraction"
-msgstr "Retratação de mensagem"
+msgstr "Retração de mensagem"
 
 #: dist/converse-no-dependencies.js:81495
 msgid "Optional reason"
@@ -1106,7 +1107,7 @@ msgstr "Motivo opcional"
 
 #: dist/converse-no-dependencies.js:81503
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Desculpe, você não está autorizado a retratar esta mensagem"
+msgstr "Desculpe, você não está autorizado a retirar esta mensagem"
 
 #: dist/converse-no-dependencies.js:81619
 msgid "Show media"
@@ -1460,7 +1461,7 @@ msgstr "Esse usuário NÃO pode enviar mensagens nessa sala."
 
 #: dist/converse-no-dependencies.js:105029
 msgid "Admin"
-msgstr "Admin"
+msgstr "Administrador"
 
 #: dist/converse-no-dependencies.js:105030
 msgid "Member"
@@ -1590,7 +1591,7 @@ msgstr "Este grupo de conversa não existe mais"
 #: dist/converse-no-dependencies.js:106724
 #, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "A seguinte razão foi dada: \"%1$s\"."
+msgstr "A seguinte razão foi dada: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:107450
 #, javascript-format

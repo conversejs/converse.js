@@ -88,7 +88,6 @@ po:
 .PHONY: release
 release:
 	rm -rf release && mkdir release
-	git clone git@github.com:conversejs/converse.js.git --depth 1 release/
 	cd release
 	$(SED) -i '/^export const VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/shared/constants.js
 	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
@@ -105,8 +104,17 @@ release:
 	make pot
 	make po
 	make dist
-	npm pack
-	cd src/headless && npm pack
+	make tars
+
+.PHONY: tars
+tars:
+	git clone git@github.com:conversejs/converse.js.git --depth 1 release/
+	cd release && make dist
+	cd release && npm pack
+	cd release/src/headless && npm pack
+	find ./release/ -name "converse.js-*.tgz" -exec mv {} . \;
+	find ./release/src/headless -name "converse-headless-*.tgz" -exec mv {} . \;
+	rm -rf release
 
 .PHONY: postrelease
 postrelease:

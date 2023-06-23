@@ -159,7 +159,7 @@ export class RichText extends String {
      *  the start of the message body text.
      */
     addMapURLs (text, offset) {
-        const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
+        const regex = /geo:(?<lat>[\-0-9.]+),(?<lon>[\-0-9.]+)(?:,(?:[\-0-9.]+))?(?:;\w+(?<!\bz)=\w+)*(?:;z=(?<zoom>\d+))?(?:;\w+=\w+)*/g;
         const matches = text.matchAll(regex);
         for (const m of matches) {
             this.addTemplateResult(

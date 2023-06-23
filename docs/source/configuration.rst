@@ -928,17 +928,17 @@ Accepts a string or array of strings. Any query strings from URLs that match thi
 geouri_regex
 ------------
 
-* Default:  ``/https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g``
+* Default:  ``/https:\/\/www\.openstreetmap\.org\/\#map=(?<zoom>[0-9]+)\/(?<lat>[\-0-9.]+)\/(?<lon>[\-0-9.]+)/g``
 
 Regular expression used to extract geo coordinates from links to openstreetmap.
 
 geouri_replacement
 ------------------
 
-* Default:  ``'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2'``
+* Default:  ``https://www.openstreetmap.org/?mlat=$<lat>&mlon=$<lon>#map=$<zoom>/$<lat>/$<lon>``
 
-String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$1`` and ``$2`` is replaced by
-latitude and longitude respectively.
+String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$<lat>``, ``$<lon>``, and ``$<zoom>`` is replaced by
+latitude, longitude, and zoom level respectively.
 
 hide_muc_participants
 ---------------------

@@ -262,7 +262,25 @@ describe("A Chat Message", function () {
         expect(_converse.api.chatboxes.get).not.toHaveBeenCalled();
     }));
 
-    it("will render Openstreetmap-URL from geo-URI",
+    it("will render Openstreetmap-URL from geo-URI with zoom level",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const message = "geo:37.786971,-122.399677;z=7";
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        spyOn(view.model, 'sendMessage').and.callThrough();
+        await mock.sendMessage(view, message);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
+        expect(view.model.sendMessage).toHaveBeenCalled();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
+        await u.waitUntil(() => msg.innerHTML.replace(/\<!-.*?-\>/g, '') ===
+            '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
+            'mlon=-122.399677#map=7/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=7/37.786971/-122.399677</a>');
+    }));
+
+    it("will render Openstreetmap-URL from geo-URI without zoom level",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -277,7 +295,41 @@ describe("A Chat Message", function () {
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         await u.waitUntil(() => msg.innerHTML.replace(/\<!-.*?-\>/g, '') ===
             '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
-            'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
+            'mlon=-122.399677#map=/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=/37.786971/-122.399677</a>');
+    }));
+
+    it("will not render geo-URI from Openstreetmap-URL",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const message = "https://www.openstreetmap.org/#map=7/51.724/6.630";
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        spyOn(view.model, 'sendMessage').and.callThrough();
+        await mock.sendMessage(view, message);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
+        expect(view.model.sendMessage).toHaveBeenCalled();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
+        await u.waitUntil(() => msg.innerHTML.replace(/\<!-.*?-\>/g, '') ===
+            'geo:51.724,6.630;z=7');
+    }));
+
+    it("will not render geo-URI from Openstreetmap-URL if additional information present in URL",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const message = "https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=51.507%2C-0.128%3B52.517%2C13.389#map=7/51.724/6.630";
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.chatboxviews.get(contact_jid);
+        spyOn(view.model, 'sendMessage').and.callThrough();
+        await mock.sendMessage(view, message);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
+        expect(view.model.sendMessage).toHaveBeenCalled();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
+        await u.waitUntil(() => msg.innerHTML.replace(/\<!-.*?-\>/g, '') ===
+            'https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&amp;route=51.507%2C-0.128%3B52.517%2C13.389#map=7/51.724/6.630');
     }));
 
     it("can be a carbon message, as defined in XEP-0280",

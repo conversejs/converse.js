@@ -110,7 +110,7 @@ release:
 
 .PHONY: postrelease
 postrelease:
-	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/core.js
+	$(SED) -i '/^export const VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/shared/constants.js
 
 .PHONY: deploy
 deploy:

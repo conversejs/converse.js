@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-02-19 05:39+0000\n"
+"PO-Revision-Date: 2023-06-25 02:53+0000\n"
 "Last-Translator: Eric <hamburger2048@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: dist/converse-no-dependencies.js:29951
 msgid "The connection has dropped, attempting to reconnect."
@@ -294,7 +294,7 @@ msgstr "%1$s 已经被赋予发言权"
 #: dist/converse-no-dependencies.js:51193
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s 已经被禁止发言"
+msgstr "%1$s 已被静音"
 
 #: dist/converse-no-dependencies.js:51201
 #, javascript-format
@@ -344,7 +344,7 @@ msgstr "%1$s 已经被赋予发言权"
 #: dist/converse-no-dependencies.js:51220
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr "%1$s 已经被禁止发言"
+msgstr "%1$s 已被静音"
 
 #: dist/converse-no-dependencies.js:51519
 #, javascript-format
@@ -699,7 +699,6 @@ msgid "Affiliation changed"
 msgstr "身份已变更"
 
 #: dist/converse-no-dependencies.js:77005
-#, fuzzy
 msgid "role changed"
 msgstr "角色已变更"
 
@@ -1162,7 +1161,7 @@ msgstr "隐藏成员"
 
 #: dist/converse-no-dependencies.js:95611
 msgid "Show participants"
-msgstr "显示成员"
+msgstr "显示参与者"
 
 #: dist/converse-no-dependencies.js:95632
 msgid "Choose a file to send"
@@ -2349,7 +2348,7 @@ msgstr "conference.example.org"
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:126434
 msgid "Query for Groupchats"
-msgstr "搜索聊天室"
+msgstr "搜索群聊"
 
 #: dist/converse-no-dependencies.js:126474
 msgid "Groupchats found"
@@ -2373,7 +2372,7 @@ msgstr "聊天室"
 
 #: dist/converse-no-dependencies.js:126599
 msgid "Query for groupchats"
-msgstr "搜索聊天室"
+msgstr "搜索群聊"
 
 #: dist/converse-no-dependencies.js:126600
 msgid "Add a new groupchat"

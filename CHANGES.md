@@ -1,6 +1,6 @@
 # Changelog
 
-## 10.1.3 (Unreleased)
+## 10.1.3 (2023-06-25)
 
 - Fix `dist` directory not included in NPM package
 

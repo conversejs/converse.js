@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.3 (Unreleased)
+
+- Fix `dist` directory not included in NPM package
+
 ## 10.1.3 (2023-06-23)
 
 - Add the ability to set roles and affiliations via the MUC occupant modal

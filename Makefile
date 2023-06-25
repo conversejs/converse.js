@@ -120,7 +120,7 @@ postrelease:
 
 .PHONY: deploy
 deploy:
-	git clone --branch v$(VERSION) git@github.com:conversejs/converse.js.git $(VERSION)
+	git clone --branch --depth 1 v$(VERSION) git@github.com:conversejs/converse.js.git $(VERSION)
 	cd $(VERSION) && make node && ASSET_PATH=https://cdn.conversejs.org/$(VERSION)/dist/ make dist && make doc
 	cd .. && git pull && make node && ASSET_PATH=https://cdn.conversejs.org/dist/ make dist && make doc
 

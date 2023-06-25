@@ -24,7 +24,8 @@
     "src/**/*.pot",
     "src/**/*.scss",
     "src/**/*.svg",
-    "src/**/*.txt"
+    "src/**/*.txt",
+    "3rdparty/*.js"
   ],
   "scripts": {
     "build": "webpack --config webpack/webpack.build.js",

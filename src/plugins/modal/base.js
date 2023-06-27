@@ -4,7 +4,7 @@ import log from "@converse/headless/log";
 import sizzle from 'sizzle';
 import tplAlertComponent from "./templates/modal-alert.js";
 import { View } from '@converse/skeletor/src/view.js';
-import { addClass, removeElement } from '../../utils/html.js';
+import { hasClass, addClass, removeElement, removeClass } from '../../utils/html.js';
 import { render } from 'lit';
 
 import './styles/_modal.scss';
@@ -43,7 +43,7 @@ const BaseModal = View.extend({
     },
 
     onHide () {
-        u.removeClass('selected', this.trigger_el);
+        removeClass('selected', this.trigger_el);
         !this.persistent && api.modal.remove(this);
     },
 

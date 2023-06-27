@@ -236,13 +236,19 @@ u.getLastChildElement = function (el, selector = '*') {
     return last_el;
 };
 
-u.hasClass = function (className, el) {
-    return el instanceof Element && el.classList.contains(className);
-};
-
 u.toggleClass = function (className, el) {
     u.hasClass(className, el) ? removeClass(className, el) : addClass(className, el);
 };
+
+/**
+ * Has an element a class?
+ * @method u#hasClass
+ * @param { string } className
+ * @param { Element } el
+ */
+export function hasClass (className, el) {
+    return el instanceof Element && el.classList.contains(className);
+}
 
 /**
  * Add a class to an element.
@@ -615,6 +621,7 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
 };
 
 Object.assign(u, {
+    hasClass,
     addClass,
     ancestor,
     getOOBURLMarkup,

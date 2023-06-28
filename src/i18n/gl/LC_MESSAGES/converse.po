@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-02-19 05:39+0000\n"
+"PO-Revision-Date: 2023-06-29 05:51+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: dist/converse-no-dependencies.js:29951
 msgid "The connection has dropped, attempting to reconnect."
@@ -714,9 +714,8 @@ msgid "Affiliation changed"
 msgstr "Cambiou a afiliación"
 
 #: dist/converse-no-dependencies.js:77005
-#, fuzzy
 msgid "role changed"
-msgstr "Rol cambiado"
+msgstr "rol cambiado"
 
 #: dist/converse-no-dependencies.js:77099
 msgid ""

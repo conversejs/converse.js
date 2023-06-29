@@ -65,9 +65,6 @@ certs:
 ########################################################################
 ## Translation machinery
 
-dist/converse-no-dependencies.js: src webpack/webpack.common.js webpack/webpack.nodeps.js @converse/headless node_modules
-	npm run nodeps
-
 GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=10.1.4 dist/converse-no-dependencies.js -c
 
 src/i18n/converse.pot: dist/converse-no-dependencies.js
@@ -85,10 +82,8 @@ po:
 ########################################################################
 ## Release management
 
-.PHONY: release
-release:
-	rm -rf release && mkdir release
-	cd release
+.PHONY: version
+version:
 	$(SED) -i '/^export const VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/shared/constants.js
 	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
 	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' src/i18n/converse.pot
@@ -105,14 +100,18 @@ release:
 	make po
 	make dist
 
+release-checkout:
+	git clone git@github.com:conversejs/converse.js.git --depth 1 --branch $(BRANCH) release-$(BRANCH)
+	cd release-$(BRANCH) && make dist
+
 .PHONY: publish
 publish:
-	git clone git@github.com:conversejs/converse.js.git --depth 1 --branch $(BRANCH) release/
-	cd release && make dist && npm pack && npm publish
-	cd release/src/headless && npm pack && npm publish
-	find ./release/ -name "converse.js-*.tgz" -exec mv {} . \;
-	find ./release/src/headless -name "converse-headless-*.tgz" -exec mv {} . \;
-	rm -rf release
+	make release-checkout
+	cd release-$(BRANCH) && npm pack && npm publish
+	cd release-$(BRANCH)/src/headless && npm pack && npm publish
+	find ./release-$(BRANCH)/ -name "converse.js-*.tgz" -exec mv {} . \;
+	find ./release-$(BRANCH)/src/headless -name "converse-headless-*.tgz" -exec mv {} . \;
+	rm -rf release-$(BRANCH)
 
 .PHONY: postrelease
 postrelease:
@@ -156,6 +155,9 @@ devserver: node_modules
 
 ########################################################################
 ## Builds
+
+dist/converse-no-dependencies.js: src webpack/webpack.common.js webpack/webpack.nodeps.js @converse/headless node_modules
+	npm run nodeps
 
 dist/converse.js:: node_modules
 	npm run build
@@ -201,7 +203,7 @@ src/headless/dist/converse-headless.js: src webpack/webpack.common.js node_modul
 src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_modules @converse/headless
 	npm run headless
 
-dist:: node_modules src/* | dist/website.css dist/website.min.css
+dist:: node_modules src/* | dist/website.css dist/website.min.css dist/converse-no-dependencies.js
 	npm run headless
 	npm run build
 

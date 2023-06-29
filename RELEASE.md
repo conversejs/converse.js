@@ -6,7 +6,7 @@
 4. Do a `git diff` to check if things look sane.
 5. Do a quick manual test with the `dist` files (via `index.html`)
 6. `git commit -am "Release 10.1.5"`
-7. `git tag -s v10.1.5 -m "Release 10.1.4"`
+7. `git tag -s v10.1.5 -m "Release 10.1.5"`
 8. `git push && git push origin v10.1.5`
 9. `make publish BRANCH=v10.1.5`
 10. Update release page on Github

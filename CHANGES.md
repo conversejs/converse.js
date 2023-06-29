@@ -2,6 +2,8 @@
 
 ## 10.1.5 (Unreleased)
 
+- #3209: Fix error when importing the `converse` global with bootstrap modal API.
+
 ## 10.1.4 (2023-06-25)
 
 - Fix `dist` directory not included in NPM package

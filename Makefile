@@ -203,9 +203,14 @@ src/headless/dist/converse-headless.js: src webpack/webpack.common.js node_modul
 src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_modules @converse/headless
 	npm run headless
 
-dist:: node_modules src/* | dist/website.css dist/website.min.css dist/converse-no-dependencies.js
+dist:: node_modules src/* | dist/website.css dist/website.min.css
 	npm run headless
 	npm run build
+	# This step is necessary to properly generate JSON files from the .po
+	# files. The nodeps config uses preset-env with IE11 to turn all template
+	# literals into old JS strings, which is required because gettext 0.21
+	# doesn't support template literals.
+	npm run nodeps
 
 .PHONY: install
 install:: dist

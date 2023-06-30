@@ -205,16 +205,16 @@ src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_m
 
 dist:: node_modules src/* | dist/website.css dist/website.min.css
 	npm run headless
-	# Ideally this should just be `npm run nodeps`.
-	# The additional steps are necessary to properly generate JSON files from
-	# the .po files. The nodeps config uses preset-env with IE11 to turn all
-	# template literals into old JS strings, which is required because
-	# gettext 0.21 doesn't support template literals.
+	# Ideally this should just be `npm run build`.
+	# The additional steps are necessary to properly generate JSON chunk files
+	# from the .po files. The nodeps config uses preset-env with IE11.
+	# Somehow this is necessary.
 	npm run nodeps
-	mkdir tmp && mv dist/locales tmp
-	npm run build
-	cp tmp/locales/*-po.js dist/locales/
-	rm -rf tmp
+	$(eval TMPD := $(shell mktemp -d))
+	mv dist/locales $(TMPD) && \
+	npm run build && \
+	mv $(TMPD)/locales/*-po.js dist/locales/ && \
+	rm -rf $(TMPD)
 
 .PHONY: install
 install:: dist

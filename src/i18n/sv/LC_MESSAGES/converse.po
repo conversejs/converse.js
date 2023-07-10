@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-04-02 13:39+0000\n"
-"Last-Translator: Kim Alvefur <zash@zash.se>\n"
+"PO-Revision-Date: 2023-07-11 06:53+0000\n"
+"Last-Translator: Luna Jernberg <droidbittin@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/conversejs/"
 "translations/sv/>\n"
 "Language: sv\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: dist/converse-no-dependencies.js:29951
 msgid "The connection has dropped, attempting to reconnect."
@@ -724,9 +724,8 @@ msgid "Affiliation changed"
 msgstr "Anknytning ändrad"
 
 #: dist/converse-no-dependencies.js:77005
-#, fuzzy
 msgid "role changed"
-msgstr "Roll ändrad"
+msgstr "roll ändrad"
 
 #: dist/converse-no-dependencies.js:77099
 msgid ""

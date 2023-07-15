@@ -7,7 +7,7 @@ import '../chatboxviews/index.js';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
-import { api, converse } from '@converse/headless/core.js';
+import { api, converse } from '@converse/headless';
 import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;

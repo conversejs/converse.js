@@ -6,7 +6,6 @@ import 'shared/modals/user-details.js';
 import 'shared/registry';
 import 'plugins/muc-views/modals/occupant.js';
 import tplFileProgress from './templates/file-progress.js';
-import log from '@converse/headless/log';
 import tplInfoMessage from './templates/info-message.js';
 import tplMepMessage from 'plugins/muc-views/templates/mep-message.js';
 import tplMessage from './templates/message.js';
@@ -15,7 +14,7 @@ import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from  '@converse/headless/core';
+import { _converse, api, converse, log } from  '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getHats } from './utils.js';
 

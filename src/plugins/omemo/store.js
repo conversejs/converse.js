@@ -1,12 +1,11 @@
 /* global libsignal */
 import difference from 'lodash-es/difference';
 import invokeMap from 'lodash-es/invokeMap';
-import log from '@converse/headless/log';
 import range from 'lodash-es/range';
 import omit from 'lodash-es/omit';
 import { Model } from '@converse/skeletor/src/model.js';
 import { generateDeviceID } from './utils.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse, log } from '@converse/headless';
 
 const { Strophe, $build, u } = converse.env;
 

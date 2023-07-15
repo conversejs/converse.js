@@ -1,7 +1,7 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplPrompt from "./templates/prompt.js";
 import { getOpenPromise } from '@converse/openpromise';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 
 export default class Confirm extends BaseModal {
 

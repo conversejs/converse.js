@@ -1,7 +1,7 @@
 import MinimizedChatsToggle from './toggle.js';
 import tplChatsPanel from './templates/chats-panel.js';
 import { CustomElement } from 'shared/components/element';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 import { initStorage } from '@converse/headless/utils/storage.js';
 
 

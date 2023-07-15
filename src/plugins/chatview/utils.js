@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 
 export function clearHistory (jid) {
     if (_converse.router.history.getFragment() === `converse/chat?jid=${jid}`) {

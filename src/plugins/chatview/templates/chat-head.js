@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { _converse } from '@converse/headless/core';
+import { _converse } from '@converse/headless';
 import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';

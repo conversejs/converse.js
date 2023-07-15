@@ -1,6 +1,6 @@
 import { CustomElement } from './element.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { html } from 'lit';
 
 const i18n_profile_picture = __('Your profile picture');

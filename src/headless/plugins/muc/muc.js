@@ -6,7 +6,7 @@ import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor/src/model.js';
 import { ROOMSTATUS } from './constants.js';
-import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
+import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { _converse, api, converse } from '../../core.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';

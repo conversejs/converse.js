@@ -3,7 +3,7 @@ import tplSpinner from 'templates/spinner.js';
 import { ANONYMOUS, EXTERNAL, LOGIN, PREBIND, CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { REPORTABLE_STATUSES, PRETTY_CONNECTION_STATUS, CONNECTION_STATUS_CSS_CLASS } from '../constants.js';
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 import { html } from 'lit';
 
 const trust_checkbox = (checked) => {

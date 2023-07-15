@@ -2,7 +2,7 @@ import './message-form.js';
 import debounce from 'lodash-es/debounce';
 import tplBottomPanel from './templates/bottom-panel.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 import { clearMessages } from './utils.js';
 import { render } from 'lit';
 

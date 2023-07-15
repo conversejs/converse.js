@@ -1,6 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import tplAvatar from './templates/avatar.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 
 import './avatar.scss';
 

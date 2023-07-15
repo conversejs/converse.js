@@ -1,8 +1,7 @@
-import log from "@converse/headless/log";
 import tplMUCConfigForm from "./templates/muc-config-form.js";
 import { CustomElement } from 'shared/components/element';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse, log } from "@converse/headless";
 
 const { sizzle } = converse.env;
 const u = converse.env.utils;

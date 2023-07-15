@@ -1,5 +1,5 @@
 import { AsyncDirective } from 'lit/async-directive.js';
-import { converse } from '@converse/headless/core';
+import { converse } from '@converse/headless';
 import { directive } from 'lit/directive.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { html } from 'lit';

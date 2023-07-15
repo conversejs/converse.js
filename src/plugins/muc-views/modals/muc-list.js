@@ -1,11 +1,10 @@
 import BaseModal from "plugins/modal/modal.js";
 import head from "lodash-es/head";
-import log from "@converse/headless/log";
 import tplMUCDescription from "../templates/muc-description.js";
 import tplMUCList from "../templates/muc-list.js";
 import tplSpinner from "templates/spinner.js";
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse, log } from "@converse/headless";
 import { getAttributes } from '@converse/headless/shared/parsers';
 
 const { Strophe, $iq, sizzle } = converse.env;

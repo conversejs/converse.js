@@ -1,7 +1,7 @@
 import './component.js';
 import AutoComplete from './autocomplete.js';
 import { FILTER_CONTAINS, FILTER_STARTSWITH } from './utils.js';
-import { _converse } from '@converse/headless/core';
+import { _converse } from '@converse/headless';
 
 import './styles/_autocomplete.scss';
 

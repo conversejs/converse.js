@@ -1,7 +1,7 @@
 import 'shared/components/icons.js';
 import DOMPurify from 'dompurify';
 import { CustomElement } from 'shared/components/element.js';
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 

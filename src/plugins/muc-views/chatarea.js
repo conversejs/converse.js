@@ -1,7 +1,7 @@
 import tplMUCChatarea from './templates/muc-chatarea.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless';
 
 
 const { u } = converse.env;

@@ -7,7 +7,7 @@ import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';
 import ChatView from './chat.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { clearHistory } from './utils.js';
 
 import './styles/index.scss';

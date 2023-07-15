@@ -1,8 +1,7 @@
-import log from '@converse/headless/log';
 import tplAffiliationForm from './templates/affiliation-form.js';
 import { CustomElement } from 'shared/components/element';
 import { __ } from 'i18n';
-import { api, converse } from '@converse/headless/core';
+import { api, converse, log } from '@converse/headless';
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
 const { Strophe, sizzle } = converse.env;

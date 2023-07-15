@@ -1,5 +1,5 @@
 import log from '../log.js';
-import { Strophe } from 'strophe.js/src/strophe';
+import { Strophe } from 'strophe.js';
 
 const PARSE_ERROR_NS = 'http://www.w3.org/1999/xhtml';
 

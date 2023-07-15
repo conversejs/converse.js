@@ -1,9 +1,8 @@
-import log from "@converse/headless/log.js";
 import tplRequestingContact from "./templates/requesting_contact.js";
 import tplRosterItem from "./templates/roster_item.js";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api, log } from "@converse/headless";
 
 
 export default class RosterContact extends CustomElement {

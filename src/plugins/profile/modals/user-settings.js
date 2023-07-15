@@ -1,7 +1,7 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplUserSettingsModal from "./templates/user-settings.js";
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 
 export default class UserSettingsModal extends BaseModal {
 

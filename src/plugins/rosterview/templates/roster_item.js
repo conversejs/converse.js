@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core.js";
+import { api } from "@converse/headless";
 import { html } from "lit";
 import { STATUSES } from '../constants.js';
 

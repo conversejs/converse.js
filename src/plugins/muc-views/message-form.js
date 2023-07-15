@@ -1,6 +1,6 @@
 import MessageForm from 'plugins/chatview/message-form.js';
 import tplMUCMessageForm from './templates/message-form.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 import { getAutoCompleteListItem } from './utils.js';
 
 

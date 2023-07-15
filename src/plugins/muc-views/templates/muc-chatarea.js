@@ -2,7 +2,7 @@ import '../bottom-panel.js';
 import '../sidebar.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
-import { _converse } from '@converse/headless/core';
+import { _converse } from '@converse/headless';
 import { html } from "lit";
 
 export default (o) => html`

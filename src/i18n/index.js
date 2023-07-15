@@ -5,8 +5,7 @@
  * @description This is the internationalization module
  */
 import Jed from 'jed';
-import log from '@converse/headless/log.js';
-import { _converse, api, converse, i18n } from '@converse/headless/core.js';
+import { _converse, api, converse, log, i18n } from '@converse/headless';
 
 const { dayjs } = converse.env;
 

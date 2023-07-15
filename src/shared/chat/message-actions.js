@@ -1,7 +1,6 @@
-import log from '@converse/headless/log.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse, log } from '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { html } from 'lit';

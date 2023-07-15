@@ -11,7 +11,7 @@ import last from "lodash-es/last";
 import log from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe } from 'strophe.js/src/strophe.js';
+import { Strophe } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '../shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
@@ -554,7 +554,7 @@ export function waitUntil (func, max_wait=300, check_delay=3) {
     const max_wait_timeout = setTimeout(handler, max_wait);
 
     return promise;
-};
+}
 
 
 export function setUnloadEvent () {

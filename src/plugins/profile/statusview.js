@@ -1,6 +1,6 @@
 import tplProfile from './templates/profile.js';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 
 class Profile extends CustomElement {
     initialize () {

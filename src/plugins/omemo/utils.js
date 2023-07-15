@@ -1,7 +1,6 @@
 /* global libsignal */
 import concat from 'lodash-es/concat';
 import difference from 'lodash-es/difference';
-import log from '@converse/headless/log';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplImage from 'templates/image.js';
@@ -9,7 +8,7 @@ import tplVideo from 'templates/video.js';
 import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
 import { MIMETYPES_MAP } from 'utils/file.js';
 import { __ } from 'i18n';
-import { _converse, converse, api } from '@converse/headless/core';
+import { _converse, converse, api, log } from '@converse/headless';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isError } from '@converse/headless/utils/core.js';

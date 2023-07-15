@@ -1,7 +1,7 @@
 import tplBackgroundLogo from '../../templates/background_logo.js';
 import tplChats from './templates/chats.js';
 import { CustomElement } from 'shared/components/element.js';
-import { api, _converse } from '@converse/headless/core';
+import { api, _converse } from '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { render } from 'lit';
 

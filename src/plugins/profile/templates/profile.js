@@ -1,6 +1,6 @@
 import 'shared/avatar/avatar.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { getPrettyStatus, logOut } from '../utils.js';
 import { html } from "lit";
 

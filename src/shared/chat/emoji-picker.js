@@ -4,7 +4,7 @@ import DOMNavigator from "shared/dom-navigator";
 import debounce from 'lodash-es/debounce';
 import { CustomElement } from 'shared/components/element.js';
 import { KEYCODES } from '@converse/headless/shared/constants.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 import { getTonedEmojis } from './utils.js';
 import { tplEmojiPicker } from "./templates/emoji-picker.js";
 

@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { html } from "lit";
 import { resetElementHeight } from 'plugins/chatview/utils.js';
 

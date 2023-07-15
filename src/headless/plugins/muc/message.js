@@ -1,4 +1,4 @@
-import { Strophe } from 'strophe.js/src/strophe';
+import { Strophe } from 'strophe.js';
 import { _converse, api } from '../../core.js';
 
 /**

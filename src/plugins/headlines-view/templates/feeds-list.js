@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { _converse } from '@converse/headless/core';
+import { _converse } from '@converse/headless';
 import { html } from "lit";
 
 function tplHeadlinesFeedsListItem (el, feed) {

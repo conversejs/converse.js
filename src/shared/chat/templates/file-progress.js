@@ -1,6 +1,6 @@
 import 'shared/avatar/avatar.js';
 import { __ } from 'i18n';
-import { converse } from '@converse/headless/core.js';
+import { converse } from '@converse/headless';
 import { html } from 'lit';
 
 const { filesize } = converse.env;

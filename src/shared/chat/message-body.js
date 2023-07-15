@@ -2,7 +2,7 @@ import 'shared/registry.js';
 import ImageModal from 'shared/modals/image.js';
 import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 
 import './styles/message-body.scss';

@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { converse } from  '@converse/headless/core';
+import { converse } from  '@converse/headless';
 import { html } from 'lit';
 
 const { dayjs } = converse.env;

@@ -1,7 +1,7 @@
 import tplGif from 'templates/gif.js';
 import tplImage from 'templates/image.js';
 import { CustomElement } from './element.js';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { filterQueryParamsFromURL, isGIFURL, shouldRenderMediaFromURL } from '@converse/headless/utils/url.js';
 
 

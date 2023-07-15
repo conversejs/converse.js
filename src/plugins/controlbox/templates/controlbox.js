@@ -1,5 +1,5 @@
 import tplSpinner from "templates/spinner.js";
-import { _converse, api, converse } from "@converse/headless/core.js";
+import { _converse, api, converse } from "@converse/headless";
 import { html } from 'lit';
 
 const { Strophe } = converse.env;

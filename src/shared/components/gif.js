@@ -1,6 +1,6 @@
 import ConverseGif from 'shared/gif/index.js';
 import { CustomElement } from 'shared/components/element.js';
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { html } from 'lit';
 

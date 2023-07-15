@@ -11,9 +11,8 @@ import DeviceList from './devicelist.js';
 import DeviceLists from './devicelists.js';
 import Devices from './devices.js';
 import OMEMOStore from './store.js';
-import log from '@converse/headless/log';
 import omemo_api from './api.js';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse, log } from '@converse/headless';
 import { shouldClearCache } from '@converse/headless/utils/core.js';
 import {
     createOMEMOMessageStanza,

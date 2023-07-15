@@ -1,7 +1,7 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplImageModal from "./templates/image.js";
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { getFileName } from 'utils/html.js';
 import { html } from "lit";
 

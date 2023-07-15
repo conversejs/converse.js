@@ -1,4 +1,4 @@
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 
 export function getTheme() {
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {

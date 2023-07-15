@@ -1,5 +1,5 @@
 import 'shared/components/font-awesome.js';
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 import { html } from 'lit';
 
 export default () => {

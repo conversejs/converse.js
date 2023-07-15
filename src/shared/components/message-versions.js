@@ -1,5 +1,5 @@
 import { CustomElement } from './element.js';
-import { api, converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { __ } from 'i18n/index.js';
 import './styles/message-versions.scss';

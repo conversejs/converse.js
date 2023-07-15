@@ -1,5 +1,5 @@
 import Storage from '@converse/skeletor/src/storage.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 
 export function getDefaultStore () {
     if (_converse.config.get('trusted')) {

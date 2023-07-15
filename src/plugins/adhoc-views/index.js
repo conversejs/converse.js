@@ -5,7 +5,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import './adhoc-commands.js';
-import { api, converse } from "@converse/headless/core.js";
+import { api, converse } from "@converse/headless";
 
 
 converse.plugins.add('converse-adhoc-views', {

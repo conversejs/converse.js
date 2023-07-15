@@ -1,6 +1,6 @@
 import "./message";
 import { CustomElement } from 'shared/components/element.js';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { getDayIndicator } from './utils.js';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';

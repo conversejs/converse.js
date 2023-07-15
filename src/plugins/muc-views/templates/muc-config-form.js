@@ -1,6 +1,6 @@
 import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
-import { api, converse } from "@converse/headless/core";
+import { api, converse } from "@converse/headless";
 import { html } from "lit";
 
 const { sizzle } = converse.env;

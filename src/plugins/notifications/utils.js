@@ -1,7 +1,6 @@
 import Favico from 'favico.js-slevomat';
-import log from '@converse/headless/log';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse, log } from '@converse/headless';
 import { isEmptyMessage } from '@converse/headless/utils/core.js';
 
 const { Strophe } = converse.env;

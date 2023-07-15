@@ -1,6 +1,6 @@
 import debounce from 'lodash-es/debounce';
 import tplNewDay from "./templates/new-day.js";
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import {

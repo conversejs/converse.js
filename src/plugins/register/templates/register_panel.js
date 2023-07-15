@@ -2,7 +2,7 @@ import tplRegistrationForm from './registration_form.js';
 import tplSpinner from 'templates/spinner.js';
 import tplSwitchForm from './switch_form.js';
 import { __ } from 'i18n';
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 import { html } from 'lit';
 
 const tplFormRequest = (el) => {

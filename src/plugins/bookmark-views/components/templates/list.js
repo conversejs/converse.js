@@ -1,6 +1,6 @@
 import bookmark_item from './item.js';
 import { __ } from 'i18n';
-import { _converse } from '@converse/headless/core.js';
+import { _converse } from '@converse/headless';
 import { html } from "lit";
 
 const filterBookmark = (b, text) => b.get('name')?.includes(text) || b.get('jid')?.includes(text);

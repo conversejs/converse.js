@@ -1,5 +1,5 @@
 import tplRoot from "./templates/root.js";
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getTheme } from './utils.js';

@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import './placeholder.js';
-import { api, converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless';
 import { fetchMessagesOnScrollUp, getPlaceholderTemplate } from './utils.js';
 
 

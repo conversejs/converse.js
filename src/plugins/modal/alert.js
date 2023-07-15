@@ -1,6 +1,6 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplAlertModal from "./templates/alert.js";
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 
 
 export default class Alert extends BaseModal {

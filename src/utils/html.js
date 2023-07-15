@@ -3,7 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
  */
-import log from '@converse/headless/log';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
@@ -17,7 +16,7 @@ import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
 import u from '../headless/utils/core';
-import { converse } from '@converse/headless/core';
+import { converse, log } from '@converse/headless';
 import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';
 

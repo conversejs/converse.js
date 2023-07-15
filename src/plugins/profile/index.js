@@ -9,7 +9,7 @@ import './modals/user-settings.js';
 import './statusview.js';
 import '@converse/headless/plugins/status';
 import '@converse/headless/plugins/vcard';
-import { api, converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless';
 
 converse.plugins.add('converse-profile', {
     dependencies: [

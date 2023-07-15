@@ -10,8 +10,7 @@ import ControlBox from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';
 import controlbox_api from './api.js';
-import log from '@converse/headless/log';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse, log } from '@converse/headless';
 import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
 
 import './styles/_controlbox.scss';

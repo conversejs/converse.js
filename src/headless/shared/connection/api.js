@@ -1,5 +1,5 @@
 import _converse from '@converse/headless/shared/_converse.js';
-import { Strophe } from 'strophe.js/src/strophe.js';
+import { Strophe } from 'strophe.js';
 
 /**
  * This grouping collects API functions related to the XMPP connection.

@@ -1,4 +1,4 @@
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { Model } from '@converse/skeletor/src/model.js';
 
 const { dayjs } = converse.env;

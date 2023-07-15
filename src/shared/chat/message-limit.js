@@ -1,6 +1,6 @@
 import tplMessageLimit from './templates/message-limit.js';
 import { CustomElement } from 'shared/components/element.js';
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 
 export default class MessageLimitIndicator extends CustomElement {
 

@@ -1,7 +1,7 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplMUCDetails from "./templates/muc-details.js";
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 
 import '../styles/muc-details-modal.scss';
 

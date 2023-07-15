@@ -1,5 +1,5 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 import { onScrolledDown } from './utils.js';
 
 

@@ -7,7 +7,7 @@ import './view.js';
 import './components/minimized-chat.js';
 import debounce from 'lodash-es/debounce';
 import MinimizedChatsToggle from './toggle.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import {
     addMinimizeButtonToChat,
     addMinimizeButtonToMUC,

@@ -2,7 +2,7 @@ import 'shared/autocomplete/index.js';
 import BaseModal from "plugins/modal/modal.js";
 import tplMUCInviteModal from "./templates/muc-invite.js";
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 
 const u = converse.env.utils;
 

@@ -1,4 +1,4 @@
-import { _converse } from '@converse/headless/core.js';
+import { _converse } from '@converse/headless';
 import assignIn from 'lodash-es/assignIn';
 import isEqual from "lodash-es/isEqual.js";
 import isObject from 'lodash-es/isObject';

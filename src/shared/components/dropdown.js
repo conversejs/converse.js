@@ -2,7 +2,7 @@ import 'shared/components/icons.js';
 import DOMNavigator from "shared/dom-navigator.js";
 import DropdownBase from 'shared/components/dropdownbase.js';
 import { KEYCODES } from '@converse/headless/shared/constants.js';
-import { api } from "@converse/headless/core.js";
+import { api } from "@converse/headless";
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 

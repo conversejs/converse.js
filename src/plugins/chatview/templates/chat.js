@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { _converse } from '@converse/headless/core';
+import { _converse } from '@converse/headless';
 
 export default (o) => html`
     <div class="flyout box-flyout">

@@ -1,4 +1,4 @@
-import log from '@converse/headless/log.js';
+import { log } from '@converse/headless';
 import { Directive, directive } from 'lit/directive.js';
 import { RichText } from 'shared/rich-text.js';
 import { html } from 'lit';

@@ -7,7 +7,7 @@
  */
 import "@converse/headless/plugins/muc/index.js";
 import './view.js';
-import { converse } from "@converse/headless/core";
+import { converse } from "@converse/headless";
 
 
 converse.plugins.add('converse-roomslist', {

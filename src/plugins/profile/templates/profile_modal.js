@@ -1,6 +1,6 @@
 import "shared/components/image-picker.js";
 import { __ } from 'i18n';
-import { _converse } from  "@converse/headless/core";
+import { _converse } from  "@converse/headless";
 import { html } from "lit";
 
 

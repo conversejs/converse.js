@@ -1,6 +1,6 @@
 import avatar from 'shared/avatar/templates/avatar.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { html } from 'lit';
 import { modal_close_button } from "plugins/modal/templates/buttons.js";
 

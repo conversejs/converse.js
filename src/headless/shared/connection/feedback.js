@@ -1,6 +1,6 @@
 import _converse from '../_converse';
 import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe } from 'strophe.js/src/strophe';
+import { Strophe } from 'strophe.js';
 
 export default Model.extend({
     defaults: {

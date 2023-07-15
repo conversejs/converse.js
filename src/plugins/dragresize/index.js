@@ -6,7 +6,7 @@
 import './components/dragresize.js';
 import { applyDragResistance, onMouseUp, onMouseMove } from './utils.js';
 import DragResizableMixin from './mixin.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 
 converse.plugins.add('converse-dragresize', {
     /* Plugin dependencies are other plugins which might be

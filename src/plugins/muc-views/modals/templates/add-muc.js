@@ -1,6 +1,6 @@
 import DOMPurify from 'dompurify';
 import { __ } from 'i18n';
-import { api } from '@converse/headless/core.js';
+import { api } from '@converse/headless';
 import { html } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { getAutoCompleteList } from "../../search.js";

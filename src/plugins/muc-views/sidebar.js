@@ -1,7 +1,7 @@
 import 'shared/autocomplete/index.js';
 import tplMUCSidebar from "./templates/muc-sidebar.js";
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 
 import 'shared/styles/status.scss';
 import './styles/muc-occupants.scss';

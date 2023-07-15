@@ -1,7 +1,7 @@
 import tplRoster from "./templates/roster.js";
 import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { slideIn, slideOut } from 'utils/html.js';
 

@@ -1,6 +1,6 @@
 import URI from 'urijs';
 import log from '@converse/headless/log';
-import { api, converse } from '@converse/headless/core';
+import { api, converse } from '@converse/headless';
 
 const { u } = converse.env;
 

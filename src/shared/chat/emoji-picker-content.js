@@ -1,5 +1,5 @@
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, converse, api } from "@converse/headless/core";
+import { _converse, converse, api } from "@converse/headless";
 import { html } from "lit";
 import { tplAllEmojis, tplSearchResults } from "./templates/emoji-picker.js";
 import { getTonedEmojis } from './utils.js';

@@ -1,7 +1,7 @@
 import '../modtools.js';
 import BaseModal from "plugins/modal/modal.js";
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { html } from 'lit';
 
 export default class ModeratorToolsModal extends BaseModal {

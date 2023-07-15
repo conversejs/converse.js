@@ -1,6 +1,6 @@
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 
 
 function shouldShowChat (c) {

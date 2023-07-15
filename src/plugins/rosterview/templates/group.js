@@ -1,6 +1,6 @@
 import 'shared/components/icons.js';
 import { __ } from 'i18n';
-import { _converse, converse } from "@converse/headless/core";
+import { _converse, converse } from "@converse/headless";
 import { html } from "lit";
 import { isUniView } from '@converse/headless/utils/core.js';
 import { repeat } from 'lit/directives/repeat.js';

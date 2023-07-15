@@ -1,7 +1,7 @@
 import 'shared/autocomplete/index.js';
 import BottomPanel from 'plugins/chatview/bottom-panel.js';
 import tplMUCBottomPanel from './templates/muc-bottom-panel.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 import { render } from 'lit';
 
 import './styles/muc-bottom-panel.scss';

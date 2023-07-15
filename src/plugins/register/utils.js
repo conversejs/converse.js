@@ -1,4 +1,4 @@
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 
 export async function setActiveForm (value) {
     await api.waitUntil('controlBoxInitialized');

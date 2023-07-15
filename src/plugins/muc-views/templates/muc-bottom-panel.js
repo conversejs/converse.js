@@ -2,7 +2,7 @@ import '../message-form.js';
 import '../nickname-form.js';
 import 'shared/chat/toolbar.js';
 import { __ } from 'i18n';
-import { api, converse } from "@converse/headless/core";
+import { api, converse } from "@converse/headless";
 import { html } from "lit";
 
 

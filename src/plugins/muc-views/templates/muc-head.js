@@ -1,7 +1,7 @@
 import 'shared/components/dropdown.js';
 import 'shared/components/rich-text.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless/core.js";
+import { _converse, api } from "@converse/headless";
 import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';

@@ -8,7 +8,7 @@ import './modals/bookmark-form.js';
 import '@converse/headless/plugins/muc/index.js';
 import BookmarkForm from './components/bookmark-form.js';
 import BookmarksView from './components/bookmarks-list.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { bookmarkableChatRoomView } from './mixins.js';
 import { getHeadingButtons, removeBookmarkViaEvent, addBookmarkViaEvent } from './utils.js';
 

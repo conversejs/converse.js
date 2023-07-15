@@ -1,4 +1,4 @@
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { __ } from 'i18n';
 
 const { dayjs, u } = converse.env;

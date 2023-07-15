@@ -4,9 +4,9 @@ import api from '@converse/headless/shared/api';
 import compact from 'lodash-es/compact';
 import debounce from 'lodash-es/debounce';
 import tplAddContactModal from "./templates/add-contact.js";
-import { Strophe } from 'strophe.js/src/core.js';
+import { Strophe } from 'strophe.js';
 import { __ } from 'i18n';
-import { _converse } from "@converse/headless/core";
+import { _converse } from "@converse/headless";
 import { addClass, removeClass } from 'utils/html.js';
 
 export default class AddContactModal extends BaseModal {

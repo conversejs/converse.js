@@ -1,4 +1,4 @@
-import { _converse } from '@converse/headless/core';
+import { _converse } from '@converse/headless';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
 import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';

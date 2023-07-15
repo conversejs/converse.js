@@ -5,7 +5,7 @@
  * @copyright 2021, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { enablePush, onChatBoxAdded } from './utils.js';
 
 const { Strophe } = converse.env;

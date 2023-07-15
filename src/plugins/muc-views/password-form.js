@@ -1,6 +1,6 @@
 import tplMUCPasswordForm from "./templates/muc-password-form.js";
 import { CustomElement } from 'shared/components/element';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless";
 
 
 class MUCPasswordForm extends CustomElement {

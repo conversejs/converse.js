@@ -7,7 +7,7 @@ import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN, PREBIND } from '../shared/constants.js';
 import { Connection, MockConnection } from '../shared/connection/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe } from 'strophe.js/src/strophe';
+import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
 import { saveWindowState, isValidJID } from './core.js';
 

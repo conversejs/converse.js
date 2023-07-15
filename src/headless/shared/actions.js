@@ -1,6 +1,6 @@
 import log from '../log';
-import { Strophe, $msg } from 'strophe.js/src/strophe';
-import { _converse, api, converse } from '@converse/headless/core';
+import { Strophe, $msg } from 'strophe.js';
+import { _converse, api, converse } from '@converse/headless';
 
 const u = converse.env.utils;
 

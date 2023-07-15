@@ -20,6 +20,9 @@ import "./plugins/status/index.js";
 import "./plugins/vcard/index.js";      // XEP-0054 VCard-temp
 /* END: Removable components */
 
-import { converse } from "./core.js";
+import log from './log.js';
+import { converse, _converse, i18n, api } from "./core.js";
+
+export { api, converse, _converse, i18n, log };
 
 export default converse;

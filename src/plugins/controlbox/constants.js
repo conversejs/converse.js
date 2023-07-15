@@ -1,4 +1,4 @@
-import { converse } from '@converse/headless/core.js';
+import { converse } from '@converse/headless';
 
 const { Strophe } = converse.env;
 

@@ -1,9 +1,8 @@
 import './modals/occupant.js';
 import './modals/moderator-tools.js';
-import log from "@converse/headless/log";
 import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse, log } from "@converse/headless";
 import { html } from "lit";
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 

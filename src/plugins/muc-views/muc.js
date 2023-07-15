@@ -1,6 +1,6 @@
 import BaseChatView from 'shared/chat/baseview.js';
 import tplMuc from './templates/muc.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 
 
 export default class MUCView extends BaseChatView {

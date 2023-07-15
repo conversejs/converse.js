@@ -3,7 +3,7 @@ import 'shared/chat/message-limit.js';
 import tplToolbar from './templates/toolbar.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 

@@ -1,6 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import tplPlaceholder from './templates/placeholder.js';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils.js';
 
 import './styles/placeholder.scss';

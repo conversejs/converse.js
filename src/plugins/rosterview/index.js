@@ -10,7 +10,7 @@ import './rosterview.js';
 import RosterContactView from './contactview.js';
 import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
 import { RosterFilterView } from './filterview.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 import { highlightRosterItem } from './utils.js';
 
 import 'shared/styles/status.scss';

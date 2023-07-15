@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  * @copyright 2022, the Converse.js contributors
  */
-import { api, converse } from "@converse/headless/core";
+import { api, converse } from "@converse/headless";
 import { isUniView } from '@converse/headless/utils/core.js';
 
 import './styles/fullscreen.scss';

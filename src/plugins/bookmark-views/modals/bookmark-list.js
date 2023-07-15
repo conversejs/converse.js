@@ -2,7 +2,7 @@ import '../components/bookmarks-list.js';
 import BaseModal from "plugins/modal/modal.js";
 import { html } from "lit";
 import { __ } from 'i18n';
-import { api } from "@converse/headless/core";
+import { api } from "@converse/headless";
 
 export default class BookmarkListModal extends BaseModal {
 

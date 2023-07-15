@@ -3,7 +3,7 @@ import 'plugins/chatview/bottom-panel.js';
 import BaseChatView from 'shared/chat/baseview.js';
 import tplChat from './templates/chat.js';
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 
 /**
  * The view of an open/ongoing chat conversation.

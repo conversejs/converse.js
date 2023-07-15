@@ -1,14 +1,12 @@
-import api from "@converse/headless/shared/api/index.js";
 import bootstrap from "bootstrap.native";
-import log from "@converse/headless/log";
 import sizzle from 'sizzle';
 import tplAlertComponent from "./templates/modal-alert.js";
 import { View } from '@converse/skeletor/src/view.js';
+import { api, log } from '@converse/headless';
 import { hasClass, addClass, removeElement, removeClass } from '../../utils/html.js';
 import { render } from 'lit';
 
 import './styles/_modal.scss';
-
 
 
 const BaseModal = View.extend({

@@ -4,7 +4,7 @@
  */
 import BootstrapModal from './base.js';
 import modal_api from './api.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 
 converse.env.BootstrapModal = BootstrapModal; // expose to plugins
 

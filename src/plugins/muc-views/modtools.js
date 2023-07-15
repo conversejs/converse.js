@@ -2,7 +2,7 @@ import tplModeratorTools from './templates/moderator-tools.js';
 import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse } from '@converse/headless/core.js';
+import { api, converse } from '@converse/headless';
 import { getAffiliationList, getAssignableAffiliations } from '@converse/headless/plugins/muc/affiliations/utils.js';
 import { getAssignableRoles, getAutoFetchedAffiliationLists } from '@converse/headless/plugins/muc/utils.js';
 import { getOpenPromise } from '@converse/openpromise';

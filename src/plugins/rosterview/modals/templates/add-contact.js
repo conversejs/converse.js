@@ -1,5 +1,5 @@
 import { __ } from 'i18n';
-import { api } from '@converse/headless/core.js';
+import { api } from '@converse/headless';
 import { getGroupsAutoCompleteList } from '@converse/headless/plugins/roster/utils.js';
 import { html } from "lit";
 

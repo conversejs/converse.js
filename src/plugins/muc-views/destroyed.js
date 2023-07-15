@@ -1,6 +1,6 @@
 import tplMUCDestroyed from './templates/muc-destroyed.js';
 import { CustomElement } from 'shared/components/element';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless";
 
 
 class MUCDestroyed extends CustomElement {

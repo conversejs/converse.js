@@ -1,7 +1,7 @@
 import './brand-byline.js';
 import './brand-logo.js';
 import { CustomElement } from './element.js';
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 import { html } from 'lit/html.js';
 
 

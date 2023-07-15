@@ -1,8 +1,7 @@
-import log from '@converse/headless/log';
 import { IQError } from './errors.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { UNDECIDED } from './consts.js';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse, log } from '@converse/headless';
 import { getRandomInt } from '@converse/headless/utils/core.js';
 import { parseBundle } from './utils.js';
 

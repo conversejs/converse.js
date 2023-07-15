@@ -1,6 +1,6 @@
 import tplMUCNicknameForm from './templates/muc-nickname-form.js';
 import { CustomElement } from 'shared/components/element';
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless";
 
 import './styles/nickname-form.scss';
 

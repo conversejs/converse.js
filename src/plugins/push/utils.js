@@ -1,5 +1,4 @@
-import log from "@converse/headless/log";
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse, log } from "@converse/headless";
 
 const { Strophe, $iq } = converse.env;
 

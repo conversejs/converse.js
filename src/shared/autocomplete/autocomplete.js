@@ -9,7 +9,7 @@
 import { Events } from '@converse/skeletor/src/events.js';
 import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.js';
 import Suggestion from './suggestion.js';
-import { converse } from "@converse/headless/core";
+import { converse } from "@converse/headless";
 
 
 const u = converse.env.utils;

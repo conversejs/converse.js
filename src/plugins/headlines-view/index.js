@@ -6,7 +6,7 @@
 import '../chatview/index.js';
 import './view.js';
 import { HeadlinesFeedsList } from './feed-list.js';
-import { _converse, converse } from '@converse/headless/core';
+import { _converse, converse } from '@converse/headless';
 
 import './styles/headlines.scss';
 import './styles/headlines-head.scss';

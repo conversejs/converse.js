@@ -1,6 +1,6 @@
 import tplControlbox from './templates/controlbox.js';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse } from '@converse/headless';
 import { LOGOUT } from '@converse/headless/shared/constants.js';
 
 const u = converse.env.utils;

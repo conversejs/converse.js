@@ -1,4 +1,4 @@
-import { api } from '@converse/headless/core';
+import { api } from '@converse/headless';
 import { CustomElement } from './element.js';
 import { html } from 'lit';
 

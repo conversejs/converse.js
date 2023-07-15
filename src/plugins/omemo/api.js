@@ -1,4 +1,4 @@
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 import { generateFingerprint } from './utils.js';
 
 export default {

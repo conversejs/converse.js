@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { api } from '@converse/headless/core.js';
+import { api } from '@converse/headless';
 
 
 export default () => html`

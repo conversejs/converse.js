@@ -8,7 +8,7 @@
  */
 import './panel.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { setActiveForm } from './utils.js';
 import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 

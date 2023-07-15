@@ -5,7 +5,7 @@
  * @copyright Rubens Mariuzzo, JC Brand
  */
 import u from '../utils/html';
-import { converse } from  "@converse/headless/core";
+import { converse } from  "@converse/headless";
 
 const { keycodes } = converse;
 

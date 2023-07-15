@@ -2,7 +2,7 @@ import 'shared/components/message-versions.js';
 import BaseModal from "plugins/modal/modal.js";
 import { __ } from 'i18n';
 import { html } from "lit";
-import {api } from "@converse/headless/core";
+import {api } from "@converse/headless";
 
 
 export default class MessageVersionsModal extends BaseModal {

@@ -1,5 +1,5 @@
 import { CustomElement } from './element.js';
-import { _converse, api } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless';
 import { html } from 'lit';
 
 

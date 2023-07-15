@@ -1,9 +1,8 @@
 import 'shared/autocomplete/index.js';
-import log from '@converse/headless/log';
 import tplAdhoc from './templates/ad-hoc.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse } from '@converse/headless/core.js';
+import { api, converse, log } from '@converse/headless';
 import { getNameAndValue } from 'utils/html.js';
 
 const { Strophe, sizzle } = converse.env;

@@ -1,7 +1,7 @@
 import tplMessageForm from './templates/message-form.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless/core.js";
+import { _converse, api, converse } from "@converse/headless";
 import { parseMessageForCommands } from './utils.js';
 import { prefixMentions } from '@converse/headless/utils/core.js';
 

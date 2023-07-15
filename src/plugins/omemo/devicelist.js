@@ -1,6 +1,5 @@
-import log from '@converse/headless/log';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse, log } from '@converse/headless';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { restoreOMEMOSession } from './utils.js';

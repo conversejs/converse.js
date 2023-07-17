@@ -6,7 +6,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import ping_api from './api.js';
-import { api, converse } from "@converse/headless/core.js";
+import { api, converse } from "@converse/headless";
 import { onWindowStateChanged, registerHandlers, unregisterIntervalHandler } from './utils.js';
 
 const { Strophe } = converse.env;

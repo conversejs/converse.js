@@ -1,4 +1,4 @@
-import { _converse, api } from "../../core.js";
+import { _converse, api } from "../../index.js";
 import { createChatBox } from './utils.js';
 
 /**

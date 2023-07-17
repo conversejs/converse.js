@@ -5,7 +5,7 @@
  */
 import DiscoEntities from './entities.js';
 import DiscoEntity from './entity.js';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse } from '@converse/headless';
 import {
     clearSession,
     initStreamFeatures,

@@ -1,5 +1,5 @@
 import log from "@converse/headless/log";
-import { _converse, api, converse } from "../../core.js";
+import { _converse, api, converse } from "../../index.js";
 import { createStanza, getVCard } from './utils.js';
 
 const { dayjs, u } = converse.env;

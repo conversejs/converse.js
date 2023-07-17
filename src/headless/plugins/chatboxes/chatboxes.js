@@ -1,5 +1,5 @@
 import { Collection } from "@converse/skeletor/src/collection";
-import { _converse, api } from "../../core.js";
+import { _converse, api } from "../../index.js";
 import { initStorage } from '@converse/headless/utils/storage.js';
 
 const ChatBoxes = Collection.extend({

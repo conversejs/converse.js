@@ -1,4 +1,4 @@
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 
 const { Strophe } = converse.env;
 

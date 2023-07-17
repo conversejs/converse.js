@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "./disco/index.js";
-import { _converse, api, converse } from "../core.js";
+import { _converse, api, converse } from "../index.js";
 import log from "../log.js";
 
 const { Strophe, $iq } = converse.env;

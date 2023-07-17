@@ -1,4 +1,5 @@
-import { _converse, api } from '../../core';
+import api from '../../shared/api/index.js';
+import _converse from '../../shared/_converse.js';
 import { STATUS_WEIGHTS } from '../../shared/constants';
 
 

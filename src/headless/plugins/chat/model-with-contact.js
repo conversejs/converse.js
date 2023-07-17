@@ -1,5 +1,5 @@
 import { Model } from '@converse/skeletor/src/model.js';
-import { api } from "../../core.js";
+import { api } from "../../index.js";
 import { getOpenPromise } from '@converse/openpromise';
 
 const ModelWithContact = Model.extend({

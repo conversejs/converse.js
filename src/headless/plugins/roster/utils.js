@@ -2,7 +2,7 @@ import log from "@converse/headless/log";
 import { Model } from '@converse/skeletor/src/model.js';
 import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
 import { STATUS_WEIGHTS } from "../../shared/constants";
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { shouldClearCache } from '@converse/headless/utils/core.js';
 

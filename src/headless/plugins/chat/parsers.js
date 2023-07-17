@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
 import u from '@converse/headless/utils/core';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { rejectMessage } from '@converse/headless/shared/actions';
 
 import {

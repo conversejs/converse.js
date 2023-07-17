@@ -1,5 +1,5 @@
 import log from '@converse/headless/log';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 import { getCommandFields, parseForCommands } from './utils.js';
 
 const { Strophe, $iq, u, stx } = converse.env;

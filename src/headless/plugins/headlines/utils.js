@@ -1,4 +1,4 @@
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless";
 import { isHeadline, isServerMessage } from '@converse/headless/shared/parsers';
 import { parseMessage } from '@converse/headless/plugins/chat/parsers';
 

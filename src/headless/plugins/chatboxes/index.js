@@ -5,7 +5,7 @@
 import "../emoji/index.js";
 import ChatBoxes from './chatboxes.js';
 import chatboxes_api from './api.js';
-import { _converse, api, converse } from "../../core.js";
+import { _converse, api, converse } from "../../index.js";
 
 const { Strophe } = converse.env;
 

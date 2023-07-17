@@ -7,7 +7,7 @@ import MessageMixin from './message.js';
 import ModelWithContact from './model-with-contact.js';
 import chat_api from './api.js';
 import { Collection } from '@converse/skeletor/src/collection';
-import { _converse, api, converse } from '../../core.js';
+import { _converse, api, converse } from '../../index.js';
 import {
     autoJoinChats,
     enableCarbons,

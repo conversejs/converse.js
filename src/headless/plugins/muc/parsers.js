@@ -20,7 +20,7 @@ import {
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
 } from '@converse/headless/shared/parsers';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 
 const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;

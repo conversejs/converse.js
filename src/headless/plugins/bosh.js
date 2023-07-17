@@ -7,7 +7,7 @@ import 'strophe.js/src/bosh';
 import log from "../log.js";
 import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "../core.js";
+import { _converse, api, converse } from "../index.js";
 import { setUserJID, } from '@converse/headless/utils/init.js';
 
 const { Strophe } = converse.env;

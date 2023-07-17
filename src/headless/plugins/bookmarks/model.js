@@ -1,4 +1,4 @@
-import { converse } from '@converse/headless/core';
+import { converse } from '@converse/headless';
 import { Model } from '@converse/skeletor/src/model.js';
 
 const { Strophe } = converse.env;

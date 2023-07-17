@@ -1,4 +1,4 @@
-import { _converse, converse } from '@converse/headless/core.js';
+import { _converse, converse } from '@converse/headless';
 import { arrayBufferToBase64, stringToArrayBuffer  } from '@converse/headless/utils/arraybuffer.js';
 
 const { Strophe, $build } = converse.env;

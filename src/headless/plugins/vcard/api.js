@@ -1,4 +1,4 @@
-import log from "@converse/headless/log";
+import log from "../../log.js";
 import { _converse, api, converse } from "../../index.js";
 import { createStanza, getVCard } from './utils.js';
 

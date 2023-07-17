@@ -1,5 +1,5 @@
 import DiscoEntity from './entity.js';
-import log from "@converse/headless/log.js";
+import log from "../../log.js";
 import { Collection } from "@converse/skeletor/src/collection";
 
 

@@ -1,7 +1,7 @@
 import ModelWithContact from './model-with-contact.js';
 import isMatch from "lodash-es/isMatch";
 import isObject from "lodash-es/isObject";
-import log from '@converse/headless/log';
+import log from '../../log.js';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
 import { TimeoutError } from '../../shared/errors.js';

@@ -1,4 +1,4 @@
-import log from '@converse/headless/log';
+import log from '../../log.js';
 import sizzle from "sizzle";
 import { RSM } from '@converse/headless/shared/rsm';
 import { TimeoutError } from '../../shared/errors.js';

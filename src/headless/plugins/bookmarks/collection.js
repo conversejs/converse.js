@@ -1,6 +1,6 @@
 import "@converse/headless/plugins/muc/index.js";
 import Bookmark from './model.js';
-import log from "@converse/headless/log.js";
+import log from "../../log.js";
 import { _converse, api, converse } from "@converse/headless";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';

@@ -1,4 +1,3 @@
-import _converse from '../_converse.js';
 import connection_api from '../connection/api.js';
 import events_api from '../api/events.js';
 import promise_api from '../api/promise.js';
@@ -19,7 +18,7 @@ import { settings_api } from '../settings/api.js';
  * @namespace _converse.api
  * @memberOf _converse
  */
-const api = _converse.api = {
+const api = {
     connection: connection_api,
     settings: settings_api,
     ...send_api,

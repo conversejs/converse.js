@@ -1,5 +1,5 @@
 import RosterContact from './contact.js';
-import log from "@converse/headless/log";
+import log from "../../log.js";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from "@converse/skeletor/src/model";
 import { _converse, api, converse } from "@converse/headless";

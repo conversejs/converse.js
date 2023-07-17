@@ -1,4 +1,4 @@
-import log from '@converse/headless/log';
+import log from '../../log.js';
 import { _converse, api, converse } from "@converse/headless";
 import { getCommandFields, parseForCommands } from './utils.js';
 

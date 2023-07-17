@@ -1,4 +1,4 @@
-import log from "@converse/headless/log";
+import log from "../../log.js";
 import { _converse, api, converse } from "../../index.js";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { shouldClearCache } from '@converse/headless/utils/core.js';

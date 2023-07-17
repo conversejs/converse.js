@@ -5,8 +5,7 @@
 import { AFFILIATIONS } from '@converse/headless/plugins/muc/index.js';
 import difference from 'lodash-es/difference';
 import indexOf from 'lodash-es/indexOf';
-import log from "@converse/headless/log";
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse, log } from '@converse/headless';
 import { parseMemberListIQ } from '../parsers.js';
 
 const { Strophe, $iq, u } = converse.env;

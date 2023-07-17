@@ -1,5 +1,4 @@
-import log from '@converse/headless/log.js';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse, log } from '@converse/headless';
 import { isArchived, isHeadline, isServerMessage, } from '@converse/headless/shared/parsers';
 import { parseMessage } from './parsers.js';
 import { shouldClearCache } from '@converse/headless/utils/core.js';

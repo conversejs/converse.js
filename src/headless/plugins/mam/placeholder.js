@@ -1,5 +1,5 @@
 import { Model } from '@converse/skeletor/src/model.js';
-import { converse } from '../../core.js';
+import { converse } from '../../index.js';
 
 const u = converse.env.utils;
 

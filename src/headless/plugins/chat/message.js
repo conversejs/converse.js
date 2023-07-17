@@ -1,7 +1,7 @@
 import ModelWithContact from './model-with-contact.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
-import { _converse, api, converse } from '../../core.js';
+import { _converse, api, converse } from '../../index.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 const { Strophe, sizzle, u } = converse.env;

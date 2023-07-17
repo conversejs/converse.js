@@ -4,7 +4,7 @@ import sizzle from 'sizzle';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants';
 import { Strophe } from 'strophe.js';
-import { _converse, api } from "../../core.js";
+import { _converse, api } from "../../index.js";
 import { clearSession, tearDown } from "../../utils/core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '../../utils/init.js';

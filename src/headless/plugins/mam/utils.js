@@ -1,7 +1,7 @@
 import MAMPlaceholderMessage from './placeholder.js';
 import log from '@converse/headless/log';
 import sizzle from 'sizzle';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import { parseMUCMessage } from '@converse/headless/plugins/muc/parsers';
 import { parseMessage } from '@converse/headless/plugins/chat/parsers';
 

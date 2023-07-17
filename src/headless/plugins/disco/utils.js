@@ -1,4 +1,4 @@
-import { _converse, api, converse } from "@converse/headless/core.js";
+import { _converse, api, converse } from "@converse/headless";
 import { Collection } from "@converse/skeletor/src/collection";
 
 const { Strophe, $iq } = converse.env;

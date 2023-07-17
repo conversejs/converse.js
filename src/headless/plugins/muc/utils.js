@@ -1,7 +1,6 @@
 import isObject from 'lodash-es/isObject';
-import log from "@converse/headless/log.js";
 import { ROLES } from './constants.js';
-import { _converse, api, converse } from '@converse/headless/core.js';
+import { _converse, api, converse, log } from '@converse/headless';
 import { safeSave } from '@converse/headless/utils/core.js';
 
 const { Strophe, sizzle, u } = converse.env;

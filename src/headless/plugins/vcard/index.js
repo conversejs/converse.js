@@ -6,7 +6,7 @@ import "../status";
 import VCard from './vcard.js';
 import vcard_api from './api.js';
 import { Collection } from "@converse/skeletor/src/collection";
-import { _converse, api, converse } from "../../core.js";
+import { _converse, api, converse } from "../../index.js";
 import {
     clearVCardsSession,
     initVCardCollection,

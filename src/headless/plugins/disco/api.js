@@ -1,6 +1,6 @@
 import isObject from "lodash-es/isObject";
 import log from "@converse/headless/log.js";
-import { _converse, api, converse } from "@converse/headless/core.js";
+import { _converse, api, converse } from "@converse/headless";
 import { getOpenPromise } from '@converse/openpromise';
 
 const { Strophe, $iq } = converse.env;

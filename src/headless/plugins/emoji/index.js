@@ -5,7 +5,7 @@
  */
 import './utils.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "../../core.js";
+import { _converse, api, converse } from "../../index.js";
 import { getOpenPromise } from '@converse/openpromise';
 
 

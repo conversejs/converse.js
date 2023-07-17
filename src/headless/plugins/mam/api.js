@@ -2,7 +2,7 @@ import log from '@converse/headless/log';
 import sizzle from "sizzle";
 import { RSM } from '@converse/headless/shared/rsm';
 import { TimeoutError } from '../../shared/errors.js';
-import { _converse, api, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless";
 
 const { Strophe, $iq, dayjs } = converse.env;
 const { NS } = Strophe;

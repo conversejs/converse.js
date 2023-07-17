@@ -1,4 +1,4 @@
-import { _converse, converse } from "../../core.js";
+import { _converse, converse } from "../../index.js";
 import log from "../../log";
 
 const { Strophe } = converse.env;

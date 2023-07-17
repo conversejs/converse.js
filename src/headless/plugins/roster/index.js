@@ -7,7 +7,7 @@ import RosterContact from './contact.js';
 import RosterContacts from './contacts.js';
 import roster_api from './api.js';
 import { Presence, Presences } from './presence.js';
-import { _converse, api, converse } from '@converse/headless/core';
+import { _converse, api, converse } from '@converse/headless';
 import {
     onChatBoxesInitialized,
     onClearSession,

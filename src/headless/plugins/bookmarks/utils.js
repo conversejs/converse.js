@@ -1,5 +1,5 @@
-import log from "@converse/headless/log.js";
-import { _converse, api, converse } from '@converse/headless/core.js';
+import log from "../../log.js";
+import { _converse, api, converse } from '@converse/headless';
 
 const { Strophe, sizzle } = converse.env;
 

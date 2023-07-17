@@ -8,7 +8,7 @@ import "@converse/headless/plugins/muc/index.js";
 import Bookmark from './model.js';
 import Bookmarks from './collection.js';
 import { Collection } from "@converse/skeletor/src/collection.js";
-import { _converse, api, converse } from "@converse/headless/core.js";
+import { _converse, api, converse } from "@converse/headless";
 import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
 
 const { Strophe } = converse.env;

@@ -3,7 +3,7 @@ import { Collection } from '@converse/skeletor/src/collection.js';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
-import { _converse, api, converse } from '../../core.js';
+import { _converse, api, converse } from '../../index.js';
 import { getAffiliationList } from './affiliations/utils.js';
 import { getAutoFetchedAffiliationLists } from './utils.js';
 import { getUniqueId } from '@converse/headless/utils/core.js';

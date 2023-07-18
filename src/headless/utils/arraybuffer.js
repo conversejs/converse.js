@@ -1,8 +1,3 @@
-import { converse } from '@converse/headless';
-
-const { u } = converse.env;
-
-
 export function appendArrayBuffer (buffer1, buffer2) {
     const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
     tmp.set(new Uint8Array(buffer1), 0);
@@ -43,6 +38,3 @@ export function hexToArrayBuffer (hex) {
     const typedArray = new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)))
     return typedArray.buffer
 }
-
-
-Object.assign(u, { arrayBufferToHex, arrayBufferToString, stringToArrayBuffer, arrayBufferToBase64, base64ToArrayBuffer });

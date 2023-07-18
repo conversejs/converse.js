@@ -3,17 +3,37 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the form utilities module.
  */
-import u from "./core";
+import { toStanza } from './stanza.js';
 
-const tplXformField = (name, value) => `<field var="${name}">${ value }</field>`;
+/**
+ * @param {string} name
+ * @param {string|string[]} value
+ */
+const tplXformField = (name, value) => `<field var="${name}">${value}</field>`;
 
+/** @param {string} value */
 const tplXformValue = (value) => `<value>${value}</value>`;
 
 /**
+ * @param {HTMLSelectElement} select
+ * @return {string[]}
+ */
+export function getSelectValues (select) {
+    const result = [];
+    const options = select?.options;
+    for (let i = 0, iLen = options.length; i < iLen; i++) {
+        const opt = options[i];
+        if (opt.selected) {
+            result.push(opt.value || opt.text);
+        }
+    }
+    return result;
+}
+
+/**
  * Takes an HTML DOM and turns it into an XForm field.
- * @private
- * @method u#webForm2xForm
- * @param { Element } field - the field to convert
+ * @param {HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement} field - the field to convert
+ * @return {Element}
  */
 export function webForm2xForm (field) {
     const name = field.getAttribute('name');
@@ -22,18 +42,13 @@ export function webForm2xForm (field) {
     }
     let value;
     if (field.getAttribute('type') === 'checkbox') {
-        value = field.checked && 1 || 0;
-    } else if (field.tagName == "TEXTAREA") {
-        value = field.value.split('\n').filter(s => s.trim());
-    } else if (field.tagName == "SELECT") {
-        value = u.getSelectValues(field);
+        value = /** @type {HTMLInputElement} */ (field).checked && '1' || '0';
+    } else if (field.tagName == 'TEXTAREA') {
+        value = field.value.split('\n').filter((s) => s.trim());
+    } else if (field.tagName == 'SELECT') {
+        value = getSelectValues(/** @type {HTMLSelectElement} */ (field));
     } else {
         value = field.value;
     }
-    return u.toStanza(tplXformField(
-        name,
-        Array.isArray(value) ? value.map(tplXformValue) : tplXformValue(value),
-    ));
+    return toStanza(tplXformField(name, Array.isArray(value) ? value.map(tplXformValue) : tplXformValue(value)));
 }
-
-u.webForm2xForm = webForm2xForm;

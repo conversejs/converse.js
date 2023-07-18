@@ -2,11 +2,12 @@ import api from "../../shared/api/index.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { getOpenPromise } from '@converse/openpromise';
 
-const ModelWithContact = Model.extend({
+class ModelWithContact extends Model {
 
     initialize () {
+        super.initialize();
         this.rosterContactAdded = getOpenPromise();
-    },
+    }
 
     async setRosterContact (jid) {
         const contact = await api.contacts.get(jid);
@@ -16,6 +17,6 @@ const ModelWithContact = Model.extend({
             this.rosterContactAdded.resolve();
         }
     }
-});
+}
 
 export default ModelWithContact;

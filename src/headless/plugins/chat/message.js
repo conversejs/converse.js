@@ -8,24 +8,25 @@ import { getOpenPromise } from '@converse/openpromise';
 const { Strophe, sizzle, u } = converse.env;
 
 /**
- * Mixin which turns a `ModelWithContact` model into a non-MUC message.
+ * Represents a (non-MUC) message.
  * These can be either `chat`, `normal` or `headline` messages.
- * @mixin
  * @namespace _converse.Message
  * @memberOf _converse
- * @example const msg = new _converse.Message({'message': 'hello world!'});
+ * @example const msg = new Message({'message': 'hello world!'});
  */
-const MessageMixin = {
+class Message extends ModelWithContact {
 
-    defaults () {
+    defaults () { // eslint-disable-line class-methods-use-this
         return {
             'msgid': u.getUniqueId(),
             'time': new Date().toISOString(),
             'is_ephemeral': false
         };
-    },
+    }
 
     async initialize () {
+        super.initialize();
+
         if (!this.checkValidity()) {
             return;
         }
@@ -47,14 +48,14 @@ const MessageMixin = {
          */
         await api.trigger('messageInitialized', this, { 'Synchronous': true });
         this.initialized.resolve();
-    },
+    }
 
     setContact () {
         if (['chat', 'normal'].includes(this.get('type'))) {
             ModelWithContact.prototype.initialize.apply(this, arguments);
             this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
         }
-    },
+    }
 
     /**
      * Sets an auto-destruct timer for this message, if it's is_ephemeral.
@@ -70,7 +71,7 @@ const MessageMixin = {
             const timeout = typeof is_ephemeral === "number" ? is_ephemeral : 10000;
             this.ephemeral_timer = window.setTimeout(() => this.safeDestroy(), timeout);
         }
-    },
+    }
 
     checkValidity () {
         if (Object.keys(this.attributes).length === 3) {
@@ -84,11 +85,10 @@ const MessageMixin = {
             return false;
         }
         return true;
-    },
+    }
 
     /**
      * Determines whether this messsage may be retracted by the current user.
-     * @private
      * @method _converse.Messages#mayBeRetracted
      * @returns { Boolean }
      */
@@ -96,7 +96,7 @@ const MessageMixin = {
         const is_own_message = this.get('sender') === 'me';
         const not_canceled = this.get('error_type') !== 'cancel';
         return is_own_message && not_canceled && ['all', 'own'].includes(api.settings.get('allow_message_retraction'));
-    },
+    }
 
     safeDestroy () {
         try {
@@ -104,7 +104,7 @@ const MessageMixin = {
         } catch (e) {
             log.warn(`safeDestroy: ${e}`);
         }
-    },
+    }
 
     /**
      * Returns a boolean indicating whether this message is ephemeral,
@@ -113,7 +113,7 @@ const MessageMixin = {
      */
     isEphemeral () {
         return this.get('is_ephemeral');
-    },
+    }
 
     /**
      * Returns a boolean indicating whether this message is a XEP-0245 /me command.
@@ -125,7 +125,7 @@ const MessageMixin = {
             return false;
         }
         return text.startsWith('/me ');
-    },
+    }
 
     /**
      * Returns a boolean indicating whether this message is considered a followup
@@ -149,7 +149,7 @@ const MessageMixin = {
             this.get('type') === prev_model.get('type') && this.get('type') !== 'info' &&
             date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
             (this.get('type') === 'groupchat' ? this.get('occupant_id') === prev_model.get('occupant_id') : true);
-    },
+    }
 
     getDisplayName () {
         if (this.contact) {
@@ -159,7 +159,7 @@ const MessageMixin = {
         } else {
             return this.get('from');
         }
-    },
+    }
 
     getMessageText () {
         if (this.get('is_encrypted')) {
@@ -170,7 +170,7 @@ const MessageMixin = {
         } else {
             return this.get('message');
         }
-    },
+    }
 
     /**
      * Send out an IQ stanza to request a file upload slot.
@@ -195,9 +195,9 @@ const MessageMixin = {
                 'content-type': this.file.type
             });
         return api.sendIQ(iq);
-    },
+    }
 
-    getUploadRequestMetadata (stanza) {
+    getUploadRequestMetadata (stanza) { // eslint-disable-line class-methods-use-this
         const headers = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"] put header`, stanza);
         // https://xmpp.org/extensions/xep-0363.html#request
         // TODO: Can't set the Cookie header in JavaScipt, instead cookies need
@@ -207,7 +207,7 @@ const MessageMixin = {
                 .map(h => ({ 'name': h.getAttribute('name'), 'value': h.textContent }))
                 .filter(h => ['Authorization', 'Expires'].includes(h.name))
         }
-    },
+    }
 
     async getRequestSlotURL () {
         const { __ } = _converse;
@@ -236,7 +236,7 @@ const MessageMixin = {
                 'is_ephemeral': true
             });
         }
-    },
+    }
 
     uploadFile () {
         const xhr = new XMLHttpRequest();
@@ -297,6 +297,6 @@ const MessageMixin = {
         this.upload_metadata.headers?.forEach(h => xhr.setRequestHeader(h.name, h.value));
         xhr.send(this.file);
     }
-};
+}
 
-export default MessageMixin;
+export default Message;

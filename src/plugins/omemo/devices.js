@@ -1,4 +1,12 @@
 import Device from './device.js';
 import { Collection } from '@converse/skeletor/src/collection';
 
-export default Collection.extend({ model: Device });
+class Devices extends Collection {
+
+    constructor () {
+        super();
+        this.model = Device;
+    }
+}
+
+export default Devices;

@@ -9,7 +9,6 @@ import Bookmark from './model.js';
 import Bookmarks from './collection.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
-import { Collection } from "@converse/skeletor/src/collection.js";
 import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
 
 const { Strophe } = converse.env;
@@ -55,7 +54,7 @@ converse.plugins.add('converse-bookmarks', {
         api.promises.add('bookmarksInitialized');
 
         _converse.Bookmark = Bookmark;
-        _converse.Bookmarks = Collection.extend(Bookmarks);
+        _converse.Bookmarks = Bookmarks;
 
         api.listen.on('addClientFeatures', () => {
             if (api.settings.get('allow_bookmarks')) {

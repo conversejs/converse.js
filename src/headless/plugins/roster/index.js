@@ -8,7 +8,8 @@ import RosterContacts from './contacts.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import roster_api from './api.js';
-import { Presence, Presences } from './presence.js';
+import Presence from './presence.js';
+import Presences from './presences.js';
 import {
     onChatBoxesInitialized,
     onClearSession,

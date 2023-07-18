@@ -1,13 +1,9 @@
-import { Collection } from "@converse/skeletor/src/collection";
+import Resources from "./resources.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { converse } from '../../shared/api/index.js';
 import { initStorage } from '../../utils/storage.js';
 
 const { Strophe, dayjs, sizzle } = converse.env;
-
-export const Resource = Model.extend({'idAttribute': 'name'});
-export const Resources = Collection.extend({'model': Resource});
-
 
 class Presence extends Model {
     get idAttribute () { // eslint-disable-line class-methods-use-this
@@ -84,6 +80,4 @@ class Presence extends Model {
     }
 }
 
-export { Presence };
-
-export const Presences = Collection.extend({'model': Presence });
+export default Presence;

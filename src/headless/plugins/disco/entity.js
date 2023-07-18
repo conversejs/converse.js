@@ -15,10 +15,13 @@ const { Strophe } = converse.env;
  *
  * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
  */
-const DiscoEntity = Model.extend({
-    idAttribute: 'jid',
+class DiscoEntity extends Model {
+    get idAttribute () { // eslint-disable-line class-methods-use-this
+        return 'jid';
+    }
 
     initialize (_, options) {
+        super.initialize();
         this.waitUntilFeaturesDiscovered = getOpenPromise();
 
         this.dataforms = new Collection();
@@ -39,7 +42,7 @@ const DiscoEntity = Model.extend({
         id = `converse.identities-${this.get('jid')}`;
         this.identities.browserStorage = _converse.createStore(id, 'session');
         this.fetchFeatures(options);
-    },
+    }
 
     /**
      * Returns a Promise which resolves with a map indicating
@@ -55,7 +58,7 @@ const DiscoEntity = Model.extend({
             'category': category,
             'type': type,
         });
-    },
+    }
 
     /**
      * Returns a Promise which resolves with a map indicating
@@ -69,7 +72,7 @@ const DiscoEntity = Model.extend({
         if (this.features.findWhere({ 'var': feature })) {
             return this;
         }
-    },
+    }
 
     onFeatureAdded (feature) {
         feature.entity = this;
@@ -81,7 +84,7 @@ const DiscoEntity = Model.extend({
          * @example _converse.api.listen.on('featuresDiscovered', feature => { ... });
          */
         api.trigger('serviceDiscovered', feature);
-    },
+    }
 
     onFieldAdded (field) {
         field.entity = this;
@@ -92,7 +95,7 @@ const DiscoEntity = Model.extend({
          * @example _converse.api.listen.on('discoExtensionFieldDiscovered', () => { ... });
          */
         api.trigger('discoExtensionFieldDiscovered', field);
-    },
+    }
 
     async fetchFeatures (options) {
         if (options.ignore_cache) {
@@ -113,7 +116,7 @@ const DiscoEntity = Model.extend({
                 this.identities.fetch({ add: true });
             }
         }
-    },
+    }
 
     async queryInfo () {
         let stanza;
@@ -125,7 +128,7 @@ const DiscoEntity = Model.extend({
             return;
         }
         this.onInfo(stanza);
-    },
+    }
 
     onDiscoItems (stanza) {
         sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza).forEach(item => {
@@ -146,7 +149,7 @@ const DiscoEntity = Model.extend({
                 });
             }
         });
-    },
+    }
 
     async queryForItems () {
         if (this.identities.where({ 'category': 'server' }).length === 0) {
@@ -156,7 +159,7 @@ const DiscoEntity = Model.extend({
         }
         const stanza = await api.disco.items(this.get('jid'));
         this.onDiscoItems(stanza);
-    },
+    }
 
     async onInfo (stanza) {
         Array.from(stanza.querySelectorAll('identity')).forEach(identity => {
@@ -199,7 +202,7 @@ const DiscoEntity = Model.extend({
 
         this.waitUntilFeaturesDiscovered.resolve(this);
         this.trigger('featuresDiscovered');
-    },
-});
+    }
+}
 
 export default DiscoEntity;

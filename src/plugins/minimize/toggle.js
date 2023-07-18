@@ -1,9 +1,11 @@
 import { Model } from '@converse/skeletor/src/model.js';
 
-const MinimizedChatsToggle = Model.extend({
-    defaults: {
-        'collapsed': false
+class MinimizedChatsToggle extends Model {
+    defaults () { // eslint-disable-line class-methods-use-this
+        return {
+            'collapsed': false
+        }
     }
-});
+}
 
 export default MinimizedChatsToggle;

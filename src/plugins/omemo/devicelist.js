@@ -7,25 +7,27 @@ import { restoreOMEMOSession } from './utils.js';
 const { Strophe, $build, $iq, sizzle } = converse.env;
 
 /**
- * @class
  * @namespace _converse.DeviceList
  * @memberOf _converse
  */
-const DeviceList = Model.extend({
-    idAttribute: 'jid',
+class DeviceList extends Model {
+    get idAttribute () { // eslint-disable-line class-methods-use-this
+        return 'jid';
+    }
 
     async initialize () {
+        super.initialize();
         this.initialized = getOpenPromise();
         await this.initDevices();
         this.initialized.resolve();
-    },
+    }
 
     initDevices () {
         this.devices = new _converse.Devices();
         const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
         initStorage(this.devices, id);
         return this.fetchDevices();
-    },
+    }
 
     async onDevicesFound (collection) {
         if (collection.length === 0) {
@@ -45,7 +47,7 @@ const DeviceList = Model.extend({
                 this.publishCurrentDevice(ids);
             }
         }
-    },
+    }
 
     fetchDevices () {
         if (this._devices_promise === undefined) {
@@ -60,7 +62,7 @@ const DeviceList = Model.extend({
             });
         }
         return this._devices_promise;
-    },
+    }
 
     async getOwnDeviceId () {
         let device_id = _converse.omemo_store.get('device_id');
@@ -70,7 +72,7 @@ const DeviceList = Model.extend({
             device_id = _converse.omemo_store.get('device_id');
         }
         return device_id;
-    },
+    }
 
     async publishCurrentDevice (device_ids) {
         if (this.get('jid') !== _converse.bare_jid) {
@@ -87,7 +89,7 @@ const DeviceList = Model.extend({
         if (!device_ids.includes(await this.getOwnDeviceId())) {
             return this.publishDevices();
         }
-    },
+    }
 
     async fetchDevicesFromServer () {
         const stanza = $iq({
@@ -102,7 +104,7 @@ const DeviceList = Model.extend({
         const device_ids = sizzle(selector, iq).map(d => d.getAttribute('id'));
         const jid = this.get('jid');
         return Promise.all(device_ids.map(id => this.devices.create({ id, jid }, { 'promise': true })));
-    },
+    }
 
     /**
      * Send an IQ stanza to the current user's "devices" PEP node to
@@ -114,7 +116,7 @@ const DeviceList = Model.extend({
         this.devices.filter(d => d.get('active')).forEach(d => item.c('device', { 'id': d.get('id') }).up());
         const options = { 'pubsub#access_model': 'open' };
         return api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
-    },
+    }
 
     async removeOwnDevices (device_ids) {
         if (this.get('jid') !== _converse.bare_jid) {
@@ -128,6 +130,6 @@ const DeviceList = Model.extend({
         ));
         return this.publishDevices();
     }
-});
+}
 
 export default DeviceList;

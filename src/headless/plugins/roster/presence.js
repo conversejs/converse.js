@@ -10,21 +10,26 @@ export const Resource = Model.extend({'idAttribute': 'name'});
 export const Resources = Collection.extend({'model': Resource});
 
 
-export const Presence = Model.extend({
-    idAttribute: 'jid',
+class Presence extends Model {
+    get idAttribute () { // eslint-disable-line class-methods-use-this
+        return 'jid';
+    }
 
-    defaults: {
-        'show': 'offline'
-    },
+    defaults () { // eslint-disable-line class-methods-use-this
+        return {
+            'show': 'offline'
+        }
+    }
 
     initialize () {
+        super.initialize();
         this.resources = new Resources();
         const id = `converse.identities-${this.get('jid')}`;
         initStorage(this.resources, id, 'session');
 
         this.listenTo(this.resources, 'update', this.onResourcesChanged);
         this.listenTo(this.resources, 'change', this.onResourcesChanged);
-    },
+    }
 
     onResourcesChanged () {
         const hpr = this.getHighestPriorityResource();
@@ -32,7 +37,7 @@ export const Presence = Model.extend({
         if (this.get('show') !== show) {
             this.save({ show });
         }
-    },
+    }
 
     /**
      * Return the resource with the highest priority.
@@ -41,13 +46,12 @@ export const Presence = Model.extend({
      */
     getHighestPriorityResource () {
         return this.resources.sortBy(r => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
-    },
+    }
 
     /**
      * Adds a new resource and it's associated attributes as taken
      * from the passed in presence stanza.
      * Also updates the presence if the resource has higher priority (and is newer).
-     * @private
      * @param { Element } presence: The presence stanza
      */
     addResource (presence) {
@@ -67,20 +71,20 @@ export const Presence = Model.extend({
         } else {
             this.resources.create(settings);
         }
-    },
+    }
 
     /**
      * Remove the passed in resource from the resources map.
      * Also redetermines the presence given that there's one less
      * resource.
-     * @private
      * @param { string } name: The resource name
      */
     removeResource (name) {
         const resource = this.resources.get(name);
         resource?.destroy();
     }
-});
+}
 
+export { Presence };
 
 export const Presences = Collection.extend({'model': Presence });

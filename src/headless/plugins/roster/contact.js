@@ -6,23 +6,24 @@ import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, $pres } = converse.env;
 
-/**
- * @class
- * @namespace RosterContact
- */
-const RosterContact = Model.extend({
-    idAttribute: 'jid',
+class RosterContact extends Model {
+    get idAttribute () { // eslint-disable-line class-methods-use-this
+        return 'jid';
+    }
 
-    defaults: {
-        'chat_state': undefined,
-        'groups': [],
-        'image': _converse.DEFAULT_IMAGE,
-        'image_type': _converse.DEFAULT_IMAGE_TYPE,
-        'num_unread': 0,
-        'status': undefined,
-    },
+    defaults () { // eslint-disable-line class-methods-use-this
+        return {
+            'chat_state': undefined,
+            'groups': [],
+            'image': _converse.DEFAULT_IMAGE,
+            'image_type': _converse.DEFAULT_IMAGE_TYPE,
+            'num_unread': 0,
+            'status': undefined,
+        }
+    }
 
     async initialize (attributes) {
+        super.initialize(attributes);
         this.initialized = getOpenPromise();
         this.setPresence();
         const { jid } = attributes;
@@ -49,17 +50,17 @@ const RosterContact = Model.extend({
          */
         await api.trigger('rosterContactInitialized', this, {'Synchronous': true});
         this.initialized.resolve();
-    },
+    }
 
     setPresence () {
         const jid = this.get('jid');
         this.presence = _converse.presences.findWhere(jid) || _converse.presences.create({ jid });
-    },
+    }
 
     openChat () {
         const attrs = this.attributes;
         api.chats.open(attrs.jid, attrs, true);
-    },
+    }
 
     /**
      * Return a string of tab-separated values that are to be used when
@@ -76,7 +77,7 @@ const RosterContact = Model.extend({
         criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
         criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
         return criteria.toLowerCase();
-    },
+    }
 
     getDisplayName () {
         // Gets overridden in converse-vcard where the fullname is may be returned
@@ -85,12 +86,12 @@ const RosterContact = Model.extend({
         } else {
             return this.get('jid');
         }
-    },
+    }
 
     getFullname () {
         // Gets overridden in converse-vcard where the fullname may be returned
         return this.get('jid');
-    },
+    }
 
     /**
      * Send a presence subscription request to this roster contact
@@ -102,14 +103,13 @@ const RosterContact = Model.extend({
         api.user.presence.send('subscribe', this.get('jid'), message);
         this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
         return this;
-    },
+    }
 
     /**
      * Upon receiving the presence stanza of type "subscribed",
      * the user SHOULD acknowledge receipt of that subscription
      * state notification by sending a presence stanza of type
      * "subscribe" to the contact
-     * @private
      * @method _converse.RosterContacts#ackSubscribe
      */
     ackSubscribe () {
@@ -117,7 +117,7 @@ const RosterContact = Model.extend({
             'type': 'subscribe',
             'to': this.get('jid')
         }));
-    },
+    }
 
     /**
      * Upon receiving the presence stanza of type "unsubscribed",
@@ -125,29 +125,26 @@ const RosterContact = Model.extend({
      * notification by sending a presence stanza of type "unsubscribe"
      * this step lets the user's server know that it MUST no longer
      * send notification of the subscription state change to the user.
-     * @private
      * @method _converse.RosterContacts#ackUnsubscribe
      */
     ackUnsubscribe () {
         api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
         this.removeFromRoster();
         this.destroy();
-    },
+    }
 
     /**
      * Unauthorize this contact's presence subscription
-     * @private
      * @method _converse.RosterContacts#unauthorize
      * @param { String } message - Optional message to send to the person being unauthorized
      */
     unauthorize (message) {
         rejectPresenceSubscription(this.get('jid'), message);
         return this;
-    },
+    }
 
     /**
      * Authorize presence subscription
-     * @private
      * @method _converse.RosterContacts#authorize
      * @param { String } message - Optional message to send to the person being authorized
      */
@@ -158,12 +155,11 @@ const RosterContact = Model.extend({
         }
         api.send(pres);
         return this;
-    },
+    }
 
     /**
      * Instruct the XMPP server to remove this contact from our roster
-     * @private
-     * @method _converse.RosterContacts#
+     * @method _converse.RosterContacts#removeFromRoster
      * @returns { Promise }
      */
     removeFromRoster () {
@@ -172,6 +168,6 @@ const RosterContact = Model.extend({
             .c('item', {jid: this.get('jid'), subscription: "remove"});
         return api.sendIQ(iq);
     }
-});
+}
 
 export default RosterContact;

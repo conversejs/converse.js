@@ -2,14 +2,21 @@ import _converse from '../_converse';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
 
-export default Model.extend({
-    defaults: {
-        'connection_status': Strophe.Status.DISCONNECTED,
-        'message': ''
-    },
+
+class Feedback extends Model {
+
+    defaults () { // eslint-disable-line class-methods-use-this
+        return {
+            'connection_status': Strophe.Status.DISCONNECTED,
+            'message': '',
+        }
+    }
 
     initialize () {
+        super.initialize();
         const { api } = _converse;
         this.on('change', () => api.trigger('connfeedback', _converse.connfeedback));
     }
-});
+}
+
+export default Feedback;

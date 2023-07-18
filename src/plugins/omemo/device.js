@@ -7,23 +7,23 @@ import { parseBundle } from './utils.js';
 
 const { Strophe, sizzle, $iq } = converse.env;
 
-
 /**
- * @class
  * @namespace _converse.Device
  * @memberOf _converse
  */
-const Device = Model.extend({
-    defaults: {
-        'trusted': UNDECIDED,
-        'active': true
-    },
+class Device extends Model {
+    defaults () { // eslint-disable-line class-methods-use-this
+        return {
+            'trusted': UNDECIDED,
+            'active': true
+        }
+    }
 
     getRandomPreKey () {
         // XXX: assumes that the bundle has already been fetched
         const bundle = this.get('bundle');
         return bundle.prekeys[getRandomInt(bundle.prekeys.length)];
-    },
+    }
 
     async fetchBundleFromServer () {
         const stanza = $iq({
@@ -49,7 +49,7 @@ const Device = Model.extend({
         const bundle = parseBundle(bundle_el);
         this.save('bundle', bundle);
         return bundle;
-    },
+    }
 
     /**
      * Fetch and save the bundle information associated with
@@ -63,6 +63,6 @@ const Device = Model.extend({
             return this.fetchBundleFromServer();
         }
     }
-});
+}
 
 export default Device;

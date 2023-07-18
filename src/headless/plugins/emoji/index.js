@@ -59,17 +59,20 @@ converse.plugins.add('converse-emoji', {
 
         /**
          * Model for storing data related to the Emoji picker widget
-         * @class
          * @namespace _converse.EmojiPicker
          * @memberOf _converse
          */
-        _converse.EmojiPicker = Model.extend({
-            defaults: {
-                'current_category': 'smileys',
-                'current_skintone': '',
-                'scroll_position': 0
+        class EmojiPicker extends Model {
+            defaults () { // eslint-disable-line class-methods-use-this
+                return {
+                    'current_category': 'smileys',
+                    'current_skintone': '',
+                    'scroll_position': 0
+                }
             }
-        });
+        }
+
+        _converse.EmojiPicker = EmojiPicker;
 
         // We extend the default converse.js API to add methods specific to MUC groupchats.
         Object.assign(api, {

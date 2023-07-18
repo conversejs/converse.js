@@ -1,16 +1,13 @@
 import URI from 'urijs';
-import log from '@converse/headless/log';
-import { api, converse } from '@converse/headless';
-
-const { u } = converse.env;
+import { api, log } from '@converse/headless';
 
 /**
  * Given a url, check whether the protocol being used is allowed for rendering
  * the media in the chat (as opposed to just rendering a URL hyperlink).
- * @param { String } url
- * @returns { Boolean }
+ * @param {string} url
+ * @returns {boolean}
  */
-function isAllowedProtocolForMedia(url) {
+export function isAllowedProtocolForMedia(url) {
     const uri = getURI(url);
     const { protocol } = window.location;
     if (['chrome-extension:','file:'].includes(protocol)) {
@@ -34,13 +31,13 @@ export function getURI (url) {
 /**
  * Given the an array of file extensions, check whether a URL points to a file
  * ending in one of them.
- * @param { String[] } types - An array of file extensions
- * @param { String } url
- * @returns { Boolean }
+ * @param {string[]} types - An array of file extensions
+ * @param {string} url
+ * @returns {boolean}
  * @example
  *  checkFileTypes(['.gif'], 'https://conversejs.org/cat.gif?foo=bar');
  */
-function checkFileTypes (types, url) {
+export function checkFileTypes (types, url) {
     const uri = getURI(url);
     if (uri === null) {
         throw new Error(`checkFileTypes: could not parse url ${url}`);
@@ -94,8 +91,8 @@ export function isDomainAllowed (url, setting) {
 /**
  * Accepts a {@link MediaURL} object and then checks whether its domain is
  * allowed for rendering in the chat.
- * @param { MediaURL } o
- * @returns { Bool }
+ * @param {MediaURL} o
+ * @returns {boolean}
  */
 export function isMediaURLDomainAllowed (o) {
     return o.is_audio && isDomainAllowed(o.url, 'allowed_audio_domains') ||
@@ -127,15 +124,3 @@ export function isImageURL (url) {
 export function isEncryptedFileURL (url) {
     return url.startsWith('aesgcm://');
 }
-
-Object.assign(u, {
-    isAudioURL,
-    isGIFURL,
-    isVideoURL,
-    isImageURL,
-    isURLWithImageExtension,
-    checkFileTypes,
-    getURI,
-    shouldRenderMediaFromURL,
-    isAllowedProtocolForMedia,
-});

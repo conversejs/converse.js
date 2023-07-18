@@ -11,9 +11,9 @@ const { dayjs } = converse.env;
  * `view_mode` it's a left-aligned sidebar.
  * @mixin
  */
-const ControlBox = Model.extend({
+class ControlBox extends Model {
 
-    defaults () {
+    defaults () {  // eslint-disable-line class-methods-use-this
         return {
             'bookmarked': false,
             'box_id': 'controlbox',
@@ -24,7 +24,7 @@ const ControlBox = Model.extend({
             'type': _converse.CONTROLBOX_TYPE,
             'url': ''
         };
-    },
+    }
 
     validate (attrs) {
         if (attrs.type === _converse.CONTROLBOX_TYPE) {
@@ -34,7 +34,7 @@ const ControlBox = Model.extend({
             return;
         }
         return _converse.ChatBox.prototype.validate.call(this, attrs);
-    },
+    }
 
     maybeShow (force) {
         if (!force && this.get('id') === 'controlbox') {
@@ -42,11 +42,11 @@ const ControlBox = Model.extend({
             return this;
         }
         return _converse.ChatBox.prototype.maybeShow.call(this, force);
-    },
+    }
 
     onReconnection () {
         this.save('connected', true);
     }
-});
+}
 
 export default ControlBox;

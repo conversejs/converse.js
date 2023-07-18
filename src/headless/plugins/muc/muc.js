@@ -46,13 +46,13 @@ const METADATA_ATTRIBUTES = [
 
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 
-const MUCSession = Model.extend({
-    defaults () {
+class MUCSession extends Model {
+    defaults () { // eslint-disable-line class-methods-use-this
         return {
             'connection_status': ROOMSTATUS.DISCONNECTED
         };
     }
-});
+}
 
 /**
  * Represents an open/ongoing groupchat conversation.

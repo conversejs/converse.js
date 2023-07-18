@@ -4,8 +4,8 @@
  */
 import "../status";
 import VCard from './vcard.js';
+import VCards from "./vcards";
 import vcard_api from './api.js';
-import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api, converse } from "../../index.js";
 import {
     clearVCardsSession,
@@ -72,13 +72,7 @@ converse.plugins.add('converse-vcard', {
         api.promises.add('VCardsInitialized');
 
         _converse.VCard = VCard;
-
-        _converse.VCards = Collection.extend({
-            model: _converse.VCard,
-            initialize () {
-                this.on('add', v => v.get('jid') && api.vcard.update(v));
-            }
-        });
+        _converse.VCards = VCards;
 
         api.listen.on('chatRoomInitialized', (m) => {
             setVCardOnModel(m)

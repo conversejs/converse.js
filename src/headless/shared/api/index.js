@@ -15,8 +15,9 @@ import { settings_api } from '../settings/api.js';
  * sensitive data which should be kept off-limits to other 3rd-party scripts
  * that might be running in the page.
  *
- * @namespace _converse.api
  * @memberOf _converse
+ * @namespace api
+ * @property {Object} disco
  */
 const api = {
     connection: connection_api,
@@ -25,6 +26,8 @@ const api = {
     ...user_api,
     ...events_api,
     ...promise_api,
+
+    disco: null,
 };
 
 export default api;

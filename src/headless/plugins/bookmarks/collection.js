@@ -1,6 +1,7 @@
 import "@converse/headless/plugins/muc/index.js";
 import Bookmark from './model.js';
 import log from "../../log.js";
+import { Collection } from "@converse/skeletor/src/collection.js";
 import { _converse, api, converse } from "@converse/headless";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
@@ -8,10 +9,17 @@ import { initStorage } from '@converse/headless/utils/storage.js';
 const { Strophe, $iq, sizzle } = converse.env;
 
 
-const Bookmarks = {
+class Bookmarks extends Collection {
 
-    model: Bookmark,
-    comparator: (item) => item.get('name').toLowerCase(),
+    constructor () {
+        super();
+        this.model = Bookmark;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    comparator (item) {
+        return item.get('name').toLowerCase();
+    }
 
     async initialize () {
         this.on('add', bm => this.openBookmarkedRoom(bm)
@@ -36,8 +44,9 @@ const Bookmarks = {
          * @example _converse.api.listen.on('bookmarksInitialized', (bookmarks) => { ... });
          */
         api.trigger('bookmarksInitialized', this);
-    },
+    }
 
+    // eslint-disable-next-line class-methods-use-this
     async openBookmarkedRoom (bookmark) {
         if ( api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
             const groupchat = await api.rooms.create(
@@ -47,7 +56,7 @@ const Bookmarks = {
             groupchat.maybeShow();
         }
         return bookmark;
-    },
+    }
 
     fetchBookmarks () {
         const deferred = getOpenPromise();
@@ -60,12 +69,12 @@ const Bookmarks = {
             this.fetchBookmarksFromServer(deferred);
         }
         return deferred;
-    },
+    }
 
     createBookmark (options) {
         this.create(options);
         this.sendBookmarkStanza().catch(iq => this.onBookmarkError(iq, options));
-    },
+    }
 
     sendBookmarkStanza () {
         const stanza = $iq({
@@ -93,7 +102,7 @@ const Bookmarks = {
                 .c('field', {'var':'pubsub#access_model'})
                     .c('value').t('whitelist');
         return api.sendIQ(stanza);
-    },
+    }
 
     onBookmarkError (iq, options) {
         const { __ } = _converse;
@@ -103,7 +112,7 @@ const Bookmarks = {
             'error', __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
         );
         this.get(options.jid)?.destroy();
-    },
+    }
 
     fetchBookmarksFromServer (deferred) {
         const stanza = $iq({
@@ -115,17 +124,19 @@ const Bookmarks = {
             .then(iq => this.onBookmarksReceived(deferred, iq))
             .catch(iq => this.onBookmarksReceivedError(deferred, iq)
         );
-    },
+    }
 
+    // eslint-disable-next-line class-methods-use-this
     markRoomAsBookmarked (bookmark) {
         const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
         groupchat?.save('bookmarked', true);
-    },
+    }
 
+    // eslint-disable-next-line class-methods-use-this
     markRoomAsUnbookmarked (bookmark) {
         const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
         groupchat?.save('bookmarked', false);
-    },
+    }
 
     createBookmarksFromStanza (stanza) {
         const xmlns = Strophe.NS.BOOKMARKS;
@@ -141,7 +152,7 @@ const Bookmarks = {
             }
             bookmark ? bookmark.save(attrs) : this.create(attrs);
         });
-    },
+    }
 
     onBookmarksReceived (deferred, iq) {
         this.createBookmarksFromStanza(iq);
@@ -149,7 +160,7 @@ const Bookmarks = {
         if (deferred !== undefined) {
             return deferred.resolve();
         }
-    },
+    }
 
     onBookmarksReceivedError (deferred, iq) {
         const { __ } = _converse;
@@ -173,7 +184,7 @@ const Bookmarks = {
             log.error('Error while fetching bookmarks');
             log.error(iq);
         }
-    },
+    }
 
     async getUnopenedBookmarks () {
         await api.waitUntil('bookmarksInitialized')

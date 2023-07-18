@@ -1,23 +1,25 @@
 import RosterContact from './contact.js';
-import log from "../../log.js";
-import { Collection } from "@converse/skeletor/src/collection";
-import { Model } from "@converse/skeletor/src/model";
-import { _converse, api, converse } from "@converse/headless";
+import log from '../../log.js';
+import { Collection } from '@converse/skeletor/src/collection';
+import { Model } from '@converse/skeletor/src/model';
+import { _converse, api, converse } from '@converse/headless';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, sizzle, u } = converse.env;
 
-
-const RosterContacts = Collection.extend({
-    model: RosterContact,
+class RosterContacts extends Collection {
+    constructor () {
+        super();
+        this.model = RosterContact;
+    }
 
     initialize () {
         const id = `roster.state-${_converse.bare_jid}-${this.get('jid')}`;
         this.state = new Model({ id, 'collapsed_groups': [] });
         initStorage(this.state, id);
         this.state.fetch();
-    },
+    }
 
     onConnected () {
         // Called as soon as the connection has been established
@@ -25,34 +27,46 @@ const RosterContacts = Collection.extend({
         // Use the opportunity to register stanza handlers.
         this.registerRosterHandler();
         this.registerRosterXHandler();
-    },
+    }
 
+    /**
+     * Register a handler for roster IQ "set" stanzas, which update
+     * roster contacts.
+     */
+    // eslint-disable-next-line class-methods-use-this
     registerRosterHandler () {
-        // Register a handler for roster IQ "set" stanzas, which update
-        // roster contacts.
-        _converse.connection.addHandler(iq => {
-            _converse.roster.onRosterPush(iq);
-            return true;
-        }, Strophe.NS.ROSTER, 'iq', "set");
-    },
+        _converse.connection.addHandler(
+            (iq) => {
+                _converse.roster.onRosterPush(iq);
+                return true;
+            },
+            Strophe.NS.ROSTER,
+            'iq',
+            'set'
+        );
+    }
 
+    /**
+     * Register a handler for RosterX message stanzas, which are
+     * used to suggest roster contacts to a user.
+     */
+    // eslint-disable-next-line class-methods-use-this
     registerRosterXHandler () {
-        // Register a handler for RosterX message stanzas, which are
-        // used to suggest roster contacts to a user.
         let t = 0;
         _converse.connection.addHandler(
             function (msg) {
-                window.setTimeout(
-                    function () {
-                        _converse.connection.flush();
-                        _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
-                    }, t);
-                t += msg.querySelectorAll('item').length*250;
+                window.setTimeout(function () {
+                    _converse.connection.flush();
+                    _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
+                }, t);
+                t += msg.querySelectorAll('item').length * 250;
                 return true;
             },
-            Strophe.NS.ROSTERX, 'message', null
+            Strophe.NS.ROSTERX,
+            'message',
+            null
         );
-    },
+    }
 
     /**
      * Fetches the roster contacts, first by trying the browser cache,
@@ -65,13 +79,13 @@ const RosterContacts = Collection.extend({
                 'add': true,
                 'silent': true,
                 'success': resolve,
-                'error': (_, e) => reject(e)
+                'error': (_, e) => reject(e),
             });
         });
         if (u.isErrorObject(result)) {
             log.error(result);
             // Force a full roster refresh
-            _converse.session.save('roster_cached', false)
+            _converse.session.save('roster_cached', false);
             this.data.save('version', undefined);
         }
 
@@ -79,7 +93,7 @@ const RosterContacts = Collection.extend({
             /**
              * The contacts roster has been retrieved from the local cache (`sessionStorage`).
              * @event _converse#cachedRoster
-             * @type { _converse.RosterContacts }
+             * @type {RosterContacts}
              * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
              * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
              */
@@ -88,10 +102,11 @@ const RosterContacts = Collection.extend({
             _converse.send_initial_presence = true;
             return _converse.roster.fetchFromServer();
         }
-    },
+    }
 
+    // eslint-disable-next-line class-methods-use-this
     subscribeToSuggestedItems (msg) {
-        Array.from(msg.querySelectorAll('item')).forEach(item => {
+        Array.from(msg.querySelectorAll('item')).forEach((item) => {
             if (item.getAttribute('action') === 'add') {
                 _converse.roster.addAndSubscribe(
                     item.getAttribute('jid'),
@@ -100,11 +115,12 @@ const RosterContacts = Collection.extend({
             }
         });
         return true;
-    },
+    }
 
+    // eslint-disable-next-line class-methods-use-this
     isSelf (jid) {
         return u.isSameBareJID(jid, _converse.connection.jid);
-    },
+    }
 
     /**
      * Add a roster contact and then once we have confirmation from
@@ -121,7 +137,7 @@ const RosterContacts = Collection.extend({
         if (contact instanceof _converse.RosterContact) {
             contact.subscribe(message);
         }
-    },
+    }
 
     /**
      * Send an IQ stanza to the XMPP server to add a new roster contact.
@@ -130,14 +146,13 @@ const RosterContacts = Collection.extend({
      * @param { String } name - The name of that user
      * @param { Array<String> } groups - Any roster groups the user might belong to
      */
+    // eslint-disable-next-line class-methods-use-this
     sendContactAddIQ (jid, name, groups) {
         name = name ? name : null;
-        const iq = $iq({'type': 'set'})
-            .c('query', {'xmlns': Strophe.NS.ROSTER})
-            .c('item', { jid, name });
-        groups.forEach(g => iq.c('group').t(g).up());
+        const iq = $iq({ 'type': 'set' }).c('query', { 'xmlns': Strophe.NS.ROSTER }).c('item', { jid, name });
+        groups.forEach((g) => iq.c('group').t(g).up());
         return api.sendIQ(iq);
-    },
+    }
 
     /**
      * Adds a RosterContact instance to _converse.roster and
@@ -160,15 +175,21 @@ const RosterContacts = Collection.extend({
             alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
             return e;
         }
-        return this.create(Object.assign({
-            'ask': undefined,
-            'nickname': name,
-            groups,
-            jid,
-            'requesting': false,
-            'subscription': 'none'
-        }, attributes), {'sort': false});
-    },
+        return this.create(
+            Object.assign(
+                {
+                    'ask': undefined,
+                    'nickname': name,
+                    groups,
+                    jid,
+                    'requesting': false,
+                    'subscription': 'none',
+                },
+                attributes
+            ),
+            { 'sort': false }
+        );
+    }
 
     async subscribeBack (bare_jid, presence) {
         const contact = this.get(bare_jid);
@@ -177,12 +198,12 @@ const RosterContacts = Collection.extend({
         } else {
             // Can happen when a subscription is retried or roster was deleted
             const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
-            const contact = await this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'});
+            const contact = await this.addContactToRoster(bare_jid, nickname, [], { 'subscription': 'from' });
             if (contact instanceof _converse.RosterContact) {
                 contact.authorize().subscribe();
             }
         }
-    },
+    }
 
     /**
      * Handle roster updates from the XMPP server.
@@ -200,12 +221,10 @@ const RosterContacts = Collection.extend({
             // attribute (i.e., implicitly from the bare JID of the user's
             // account) or it has a 'from' attribute whose value matches the
             // user's bare JID <user@domainpart>.
-            log.warn(
-                `Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`
-            );
+            log.warn(`Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`);
             return;
         }
-        api.send($iq({type: 'result', id, from: _converse.connection.jid}));
+        api.send($iq({ type: 'result', id, from: _converse.connection.jid }));
 
         const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
         this.data.save('version', query.getAttribute('ver'));
@@ -229,11 +248,11 @@ const RosterContacts = Collection.extend({
          */
         api.trigger('rosterPush', iq);
         return;
-    },
+    }
 
     rosterVersioningSupported () {
         return api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
-    },
+    }
 
     /**
      * Fetch the roster from the XMPP server
@@ -243,10 +262,10 @@ const RosterContacts = Collection.extend({
     async fetchFromServer () {
         const stanza = $iq({
             'type': 'get',
-            'id': u.getUniqueId('roster')
-        }).c('query', {xmlns: Strophe.NS.ROSTER});
+            'id': u.getUniqueId('roster'),
+        }).c('query', { xmlns: Strophe.NS.ROSTER });
         if (this.rosterVersioningSupported()) {
-            stanza.attrs({'ver': this.data.get('version')});
+            stanza.attrs({ 'ver': this.data.get('version') });
         }
 
         const iq = await api.sendIQ(stanza, null, false);
@@ -258,16 +277,16 @@ const RosterContacts = Collection.extend({
                 if (!this.data.get('version') && this.models.length) {
                     // We're getting the full roster, so remove all cached
                     // contacts that aren't included in it.
-                    const jids = items.map(item => item.getAttribute('jid'));
-                    this.forEach(m => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
+                    const jids = items.map((item) => item.getAttribute('jid'));
+                    this.forEach((m) => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
                 }
-                items.forEach(item => this.updateContact(item));
+                items.forEach((item) => this.updateContact(item));
                 this.data.save('version', query.getAttribute('ver'));
             }
         } else if (!u.isServiceUnavailableError(iq)) {
             // Some unknown error happened, so we will try to fetch again if the page reloads.
             log.error(iq);
-            log.error("Error while trying to fetch roster from the server");
+            log.error('Error while trying to fetch roster from the server');
             return;
         }
 
@@ -282,7 +301,7 @@ const RosterContacts = Collection.extend({
          * @example _converse.api.waitUntil('roster').then(iq => { ... });
          */
         api.trigger('roster', iq);
-    },
+    }
 
     /**
      * Update or create RosterContact models based on the given `item` XML
@@ -292,14 +311,14 @@ const RosterContacts = Collection.extend({
     updateContact (item) {
         const jid = item.getAttribute('jid');
         const contact = this.get(jid);
-        const subscription = item.getAttribute("subscription");
-        if (subscription === "remove") {
+        const subscription = item.getAttribute('subscription');
+        if (subscription === 'remove') {
             return contact?.destroy();
         }
 
-        const ask = item.getAttribute("ask");
+        const ask = item.getAttribute('ask');
         const nickname = item.getAttribute('name');
-        const groups = [...new Set(sizzle('group', item).map(e => e.textContent))];
+        const groups = [...new Set(sizzle('group', item).map((e) => e.textContent))];
 
         if (contact) {
             // We only find out about requesting contacts via the
@@ -307,9 +326,9 @@ const RosterContacts = Collection.extend({
             // here, we know they aren't requesting anymore.
             contact.save({ subscription, ask, nickname, groups, 'requesting': null });
         } else {
-            this.create({ nickname, ask, groups, jid, subscription }, {sort: false});
+            this.create({ nickname, ask, groups, jid, subscription }, { sort: false });
         }
-    },
+    }
 
     createRequestingContact (presence) {
         const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
@@ -319,7 +338,7 @@ const RosterContacts = Collection.extend({
             'subscription': 'none',
             'ask': null,
             'requesting': true,
-            'nickname': nickname
+            'nickname': nickname,
         };
         /**
          * Triggered when someone has requested to subscribe to your presence (i.e. to be your contact).
@@ -328,7 +347,7 @@ const RosterContacts = Collection.extend({
          * @example _converse.api.listen.on('contactRequest', contact => { ... });
          */
         api.trigger('contactRequest', this.create(user_data));
-    },
+    }
 
     handleIncomingSubscription (presence) {
         const jid = presence.getAttribute('from'),
@@ -337,44 +356,44 @@ const RosterContacts = Collection.extend({
 
         if (!api.settings.get('allow_contact_requests')) {
             const { __ } = _converse;
-            rejectPresenceSubscription(
-                jid,
-                __("This client does not allow presence subscriptions")
-            );
+            rejectPresenceSubscription(jid, __('This client does not allow presence subscriptions'));
         }
         if (api.settings.get('auto_subscribe')) {
-            if ((!contact) || (contact.get('subscription') !== 'to')) {
+            if (!contact || contact.get('subscription') !== 'to') {
                 this.subscribeBack(bare_jid, presence);
             } else {
                 contact.authorize();
             }
         } else {
             if (contact) {
-                if (contact.get('subscription') !== 'none')  {
+                if (contact.get('subscription') !== 'none') {
                     contact.authorize();
-                } else if (contact.get('ask') === "subscribe") {
+                } else if (contact.get('ask') === 'subscribe') {
                     contact.authorize();
                 }
             } else {
                 this.createRequestingContact(presence);
             }
         }
-    },
+    }
 
+    // eslint-disable-next-line class-methods-use-this
     handleOwnPresence (presence) {
         const jid = presence.getAttribute('from'),
-              resource = Strophe.getResourceFromJid(jid),
-              presence_type = presence.getAttribute('type');
+            resource = Strophe.getResourceFromJid(jid),
+            presence_type = presence.getAttribute('type');
 
-        if ((_converse.connection.jid !== jid) &&
-                (presence_type !== 'unavailable') &&
-                (api.settings.get('synchronize_availability') === true ||
-                 api.settings.get('synchronize_availability') === resource)) {
+        if (
+            _converse.connection.jid !== jid &&
+            presence_type !== 'unavailable' &&
+            (api.settings.get('synchronize_availability') === true ||
+                api.settings.get('synchronize_availability') === resource)
+        ) {
             // Another resource has changed its status and
             // synchronize_availability option set to update,
             // we'll update ours as well.
             const show = presence.querySelector('show')?.textContent || 'online';
-            _converse.xmppstatus.save({'status': show}, {'silent': true});
+            _converse.xmppstatus.save({ 'status': show }, { 'silent': true });
 
             const status_message = presence.querySelector('status')?.textContent;
             if (status_message) _converse.xmppstatus.save({ status_message });
@@ -396,7 +415,7 @@ const RosterContacts = Collection.extend({
             // otherwise we're treated as offline.
             api.user.presence.send();
         }
-    },
+    }
 
     presenceHandler (presence) {
         const presence_type = presence.getAttribute('type');
@@ -414,7 +433,7 @@ const RosterContacts = Collection.extend({
 
         if (contact) {
             const status = presence.querySelector('status')?.textContent;
-            if (contact.get('status') !== status) contact.save({status});
+            if (contact.get('status') !== status) contact.save({ status });
         }
 
         if (presence_type === 'subscribed' && contact) {
@@ -433,6 +452,6 @@ const RosterContacts = Collection.extend({
             contact.presence.addResource(presence);
         }
     }
-});
+}
 
 export default RosterContacts;

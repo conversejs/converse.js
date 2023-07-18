@@ -1,13 +1,13 @@
+import Message from '../chat/message.js';
 import { Strophe } from 'strophe.js';
 import { _converse, api } from '../../index.js';
 
 /**
- * Mixing that turns a Message model into a ChatRoomMessage model.
- * @class
  * @namespace _converse.ChatRoomMessage
  * @memberOf _converse
  */
-const ChatRoomMessageMixin = {
+class MUCMessage extends Message {
+
     initialize () {
         if (!this.checkValidity()) {
             return;
@@ -29,18 +29,16 @@ const ChatRoomMessageMixin = {
          * @example _converse.api.listen.on('chatRoomMessageInitialized', model => { ... });
          */
         api.trigger('chatRoomMessageInitialized', this);
-    },
-
+    }
 
     getDisplayName () {
         return this.occupant?.getDisplayName() || this.get('nick');
-    },
+    }
 
     /**
      * Determines whether this messsage may be moderated,
      * based on configuration settings and server support.
      * @async
-     * @private
      * @method _converse.ChatRoomMessages#mayBeModerated
      * @returns { Boolean }
      */
@@ -55,19 +53,19 @@ const ChatRoomMessageMixin = {
             this.get(`stanza_id ${this.get('from_muc')}`) &&
             this.chatbox.canModerateMessages()
         );
-    },
+    }
 
     checkValidity () {
         const result = _converse.Message.prototype.checkValidity.call(this);
         !result && this.chatbox.debouncedRejoin();
         return result;
-    },
+    }
 
     onOccupantRemoved () {
         this.stopListening(this.occupant);
         delete this.occupant;
         this.listenTo(this.chatbox.occupants, 'add', this.onOccupantAdded);
-    },
+    }
 
     onOccupantAdded (occupant) {
         if (this.get('occupant_id')) {
@@ -86,14 +84,14 @@ const ChatRoomMessageMixin = {
         this.trigger('occupantAdded');
         this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
         this.stopListening(this.chatbox.occupants, 'add', this.onOccupantAdded);
-    },
+    }
 
     getOccupant() {
         if (this.occupant) return this.occupant;
 
         this.setOccupant();
         return this.occupant;
-    },
+    }
 
     setOccupant () {
         if (this.get('type') !== 'groupchat' || this.isEphemeral() || this.occupant) {
@@ -120,6 +118,6 @@ const ChatRoomMessageMixin = {
 
         this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
     }
-};
+}
 
-export default ChatRoomMessageMixin;
+export default MUCMessage;

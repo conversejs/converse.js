@@ -2,14 +2,12 @@ import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api } from "../../index.js";
 import { initStorage } from '@converse/headless/utils/storage.js';
 
-const ChatBoxes = Collection.extend({
-    comparator: 'time_opened',
+class ChatBoxes extends Collection {
+    get comparator () { // eslint-disable-line class-methods-use-this
+        return 'time_opened';
+    }
 
-    model (attrs, options) {
-        return new _converse.ChatBox(attrs, options);
-    },
-
-    onChatBoxesFetched (collection) {
+    onChatBoxesFetched (collection) { // eslint-disable-line class-methods-use-this
         collection.filter(c => !c.isValid()).forEach(c => c.destroy());
         /**
          * Triggered once all chat boxes have been recreated from the browser cache
@@ -21,7 +19,7 @@ const ChatBoxes = Collection.extend({
          * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
          */
         api.trigger('chatBoxesFetched');
-    },
+    }
 
     onConnected (reconnecting) {
         if (reconnecting) { return; }
@@ -31,7 +29,6 @@ const ChatBoxes = Collection.extend({
             'success': c => this.onChatBoxesFetched(c)
         });
     }
-});
-
+}
 
 export default ChatBoxes;

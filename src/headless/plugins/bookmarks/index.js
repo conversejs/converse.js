@@ -7,7 +7,6 @@
 import "@converse/headless/plugins/muc/index.js";
 import Bookmark from './model.js';
 import Bookmarks from './collection.js';
-import { Collection } from "@converse/skeletor/src/collection.js";
 import { _converse, api, converse } from "@converse/headless";
 import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
 
@@ -54,7 +53,7 @@ converse.plugins.add('converse-bookmarks', {
         api.promises.add('bookmarksInitialized');
 
         _converse.Bookmark = Bookmark;
-        _converse.Bookmarks = Collection.extend(Bookmarks);
+        _converse.Bookmarks = Bookmarks;
 
         api.listen.on('addClientFeatures', () => {
             if (api.settings.get('allow_bookmarks')) {

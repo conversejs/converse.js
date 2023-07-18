@@ -3,10 +3,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import ChatBox from './model.js';
-import MessageMixin from './message.js';
-import ModelWithContact from './model-with-contact.js';
+import Message from './message.js';
+import Messages from './messages.js';
 import chat_api from './api.js';
-import { Collection } from '@converse/skeletor/src/collection';
 import { _converse, api, converse } from '../../index.js';
 import {
     autoJoinChats,
@@ -38,13 +37,7 @@ converse.plugins.add('converse-chat', {
             'send_chat_state_notifications': true,
         });
 
-        _converse.Message = ModelWithContact.extend(MessageMixin);
-        _converse.Messages = Collection.extend({
-            model: _converse.Message,
-            comparator: 'time',
-        });
-
-        Object.assign(_converse, { ChatBox, handleMessageStanza });
+        Object.assign(_converse, { ChatBox, Message, Messages, handleMessageStanza });
         Object.assign(api, chat_api);
 
         _converse.router.route('converse/chat?jid=:jid', openChat);

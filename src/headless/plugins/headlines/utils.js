@@ -1,3 +1,4 @@
+import HeadlinesFeed from './feed';
 import { _converse, api } from "@converse/headless";
 import { isHeadline, isServerMessage } from '@converse/headless/shared/parsers';
 import { parseMessage } from '@converse/headless/plugins/chat/parsers';
@@ -20,13 +21,15 @@ export async function onHeadlineMessage (stanza) {
             // Avoid creating a chat box if we have nothing to show inside it.
             return;
         }
-        const chatbox = _converse.chatboxes.create({
+
+        const chatbox = await api.chatboxes.create(from_jid, {
             'id': from_jid,
             'jid': from_jid,
             'type': _converse.HEADLINES_TYPE,
             'from': from_jid
-        });
-        const attrs = await parseMessage(stanza, _converse);
+        }, HeadlinesFeed);
+
+        const attrs = await parseMessage(stanza);
         await chatbox.createMessage(attrs);
         api.trigger('message', {chatbox, stanza, attrs});
     }

@@ -1,3 +1,4 @@
+import ChatBox from '../chat/model';
 import debounce from 'lodash-es/debounce';
 import log from '../../log';
 import p from '../../utils/parse-helpers';
@@ -55,12 +56,12 @@ class MUCSession extends Model {
 
 /**
  * Represents an open/ongoing groupchat conversation.
- * @mixin
  * @namespace _converse.ChatRoom
  * @memberOf _converse
  */
-const ChatRoomMixin = {
-    defaults () {
+class MUC extends ChatBox {
+
+    defaults () { // eslint-disable-line class-methods-use-this
         return {
             'bookmarked': false,
             'chat_state': undefined,
@@ -84,10 +85,11 @@ const ChatRoomMixin = {
             'time_sent': new Date(0).toISOString(),
             'type': _converse.CHATROOMS_TYPE
         };
-    },
+    }
 
     async initialize () {
         this.initialized = getOpenPromise();
+
         this.debouncedRejoin = debounce(this.rejoin, 250);
         this.set('box_id', `box-${this.get('jid')}`);
         this.initNotifications();
@@ -123,11 +125,11 @@ const ChatRoomMixin = {
          */
         await api.trigger('chatRoomInitialized', this, { 'Synchronous': true });
         this.initialized.resolve();
-    },
+    }
 
     isEntered () {
         return this.session.get('connection_status') === ROOMSTATUS.ENTERED;
-    },
+    }
 
     /**
      * Checks whether this MUC qualifies for subscribing to XEP-0437 Room Activity Indicators (RAI)
@@ -136,7 +138,7 @@ const ChatRoomMixin = {
      */
     isRAICandidate () {
         return this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none';
-    },
+    }
 
     /**
      * Checks whether we're still joined and if so, restores the MUC state from cache.
@@ -162,7 +164,7 @@ const ChatRoomMixin = {
         this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
         this.clearOccupantsCache();
         return false;
-    },
+    }
 
     /**
      * Join the MUC
@@ -192,7 +194,7 @@ const ChatRoomMixin = {
         }
         api.send(await this.constructJoinPresence(password));
         return this;
-    },
+    }
 
     /**
      * Clear stale cache and re-join a MUC we've been in before.
@@ -204,7 +206,7 @@ const ChatRoomMixin = {
         this.registerHandlers();
         this.clearOccupantsCache();
         return this.join();
-    },
+    }
 
     async constructJoinPresence (password) {
         let stanza = $pres({
@@ -229,7 +231,7 @@ const ChatRoomMixin = {
           */
         stanza = await api.hook('constructedMUCPresence', this, stanza);
         return stanza;
-    },
+    }
 
     clearOccupantsCache () {
         if (this.occupants.length) {
@@ -239,7 +241,7 @@ const ChatRoomMixin = {
             // Looks like we haven't restored occupants from cache, so we clear it.
             this.occupants.clearStore();
         }
-    },
+    }
 
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
@@ -262,7 +264,7 @@ const ChatRoomMixin = {
             const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
             sendMarker(from_jid, id, type, msg.get('type'));
         }
-    },
+    }
 
     /**
      * Ensures that the user is subscribed to XEP-0437 Room Activity Indicators
@@ -279,7 +281,7 @@ const ChatRoomMixin = {
             const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
             api.user.presence.send(null, muc_domain, null, $build('rai', { 'xmlns': Strophe.NS.RAI }));
         }
-    },
+    }
 
     /**
      * Handler that gets called when the 'hidden' flag is toggled.
@@ -301,7 +303,7 @@ const ChatRoomMixin = {
             }
             this.clearUnreadMsgCounter();
         }
-    },
+    }
 
     onOccupantAdded (occupant) {
         if (
@@ -311,7 +313,7 @@ const ChatRoomMixin = {
         ) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
         }
-    },
+    }
 
     onOccupantRemoved (occupant) {
         if (
@@ -321,7 +323,7 @@ const ChatRoomMixin = {
         ) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.EXITED);
         }
-    },
+    }
 
     onOccupantShowChanged (occupant) {
         if (occupant.get('states').includes('303')) {
@@ -332,7 +334,7 @@ const ChatRoomMixin = {
         } else if (occupant.get('show') === 'online' && _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
         }
-    },
+    }
 
     async onRoomEntered () {
         await this.occupants.fetchMembers();
@@ -354,7 +356,7 @@ const ChatRoomMixin = {
         ) {
             this.registerNickname();
         }
-    },
+    }
 
     async onConnectionStatusChanged () {
         if (this.isEntered()) {
@@ -369,23 +371,23 @@ const ChatRoomMixin = {
                 await this.onRoomEntered();
             }
         }
-    },
+    }
 
     async onReconnection () {
         await this.rejoin();
         this.announceReconnection();
-    },
+    }
 
     getMessagesCollection () {
         return new _converse.ChatRoomMessages();
-    },
+    }
 
     restoreSession () {
         const id = `muc.session-${_converse.bare_jid}-${this.get('jid')}`;
         this.session = new MUCSession({ id });
         initStorage(this.session, id, 'session');
         return new Promise(r => this.session.fetch({ 'success': r, 'error': r }));
-    },
+    }
 
     initDiscoModels () {
         let id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
@@ -405,7 +407,7 @@ const ChatRoomMixin = {
         this.config = new Model({ id });
         this.config.browserStorage = _converse.createStore(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
-    },
+    }
 
     initOccupants () {
         this.occupants = new _converse.ChatRoomOccupants();
@@ -413,7 +415,7 @@ const ChatRoomMixin = {
         this.occupants.browserStorage = _converse.createStore(id, 'session');
         this.occupants.chatroom = this;
         this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.browserStorage.flush());
-    },
+    }
 
     fetchOccupants () {
         this.occupants.fetched = new Promise(resolve => {
@@ -425,7 +427,7 @@ const ChatRoomMixin = {
             });
         });
         return this.occupants.fetched;
-    },
+    }
 
     handleAffiliationChangedMessage (stanza) {
         const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
@@ -451,7 +453,7 @@ const ChatRoomMixin = {
                 this.occupants.create(data);
             }
         }
-    },
+    }
 
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
@@ -500,7 +502,7 @@ const ChatRoomMixin = {
         } else {
             this.createMessage(attrs);
         }
-    },
+    }
 
     /**
      * Handles incoming message stanzas from the service that hosts this MUC
@@ -521,7 +523,7 @@ const ChatRoomMixin = {
                 'num_unread_general': 0 // Either/or between activity and unreads
             });
         }
-    },
+    }
 
     /**
      * Handles XEP-0452 MUC Mention Notification messages
@@ -551,7 +553,7 @@ const ChatRoomMixin = {
                 api.trigger('message', data);
             });
         }
-    },
+    }
 
     /**
      * Parses an incoming message stanza and queues it for processing.
@@ -600,7 +602,7 @@ const ChatRoomMixin = {
          */
         api.trigger('message', data);
         return attrs && this.queueMessage(attrs);
-    },
+    }
 
     /**
      * Register presence and message handlers relevant to this groupchat
@@ -657,7 +659,7 @@ const ChatRoomMixin = {
             null,
             muc_jid
         );
-    },
+    }
 
     removeHandlers () {
         // Remove the presence and message handlers that were
@@ -683,14 +685,14 @@ const ChatRoomMixin = {
             delete this.affiliation_message_handler;
         }
         return this;
-    },
+    }
 
     invitesAllowed () {
         return (
             api.settings.get('allow_muc_invitations') &&
             (this.features.get('open') || this.getOwnAffiliation() === 'owner')
         );
-    },
+    }
 
     getDisplayName () {
         const name = this.get('name');
@@ -701,7 +703,7 @@ const ChatRoomMixin = {
         } else {
             return this.get('jid');
         }
-    },
+    }
 
     /**
      * Sends a message stanza to the XMPP server and expects a reflection
@@ -737,7 +739,7 @@ const ChatRoomMixin = {
             }, null, 'message', ['error', 'groupchat'], id);
         api.send(el);
         return promise;
-    },
+    }
 
     /**
      * Retract one of your messages in this groupchat
@@ -787,7 +789,7 @@ const ChatRoomMixin = {
                 'retraction_id': undefined
             });
         }
-    },
+    }
 
     /**
      * Retract someone else's message in this groupchat.
@@ -822,7 +824,7 @@ const ChatRoomMixin = {
             });
         }
         return result;
-    },
+    }
 
     /**
      * Sends an IQ stanza to the XMPP server to retract a message in this groupchat.
@@ -843,7 +845,7 @@ const ChatRoomMixin = {
             .c('reason')
             .t(reason || '');
         return api.sendIQ(iq, null, false);
-    },
+    }
 
     /**
      * Sends an IQ stanza to the XMPP server to destroy this groupchat. Not
@@ -869,7 +871,7 @@ const ChatRoomMixin = {
             iq.c('reason', reason);
         }
         return api.sendIQ(iq);
-    },
+    }
 
     /**
      * Leave the groupchat.
@@ -898,7 +900,7 @@ const ChatRoomMixin = {
             }));
         }
         safeSave(this.session, { 'connection_status': ROOMSTATUS.DISCONNECTED });
-    },
+    }
 
     async close (ev) {
         const { ENTERED, CLOSING } = ROOMSTATUS;
@@ -922,12 +924,12 @@ const ChatRoomMixin = {
             })
         );
         return _converse.ChatBox.prototype.close.call(this);
-    },
+    }
 
     canModerateMessages () {
         const self = this.getOwnOccupant();
         return self && self.isModerator() && api.disco.supports(Strophe.NS.MODERATE, this.get('jid'));
-    },
+    }
 
     /**
      * Return an array of unique nicknames based on all occupants and messages in this MUC.
@@ -939,29 +941,29 @@ const ChatRoomMixin = {
         return [
             ...new Set([...this.occupants.map(o => o.get('nick')), ...this.messages.map(m => m.get('nick'))])
         ].filter(n => n);
-    },
+    }
 
     getAllKnownNicknamesRegex () {
         const longNickString = this.getAllKnownNicknames()
             .map(n => p.escapeRegexString(n))
             .join('|');
         return RegExp(`(?:\\p{P}|\\p{Z}|^)@(${longNickString})(?![\\w@-])`, 'uig');
-    },
+    }
 
     getOccupantByJID (jid) {
         return this.occupants.findOccupant({ jid });
-    },
+    }
 
     getOccupantByNickname (nick) {
         return this.occupants.findOccupant({ nick });
-    },
+    }
 
     getReferenceURIFromNickname (nickname) {
         const muc_jid = this.get('jid');
         const occupant = this.getOccupant(nickname);
         const uri = (this.features.get('nonanonymous') && occupant?.get('jid')) || `${muc_jid}/${nickname}`;
         return encodeURI(`xmpp:${uri}`);
-    },
+    }
 
     /**
      * Given a text message, look for `@` mentions and turn them into
@@ -996,7 +998,7 @@ const ChatRoomMixin = {
 
         const [updated_message, updated_references] = p.reduceTextFromReferences(text, references);
         return [updated_message, updated_references];
-    },
+    }
 
     async getOutgoingMessageAttributes (attrs) {
         await api.emojis.initialize();
@@ -1030,7 +1032,7 @@ const ChatRoomMixin = {
          */
         attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
         return attrs;
-    },
+    }
 
     /**
      * Utility method to construct the JID for the current user as occupant of the groupchat.
@@ -1043,7 +1045,7 @@ const ChatRoomMixin = {
         const nick = this.get('nick');
         const jid = Strophe.getBareJidFromJid(this.get('jid'));
         return jid + (nick !== null ? `/${nick}` : '');
-    },
+    }
 
     /**
      * Sends a message with the current XEP-0085 chat state of the user
@@ -1077,7 +1079,7 @@ const ChatRoomMixin = {
                 .up()
                 .c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS })
         );
-    },
+    }
 
     /**
      * Send a direct invitation as per XEP-0249
@@ -1124,7 +1126,7 @@ const ChatRoomMixin = {
             'recipient': recipient,
             'reason': reason
         });
-    },
+    }
 
     /**
      * Refresh the disco identity, features and fields for this {@link _converse.ChatRoom}.
@@ -1138,7 +1140,7 @@ const ChatRoomMixin = {
             .refresh(this.get('jid'))
             .then(() => this.getDiscoInfo())
             .catch(e => log.error(e));
-    },
+    }
 
     /**
      * Fetch the *extended* MUC info from the server and cache it locally
@@ -1154,7 +1156,7 @@ const ChatRoomMixin = {
             .then(() => this.getDiscoInfoFields())
             .then(() => this.getDiscoInfoFeatures())
             .catch(e => log.error(e));
-    },
+    }
 
     /**
      * Fetch the *extended* MUC info fields from the server and store them locally
@@ -1174,7 +1176,7 @@ const ChatRoomMixin = {
             return config;
         }, {});
         this.config.save(config);
-    },
+    }
 
     /**
      * Use converse-disco to populate the features {@link Model} which
@@ -1205,7 +1207,7 @@ const ChatRoomMixin = {
             attrs[fieldname.replace('muc_', '')] = true;
         });
         this.features.save(attrs);
-    },
+    }
 
     /**
      * Given a <field> element, return a copy with a <value> child if
@@ -1236,7 +1238,7 @@ const ChatRoomMixin = {
             field.innerHTML = values.map(v => $build('value').t(v)).join('');
         }
         return field;
-    },
+    }
 
     /**
      * Automatically configure the groupchat based on this model's
@@ -1254,7 +1256,7 @@ const ChatRoomMixin = {
         if (configArray.length) {
             return this.sendConfiguration(configArray);
         }
-    },
+    }
 
     /**
      * Send an IQ stanza to fetch the groupchat configuration data.
@@ -1266,7 +1268,7 @@ const ChatRoomMixin = {
      */
     fetchRoomConfiguration () {
         return api.sendIQ($iq({ 'to': this.get('jid'), 'type': 'get' }).c('query', { xmlns: Strophe.NS.MUC_OWNER }));
-    },
+    }
 
     /**
      * Sends an IQ stanza with the groupchat configuration.
@@ -1282,7 +1284,7 @@ const ChatRoomMixin = {
             .c('x', { xmlns: Strophe.NS.XFORM, type: 'submit' });
         config.forEach(node => iq.cnode(node).up());
         return api.sendIQ(iq);
-    },
+    }
 
     onCommandError (err) {
         const { __ } = _converse;
@@ -1292,7 +1294,7 @@ const ChatRoomMixin = {
             ' ' +
             __("Check your browser's developer console for details.");
         this.createMessage({ message, 'type': 'error' });
-    },
+    }
 
     getNickOrJIDFromCommandArgs (args) {
         const { __ } = _converse;
@@ -1321,7 +1323,7 @@ const ChatRoomMixin = {
             return;
         }
         return nick_or_jid;
-    },
+    }
 
     validateRoleOrAffiliationChangeArgs (command, args) {
         const { __ } = _converse;
@@ -1334,7 +1336,7 @@ const ChatRoomMixin = {
             return false;
         }
         return true;
-    },
+    }
 
     getAllowedCommands () {
         let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
@@ -1359,7 +1361,7 @@ const ChatRoomMixin = {
         } else {
             return allowed_commands;
         }
-    },
+    }
 
     verifyAffiliations (affiliations, occupant, show_error = true) {
         const { __ } = _converse;
@@ -1381,7 +1383,7 @@ const ChatRoomMixin = {
             this.createMessage({ message, 'type': 'error' });
         }
         return false;
-    },
+    }
 
     verifyRoles (roles, occupant, show_error = true) {
         const { __ } = _converse;
@@ -1403,7 +1405,7 @@ const ChatRoomMixin = {
             this.createMessage({ message, 'type': 'error', 'is_ephemeral': 20000 });
         }
         return false;
-    },
+    }
 
     /**
      * Returns the `role` which the current user has in this MUC
@@ -1413,7 +1415,7 @@ const ChatRoomMixin = {
      */
     getOwnRole () {
         return this.getOwnOccupant()?.attributes?.role;
-    },
+    }
 
     /**
      * Returns the `affiliation` which the current user has in this MUC
@@ -1423,7 +1425,7 @@ const ChatRoomMixin = {
      */
     getOwnAffiliation () {
         return this.getOwnOccupant()?.attributes?.affiliation || 'none';
-    },
+    }
 
     /**
      * Get the {@link _converse.ChatRoomOccupant} instance which
@@ -1433,7 +1435,7 @@ const ChatRoomMixin = {
      */
     getOwnOccupant () {
         return this.occupants.getOwnOccupant();
-    },
+    }
 
     /**
      * Send a presence stanza to update the user's nickname in this MUC.
@@ -1465,7 +1467,7 @@ const ChatRoomMixin = {
                 'id': getUniqueId()
             }).tree()
         )
-    },
+    }
 
     /**
      * Send an IQ stanza to modify an occupant's role
@@ -1495,7 +1497,7 @@ const ChatRoomMixin = {
             .sendIQ(iq)
             .then(onSuccess)
             .catch(onError);
-    },
+    }
 
     /**
      * @private
@@ -1507,7 +1509,7 @@ const ChatRoomMixin = {
         return u.isValidJID(nickname_or_jid)
             ? this.getOccupantByJID(nickname_or_jid)
             : this.getOccupantByNickname(nickname_or_jid);
-    },
+    }
 
     /**
      * Return an array of occupant models that have the required role
@@ -1526,7 +1528,7 @@ const ChatRoomMixin = {
                     'role': item.get('role')
                 };
             });
-    },
+    }
 
     /**
      * Return an array of occupant models that have the required affiliation
@@ -1545,7 +1547,7 @@ const ChatRoomMixin = {
                     'affiliation': item.get('affiliation')
                 };
             });
-    },
+    }
 
     /**
      * Return an array of occupant models, sorted according to the passed-in attribute.
@@ -1558,7 +1560,7 @@ const ChatRoomMixin = {
         return Array.from(this.occupants.models).sort((a, b) =>
             a.get(attr) < b.get(attr) ? -1 : a.get(attr) > b.get(attr) ? 1 : 0
         );
-    },
+    }
 
     /**
      * Fetch the lists of users with the given affiliations.
@@ -1580,7 +1582,7 @@ const ChatRoomMixin = {
         const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
         await setAffiliations(muc_jid, computeAffiliationsDelta(true, false, members, old_members));
         await this.occupants.fetchMembers();
-    },
+    }
 
     /**
      * Given a nick name, save it to the model state, otherwise, look
@@ -1594,7 +1596,7 @@ const ChatRoomMixin = {
         nick = nick || this.get('nick') || (await this.getReservedNick()) || _converse.getDefaultMUCNickname();
         if (nick) safeSave(this, { nick }, { 'silent': true });
         return nick;
-    },
+    }
 
     /**
      * Use service-discovery to ask the XMPP server whether
@@ -1620,7 +1622,7 @@ const ChatRoomMixin = {
         // Result might be undefined due to a timeout
         const identity_el = result?.querySelector('query[node="x-roomuser-item"] identity');
         return identity_el ? identity_el.getAttribute('name') : null;
-    },
+    }
 
     /**
      * Send an IQ stanza to the MUC to register this user's nickname.
@@ -1678,7 +1680,7 @@ const ChatRoomMixin = {
             log.error(e);
             return err_msg;
         }
-    },
+    }
 
     /**
      * Check whether we should unregister the user from this MUC, and if so,
@@ -1695,7 +1697,7 @@ const ChatRoomMixin = {
                 log.error(e);
             }
         }
-    },
+    }
 
     /**
      * Send an IQ stanza to the MUC to unregister this user's nickname.
@@ -1709,7 +1711,7 @@ const ChatRoomMixin = {
             .c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
             .c('remove');
         return api.sendIQ(iq).catch(e => log.error(e));
-    },
+    }
 
     /**
      * Given a presence stanza, update the occupant model based on its contents.
@@ -1762,7 +1764,7 @@ const ChatRoomMixin = {
         } else {
             this.occupants.create(attributes);
         }
-    },
+    }
 
     fetchFeaturesIfConfigurationChanged (stanza) {
         // 104: configuration change
@@ -1775,7 +1777,7 @@ const ChatRoomMixin = {
         if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('status'))).length) {
             this.refreshDiscoInfo();
         }
-    },
+    }
 
     /**
      * Given two JIDs, which can be either user JIDs or MUC occupant JIDs,
@@ -1810,12 +1812,12 @@ const ChatRoomMixin = {
                     : this.occupants.findOccupant({ 'jid': bare_jid2 });
             return occupant1 === occupant2;
         }
-    },
+    }
 
     async isSubjectHidden () {
         const jids = await api.user.settings.get('mucs_with_hidden_subject', []);
         return jids.includes(this.get('jid'));
-    },
+    }
 
     async toggleSubjectHiddenState () {
         const muc_jid = this.get('jid');
@@ -1828,7 +1830,7 @@ const ChatRoomMixin = {
         } else {
             api.user.settings.set('mucs_with_hidden_subject', [...jids, muc_jid]);
         }
-    },
+    }
 
     /**
      * Handle a possible subject change and return `true` if so.
@@ -1865,7 +1867,7 @@ const ChatRoomMixin = {
             return true;
         }
         return false;
-    },
+    }
 
     /**
      * Set the subject for this {@link _converse.ChatRoom}
@@ -1884,7 +1886,7 @@ const ChatRoomMixin = {
                 .t(value)
                 .tree()
         );
-    },
+    }
 
     /**
      * Is this a chat state notification that can be ignored,
@@ -1895,7 +1897,7 @@ const ChatRoomMixin = {
      */
     ignorableCSN (attrs) {
         return attrs.chat_state && !attrs.body && (attrs.is_delayed || this.isOwnMessage(attrs));
-    },
+    }
 
     /**
      * Determines whether the message is from ourselves by checking
@@ -1914,7 +1916,7 @@ const ChatRoomMixin = {
             from = msg.from;
         }
         return Strophe.getResourceFromJid(from) == this.get('nick');
-    },
+    }
 
     getUpdatedMessageAttributes (message, attrs) {
         const new_attrs = {
@@ -1930,7 +1932,7 @@ const ChatRoomMixin = {
             }
         }
         return new_attrs;
-    },
+    }
 
     /**
      * Send a MUC-0410 MUC Self-Ping stanza to room to determine
@@ -1949,7 +1951,7 @@ const ChatRoomMixin = {
             await new Promise(resolve => api.listen.once('reconnected', resolve));
         }
         return api.ping(`${this.get('jid')}/${this.get('nick')}`)
-    },
+    }
 
     /**
      * Sends a status update presence (i.e. based on the `<show>` element)
@@ -1965,7 +1967,7 @@ const ChatRoomMixin = {
             child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             api.send(presence);
         }
-    },
+    }
 
     /**
      * Check whether we're still joined and re-join if not
@@ -1981,7 +1983,7 @@ const ChatRoomMixin = {
             this.rejoin();
             return true;
         }
-    },
+    }
 
     /**
      * @private
@@ -2000,7 +2002,7 @@ const ChatRoomMixin = {
             return false;
         }
         return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, attrs);
-    },
+    }
 
     /**
      * Looks whether we already have a moderation message for this
@@ -2034,7 +2036,7 @@ const ChatRoomMixin = {
                     attributes.moderated_by
             );
         }
-    },
+    }
 
     /**
      * Handles message moderation based on the passed in attributes.
@@ -2071,7 +2073,7 @@ const ChatRoomMixin = {
             }
         }
         return false;
-    },
+    }
 
     getNotificationsText () {
         const { __ } = _converse;
@@ -2146,7 +2148,7 @@ const ChatRoomMixin = {
             }
             return result;
         }, '');
-    },
+    }
 
     /**
      * @param { String } actor - The nickname of the actor that caused the notification
@@ -2163,7 +2165,7 @@ const ChatRoomMixin = {
                 this.notifications.set(state, Array.from(existing_actors));
             }
         });
-    },
+    }
 
     /**
      * Update the notifications model by adding the passed in nickname
@@ -2195,7 +2197,7 @@ const ChatRoomMixin = {
         const actors_per_role_change = converse.MUC_ROLE_CHANGES_LIST.reduce(reducer, {});
         this.notifications.set(Object.assign(actors_per_chat_state, actors_per_traffic_state, actors_per_role_change));
         window.setTimeout(() => this.removeNotification(actor, state), 10000);
-    },
+    }
 
     handleMetadataFastening (attrs) {
         if (attrs.ogp_for_id) {
@@ -2217,7 +2219,7 @@ const ChatRoomMixin = {
             }
         }
         return false;
-    },
+    }
 
     /**
      * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
@@ -2235,7 +2237,7 @@ const ChatRoomMixin = {
             api.trigger('message', { 'attrs': data, 'chatbox': this });
         });
         return !!attrs.activities.length
-    },
+    }
 
     /**
      * Returns an already cached message (if it exists) based on the
@@ -2251,7 +2253,7 @@ const ChatRoomMixin = {
         } else {
             return _converse.ChatBox.prototype.getDuplicateMessage.call(this, attrs);
         }
-    },
+    }
 
 
     /**
@@ -2299,7 +2301,7 @@ const ChatRoomMixin = {
             this.removeNotification(attrs.nick, ['composing', 'paused']);
             this.handleUnreadMessage(msg);
         }
-    },
+    }
 
     handleModifyError (pres) {
         const text = pres.querySelector('error text')?.textContent;
@@ -2315,7 +2317,7 @@ const ChatRoomMixin = {
                 this.createMessage(attrs);
             }
         }
-    },
+    }
 
     /**
      * Handle a presence stanza that disconnects the user from the MUC
@@ -2345,7 +2347,7 @@ const ChatRoomMixin = {
         const message = _converse.muc.disconnect_messages[codes[0]];
         const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);
-    },
+    }
 
     getActionInfoMessage (code, nick, actor) {
         const __ = _converse.__;
@@ -2360,7 +2362,7 @@ const ChatRoomMixin = {
         } else if (code === '322') {
             return __('%1$s has been removed for not being a member', nick);
         }
-    },
+    }
 
     createAffiliationChangeMessage (occupant) {
         const __ = _converse.__;
@@ -2422,7 +2424,7 @@ const ChatRoomMixin = {
                 'message': __('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation)
             });
         }
-    },
+    }
 
     createRoleChangeMessage (occupant, changed) {
         if (changed === 'none' || occupant.changed.affiliation) {
@@ -2447,7 +2449,7 @@ const ChatRoomMixin = {
                 this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.OP);
             }
         }
-    },
+    }
 
     /**
      * Create an info message based on a received MUC status code
@@ -2491,7 +2493,7 @@ const ChatRoomMixin = {
             }
             this.createMessage(data);
         }
-    },
+    }
 
     /**
      * Create info messages based on a received presence or message stanza
@@ -2507,7 +2509,7 @@ const ChatRoomMixin = {
         }
         const is_self = codes.includes('110');
         codes.forEach(code => this.createInfoMessage(code, stanza, is_self));
-    },
+    }
 
     /**
      * Set parameters regarding disconnection from this room. This helps to
@@ -2525,7 +2527,7 @@ const ChatRoomMixin = {
             'disconnection_message': message,
             'disconnection_reason': reason,
         });
-    },
+    }
 
     onNicknameClash (presence) {
         const __ = _converse.__;
@@ -2546,7 +2548,7 @@ const ChatRoomMixin = {
             });
             this.session.save({ 'connection_status': ROOMSTATUS.NICKNAME_REQUIRED });
         }
-    },
+    }
 
     /**
      * Parses a <presence> stanza with type "error" and sets the proper
@@ -2612,7 +2614,7 @@ const ChatRoomMixin = {
                 this.setDisconnectionState(message, reason);
             }
         }
-    },
+    }
 
     /**
      * Listens for incoming presence stanzas from the service that hosts this MUC
@@ -2631,7 +2633,7 @@ const ChatRoomMixin = {
                 }
             }
         }
-    },
+    }
 
     /**
      * Handles incoming presence stanzas coming from the MUC
@@ -2655,7 +2657,7 @@ const ChatRoomMixin = {
         } else {
             this.updateOccupantsOnPresence(stanza);
         }
-    },
+    }
 
     /**
      * Handles a received presence relating to the current user.
@@ -2705,7 +2707,7 @@ const ChatRoomMixin = {
                 this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
             }
         }
-    },
+    }
 
     /**
      * Returns a boolean to indicate whether the current user
@@ -2725,7 +2727,7 @@ const ChatRoomMixin = {
         } else {
             return new RegExp(`\\b${nick}\\b`).test(message.get('body'));
         }
-    },
+    }
 
     incrementUnreadMsgsCounter (message) {
         const settings = {
@@ -2738,7 +2740,7 @@ const ChatRoomMixin = {
             settings.num_unread = this.get('num_unread') + 1;
         }
         this.save(settings);
-    },
+    }
 
     clearUnreadMsgCounter () {
         if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0 || this.get('has_activity')) {
@@ -2750,6 +2752,6 @@ const ChatRoomMixin = {
             'num_unread_general': 0
         });
     }
-};
+}
 
-export default ChatRoomMixin;
+export default MUC;

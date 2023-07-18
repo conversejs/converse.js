@@ -6,13 +6,13 @@
 import '../chat/index.js';
 import '../disco/index.js';
 import '../emoji/index.js';
-import ChatRoomMessageMixin from './message.js';
-import ChatRoomMixin from './muc.js';
+import MUCMessage from './message.js';
+import MUCMessages from './messages.js';
+import MUC from './muc.js';
 import ChatRoomOccupant from './occupant.js';
 import ChatRoomOccupants from './occupants.js';
 import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
-import { Collection } from '@converse/skeletor/src/collection';
 import { _converse, api, converse } from '../../index.js';
 import {
     autoJoinRooms,
@@ -47,7 +47,7 @@ export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 
 converse.AFFILIATION_CHANGES = AFFILIATION_CHANGES;
 converse.AFFILIATION_CHANGES_LIST = AFFILIATION_CHANGES_LIST;
-converse.MUC_TRAFFIC_STATES =  MUC_TRAFFIC_STATES;
+converse.MUC_TRAFFIC_STATES = MUC_TRAFFIC_STATES;
 converse.MUC_TRAFFIC_STATES_LIST = MUC_TRAFFIC_STATES_LIST;
 converse.MUC_ROLE_CHANGES = MUC_ROLE_CHANGES;
 converse.MUC_ROLE_CHANGES_LIST = MUC_ROLE_CHANGES_LIST;
@@ -69,22 +69,8 @@ Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + '#user');
 Strophe.addNamespace('MUC_HATS', 'xmpp:prosody.im/protocol/hats:1');
 Strophe.addNamespace('CONFINFO', 'urn:ietf:params:xml:ns:conference-info');
 
-
 converse.plugins.add('converse-muc', {
     dependencies: ['converse-chatboxes', 'converse-chat', 'converse-disco'],
-
-    overrides: {
-        ChatBoxes: {
-            model (attrs, options) {
-                const { _converse } = this.__super__;
-                if (attrs && attrs.type == _converse.CHATROOMS_TYPE) {
-                    return new _converse.ChatRoom(attrs, options);
-                } else {
-                    return this.__super__.model.apply(this, arguments);
-                }
-            },
-        },
-    },
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -194,24 +180,17 @@ converse.plugins.add('converse-muc', {
 
         _converse.router.route('converse/room?jid=:jid', routeToRoom);
 
-        _converse.ChatRoom = _converse.ChatBox.extend(ChatRoomMixin);
-        _converse.ChatRoomMessage = _converse.Message.extend(ChatRoomMessageMixin);
+        _converse.ChatRoom = MUC;
+        _converse.ChatRoomMessage = MUCMessage;
         _converse.ChatRoomOccupants = ChatRoomOccupants;
         _converse.ChatRoomOccupant = ChatRoomOccupant;
 
-        /**
-         * Collection which stores MUC messages
-         * @class
-         * @namespace _converse.ChatRoomMessages
-         * @memberOf _converse
-         */
-        _converse.ChatRoomMessages = Collection.extend({
-            model: _converse.ChatRoomMessage,
-            comparator: 'time',
+        Object.assign(_converse, {
+            getDefaultMUCNickname,
+            isInfoVisible,
+            onDirectMUCInvitation,
+            ChatRoomMessages: MUCMessages,
         });
-
-        Object.assign(_converse, { getDefaultMUCNickname, isInfoVisible, onDirectMUCInvitation });
-
 
         /************************ BEGIN Event Handlers ************************/
 

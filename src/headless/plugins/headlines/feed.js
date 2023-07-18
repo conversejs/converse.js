@@ -5,7 +5,7 @@ import { _converse } from '../../index.js';
 
 export default class HeadlinesFeed extends ChatBox {
 
-    defaults () {
+    defaults () { // eslint-disable-line class-methods-use-this
         return {
             'bookmarked': false,
             'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
@@ -17,6 +17,7 @@ export default class HeadlinesFeed extends ChatBox {
     }
 
     async initialize () {
+        super.initialize();
         this.set({'box_id': `box-${this.get('jid')}`});
         this.initUI();
         this.initMessages();
@@ -24,7 +25,7 @@ export default class HeadlinesFeed extends ChatBox {
         /**
          * Triggered once a { @link _converse.HeadlinesFeed } has been created and initialized.
          * @event _converse#headlinesFeedInitialized
-         * @type { _converse.HeadlinesFeed }
+         * @type {HeadlinesFeed}
          * @example _converse.api.listen.on('headlinesFeedInitialized', model => { ... });
          */
         api.trigger('headlinesFeedInitialized', this);

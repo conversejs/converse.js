@@ -106,7 +106,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         const el = await u.waitUntil(() => view.querySelector('.chat-content progress'));
                         expect(el.getAttribute('value')).toBe('0');
                         message.set('progress', 0.5);
-                        await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                        await u.waitUntil(() => view.querySelector('.chat-content progress')?.getAttribute('value') === '0.5')
                         message.set('progress', 1);
                         await u.waitUntil(() => view.querySelector('.chat-content progress')?.getAttribute('value') === '1')
                         message.save({

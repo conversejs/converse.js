@@ -23,12 +23,10 @@ const u = converse.env.utils;
 
 /**
  * Represents an open/ongoing chat conversation.
- *
- * @class
  * @namespace _converse.ChatBox
  * @memberOf _converse
  */
-const ChatBox = ModelWithContact.extend({
+class ChatBox extends ModelWithContact {
 
     defaults () {
         return {
@@ -43,11 +41,11 @@ const ChatBox = ModelWithContact.extend({
             'type': _converse.PRIVATE_CHAT_TYPE,
             'url': ''
         }
-    },
+    }
 
     async initialize () {
+        super.initialize();
         this.initialized = getOpenPromise();
-        ModelWithContact.prototype.initialize.apply(this, arguments);
 
         const jid = this.get('jid');
         if (!jid) {
@@ -81,15 +79,15 @@ const ChatBox = ModelWithContact.extend({
          */
         await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
         this.initialized.resolve();
-    },
+    }
 
     getMessagesCollection () {
         return new _converse.Messages();
-    },
+    }
 
     getMessagesCacheKey () {
         return `converse.messages-${this.get('jid')}-${_converse.bare_jid}`;
-    },
+    }
 
     initMessages () {
         this.messages = this.getMessagesCollection();
@@ -99,15 +97,15 @@ const ChatBox = ModelWithContact.extend({
 
         this.listenTo(this.messages, 'change:upload', this.onMessageUploadChanged, this);
         this.listenTo(this.messages, 'add', this.onMessageAdded, this);
-    },
+    }
 
     initUI () {
         this.ui = new Model();
-    },
+    }
 
     initNotifications () {
         this.notifications = new Model();
-    },
+    }
 
     getNotificationsText () {
         const { __ } = _converse;
@@ -120,7 +118,7 @@ const ChatBox = ModelWithContact.extend({
         } else {
             return '';
         }
-    },
+    }
 
     afterMessagesFetched () {
         this.pruneHistoryWhenScrolledDown();
@@ -132,7 +130,7 @@ const ChatBox = ModelWithContact.extend({
          * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
          */
         api.trigger('afterMessagesFetched', this);
-    },
+    }
 
     fetchMessages () {
         if (this.messages.fetched_flag) {
@@ -147,7 +145,7 @@ const ChatBox = ModelWithContact.extend({
             'error': () => { this.afterMessagesFetched(); resolve() }
         });
         return this.messages.fetched;
-    },
+    }
 
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
@@ -185,7 +183,7 @@ const ChatBox = ModelWithContact.extend({
         } else {
             this.createMessage(attrs);
         }
-    },
+    }
 
     /**
      * Queue an incoming `chat` message stanza for processing.
@@ -199,7 +197,7 @@ const ChatBox = ModelWithContact.extend({
             .then(() => this.onMessage(attrs))
             .catch(e => log.error(e));
         return this.msg_chain;
-    },
+    }
 
     /**
      * @async
@@ -232,7 +230,7 @@ const ChatBox = ModelWithContact.extend({
                 this.handleUnreadMessage(msg);
             }
         }
-    },
+    }
 
     async onMessageUploadChanged (message) {
         if (message.get('upload') === _converse.SUCCESS) {
@@ -245,7 +243,7 @@ const ChatBox = ModelWithContact.extend({
             await this.sendMessage(attrs);
             message.destroy();
         }
-    },
+    }
 
     onMessageAdded (message) {
         if (api.settings.get('prune_messages_above') &&
@@ -254,7 +252,7 @@ const ChatBox = ModelWithContact.extend({
         ) {
             debouncedPruneHistory(this);
         }
-    },
+    }
 
     async clearMessages () {
         try {
@@ -267,7 +265,7 @@ const ChatBox = ModelWithContact.extend({
             // Make sure to resolve the fetched promise to avoid freezes.
             this.messages.fetched.resolve();
         }
-    },
+    }
 
     async close () {
         if (api.connection.connected()) {
@@ -294,7 +292,7 @@ const ChatBox = ModelWithContact.extend({
          * @example _converse.api.listen.on('chatBoxClosed', chat => { ... });
          */
         api.trigger('chatBoxClosed', this);
-    },
+    }
 
     announceReconnection () {
         /**
@@ -304,14 +302,14 @@ const ChatBox = ModelWithContact.extend({
          * @example _converse.api.listen.on('onChatReconnected', chat => { ... });
          */
         api.trigger('chatReconnected', this);
-    },
+    }
 
     async onReconnection () {
         if (api.settings.get('clear_messages_on_reconnection')) {
             await this.clearMessages();
         }
         this.announceReconnection();
-    },
+    }
 
     onPresenceChanged (item) {
         const { __ } = _converse;
@@ -328,14 +326,14 @@ const ChatBox = ModelWithContact.extend({
             text = __('%1$s is online', fullname);
         }
         text && this.createMessage({ 'message': text, 'type': 'info' });
-    },
+    }
 
     onScrolledChanged () {
         if (!this.ui.get('scrolled')) {
             this.clearUnreadMsgCounter();
             this.pruneHistoryWhenScrolledDown();
         }
-    },
+    }
 
     pruneHistoryWhenScrolledDown () {
         if (
@@ -345,7 +343,7 @@ const ChatBox = ModelWithContact.extend({
         ) {
             debouncedPruneHistory(this);
         }
-    },
+    }
 
     validate (attrs) {
         if (!attrs.jid) {
@@ -358,7 +356,7 @@ const ChatBox = ModelWithContact.extend({
             log.warn(msg);
             return msg;
         }
-    },
+    }
 
     getDisplayName () {
         if (this.contact) {
@@ -368,7 +366,7 @@ const ChatBox = ModelWithContact.extend({
         } else {
             return this.get('jid');
         }
-    },
+    }
 
     async createMessageFromError (error) {
         if (error instanceof TimeoutError) {
@@ -380,7 +378,7 @@ const ChatBox = ModelWithContact.extend({
             });
             msg.error = error;
         }
-    },
+    }
 
     editEarlierMessage () {
         let message;
@@ -404,7 +402,7 @@ const ChatBox = ModelWithContact.extend({
         if (message) {
             message.save('correcting', true);
         }
-    },
+    }
 
     editLaterMessage () {
         let message;
@@ -422,7 +420,7 @@ const ChatBox = ModelWithContact.extend({
             }
         }
         return message;
-    },
+    }
 
     getOldestMessage () {
         for (let i=0; i<this.messages.length; i++) {
@@ -431,7 +429,7 @@ const ChatBox = ModelWithContact.extend({
                 return message;
             }
         }
-    },
+    }
 
     getMostRecentMessage () {
         for (let i=this.messages.length-1; i>=0; i--) {
@@ -440,7 +438,7 @@ const ChatBox = ModelWithContact.extend({
                 return message;
             }
         }
-    },
+    }
 
     getUpdatedMessageAttributes (message, attrs) {
         if (!attrs.error_type && message.get('error_type') === 'Decryption') {
@@ -459,12 +457,12 @@ const ChatBox = ModelWithContact.extend({
         } else {
             return { is_archived: attrs.is_archived };
         }
-    },
+    }
 
     updateMessage (message, attrs) {
         const new_attrs = this.getUpdatedMessageAttributes(message, attrs);
         new_attrs && message.save(new_attrs);
-    },
+    }
 
     /**
      * Mutator for setting the chat state of this chat session.
@@ -497,7 +495,7 @@ const ChatBox = ModelWithContact.extend({
         }
         this.set('chat_state', state, options);
         return this;
-    },
+    }
 
     /**
      * Given an error `<message>` stanza's attributes, find the saved message model which is
@@ -507,7 +505,7 @@ const ChatBox = ModelWithContact.extend({
     getMessageReferencedByError (attrs) {
         const id = attrs.msgid;
         return id && this.messages.models.find(m => [m.get('msgid'), m.get('retraction_id')].includes(id));
-    },
+    }
 
     /**
      * @private
@@ -525,11 +523,11 @@ const ChatBox = ModelWithContact.extend({
         }
         // Gets overridden in ChatRoom
         return true;
-    },
+    }
 
     isSameUser (jid1, jid2) {
         return u.isSameBareJID(jid1, jid2);
-    },
+    }
 
     /**
      * Looks whether we already have a retraction for this
@@ -559,7 +557,7 @@ const ChatBox = ModelWithContact.extend({
                     !attributes.moderated_by
             );
         }
-    },
+    }
 
     /**
      * Handles message retraction based on the passed in attributes.
@@ -596,7 +594,7 @@ const ChatBox = ModelWithContact.extend({
             }
         }
         return false;
-    },
+    }
 
     /**
      * Returns an already cached message (if it exists) based on the
@@ -615,11 +613,11 @@ const ChatBox = ModelWithContact.extend({
             ].filter(s => s);
         const msgs = this.messages.models;
         return msgs.find(m => queries.reduce((out, q) => (out || isMatch(m.attributes, q)), false));
-    },
+    }
 
     getOriginIdQueryAttrs (attrs) {
         return attrs.origin_id && {'origin_id': attrs.origin_id, 'from': attrs.from};
-    },
+    }
 
     getStanzaIdQueryAttrs (attrs) {
         const keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id '));
@@ -629,7 +627,7 @@ const ChatBox = ModelWithContact.extend({
             query[`stanza_id ${by_jid}`] = attrs[key];
             return query;
         });
-    },
+    }
 
     getMessageBodyQueryAttrs (attrs) {
         if (attrs.msgid) {
@@ -645,7 +643,7 @@ const ChatBox = ModelWithContact.extend({
             }
             return query;
         }
-    },
+    }
 
     /**
      * Retract one of your messages in this chat
@@ -653,7 +651,7 @@ const ChatBox = ModelWithContact.extend({
      * @method _converse.ChatBoxView#retractOwnMessage
      * @param { _converse.Message } message - The message which we're retracting.
      */
-    retractOwnMessage(message) {
+    retractOwnMessage (message) {
         this.sendRetractionMessage(message)
         message.save({
             'retracted': (new Date()).toISOString(),
@@ -662,7 +660,7 @@ const ChatBox = ModelWithContact.extend({
             'is_ephemeral': true,
             'editable': false
         });
-    },
+    }
 
     /**
      * Sends a message stanza to retract a message in this chat
@@ -686,7 +684,7 @@ const ChatBox = ModelWithContact.extend({
                 'xmlns': Strophe.NS.FASTEN
             }).c('retract', {xmlns: Strophe.NS.RETRACT})
         return api.connection.get().send(msg);
-    },
+    }
 
     /**
      * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
@@ -699,7 +697,7 @@ const ChatBox = ModelWithContact.extend({
         msgs.reverse();
         const msg = msgs.find(m => m.get('sender') === 'them' && (force || m.get('is_markable')));
         msg && this.sendMarkerForMessage(msg, type, force);
-    },
+    }
 
     /**
      * Given the passed in message object, send a XEP-0333 chat marker.
@@ -716,7 +714,7 @@ const ChatBox = ModelWithContact.extend({
             const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
             sendMarker(from_jid, msg.get('msgid'), type, msg.get('type'));
         }
-    },
+    }
 
     handleChatMarker (attrs) {
         const to_bare_jid = Strophe.getBareJidFromJid(attrs.to);
@@ -736,7 +734,7 @@ const ChatBox = ModelWithContact.extend({
             }
             return true;
         }
-    },
+    }
 
     sendReceiptStanza (to_jid, id) {
         const receipt_stanza = $msg({
@@ -747,7 +745,7 @@ const ChatBox = ModelWithContact.extend({
         }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up()
         .c('store', {'xmlns': Strophe.NS.HINTS}).up();
         api.send(receipt_stanza);
-    },
+    }
 
     handleReceipt (attrs) {
         if (attrs.sender === 'them') {
@@ -762,7 +760,7 @@ const ChatBox = ModelWithContact.extend({
             }
         }
         return false;
-    },
+    }
 
     /**
      * Given a {@link _converse.Message} return the XML stanza that represents it.
@@ -835,7 +833,7 @@ const ChatBox = ModelWithContact.extend({
          */
         const data = await api.hook('createMessageStanza', this, { message, stanza });
         return data.stanza;
-    },
+    }
 
     async getOutgoingMessageAttributes (attrs) {
         await api.emojis.initialize();
@@ -872,7 +870,7 @@ const ChatBox = ModelWithContact.extend({
          */
         attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
         return attrs;
-    },
+    }
 
     /**
      * Responsible for setting the editable attribute of messages.
@@ -895,7 +893,7 @@ const ChatBox = ModelWithContact.extend({
             this.messages.findWhere({'editable': true})?.save({'editable': false});
             attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
         }
-    },
+    }
 
     /**
      * Queue the creation of a message, to make sure that we don't run
@@ -910,7 +908,7 @@ const ChatBox = ModelWithContact.extend({
         attrs.time = attrs.time || (new Date()).toISOString();
         await this.messages.fetched;
         return this.messages.create(attrs, options);
-    },
+    }
 
     /**
      * Responsible for sending off a text message inside an ongoing chat conversation.
@@ -968,7 +966,7 @@ const ChatBox = ModelWithContact.extend({
         */
         api.trigger('sendMessage', {'chatbox': this, message});
         return message;
-    },
+    }
 
     /**
      * Sends a message with the current XEP-0085 chat state of the user
@@ -992,7 +990,7 @@ const ChatBox = ModelWithContact.extend({
                 .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
             );
         }
-    },
+    }
 
 
     async sendFiles (files) {
@@ -1052,7 +1050,7 @@ const ChatBox = ModelWithContact.extend({
                 message.getRequestSlotURL();
             }
         });
-    },
+    }
 
     maybeShow (force) {
         if (isUniView()) {
@@ -1071,7 +1069,7 @@ const ChatBox = ModelWithContact.extend({
         u.safeSave(this, {'hidden': false});
         this.trigger('show');
         return this;
-    },
+    }
 
     /**
      * Indicates whether the chat is hidden and therefore
@@ -1082,7 +1080,7 @@ const ChatBox = ModelWithContact.extend({
     isHidden () {
         // Note: This methods gets overridden by converse-minimize
         return this.get('hidden') || this.isScrolledUp() || _converse.windowState === 'hidden';
-    },
+    }
 
     /**
      * Given a newly received {@link _converse.Message} instance,
@@ -1108,7 +1106,7 @@ const ChatBox = ModelWithContact.extend({
                 this.sendMarkerForMessage(message);
             }
         }
-    },
+    }
 
     incrementUnreadMsgsCounter (message) {
         const settings = {
@@ -1118,18 +1116,18 @@ const ChatBox = ModelWithContact.extend({
             settings['first_unread_id'] = message.get('id');
         }
         this.save(settings);
-    },
+    }
 
     clearUnreadMsgCounter () {
         if (this.get('num_unread') > 0) {
             this.sendMarkerForMessage(this.messages.last());
         }
         u.safeSave(this, {'num_unread': 0});
-    },
+    }
 
     isScrolledUp () {
         return this.ui.get('scrolled');
     }
-});
+}
 
 export default ChatBox;

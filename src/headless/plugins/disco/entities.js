@@ -3,8 +3,12 @@ import log from "../../log.js";
 import { Collection } from "@converse/skeletor/src/collection";
 
 
-const DiscoEntities = Collection.extend({
-    model: DiscoEntity,
+class DiscoEntities extends Collection {
+
+    constructor () {
+        super();
+        this.model = DiscoEntity;
+    }
 
     fetchEntities () {
         return new Promise((resolve, reject) => {
@@ -18,6 +22,6 @@ const DiscoEntities = Collection.extend({
             });
         });
     }
-});
+}
 
 export default DiscoEntities;

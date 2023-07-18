@@ -1,11 +1,13 @@
 import DeviceList from './devicelist.js';
 import { Collection } from '@converse/skeletor/src/collection';
 
-/**
- * @class
- * @namespace _converse.DeviceLists
- * @memberOf _converse
- */
-const DeviceLists = Collection.extend({ model: DeviceList });
+class DeviceLists extends Collection {
+
+    constructor () {
+        super();
+        this.model = DeviceList;
+    }
+
+}
 
 export default DeviceLists;

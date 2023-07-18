@@ -1,6 +1,6 @@
 import bootstrap from "bootstrap.native";
 import tplModal from './templates/modal.js';
-import { ElementView } from '@converse/skeletor/src/element.js';
+import ElementView from '@converse/skeletor/src/element.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 

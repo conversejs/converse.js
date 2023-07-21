@@ -1,5 +1,11 @@
 # Changelog
 
+## 11.0.0 (Unreleased)
+
+Breaking changes:
+- Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal`
+  which is a web component.
+
 ## 10.1.5 (2023-06-29)
 
 - #3209: Fix error when importing the `converse` global with bootstrap modal API

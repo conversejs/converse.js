@@ -2,18 +2,16 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import BootstrapModal from './base.js';
+import BaseModal from './modal.js';
 import modal_api from './api.js';
-import { _converse, api, converse } from "@converse/headless";
+import { _converse, api, converse } from '@converse/headless';
 
-converse.env.BootstrapModal = BootstrapModal; // expose to plugins
-
+Object.assign(converse.env, { BaseModal });
 
 converse.plugins.add('converse-modal', {
-
     initialize () {
         api.listen.on('disconnect', () => {
-            const container = document.querySelector("#converse-modals");
+            const container = document.querySelector('#converse-modals');
             if (container) {
                 container.innerHTML = '';
             }
@@ -22,5 +20,5 @@ converse.plugins.add('converse-modal', {
         api.listen.on('clearSession', () => api.modal.removeAll());
 
         Object.assign(_converse.api, modal_api);
-    }
+    },
 });

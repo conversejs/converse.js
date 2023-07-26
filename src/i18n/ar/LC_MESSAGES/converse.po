@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-07-26 21:07+0000\n"
+"PO-Revision-Date: 2023-07-26 21:39+0000\n"
 "Last-Translator: ButterflyOfFire <boffire@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -656,11 +656,11 @@ msgstr "نفّذ"
 
 #: dist/converse-no-dependencies.js:74179
 msgid "Previous"
-msgstr ""
+msgstr "السابقة"
 
 #: dist/converse-no-dependencies.js:74180
 msgid "Next"
-msgstr ""
+msgstr "التالي"
 
 #: dist/converse-no-dependencies.js:74181
 msgid "Complete"
@@ -705,7 +705,7 @@ msgstr "الدور"
 
 #: dist/converse-no-dependencies.js:76849
 msgid "Hats"
-msgstr ""
+msgstr "القبعات"
 
 #: dist/converse-no-dependencies.js:76849
 msgid "Occupant Id"
@@ -933,7 +933,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:79621
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "خطأ: نتيجة غير متوقعة"
 
 #: dist/converse-no-dependencies.js:80123
 msgid "Bookmark this groupchat"
@@ -983,7 +983,7 @@ msgstr "هل تريد الإلتحاق آليًا بفريق المحادثة ه
 
 #: dist/converse-no-dependencies.js:80985
 msgid "Remove"
-msgstr ""
+msgstr "إزالة"
 
 #: dist/converse-no-dependencies.js:80986
 msgid "The name for this bookmark:"
@@ -995,7 +995,7 @@ msgstr "ما هو الإسم المُستعار الذي تريد استخدام
 
 #: dist/converse-no-dependencies.js:80988
 msgid "Update"
-msgstr ""
+msgstr "تحديث"
 
 #: dist/converse-no-dependencies.js:80988
 #: dist/converse-no-dependencies.js:108069
@@ -1094,7 +1094,7 @@ msgstr "لم يتم العثور على الخادم عن بُعد"
 
 #: dist/converse-no-dependencies.js:89950
 msgid "Current version"
-msgstr ""
+msgstr "الإصدار الحالي"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:90111
@@ -1300,7 +1300,7 @@ msgstr "هذا جهاز موثوق فيه"
 
 #: dist/converse-no-dependencies.js:99507
 msgid "Connection URL"
-msgstr ""
+msgstr "الرابط التشعبي URL للاتصال"
 
 #: dist/converse-no-dependencies.js:99508
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
@@ -1308,7 +1308,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:99509
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "على سبيل المثال wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:99514
 msgid "Password"
@@ -1494,7 +1494,7 @@ msgstr "تغيير دور المستخدم إلى صفة مدير"
 
 #: dist/converse-no-dependencies.js:107911
 msgid "Ban user by changing their affiliation to outcast"
-msgstr ""
+msgstr "حظر المستخدم عن طريق تغيير انتمائه إلى منبوذ"
 
 #: dist/converse-no-dependencies.js:107911
 #, fuzzy
@@ -1520,8 +1520,9 @@ msgid "Kick user from groupchat"
 msgstr "طرد المستخدِم مؤقتًا مِن فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:107911
+#, fuzzy
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "اكتب بضمير الغائب"
 
 #: dist/converse-no-dependencies.js:107911
 msgid "Grant membership to a user"
@@ -1529,7 +1530,7 @@ msgstr "منح صفة العضوية لمستخدِم"
 
 #: dist/converse-no-dependencies.js:107911
 msgid "Opens up the moderator tools GUI"
-msgstr ""
+msgstr "يفتح واجهة المستخدم الرسومية لأدوات الإشراف"
 
 #: dist/converse-no-dependencies.js:107911
 msgid "Remove user's ability to post messages"
@@ -1817,11 +1818,11 @@ msgstr "إخفاء الموضوع"
 
 #: dist/converse-no-dependencies.js:111052
 msgid "Show the topic message in the heading"
-msgstr ""
+msgstr "عرض رسالة الموضوع في الرأسية"
 
 #: dist/converse-no-dependencies.js:111052
 msgid "Hide the topic in the heading"
-msgstr ""
+msgstr "إخفاء الموضوع في الرأسية"
 
 #: dist/converse-no-dependencies.js:111066
 msgid "Moderate"
@@ -1984,7 +1985,7 @@ msgstr "كلمة السر"
 
 #: dist/converse-no-dependencies.js:114891
 msgid "The new passwords must match"
-msgstr ""
+msgstr "يجب أن تتطابق كلمات المرور الجديدة"
 
 #: dist/converse-no-dependencies.js:114892
 #, fuzzy
@@ -2003,7 +2004,7 @@ msgstr "خطأ في مهلة الإنتظار"
 
 #: dist/converse-no-dependencies.js:115422
 msgid "Your server does not support in-band password reset"
-msgstr ""
+msgstr "خادمك الخاص لا يدعم إعادة تعيين كلمة المرور داخل النطاق"
 
 #: dist/converse-no-dependencies.js:115429
 msgid ""

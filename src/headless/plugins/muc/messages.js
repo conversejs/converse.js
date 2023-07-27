@@ -9,7 +9,7 @@ import { Collection } from '@converse/skeletor/src/collection';
 class MUCMessages extends Collection {
 
     // eslint-disable-next-line class-methods-use-this
-    comparator () {
+    get comparator () {
         return 'time';
     }
 

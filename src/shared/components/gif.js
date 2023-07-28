@@ -28,6 +28,7 @@ export default class ConverseGIFElement extends CustomElement {
 
     constructor () {
         super();
+        this.src = null;
         this.autoplay = false;
         this.noloop = false;
         this.fallback = 'url';
@@ -90,8 +91,6 @@ export default class ConverseGIFElement extends CustomElement {
 
     onControlsClicked (ev) {
         ev.preventDefault();
-
-
         if (this.supergif.playing) {
             this.supergif.pause();
         } else if (this.supergif.frames.length > 0) {

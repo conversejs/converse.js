@@ -16,6 +16,14 @@ export default class Image extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.src = null;
+        this.href = null;
+        this.onImgClick = null;
+        this.onImgLoad = null;
+    }
+
     render () {
         if (isGIFURL(this.src) && shouldRenderMediaFromURL(this.src, 'image')) {
             return tplGif(filterQueryParamsFromURL(this.src), true);

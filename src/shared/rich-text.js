@@ -283,11 +283,6 @@ export class RichText extends String {
 
     /**
      * Parse the text and add template references for rendering the "rich" parts.
-     *
-     * @param { RichText } text
-     * @param { Boolean } show_images - Should URLs of images be rendered as `<img>` tags?
-     * @param { Function } onImgLoad
-     * @param { Function } onImgClick
      **/
     async addTemplates () {
         /**

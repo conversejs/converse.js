@@ -1,3 +1,4 @@
+import { log } from '@converse/headless';
 import { getOpenPromise } from '@converse/openpromise';
 import { parseGIF, decompressFrames } from 'gifuct-js';
 
@@ -36,8 +37,11 @@ export default class ConverseGif {
         this.gif_el = el.querySelector('img');
         this.canvas = el.querySelector('canvas');
         this.ctx = this.canvas.getContext('2d');
-        // It's good practice to pre-render to an offscreen canvas
+
+        // Offscreen canvas with full gif
         this.offscreenCanvas = document.createElement('canvas');
+        // Offscreen canvas for patches
+        this.patchCanvas = document.createElement('canvas');
 
         this.ctx_scaled = false;
         this.frames = [];
@@ -49,6 +53,7 @@ export default class ConverseGif {
         this.start = null;
         this.hovering = null;
         this.frameImageData = null;
+        this.disposal_restore_from_idx = null;
 
         this.initialize();
     }
@@ -70,10 +75,10 @@ export default class ConverseGif {
 
         // Show the first frame
         this.frame_idx = 0;
-        this.putFrame(this.frame_idx);
+        this.renderImage();
 
         if (this.options.autoplay) {
-            const delay = (this.frames[this.frame_idx]?.delay ?? 0);
+            const delay = this.frames[this.frame_idx]?.delay ?? 0;
             setTimeout(() => this.play(), delay);
         }
     }
@@ -110,14 +115,14 @@ export default class ConverseGif {
      * `frame_delay` parameters can also be passed in. The `timestamp`
      * parameter comes from `requestAnimationFrame`.
      *
-     * The purpose of this method is to call `putFrame` with the right delay
+     * The purpose of this method is to call `renderImage` with the right delay
      * in order to render the GIF animation.
      *
      * Note, this method will cause the *next* upcoming frame to be rendered,
      * not the current one.
      *
-     * This means `this.frame_idx` will be incremented before calling `this.putFrame`, so
-     * `putFrame(0)` needs to be called *before* this method, otherwise the
+     * This means `this.frame_idx` will be incremented before calling `this.renderImage`, so
+     * `renderImage(0)` needs to be called *before* this method, otherwise the
      * animation will incorrectly start from frame #1 (this is done in `initPlayer`).
      *
      * @param { DOMHighResTimeStamp } timestamp - The timestamp as returned by `requestAnimationFrame`
@@ -132,7 +137,7 @@ export default class ConverseGif {
             return;
         }
         if (timestamp - previous_timestamp < frame_delay) {
-            this.hovering ? this.drawPauseIcon() : this.putFrame(this.frame_idx);
+            this.hovering ? this.drawPauseIcon() : this.renderImage();
             // We need to wait longer
             requestAnimationFrame((ts) => this.onAnimationFrame(ts, previous_timestamp, frame_delay));
             return;
@@ -142,8 +147,8 @@ export default class ConverseGif {
             return;
         }
         this.frame_idx = next_frame;
-        this.putFrame(this.frame_idx);
-        const delay = (this.frames[this.frame_idx]?.delay || 8);
+        this.renderImage();
+        const delay = this.frames[this.frame_idx]?.delay || 8;
         requestAnimationFrame((ts) => this.onAnimationFrame(ts, timestamp, delay));
     }
 
@@ -195,21 +200,13 @@ export default class ConverseGif {
 
     drawError () {
         this.ctx.fillStyle = 'black';
-        this.ctx.fillRect(
-            0,
-            0,
-            this.options.width ? this.options.width : this.lsd.width,
-            this.options.height ? this.options.height : this.lsd.height
-        );
+        this.ctx.fillRect(0, 0, this.options.width, this.options.height);
         this.ctx.strokeStyle = 'red';
         this.ctx.lineWidth = 3;
         this.ctx.moveTo(0, 0);
-        this.ctx.lineTo(
-            this.options.width ? this.options.width : this.lsd.width,
-            this.options.height ? this.options.height : this.lsd.height
-        );
-        this.ctx.moveTo(0, this.options.height ? this.options.height : this.lsd.height);
-        this.ctx.lineTo(this.options.width ? this.options.width : this.lsd.width, 0);
+        this.ctx.lineTo(this.options.width, this.options.height);
+        this.ctx.moveTo(0, this.options.height);
+        this.ctx.lineTo(this.options.width, 0);
         this.ctx.stroke();
     }
 
@@ -224,41 +221,97 @@ export default class ConverseGif {
         this.el.requestUpdate();
     }
 
+    manageDisposal (i) {
+        if (i <= 0) return;
+
+        const offscreenContext = this.offscreenCanvas.getContext('2d');
+        const disposal = this.frames[i - 1].disposalType;
+        /*
+         *  Disposal method indicates the way in which the graphic is to
+         *  be treated after being displayed.
+         *
+         *  Values :    0 - No disposal specified. The decoder is
+         *                  not required to take any action.
+         *              1 - Do not dispose. The graphic is to be left
+         *                  in place.
+         *              2 - Restore to background color. The area used by the
+         *                  graphic must be restored to the background color.
+         *              3 - Restore to previous. The decoder is required to
+         *                  restore the area overwritten by the graphic with
+         *                  what was there prior to rendering the graphic.
+         *
+         *                  Importantly, "previous" means the frame state
+         *                  after the last disposal of method 0, 1, or 2.
+         */
+        if (i > 1) {
+            if (disposal === 3) {
+                // eslint-disable-next-line no-eq-null
+                if (this.disposal_restore_from_idx != null) {
+                    offscreenContext.putImageData(this.frames[this.disposal_restore_from_idx].data, 0, 0);
+                }
+            } else {
+                this.disposal_restore_from_idx = i - 1;
+            }
+        }
+
+        if (disposal === 2) {
+            // Restore to background color
+            // Browser implementations historically restore to transparent; we do the same.
+            // http://www.wizards-toolkit.org/discourse-server/viewtopic.php?f=1&t=21172#p86079
+            offscreenContext.clearRect(
+                this.last_frame.dims.left,
+                this.last_frame.dims.top,
+                this.last_frame.dims.width,
+                this.last_frame.dims.height
+            );
+        }
+    }
+
     /**
      * Draws a gif frame at a specific index inside the canvas.
-     * @param {number|string} i - The frame index
+     * @param {boolean} show_pause_on_hover - The frame index
      */
-    putFrame (i, show_pause_on_hover = true) {
+    renderImage (show_pause_on_hover = true) {
         if (!this.frames.length) return;
 
+        let i = this.frame_idx;
         i = parseInt(i.toString(), 10);
         if (i > this.frames.length - 1 || i < 0) {
             i = 0;
         }
 
-        const frame = this.frames[i];
-        const dims = frame.dims;
+        this.manageDisposal(i);
 
+        const frame = this.frames[i];
+        const patchContext = this.patchCanvas.getContext('2d');
+        const offscreenContext = this.offscreenCanvas.getContext('2d');
+        const dims = frame.dims;
         if (
             !this.frameImageData ||
             dims.width != this.frameImageData.width ||
             dims.height != this.frameImageData.height
         ) {
-            this.offscreenCanvas.width = dims.width;
-            this.offscreenCanvas.height = dims.height;
-            this.frameImageData = this.offscreenCanvas.getContext('2d').createImageData(dims.width, dims.height);
+            this.patchCanvas.width = dims.width;
+            this.patchCanvas.height = dims.height;
+            this.frameImageData = patchContext.createImageData(dims.width, dims.height);
         }
 
         // set the patch data as an override
         this.frameImageData.data.set(frame.patch);
+        // draw the patch back over the canvas
+        patchContext.putImageData(this.frameImageData, 0, 0);
 
-        this.offscreenCanvas.getContext('2d').putImageData(this.frameImageData, 0, 0);
-        this.ctx.globalCompositeOperation = 'copy';
-        this.ctx.drawImage(this.offscreenCanvas, dims.left, dims.top);
+        offscreenContext.drawImage(this.patchCanvas, dims.left, dims.top);
+
+        const imageData = offscreenContext.getImageData(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
+        this.ctx.putImageData(imageData, 0, 0);
+        this.ctx.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height);
 
         if (show_pause_on_hover && this.hovering) {
             this.drawPauseIcon();
         }
+
+        this.last_frame = frame;
     }
 
     /**
@@ -278,20 +331,16 @@ export default class ConverseGif {
     }
 
     drawPauseIcon () {
-        if (!this.playing) {
-            return;
-        }
-        // Clear the potential play button by re-rendering the current frame
-        this.putFrame(this.frame_idx, false);
+        if (!this.playing) return;
 
-        this.ctx.globalCompositeOperation = 'source-over';
+        // Clear the potential play button by re-rendering the current frame
+        this.renderImage(false);
 
         // Draw dark overlay
         this.ctx.fillStyle = 'rgb(0, 0, 0, 0.25)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         const icon_size = this.canvas.height * 0.1;
-
         // Draw bars
         this.ctx.lineWidth = this.canvas.height * 0.04;
         this.ctx.beginPath();
@@ -318,10 +367,7 @@ export default class ConverseGif {
         if (this.playing) return;
 
         // Clear the potential pause button by re-rendering the current frame
-        this.putFrame(this.frame_idx, false);
-
-        this.ctx.globalCompositeOperation = 'source-over';
-
+        this.renderImage(false);
         // Draw dark overlay
         this.ctx.fillStyle = 'rgb(0, 0, 0, 0.25)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -375,7 +421,11 @@ export default class ConverseGif {
             promise.resolve(h.response);
         };
         h.onprogress = (e) => e.lengthComputable && this.doShowProgress(e.loaded, e.total, true);
-        h.onerror = () => this.showError();
+        h.onerror = (e) => {
+            log.error(e);
+            this.showError();
+        };
+
         h.send();
         return promise;
     }

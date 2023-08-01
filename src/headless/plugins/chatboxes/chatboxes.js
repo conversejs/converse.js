@@ -3,11 +3,11 @@ import { _converse, api } from "../../index.js";
 import { initStorage } from '@converse/headless/utils/storage.js';
 
 class ChatBoxes extends Collection {
-    get comparator () { // eslint-disable-line class-methods-use-this
+    get comparator () {
         return 'time_opened';
     }
 
-    onChatBoxesFetched (collection) { // eslint-disable-line class-methods-use-this
+    onChatBoxesFetched (collection) {
         collection.filter(c => !c.isValid()).forEach(c => c.destroy());
         /**
          * Triggered once all chat boxes have been recreated from the browser cache
@@ -28,6 +28,14 @@ class ChatBoxes extends Collection {
             'add': true,
             'success': c => this.onChatBoxesFetched(c)
         });
+    }
+
+    createModel (attrs, options) {
+        if (!attrs.type) {
+            throw new Error("You need to specify a type of chatbox to be created");
+        }
+        const ChatBox = api.chatboxes.registry.get(attrs.type);
+        return new ChatBox(attrs, options);
     }
 }
 

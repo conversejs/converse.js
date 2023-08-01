@@ -40,6 +40,11 @@ converse.plugins.add('converse-chat', {
         Object.assign(_converse, { ChatBox, Message, Messages, handleMessageStanza });
         Object.assign(api, chat_api);
 
+        api.chatboxes.registry.add(
+            _converse.PRIVATE_CHAT_TYPE,
+            ChatBox
+        );
+
         _converse.router.route('converse/chat?jid=:jid', openChat);
 
         api.listen.on('chatBoxesFetched', autoJoinChats);

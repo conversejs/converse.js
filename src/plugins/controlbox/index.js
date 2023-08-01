@@ -50,6 +50,11 @@ converse.plugins.add('converse-controlbox', {
         _converse.ControlBox = ControlBox;
         _converse.ControlBoxToggle = ControlBoxToggle;
 
+        api.chatboxes.registry.add(
+            _converse.CONTROLBOX_TYPE,
+            ControlBox
+        );
+
         api.listen.on('chatBoxesFetched', onChatBoxesFetched);
         api.listen.on('clearSession', clearSession);
         api.listen.on('will-reconnect', disconnect);

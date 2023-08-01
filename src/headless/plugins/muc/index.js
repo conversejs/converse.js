@@ -185,6 +185,11 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoomOccupants = ChatRoomOccupants;
         _converse.ChatRoomOccupant = ChatRoomOccupant;
 
+        api.chatboxes.registry.add(
+            _converse.CHATROOMS_TYPE,
+            MUC
+        );
+
         Object.assign(_converse, {
             getDefaultMUCNickname,
             isInfoVisible,

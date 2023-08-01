@@ -27,5 +27,10 @@ converse.plugins.add('converse-headlines', {
         api.listen.on('reconnected', registerHeadlineHandler);
 
         Object.assign(api, headlines_api);
+
+        api.chatboxes.registry.add(
+            _converse.HEADLINES_TYPE,
+            HeadlinesFeed
+        );
     }
 });

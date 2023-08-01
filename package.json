@@ -113,7 +113,7 @@
   },
   "dependencies": {
     "@converse/openpromise": "^0.0.1",
-    "@converse/skeletor": "^0.0.8",
+    "@converse/skeletor": "conversejs/skeletor#811e13b0a541e8511ba3978e49f45a1f83fd0239",
     "bootstrap": "^4.6.0",
     "bootstrap.native": "^2.0.27",
     "client-compress": "^2.2.2",

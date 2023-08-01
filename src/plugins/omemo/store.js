@@ -12,6 +12,13 @@ const { Strophe, $build, u } = converse.env;
 
 class OMEMOStore extends Model {
 
+    get Direction () {
+        return {
+            SENDING: 1,
+            RECEIVING: 2
+        }
+    }
+
     getIdentityKeyPair () {
         const keypair = this.get('identity_keypair');
         return Promise.resolve({

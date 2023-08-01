@@ -1,4 +1,3 @@
-import isNaN from 'lodash-es/isNaN';
 import isObject from 'lodash-es/isObject';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from '@converse/headless';
@@ -72,7 +71,7 @@ export default class XMPPStatus extends Model {
         if (status_message) presence.c('status').t(status_message).up();
 
         const priority = api.settings.get("priority");
-        presence.c('priority').t(isNaN(Number(priority)) ? 0 : priority).up();
+        presence.c('priority').t(Number.isNaN(Number(priority)) ? 0 : priority).up();
 
         const { idle, idle_seconds } = _converse;
         if (idle) {

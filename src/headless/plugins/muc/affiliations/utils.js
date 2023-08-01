@@ -3,8 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { AFFILIATIONS } from '@converse/headless/plugins/muc/index.js';
-import difference from 'lodash-es/difference';
-import indexOf from 'lodash-es/indexOf';
 import { _converse, api, converse, log } from '@converse/headless';
 import { parseMemberListIQ } from '../parsers.js';
 
@@ -90,7 +88,7 @@ export function setAffiliations (muc_jid, users) {
  * Related ticket: https://issues.prosody.im/345
  *
  * @param { ('outcast'|'member'|'admin'|'owner') } affiliation - The affiliation to be set
- * @param { String|Array<String> } jids - The JID(s) of the MUCs in which the
+ * @param { String|Array<String> } muc_jids - The JID(s) of the MUCs in which the
  *  affiliations need to be set.
  * @param { object } members - A map of jids, affiliations and
  *  optionally reasons. Only those entries with the
@@ -158,19 +156,19 @@ export function computeAffiliationsDelta (exclude_existing, remove_absentees, ne
     const new_jids = new_list.map(o => o.jid);
     const old_jids = old_list.map(o => o.jid);
     // Get the new affiliations
-    let delta = difference(new_jids, old_jids).map(jid => new_list[indexOf(new_jids, jid)]);
+    let delta = new_jids.filter(jid => !old_jids.includes(jid)).map(jid => new_list[new_jids.indexOf(jid)]);
     if (!exclude_existing) {
         // Get the changed affiliations
         delta = delta.concat(
             new_list.filter(item => {
-                const idx = indexOf(old_jids, item.jid);
+                const idx = old_jids.indexOf(item.jid);
                 return idx >= 0 ? item.affiliation !== old_list[idx].affiliation : false;
             })
         );
     }
     if (remove_absentees) {
         // Get the removed affiliations
-        delta = delta.concat(difference(old_jids, new_jids).map(jid => ({ 'jid': jid, 'affiliation': 'none' })));
+        delta = delta.concat(old_jids.filter(jid => !new_jids.includes(jid)).map(jid => ({ 'jid': jid, 'affiliation': 'none' })));
     }
     return delta;
 }

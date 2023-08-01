@@ -1,4 +1,3 @@
-import isNaN from "lodash-es/isNaN";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { converse } from "@converse/headless";
@@ -62,7 +61,7 @@ class Presence extends Model {
         const resource = this.resources.get(name);
         const settings = {
             name,
-            'priority': isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
+            'priority': Number.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
             'show': presence.querySelector('show')?.textContent ?? 'online',
             'timestamp': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString()
         };

@@ -1,7 +1,6 @@
 import 'shared/autocomplete/index.js';
 import BaseModal from "plugins/modal/modal.js";
 import api from '@converse/headless/shared/api';
-import compact from 'lodash-es/compact';
 import debounce from 'lodash-es/debounce';
 import tplAddContactModal from "./templates/add-contact.js";
 import { Strophe } from 'strophe.js';
@@ -113,7 +112,7 @@ export default class AddContactModal extends BaseModal {
 
     validateSubmission (jid) {
         const el = this.querySelector('.invalid-feedback');
-        if (!jid || compact(jid.split('@')).length < 2) {
+        if (!jid || jid.split('@').filter(s => !!s).length < 2) {
             addClass('is-invalid', this.querySelector('input[name="jid"]'));
             addClass('d-block', el);
             return false;

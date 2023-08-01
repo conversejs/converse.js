@@ -1,5 +1,4 @@
 import BaseModal from "plugins/modal/modal.js";
-import head from "lodash-es/head";
 import tplMUCDescription from "../templates/muc-description.js";
 import tplMUCList from "../templates/muc-list.js";
 import tplSpinner from "templates/spinner.js";
@@ -24,8 +23,8 @@ function insertRoomInfo (el, stanza) {
         'beforeEnd',
         u.getElementFromTemplateResult(tplMUCDescription({
             'jid': stanza.getAttribute('from'),
-            'desc': head(sizzle('field[var="muc#roominfo_description"] value', stanza))?.textContent,
-            'occ': head(sizzle('field[var="muc#roominfo_occupants"] value', stanza))?.textContent,
+            'desc': sizzle('field[var="muc#roominfo_description"] value', stanza).shift()?.textContent,
+            'occ': sizzle('field[var="muc#roominfo_occupants"] value', stanza).shift()?.textContent,
             'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
             'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
             'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,

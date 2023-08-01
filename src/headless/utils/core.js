@@ -5,9 +5,7 @@
  */
 import DOMPurify from 'dompurify';
 import _converse from '@converse/headless/shared/_converse.js';
-import compact from "lodash-es/compact";
 import isObject from "lodash-es/isObject";
-import last from "lodash-es/last";
 import log from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
@@ -177,7 +175,7 @@ u.getLongestSubstring = function (string, candidates) {
 
 export function isValidJID (jid) {
     if (typeof jid === 'string') {
-        return compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+        return jid.split('@').filter(s => !!s).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     }
     return false;
 }
@@ -464,7 +462,7 @@ u.isMentionBoundary = (s) => s !== '@' && RegExp(`(\\p{Z}|\\p{P})`, 'u').test(s)
 
 u.replaceCurrentWord = function (input, new_value) {
     const caret = input.selectionEnd || undefined;
-    const current_word = last(input.value.slice(0, caret).split(/\s/));
+    const current_word = input.value.slice(0, caret).split(/\s/).pop();
     const value = input.value;
     const mention_boundary = u.isMentionBoundary(current_word[0]) ? current_word[0] : '';
     input.value = value.slice(0, caret - current_word.length) + mention_boundary + `${new_value} ` + value.slice(caret);

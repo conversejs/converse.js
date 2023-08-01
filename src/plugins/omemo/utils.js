@@ -1,6 +1,4 @@
 /* global libsignal */
-import concat from 'lodash-es/concat';
-import difference from 'lodash-es/difference';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplImage from 'templates/image.js';
@@ -581,7 +579,7 @@ async function updateDevicesFromStanza (stanza) {
     const jid = stanza.getAttribute('from');
     const devicelist = await api.omemo.devicelists.get(jid, true);
     const devices = devicelist.devices;
-    const removed_ids = difference(devices.pluck('id'), device_ids);
+    const removed_ids = devices.pluck('id').filter(id => !device_ids.includes(id));
 
     removed_ids.forEach(id => {
         if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {
@@ -781,7 +779,7 @@ async function getBundlesAndBuildSessions (chatbox) {
     let devices;
     if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
         const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
-        devices = collections.reduce((a, b) => concat(a, b.models), []);
+        devices = collections.reduce((a, b) => a.concat(b.models), []);
     } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
         const their_devices = await getDevicesForContact(chatbox.get('jid'));
         if (their_devices.length === 0) {

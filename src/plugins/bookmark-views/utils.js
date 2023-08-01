@@ -1,5 +1,3 @@
-import invokeMap from 'lodash-es/invokeMap';
-import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless';
 import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
@@ -29,7 +27,7 @@ export async function removeBookmarkViaEvent (ev) {
     const jid = ev.currentTarget.getAttribute('data-room-jid');
     const result = await api.confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name));
     if (result) {
-        invokeMap(_converse.bookmarks.where({ jid }), Model.prototype.destroy);
+        _converse.bookmarks.where({ jid }).forEach(b => b.destroy());
     }
 }
 

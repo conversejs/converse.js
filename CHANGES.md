@@ -2,6 +2,8 @@
 
 ## 11.0.0 (Unreleased)
 
+- #3246: Badge color not responsive to dark theme
+
 Breaking changes:
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal`
   which is a web component.

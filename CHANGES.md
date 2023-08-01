@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.6 (Unreleased)
+
+- #3246: Badge color not responsive to dark theme
+
 ## 10.1.5 (2023-06-29)
 
 - #3209: Fix error when importing the `converse` global with bootstrap modal API

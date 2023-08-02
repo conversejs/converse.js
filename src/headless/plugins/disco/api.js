@@ -1,4 +1,3 @@
-import isObject from "lodash-es/isObject";
 import log from "../../log.js";
 import { _converse, api, converse } from "@converse/headless";
 import { getOpenPromise } from '@converse/openpromise';
@@ -277,7 +276,7 @@ export default {
                     ...api.disco.entities.items(jid).map(i => i.getFeature(feature))
                 ];
                 const result = await Promise.all(promises);
-                return result.filter(isObject);
+                return result.filter(f => (f instanceof Object));
             },
 
             /**
@@ -311,7 +310,7 @@ export default {
                 }
 
                 const result = await Promise.all(api.disco.entities.items(jid).map(i => i.getFeature(feature)));
-                return result.map(isObject).includes(true);
+                return result.map(f => (f instanceof Object)).includes(true);
             }
         },
 

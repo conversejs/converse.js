@@ -1,4 +1,3 @@
-import isObject from 'lodash-es/isObject';
 import { ROLES } from './constants.js';
 import { _converse, api, converse, log } from '@converse/headless';
 import { safeSave } from '@converse/headless/utils/core.js';
@@ -163,7 +162,7 @@ export async function autoJoinRooms () {
                     return Promise.resolve();
                 }
                 return api.rooms.open(muc);
-            } else if (isObject(muc)) {
+            } else if (muc instanceof Object) {
                 return api.rooms.open(muc.jid, { ...muc });
             } else {
                 log.error('Invalid muc criteria specified for "auto_join_rooms"');

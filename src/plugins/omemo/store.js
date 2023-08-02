@@ -1,6 +1,5 @@
 /* global libsignal */
 import range from 'lodash-es/range';
-import omit from 'lodash-es/omit';
 import { Model } from '@converse/skeletor/src/model.js';
 import { generateDeviceID } from './utils.js';
 import { _converse, api, converse, log } from '@converse/headless';
@@ -92,7 +91,9 @@ class OMEMOStore extends Model {
     }
 
     removePreKey (key_id) {
-        this.save('prekeys', omit(this.getPreKeys(), key_id));
+        const prekeys = { ...this.getPreKeys() };
+        delete prekeys[key_id];
+        this.save('prekeys', prekeys);
         return Promise.resolve();
     }
 

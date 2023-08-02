@@ -5,7 +5,6 @@
  */
 import DOMPurify from 'dompurify';
 import _converse from '@converse/headless/shared/_converse.js';
-import isObject from "lodash-es/isObject";
 import log from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
@@ -257,15 +256,15 @@ u.isServiceUnavailableError = function (stanza) {
 /**
  * Merge the second object into the first one.
  * @method u#merge
- * @param { Object } dst
- * @param { Object } src
+ * @param {Object} dst
+ * @param {Object} src
  */
 export function merge (dst, src) {
     for (const k in src) {
         if (!Object.prototype.hasOwnProperty.call(src, k)) continue;
         if (k === "__proto__" || k === "constructor") continue;
 
-        if (isObject(dst[k])) {
+        if (dst[k] instanceof Object) {
             merge(dst[k], src[k]);
         } else {
             dst[k] = src[k];
@@ -273,60 +272,57 @@ export function merge (dst, src) {
     }
 }
 
-u.getOuterWidth = function (el, include_margin=false) {
+/**
+ * @param {HTMLElement} el
+ * @param {boolean} include_margin
+ */
+function getOuterWidth (el, include_margin=false) {
     let width = el.offsetWidth;
     if (!include_margin) {
         return width;
     }
     const style = window.getComputedStyle(el);
-    width += parseInt(style.marginLeft ? style.marginLeft : 0, 10) +
-             parseInt(style.marginRight ? style.marginRight : 0, 10);
+    width += parseInt(style.marginLeft ? style.marginLeft : '0', 10) +
+             parseInt(style.marginRight ? style.marginRight : '0', 10);
     return width;
-};
+}
 
 /**
  * Converts an HTML string into a DOM element.
  * Expects that the HTML string has only one top-level element,
  * i.e. not multiple ones.
- * @private
  * @method u#stringToElement
- * @param { String } s - The HTML string
+ * @param {string} s - The HTML string
  */
-u.stringToElement = function (s) {
+function stringToElement (s) {
     var div = document.createElement('div');
     div.innerHTML = s;
     return div.firstElementChild;
-};
+}
 
 /**
  * Checks whether the DOM element matches the given selector.
- * @private
  * @method u#matchesSelector
- * @param { Element } el - The DOM element
- * @param { String } selector - The selector
+ * @param {HTMLElement} el - The DOM element
+ * @param {string} selector - The selector
  */
-u.matchesSelector = function (el, selector) {
+function matchesSelector (el, selector) {
     const match = (
         el.matches ||
-        el.matchesSelector ||
-        el.msMatchesSelector ||
-        el.mozMatchesSelector ||
-        el.webkitMatchesSelector ||
-        el.oMatchesSelector
+        el.webkitMatchesSelector
     );
     return match ? match.call(el, selector) : false;
-};
+}
 
 /**
  * Returns a list of children of the DOM element that match the selector.
- * @private
  * @method u#queryChildren
- * @param { Element } el - the DOM element
- * @param { String } selector - the selector they should be matched against
+ * @param {HTMLElement} el - the DOM element
+ * @param {string} selector - the selector they should be matched against
  */
-u.queryChildren = function (el, selector) {
+function queryChildren  (el, selector) {
     return Array.from(el.childNodes).filter(el => u.matchesSelector(el, selector));
-};
+}
 
 u.contains = function (attr, query) {
     const checker = (item, key) => item.get(key).toLowerCase().includes(query.toLowerCase());
@@ -429,7 +425,6 @@ export function safeSave (model, attributes, options) {
     }
 }
 
-u.safeSave = safeSave;
 
 u.siblingIndex = function (el) {
     /* eslint-disable no-cond-assign */
@@ -440,14 +435,14 @@ u.siblingIndex = function (el) {
 /**
  * Returns the current word being written in the input element
  * @method u#getCurrentWord
- * @param { HTMLElement } input - The HTMLElement in which text is being entered
- * @param { number } [index] - An optional rightmost boundary index. If given, the text
+ * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
+ * @param {number} [index] - An optional rightmost boundary index. If given, the text
  *  value of the input element will only be considered up until this index.
- * @param { string } [delineator] - An optional string delineator to
+ * @param {string} [delineator] - An optional string delineator to
  *  differentiate between words.
  * @private
  */
-u.getCurrentWord = function (input, index, delineator) {
+function getCurrentWord (input, index, delineator) {
     if (!index) {
         index = input.selectionEnd || undefined;
     }
@@ -456,7 +451,7 @@ u.getCurrentWord = function (input, index, delineator) {
         [word] = word.split(delineator).slice(-1);
     }
     return word;
-};
+}
 
 u.isMentionBoundary = (s) => s !== '@' && RegExp(`(\\p{Z}|\\p{P})`, 'u').test(s);
 
@@ -470,17 +465,27 @@ u.replaceCurrentWord = function (input, new_value) {
     input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
 };
 
-u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {
+/**
+ * @param {Element} el
+ * @param {string} name
+ * @param {string} [type]
+ * @param {boolean} [bubbles]
+ * @param {boolean} [cancelable]
+ */
+function triggerEvent (el, name, type="Event", bubbles=true, cancelable=true) {
     const evt = document.createEvent(type);
     evt.initEvent(name, bubbles, cancelable);
     el.dispatchEvent(evt);
-};
+}
 
 export function getRandomInt (max) {
     return (Math.random() * max) | 0;
 }
 
-u.placeCaretAtEnd = function (textarea) {
+/**
+ * @param {HTMLTextAreaElement} textarea
+ */
+function placeCaretAtEnd (textarea) {
     if (textarea !== document.activeElement) {
         textarea.focus();
     }
@@ -490,9 +495,13 @@ u.placeCaretAtEnd = function (textarea) {
     setTimeout(() => textarea.setSelectionRange(len, len), 1);
     // Scroll to the bottom, in case we're in a tall textarea
     // (Necessary for Firefox and Chrome)
-    this.scrollTop = 999999;
-};
+    textarea.scrollTop = 999999;
+}
 
+/**
+ * @param {string} suffix
+ * @return {string}
+ */
 export function getUniqueId (suffix) {
     const uuid = crypto.randomUUID?.() ??
         'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -511,9 +520,8 @@ export function getUniqueId (suffix) {
 /**
  * Clears the specified timeout and interval.
  * @method u#clearTimers
- * @param { number } timeout - Id if the timeout to clear.
- * @param { number } interval - Id of the interval to clear.
- * @private
+ * @param {ReturnType<typeof setTimeout>} timeout - Id if the timeout to clear.
+ * @param {ReturnType<typeof setInterval>} interval - Id of the interval to clear.
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */
@@ -654,17 +662,25 @@ export function saveWindowState (ev) {
 
 
 export default Object.assign({
-    shouldClearCache,
-    waitUntil, // TODO: remove. Only the API should be used
-    isErrorObject,
+    getCurrentWord,
+    getOuterWidth,
     getRandomInt,
     getUniqueId,
     isElement,
     isEmptyMessage,
+    isErrorObject,
     isValidJID,
+    matchesSelector,
     merge,
+    placeCaretAtEnd,
     prefixMentions,
+    queryChildren,
+    safeSave,
     saveWindowState,
+    shouldClearCache,
+    stringToElement,
     stx,
     toStanza,
+    triggerEvent,
+    waitUntil, // TODO: remove. Only the API should be used
 }, u);

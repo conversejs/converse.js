@@ -1,5 +1,4 @@
 import debounce from 'lodash-es/debounce';
-import isElement from 'lodash-es/isElement';
 import log from '../../log';
 import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
@@ -1901,14 +1900,13 @@ const ChatRoomMixin = {
     /**
      * Determines whether the message is from ourselves by checking
      * the `from` attribute. Doesn't check the `type` attribute.
-     * @private
      * @method _converse.ChatRoom#isOwnMessage
-     * @param { Object|Element|_converse.Message } msg
-     * @returns { boolean }
+     * @param {Object|Element|_converse.Message} msg
+     * @returns {boolean}
      */
     isOwnMessage (msg) {
         let from;
-        if (isElement(msg)) {
+        if (msg instanceof Element) {
             from = msg.getAttribute('from');
         } else if (msg instanceof _converse.Message) {
             from = msg.get('from');
@@ -2042,9 +2040,9 @@ const ChatRoomMixin = {
      * Handles message moderation based on the passed in attributes.
      * @private
      * @method _converse.ChatRoom#handleModeration
-     * @param { object } attrs - Attributes representing a received
+     * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
-     * @returns { Boolean } Returns `true` or `false` depending on
+     * @returns {Promise<boolean>} Returns `true` or `false` depending on
      *  whether a message was moderated or not.
      */
     async handleModeration (attrs) {

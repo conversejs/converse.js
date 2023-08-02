@@ -1,6 +1,5 @@
 import ModelWithContact from './model-with-contact.js';
 import isMatch from "lodash-es/isMatch";
-import isObject from "lodash-es/isObject";
 import log from '../../log.js';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor/src/model.js';
@@ -349,7 +348,7 @@ const ChatBox = ModelWithContact.extend({
         if (!attrs.jid) {
             return 'Ignored ChatBox without JID';
         }
-        const room_jids = api.settings.get('auto_join_rooms').map(s => isObject(s) ? s.jid : s);
+        const room_jids = api.settings.get('auto_join_rooms').map(s => (s instanceof Object) ? s.jid : s);
         const auto_join = api.settings.get('auto_join_private_chats').concat(room_jids);
         if (api.settings.get("singleton") && !auto_join.includes(attrs.jid) && !api.settings.get('auto_join_on_invite')) {
             const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
@@ -601,7 +600,7 @@ const ChatBox = ModelWithContact.extend({
      * passed in attributes map.
      * @private
      * @method _converse.ChatBox#getDuplicateMessage
-     * @param { object } attrs - Attributes representing a received
+     * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMessage}
      * @returns {Promise<_converse.Message>}
      */

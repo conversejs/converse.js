@@ -1,4 +1,3 @@
-import isObject from 'lodash-es/isObject';
 import log from '@converse/headless/log.js';
 import {
     clearUserSettings,
@@ -28,10 +27,10 @@ export const settings_api = {
      * called will *not* change the initialization settings provided via
      * `converse.initialize`.
      *
-     * @method _converse.api.settings.extend
+     * @method api.settings.extend
      * @param { object } settings The configuration settings
      * @example
-     * _converse.api.settings.extend({
+     * api.settings.extend({
      *    'enable_foo': true
      * });
      *
@@ -56,7 +55,7 @@ export const settings_api = {
     /**
      * @method _converse.api.settings.get
      * @returns {*} Value of the particular configuration setting.
-     * @example _converse.api.settings.get("play_sounds");
+     * @example api.settings.get("play_sounds");
      */
     get (key) {
         return getAppSetting(key);
@@ -74,9 +73,9 @@ export const settings_api = {
      *  An object containing configuration settings.
      *  Alternatively to passing in an object, you can pass in a key and a value.
      * @param { string } [value]
-     * @example _converse.api.settings.set("play_sounds", true);
+     * @example api.settings.set("play_sounds", true);
      * @example
-     * _converse.api.settings.set({
+     * api.settings.set({
      *     "play_sounds": true,
      *     "hide_offline_users": true
      * });
@@ -101,7 +100,7 @@ export const settings_api = {
          * @param { Function } handler - The event handler function
          * @param { Object } [context] - The context of the `this` attribute of the
          *  handler function.
-         * @example _converse.api.settings.listen.on('change', callback);
+         * @example api.settings.listen.on('change', callback);
          */
         on (name, handler, context) {
             registerListener(name, handler, context);
@@ -112,7 +111,7 @@ export const settings_api = {
          * @method _converse.api.settings.listen.not
          * @param { String } name The event's name
          * @param { Function } handler The callback method that is to no longer be called when the event fires
-         * @example _converse.api.settings.listen.not('change', callback);
+         * @example api.settings.listen.not('change', callback);
          */
         not (name, handler) {
             unregisterListener(name, handler);
@@ -134,7 +133,7 @@ export const user_settings_api = {
      * @async
      * @method _converse.api.user.settings.getModel
      * @returns {Promise<Model>}
-     * @example const settings = await _converse.api.user.settings.getModel();
+     * @example const settings = await api.user.settings.getModel();
      */
     getModel () {
         return getUserSettings();
@@ -143,10 +142,10 @@ export const user_settings_api = {
     /**
      * Get the value of a particular user setting.
      * @method _converse.api.user.settings.get
-     * @param { String } key - The setting name
+     * @param {string} key - The setting name
      * @param {*} [fallback] - An optional fallback value if the user setting is undefined
      * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
-     * @example _converse.api.user.settings.get("foo");
+     * @example api.user.settings.get("foo");
      */
     async get (key, fallback) {
         const user_settings = await getUserSettings();
@@ -157,18 +156,17 @@ export const user_settings_api = {
      * Set one or many user settings.
      * @async
      * @method _converse.api.user.settings.set
-     * @param { Object } [settings] An object containing configuration settings.
-     * @param { string } [key] Alternatively to passing in an object, you can pass in a key and a value.
-     * @param { string } [value]
-     * @example _converse.api.user.settings.set("foo", "bar");
+     * @param {Object|string} key An object containing config settings or alternatively a string key
+     * @param {string} [val] The value, if the previous parameter is a key
+     * @example api.user.settings.set("foo", "bar");
      * @example
-     * _converse.api.user.settings.set({
+     * api.user.settings.set({
      *     "foo": "bar",
      *     "baz": "buz"
      * });
      */
     set (key, val) {
-        if (isObject(key)) {
+        if (key instanceof Object) {
             return updateUserSettings(key, {'promise': true});
         } else {
             const o = {};
@@ -180,7 +178,7 @@ export const user_settings_api = {
     /**
      * Clears all the user settings
      * @async
-     * @method _converse.api.user.settings.clear
+     * @method api.user.settings.clear
      */
     clear () {
         return clearUserSettings();

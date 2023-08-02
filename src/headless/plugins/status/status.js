@@ -1,4 +1,3 @@
-import isObject from 'lodash-es/isObject';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from '@converse/headless';
 
@@ -12,7 +11,7 @@ export default class XMPPStatus extends Model {
 
     initialize () {
         this.on('change', item => {
-            if (!isObject(item.changed)) {
+            if (!(item.changed instanceof Object)) {
                 return;
             }
             if ('status' in item.changed || 'status_message' in item.changed) {

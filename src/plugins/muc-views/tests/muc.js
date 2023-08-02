@@ -1742,7 +1742,7 @@ describe("Groupchats", function () {
             sizzle('[name="muc#roomconfig_roomname"]', view).pop().value = "New room name"
             view.querySelector('.chatroom-form input[type="submit"]').click();
 
-            iq = await u.waitUntil(() => IQs.filter(iq => u.matchesSelector(iq, `iq[to="${muc_jid}"][type="set"]`)).pop());
+            iq = await u.waitUntil(() => IQs.filter(iq => iq.matches(`iq[to="${muc_jid}"][type="set"]`)).pop());
             const result = $iq({
                 "xmlns": "jabber:client",
                 "type": "result",

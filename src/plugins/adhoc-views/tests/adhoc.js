@@ -226,6 +226,7 @@ describe("Ad-hoc commands consisting of multiple steps", function () {
         `));
 
         let button = await u.waitUntil(() => modal.querySelector('input[data-action="next"]'));
+        debugger;
         button.click();
 
         sel = `iq[to="${entity_jid}"] command[sessionid="${sessionid}"]`;

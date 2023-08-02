@@ -138,9 +138,9 @@ export function prefixMentions (message) {
     return text;
 }
 
-u.isTagEqual = function (stanza, name) {
+function isTagEqual (stanza, name) {
     if (stanza.tree?.()) {
-        return u.isTagEqual(stanza.tree(), name);
+        return isTagEqual(stanza.tree(), name);
     } else if (!(stanza instanceof Element)) {
         throw Error(
             "isTagEqual called with value which isn't "+
@@ -301,27 +301,13 @@ function stringToElement (s) {
 }
 
 /**
- * Checks whether the DOM element matches the given selector.
- * @method u#matchesSelector
- * @param {HTMLElement} el - The DOM element
- * @param {string} selector - The selector
- */
-function matchesSelector (el, selector) {
-    const match = (
-        el.matches ||
-        el.webkitMatchesSelector
-    );
-    return match ? match.call(el, selector) : false;
-}
-
-/**
  * Returns a list of children of the DOM element that match the selector.
  * @method u#queryChildren
  * @param {HTMLElement} el - the DOM element
  * @param {string} selector - the selector they should be matched against
  */
-function queryChildren  (el, selector) {
-    return Array.from(el.childNodes).filter(el => u.matchesSelector(el, selector));
+function queryChildren (el, selector) {
+    return Array.from(el.childNodes).filter(el => (el instanceof Element) && el.matches(selector));
 }
 
 u.contains = function (attr, query) {
@@ -337,14 +323,6 @@ u.contains = function (attr, query) {
     };
 };
 
-u.isOfType = function (type, item) {
-    return item.get('type') == type;
-};
-
-u.isInstance = function (type, item) {
-    return item instanceof type;
-};
-
 u.getAttribute = function (key, item) {
     return item.get(key);
 };
@@ -355,44 +333,12 @@ u.contains.not = function (attr, query) {
     };
 };
 
-u.rootContains = function (root, el) {
-    // The document element does not have the contains method in IE.
-    if (root === document && !root.contains) {
-        return document.head.contains(el) || document.body.contains(el);
-    }
-    return root.contains ? root.contains(el) : window.HTMLElement.prototype.contains.call(root, el);
-};
-
-u.createFragmentFromText = function (markup) {
-    /* Returns a DocumentFragment containing DOM nodes based on the
-     * passed-in markup text.
-     */
-    // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
-    var frag = document.createDocumentFragment(),
-        tmp = document.createElement('body'), child;
-    tmp.innerHTML = markup;
-    // Append elements in a loop to a DocumentFragment, so that the
-    // browser does not re-render the document for each node.
-    while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
-        frag.appendChild(child);
-    }
-    return frag
-};
-
 u.isPersistableModel = function (model) {
     return model.collection && model.collection.browserStorage;
 };
 
 u.getResolveablePromise = getOpenPromise;
 u.getOpenPromise = getOpenPromise;
-
-u.interpolate = function (string, o) {
-    return string.replace(/{{{([^{}]*)}}}/g,
-        (a, b) => {
-            var r = o[b];
-            return typeof r === 'string' || typeof r === 'number' ? r : a;
-        });
-};
 
 /**
  * Call the callback once all the events have been triggered
@@ -499,7 +445,7 @@ function placeCaretAtEnd (textarea) {
 }
 
 /**
- * @param {string} suffix
+ * @param {string} [suffix]
  * @return {string}
  */
 export function getUniqueId (suffix) {
@@ -669,8 +615,8 @@ export default Object.assign({
     isElement,
     isEmptyMessage,
     isErrorObject,
+    isTagEqual,
     isValidJID,
-    matchesSelector,
     merge,
     placeCaretAtEnd,
     prefixMentions,

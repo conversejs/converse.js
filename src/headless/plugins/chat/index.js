@@ -6,13 +6,13 @@ import ChatBox from './model.js';
 import Message from './message.js';
 import Messages from './messages.js';
 import chat_api from './api.js';
-import { _converse, api, converse } from '../../index.js';
+import { _converse, api, converse, u } from '../../index.js';
 import {
     autoJoinChats,
     enableCarbons,
     handleMessageStanza,
     onClearSession,
-    openChat,
+    routeToChat,
     registerMessageHandlers,
 } from './utils.js';
 
@@ -45,7 +45,8 @@ converse.plugins.add('converse-chat', {
             ChatBox
         );
 
-        _converse.router.route('converse/chat?jid=:jid', openChat);
+        routeToChat();
+        addEventListener('hashchange', routeToChat);
 
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);

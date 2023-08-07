@@ -5,7 +5,7 @@
  */
 import DOMPurify from 'dompurify';
 import _converse from '@converse/headless/shared/_converse.js';
-import log from '../log.js';
+import log, { LEVELS } from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
@@ -54,6 +54,22 @@ const u = {
     stringToArrayBuffer,
     webForm2xForm,
 };
+
+
+/**
+ * @param {Event} [event]
+ */
+export function setLogLevelFromRoute (event) {
+    if (location.hash.startsWith('#converse?loglevel=')) {
+        event?.preventDefault();
+        const level = location.hash.split('=').pop();
+        if (Object.keys(LEVELS).includes(level)) {
+            log.setLogLevel(/** @type {keyof LEVELS} */(level));
+        } else {
+            log.error(`Could not set loglevel of ${level}`);
+        }
+    }
+}
 
 export function isElement (el) {
     return el instanceof Element || el instanceof HTMLDocument;

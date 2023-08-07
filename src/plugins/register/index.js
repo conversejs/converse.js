@@ -8,8 +8,8 @@
  */
 import './panel.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless';
-import { setActiveForm } from './utils.js';
+import { api, converse } from '@converse/headless';
+import { routeToForm } from './utils.js';
 import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 
 // Strophe methods for building stanzas
@@ -34,8 +34,6 @@ converse.plugins.add('converse-register', {
     },
 
     initialize () {
-        const { router } = _converse;
-
         CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
         CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
         CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
@@ -48,7 +46,7 @@ converse.plugins.add('converse-register', {
             'registration_domain': ''
         });
 
-        router.route('converse/login', () => setActiveForm('login'));
-        router.route('converse/register', () => setActiveForm('register'));
+        routeToForm();
+        addEventListener('hashchange', routeToForm);
     }
 });

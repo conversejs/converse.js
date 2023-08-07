@@ -44,8 +44,8 @@ export function confirmDirectMUCInvitation ({ contact, jid, reason }) {
 }
 
 export function clearHistory (jid) {
-    if (_converse.router.history.getFragment() === `converse/room?jid=${jid}`) {
-        _converse.router.navigate('');
+    if (location.hash === `converse/room?jid=${jid}`) {
+        history.pushState(null, '', window.location.pathname);
     }
 }
 

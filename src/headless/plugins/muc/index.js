@@ -13,7 +13,7 @@ import ChatRoomOccupant from './occupant.js';
 import ChatRoomOccupants from './occupants.js';
 import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
-import { _converse, api, converse } from '../../index.js';
+import { _converse, api, converse, u } from '../../index.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -178,7 +178,8 @@ converse.plugins.add('converse-muc', {
             },
         };
 
-        _converse.router.route('converse/room?jid=:jid', routeToRoom);
+        routeToRoom();
+        addEventListener('hashchange', routeToRoom);
 
         _converse.ChatRoom = MUC;
         _converse.ChatRoomMessage = MUCMessage;

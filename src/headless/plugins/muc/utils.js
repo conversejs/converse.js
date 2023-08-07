@@ -54,7 +54,15 @@ export async function onWindowStateChanged (data) {
     }
 }
 
-export async function routeToRoom (jid) {
+/**
+ * @param {Event} [event]
+ */
+export async function routeToRoom (event) {
+    if (!location.hash.startsWith('#converse/room?jid=')) {
+        return;
+    }
+    event?.preventDefault();
+    const jid = location.hash.split('=').pop();
     if (!u.isValidMUCJID(jid)) {
         return log.warn(`invalid jid "${jid}" provided in url fragment`);
     }

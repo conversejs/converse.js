@@ -34,8 +34,8 @@ class HeadlinesFeedView extends BaseChatView {
 
     async close (ev) {
         ev?.preventDefault?.();
-        if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
-            _converse.router.navigate('');
+        if (location.hash === 'converse/chat?jid=' + this.model.get('jid')) {
+            history.pushState(null, '', window.location.pathname);
         }
         await this.model.close(ev);
         return this;

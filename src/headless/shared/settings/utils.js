@@ -1,4 +1,4 @@
-import { _converse } from '@converse/headless';
+import _converse from '../_converse.js';
 import isEqual from "lodash-es/isEqual.js";
 import log from '@converse/headless/log';
 import pick from 'lodash-es/pick';
@@ -6,7 +6,7 @@ import u from '@converse/headless/utils/core';
 import { DEFAULT_SETTINGS } from './constants.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { initStorage } from '../../utils/storage.js';
 
 let app_settings;
 let init_settings = {}; // Container for settings passed in via converse.initialize

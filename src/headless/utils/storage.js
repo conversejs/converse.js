@@ -1,9 +1,10 @@
 import Storage from '@converse/skeletor/src/storage.js';
-import { _converse, api } from '@converse/headless';
+import _converse from '../shared/_converse.js';
+import { settings_api } from '../shared/settings/api.js';
 
 export function getDefaultStore () {
     if (_converse.config.get('trusted')) {
-        const is_non_persistent = api.settings.get('persistent_store') === 'sessionStorage';
+        const is_non_persistent = settings_api.get('persistent_store') === 'sessionStorage';
         return is_non_persistent ? 'session': 'persistent';
     } else {
         return 'session';
@@ -11,7 +12,7 @@ export function getDefaultStore () {
 }
 
 function storeUsesIndexedDB (store) {
-    return store === 'persistent' && api.settings.get('persistent_store') === 'IndexedDB';
+    return store === 'persistent' && settings_api.get('persistent_store') === 'IndexedDB';
 }
 
 export function createStore (id, store) {

@@ -1,4 +1,4 @@
-import _converse from '../../shared/_converse.js';
+import _converse from '../_converse.js';
 import log from '../../log.js';
 import { Strophe } from 'strophe.js';
 import { TimeoutError } from '../errors.js';

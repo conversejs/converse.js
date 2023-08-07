@@ -1,7 +1,7 @@
 import './shared/constants.js';
-import _converse from './shared/_converse';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import api from './shared/api/index.js';
+import _converse from './shared/_converse';
 import dayjs from 'dayjs';
 import i18n from './shared/i18n';
 import { converse } from './shared/api/public.js';

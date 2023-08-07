@@ -1,4 +1,4 @@
-import _converse from '@converse/headless/shared/_converse.js';
+import _converse from '../_converse.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { waitUntil, isFunction } from '../../utils/core.js';
 

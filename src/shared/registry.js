@@ -1,4 +1,4 @@
-import api from "@converse/headless/shared/api/index.js";
+import { api } from "@converse/headless";
 
 const registry = {};
 
@@ -8,7 +8,7 @@ const registry = {};
  * @namespace api.elements
  * @memberOf api
  */
-api.elements = {
+const elements = {
     registry,
 
     /**
@@ -41,3 +41,5 @@ api.elements = {
         });
     }
 }
+
+Object.assign(api, { elements });

@@ -1,8 +1,8 @@
 import connection_api from '../connection/api.js';
-import events_api from '../api/events.js';
-import promise_api from '../api/promise.js';
-import send_api from '../api/send.js';
-import user_api from '../api/user.js';
+import events_api from './events.js';
+import promise_api from './promise.js';
+import send_api from './send.js';
+import user_api from './user.js';
 import { settings_api } from '../settings/api.js';
 
 /**

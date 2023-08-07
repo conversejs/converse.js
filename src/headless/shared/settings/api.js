@@ -1,4 +1,4 @@
-import log from '@converse/headless/log.js';
+import log from '../../log.js';
 import {
     clearUserSettings,
     extendAppSettings,
@@ -8,7 +8,7 @@ import {
     unregisterListener,
     updateAppSettings,
     updateUserSettings,
-} from '@converse/headless/shared/settings/utils.js';
+} from './utils.js';
 
 /**
  * This grouping allows access to the

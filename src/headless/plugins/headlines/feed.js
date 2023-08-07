@@ -1,5 +1,6 @@
 import ChatBox from '@converse/headless/plugins/chat/model.js';
-import { _converse, api } from '../../index.js';
+import api from "../../shared/api/index.js";
+import { _converse } from '../../index.js';
 
 
 export default class HeadlinesFeed extends ChatBox {

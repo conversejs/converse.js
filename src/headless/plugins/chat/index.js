@@ -13,7 +13,7 @@ import {
     enableCarbons,
     handleMessageStanza,
     onClearSession,
-    openChat,
+    routeToChat,
     registerMessageHandlers,
 } from './utils.js';
 
@@ -46,7 +46,8 @@ converse.plugins.add('converse-chat', {
             ChatBox
         );
 
-        _converse.router.route('converse/chat?jid=:jid', openChat);
+        routeToChat();
+        addEventListener('hashchange', routeToChat);
 
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);

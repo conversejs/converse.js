@@ -1,6 +1,6 @@
 import { isElement } from './utils/html.js';
 
-const LEVELS = {
+export const LEVELS = {
     'debug': 0,
     'info': 1,
     'warn': 2,
@@ -27,7 +27,7 @@ export default {
     /**
      * The the log-level, which determines how verbose the logging is.
      * @method log#setLogLevel
-     * @param { string } level - The loglevel which allows for filtering of log messages
+     * @param {keyof LEVELS} level - The loglevel which allows for filtering of log messages
      */
     setLogLevel (level) {
         if (!['debug', 'info', 'warn', 'error', 'fatal'].includes(level)) {

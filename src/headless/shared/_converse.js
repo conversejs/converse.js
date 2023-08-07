@@ -2,7 +2,6 @@ import i18n from './i18n.js';
 import log from '../log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { Events } from '@converse/skeletor/src/events.js';
-import { Router } from '@converse/skeletor/src/router.js';
 import { createStore, getDefaultStore } from '../utils/storage.js';
 import { getInitSettings } from './settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
@@ -84,7 +83,6 @@ const _converse = {
     },
 
     default_connection_options: {'explicitResourceBinding': true},
-    router: new Router(),
 
     isTestEnv: () => {
         return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';

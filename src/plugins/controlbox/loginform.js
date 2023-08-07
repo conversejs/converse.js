@@ -85,10 +85,9 @@ class LoginForm extends CustomElement {
         });
     }
 
-    // eslint-disable-next-line class-methods-use-this
     connect (jid) {
-        if (['converse/login', 'converse/register'].includes(_converse.router.history.getFragment())) {
-            _converse.router.navigate('', { 'replace': true });
+        if (['converse/login', 'converse/register'].includes(location.hash)) {
+            history.pushState(null, '', window.location.pathname);
         }
         _converse.connection?.reset();
         api.user.login(jid);

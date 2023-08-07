@@ -176,7 +176,8 @@ converse.plugins.add('converse-muc', {
             },
         };
 
-        _converse.router.route('converse/room?jid=:jid', routeToRoom);
+        routeToRoom();
+        addEventListener('hashchange', routeToRoom);
 
         _converse.ChatRoom = MUC;
         _converse.ChatRoomMessage = MUCMessage;

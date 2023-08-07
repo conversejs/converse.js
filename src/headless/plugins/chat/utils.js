@@ -7,7 +7,12 @@ import { shouldClearCache } from '../../utils/core.js';
 
 const { Strophe, u } = converse.env;
 
-export function openChat (jid) {
+export function routeToChat (event) {
+    if (!location.hash.startsWith('#converse/chat?jid=')) {
+        return;
+    }
+    event?.preventDefault();
+    const jid = location.hash.split('=').pop();
     if (!u.isValidJID(jid)) {
         return log.warn(`Invalid JID "${jid}" provided in URL fragment`);
     }

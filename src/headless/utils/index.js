@@ -3,6 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
+import log, { LEVELS } from '../log.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
@@ -53,6 +54,21 @@ import {
  */
 const u = {};
 
+
+/**
+ * @param {Event} [event]
+ */
+export function setLogLevelFromRoute (event) {
+    if (location.hash.startsWith('#converse?loglevel=')) {
+        event?.preventDefault();
+        const level = location.hash.split('=').pop();
+        if (Object.keys(LEVELS).includes(level)) {
+            log.setLogLevel(/** @type {keyof LEVELS} */(level));
+        } else {
+            log.error(`Could not set loglevel of ${level}`);
+        }
+    }
+}
 
 export function isEmptyMessage (attrs) {
     if (attrs instanceof Model) {

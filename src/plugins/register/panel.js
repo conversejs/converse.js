@@ -225,8 +225,8 @@ class RegisterPanel extends CustomElement {
             log.debug("Registered successfully.");
             api.connection.get().reset();
 
-            if (["converse/login", "converse/register"].includes(_converse.router.history.getFragment())) {
-                _converse.router.navigate('', {'replace': true});
+            if (["converse/login", "converse/register"].includes(window.location.hash)) {
+                history.pushState(null, '', window.location.pathname);
             }
             setActiveForm('login');
 

@@ -1,6 +1,7 @@
 import './shared/constants.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import api from './shared/api/index.js';
+import u from './utils/index.js';
 import _converse from './shared/_converse';
 _converse.api = api;
 
@@ -35,6 +36,6 @@ import "./plugins/vcard/index.js";      // XEP-0054 VCard-temp
 
 import log from './log.js';
 
-export { api, converse, _converse, i18n, log };
+export { api, converse, _converse, i18n, log, u };
 
 export default converse;

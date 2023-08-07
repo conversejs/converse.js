@@ -2,7 +2,6 @@ import i18n from './i18n.js';
 import log from '../log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { Events } from '@converse/skeletor/src/events.js';
-import { Router } from '@converse/skeletor/src/router.js';
 import { getOpenPromise } from '@converse/openpromise';
 
 import {
@@ -79,15 +78,12 @@ const _converse = {
         INACTIVE: 90000
     },
 
-    router: new Router(),
-
-
     /**
      * Translate the given string based on the current locale.
      * @method __
      * @private
      * @memberOf _converse
-     * @param { String } str
+     * @param { ...String } args
      */
     '__': (...args) => i18n.__(...args),
 

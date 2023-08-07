@@ -2,8 +2,8 @@ import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless';
 
 export function clearHistory (jid) {
-    if (_converse.router.history.getFragment() === `converse/chat?jid=${jid}`) {
-        _converse.router.navigate('');
+    if (location.hash === `converse/chat?jid=${jid}`) {
+        history.pushState(null, '', window.location.pathname);
     }
 }
 

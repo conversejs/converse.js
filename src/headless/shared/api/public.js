@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import i18n from '../i18n';
 import log from '../../log.js';
 import sizzle from 'sizzle';
-import u from '../../utils/index.js';
+import u, { setLogLevelFromRoute } from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { setUnloadEvent, isTestEnv } from '../../utils/session.js';
 import { Collection } from "@converse/skeletor/src/collection";
@@ -50,7 +50,7 @@ export const converse = Object.assign(window.converse || {}, {
      * @async
      * @memberOf converse
      * @method initialize
-     * @param { object } config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
+     * @param { object } settings A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
      * @example
      * converse.initialize({
      *     auto_list_rooms: false,
@@ -80,10 +80,10 @@ export const converse = Object.assign(window.converse || {}, {
                       "authentication with auto_login.");
             }
         }
-        _converse.router.route(
-            /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
-            l => log.setLogLevel(l)
-        );
+
+        setLogLevelFromRoute();
+        addEventListener('hashchange', setLogLevelFromRoute);
+
         _converse.connfeedback = new ConnectionFeedback();
 
         /* When reloading the page:
@@ -106,12 +106,6 @@ export const converse = Object.assign(window.converse || {}, {
         api.elements?.register();
 
         registerGlobalEventHandlers(_converse);
-
-        try {
-            !History.started && _converse.router.history.start();
-        } catch (e) {
-            log.error(e);
-        }
 
         const plugins = _converse.pluggable.plugins
         if (api.settings.get("auto_login") || api.settings.get("keepalive") && plugins['converse-bosh']?.enabled()) {

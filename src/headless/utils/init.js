@@ -238,7 +238,6 @@ function unregisterGlobalEventHandlers (_converse) {
 export async function cleanup (_converse) {
     const { api } = _converse;
     await api.trigger('cleanup', {'synchronous': true});
-    _converse.router.history.stop();
     unregisterGlobalEventHandlers(_converse);
     api.connection.get()?.reset();
     _converse.stopListening();

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-06-29 05:51+0000\n"
+"PO-Revision-Date: 2023-08-19 15:16+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: dist/converse-no-dependencies.js:29951
 msgid "The connection has dropped, attempting to reconnect."
@@ -1741,7 +1741,7 @@ msgstr "Convidar"
 
 #: dist/converse-no-dependencies.js:109731
 msgid "user@example.org"
-msgstr "nome@exemplo.org"
+msgstr "identificador@exemplo.org"
 
 #: dist/converse-no-dependencies.js:109734
 msgid "Optional reason for the invitation"

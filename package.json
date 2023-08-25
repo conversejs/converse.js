@@ -103,7 +103,7 @@
     "sass-loader": "^13.1.0",
     "style-loader": "^3.1.0",
     "tsc": "^2.0.4",
-    "typescript": "^4.9.5",
+    "typescript": "^5.2.2",
     "typescript-eslint-parser": "^22.0.0",
     "uglify-js": "^3.17.4",
     "webpack": "^5.86.0",

@@ -5,7 +5,10 @@
  */
 import '../disco/index.js';
 import MAMPlaceholderMessage from './placeholder.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import mam_api from './api.js';
+import { Strophe } from 'strophe.js';
 import {
     onMAMError,
     onMAMPreferences,
@@ -14,9 +17,7 @@ import {
     fetchNewestMessages,
     handleMAMResult
 } from './utils.js';
-import { _converse, api, converse } from '@converse/headless';
 
-const { Strophe } = converse.env;
 const { NS } = Strophe;
 
 converse.plugins.add('converse-mam', {

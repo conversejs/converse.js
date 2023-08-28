@@ -1,11 +1,12 @@
 import MAMPlaceholderMessage from './placeholder.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
 import sizzle from 'sizzle';
-import { _converse, api, converse } from '@converse/headless';
-import { parseMUCMessage } from '@converse/headless/plugins/muc/parsers';
-import { parseMessage } from '@converse/headless/plugins/chat/parsers';
+import { Strophe, $iq } from 'strophe.js';
+import { parseMUCMessage } from '../../plugins/muc/parsers';
+import { parseMessage } from '../../plugins/chat/parsers';
 
-const { Strophe, $iq } = converse.env;
 const { NS } = Strophe;
 const u = converse.env.utils;
 

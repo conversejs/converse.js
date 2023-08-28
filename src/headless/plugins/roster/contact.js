@@ -1,6 +1,7 @@
-import '@converse/headless/plugins/status/api.js';
+import '../../plugins/status/api.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "@converse/headless";
 import { getOpenPromise } from '@converse/openpromise';
 import { rejectPresenceSubscription } from './utils.js';
 

@@ -1,7 +1,9 @@
-import { _converse, api, converse, log } from '@converse/headless';
-import { isArchived, isHeadline, isServerMessage, } from '@converse/headless/shared/parsers';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
+import log from '../../log.js';
+import { isArchived, isHeadline, isServerMessage, } from '../../shared/parsers';
 import { parseMessage } from './parsers.js';
-import { shouldClearCache } from '@converse/headless/utils/core.js';
+import { shouldClearCache } from '../../utils/core.js';
 
 const { Strophe, u } = converse.env;
 

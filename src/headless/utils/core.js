@@ -4,7 +4,7 @@
  * @description This is the core utilities module.
  */
 import DOMPurify from 'dompurify';
-import _converse from '@converse/headless/shared/_converse.js';
+import _converse from '../shared/_converse.js';
 import log from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
@@ -12,7 +12,21 @@ import { Strophe } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '../shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
-import { getSelectValues, webForm2xForm } from './form.js';
+import {
+    getCurrentWord,
+    getSelectValues,
+    isMentionBoundary,
+    placeCaretAtEnd,
+    replaceCurrentWord,
+    webForm2xForm
+} from './form.js';
+import {
+    getOuterWidth,
+    isElement,
+    isTagEqual,
+    queryChildren,
+    stringToElement,
+} from './html.js';
 import {
     arrayBufferToHex,
     arrayBufferToString,
@@ -54,10 +68,6 @@ const u = {
     stringToArrayBuffer,
     webForm2xForm,
 };
-
-export function isElement (el) {
-    return el instanceof Element || el instanceof HTMLDocument;
-}
 
 export function isError (obj) {
     return Object.prototype.toString.call(obj) === "[object Error]";
@@ -137,19 +147,6 @@ export function prefixMentions (message) {
         });
     return text;
 }
-
-function isTagEqual (stanza, name) {
-    if (stanza.tree?.()) {
-        return isTagEqual(stanza.tree(), name);
-    } else if (!(stanza instanceof Element)) {
-        throw Error(
-            "isTagEqual called with value which isn't "+
-            "an element or Strophe.Builder instance");
-    } else {
-        return Strophe.isTagEqual(stanza, name);
-    }
-}
-
 
 u.getJIDFromURI = function (jid) {
     return jid.startsWith('xmpp:') && jid.endsWith('?join')
@@ -272,43 +269,6 @@ export function merge (dst, src) {
     }
 }
 
-/**
- * @param {HTMLElement} el
- * @param {boolean} include_margin
- */
-function getOuterWidth (el, include_margin=false) {
-    let width = el.offsetWidth;
-    if (!include_margin) {
-        return width;
-    }
-    const style = window.getComputedStyle(el);
-    width += parseInt(style.marginLeft ? style.marginLeft : '0', 10) +
-             parseInt(style.marginRight ? style.marginRight : '0', 10);
-    return width;
-}
-
-/**
- * Converts an HTML string into a DOM element.
- * Expects that the HTML string has only one top-level element,
- * i.e. not multiple ones.
- * @method u#stringToElement
- * @param {string} s - The HTML string
- */
-function stringToElement (s) {
-    var div = document.createElement('div');
-    div.innerHTML = s;
-    return div.firstElementChild;
-}
-
-/**
- * Returns a list of children of the DOM element that match the selector.
- * @method u#queryChildren
- * @param {HTMLElement} el - the DOM element
- * @param {string} selector - the selector they should be matched against
- */
-function queryChildren (el, selector) {
-    return Array.from(el.childNodes).filter(el => (el instanceof Element) && el.matches(selector));
-}
 
 u.contains = function (attr, query) {
     const checker = (item, key) => item.get(key).toLowerCase().includes(query.toLowerCase());
@@ -379,39 +339,6 @@ u.siblingIndex = function (el) {
 };
 
 /**
- * Returns the current word being written in the input element
- * @method u#getCurrentWord
- * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
- * @param {number} [index] - An optional rightmost boundary index. If given, the text
- *  value of the input element will only be considered up until this index.
- * @param {string} [delineator] - An optional string delineator to
- *  differentiate between words.
- * @private
- */
-function getCurrentWord (input, index, delineator) {
-    if (!index) {
-        index = input.selectionEnd || undefined;
-    }
-    let [word] = input.value.slice(0, index).split(/\s/).slice(-1);
-    if (delineator) {
-        [word] = word.split(delineator).slice(-1);
-    }
-    return word;
-}
-
-u.isMentionBoundary = (s) => s !== '@' && RegExp(`(\\p{Z}|\\p{P})`, 'u').test(s);
-
-u.replaceCurrentWord = function (input, new_value) {
-    const caret = input.selectionEnd || undefined;
-    const current_word = input.value.slice(0, caret).split(/\s/).pop();
-    const value = input.value;
-    const mention_boundary = u.isMentionBoundary(current_word[0]) ? current_word[0] : '';
-    input.value = value.slice(0, caret - current_word.length) + mention_boundary + `${new_value} ` + value.slice(caret);
-    const selection_end = caret - current_word.length + new_value.length + 1;
-    input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
-};
-
-/**
  * @param {Element} el
  * @param {string} name
  * @param {string} [type]
@@ -426,22 +353,6 @@ function triggerEvent (el, name, type="Event", bubbles=true, cancelable=true) {
 
 export function getRandomInt (max) {
     return (Math.random() * max) | 0;
-}
-
-/**
- * @param {HTMLTextAreaElement} textarea
- */
-function placeCaretAtEnd (textarea) {
-    if (textarea !== document.activeElement) {
-        textarea.focus();
-    }
-    // Double the length because Opera is inconsistent about whether a carriage return is one character or two.
-    const len = textarea.value.length * 2;
-    // Timeout seems to be required for Blink
-    setTimeout(() => textarea.setSelectionRange(len, len), 1);
-    // Scroll to the bottom, in case we're in a tall textarea
-    // (Necessary for Firefox and Chrome)
-    textarea.scrollTop = 999999;
 }
 
 /**
@@ -611,6 +522,7 @@ export default Object.assign({
     getCurrentWord,
     getOuterWidth,
     getRandomInt,
+    isMentionBoundary,
     getUniqueId,
     isElement,
     isEmptyMessage,
@@ -621,6 +533,7 @@ export default Object.assign({
     placeCaretAtEnd,
     prefixMentions,
     queryChildren,
+    replaceCurrentWord,
     safeSave,
     saveWindowState,
     shouldClearCache,

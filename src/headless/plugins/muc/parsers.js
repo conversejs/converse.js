@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import {
     StanzaParseError,
     getChatMarker,
@@ -19,8 +21,7 @@ import {
     isHeadline,
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
-} from '@converse/headless/shared/parsers';
-import { _converse, api, converse } from '@converse/headless';
+} from '../../shared/parsers';
 
 const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;

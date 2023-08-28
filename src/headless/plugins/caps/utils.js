@@ -1,5 +1,6 @@
-import { _converse, converse } from '@converse/headless';
-import { arrayBufferToBase64, stringToArrayBuffer  } from '@converse/headless/utils/arraybuffer.js';
+import _converse from '../../shared/_converse.js';
+import { converse } from '../../shared/api/index.js';
+import { arrayBufferToBase64, stringToArrayBuffer  } from '../../utils/arraybuffer.js';
 
 const { Strophe, $build } = converse.env;
 

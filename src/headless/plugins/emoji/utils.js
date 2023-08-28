@@ -1,5 +1,5 @@
 import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './regexes.js';
-import { converse } from "../../index.js";
+import { converse } from '../../shared/api/index.js';
 
 const { u } = converse.env;
 

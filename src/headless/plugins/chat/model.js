@@ -2,17 +2,18 @@ import ModelWithContact from './model-with-contact.js';
 import isMatch from "lodash-es/isMatch";
 import log from '../../log.js';
 import pick from "lodash-es/pick";
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { TimeoutError } from '../../shared/errors.js';
-import { _converse, api, converse } from "../../index.js";
-import { debouncedPruneHistory, handleCorrection } from '@converse/headless/shared/chat/utils.js';
+import { debouncedPruneHistory, handleCorrection } from '../../shared/chat/utils.js';
 import { filesize } from "filesize";
-import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
+import { getMediaURLsMetadata } from '../../shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { initStorage } from '../../utils/storage.js';
 import { isUniView, isEmptyMessage } from '../../utils/core.js';
 import { parseMessage } from './parsers.js';
-import { sendMarker } from '@converse/headless/shared/actions.js';
+import { sendMarker } from '../../shared/actions.js';
 
 const { Strophe, $msg } = converse.env;
 

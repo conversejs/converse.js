@@ -1,5 +1,6 @@
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
 import { Strophe } from 'strophe.js';
-import { _converse, api } from '../../index.js';
 
 /**
  * Mixing that turns a Message model into a ChatRoomMessage model.

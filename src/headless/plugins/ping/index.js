@@ -5,8 +5,8 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import api, { converse } from '../../shared/api/index.js';
 import ping_api from './api.js';
-import { api, converse } from "@converse/headless";
 import { onWindowStateChanged, registerHandlers, unregisterIntervalHandler } from './utils.js';
 
 const { Strophe } = converse.env;

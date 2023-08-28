@@ -28,3 +28,5 @@ const api = {
 };
 
 export default api;
+
+export { converse } from './public.js';

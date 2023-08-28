@@ -1,10 +1,11 @@
 import debounce from 'lodash-es/debounce';
 import log from "../../log.js";
 import sizzle from 'sizzle';
+import _converse from '../_converse.js';
+import api from '../api/index.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants';
 import { Strophe } from 'strophe.js';
-import { _converse, api } from "../../index.js";
 import { clearSession, tearDown } from "../../utils/core.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '../../utils/init.js';

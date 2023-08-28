@@ -1,9 +1,10 @@
-import "@converse/headless/plugins/muc/index.js";
+import "../../plugins/muc/index.js";
 import Bookmark from './model.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
-import { _converse, api, converse } from "@converse/headless";
 import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { initStorage } from '../../utils/storage.js';
 
 const { Strophe, $iq, sizzle } = converse.env;
 

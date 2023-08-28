@@ -1,3 +1,5 @@
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import debounce from 'lodash-es/debounce';
 import log from '../../log';
 import p from '../../utils/parse-helpers';
@@ -7,7 +9,6 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { ROOMSTATUS } from './constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
-import { _converse, api, converse } from '../../index.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { handleCorrection } from '../../shared/chat/utils.js';

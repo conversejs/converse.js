@@ -1,7 +1,7 @@
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { converse } from "@converse/headless";
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { converse } from '../../shared/api/index.js';
+import { initStorage } from '../../utils/storage.js';
 
 const { Strophe, dayjs, sizzle } = converse.env;
 

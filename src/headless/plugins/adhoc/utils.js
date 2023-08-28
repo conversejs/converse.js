@@ -1,6 +1,6 @@
 import sizzle from 'sizzle';
-import { converse } from "@converse/headless";
-import { getAttributes } from '@converse/headless/shared/parsers';
+import { converse } from '../../shared/api/index.js';
+import { getAttributes } from '../../shared/parsers';
 
 const { Strophe, u } = converse.env;
 

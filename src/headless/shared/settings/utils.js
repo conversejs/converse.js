@@ -1,8 +1,8 @@
 import _converse from '../_converse.js';
 import isEqual from "lodash-es/isEqual.js";
-import log from '@converse/headless/log';
+import log from '../../log.js';
 import pick from 'lodash-es/pick';
-import u from '@converse/headless/utils/core';
+import u from '../../utils/core';
 import { DEFAULT_SETTINGS } from './constants.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';

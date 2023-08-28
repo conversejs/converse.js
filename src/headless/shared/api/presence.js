@@ -1,5 +1,5 @@
-import { _converse, api } from '../../index.js';
-
+import _converse from '../_converse.js';
+import api from '../../shared/api/index.js';
 
 export default {
     /**

@@ -1,5 +1,5 @@
 import adhoc_api from './api.js';
-import { converse } from "@converse/headless";
+import { converse } from '../../shared/api/index.js';
 
 const { Strophe } = converse.env;
 

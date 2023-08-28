@@ -1,18 +1,19 @@
 import URI from 'urijs';
+import _converse from './_converse.js';
+import api from './api/index.js';
 import dayjs from 'dayjs';
-import log from '@converse/headless/log';
+import log from '../log.js';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
-import { URL_PARSE_OPTIONS } from '@converse/headless/shared/constants.js';
-import { _converse, api } from '@converse/headless';
-import { decodeHTMLEntities } from '@converse/headless/utils/core.js';
-import { rejectMessage } from '@converse/headless/shared/actions';
+import { URL_PARSE_OPTIONS } from './constants.js';
+import { decodeHTMLEntities } from '..//utils/core.js';
+import { rejectMessage } from './actions';
 import {
     isAudioURL,
     isEncryptedFileURL,
     isImageURL,
     isVideoURL
-} from '@converse/headless/utils/url.js';
+} from '../utils/url.js';
 
 const { NS } = Strophe;
 

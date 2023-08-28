@@ -4,11 +4,12 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "@converse/headless/plugins/muc/index.js";
+import "../..//plugins/muc/index.js";
 import Bookmark from './model.js';
 import Bookmarks from './collection.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import { Collection } from "@converse/skeletor/src/collection.js";
-import { _converse, api, converse } from "@converse/headless";
 import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './utils.js';
 
 const { Strophe } = converse.env;

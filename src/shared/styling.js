@@ -5,7 +5,7 @@
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
 import { html } from 'lit';
-import { renderStylingDirectiveBody } from 'shared/directives/styling.js';
+import { renderStylingDirectiveBody } from './directives/styling.js';
 
 
 const bracketing_directives = ['*', '_', '~', '`'];

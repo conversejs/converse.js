@@ -1,5 +1,5 @@
+import _converse from '../../shared/_converse.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse } from "../../index.js";
 
 /**
  * Represents a VCard

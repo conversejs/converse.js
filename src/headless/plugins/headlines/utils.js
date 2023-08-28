@@ -1,6 +1,8 @@
-import { _converse, api } from "@converse/headless";
-import { isHeadline, isServerMessage } from '@converse/headless/shared/parsers';
-import { parseMessage } from '@converse/headless/plugins/chat/parsers';
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
+import { HEADLINES_TYPE } from '../../shared/constants.js';
+import { isHeadline, isServerMessage } from '../../shared/parsers.js';
+import { parseMessage } from '../../plugins/chat/parsers.js';
 
 /**
  * Handler method for all incoming messages of type "headline".
@@ -23,10 +25,10 @@ export async function onHeadlineMessage (stanza) {
         const chatbox = _converse.chatboxes.create({
             'id': from_jid,
             'jid': from_jid,
-            'type': _converse.HEADLINES_TYPE,
+            'type': HEADLINES_TYPE,
             'from': from_jid
         });
-        const attrs = await parseMessage(stanza, _converse);
+        const attrs = await parseMessage(stanza);
         await chatbox.createMessage(attrs);
         api.trigger('message', {chatbox, stanza, attrs});
     }

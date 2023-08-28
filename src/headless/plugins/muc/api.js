@@ -1,6 +1,7 @@
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import log from '../../log';
 import { Strophe } from 'strophe.js';
-import { _converse, api, converse } from '../../index.js';
 
 const { u } = converse.env;
 

@@ -1,7 +1,8 @@
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
-import { _converse, api, converse } from "../../index.js";
-import { initStorage } from '@converse/headless/utils/storage.js';
-import { shouldClearCache } from '@converse/headless/utils/core.js';
+import { initStorage } from '../../utils/storage.js';
+import { shouldClearCache } from '../../utils/core.js';
 
 const { Strophe, $iq, u } = converse.env;
 

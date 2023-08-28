@@ -1,4 +1,5 @@
-import { _converse, api, converse } from "@converse/headless";
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 
 const { Strophe, $iq } = converse.env;
 

@@ -1,6 +1,8 @@
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
+import log from '../../log.js';
 import { ROLES } from './constants.js';
-import { _converse, api, converse, log } from '@converse/headless';
-import { safeSave } from '@converse/headless/utils/core.js';
+import { safeSave } from '../../utils/core.js';
 
 const { Strophe, sizzle, u } = converse.env;
 

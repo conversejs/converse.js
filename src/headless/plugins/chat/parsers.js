@@ -1,8 +1,9 @@
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
-import u from '@converse/headless/utils/core';
-import { _converse, api, converse } from '@converse/headless';
-import { rejectMessage } from '@converse/headless/shared/actions';
+import u from '../../utils/core';
+import { rejectMessage } from '../../shared/actions';
 
 import {
     StanzaParseError,
@@ -24,7 +25,7 @@ import {
     isServerMessage,
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
-} from '@converse/headless/shared/parsers';
+} from '../../shared/parsers';
 
 const { Strophe, sizzle } = converse.env;
 
@@ -33,8 +34,7 @@ const { Strophe, sizzle } = converse.env;
  * Parses a passed in message stanza and returns an object of attributes.
  * @method st#parseMessage
  * @param { Element } stanza - The message stanza
- * @param { _converse } _converse
- * @returns { (MessageAttributes|Error) }
+ * @returns { Promise<MessageAttributes|Error> }
  */
 export async function parseMessage (stanza) {
     throwErrorIfInvalidForward(stanza);

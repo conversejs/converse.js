@@ -3,8 +3,9 @@
  * @copyright 2022, the Converse.js contributors
  */
 import HeadlinesFeed from './feed.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import headlines_api from './api.js';
-import { _converse, api, converse } from "../../index.js";
 import { onHeadlineMessage } from './utils.js';
 
 

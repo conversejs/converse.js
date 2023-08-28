@@ -1,5 +1,6 @@
 import URI from 'urijs';
-import { api, log } from '@converse/headless';
+import log from '../log.js';
+import api from '../shared/api/index.js';
 
 /**
  * Given a url, check whether the protocol being used is allowed for rendering

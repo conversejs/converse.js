@@ -1,6 +1,6 @@
 import { log } from '@converse/headless';
 import { Directive, directive } from 'lit/directive.js';
-import { RichText } from 'shared/rich-text.js';
+import { RichText } from '../rich-text.js';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 

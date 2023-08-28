@@ -1,5 +1,6 @@
-import { _converse, api, converse } from '@converse/headless';
-import { initStorage } from '@converse/headless/utils/storage.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
+import { initStorage } from '../../utils/storage.js';
 
 const { Strophe, $build } = converse.env;
 

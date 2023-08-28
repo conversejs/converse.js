@@ -5,7 +5,9 @@
  */
 import DiscoEntities from './entities.js';
 import DiscoEntity from './entity.js';
-import { _converse, api, converse } from '@converse/headless';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
+import disco_api from './api.js';
 import {
     clearSession,
     initStreamFeatures,
@@ -13,7 +15,6 @@ import {
     notifyStreamFeaturesAdded,
     populateStreamFeatures
 } from './utils.js';
-import disco_api from './api.js';
 
 const { Strophe } = converse.env;
 

@@ -4,8 +4,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import './utils.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "../../index.js";
 import { getOpenPromise } from '@converse/openpromise';
 
 

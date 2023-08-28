@@ -1,5 +1,5 @@
 import debounce from 'lodash-es/debounce.js';
-import { api, converse } from '@converse/headless';
+import api, { converse } from '../../shared/api/index.js';
 
 const { u } = converse.env;
 

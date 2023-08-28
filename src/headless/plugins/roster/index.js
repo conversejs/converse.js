@@ -2,12 +2,13 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import '@converse/headless/plugins/status';
+import '../../plugins/status/index.js';
 import RosterContact from './contact.js';
 import RosterContacts from './contacts.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import roster_api from './api.js';
 import { Presence, Presences } from './presence.js';
-import { _converse, api, converse } from '@converse/headless';
 import {
     onChatBoxesInitialized,
     onClearSession,

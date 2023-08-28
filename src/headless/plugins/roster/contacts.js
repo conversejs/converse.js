@@ -1,9 +1,10 @@
 import RosterContact from './contact.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from "@converse/skeletor/src/model";
-import { _converse, api, converse } from "@converse/headless";
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { initStorage } from '../../utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, sizzle, u } = converse.env;

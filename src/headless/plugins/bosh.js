@@ -4,11 +4,12 @@
  * @description Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
  */
 import 'strophe.js/src/bosh';
+import _converse from '../shared/_converse.js';
+import api, { converse } from '../shared/api/index.js';
 import log from "../log.js";
-import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
+import { BOSH_WAIT } from '../shared/constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "../index.js";
-import { setUserJID, } from '@converse/headless/utils/init.js';
+import { setUserJID, } from '../utils/init.js';
 
 const { Strophe } = converse.env;
 

@@ -13,7 +13,8 @@ import ChatRoomOccupants from './occupants.js';
 import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
 import { Collection } from '@converse/skeletor/src/collection';
-import { _converse, api, converse } from '../../index.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -41,9 +42,6 @@ import {
     ROOMSTATUS,
     ROOM_FEATURES,
 } from './constants.js';
-
-export const ROLES = ['moderator', 'participant', 'visitor'];
-export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 
 converse.AFFILIATION_CHANGES = AFFILIATION_CHANGES;
 converse.AFFILIATION_CHANGES_LIST = AFFILIATION_CHANGES_LIST;

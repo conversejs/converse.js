@@ -2,11 +2,12 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "../status";
+import "../status/index.js";
 import VCard from './vcard.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import vcard_api from './api.js';
 import { Collection } from "@converse/skeletor/src/collection";
-import { _converse, api, converse } from "../../index.js";
 import {
     clearVCardsSession,
     initVCardCollection,

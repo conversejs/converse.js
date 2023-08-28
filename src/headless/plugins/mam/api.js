@@ -1,10 +1,12 @@
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
+import dayjs from 'dayjs';
 import log from '../../log.js';
 import sizzle from "sizzle";
-import { RSM } from '@converse/headless/shared/rsm';
+import { RSM } from '../../shared/rsm';
+import { Strophe, $iq } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
-import { _converse, api, converse } from "@converse/headless";
 
-const { Strophe, $iq, dayjs } = converse.env;
 const { NS } = Strophe;
 const u = converse.env.utils;
 

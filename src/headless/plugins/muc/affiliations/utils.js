@@ -2,8 +2,10 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { AFFILIATIONS } from '@converse/headless/plugins/muc/index.js';
-import { _converse, api, converse, log } from '@converse/headless';
+import _converse from '../../../shared/_converse.js';
+import api, { converse } from '../../../shared/api/index.js';
+import log from '../../../log.js';
+import { AFFILIATIONS } from '../constants.js';
 import { parseMemberListIQ } from '../parsers.js';
 
 const { Strophe, $iq, u } = converse.env;

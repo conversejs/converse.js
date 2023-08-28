@@ -1,6 +1,7 @@
 import log from '../log';
 import { Strophe, $msg } from 'strophe.js';
-import { _converse, api, converse } from '@converse/headless';
+import _converse from './_converse.js';
+import api, { converse } from './api/index.js';
 
 const u = converse.env.utils;
 

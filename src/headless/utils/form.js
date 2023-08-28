@@ -52,3 +52,60 @@ export function webForm2xForm (field) {
     }
     return toStanza(tplXformField(name, Array.isArray(value) ? value.map(tplXformValue) : tplXformValue(value)));
 }
+
+/**
+ * Returns the current word being written in the input element
+ * @method u#getCurrentWord
+ * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
+ * @param {number} [index] - An optional rightmost boundary index. If given, the text
+ *  value of the input element will only be considered up until this index.
+ * @param {string} [delineator] - An optional string delineator to
+ *  differentiate between words.
+ */
+export function getCurrentWord (input, index, delineator) {
+    if (!index) {
+        index = input.selectionEnd || undefined;
+    }
+    let [word] = input.value.slice(0, index).split(/\s/).slice(-1);
+    if (delineator) {
+        [word] = word.split(delineator).slice(-1);
+    }
+    return word;
+}
+
+/**
+ * @param {string} s
+ */
+export function isMentionBoundary (s) {
+    return s !== '@' && RegExp(`(\\p{Z}|\\p{P})`, 'u').test(s);
+}
+
+/**
+ * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
+ * @param {string} new_value
+ */
+export function replaceCurrentWord (input, new_value) {
+    const caret = input.selectionEnd || undefined;
+    const current_word = input.value.slice(0, caret).split(/\s/).pop();
+    const value = input.value;
+    const mention_boundary = isMentionBoundary(current_word[0]) ? current_word[0] : '';
+    input.value = value.slice(0, caret - current_word.length) + mention_boundary + `${new_value} ` + value.slice(caret);
+    const selection_end = caret - current_word.length + new_value.length + 1;
+    input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
+}
+
+/**
+ * @param {HTMLTextAreaElement} textarea
+ */
+export function placeCaretAtEnd (textarea) {
+    if (textarea !== document.activeElement) {
+        textarea.focus();
+    }
+    // Double the length because Opera is inconsistent about whether a carriage return is one character or two.
+    const len = textarea.value.length * 2;
+    // Timeout seems to be required for Blink
+    setTimeout(() => textarea.setSelectionRange(len, len), 1);
+    // Scroll to the bottom, in case we're in a tall textarea
+    // (Necessary for Firefox and Chrome)
+    textarea.scrollTop = 999999;
+}

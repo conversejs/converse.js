@@ -1,4 +1,5 @@
-import { _converse, converse } from "../../index.js";
+import _converse from '../../shared/_converse.js';
+import { converse } from '../../shared/api/index.js';
 import log from "../../log";
 
 const { Strophe } = converse.env;

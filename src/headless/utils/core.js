@@ -9,6 +9,7 @@ import log, { LEVELS } from '../log.js';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
+import { converse } from '../shared/api/public.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '../shared/settings/api.js';
 import { stx , toStanza } from './stanza.js';
@@ -117,7 +118,7 @@ export function shouldClearCache () {
     const { api } = _converse;
     return !_converse.config.get('trusted') ||
         api.settings.get('clear_cache_on_logout') ||
-        _converse.isTestEnv();
+        converse.isTestEnv();
 }
 
 

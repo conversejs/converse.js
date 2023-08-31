@@ -1,79 +1,19 @@
 import i18n from './i18n.js';
-import log from '../log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { Events } from '@converse/skeletor/src/events.js';
-import { createStore, getDefaultStore } from '../utils/storage.js';
-import { getInitSettings } from './settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { shouldClearCache } from '../utils/core.js';
-
-import {
-    ACTIVE,
-    ANONYMOUS,
-    CHATROOMS_TYPE,
-    CLOSED,
-    COMPOSING,
-    CONTROLBOX_TYPE,
-    DEFAULT_IMAGE,
-    DEFAULT_IMAGE_TYPE,
-    EXTERNAL,
-    FAILURE,
-    GONE,
-    HEADLINES_TYPE,
-    INACTIVE,
-    LOGIN,
-    LOGOUT,
-    OPENED,
-    PAUSED,
-    PREBIND,
-    PRIVATE_CHAT_TYPE,
-    SUCCESS,
-    VERSION_NAME
-} from './constants';
 
 
 /**
- * A private, closured object containing the private api (via {@link _converse.api})
- * as well as private methods and internal data-structures.
+ * A private, closured object which contains the app context and exposes
+ * a private api (via {@link _converse.api}).
  * @global
  * @namespace _converse
  */
 const _converse = {
-    log,
-
-    shouldClearCache, // TODO: Should be moved to utils with next major release
-    VERSION_NAME,
-
-    templates: {},
     promises: {
         'initialized': getOpenPromise()
     },
-
-    // TODO: remove constants in next major release
-    ANONYMOUS,
-    CLOSED,
-    EXTERNAL,
-    LOGIN,
-    LOGOUT,
-    OPENED,
-    PREBIND,
-
-    SUCCESS,
-    FAILURE,
-
-    DEFAULT_IMAGE_TYPE,
-    DEFAULT_IMAGE,
-
-    INACTIVE,
-    ACTIVE,
-    COMPOSING,
-    PAUSED,
-    GONE,
-
-    PRIVATE_CHAT_TYPE,
-    CHATROOMS_TYPE,
-    HEADLINES_TYPE,
-    CONTROLBOX_TYPE,
 
     // Set as module attr so that we can override in tests.
     // TODO: replace with config settings
@@ -84,13 +24,6 @@ const _converse = {
 
     default_connection_options: {'explicitResourceBinding': true},
 
-    isTestEnv: () => {
-        return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
-    },
-
-    getDefaultStore,
-    createStore,
-
     /**
      * Translate the given string based on the current locale.
      * @method __
@@ -98,7 +31,7 @@ const _converse = {
      * @memberOf _converse
      * @param { String } str
      */
-    '__': (...args) => i18n.__(...args),
+    '__': (str, ...args) => i18n.__(str, ...args),
 
     /**
      * A no-op method which is used to signal to gettext that the passed in string

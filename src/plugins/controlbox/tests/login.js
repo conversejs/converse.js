@@ -25,15 +25,15 @@ describe("The Login Form", function () {
         cbview.querySelector('input[name="password"]').value = 'secret';
 
         expect(_converse.config.get('trusted')).toBe(true);
-        expect(_converse.getDefaultStore()).toBe('persistent');
+        expect(api.storage.default()).toBe('persistent');
         cbview.querySelector('input[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(true);
-        expect(_converse.getDefaultStore()).toBe('persistent');
+        expect(api.storage.default()).toBe('persistent');
 
         checkbox.click();
         cbview.querySelector('input[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(false);
-        expect(_converse.getDefaultStore()).toBe('session');
+        expect(api.storage.default()).toBe('session');
     }));
 
     it("checkbox can be set to false by default",
@@ -60,11 +60,11 @@ describe("The Login Form", function () {
 
         cbview.querySelector('input[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(false);
-        expect(_converse.getDefaultStore()).toBe('session');
+        expect(api.storage.default()).toBe('session');
 
         checkbox.click();
         cbview.querySelector('input[type="submit"]').click();
         expect(_converse.config.get('trusted')).toBe(true);
-        expect(_converse.getDefaultStore()).toBe('persistent');
+        expect(api.storage.default()).toBe('persistent');
     }));
 });

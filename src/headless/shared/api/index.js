@@ -4,6 +4,7 @@ import promise_api from './promise.js';
 import send_api from './send.js';
 import user_api from './user.js';
 import { settings_api } from '../settings/api.js';
+import storage_api from './storage.js';
 
 /**
  * ### The private API
@@ -26,6 +27,7 @@ const api = {
     ...user_api,
     ...events_api,
     ...promise_api,
+    ...storage_api,
 
     disco: null,
 };

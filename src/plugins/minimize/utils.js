@@ -61,7 +61,7 @@ function getBoxesWidth (newchat) {
  * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesFeedView } [newchat]
  */
 export function trimChats (newchat) {
-    if (_converse.isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
+    if (converse.isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
         return;
     }
     const shown_chats = getShownChats();

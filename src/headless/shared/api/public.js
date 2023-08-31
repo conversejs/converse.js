@@ -13,7 +13,7 @@ import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
 import { filesize } from 'filesize';
 import { html } from 'lit';
-import { initAppSettings } from '../settings/utils.js';
+import { initAppSettings, getInitSettings } from '../settings/utils.js';
 import { sprintf } from 'sprintf-js';
 import { stx } from '../../utils/stanza.js';
 
@@ -43,6 +43,10 @@ export const converse = Object.assign(window.converse || {}, {
     CHAT_STATES,
 
     keycodes: KEYCODES,
+
+    isTestEnv: () => {
+        return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
+    },
 
     /**
      * Public API method which initializes Converse.
@@ -118,7 +122,7 @@ export const converse = Object.assign(window.converse || {}, {
          */
         api.trigger('initialized');
 
-        if (_converse.isTestEnv()) {
+        if (converse.isTestEnv()) {
             return _converse;
         }
     },

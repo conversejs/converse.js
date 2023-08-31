@@ -33,7 +33,7 @@ converse.plugins.add('converse-bosh', {
             const id = BOSH_SESSION_ID;
             if (!_converse.bosh_session) {
                 _converse.bosh_session = new Model({id});
-                _converse.bosh_session.browserStorage = _converse.createStore(id, "session");
+                _converse.bosh_session.browserStorage = api.storage.create(id, "session");
                 await new Promise(resolve => _converse.bosh_session.fetch({'success': resolve, 'error': resolve}));
             }
             if (_converse.jid) {
@@ -93,7 +93,7 @@ converse.plugins.add('converse-bosh', {
                     _converse.connection.restore(jid, _converse.connection.onConnectStatusChanged);
                     return true;
                 } catch (e) {
-                    !_converse.isTestEnv() && log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);
+                    !converse.isTestEnv() && log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);
                     return false;
                 }
             }

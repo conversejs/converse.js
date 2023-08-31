@@ -65,7 +65,7 @@ export async function initializeDisco () {
 
     _converse.disco_entities = new _converse.DiscoEntities();
     const id = `converse.disco-entities-${_converse.bare_jid}`;
-    _converse.disco_entities.browserStorage = _converse.createStore(id, 'session');
+    _converse.disco_entities.browserStorage = api.storage.create(id, 'session');
 
     const collection = await _converse.disco_entities.fetchEntities();
     if (collection.length === 0 || !collection.get(_converse.domain)) {
@@ -93,7 +93,7 @@ export function initStreamFeatures () {
         const id = `converse.stream-features-${bare_jid}`;
         api.promises.add('streamFeaturesAdded');
         _converse.stream_features = new Collection();
-        _converse.stream_features.browserStorage = _converse.createStore(id, "session");
+        _converse.stream_features.browserStorage = api.storage.create(id, "session");
     }
 }
 

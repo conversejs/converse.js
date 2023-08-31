@@ -12,11 +12,11 @@ let favicon;
 
 
 export function isMessageToHiddenChat (attrs) {
-    return _converse.isTestEnv() || (_converse.chatboxes.get(attrs.from)?.isHidden() ?? false);
+    return converse.isTestEnv() || (_converse.chatboxes.get(attrs.from)?.isHidden() ?? false);
 }
 
 export function areDesktopNotificationsEnabled () {
-    return _converse.isTestEnv() || (
+    return converse.isTestEnv() || (
         supports_html5_notification &&
         api.settings.get('show_desktop_notifications') &&
         Notification.permission === 'granted'

@@ -28,21 +28,21 @@ class DiscoEntity extends Model {
 
         this.dataforms = new Collection();
         let id = `converse.dataforms-${this.get('jid')}`;
-        this.dataforms.browserStorage = _converse.createStore(id, 'session');
+        this.dataforms.browserStorage = api.storage.create(id, 'session');
 
         this.features = new Collection();
         id = `converse.features-${this.get('jid')}`;
-        this.features.browserStorage = _converse.createStore(id, 'session');
+        this.features.browserStorage = api.storage.create(id, 'session');
         this.listenTo(this.features, 'add', this.onFeatureAdded);
 
         this.fields = new Collection();
         id = `converse.fields-${this.get('jid')}`;
-        this.fields.browserStorage = _converse.createStore(id, 'session');
+        this.fields.browserStorage = api.storage.create(id, 'session');
         this.listenTo(this.fields, 'add', this.onFieldAdded);
 
         this.identities = new Collection();
         id = `converse.identities-${this.get('jid')}`;
-        this.identities.browserStorage = _converse.createStore(id, 'session');
+        this.identities.browserStorage = api.storage.create(id, 'session');
         this.fetchFeatures(options);
     }
 

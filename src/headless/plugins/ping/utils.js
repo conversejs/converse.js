@@ -56,7 +56,7 @@ export function unregisterIntervalHandler () {
 }
 
 export function onEverySecond () {
-    if (_converse.isTestEnv() || !api.connection.authenticated()) {
+    if (converse.isTestEnv() || !api.connection.authenticated()) {
         return;
     }
     const ping_interval = api.settings.get('ping_interval');

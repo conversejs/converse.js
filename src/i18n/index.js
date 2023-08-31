@@ -120,7 +120,7 @@ Object.assign(i18n, {
     },
 
     async initialize () {
-        if (_converse.isTestEnv()) {
+        if (converse.isTestEnv()) {
             _converse.locale = 'en';
         } else {
             try {

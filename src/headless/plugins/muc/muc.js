@@ -401,19 +401,19 @@ class MUC extends ChatBox {
                 }, {})
             )
         );
-        this.features.browserStorage = _converse.createStore(id, 'session');
+        this.features.browserStorage = api.storage.create(id, 'session');
         this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
         id = `converse.muc-config-${_converse.bare_jid}-${this.get('jid')}`;
         this.config = new Model({ id });
-        this.config.browserStorage = _converse.createStore(id, 'session');
+        this.config.browserStorage = api.storage.create(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     }
 
     initOccupants () {
         this.occupants = new _converse.ChatRoomOccupants();
         const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
-        this.occupants.browserStorage = _converse.createStore(id, 'session');
+        this.occupants.browserStorage = api.storage.create(id, 'session');
         this.occupants.chatroom = this;
         this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.browserStorage.flush());
     }

@@ -1,7 +1,7 @@
 import { Strophe } from 'strophe.js/src/strophe';
 
 export const BOSH_WAIT = 59;
-export const VERSION_NAME = "v10.1.5";
+export const VERSION_NAME = "v10.1.6";
 
 export const STATUS_WEIGHTS = {
     offline: 6,

@@ -1,8 +1,9 @@
 # Changelog
 
-## 10.1.6 (Unreleased)
+## 10.1.6 (2023-08-31)
 
 - #3246: Badge color not responsive to dark theme
+- Fix a GIF rendering bug that causes a memory overflow
 
 ## 10.1.5 (2023-06-29)
 

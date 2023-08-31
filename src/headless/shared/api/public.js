@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import i18n from '../i18n';
 import log from '../../log.js';
 import sizzle from 'sizzle';
-import u, { setUnloadEvent, setLogLevelFromRoute } from '../../utils/core.js';
+import { setUnloadEvent, setLogLevelFromRoute } from '../../utils/core.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
@@ -13,9 +13,10 @@ import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
 import { filesize } from 'filesize';
 import { html } from 'lit';
-import { initAppSettings, getInitSettings } from '../settings/utils.js';
+import { initAppSettings, isTestEnv } from '../settings/utils.js';
 import { sprintf } from 'sprintf-js';
 import { stx } from '../../utils/stanza.js';
+import u from '../../utils/index.js';
 
 import {
     cleanup,
@@ -43,10 +44,6 @@ export const converse = Object.assign(window.converse || {}, {
     CHAT_STATES,
 
     keycodes: KEYCODES,
-
-    isTestEnv: () => {
-        return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
-    },
 
     /**
      * Public API method which initializes Converse.
@@ -122,9 +119,7 @@ export const converse = Object.assign(window.converse || {}, {
          */
         api.trigger('initialized');
 
-        if (converse.isTestEnv()) {
-            return _converse;
-        }
+        return isTestEnv() ? _converse : undefined;
     },
 
     /**

@@ -4,13 +4,10 @@
  * @description Utility functions to help with parsing XEP-393 message styling hints
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
-import { html } from 'lit';
-import { renderStylingDirectiveBody } from './directives/styling.js';
-
 
 const bracketing_directives = ['*', '_', '~', '`'];
 const styling_directives = [...bracketing_directives, '```', '>'];
-const styling_map = {
+export const styling_map = {
     '*': {'name': 'strong', 'type': 'span'},
     '_': {'name': 'emphasis', 'type': 'span'},
     '~': {'name': 'strike', 'type': 'span'},
@@ -20,18 +17,6 @@ const styling_map = {
 };
 
 const dont_escape = ['_', '>', '`', '~'];
-
-const styling_templates = {
-    // m is the chatbox model
-    // i is the offset of this directive relative to the start of the original message
-    'emphasis': (txt, i, options) => html`<span class="styling-directive">_</span><i>${renderStylingDirectiveBody(txt, i, options)}</i><span class="styling-directive">_</span>`,
-    'preformatted': txt => html`<span class="styling-directive">\`</span><code>${txt}</code><span class="styling-directive">\`</span>`,
-    'preformatted_block': txt => html`<div class="styling-directive">\`\`\`</div><code class="block">${txt}</code><div class="styling-directive">\`\`\`</div>`,
-    'quote': (txt, i, options) => html`<blockquote>${renderStylingDirectiveBody(txt, i, options)}</blockquote>`,
-    'strike': (txt, i, options) => html`<span class="styling-directive">~</span><del>${renderStylingDirectiveBody(txt, i, options)}</del><span class="styling-directive">~</span>`,
-    'strong': (txt, i, options) => html`<span class="styling-directive">*</span><b>${renderStylingDirectiveBody(txt, i, options)}</b><span class="styling-directive">*</span>`,
-};
-
 
 /**
  * Checks whether a given character "d" at index "i" of "text" is a valid opening or closing directive.
@@ -143,21 +128,6 @@ export function getDirectiveAndLength (text, i) {
 
 
 export const isQuoteDirective = (d) => ['>', '&gt;'].includes(d);
-
-
-export function getDirectiveTemplate (d, text, offset, options) {
-    const template = styling_templates[styling_map[d].name];
-    if (isQuoteDirective(d)) {
-        const newtext = text
-            // Don't show the directive itself
-            .replace(/\n>\s/g, '\n\u200B\u200B')
-            .replace(/\n>/g, '\n\u200B')
-            .replace(/\n$/, ''); // Trim line-break at the end
-        return template(newtext, offset, options);
-    } else {
-        return template(text, offset, options);
-    }
-}
 
 
 export function containsDirectives (text) {

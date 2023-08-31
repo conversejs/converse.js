@@ -26,6 +26,7 @@ import {
     onDirectMUCInvitation,
     onStatusInitialized,
     onWindowStateChanged,
+    onPresenceSent,
     registerDirectInvitationHandler,
     routeToRoom,
 } from './utils.js';
@@ -211,5 +212,6 @@ converse.plugins.add('converse-muc', {
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
         api.listen.on('windowStateChanged', onWindowStateChanged);
+        api.listen.on('presenceSent', onPresenceSent);
     },
 });

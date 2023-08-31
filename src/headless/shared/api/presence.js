@@ -1,5 +1,11 @@
 import _converse from '../_converse.js';
-import api from '../../shared/api/index.js';
+import api_promise from './promise.js';
+import api_send from './send.js';
+import api_events from './events.js';
+
+const { waitUntil } = api_promise;
+const { send } = api_send;
+const { trigger } = api_events;
 
 export default {
     /**
@@ -17,19 +23,20 @@ export default {
          *  Nodes(s) to be added as child nodes of the `presence` XML element.
          */
         async send (type, to, status, child_nodes) {
-            await api.waitUntil('statusInitialized');
+            await waitUntil('statusInitialized');
             if (child_nodes && !Array.isArray(child_nodes)) {
                 child_nodes = [child_nodes];
             }
             const model = _converse.xmppstatus
             const presence = await model.constructPresence(type, to, status);
             child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
-            api.send(presence);
-
-            if (['away', 'chat', 'dnd', 'online', 'xa', undefined].includes(type)) {
-                const mucs = await api.rooms.get();
-                mucs.forEach(muc => muc.sendStatusPresence(type, status, child_nodes));
-            }
+            send(presence);
+            /**
+             * Triggered when a presence has been sent out via api.presence.send
+             * @event _converse#presenceSent
+             * @example _converse.api.listen.on('presenceSent', ({ presence, type, child_nodes }) => { ... });
+             */
+            trigger('presenceSent', { presence, type, child_nodes });
         }
     }
 }

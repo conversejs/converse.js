@@ -56,6 +56,13 @@ export async function onWindowStateChanged (data) {
     }
 }
 
+export async function onPresenceSent ({ type, child_nodes }) {
+    if (['away', 'chat', 'dnd', 'online', 'xa', undefined].includes(type)) {
+        const mucs = await api.rooms.get();
+        mucs.forEach(muc => muc.sendStatusPresence(type, status, child_nodes));
+    }
+}
+
 /**
  * @param {Event} [event]
  */

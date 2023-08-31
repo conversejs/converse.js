@@ -61,6 +61,6 @@ converse.plugins.add('converse-controlbox', {
 
         api.waitUntil('chatBoxViewsInitialized')
             .then(addControlBox)
-            .catch(e => log.fatal(e));
+            .catch(e => log.error(e));
     }
 });

@@ -1,5 +1,5 @@
 import _converse from '../_converse.js';
-import isFunction from '../../utils/core.js';
+import { isFunction } from '../../utils/core.js';
 
 
 export default {

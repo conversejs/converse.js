@@ -6,6 +6,7 @@
  */
 import Jed from 'jed';
 import { _converse, api, converse, log, i18n } from '@converse/headless';
+import { isTestEnv } from '@converse/headless/shared/settings/utils.js';
 
 const { dayjs } = converse.env;
 
@@ -120,7 +121,7 @@ Object.assign(i18n, {
     },
 
     async initialize () {
-        if (converse.isTestEnv()) {
+        if (isTestEnv()) {
             _converse.locale = 'en';
         } else {
             try {

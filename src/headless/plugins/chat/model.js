@@ -11,9 +11,11 @@ import { filesize } from "filesize";
 import { getMediaURLsMetadata } from '../../shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '../../utils/storage.js';
-import { isUniView, isEmptyMessage } from '../../utils/core.js';
+import { isEmptyMessage } from '../../utils/core.js';
+import { isUniView } from '../../shared/settings/api.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
+import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
 
 const { Strophe, $msg } = converse.env;
 
@@ -36,7 +38,7 @@ class ChatBox extends ModelWithContact {
             'num_unread': 0,
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
             'time_sent': (new Date(0)).toISOString(),
-            'type': _converse.PRIVATE_CHAT_TYPE,
+            'type': PRIVATE_CHAT_TYPE,
             'url': ''
         }
     }
@@ -60,7 +62,7 @@ class ChatBox extends ModelWithContact {
         this.initUI();
         this.initMessages();
 
-        if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        if (this.get('type') === PRIVATE_CHAT_TYPE) {
             this.presence = _converse.presences.get(jid) || _converse.presences.create({ jid });
             await this.setRosterContact(jid);
             this.presence.on('change:show', item => this.onPresenceChanged(item));
@@ -70,9 +72,9 @@ class ChatBox extends ModelWithContact {
 
         await this.fetchMessages();
         /**
-         * Triggered once a {@link _converse.ChatBox} has been created and initialized.
+         * Triggered once a {@link ChatBox} has been created and initialized.
          * @event _converse#chatBoxInitialized
-         * @type { _converse.ChatBox}
+         * @type { ChatBox}
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
         await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
@@ -121,10 +123,10 @@ class ChatBox extends ModelWithContact {
     afterMessagesFetched () {
         this.pruneHistoryWhenScrolledDown();
         /**
-         * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
+         * Triggered whenever a { @link ChatBox } or ${ @link _converse.ChatRoom }
          * has fetched its messages from the local cache.
          * @event _converse#afterMessagesFetched
-         * @type { _converse.ChatBox| _converse.ChatRoom }
+         * @type { ChatBox|ChatRoom }
          * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
          */
         api.trigger('afterMessagesFetched', this);

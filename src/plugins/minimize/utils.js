@@ -1,4 +1,5 @@
 import { _converse, api, converse } from '@converse/headless';
+import { isTestEnv } from '@converse/headless/shared/settings/utils.js';
 import { __ } from 'i18n';
 
 const { dayjs, u } = converse.env;
@@ -61,7 +62,7 @@ function getBoxesWidth (newchat) {
  * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesFeedView } [newchat]
  */
 export function trimChats (newchat) {
-    if (converse.isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
+    if (isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
         return;
     }
     const shown_chats = getShownChats();

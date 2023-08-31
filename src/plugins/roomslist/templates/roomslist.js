@@ -3,7 +3,7 @@ import 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless";
 import { html } from "lit";
-import { isUniView } from '@converse/headless/utils/core.js';
+import { isUniView } from '@converse/headless/shared/settings/api.js';
 import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
 
 

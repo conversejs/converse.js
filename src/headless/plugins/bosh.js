@@ -9,6 +9,7 @@ import api, { converse } from '../shared/api/index.js';
 import log from "../log.js";
 import { BOSH_WAIT } from '../shared/constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
+import { isTestEnv } from '../shared/settings/utils.js';
 import { setUserJID, } from '../utils/init.js';
 
 const { Strophe } = converse.env;
@@ -93,7 +94,7 @@ converse.plugins.add('converse-bosh', {
                     _converse.connection.restore(jid, _converse.connection.onConnectStatusChanged);
                     return true;
                 } catch (e) {
-                    !converse.isTestEnv() && log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);
+                    !isTestEnv() && log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);
                     return false;
                 }
             }

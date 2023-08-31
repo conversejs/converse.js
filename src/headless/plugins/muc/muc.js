@@ -15,7 +15,8 @@ import { getOpenPromise } from '@converse/openpromise';
 import { handleCorrection } from '../../shared/chat/utils.js';
 import { initStorage } from '../../utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '../../shared/parsers.js';
-import { isUniView, getUniqueId, safeSave } from '../../utils/core.js';
+import { getUniqueId, safeSave } from '../../utils/core.js';
+import { isUniView } from '../../shared/settings/api.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
 

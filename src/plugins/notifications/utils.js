@@ -2,6 +2,7 @@ import Favico from 'favico.js-slevomat';
 import { __ } from 'i18n';
 import { _converse, api, converse, log } from '@converse/headless';
 import { isEmptyMessage } from '@converse/headless/utils/core.js';
+import { isTestEnv } from '@converse/headless/shared/settings/utils.js';
 
 const { Strophe } = converse.env;
 const supports_html5_notification = 'Notification' in window;
@@ -12,11 +13,11 @@ let favicon;
 
 
 export function isMessageToHiddenChat (attrs) {
-    return converse.isTestEnv() || (_converse.chatboxes.get(attrs.from)?.isHidden() ?? false);
+    return isTestEnv() || (_converse.chatboxes.get(attrs.from)?.isHidden() ?? false);
 }
 
 export function areDesktopNotificationsEnabled () {
-    return converse.isTestEnv() || (
+    return isTestEnv() || (
         supports_html5_notification &&
         api.settings.get('show_desktop_notifications') &&
         Notification.permission === 'granted'

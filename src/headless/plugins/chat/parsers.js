@@ -2,8 +2,9 @@ import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
-import u from '../../utils/core';
+import { getUniqueId } from '../../utils/core';
 import { rejectMessage } from '../../shared/actions';
+import u from '../../utils/index.js';
 
 import {
     StanzaParseError,
@@ -207,7 +208,7 @@ export async function parseMessage (stanza) {
 
     // We prefer to use one of the XEP-0359 unique and stable stanza IDs
     // as the Model id, to avoid duplicates.
-    attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from}`] || u.getUniqueId();
+    attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from}`] || getUniqueId();
 
     /**
      * *Hook* which allows plugins to add additional parsing

@@ -1,5 +1,6 @@
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
+import { isTestEnv } from '../../shared/settings/utils.js';
 
 const { Strophe, $iq } = converse.env;
 
@@ -56,7 +57,7 @@ export function unregisterIntervalHandler () {
 }
 
 export function onEverySecond () {
-    if (converse.isTestEnv() || !api.connection.authenticated()) {
+    if (isTestEnv() || !api.connection.authenticated()) {
         return;
     }
     const ping_interval = api.settings.get('ping_interval');

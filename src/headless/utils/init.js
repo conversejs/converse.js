@@ -1,35 +1,17 @@
 import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '../shared/_converse';
-import { converse } from '../shared/api/public.js';
 import debounce from 'lodash-es/debounce';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '../log.js';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
-import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN, PREBIND } from '../shared/constants.js';
-import { Connection, MockConnection } from '../shared/connection/index.js';
+import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from '../shared/constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
-import { saveWindowState, isValidJID } from './core.js';
+import { saveWindowState, isValidJID, generateResource } from './core.js';
+import { isTestEnv } from '../shared/settings/utils.js';
 
-
-function setUpXMLLogging () {
-    const lmap = {}
-    lmap[Strophe.LogLevel.DEBUG] = 'debug';
-    lmap[Strophe.LogLevel.INFO] = 'info';
-    lmap[Strophe.LogLevel.WARN] = 'warn';
-    lmap[Strophe.LogLevel.ERROR] = 'error';
-    lmap[Strophe.LogLevel.FATAL] = 'fatal';
-
-    Strophe.log = (level, msg) => log.log(msg, lmap[level]);
-    Strophe.error = (msg) => log.error(msg);
-
-    _converse.connection.xmlInput = body => log.debug(body.outerHTML, 'color: darkgoldenrod');
-    _converse.connection.xmlOutput = body => log.debug(body.outerHTML, 'color: darkcyan');
-}
-
-
-function getConnectionServiceURL () {
+export function getConnectionServiceURL () {
     const { api } = _converse;
     if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
         return api.settings.get('websocket_url');
@@ -38,37 +20,6 @@ function getConnectionServiceURL () {
     }
     return '';
 }
-
-
-export function initConnection () {
-    const api = _converse.api;
-
-    if (! api.settings.get('bosh_service_url')) {
-        if (api.settings.get("authentication") === PREBIND) {
-            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
-        }
-    }
-
-    const XMPPConnection = converse.isTestEnv() ? MockConnection : Connection;
-    _converse.connection = new XMPPConnection(
-        getConnectionServiceURL(),
-        Object.assign(
-            _converse.default_connection_options,
-            api.settings.get("connection_options"),
-            {'keepalive': api.settings.get("keepalive")}
-        )
-    );
-
-    setUpXMLLogging();
-    /**
-     * Triggered once the `Connection` constructor has been initialized, which
-     * will be responsible for managing the connection to the XMPP server.
-     *
-     * @event _converse#connectionInitialized
-     */
-    api.trigger('connectionInitialized');
-}
-
 
 export function initPlugins (_converse) {
     // If initialize gets called a second time (e.g. during tests), then we
@@ -140,7 +91,7 @@ export async function initSessionStorage (_converse) {
     await Storage.sessionStorageInitialized;
     _converse.storage = {
         'session': Storage.localForage.createInstance({
-            'name': converse.isTestEnv() ? 'converse-test-session' : 'converse-session',
+            'name': isTestEnv() ? 'converse-test-session' : 'converse-session',
             'description': 'sessionStorage instance',
             'driver': ['sessionStorageWrapper']
         })
@@ -167,7 +118,7 @@ function initPersistentStorage (_converse, store_name) {
     }
 
     const config = {
-        'name': converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
+        'name': isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
         'storeName': store_name
     }
     if (_converse.api.settings.get("persistent_store") === 'localStorage') {
@@ -184,7 +135,7 @@ function initPersistentStorage (_converse, store_name) {
 function saveJIDtoSession (_converse, jid) {
     jid = _converse.session.get('jid') || jid;
     if (_converse.api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
-        jid = jid.toLowerCase() + Connection.generateResource();
+        jid = jid.toLowerCase() + generateResource();
     }
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
@@ -409,12 +360,12 @@ export async function attemptNonPreboundSession (credentials, automatic) {
             if (credentials) return connect(credentials);
         }
 
-        if (!converse.isTestEnv() && 'credentials' in navigator) {
+        if (!isTestEnv() && 'credentials' in navigator) {
             const credentials = await getLoginCredentialsFromBrowser();
             if (credentials) return connect(credentials);
         }
 
-        if (!converse.isTestEnv()) log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
+        if (!isTestEnv()) log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
 
     } else if (
         [ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication")) &&

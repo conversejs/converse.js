@@ -35,7 +35,7 @@ export async function fetchMessagesOnScrollUp (view) {
                 return;
             }
             if (api.settings.get('allow_url_history_change')) {
-                history.pushState(null, '', `#${oldest_message.get('msgid')}`)
+                history.pushState(null, '', `#${oldest_message.get('msgid')}`);
             }
             setTimeout(() => view.model.ui.set('chat-content-spinner-top', false), 250);
         }

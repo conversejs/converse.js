@@ -15,7 +15,7 @@ import tplFormUrl from '../templates/form_url.js';
 import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
-import u from '../headless/utils/core';
+import u from '../headless/utils/index.js';
 import { converse, log } from '@converse/headless';
 import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';

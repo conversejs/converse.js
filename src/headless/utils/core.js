@@ -6,69 +6,12 @@
 import DOMPurify from 'dompurify';
 import _converse from '../shared/_converse.js';
 import log, { LEVELS } from '../log.js';
-import sizzle from "sizzle";
+import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
-import { converse } from '../shared/api/public.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { settings_api } from '../shared/settings/api.js';
-import { stx , toStanza } from './stanza.js';
-import {
-    getCurrentWord,
-    getSelectValues,
-    isMentionBoundary,
-    placeCaretAtEnd,
-    replaceCurrentWord,
-    webForm2xForm
-} from './form.js';
-import {
-    getOuterWidth,
-    isElement,
-    isTagEqual,
-    queryChildren,
-    stringToElement,
-} from './html.js';
-import {
-    arrayBufferToHex,
-    arrayBufferToString,
-    stringToArrayBuffer,
-    arrayBufferToBase64,
-    base64ToArrayBuffer,
-} from './arraybuffer.js';
-import {
-    isAudioURL,
-    isGIFURL,
-    isVideoURL,
-    isImageURL,
-    isURLWithImageExtension,
-    checkFileTypes,
-    getURI,
-    shouldRenderMediaFromURL,
-    isAllowedProtocolForMedia,
-} from './url.js';
-
-/**
- * The utils object
- * @namespace u
- */
-const u = {
-    arrayBufferToBase64,
-    arrayBufferToHex,
-    arrayBufferToString,
-    base64ToArrayBuffer,
-    checkFileTypes,
-    getSelectValues,
-    getURI,
-    isAllowedProtocolForMedia,
-    isAudioURL,
-    isGIFURL,
-    isImageURL,
-    isURLWithImageExtension,
-    isVideoURL,
-    shouldRenderMediaFromURL,
-    stringToArrayBuffer,
-    webForm2xForm,
-};
+import { isElement } from './html.js';
+import { isTestEnv } from '../shared/settings/utils.js';
 
 /**
  * @param {Event} [event]
@@ -78,7 +21,7 @@ export function setLogLevelFromRoute (event) {
         event?.preventDefault();
         const level = location.hash.split('=').pop();
         if (Object.keys(LEVELS).includes(level)) {
-            log.setLogLevel(/** @type {keyof LEVELS} */(level));
+            log.setLogLevel(/** @type {keyof LEVELS} */ (level));
         } else {
             log.error(`Could not set loglevel of ${level}`);
         }
@@ -86,7 +29,7 @@ export function setLogLevelFromRoute (event) {
 }
 
 export function isError (obj) {
-    return Object.prototype.toString.call(obj) === "[object Error]";
+    return Object.prototype.toString.call(obj) === '[object Error]';
 }
 
 export function isFunction (val) {
@@ -97,34 +40,23 @@ export function isEmptyMessage (attrs) {
     if (attrs instanceof Model) {
         attrs = attrs.attributes;
     }
-    return !attrs['oob_url'] &&
+    return (
+        !attrs['oob_url'] &&
         !attrs['file'] &&
         !(attrs['is_encrypted'] && attrs['plaintext']) &&
         !attrs['message'] &&
-        !attrs['body'];
-}
-
-/**
- * We distinguish between UniView and MultiView instances.
- *
- * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
- * MultiView means that multiple chats may be visible simultaneously.
- */
-export function isUniView () {
-    return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
+        !attrs['body']
+    );
 }
 
 export function shouldClearCache () {
     const { api } = _converse;
-    return !_converse.config.get('trusted') ||
-        api.settings.get('clear_cache_on_logout') ||
-        converse.isTestEnv();
+    return !_converse.config.get('trusted') || api.settings.get('clear_cache_on_logout') || isTestEnv();
 }
-
 
 export async function tearDown () {
     const { api } = _converse;
-    await api.trigger('beforeTearDown', {'synchronous': true});
+    await api.trigger('beforeTearDown', { 'synchronous': true });
     window.removeEventListener('click', _converse.onUserActivity);
     window.removeEventListener('focus', _converse.onUserActivity);
     window.removeEventListener('keypress', _converse.onUserActivity);
@@ -134,7 +66,6 @@ export async function tearDown () {
     api.trigger('afterTearDown');
     return _converse;
 }
-
 
 export function clearSession () {
     _converse.session?.destroy();
@@ -146,9 +77,8 @@ export function clearSession () {
      * disconnected for some other reason.
      * @event _converse#clearSession
      */
-    return _converse.api.trigger('clearSession', {'synchronous': true});
+    return _converse.api.trigger('clearSession', { 'synchronous': true });
 }
-
 
 /**
  * Given a message object, return its text with @ chars
@@ -158,19 +88,17 @@ export function prefixMentions (message) {
     let text = message.getMessageText();
     (message.get('references') || [])
         .sort((a, b) => b.begin - a.begin)
-        .forEach(ref => {
-            text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`
+        .forEach((ref) => {
+            text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`;
         });
     return text;
 }
 
-u.getJIDFromURI = function (jid) {
-    return jid.startsWith('xmpp:') && jid.endsWith('?join')
-        ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '')
-        : jid;
+export function getJIDFromURI (jid) {
+    return jid.startsWith('xmpp:') && jid.endsWith('?join') ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '') : jid;
 }
 
-u.getLongestSubstring = function (string, candidates) {
+export function getLongestSubstring (string, candidates) {
     function reducer (accumulator, current_value) {
         if (string.startsWith(current_value)) {
             if (current_value.length > accumulator.length) {
@@ -187,33 +115,34 @@ u.getLongestSubstring = function (string, candidates) {
 
 export function isValidJID (jid) {
     if (typeof jid === 'string') {
-        return jid.split('@').filter(s => !!s).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+        return jid.split('@').filter((s) => !!s).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     }
     return false;
 }
 
-u.isValidMUCJID = function (jid) {
+export function isValidMUCJID (jid) {
     return !jid.startsWith('@') && !jid.endsWith('@');
-};
+}
 
-u.isSameBareJID = function (jid1, jid2) {
+export function isSameBareJID (jid1, jid2) {
     if (typeof jid1 !== 'string' || typeof jid2 !== 'string') {
         return false;
     }
-    return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
-            Strophe.getBareJidFromJid(jid2).toLowerCase();
-};
+    return Strophe.getBareJidFromJid(jid1).toLowerCase() === Strophe.getBareJidFromJid(jid2).toLowerCase();
+}
 
-
-u.isSameDomain = function (jid1, jid2) {
+export function isSameDomain (jid1, jid2) {
     if (typeof jid1 !== 'string' || typeof jid2 !== 'string') {
         return false;
     }
-    return Strophe.getDomainFromJid(jid1).toLowerCase() ===
-            Strophe.getDomainFromJid(jid2).toLowerCase();
-};
+    return Strophe.getDomainFromJid(jid1).toLowerCase() === Strophe.getDomainFromJid(jid2).toLowerCase();
+}
 
-u.isNewMessage = function (message) {
+export function generateResource() {
+    return `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
+}
+
+export function isNewMessage (message) {
     /* Given a stanza, determine whether it's a new
      * message, i.e. not a MAM archived one.
      */
@@ -226,67 +155,49 @@ u.isNewMessage = function (message) {
         message = message.attributes;
     }
     return !(message['is_delayed'] && message['is_archived']);
-};
-
-u.shouldCreateMessage = function (attrs) {
-    return attrs['retracted'] || // Retraction received *before* the message
-        !isEmptyMessage(attrs);
 }
 
-u.shouldCreateGroupchatMessage = function (attrs) {
-    return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
+export function shouldCreateMessage (attrs) {
+    return (
+        attrs['retracted'] || // Retraction received *before* the message
+        !isEmptyMessage(attrs)
+    );
 }
 
-u.isChatRoom = function (model) {
-    return model && (model.get('type') === 'chatroom');
+export function shouldCreateGroupchatMessage (attrs) {
+    return attrs.nick && (shouldCreateMessage(attrs) || attrs.is_tombstone);
+}
+
+export function isChatRoom (model) {
+    return model && model.get('type') === 'chatroom';
 }
 
 export function isErrorObject (o) {
     return o instanceof Error;
 }
 
-u.isErrorStanza = function (stanza) {
+export function isErrorStanza (stanza) {
     if (!isElement(stanza)) {
         return false;
     }
     return stanza.getAttribute('type') === 'error';
 }
 
-u.isForbiddenError = function (stanza) {
+export function isForbiddenError (stanza) {
     if (!isElement(stanza)) {
         return false;
     }
     return sizzle(`error[type="auth"] forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
 }
 
-u.isServiceUnavailableError = function (stanza) {
+export function isServiceUnavailableError (stanza) {
     if (!isElement(stanza)) {
         return false;
     }
     return sizzle(`error[type="cancel"] service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
 }
 
-/**
- * Merge the second object into the first one.
- * @method u#merge
- * @param {Object} dst
- * @param {Object} src
- */
-export function merge (dst, src) {
-    for (const k in src) {
-        if (!Object.prototype.hasOwnProperty.call(src, k)) continue;
-        if (k === "__proto__" || k === "constructor") continue;
-
-        if (dst[k] instanceof Object) {
-            merge(dst[k], src[k]);
-        } else {
-            dst[k] = src[k];
-        }
-    }
-}
-
-
-u.contains = function (attr, query) {
+export function contains (attr, query) {
     const checker = (item, key) => item.get(key).toLowerCase().includes(query.toLowerCase());
     return function (item) {
         if (typeof attr === 'object') {
@@ -297,24 +208,21 @@ u.contains = function (attr, query) {
             throw new TypeError('contains: wrong attribute type. Must be string or array.');
         }
     };
-};
+}
 
-u.getAttribute = function (key, item) {
+export function getAttribute (key, item) {
     return item.get(key);
-};
+}
 
-u.contains.not = function (attr, query) {
+contains.not = function (attr, query) {
     return function (item) {
-        return !(u.contains(attr, query)(item));
+        return !contains(attr, query)(item);
     };
-};
+}
 
-u.isPersistableModel = function (model) {
+export function isPersistableModel (model) {
     return model.collection && model.collection.browserStorage;
-};
-
-u.getResolveablePromise = getOpenPromise;
-u.getOpenPromise = getOpenPromise;
+}
 
 /**
  * Call the callback once all the events have been triggered
@@ -325,34 +233,32 @@ u.getOpenPromise = getOpenPromise;
  * @param { Function } callback: The function to call once all events have
  *    been triggered.
  */
-u.onMultipleEvents = function (events=[], callback) {
+export function onMultipleEvents (events = [], callback) {
     let triggered = [];
 
     function handler (result) {
-        triggered.push(result)
+        triggered.push(result);
         if (events.length === triggered.length) {
             callback(triggered);
             triggered = [];
         }
     }
-    events.forEach(e => e.object.on(e.event, handler));
-};
-
+    events.forEach((e) => e.object.on(e.event, handler));
+}
 
 export function safeSave (model, attributes, options) {
-    if (u.isPersistableModel(model)) {
+    if (isPersistableModel(model)) {
         model.save(attributes, options);
     } else {
         model.set(attributes, options);
     }
 }
 
-
-u.siblingIndex = function (el) {
+export function siblingIndex (el) {
     /* eslint-disable no-cond-assign */
-    for (var i = 0; el = el.previousElementSibling; i++);
+    for (var i = 0; (el = el.previousElementSibling); i++);
     return i;
-};
+}
 
 /**
  * @param {Element} el
@@ -361,7 +267,7 @@ u.siblingIndex = function (el) {
  * @param {boolean} [bubbles]
  * @param {boolean} [cancelable]
  */
-function triggerEvent (el, name, type="Event", bubbles=true, cancelable=true) {
+export function triggerEvent (el, name, type = 'Event', bubbles = true, cancelable = true) {
     const evt = document.createEvent(type);
     evt.initEvent(name, bubbles, cancelable);
     el.dispatchEvent(evt);
@@ -376,19 +282,19 @@ export function getRandomInt (max) {
  * @return {string}
  */
 export function getUniqueId (suffix) {
-    const uuid = crypto.randomUUID?.() ??
+    const uuid =
+        crypto.randomUUID?.() ??
         'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
             const r = getRandomInt(16);
-            const v = c === 'x' ? r : r & 0x3 | 0x8;
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
-    if (typeof(suffix) === "string" || typeof(suffix) === "number") {
-        return uuid + ":" + suffix;
+    if (typeof suffix === 'string' || typeof suffix === 'number') {
+        return uuid + ':' + suffix;
     } else {
         return uuid;
     }
 }
-
 
 /**
  * Clears the specified timeout and interval.
@@ -398,11 +304,10 @@ export function getUniqueId (suffix) {
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */
-function clearTimers(timeout, interval) {
+function clearTimers (timeout, interval) {
     clearTimeout(timeout);
     clearInterval(interval);
 }
-
 
 /**
  * Creates a {@link Promise} that resolves if the passed in function returns a truthy value.
@@ -417,7 +322,7 @@ function clearTimers(timeout, interval) {
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */
-export function waitUntil (func, max_wait=300, check_delay=3) {
+export function waitUntil (func, max_wait = 300, check_delay = 3) {
     // Run the function once without setting up any listeners in case it's already true
     try {
         const result = func();
@@ -459,7 +364,6 @@ export function waitUntil (func, max_wait=300, check_delay=3) {
     return promise;
 }
 
-
 export function setUnloadEvent () {
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -473,7 +377,6 @@ export function setUnloadEvent () {
         _converse.unloadevent = 'unload';
     }
 }
-
 
 export function replacePromise (name) {
     const existing_promise = _converse.promises[name];
@@ -489,7 +392,6 @@ export function replacePromise (name) {
     }
 }
 
-
 const element = document.createElement('div');
 
 export function decodeHTMLEntities (str) {
@@ -501,25 +403,24 @@ export function decodeHTMLEntities (str) {
     return str;
 }
 
-
 export function saveWindowState (ev) {
     // XXX: eventually we should be able to just use
     // document.visibilityState (when we drop support for older
     // browsers).
     let state;
     const event_map = {
-        'focus': "visible",
-        'focusin': "visible",
-        'pageshow': "visible",
-        'blur': "hidden",
-        'focusout': "hidden",
-        'pagehide': "hidden"
+        'focus': 'visible',
+        'focusin': 'visible',
+        'pageshow': 'visible',
+        'blur': 'hidden',
+        'focusout': 'hidden',
+        'pagehide': 'hidden',
     };
     ev = ev || document.createEvent('Events');
     if (ev.type in event_map) {
         state = event_map[ev.type];
     } else {
-        state = document.hidden ? "hidden" : "visible";
+        state = document.hidden ? 'hidden' : 'visible';
     }
     _converse.windowState = state;
     /**
@@ -530,32 +431,5 @@ export function saveWindowState (ev) {
      * @property{ string } state - Either "hidden" or "visible"
      * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
      */
-    _converse.api.trigger('windowStateChanged', {state});
+    _converse.api.trigger('windowStateChanged', { state });
 }
-
-
-export default Object.assign({
-    getCurrentWord,
-    getOuterWidth,
-    getRandomInt,
-    isMentionBoundary,
-    getUniqueId,
-    isElement,
-    isEmptyMessage,
-    isErrorObject,
-    isTagEqual,
-    isValidJID,
-    merge,
-    placeCaretAtEnd,
-    prefixMentions,
-    queryChildren,
-    replaceCurrentWord,
-    safeSave,
-    saveWindowState,
-    shouldClearCache,
-    stringToElement,
-    stx,
-    toStanza,
-    triggerEvent,
-    waitUntil, // TODO: remove. Only the API should be used
-}, u);

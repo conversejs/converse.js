@@ -3,7 +3,7 @@ import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { RosterFilter } from '../../plugins/roster/filter.js';
-import { STATUS_WEIGHTS } from "../../shared/constants";
+import { PRIVATE_CHAT_TYPE, STATUS_WEIGHTS } from "../../shared/constants.js";
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/core.js';
 
@@ -166,7 +166,7 @@ export function onChatBoxesInitialized () {
     _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
 
     _converse.chatboxes.on('add', chatbox => {
-        if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
             chatbox.setRosterContact(chatbox.get('jid'));
         }
     });

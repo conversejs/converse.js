@@ -11,6 +11,8 @@ describe("The Login Form", function () {
               allow_registration: false },
             async function (_converse) {
 
+        const { api } = _converse;
+
         const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         mock.toggleControlBox();
         const checkboxes = cbview.querySelectorAll('input[type="checkbox"]');
@@ -43,6 +45,8 @@ describe("The Login Form", function () {
               allow_user_trust_override: 'off',
               allow_registration: false },
             async function (_converse) {
+
+        const { api } = _converse;
 
         await u.waitUntil(() => _converse.chatboxviews.get('controlbox'))
         const cbview = _converse.chatboxviews.get('controlbox');

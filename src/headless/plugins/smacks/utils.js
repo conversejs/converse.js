@@ -2,12 +2,13 @@ import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { isTestEnv } from '../../shared/settings/utils.js';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 function isStreamManagementSupported () {
-    if (api.connection.isType('bosh') && !converse.isTestEnv()) {
+    if (api.connection.isType('bosh') && !isTestEnv()) {
         return false;
     }
     return api.disco.stream.getFeature('sm', Strophe.NS.SM);
@@ -172,7 +173,7 @@ export async function sendEnableStanza () {
         _converse.connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
         _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
-        const resume = api.connection.isType('websocket') || converse.isTestEnv();
+        const resume = api.connection.isType('websocket') || isTestEnv();
         const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);
         api.send(stanza);
         _converse.connection.flush();

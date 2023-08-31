@@ -3,7 +3,7 @@ import tplLoginPanel from './templates/loginform.js';
 import { ANONYMOUS } from '@converse/headless/shared/constants';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from '@converse/headless';
-import { initConnection } from '@converse/headless/utils/init.js';
+import { initConnection } from '@converse/headless/shared/connection/index.js';
 import { updateSettingsWithFormData, validateJID } from './utils.js';
 
 const { Strophe, u } = converse.env;

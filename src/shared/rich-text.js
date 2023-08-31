@@ -2,12 +2,20 @@ import tplAudio from 'templates/audio.js';
 import tplGif from 'templates/gif.js';
 import tplImage from 'templates/image.js';
 import tplVideo from 'templates/video.js';
-import { api } from '@converse/headless';
-import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
+import { Directive, directive } from 'lit/directive.js';
+import { api, log } from '@converse/headless';
 import { getEmojiMarkup } from './chat/utils.js';
 import { getHyperlinkTemplate } from 'utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
+import { until } from 'lit/directives/until.js';
+import { html } from 'lit';
+import {
+    containsDirectives,
+    getDirectiveAndLength,
+    isQuoteDirective,
+    styling_map
+} from './styling.js';
 import {
     convertASCII2Emoji,
     getCodePointReferences,
@@ -22,8 +30,6 @@ import {
     shouldRenderMediaFromURL,
 } from '@converse/headless/utils/url.js';
 
-
-import { html } from 'lit';
 
 const isString = s => typeof s === 'string';
 
@@ -242,7 +248,7 @@ export class RichText extends String {
                 const text = this.slice(slice_begin, slice_end);
                 references.push({
                     'begin': i,
-                    'template': getDirectiveTemplate(d, text, offset, this.options),
+                    'template': this.getDirectiveTemplate(d, text, offset),
                     end
                 });
                 i = end;
@@ -250,6 +256,20 @@ export class RichText extends String {
             i++;
         }
         references.forEach(ref => this.addTemplateResult(ref.begin, ref.end, ref.template));
+    }
+
+    getDirectiveTemplate (d, text, offset) {
+        const template = styling_templates[styling_map[d].name];
+        if (isQuoteDirective(d)) {
+            const newtext = text
+                // Don't show the directive itself
+                .replace(/\n>\s/g, '\n\u200B\u200B')
+                .replace(/\n>/g, '\n\u200B')
+                .replace(/\n$/, ''); // Trim line-break at the end
+            return template(newtext, offset, this.options);
+        } else {
+            return template(text, offset, this.options);
+        }
     }
 
     trimMeMessage () {
@@ -365,3 +385,36 @@ export class RichText extends String {
         );
     }
 }
+
+async function transform (t) {
+    try {
+        await t.addTemplates();
+    } catch (e) {
+        log.error(e);
+    }
+    return t.payload;
+}
+
+class StylingDirective extends Directive {
+    render (txt, offset, options) { // eslint-disable-line class-methods-use-this
+        const t = new RichText(
+            txt,
+            offset,
+            Object.assign(options, { 'show_images': false, 'embed_videos': false, 'embed_audio': false })
+        );
+        return html`${until(transform(t), html`${t}`)}`;
+    }
+}
+
+const renderStylingDirectiveBody = directive(StylingDirective);
+
+const styling_templates = {
+    // m is the chatbox model
+    // i is the offset of this directive relative to the start of the original message
+    'emphasis': (txt, i, options) => html`<span class="styling-directive">_</span><i>${renderStylingDirectiveBody(txt, i, options)}</i><span class="styling-directive">_</span>`,
+    'preformatted': txt => html`<span class="styling-directive">\`</span><code>${txt}</code><span class="styling-directive">\`</span>`,
+    'preformatted_block': txt => html`<div class="styling-directive">\`\`\`</div><code class="block">${txt}</code><div class="styling-directive">\`\`\`</div>`,
+    'quote': (txt, i, options) => html`<blockquote>${renderStylingDirectiveBody(txt, i, options)}</blockquote>`,
+    'strike': (txt, i, options) => html`<span class="styling-directive">~</span><del>${renderStylingDirectiveBody(txt, i, options)}</del><span class="styling-directive">~</span>`,
+    'strong': (txt, i, options) => html`<span class="styling-directive">*</span><b>${renderStylingDirectiveBody(txt, i, options)}</b><span class="styling-directive">*</span>`,
+};

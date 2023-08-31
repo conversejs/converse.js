@@ -31,7 +31,7 @@ const plugins = [
     }),
     new CircularDependencyPlugin({
       exclude: /node_modules/,
-      failOnError: false,
+      failOnError: true,
       allowAsyncCycles: false,
       cwd: process.cwd(),
     })

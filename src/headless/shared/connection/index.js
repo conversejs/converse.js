@@ -1,18 +1,17 @@
 import debounce from 'lodash-es/debounce';
-import log from "../../log.js";
+import log from '../../log.js';
 import sizzle from 'sizzle';
 import _converse from '../_converse.js';
-import api from '../api/index.js';
-import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
+import { ANONYMOUS, BOSH_WAIT, LOGOUT, PREBIND } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants';
 import { Strophe } from 'strophe.js';
-import { clearSession, tearDown } from "../../utils/core.js";
+import { clearSession, tearDown } from '../../utils/core.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { setUserJID, } from '../../utils/init.js';
+import { setUserJID, getConnectionServiceURL } from '../../utils/init.js';
+import { isTestEnv } from '../settings/utils.js';
 
 const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
 Strophe.Status.RECONNECTING = i + 1;
-
 
 /**
  * The Connection class manages the connection to the XMPP server. It's
@@ -20,44 +19,40 @@ Strophe.Status.RECONNECTING = i + 1;
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends Strophe.Connection {
-
     constructor (service, options) {
         super(service, options);
         this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 
-    static generateResource () {
-        return `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
-    }
-
     async bind () {
+        const { api } = _converse;
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
          * JID resource for this session.
          * @event _converse#beforeResourceBinding
          */
-        await api.trigger('beforeResourceBinding', {'synchronous': true});
+        await api.trigger('beforeResourceBinding', { 'synchronous': true });
         super.bind();
     }
 
-
     async onDomainDiscovered (response) {
         const text = await response.text();
-        const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
-        if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
-            return log.warn("Could not discover XEP-0156 connection methods");
+        const xrd = new window.DOMParser().parseFromString(text, 'text/xml').firstElementChild;
+        if (xrd.nodeName != 'XRD' || xrd.namespaceURI != 'http://docs.oasis-open.org/ns/xri/xrd-1.0') {
+            return log.warn('Could not discover XEP-0156 connection methods');
         }
         const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
         const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
-        const bosh_methods = bosh_links.map(el => el.getAttribute('href'));
-        const ws_methods = ws_links.map(el => el.getAttribute('href'));
+        const bosh_methods = bosh_links.map((el) => el.getAttribute('href'));
+        const ws_methods = ws_links.map((el) => el.getAttribute('href'));
         if (bosh_methods.length === 0 && ws_methods.length === 0) {
-            log.warn("Neither BOSH nor WebSocket connection methods have been specified with XEP-0156.");
+            log.warn('Neither BOSH nor WebSocket connection methods have been specified with XEP-0156.');
         } else {
+            const { api } = _converse;
             // TODO: support multiple endpoints
-            api.settings.set("websocket_url", ws_methods.pop());
+            api.settings.set('websocket_url', ws_methods.pop());
             api.settings.set('bosh_service_url', bosh_methods.pop());
-            this.service = api.settings.get("websocket_url") || api.settings.get('bosh_service_url');
+            this.service = api.settings.get('websocket_url') || api.settings.get('bosh_service_url');
             this.setProtocol();
         }
     }
@@ -74,8 +69,8 @@ export class Connection extends Strophe.Connection {
         const options = {
             'mode': 'cors',
             'headers': {
-                'Accept': 'application/xrd+xml, text/xml'
-            }
+                'Accept': 'application/xrd+xml, text/xml',
+            },
         };
         const url = `https://${domain}/.well-known/host-meta`;
         let response;
@@ -89,7 +84,7 @@ export class Connection extends Strophe.Connection {
         if (response.status >= 200 && response.status < 400) {
             await this.onDomainDiscovered(response);
         } else {
-            log.warn("Could not discover XEP-0156 connection methods");
+            log.warn('Could not discover XEP-0156 connection methods');
         }
     }
 
@@ -99,15 +94,16 @@ export class Connection extends Strophe.Connection {
      * @method Connnection.connect
      * @param { String } jid
      * @param { String } password
-     * @param { Funtion } callback
+     * @param { Function } callback
      */
     async connect (jid, password, callback) {
-        if (api.settings.get("discover_connection_methods")) {
+        const { api } = _converse;
+        if (api.settings.get('discover_connection_methods')) {
             const domain = Strophe.getDomainFromJid(jid);
             await this.discoverConnectionMethods(domain);
         }
-        if (!api.settings.get('bosh_service_url') && !api.settings.get("websocket_url")) {
-            throw new Error("You must supply a value for either the bosh_service_url or websocket_url or both.");
+        if (!api.settings.get('bosh_service_url') && !api.settings.get('websocket_url')) {
+            throw new Error('You must supply a value for either the bosh_service_url or websocket_url or both.');
         }
         super.connect(jid, password, callback || this.onConnectStatusChanged, BOSH_WAIT);
     }
@@ -123,27 +119,30 @@ export class Connection extends Strophe.Connection {
      * for the old transport are removed.
      */
     async switchTransport () {
+        const { api } = _converse;
         if (api.connection.isType('websocket') && api.settings.get('bosh_service_url')) {
             await setUserJID(_converse.bare_jid);
             this._proto._doDisconnect();
             this._proto = new Strophe.Bosh(this);
             this.service = api.settings.get('bosh_service_url');
-        } else if (api.connection.isType('bosh') && api.settings.get("websocket_url")) {
-            if (api.settings.get("authentication") === ANONYMOUS) {
+        } else if (api.connection.isType('bosh') && api.settings.get('websocket_url')) {
+            if (api.settings.get('authentication') === ANONYMOUS) {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
-                await setUserJID(api.settings.get("jid"));
+                await setUserJID(api.settings.get('jid'));
             } else {
                 await setUserJID(_converse.bare_jid);
             }
             this._proto._doDisconnect();
             this._proto = new Strophe.Websocket(this);
-            this.service = api.settings.get("websocket_url");
+            this.service = api.settings.get('websocket_url');
         }
     }
 
     async reconnect () {
+        const { api } = _converse;
+
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
         this.reconnecting = true;
         await tearDown();
@@ -151,11 +150,11 @@ export class Connection extends Strophe.Connection {
         const conn_status = _converse.connfeedback.get('connection_status');
         if (conn_status === Strophe.Status.CONNFAIL) {
             this.switchTransport();
-        } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === ANONYMOUS) {
+        } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get('authentication') === ANONYMOUS) {
             // When reconnecting anonymously, we need to connect with only
             // the domain, not the full JID that we had in our previous
             // (now failed) session.
-            await setUserJID(api.settings.get("jid"));
+            await setUserJID(api.settings.get('jid'));
         }
 
         /**
@@ -165,7 +164,7 @@ export class Connection extends Strophe.Connection {
          */
         api.trigger('will-reconnect');
 
-        if (api.settings.get("authentication") === ANONYMOUS) {
+        if (api.settings.get('authentication') === ANONYMOUS) {
             await clearSession();
         }
         return api.user.login();
@@ -188,12 +187,14 @@ export class Connection extends Strophe.Connection {
             localStorage.setItem('conversejs-session-jid', _converse.bare_jid);
         }
 
+        const { api } = _converse;
+
         /**
          * Synchronous event triggered after we've sent an IQ to bind the
          * user's JID resource for this session.
          * @event _converse#afterResourceBinding
          */
-        await api.trigger('afterResourceBinding', reconnecting, {'synchronous': true});
+        await api.trigger('afterResourceBinding', reconnecting, { 'synchronous': true });
 
         if (reconnecting) {
             /**
@@ -236,7 +237,7 @@ export class Connection extends Strophe.Connection {
 
     setConnectionStatus (status, message) {
         this.status = status;
-        _converse.connfeedback.set({'connection_status': status, message });
+        _converse.connfeedback.set({ 'connection_status': status, message });
     }
 
     async finishDisconnection () {
@@ -247,12 +248,14 @@ export class Connection extends Strophe.Connection {
         tearDown();
         await clearSession();
         delete _converse.connection;
+
+        const { api } = _converse;
         /**
-        * Triggered after converse.js has disconnected from the XMPP server.
-        * @event _converse#disconnected
-        * @memberOf _converse
-        * @example _converse.api.listen.on('disconnected', () => { ... });
-        */
+         * Triggered after converse.js has disconnected from the XMPP server.
+         * @event _converse#disconnected
+         * @memberOf _converse
+         * @example _converse.api.listen.on('disconnected', () => { ... });
+         */
         api.trigger('disconnected');
     }
 
@@ -263,10 +266,11 @@ export class Connection extends Strophe.Connection {
      * @method onDisconnected
      */
     onDisconnected () {
-        if (api.settings.get("auto_reconnect")) {
+        const { api } = _converse;
+        if (api.settings.get('auto_reconnect')) {
             const reason = this.disconnection_reason;
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
-                if (api.settings.get("credentials_url") || api.settings.get("authentication") === ANONYMOUS) {
+                if (api.settings.get('credentials_url') || api.settings.get('authentication') === ANONYMOUS) {
                     // If `credentials_url` is set, we reconnect, because we might
                     // be receiving expirable tokens from the credentials_url.
                     //
@@ -290,8 +294,8 @@ export class Connection extends Strophe.Connection {
             } else if (
                 this.disconnection_cause === LOGOUT ||
                 reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
-                reason === "host-unknown" ||
-                reason === "remote-connection-failed"
+                reason === 'host-unknown' ||
+                reason === 'remote-connection-failed'
             ) {
                 return this.finishDisconnection();
             }
@@ -314,7 +318,6 @@ export class Connection extends Strophe.Connection {
         if (status === Strophe.Status.ATTACHFAIL) {
             this.setConnectionStatus(status);
             this.worker_attach_promise?.resolve(false);
-
         } else if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
             if (this.worker_attach_promise?.isResolved && this.status === Strophe.Status.ATTACHED) {
                 // A different tab must have attached, so nothing to do for us here.
@@ -344,10 +347,7 @@ export class Connection extends Strophe.Connection {
         } else if (status === Strophe.Status.BINDREQUIRED) {
             this.bind();
         } else if (status === Strophe.Status.ERROR) {
-            this.setConnectionStatus(
-                status,
-                __('An error occurred while connecting to the chat server.')
-            );
+            this.setConnectionStatus(status, __('An error occurred while connecting to the chat server.'));
         } else if (status === Strophe.Status.CONNECTING) {
             this.setConnectionStatus(status);
         } else if (status === Strophe.Status.AUTHENTICATING) {
@@ -361,11 +361,13 @@ export class Connection extends Strophe.Connection {
             this.onDisconnected();
         } else if (status === Strophe.Status.CONNFAIL) {
             let feedback = message;
-            if (message === "host-unknown" || message == "remote-connection-failed") {
-                feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
-                    `\"${Strophe.getDomainFromJid(this.jid)}\"`);
+            if (message === 'host-unknown' || message == 'remote-connection-failed') {
+                feedback = __(
+                    'Sorry, we could not connect to the XMPP host with domain: %1$s',
+                    `\"${Strophe.getDomainFromJid(this.jid)}\"`
+                );
             } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
-                feedback = __("The XMPP server did not offer a supported authentication mechanism");
+                feedback = __('The XMPP server did not offer a supported authentication mechanism');
             }
             this.setConnectionStatus(status, feedback);
             this.setDisconnectionCause(status, message);
@@ -383,7 +385,8 @@ export class Connection extends Strophe.Connection {
     }
 
     hasResumed () {
-        if (api.settings.get("connection_options")?.worker || this.isType('bosh')) {
+        const { api } = _converse;
+        if (api.settings.get('connection_options')?.worker || this.isType('bosh')) {
             return _converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
         } else {
             // Not binding means that the session was resumed.
@@ -398,13 +401,11 @@ export class Connection extends Strophe.Connection {
     }
 }
 
-
 /**
  * The MockConnection class is used during testing, to mock an XMPP connection.
  * @class
  */
 export class MockConnection extends Connection {
-
     constructor (service, options) {
         super(service, options);
 
@@ -434,10 +435,11 @@ export class MockConnection extends Connection {
             this.mock = true;
             this.jid = 'romeo@montague.lit/orchard';
             this._changeConnectStatus(Strophe.Status.BINDREQUIRED);
-        }
+        };
     }
 
-    _processRequest () { // eslint-disable-line class-methods-use-this
+    _processRequest () {
+        // eslint-disable-line class-methods-use-this
         // Don't attempt to send out stanzas
     }
 
@@ -457,10 +459,53 @@ export class MockConnection extends Connection {
     }
 
     async bind () {
-        await api.trigger('beforeResourceBinding', {'synchronous': true});
+        const { api } = _converse;
+        await api.trigger('beforeResourceBinding', { 'synchronous': true });
         this.authenticated = true;
         if (!_converse.no_connection_on_bind) {
             this._changeConnectStatus(Strophe.Status.CONNECTED);
         }
     }
+}
+
+export function initConnection () {
+    const { api } = _converse;
+
+    if (!api.settings.get('bosh_service_url')) {
+        if (api.settings.get('authentication') === PREBIND) {
+            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+        }
+    }
+
+    const XMPPConnection = isTestEnv() ? MockConnection : Connection;
+    _converse.connection = new XMPPConnection(
+        getConnectionServiceURL(),
+        Object.assign(_converse.default_connection_options, api.settings.get('connection_options'), {
+            'keepalive': api.settings.get('keepalive'),
+        })
+    );
+
+    setUpXMLLogging();
+    /**
+     * Triggered once the `Connection` constructor has been initialized, which
+     * will be responsible for managing the connection to the XMPP server.
+     *
+     * @event _converse#connectionInitialized
+     */
+    api.trigger('connectionInitialized');
+}
+
+export function setUpXMLLogging () {
+    const lmap = {};
+    lmap[Strophe.LogLevel.DEBUG] = 'debug';
+    lmap[Strophe.LogLevel.INFO] = 'info';
+    lmap[Strophe.LogLevel.WARN] = 'warn';
+    lmap[Strophe.LogLevel.ERROR] = 'error';
+    lmap[Strophe.LogLevel.FATAL] = 'fatal';
+
+    Strophe.log = (level, msg) => log.log(msg, lmap[level]);
+    Strophe.error = (msg) => log.error(msg);
+
+    _converse.connection.xmlInput = (body) => log.debug(body.outerHTML, 'color: darkgoldenrod');
+    _converse.connection.xmlOutput = (body) => log.debug(body.outerHTML, 'color: darkcyan');
 }

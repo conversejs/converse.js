@@ -29,6 +29,7 @@ const api = {
     ...promise_api,
     ...storage_api,
 
+    contacts: null,
     disco: null,
 };
 

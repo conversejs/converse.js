@@ -3,6 +3,29 @@ import pluggable from 'pluggable.js/src/pluggable.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { getOpenPromise } from '@converse/openpromise';
 
+import {
+    ACTIVE,
+    ANONYMOUS,
+    CHATROOMS_TYPE,
+    CLOSED,
+    COMPOSING,
+    CONTROLBOX_TYPE,
+    DEFAULT_IMAGE,
+    DEFAULT_IMAGE_TYPE,
+    EXTERNAL,
+    FAILURE,
+    GONE,
+    HEADLINES_TYPE,
+    INACTIVE,
+    LOGIN,
+    LOGOUT,
+    OPENED,
+    PAUSED,
+    PREBIND,
+    PRIVATE_CHAT_TYPE,
+    SUCCESS,
+} from './constants';
+
 
 /**
  * A private, closured object which contains the app context and exposes
@@ -14,6 +37,32 @@ const _converse = {
     promises: {
         'initialized': getOpenPromise()
     },
+
+    // TODO: move constants to public 'converse' obj.
+    ANONYMOUS,
+    CLOSED,
+    EXTERNAL,
+    LOGIN,
+    LOGOUT,
+    OPENED,
+    PREBIND,
+
+    SUCCESS,
+    FAILURE,
+
+    DEFAULT_IMAGE_TYPE,
+    DEFAULT_IMAGE,
+
+    INACTIVE,
+    ACTIVE,
+    COMPOSING,
+    PAUSED,
+    GONE,
+
+    PRIVATE_CHAT_TYPE,
+    CHATROOMS_TYPE,
+    HEADLINES_TYPE,
+    CONTROLBOX_TYPE,
 
     // Set as module attr so that we can override in tests.
     // TODO: replace with config settings

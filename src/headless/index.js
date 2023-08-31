@@ -1,7 +1,6 @@
 import './shared/constants.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import api from './shared/api/index.js';
-import u from './utils/core.js';
 import _converse from './shared/_converse';
 import dayjs from 'dayjs';
 import i18n from './shared/i18n';
@@ -34,7 +33,7 @@ import "./plugins/status/index.js";
 import "./plugins/vcard/index.js";      // XEP-0054 VCard-temp
 /* END: Removable components */
 
-import log from './log.js';
+const { u, log } = converse.env;
 
 export { api, converse, _converse, i18n, log, u };
 

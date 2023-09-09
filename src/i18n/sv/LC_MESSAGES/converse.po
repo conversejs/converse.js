@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-07-11 06:53+0000\n"
+"PO-Revision-Date: 2023-09-09 15:34+0000\n"
 "Last-Translator: Luna Jernberg <droidbittin@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/conversejs/"
 "translations/sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: dist/converse-no-dependencies.js:29951
 msgid "The connection has dropped, attempting to reconnect."
@@ -762,9 +762,8 @@ msgstr ""
 "roller och anknytningar hos alla andra användare förutom ägare."
 
 #: dist/converse-no-dependencies.js:77112
-#, fuzzy
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr "För att porta en användare så ger du dom anknytningen \"utstött\"."
+msgstr "För att porta en användare, ger du dem tillhörigheten \"utstött\"."
 
 #: dist/converse-no-dependencies.js:77138
 msgid "No users with that affiliation found."
@@ -1981,9 +1980,8 @@ msgid "Timeout error"
 msgstr "Timeout-fel"
 
 #: dist/converse-no-dependencies.js:115422
-#, fuzzy
 msgid "Your server does not support in-band password reset"
-msgstr "Din server stödjer inte lösenordsåterställning över anslutningen"
+msgstr "Din server stöder inte över-anslutning lösenordsåterställning"
 
 #: dist/converse-no-dependencies.js:115429
 msgid ""
@@ -1998,22 +1996,20 @@ msgstr "Timeoutfel när lösenordet skulle sättas"
 
 #: dist/converse-no-dependencies.js:115450
 msgid "Your server does not allow in-band password reset"
-msgstr ""
+msgstr "Din server stöder inte över-anslutning lösenordsåterställning"
 
 #: dist/converse-no-dependencies.js:115452
 #: dist/converse-no-dependencies.js:115454
-#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr "Du har inte tillåtelse att skapa nya gruppchattar."
+msgstr "Du har inte tillåtelse att ändra ditt lösenord"
 
 #: dist/converse-no-dependencies.js:115456
 msgid "Success"
-msgstr ""
+msgstr "Lyckades"
 
 #: dist/converse-no-dependencies.js:115456
-#, fuzzy
 msgid "Your new password has been set"
-msgstr "En ny gruppchatt har skapats"
+msgstr "Ditt nya lösenord har ställts in"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:116001
@@ -2131,15 +2127,16 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Fel: kunde inte dekryptera en mottagen krypterad fil eftersom den inte kunde "
+"laddas ned"
 
 #: dist/converse-no-dependencies.js:117930
-#, fuzzy
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
 msgstr ""
-"Ledsen, kunde inte avkryptera ett mottaget OMEMO eftersom att vi inte har "
-"XMPP-adressen till den användaren."
+"Tyvärr, det gick inte att dekryptera ett mottaget OMEMO-meddelande eftersom "
+"vi inte har XMPP-adressen för den användaren."
 
 #: dist/converse-no-dependencies.js:117995
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -2190,7 +2187,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:118711
 msgid "OMEMO encryption is not supported"
-msgstr ""
+msgstr "OMEMO kryptering stöds inte"
 
 #: dist/converse-no-dependencies.js:118735
 msgid ""
@@ -2315,13 +2312,12 @@ msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Ledsen, vi kan inte koppla upp oss till din valda leverantör."
 
 #: dist/converse-no-dependencies.js:124872
-#, fuzzy
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
-"Ledsen, den angivna leverantören stödjer inte in-band-registrering. Vänligen "
-"försök med en annan leverantör."
+"Tyvärr, den angivna leverantören stöder inte registrering av konton över-"
+"anslutning. Försök med en annan leverantör."
 
 #: dist/converse-no-dependencies.js:125009
 msgid "Now logging you in"
@@ -2379,9 +2375,8 @@ msgid "Description:"
 msgstr "Beskrivning:"
 
 #: dist/converse-no-dependencies.js:126133
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Gruppchattadress"
+msgstr "Gruppchatt XMPP adress:"
 
 #: dist/converse-no-dependencies.js:126134
 msgid "Participants:"
@@ -2462,9 +2457,8 @@ msgid "Add a new groupchat"
 msgstr "Lägg till en ny gruppchatt"
 
 #: dist/converse-no-dependencies.js:126601
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Visa gruppchatter"
+msgstr "Visa bokmärkta gruppchatter"
 
 #: dist/converse-no-dependencies.js:127178
 #, javascript-format
@@ -2477,9 +2471,8 @@ msgid "Add"
 msgstr "Lägg till"
 
 #: dist/converse-no-dependencies.js:127683
-#, fuzzy
 msgid "Group"
-msgstr "Gruppchatter"
+msgstr "Grupp"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:127892
@@ -2505,9 +2498,8 @@ msgid "Contacts"
 msgstr "Kontakter"
 
 #: dist/converse-no-dependencies.js:128135
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Klicka för att dölja dessa kontakter"
+msgstr "Klicka för att växla kontakter"
 
 #: dist/converse-no-dependencies.js:128136
 msgid "Add a contact"

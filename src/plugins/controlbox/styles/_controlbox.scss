@@ -53,6 +53,7 @@
     #controlbox {
         order: -1;
         color: var(--controlbox-text-color);
+        overflow-y:none;
 
         .chat-status--avatar {
             border: 1px solid var(--controlbox-pane-background-color);

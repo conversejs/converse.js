@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-09-25 16:40+0000\n"
+"PO-Revision-Date: 2023-09-27 10:02+0000\n"
 "Last-Translator: sergey solovey <njuton89@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
@@ -239,6 +239,8 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Помилка: команда \"%1$s\" приймає два аргументи, користувацький псевдонім і "
+"(опціонально) причину."
 
 #: dist/converse-no-dependencies.js:50155
 msgid ""
@@ -587,17 +589,19 @@ msgstr "Помилка"
 
 #: dist/converse-no-dependencies.js:54916
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr ""
+msgstr "Вибачте, щось пішло не так при спробі зберегти закладку."
 
 #: dist/converse-no-dependencies.js:54971
 msgid "Timeout Error"
-msgstr ""
+msgstr "Помилка часу очікування"
 
 #: dist/converse-no-dependencies.js:54971
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Сервер не повернув ваші закладки протягом дозволеного часу. Ви можете "
+"перезавантажити сторінку, щоб запросити їх знову."
 
 #: dist/converse-no-dependencies.js:58367
 #, fuzzy
@@ -606,7 +610,7 @@ msgstr "Трапилася помилка при спробі зберегти �
 
 #: dist/converse-no-dependencies.js:58409
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Тайм-аут"
 
 #: dist/converse-no-dependencies.js:60849
 #, fuzzy
@@ -621,11 +625,11 @@ msgstr "Трапилася помилка при спробі зберегти �
 #: dist/converse-no-dependencies.js:65825
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr ""
+msgstr "Вибачте, сталася помилка при спробі додати %1$s як контакт."
 
 #: dist/converse-no-dependencies.js:66072
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "Цей чат-клієнт не підтримує повідомлення про статус"
 
 #: dist/converse-no-dependencies.js:66734
 msgid "My contacts"
@@ -653,7 +657,7 @@ msgstr "Видалити повідомлення"
 #: dist/converse-no-dependencies.js:69836
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "Завантажити файл \"%1$s\""
 
 #: dist/converse-no-dependencies.js:70777
 #: dist/converse-no-dependencies.js:70778
@@ -676,19 +680,19 @@ msgstr "Скасувати"
 
 #: dist/converse-no-dependencies.js:74178
 msgid "Execute"
-msgstr ""
+msgstr "Виконати"
 
 #: dist/converse-no-dependencies.js:74179
 msgid "Previous"
-msgstr ""
+msgstr "Попередні"
 
 #: dist/converse-no-dependencies.js:74180
 msgid "Next"
-msgstr ""
+msgstr "Далі"
 
 #: dist/converse-no-dependencies.js:74181
 msgid "Complete"
-msgstr ""
+msgstr "Завершено"
 
 #: dist/converse-no-dependencies.js:76835
 #, fuzzy
@@ -712,33 +716,33 @@ msgstr "Прізвисько"
 #: dist/converse-no-dependencies.js:114845
 #: dist/converse-no-dependencies.js:127685
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP адреса"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:76845
 #: dist/converse-no-dependencies.js:77137
 msgid "Affiliation"
-msgstr ""
+msgstr "Приналежність"
 
 #: dist/converse-no-dependencies.js:76847
 #: dist/converse-no-dependencies.js:77141
 #: dist/converse-no-dependencies.js:90217
 #: dist/converse-no-dependencies.js:114847
 msgid "Role"
-msgstr ""
+msgstr "Роль"
 
 #: dist/converse-no-dependencies.js:76849
 msgid "Hats"
-msgstr ""
+msgstr "Шапки"
 
 #: dist/converse-no-dependencies.js:76849
 msgid "Occupant Id"
-msgstr ""
+msgstr "Ідентифікатор користувача"
 
 #: dist/converse-no-dependencies.js:77002
 #: dist/converse-no-dependencies.js:77666
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Приналежність змінено"
 
 #: dist/converse-no-dependencies.js:77005
 #, fuzzy
@@ -750,35 +754,44 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Модератори - це привілейовані користувачі, які можуть змінювати ролі інших "
+"користувачів (окрім тих, хто має права адміністратора або власника)."
 
 #: dist/converse-no-dependencies.js:77101
 msgid "The default role, implies that you can read and write messages."
 msgstr ""
+"Роль за замовчуванням передбачає, що ви можете читати і писати повідомлення."
 
 #: dist/converse-no-dependencies.js:77103
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Відвідувачам заборонено писати повідомлення в модерованому "
+"багатокористувацькому чаті."
 
 #: dist/converse-no-dependencies.js:77108
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Власник - це найвища приналежність. Власники можуть змінювати ролі та "
+"приналежності всіх інших користувачів."
 
 #: dist/converse-no-dependencies.js:77110
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Адміністратор - це 2-й найвищий рівень приналежності. Адміни можуть "
+"змінювати ролі та приналежності всіх інших користувачів, окрім власників."
 
 #: dist/converse-no-dependencies.js:77112
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "Щоб забанити користувача, ви надаєте йому приналежність \"ізгой\"."
 
 #: dist/converse-no-dependencies.js:77138
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Користувачів з такою афіліацією не знайдено."
 
 #: dist/converse-no-dependencies.js:77139
 #, fuzzy
@@ -1508,12 +1521,11 @@ msgstr "Адмін"
 
 #: dist/converse-no-dependencies.js:107002
 msgid "Member"
-msgstr ""
+msgstr "Учасник"
 
 #: dist/converse-no-dependencies.js:107003
-#, fuzzy
 msgid "Moderator"
-msgstr "Модерована"
+msgstr "Модератор"
 
 #: dist/converse-no-dependencies.js:107004
 msgid "Owner"

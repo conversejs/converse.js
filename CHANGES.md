@@ -9,6 +9,7 @@ Breaking changes:
 
 - #3246: Badge color not responsive to dark theme
 - Fix a GIF rendering bug that causes a memory overflow
+- #2716: Fix issue with chat display when opening via URL
 
 ## 10.1.5 (2023-06-29)
 

@@ -6,7 +6,7 @@ import api from '../api/index.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants';
 import { Strophe } from 'strophe.js';
-import { clearSession, tearDown } from "../../utils/core.js";
+import { clearSession, tearDown } from "../../utils/session.js";
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID, } from '../../utils/init.js';
 

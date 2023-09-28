@@ -3,10 +3,7 @@ import log from '../log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Router } from '@converse/skeletor/src/router.js';
-import { createStore, getDefaultStore } from '../utils/storage.js';
-import { getInitSettings } from './settings/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { shouldClearCache } from '../utils/core.js';
 
 import {
     ACTIVE,
@@ -42,7 +39,6 @@ import {
 const _converse = {
     log,
 
-    shouldClearCache, // TODO: Should be moved to utils with next major release
     VERSION_NAME,
 
     templates: {},
@@ -86,12 +82,6 @@ const _converse = {
     default_connection_options: {'explicitResourceBinding': true},
     router: new Router(),
 
-    isTestEnv: () => {
-        return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
-    },
-
-    getDefaultStore,
-    createStore,
 
     /**
      * Translate the given string based on the current locale.

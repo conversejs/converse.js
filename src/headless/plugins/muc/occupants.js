@@ -7,7 +7,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
 import { getAffiliationList } from './affiliations/utils.js';
 import { getAutoFetchedAffiliationLists } from './utils.js';
-import { getUniqueId } from '../../utils/core.js';
+import { getUniqueId } from '../../utils/index.js';
 
 const { u } = converse.env;
 

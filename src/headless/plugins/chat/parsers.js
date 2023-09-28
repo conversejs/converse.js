@@ -2,7 +2,7 @@ import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
-import u from '../../utils/core';
+import u from '../../utils/index.js';
 import { rejectMessage } from '../../shared/actions';
 
 import {

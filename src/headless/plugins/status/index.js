@@ -6,7 +6,7 @@ import XMPPStatus from './status.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import status_api from './api.js';
-import { shouldClearCache } from '../../utils/core.js';
+import { shouldClearCache } from '../../utils/session.js';
 import {
     addStatusToMUCJoinPresence,
     initStatus,

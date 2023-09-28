@@ -6,7 +6,7 @@ import log from '../log.js';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
 import { URL_PARSE_OPTIONS } from './constants.js';
-import { decodeHTMLEntities } from '..//utils/core.js';
+import { decodeHTMLEntities } from '../utils/index.js';
 import { rejectMessage } from './actions';
 import {
     isAudioURL,

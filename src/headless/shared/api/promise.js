@@ -1,6 +1,7 @@
 import _converse from '../_converse.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { waitUntil, isFunction } from '../../utils/core.js';
+import { waitUntil } from '../../utils/promise.js';
+import { isFunction } from '../../utils/object.js';
 
 export default {
     /**

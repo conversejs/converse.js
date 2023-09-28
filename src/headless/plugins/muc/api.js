@@ -1,9 +1,8 @@
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
 import log from '../../log';
 import { Strophe } from 'strophe.js';
-
-const { u } = converse.env;
+import { getJIDFromURI } from '../../utils/jid.js';
 
 
 export default {
@@ -35,9 +34,9 @@ export default {
             if (jids === undefined) {
                 throw new TypeError('rooms.create: You need to provide at least one JID');
             } else if (typeof jids === 'string') {
-                return api.rooms.get(u.getJIDFromURI(jids), attrs, true);
+                return api.rooms.get(getJIDFromURI(jids), attrs, true);
             }
-            return jids.map(jid => api.rooms.get(u.getJIDFromURI(jid), attrs, true));
+            return jids.map(jid => api.rooms.get(getJIDFromURI(jid), attrs, true));
         },
 
         /**
@@ -142,7 +141,7 @@ export default {
             await api.waitUntil('chatBoxesFetched');
 
             async function _get (jid) {
-                jid = u.getJIDFromURI(jid);
+                jid = getJIDFromURI(jid);
                 let model = await api.chatboxes.get(jid);
                 if (!model && create) {
                     model = await api.chatboxes.create(jid, attrs, _converse.ChatRoom);

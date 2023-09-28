@@ -5,7 +5,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { STATUS_WEIGHTS } from "../../shared/constants";
 import { initStorage } from '../../utils/storage.js';
-import { shouldClearCache } from '../../utils/core.js';
+import { shouldClearCache } from '../../utils/session.js';
 
 const { $pres } = converse.env;
 

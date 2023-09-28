@@ -5,8 +5,9 @@ import dayjs from 'dayjs';
 import i18n from '../i18n';
 import log from '../../log.js';
 import sizzle from 'sizzle';
-import u, { setUnloadEvent } from '../../utils/core.js';
+import u from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
+import { setUnloadEvent, isTestEnv } from '../../utils/session.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
@@ -124,7 +125,7 @@ export const converse = Object.assign(window.converse || {}, {
          */
         api.trigger('initialized');
 
-        if (_converse.isTestEnv()) {
+        if (isTestEnv()) {
             return _converse;
         }
     },

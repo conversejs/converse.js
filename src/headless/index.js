@@ -2,11 +2,11 @@ import './shared/constants.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import api from './shared/api/index.js';
 import _converse from './shared/_converse';
+_converse.api = api;
+
 import dayjs from 'dayjs';
 import i18n from './shared/i18n';
 import { converse } from './shared/api/public.js';
-
-_converse.api = api;
 
 dayjs.extend(advancedFormat);
 

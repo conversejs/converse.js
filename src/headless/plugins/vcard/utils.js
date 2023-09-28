@@ -2,7 +2,7 @@ import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
 import { initStorage } from '../../utils/storage.js';
-import { shouldClearCache } from '../../utils/core.js';
+import { shouldClearCache } from '../../utils/session.js';
 
 const { Strophe, $iq, u } = converse.env;
 

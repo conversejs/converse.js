@@ -12,9 +12,10 @@ import { TimeoutError } from '../../shared/errors.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { handleCorrection } from '../../shared/chat/utils.js';
-import { initStorage } from '../../utils/storage.js';
+import { initStorage, createStore } from '../../utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '../../shared/parsers.js';
-import { isUniView, getUniqueId, safeSave } from '../../utils/core.js';
+import { getUniqueId, safeSave } from '../../utils/index.js';
+import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
 
@@ -399,19 +400,19 @@ const ChatRoomMixin = {
                 }, {})
             )
         );
-        this.features.browserStorage = _converse.createStore(id, 'session');
+        this.features.browserStorage = createStore(id, 'session');
         this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
         id = `converse.muc-config-${_converse.bare_jid}-${this.get('jid')}`;
         this.config = new Model({ id });
-        this.config.browserStorage = _converse.createStore(id, 'session');
+        this.config.browserStorage = createStore(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     },
 
     initOccupants () {
         this.occupants = new _converse.ChatRoomOccupants();
         const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
-        this.occupants.browserStorage = _converse.createStore(id, 'session');
+        this.occupants.browserStorage = createStore(id, 'session');
         this.occupants.chatroom = this;
         this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.browserStorage.flush());
     },

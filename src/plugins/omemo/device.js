@@ -2,7 +2,7 @@ import { IQError } from './errors.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { UNDECIDED } from './consts.js';
 import { _converse, api, converse, log } from '@converse/headless';
-import { getRandomInt } from '@converse/headless/utils/core.js';
+import { getRandomInt } from '@converse/headless/utils/index.js';
 import { parseBundle } from './utils.js';
 
 const { Strophe, sizzle, $iq } = converse.env;

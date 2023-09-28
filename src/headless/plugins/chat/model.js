@@ -11,7 +11,8 @@ import { filesize } from "filesize";
 import { getMediaURLsMetadata } from '../../shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '../../utils/storage.js';
-import { isUniView, isEmptyMessage } from '../../utils/core.js';
+import { isEmptyMessage } from '../../utils/index.js';
+import { isUniView } from '../../utils/session.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
 

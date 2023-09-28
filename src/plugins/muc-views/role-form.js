@@ -2,7 +2,7 @@ import tplRoleForm from './templates/role-form.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { api, converse, log } from '@converse/headless';
-import { isErrorObject } from '@converse/headless/utils/core.js';
+import { isErrorObject } from '@converse/headless/utils/index.js';
 
 const { Strophe, sizzle } = converse.env;
 

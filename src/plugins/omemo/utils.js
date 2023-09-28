@@ -9,7 +9,7 @@ import { __ } from 'i18n';
 import { _converse, converse, api, log } from '@converse/headless';
 import { html } from 'lit';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { isError } from '@converse/headless/utils/core.js';
+import { isError } from '@converse/headless/utils/object.js';
 import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
 import { until } from 'lit/directives/until.js';
 import {

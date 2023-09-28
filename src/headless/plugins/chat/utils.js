@@ -3,7 +3,7 @@ import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
 import { isArchived, isHeadline, isServerMessage, } from '../../shared/parsers';
 import { parseMessage } from './parsers.js';
-import { shouldClearCache } from '../../utils/core.js';
+import { shouldClearCache } from '../../utils/session.js';
 
 const { Strophe, u } = converse.env;
 

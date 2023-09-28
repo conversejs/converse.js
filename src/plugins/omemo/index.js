@@ -13,7 +13,7 @@ import Devices from './devices.js';
 import OMEMOStore from './store.js';
 import omemo_api from './api.js';
 import { _converse, api, converse, log } from '@converse/headless';
-import { shouldClearCache } from '@converse/headless/utils/core.js';
+import { shouldClearCache } from '@converse/headless/utils/session.js';
 import {
     createOMEMOMessageStanza,
     encryptFile,

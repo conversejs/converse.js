@@ -1,6 +1,7 @@
 import _converse from '../_converse.js';
 import presence_api from './presence.js';
-import u, { replacePromise } from '../../utils/core.js';
+import { isSameDomain } from '../../utils/jid.js';
+import { replacePromise } from '../../utils/session.js';
 import { attemptNonPreboundSession, initConnection, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/api.js';
@@ -46,7 +47,7 @@ export default {
         async login (jid, password, automatic=false) {
             const { api } = _converse;
             jid = jid || api.settings.get('jid');
-            if (!_converse.connection?.jid || (jid && !u.isSameDomain(_converse.connection.jid, jid))) {
+            if (!_converse.connection?.jid || (jid && !isSameDomain(_converse.connection.jid, jid))) {
                 initConnection();
             }
             if (api.settings.get("connection_options")?.worker && (await _converse.connection.restoreWorkerSession())) {

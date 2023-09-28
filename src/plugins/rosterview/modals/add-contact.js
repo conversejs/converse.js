@@ -1,11 +1,10 @@
 import 'shared/autocomplete/index.js';
 import BaseModal from "plugins/modal/modal.js";
-import api from '@converse/headless/shared/api';
 import debounce from 'lodash-es/debounce';
 import tplAddContactModal from "./templates/add-contact.js";
 import { Strophe } from 'strophe.js';
 import { __ } from 'i18n';
-import { _converse } from "@converse/headless";
+import { _converse, api } from "@converse/headless";
 import { addClass, removeClass } from 'utils/html.js';
 
 export default class AddContactModal extends BaseModal {

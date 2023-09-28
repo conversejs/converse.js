@@ -9,7 +9,8 @@ import { Connection, MockConnection } from '../shared/connection/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
-import { saveWindowState, isValidJID } from './core.js';
+import { isValidJID } from './jid.js';
+import { saveWindowState, isTestEnv } from './session.js';
 
 
 function setUpXMLLogging () {
@@ -48,7 +49,7 @@ export function initConnection () {
         }
     }
 
-    const XMPPConnection = _converse.isTestEnv() ? MockConnection : Connection;
+    const XMPPConnection = isTestEnv() ? MockConnection : Connection;
     _converse.connection = new XMPPConnection(
         getConnectionServiceURL(),
         Object.assign(
@@ -139,7 +140,7 @@ export async function initSessionStorage (_converse) {
     await Storage.sessionStorageInitialized;
     _converse.storage = {
         'session': Storage.localForage.createInstance({
-            'name': _converse.isTestEnv() ? 'converse-test-session' : 'converse-session',
+            'name': isTestEnv() ? 'converse-test-session' : 'converse-session',
             'description': 'sessionStorage instance',
             'driver': ['sessionStorageWrapper']
         })
@@ -166,7 +167,7 @@ function initPersistentStorage (_converse, store_name) {
     }
 
     const config = {
-        'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
+        'name': isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
         'storeName': store_name
     }
     if (_converse.api.settings.get("persistent_store") === 'localStorage') {
@@ -409,12 +410,12 @@ export async function attemptNonPreboundSession (credentials, automatic) {
             if (credentials) return connect(credentials);
         }
 
-        if (!_converse.isTestEnv() && 'credentials' in navigator) {
+        if (!isTestEnv() && 'credentials' in navigator) {
             const credentials = await getLoginCredentialsFromBrowser();
             if (credentials) return connect(credentials);
         }
 
-        if (!_converse.isTestEnv()) log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
+        if (!isTestEnv()) log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
 
     } else if (
         [ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication")) &&

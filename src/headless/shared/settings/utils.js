@@ -2,7 +2,7 @@ import _converse from '../_converse.js';
 import isEqual from "lodash-es/isEqual.js";
 import log from '../../log.js';
 import pick from 'lodash-es/pick';
-import u from '../../utils/core';
+import { merge } from '../../utils/object.js';
 import { DEFAULT_SETTINGS } from './constants.js';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
@@ -38,13 +38,13 @@ export function getAppSetting (key) {
 }
 
 export function extendAppSettings (settings) {
-    u.merge(DEFAULT_SETTINGS, settings);
+    merge(DEFAULT_SETTINGS, settings);
     // When updating the settings, we need to avoid overwriting the
     // initialization_settings (i.e. the settings passed in via converse.initialize).
     const allowed_keys = Object.keys(settings).filter(k => k in DEFAULT_SETTINGS);
     const allowed_site_settings = pick(init_settings, allowed_keys);
     const updated_settings = Object.assign(pick(settings, allowed_keys), allowed_site_settings);
-    u.merge(app_settings, updated_settings);
+    merge(app_settings, updated_settings);
 }
 
 /**

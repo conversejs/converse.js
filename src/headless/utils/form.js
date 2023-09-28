@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the form utilities module.
  */
-import { toStanza } from './stanza.js';
+import { toStanza } from 'strophe.js';
 
 /**
  * @param {string} name

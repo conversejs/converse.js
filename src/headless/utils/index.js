@@ -6,9 +6,8 @@
 import DOMPurify from 'dompurify';
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe } from 'strophe.js';
+import { Strophe, toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { stx , toStanza } from './stanza.js';
 import { saveWindowState, shouldClearCache } from './session.js';
 import { merge, isError, isFunction } from './object.js';
 import { createStore, getDefaultStore } from './storage.js';
@@ -288,7 +287,6 @@ export default Object.assign({
     saveWindowState,
     shouldClearCache,
     stringToElement,
-    stx,
     toStanza,
     triggerEvent,
     waitUntil, // TODO: remove. Only the API should be used

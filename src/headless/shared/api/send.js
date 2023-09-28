@@ -1,8 +1,7 @@
 import _converse from '../_converse.js';
 import log from '../../log.js';
-import { Strophe } from 'strophe.js';
+import { Strophe, toStanza } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
-import { toStanza } from '../../utils/stanza.js';
 
 export default {
     /**

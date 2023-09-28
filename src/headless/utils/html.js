@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { Strophe } from 'strophe.js';
 
 /**
@@ -61,4 +62,29 @@ export function stringToElement (s) {
  */
 export function queryChildren (el, selector) {
     return Array.from(el.childNodes).filter(el => (el instanceof Element) && el.matches(selector));
+}
+
+/**
+ * @param {Element} el - the DOM element
+ * @return {number}
+ */
+export function siblingIndex (el) {
+    /* eslint-disable no-cond-assign */
+    for (var i = 0; el = el.previousElementSibling; i++);
+    return i;
+}
+
+const element = document.createElement('div');
+
+/**
+ * @param {string} str
+ * @return {string}
+ */
+export function decodeHTMLEntities (str) {
+    if (str && typeof str === 'string') {
+        element.innerHTML = DOMPurify.sanitize(str);
+        str = element.textContent;
+        element.textContent = '';
+    }
+    return str;
 }

@@ -6,6 +6,15 @@ import { safeSave } from '../../utils/index.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
+export function isChatRoom (model) {
+    return model?.get('type') === 'chatroom';
+}
+
+export function shouldCreateGroupchatMessage (attrs) {
+    return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
+}
+
+
 export function getAutoFetchedAffiliationLists () {
     const affs = api.settings.get('muc_fetch_members');
     return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];

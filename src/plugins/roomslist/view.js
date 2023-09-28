@@ -5,6 +5,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 import { initStorage } from '@converse/headless/utils/storage.js';
+import { isChatRoom } from '@converse/headless/plugins/muc/utils.js';
 
 const { Strophe, u } = converse.env;
 
@@ -30,13 +31,13 @@ export class RoomsList extends CustomElement {
     }
 
     renderIfChatRoom (model) {
-        u.isChatRoom(model) && this.requestUpdate();
+        isChatRoom(model) && this.requestUpdate();
     }
 
     renderIfRelevantChange (model) {
         const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
         const changed = model.changed || {};
-        if (u.isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
+        if (isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
             this.requestUpdate();
         }
     }

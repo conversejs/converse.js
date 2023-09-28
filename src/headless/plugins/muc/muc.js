@@ -18,6 +18,7 @@ import { getUniqueId, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
+import { shouldCreateGroupchatMessage } from './utils.js';
 
 const { u } = converse.env;
 
@@ -2296,7 +2297,7 @@ const ChatRoomMixin = {
         if (attrs['chat_state']) {
             this.updateNotifications(attrs.nick, attrs.chat_state);
         }
-        if (u.shouldCreateGroupchatMessage(attrs)) {
+        if (shouldCreateGroupchatMessage(attrs)) {
             const msg = await handleCorrection(this, attrs) || (await this.createMessage(attrs));
             this.removeNotification(attrs.nick, ['composing', 'paused']);
             this.handleUnreadMessage(msg);

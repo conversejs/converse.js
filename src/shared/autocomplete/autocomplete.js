@@ -6,10 +6,11 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import { Events } from '@converse/skeletor/src/events.js';
-import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.js';
 import Suggestion from './suggestion.js';
+import { Events } from '@converse/skeletor/src/events.js';
 import { converse } from "@converse/headless";
+import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.js';
+import { siblingIndex } from '@converse/headless/utils/html.js';
 
 
 const u = converse.env.utils;
@@ -185,7 +186,7 @@ export class AutoComplete {
 
     select (selected) {
         if (selected) {
-            this.index = u.siblingIndex(selected);
+            this.index = siblingIndex(selected);
         } else {
             selected = this.ul.children[this.index];
         }

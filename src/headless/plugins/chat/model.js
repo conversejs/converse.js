@@ -15,6 +15,7 @@ import { isEmptyMessage } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
+import { isNewMessage } from './utils.js';
 
 const { Strophe, $msg } = converse.env;
 
@@ -1094,7 +1095,7 @@ const ChatBox = ModelWithContact.extend({
         if (!message?.get('body')) {
             return
         }
-        if (u.isNewMessage(message)) {
+        if (isNewMessage(message)) {
             if (message.get('sender') === 'me') {
                 // We remove the "scrolled" flag so that the chat area
                 // gets scrolled down. We always want to scroll down

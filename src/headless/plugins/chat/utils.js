@@ -1,3 +1,5 @@
+import sizzle from "sizzle";
+import { Model } from '@converse/skeletor/src/model.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
@@ -23,6 +25,22 @@ export async function onClearSession () {
         _converse.chatboxes.clearStore({ 'silent': true }, filter);
     }
 }
+
+export function isNewMessage (message) {
+    /* Given a stanza, determine whether it's a new
+     * message, i.e. not a MAM archived one.
+     */
+    if (message instanceof Element) {
+        return !(
+            sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
+            sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length
+        );
+    } else if (message instanceof Model) {
+        message = message.attributes;
+    }
+    return !(message['is_delayed'] && message['is_archived']);
+}
+
 
 async function handleErrorMessage (stanza) {
     const from_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));

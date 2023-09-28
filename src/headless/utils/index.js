@@ -3,16 +3,15 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
-import DOMPurify from 'dompurify';
-import sizzle from "sizzle";
 import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe, toStanza } from 'strophe.js';
+import { toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { saveWindowState, shouldClearCache } from './session.js';
 import { merge, isError, isFunction } from './object.js';
 import { createStore, getDefaultStore } from './storage.js';
 import { waitUntil } from './promise.js';
 import { isValidJID, isValidMUCJID, isSameBareJID } from './jid.js';
+import { isErrorStanza } from './stanza.js';
 import {
     getCurrentWord,
     getSelectValues,
@@ -52,26 +51,7 @@ import {
  * The utils object
  * @namespace u
  */
-const u = {
-    arrayBufferToBase64,
-    arrayBufferToHex,
-    arrayBufferToString,
-    base64ToArrayBuffer,
-    checkFileTypes,
-    getSelectValues,
-    getURI,
-    isAllowedProtocolForMedia,
-    isAudioURL,
-    isError,
-    isFunction,
-    isGIFURL,
-    isImageURL,
-    isURLWithImageExtension,
-    isVideoURL,
-    shouldRenderMediaFromURL,
-    stringToArrayBuffer,
-    webForm2xForm,
-};
+const u = {};
 
 
 export function isEmptyMessage (attrs) {
@@ -99,7 +79,7 @@ export function prefixMentions (message) {
     return text;
 }
 
-u.getLongestSubstring = function (string, candidates) {
+function getLongestSubstring (string, candidates) {
     function reducer (accumulator, current_value) {
         if (string.startsWith(current_value)) {
             if (current_value.length > accumulator.length) {
@@ -114,80 +94,23 @@ u.getLongestSubstring = function (string, candidates) {
     return candidates.reduce(reducer, '');
 }
 
-u.isNewMessage = function (message) {
-    /* Given a stanza, determine whether it's a new
-     * message, i.e. not a MAM archived one.
-     */
-    if (message instanceof Element) {
-        return !(
-            sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
-            sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length
-        );
-    } else if (message instanceof Model) {
-        message = message.attributes;
-    }
-    return !(message['is_delayed'] && message['is_archived']);
-};
-
-u.shouldCreateMessage = function (attrs) {
+function shouldCreateMessage (attrs) {
     return attrs['retracted'] || // Retraction received *before* the message
         !isEmptyMessage(attrs);
-}
-
-u.shouldCreateGroupchatMessage = function (attrs) {
-    return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
-}
-
-u.isChatRoom = function (model) {
-    return model && (model.get('type') === 'chatroom');
 }
 
 export function isErrorObject (o) {
     return o instanceof Error;
 }
 
-u.isErrorStanza = function (stanza) {
-    if (!isElement(stanza)) {
-        return false;
-    }
-    return stanza.getAttribute('type') === 'error';
-}
-
-u.isForbiddenError = function (stanza) {
-    if (!isElement(stanza)) {
-        return false;
-    }
-    return sizzle(`error[type="auth"] forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
-}
-
-u.isServiceUnavailableError = function (stanza) {
-    if (!isElement(stanza)) {
-        return false;
-    }
-    return sizzle(`error[type="cancel"] service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
-}
-
-u.getAttribute = function (key, item) {
-    return item.get(key);
-};
-
-u.isPersistableModel = function (model) {
-    return model.collection && model.collection.browserStorage;
-};
-
-u.getResolveablePromise = getOpenPromise;
-u.getOpenPromise = getOpenPromise;
-
 /**
  * Call the callback once all the events have been triggered
- * @private
- * @method u#onMultipleEvents
  * @param { Array } events: An array of objects, with keys `object` and
  *   `event`, representing the event name and the object it's triggered upon.
  * @param { Function } callback: The function to call once all events have
  *    been triggered.
  */
-u.onMultipleEvents = function (events=[], callback) {
+function onMultipleEvents (events=[], callback) {
     let triggered = [];
 
     function handler (result) {
@@ -198,23 +121,19 @@ u.onMultipleEvents = function (events=[], callback) {
         }
     }
     events.forEach(e => e.object.on(e.event, handler));
-};
+}
 
+function isPersistableModel (model) {
+    return model.collection && model.collection.browserStorage;
+}
 
 export function safeSave (model, attributes, options) {
-    if (u.isPersistableModel(model)) {
+    if (isPersistableModel(model)) {
         model.save(attributes, options);
     } else {
         model.set(attributes, options);
     }
 }
-
-
-u.siblingIndex = function (el) {
-    /* eslint-disable no-cond-assign */
-    for (var i = 0; el = el.previousElementSibling; i++);
-    return i;
-};
 
 /**
  * @param {Element} el
@@ -251,34 +170,41 @@ export function getUniqueId (suffix) {
     }
 }
 
-
-const element = document.createElement('div');
-
-export function decodeHTMLEntities (str) {
-    if (str && typeof str === 'string') {
-        element.innerHTML = DOMPurify.sanitize(str);
-        str = element.textContent;
-        element.textContent = '';
-    }
-    return str;
-}
-
 export default Object.assign({
+    arrayBufferToBase64,
+    arrayBufferToHex,
+    arrayBufferToString,
+    base64ToArrayBuffer,
+    checkFileTypes,
     createStore,
     getCurrentWord,
     getDefaultStore,
+    getLongestSubstring,
+    getOpenPromise,
     getOuterWidth,
     getRandomInt,
+    getSelectValues,
+    getURI,
     getUniqueId,
+    isAllowedProtocolForMedia,
+    isAudioURL,
     isElement,
     isEmptyMessage,
+    isError,
     isErrorObject,
+    isErrorStanza,
+    isFunction,
+    isGIFURL,
+    isImageURL,
     isMentionBoundary,
     isSameBareJID,
     isTagEqual,
+    isURLWithImageExtension,
     isValidJID,
     isValidMUCJID,
+    isVideoURL,
     merge,
+    onMultipleEvents,
     placeCaretAtEnd,
     prefixMentions,
     queryChildren,
@@ -286,8 +212,12 @@ export default Object.assign({
     safeSave,
     saveWindowState,
     shouldClearCache,
+    shouldCreateMessage,
+    shouldRenderMediaFromURL,
+    stringToArrayBuffer,
     stringToElement,
     toStanza,
     triggerEvent,
+    webForm2xForm,
     waitUntil, // TODO: remove. Only the API should be used
 }, u);

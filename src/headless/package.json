@@ -8,8 +8,7 @@
   ],
   "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
-  "main": "index.js",
-  "browser": "dist/converse-headless.js",
+  "main": "dist/converse-headless.js",
   "module": "index.js",
   "keywords": [
     "converse.js",

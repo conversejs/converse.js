@@ -1,10 +1,10 @@
 # Changelog
 
 ## 11.0.0 (Unreleased)
+- #fixes #3133 changes _controlbox.scss to fix the overflow issue
 
 Breaking changes:
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
-- #fixes #3133 changes _controlbox.scss to fix the overflow issue
 
 ## 10.1.6 (2023-08-31)
 

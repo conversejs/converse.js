@@ -73,7 +73,7 @@ export async function routeToRoom (jid) {
     if (api.settings.get('allow_bookmarks')) {
         await api.waitUntil('bookmarksInitialized');
     }
-    api.rooms.open(jid);
+    api.rooms.open(jid, {}, true);
 }
 
 /* Opens a groupchat, making sure that certain attributes

@@ -2,6 +2,9 @@
 
 ## 11.0.0 (Unreleased)
 
+
+- #2716: Fix issue with chat display when opening via URL
+
 Breaking changes:
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
 
@@ -9,7 +12,7 @@ Breaking changes:
 
 - #3246: Badge color not responsive to dark theme
 - Fix a GIF rendering bug that causes a memory overflow
-
+  
 ## 10.1.5 (2023-06-29)
 
 - #3209: Fix error when importing the `converse` global with bootstrap modal API

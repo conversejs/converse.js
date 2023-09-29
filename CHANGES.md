@@ -2,9 +2,11 @@
 
 ## 11.0.0 (Unreleased)
 
+
+- #2716: Fix issue with chat display when opening via URL
+
 Breaking changes:
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
-- #2716: Fix issue with chat display when opening via URL
 
 ## 10.1.6 (2023-08-31)
 

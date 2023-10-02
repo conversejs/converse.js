@@ -71,7 +71,7 @@ const Bookmarks = {
     sendBookmarkStanza () {
         const stanza = $iq({
                 'type': 'set',
-                'from': _converse.connection.jid,
+                'from': api.connection.get().jid,
             })
             .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                 .c('publish', {'node': Strophe.NS.BOOKMARKS})
@@ -108,7 +108,7 @@ const Bookmarks = {
 
     fetchBookmarksFromServer (deferred) {
         const stanza = $iq({
-            'from': _converse.connection.jid,
+            'from': api.connection.get().jid,
             'type': 'get',
         }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
             .c('items', {'node': Strophe.NS.BOOKMARKS});

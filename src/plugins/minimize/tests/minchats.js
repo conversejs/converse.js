@@ -26,7 +26,7 @@ describe("A chat message", function () {
         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         var msg = $msg({
             from: sender_jid,
-            to: _converse.connection.jid,
+            to: _converse.api.connection.get().jid,
             type: 'chat',
             id: u.getUniqueId()
         }).c('body').t(message).up()
@@ -45,7 +45,7 @@ describe("A chat message", function () {
         _converse.handleMessageStanza(
             $msg({
                 from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                to: _converse.connection.jid,
+                to: _converse.api.connection.get().jid,
                 type: 'chat',
                 id: u.getUniqueId()
             }).c('body').t('This message is also sent to a minimized chatbox').up()
@@ -291,7 +291,7 @@ describe("The Minimized Chats Widget", function () {
         for (i=0; i<3; i++) {
             const msg = $msg({
                 from: contact_jid,
-                to: _converse.connection.jid,
+                to: _converse.api.connection.get().jid,
                 type: 'chat',
                 id: u.getUniqueId()
             }).c('body').t('This message is sent to a minimized chatbox').up()
@@ -307,7 +307,7 @@ describe("The Minimized Chats Widget", function () {
         // <composing> state
         _converse.handleMessageStanza($msg({
             from: contact_jid,
-            to: _converse.connection.jid,
+            to: _converse.api.connection.get().jid,
             type: 'chat',
             id: u.getUniqueId()
         }).c('composing', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
@@ -316,7 +316,7 @@ describe("The Minimized Chats Widget", function () {
         // <paused> state
         _converse.handleMessageStanza($msg({
             from: contact_jid,
-            to: _converse.connection.jid,
+            to: _converse.api.connection.get().jid,
             type: 'chat',
             id: u.getUniqueId()
         }).c('paused', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
@@ -325,7 +325,7 @@ describe("The Minimized Chats Widget", function () {
         // <gone> state
         _converse.handleMessageStanza($msg({
             from: contact_jid,
-            to: _converse.connection.jid,
+            to: _converse.api.connection.get().jid,
             type: 'chat',
             id: u.getUniqueId()
         }).c('gone', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
@@ -334,7 +334,7 @@ describe("The Minimized Chats Widget", function () {
         // <inactive> state
         _converse.handleMessageStanza($msg({
             from: contact_jid,
-            to: _converse.connection.jid,
+            to: _converse.api.connection.get().jid,
             type: 'chat',
             id: u.getUniqueId()
         }).c('inactive', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());

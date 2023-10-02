@@ -12,10 +12,10 @@ describe("Message Archive Management", function () {
        it("can be used to query for all archived messages",
                 mock.initConverse(['discoInitialized'], {}, async function (_converse) {
 
-            const sendIQ = _converse.connection.sendIQ;
+            const sendIQ = _converse.api.connection.get().sendIQ;
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -31,8 +31,8 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -61,7 +61,7 @@ describe("Message Archive Management", function () {
             _converse.api.archive.query({'with': room_jid, 'groupchat': true});
             await mock.waitUntilDiscoConfirmed(_converse, room_jid, null, [Strophe.NS.MAM]);
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const stanza = await u.waitUntil(
                 () => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
 
@@ -86,7 +86,7 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, room_jid, null, [Strophe.NS.MAM]);
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const sent_stanza = await u.waitUntil(
                 () => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
             const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
@@ -121,7 +121,7 @@ describe("Message Archive Management", function () {
                                     'from':'coven@chat.shakespeare.lit/firstwitch',
                                     'type':'groupchat' })
                                 .c('body').t("Thrice the brinded cat hath mew'd.");
-            _converse.connection._dataRecv(mock.createRequest(msg1));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg1));
 
             /* Send an <iq> stanza to indicate the end of the result set.
              *
@@ -140,7 +140,7 @@ describe("Message Archive Management", function () {
                         .c('first', {'index': '0'}).t('23452-4534-1').up()
                         .c('last').t('09af3-cc343-b409f').up()
                         .c('count').t('16');
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             const result = await promise;
             expect(result.messages.length).toBe(0);
@@ -151,8 +151,8 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -199,8 +199,8 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -232,8 +232,8 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -265,8 +265,8 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -302,8 +302,8 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -331,8 +331,8 @@ describe("Message Archive Management", function () {
 
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -365,7 +365,7 @@ describe("Message Archive Management", function () {
                                     'from':'romeo@montague.lit/orchard',
                                     'type':'chat' })
                                 .c('body').t("Call me but love, and I'll be new baptized;");
-            _converse.connection._dataRecv(mock.createRequest(msg1));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg1));
 
             const msg2 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
                         .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73624'})
@@ -377,7 +377,7 @@ describe("Message Archive Management", function () {
                                     'from':'romeo@montague.lit/orchard',
                                     'type':'chat' })
                                 .c('body').t("Henceforth I never will be Romeo.");
-            _converse.connection._dataRecv(mock.createRequest(msg2));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg2));
 
             /* Send an <iq> stanza to indicate the end of the result set.
              *
@@ -396,7 +396,7 @@ describe("Message Archive Management", function () {
                         .c('first', {'index': '0'}).t('23452-4534-1').up()
                         .c('last').t('09af3-cc343-b409f').up()
                         .c('count').t('16');
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             const result = await promise;
             expect(result.messages.length).toBe(2);

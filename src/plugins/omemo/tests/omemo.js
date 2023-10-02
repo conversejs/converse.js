@@ -27,14 +27,14 @@ describe("The OMEMO module", function() {
         let stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.getAttribute('id'),
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
                 .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
                     .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
         const devicelist = _converse.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => devicelist.devices.length === 1);
@@ -68,7 +68,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
         stanza = $iq({
             'from': _converse.bare_jid,
@@ -88,8 +88,8 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
 
-        spyOn(_converse.connection, 'send').and.callFake(stanza => { sent_stanza = stanza });
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        spyOn(_converse.api.connection.get(), 'send').and.callFake(stanza => { sent_stanza = stanza });
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => sent_stanza);
         expect(Strophe.serialize(sent_stanza)).toBe(
             `<message from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute("id")}" `+
@@ -117,9 +117,9 @@ describe("The OMEMO module", function() {
         // However, we're mocking libsignal in the tests, so we include it as plaintext in the message.
         stanza = $msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'chat',
-                'id': _converse.connection.getUniqueId()
+                'id': _converse.api.connection.get().getUniqueId()
             }).c('body').t('This is a fallback message').up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
@@ -127,7 +127,7 @@ describe("The OMEMO module", function() {
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(2);
         expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim())
@@ -137,16 +137,16 @@ describe("The OMEMO module", function() {
         obj = await omemo.encryptMessage('Another received encrypted message without fallback')
         stanza = $msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'chat',
-                'id': _converse.connection.getUniqueId()
+                'id': _converse.api.connection.get().getUniqueId()
             }).c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                 .c('header', {'sid':  '555'})
                     .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                     .c('iv').t(obj.iv)
                     .up().up()
                 .c('payload').t(obj.payload);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         await u.waitUntil(() => view.model.messages.length > 1);
         expect(view.model.messages.length).toBe(3);
@@ -165,14 +165,14 @@ describe("The OMEMO module", function() {
         let stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.getAttribute('id'),
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
                 .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
                     .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => _converse.omemo_store);
 
@@ -182,10 +182,10 @@ describe("The OMEMO module", function() {
         // Test reception of an encrypted message
         const msg_txt = 'This is an encrypted message from the contact';
         const obj = await omemo.encryptMessage(msg_txt)
-        const id = _converse.connection.getUniqueId();
+        const id = _converse.api.connection.get().getUniqueId();
         stanza = $msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'chat',
                 id
             }).c('body').t('This is a fallback message').up()
@@ -196,14 +196,14 @@ describe("The OMEMO module", function() {
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         // Test reception of the same message, but the decryption fails.
         // The properly decrypted message should still show to the user.
         // See issue: https://github.com/conversejs/converse.js/issues/2733#issuecomment-1035493594
         stanza = $msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'chat',
                 id
             }).c('body').t('This is a fallback message').up()
@@ -214,7 +214,7 @@ describe("The OMEMO module", function() {
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload+'x'); // Hack to break decryption.
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => view.querySelector('.chat-msg__text')?.textContent.trim() === msg_txt);
 
@@ -240,14 +240,14 @@ describe("The OMEMO module", function() {
         const stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.getAttribute('id'),
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
                 .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
                     .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
 
         const contact_devicelist = _converse.devicelists.get({'jid': contact_jid});
@@ -288,8 +288,8 @@ describe("The OMEMO module", function() {
                 </sent>
             </message>
         `);
-        _converse.connection.IQ_stanzas = [];
-        _converse.connection._dataRecv(mock.createRequest(carbon));
+        _converse.api.connection.get().IQ_stanzas = [];
+        _converse.api.connection.get()._dataRecv(mock.createRequest(carbon));
 
         // The message received is a prekey message, so missing prekeys are
         // generated and a new bundle published.
@@ -299,7 +299,7 @@ describe("The OMEMO module", function() {
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(result_iq));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
 
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(1);
@@ -347,7 +347,7 @@ describe("The OMEMO module", function() {
         // it as plaintext in the message.
         let stanza = $msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'chat',
                 'id': 'qwerty'
             }).c('body').t('This is a fallback message').up()
@@ -370,13 +370,13 @@ describe("The OMEMO module", function() {
             _converse.omemo_store.removePreKey(1);
             return generateMissingPreKeys.apply(_converse.omemo_store, arguments);
         });
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         let iq_stanza = await mock.deviceListFetched(_converse, contact_jid);
         stanza = $iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
-            'to': _converse.connection.jid,
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
         }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
             .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
@@ -387,8 +387,8 @@ describe("The OMEMO module", function() {
         // XXX: the bundle gets published twice, we want to make sure
         // that we wait for the 2nd, so we clear all the already sent
         // stanzas.
-        _converse.connection.IQ_stanzas = [];
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get().IQ_stanzas = [];
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse), 1000);
         expect(Strophe.serialize(iq_stanza)).toBe(
@@ -458,7 +458,7 @@ describe("The OMEMO module", function() {
                 .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '555'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
         expect(_converse.chatboxes.length).toBe(1);
         expect(_converse.devicelists.length).toBe(1);
@@ -472,7 +472,7 @@ describe("The OMEMO module", function() {
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
 
         stanza = $iq({
@@ -480,12 +480,12 @@ describe("The OMEMO module", function() {
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized');
 
 
         // A PEP message is received with a device list.
-        _converse.connection._dataRecv(mock.createRequest($msg({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
             'from': contact_jid,
             'to': _converse.bare_jid,
             'type': 'headline',
@@ -506,10 +506,10 @@ describe("The OMEMO module", function() {
         // This is perhaps a bit wasteful since we're already (AFIAK) getting the info we need
         // from the PEP headline message, but the code is simpler this way.
         const iq_devicelist_get = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
                 'from': contact_jid,
                 'id': iq_devicelist_get.getAttribute('id'),
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
                 .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
@@ -540,7 +540,7 @@ describe("The OMEMO module", function() {
                     .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
                         .c('device', {'id': '4223'}).up()
                         .c('device', {'id': '4224'})
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         expect(_converse.devicelists.length).toBe(2);
         await u.waitUntil(() => list.devices.length === 3);
@@ -562,7 +562,7 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '123456789'})
                         .c('device', {'id': '555'})
                         .c('device', {'id': '777'})
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         expect(_converse.devicelists.length).toBe(2);
         devices = _converse.devicelists.get(_converse.bare_jid).devices;
@@ -572,7 +572,7 @@ describe("The OMEMO module", function() {
         expect(devices.get('555').get('active')).toBe(true);
         expect(devices.get('777').get('active')).toBe(true);
 
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
 
         // Check that own device gets re-added
         stanza = $msg({
@@ -585,7 +585,7 @@ describe("The OMEMO module", function() {
                 .c('item')
                     .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
                         .c('device', {'id': '444'})
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
         // Check that our own device is added again, but that removed
@@ -646,7 +646,7 @@ describe("The OMEMO module", function() {
                 `</pubsub>`+
             `</iq>`);
 
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
@@ -670,17 +670,17 @@ describe("The OMEMO module", function() {
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         stanza = $iq({
             'from': _converse.bare_jid,
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized');
 
-        _converse.connection._dataRecv(mock.createRequest($msg({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
             'from': contact_jid,
             'to': _converse.bare_jid,
             'type': 'headline',
@@ -703,10 +703,10 @@ describe("The OMEMO module", function() {
         // It will be created and then automatically the devices will
         // be requested from the server via IQ stanza.
         const iq_devicelist_get = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
                 'from': contact_jid,
                 'id': iq_devicelist_get.getAttribute('id'),
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
                 .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
@@ -745,7 +745,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '2001'}).up()
                             .c('preKeyPublic', {'preKeyId': '2002'}).up()
                             .c('preKeyPublic', {'preKeyId': '2003'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         expect(_converse.devicelists.length).toBe(2);
         expect(list.devices.length).toBe(1);
@@ -760,7 +760,7 @@ describe("The OMEMO module", function() {
         expect(device.get('bundle').prekeys[1].id).toBe(2002);
         expect(device.get('bundle').prekeys[2].id).toBe(2003);
 
-        _converse.connection._dataRecv(mock.createRequest($msg({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
             'from': _converse.bare_jid,
             'to': _converse.bare_jid,
             'type': 'headline',
@@ -817,7 +817,7 @@ describe("The OMEMO module", function() {
                 .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '482886413b977930064a5888b92134fe'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.devicelists.length).toBe(1);
         await mock.openChatBoxFor(_converse, contact_jid);
         iq_stanza = await mock.ownDeviceHasBeenPublished(_converse);
@@ -826,7 +826,7 @@ describe("The OMEMO module", function() {
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         expect(Strophe.serialize(iq_stanza)).toBe(
@@ -863,7 +863,7 @@ describe("The OMEMO module", function() {
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized');
     }));
 
@@ -898,7 +898,7 @@ describe("The OMEMO module", function() {
                 .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '482886413b977930064a5888b92134fe'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
         expect(_converse.devicelists.length).toBe(1);
         let devicelist = _converse.devicelists.get(_converse.bare_jid);
@@ -936,7 +936,7 @@ describe("The OMEMO module", function() {
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const iq_el = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         expect(iq_el.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
@@ -954,7 +954,7 @@ describe("The OMEMO module", function() {
             'id': iq_el.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized', 1000);
         await mock.openChatBoxFor(_converse, contact_jid);
 
@@ -966,7 +966,7 @@ describe("The OMEMO module", function() {
                 `</pubsub>`+
             `</iq>`);
 
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
@@ -1056,7 +1056,7 @@ describe("The OMEMO module", function() {
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>`+
             `</iq>`);
 
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
@@ -1078,7 +1078,7 @@ describe("The OMEMO module", function() {
                 `</pubsub>`+
             `</iq>`);
 
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,

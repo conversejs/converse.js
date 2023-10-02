@@ -22,7 +22,7 @@ describe("Notifications", function () {
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         msg = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: _converse.api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('body').t(message).up()
@@ -49,7 +49,7 @@ describe("Notifications", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(text).tree();
-                    _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(window.Notification).not.toHaveBeenCalled();
 
@@ -61,13 +61,13 @@ describe("Notifications", function () {
                         type: 'groupchat'
                     }).c('body').t('romeo: this will show a notification').up()
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'0', 'end':'5', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).tree();
-                    _converse.connection._dataRecv(mock.createRequest(message_with_ref));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(message_with_ref));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(window.Notification.calls.count()).toBe(1);
 
                     // Test mention with setting true
                     _converse.api.settings.set('notify_all_room_messages', true);
-                    _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will show a notification')));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(makeMsg('romeo: this will show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(window.Notification.calls.count()).toBe(2);
                 }));
@@ -87,7 +87,7 @@ describe("Notifications", function () {
                         .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
                         .c('x', {'xmlns': 'jabber:x:oob'})
                         .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
-                    _converse.connection._dataRecv(mock.createRequest(stanza));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                     await u.waitUntil(() => _converse.chatboxviews.keys().length === 2);
                     expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
@@ -109,7 +109,7 @@ describe("Notifications", function () {
                         .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
                         .c('x', {'xmlns': 'jabber:x:oob'})
                         .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
-                    _converse.connection._dataRecv(mock.createRequest(stanza));
+                    _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                     expect(_converse.chatboxviews.keys().includes('someone@notify.example.com')).toBeFalsy();
                     expect(window.Notification).not.toHaveBeenCalled();
                 }));
@@ -207,7 +207,7 @@ describe("Notifications", function () {
             const previous_state = _converse.windowState;
             const msg = $msg({
                     from: sender_jid,
-                    to: _converse.connection.jid,
+                    to: _converse.api.connection.get().jid,
                     type: 'chat',
                     id: u.getUniqueId()
                 }).c('body').t('This message will increment the message counter').up()
@@ -224,7 +224,7 @@ describe("Notifications", function () {
             _converse.api.settings.set('show_tab_notifications', true);
             const msg2 = $msg({
                     from: sender_jid,
-                    to: _converse.connection.jid,
+                    to: _converse.api.connection.get().jid,
                     type: 'chat',
                     id: u.getUniqueId()
                 }).c('body').t('This message increment the message counter AND update the page title').up()
@@ -261,7 +261,7 @@ describe("Notifications", function () {
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 msg = $msg({
                     from: sender_jid,
-                    to: _converse.connection.jid,
+                    to: _converse.api.connection.get().jid,
                     type: 'chat',
                     id: u.getUniqueId()
                 }).c('body').t(message).up()
@@ -288,7 +288,7 @@ describe("Notifications", function () {
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => $msg({
                     from: sender_jid,
-                    to: _converse.connection.jid,
+                    to: _converse.api.connection.get().jid,
                     type: 'chat',
                     id: u.getUniqueId()
                 })

@@ -14,14 +14,14 @@ describe("An OMEMO encrypted message", function() {
         let stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.getAttribute('id'),
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
                 .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
                     .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
         const devicelist = _converse.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => devicelist.devices.length === 1);
@@ -55,7 +55,7 @@ describe("An OMEMO encrypted message", function() {
                             .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
         stanza = $iq({
             'from': _converse.bare_jid,
@@ -75,7 +75,7 @@ describe("An OMEMO encrypted message", function() {
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
 
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.querySelector('.chat-msg__text').textContent)
@@ -101,8 +101,8 @@ describe("An OMEMO encrypted message", function() {
         });
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newer_text);
 
-        await u.waitUntil(() => _converse.connection.sent_stanzas.filter(s => s.nodeName === 'message').length === 3);
-        const msg = _converse.connection.sent_stanzas.pop();
+        await u.waitUntil(() => _converse.api.connection.get().sent_stanzas.filter(s => s.nodeName === 'message').length === 3);
+        const msg = _converse.api.connection.get().sent_stanzas.pop();
         const fallback_text = 'This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo';
 
         expect(Strophe.serialize(msg))
@@ -157,9 +157,9 @@ describe("An OMEMO encrypted message", function() {
 
         const first_rcvd_msg_id = u.getUniqueId();
         let obj = await omemo.encryptMessage('This is an encrypted message from the contact')
-        _converse.connection._dataRecv(mock.createRequest($msg({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'chat',
                 'id': first_rcvd_msg_id
             }).c('body').t(fallback_text).up()
@@ -177,9 +177,9 @@ describe("An OMEMO encrypted message", function() {
 
         const msg_id = u.getUniqueId();
         obj = await omemo.encryptMessage('This is an edited encrypted message from the contact')
-        _converse.connection._dataRecv(mock.createRequest($msg({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'chat',
                 'id': msg_id
             }).c('body').t(fallback_text).up()
@@ -248,7 +248,7 @@ describe("An OMEMO encrypted MUC message", function() {
                 'jid': 'newguy@montague.lit/_converse.js-290929789',
                 'role': 'participant'
             }).tree();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         // Wait for Converse to fetch newguy's device list
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
@@ -270,7 +270,7 @@ describe("An OMEMO encrypted MUC message", function() {
                 .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
         expect(_converse.devicelists.length).toBe(2);
 
@@ -308,7 +308,7 @@ describe("An OMEMO encrypted MUC message", function() {
                             .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'), 1000);
         stanza = $iq({
@@ -329,10 +329,10 @@ describe("An OMEMO encrypted MUC message", function() {
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
 
-        spyOn(_converse.connection, 'send').and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.connection.send.calls.count(), 1000);
-        const sent_stanza = _converse.connection.send.calls.all()[0].args[0];
+        spyOn(_converse.api.connection.get(), 'send').and.callThrough();
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+        await u.waitUntil(() => _converse.api.connection.get().send.calls.count(), 1000);
+        const sent_stanza = _converse.api.connection.get().send.calls.all()[0].args[0];
 
         expect(Strophe.serialize(sent_stanza)).toBe(
             `<message from="romeo@montague.lit/orchard" `+
@@ -385,8 +385,8 @@ describe("An OMEMO encrypted MUC message", function() {
         expect(first_msg.get('body')).toBe(fallback_text);
         expect(first_msg.get('message')).toBe(fallback_text);
 
-        await u.waitUntil(() => _converse.connection.sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
-        const msg = _converse.connection.sent_stanzas.pop();
+        await u.waitUntil(() => _converse.api.connection.get().sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
+        const msg = _converse.api.connection.get().sent_stanzas.pop();
 
         expect(Strophe.serialize(msg))
             .toBe(`<message from="${_converse.jid}" id="${msg.getAttribute("id")}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
@@ -408,12 +408,12 @@ describe("An OMEMO encrypted MUC message", function() {
 
 
         // Test reception of an encrypted message
-        const first_received_id = _converse.connection.getUniqueId()
+        const first_received_id = _converse.api.connection.get().getUniqueId()
         const first_received_message = 'This is an encrypted message from the contact';
         const first_obj = await omemo.encryptMessage(first_received_message)
-        _converse.connection._dataRecv(mock.createRequest($msg({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
                 'from': `${muc_jid}/newguy`,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'id': first_received_id
             }).c('body').t(fallback_text).up()
@@ -433,11 +433,11 @@ describe("An OMEMO encrypted MUC message", function() {
 
         const second_received_message = 'This is an edited encrypted message from the contact';
         const second_obj = await omemo.encryptMessage(second_received_message)
-        _converse.connection._dataRecv(mock.createRequest($msg({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($msg({
                 'from': `${muc_jid}/newguy`,
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
-                'id': _converse.connection.getUniqueId()
+                'id': _converse.api.connection.get().getUniqueId()
             }).c('body').t(fallback_text).up()
                 .c('replace',  {'id':first_received_id, 'xmlns': 'urn:xmpp:message-correct:0'})
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})

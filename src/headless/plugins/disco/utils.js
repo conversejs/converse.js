@@ -58,7 +58,7 @@ function addClientFeatures () {
 
 export async function initializeDisco () {
     addClientFeatures();
-    _converse.connection.addHandler(
+    api.connection.get().addHandler(
         stanza => onDiscoInfoRequest(stanza),
         Strophe.NS.DISCO_INFO,
         'iq', 'get', null, null
@@ -111,12 +111,12 @@ export function notifyStreamFeaturesAdded () {
 
 export function populateStreamFeatures () {
     // Strophe.js sets the <stream:features> element on the
-    // Strophe.Connection instance (_converse.connection).
+    // Strophe.Connection instance.
     //
     // Once this is we populate the _converse.stream_features collection
     // and trigger streamFeaturesAdded.
     initStreamFeatures();
-    Array.from(_converse.connection.features.childNodes).forEach(feature => {
+    Array.from(api.connection.get().features.childNodes).forEach(feature => {
         _converse.stream_features.create({
             'name': feature.nodeName,
             'xmlns': feature.getAttribute('xmlns')

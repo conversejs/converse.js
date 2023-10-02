@@ -145,7 +145,7 @@ export default class MUCListModal extends BaseModal {
     updateRoomsList () {
         const iq = $iq({
             'to': this.model.get('muc_domain'),
-            'from': _converse.connection.jid,
+            'from': api.connection.get().jid,
             'type': "get"
         }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS});
         api.sendIQ(iq)

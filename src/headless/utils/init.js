@@ -1,73 +1,18 @@
 import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '../shared/_converse';
+import api from '../shared/api/index.js';
 import debounce from 'lodash-es/debounce';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '../log.js';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
-import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN, PREBIND } from '../shared/constants.js';
-import { Connection, MockConnection } from '../shared/connection/index.js';
+import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from '../shared/constants.js';
+import { Connection } from '../shared/connection/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
+import { getConnectionServiceURL } from '../shared/connection/utils';
 import { isValidJID } from './jid.js';
 import { saveWindowState, isTestEnv } from './session.js';
-
-
-function setUpXMLLogging () {
-    const lmap = {}
-    lmap[Strophe.LogLevel.DEBUG] = 'debug';
-    lmap[Strophe.LogLevel.INFO] = 'info';
-    lmap[Strophe.LogLevel.WARN] = 'warn';
-    lmap[Strophe.LogLevel.ERROR] = 'error';
-    lmap[Strophe.LogLevel.FATAL] = 'fatal';
-
-    Strophe.log = (level, msg) => log.log(msg, lmap[level]);
-    Strophe.error = (msg) => log.error(msg);
-
-    _converse.connection.xmlInput = body => log.debug(body.outerHTML, 'color: darkgoldenrod');
-    _converse.connection.xmlOutput = body => log.debug(body.outerHTML, 'color: darkcyan');
-}
-
-
-function getConnectionServiceURL () {
-    const { api } = _converse;
-    if (('WebSocket' in window || 'MozWebSocket' in window) && api.settings.get("websocket_url")) {
-        return api.settings.get('websocket_url');
-    } else if (api.settings.get('bosh_service_url')) {
-        return api.settings.get('bosh_service_url');
-    }
-    return '';
-}
-
-
-export function initConnection () {
-    const api = _converse.api;
-
-    if (! api.settings.get('bosh_service_url')) {
-        if (api.settings.get("authentication") === PREBIND) {
-            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
-        }
-    }
-
-    const XMPPConnection = isTestEnv() ? MockConnection : Connection;
-    _converse.connection = new XMPPConnection(
-        getConnectionServiceURL(),
-        Object.assign(
-            _converse.default_connection_options,
-            api.settings.get("connection_options"),
-            {'keepalive': api.settings.get("keepalive")}
-        )
-    );
-
-    setUpXMLLogging();
-    /**
-     * Triggered once the `Connection` constructor has been initialized, which
-     * will be responsible for managing the connection to the XMPP server.
-     *
-     * @event _converse#connectionInitialized
-     */
-    api.trigger('connectionInitialized');
-}
 
 
 export function initPlugins (_converse) {
@@ -203,7 +148,7 @@ function saveJIDtoSession (_converse, jid) {
     });
     // Set JID on the connection object so that when we call `connection.bind`
     // the new resource is found by Strophe.js and sent to the XMPP server.
-    _converse.connection.jid = jid;
+    api.connection.get().jid = jid;
 }
 
 /**
@@ -212,7 +157,7 @@ function saveJIDtoSession (_converse, jid) {
  *
  * Given that we can only create an XMPP connection if we know the domain of
  * the server connect to and we only know this once we know the JID, we also
- * call {@link initConnection } (if necessary) to make sure that the
+ * call {@link api.connection.init} (if necessary) to make sure that the
  * connection is set up.
  *
  * @emits _converse#setUserJID
@@ -295,7 +240,7 @@ export async function cleanup (_converse) {
     await api.trigger('cleanup', {'synchronous': true});
     _converse.router.history.stop();
     unregisterGlobalEventHandlers(_converse);
-    _converse.connection?.reset();
+    api.connection.get()?.reset();
     _converse.stopListening();
     _converse.off();
     if (_converse.promises['initialized'].isResolved) {
@@ -399,9 +344,9 @@ export async function attemptNonPreboundSession (credentials, automatic) {
             return connect(credentials);
         } else if (api.settings.get("credentials_url")) {
             // We give credentials_url preference, because
-            // _converse.connection.pass might be an expired token.
+            // connection.pass might be an expired token.
             return connect(await getLoginCredentialsFromURL());
-        } else if (_converse.jid && (api.settings.get("password") || _converse.connection.pass)) {
+        } else if (_converse.jid && (api.settings.get("password") || api.connection.get().pass)) {
             return connect();
         }
 
@@ -454,6 +399,7 @@ export async function savedLoginInfo (jid) {
  */
 async function connect (credentials) {
     const { api } = _converse;
+    const connection = api.connection.get();
     if ([ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication"))) {
         if (!_converse.jid) {
             throw new Error("Config Error: when using anonymous login " +
@@ -461,24 +407,24 @@ async function connect (credentials) {
                 "Either when calling converse.initialize, or when calling " +
                 "_converse.api.user.login.");
         }
-        if (!_converse.connection.reconnecting) {
-            _converse.connection.reset();
+        if (!connection.reconnecting) {
+            connection.reset();
         }
-        _converse.connection.connect(_converse.jid.toLowerCase());
+        connection.connect(_converse.jid.toLowerCase());
     } else if (api.settings.get("authentication") === LOGIN) {
-        const password = credentials?.password ?? (_converse.connection?.pass || api.settings.get("password"));
+        const password = credentials?.password ?? (connection?.pass || api.settings.get("password"));
         if (!password) {
             if (api.settings.get("auto_login")) {
                 throw new Error("autoLogin: If you use auto_login and "+
                     "authentication='login' then you also need to provide a password.");
             }
-            _converse.connection.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
+            connection.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
             api.connection.disconnect();
             return;
         }
-        if (!_converse.connection.reconnecting) {
-            _converse.connection.reset();
-            _converse.connection.service = getConnectionServiceURL();
+        if (!connection.reconnecting) {
+            connection.reset();
+            connection.service = getConnectionServiceURL();
         }
 
         let callback;
@@ -494,12 +440,12 @@ async function connect (credentials) {
             const login_info = await savedLoginInfo(_converse.jid);
 
             callback = (status) => {
-                const { scram_keys } = _converse.connection;
+                const { scram_keys } = connection;
                 if (scram_keys) login_info.save({ scram_keys });
-                _converse.connection.onConnectStatusChanged(status);
+                connection.onConnectStatusChanged(status);
             };
         }
 
-        _converse.connection.connect(_converse.jid, password, callback);
+        connection.connect(_converse.jid, password, callback);
     }
 }

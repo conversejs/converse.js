@@ -33,7 +33,7 @@ export default {
         if (stanza.tagName === 'iq') {
             return api.sendIQ(stanza);
         } else {
-            _converse.connection.send(stanza);
+            api.connection.get().send(stanza);
             api.trigger('send', stanza);
         }
     },
@@ -52,7 +52,15 @@ export default {
      *  nothing to wait for, so an already resolved promise is returned.
      */
     sendIQ (stanza, timeout, reject=true) {
-        const { api, connection } = _converse;
+        const { api } = _converse;
+
+        if (!api.connection.connected()) {
+            log.warn("Not sending IQ stanza because we're not connected!");
+            log.warn(Strophe.serialize(stanza));
+            return;
+        }
+
+        const connection = api.connection.get();
 
         let promise;
         stanza = stanza.tree?.() ?? stanza;
@@ -71,7 +79,7 @@ export default {
                 promise = new Promise((resolve) => connection.sendIQ(stanza, resolve, resolve, timeout));
             }
         } else {
-            _converse.connection.sendIQ(stanza);
+            connection.sendIQ(stanza);
             promise = Promise.resolve();
         }
         api.trigger('send', stanza);

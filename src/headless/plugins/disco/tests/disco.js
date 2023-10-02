@@ -10,8 +10,8 @@ describe("Service Discovery", function () {
                 async function (_converse) {
 
             const { u, $iq } = converse.env;
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
-            const IQ_ids =  _converse.connection.IQ_ids;
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            const IQ_ids =  _converse.api.connection.get().IQ_ids;
             await u.waitUntil(function () {
                 return IQ_stanzas.filter(function (iq) {
                     return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
@@ -74,7 +74,7 @@ describe("Service Discovery", function () {
                     'var': 'jabber:iq:time'}).up()
                 .c('feature', {
                     'var': 'jabber:iq:version'});
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(function () {
                 // Converse.js sees that the entity has a disco#items feature,
@@ -139,7 +139,7 @@ describe("Service Discovery", function () {
                     'name': 'Music from the time of Shakespeare'
                 });
 
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             const entities = await _converse.api.disco.entities.get()
             expect(entities.length).toBe(5); // We have an extra entity, which is the user's JID

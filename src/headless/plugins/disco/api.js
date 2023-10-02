@@ -144,7 +144,7 @@ export default {
                 attrs.node = node;
             }
             const info = $iq({
-                'from': _converse.connection.jid,
+                'from': api.connection.get().jid,
                 'to':jid,
                 'type':'get'
             }).c('query', attrs);
@@ -166,7 +166,7 @@ export default {
             }
             return api.sendIQ(
                 $iq({
-                    'from': _converse.connection.jid,
+                    'from': api.connection.get().jid,
                     'to':jid,
                     'type':'get'
                 }).c('query', attrs)

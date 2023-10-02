@@ -37,7 +37,7 @@ export function onUserActivity () {
     if (_converse.idle_seconds > 0) {
         _converse.idle_seconds = 0;
     }
-    if (!_converse.connection?.authenticated) {
+    if (!api.connection.get()?.authenticated) {
         // We can't send out any stanzas when there's no authenticated connection.
         // This can happen when the connection reconnects.
         return;
@@ -61,7 +61,7 @@ export function onEverySecond () {
     /* An interval handler running every second.
      * Used for CSI and the auto_away and auto_xa features.
      */
-    if (!_converse.connection?.authenticated) {
+    if (!api.connection.get()?.authenticated) {
         // We can't send out any stanzas when there's no authenticated connection.
         // This can happen when the connection reconnects.
         return;

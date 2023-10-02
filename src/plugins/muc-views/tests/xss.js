@@ -28,7 +28,7 @@ describe("XSS", function () {
                 }).up()
                 .c('status').attrs({code:'110'}).nodeTree;
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             await u.waitUntil(() => view.querySelectorAll('.occupant-list .occupant-nick').length === 2);
             const occupants = view.querySelectorAll('.occupant-list li .occupant-nick');

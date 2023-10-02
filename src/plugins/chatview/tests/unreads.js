@@ -8,13 +8,14 @@ describe("A ChatBox's Unread Message Count", function () {
     it("is incremented when the message is received and ChatBoxView is scrolled up",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
 
         const view = await mock.openChatBoxFor(_converse, sender_jid)
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         view.model.ui.set('scrolled', true);
         await _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.model.messages.length);
@@ -28,12 +29,13 @@ describe("A ChatBox's Unread Message Count", function () {
     it("is not incremented when the message is received and ChatBoxView is scrolled down",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
         await mock.openChatBoxFor(_converse, sender_jid);
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         const chatbox = _converse.chatboxes.get(sender_jid);
         await _converse.handleMessageStanza(msg);
         expect(chatbox.get('num_unread')).toBe(0);
@@ -44,6 +46,7 @@ describe("A ChatBox's Unread Message Count", function () {
     it("is incremented when message is received, chatbox is scrolled down and the window is not focused",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msgFactory = function () {
@@ -51,7 +54,7 @@ describe("A ChatBox's Unread Message Count", function () {
         };
         await mock.openChatBoxFor(_converse, sender_jid);
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         const chatbox = _converse.chatboxes.get(sender_jid);
         _converse.windowState = 'hidden';
         const msg = msgFactory();
@@ -67,12 +70,13 @@ describe("A ChatBox's Unread Message Count", function () {
     it("is incremented when message is received, chatbox is scrolled up and the window is not focused",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
         await mock.openChatBoxFor(_converse, sender_jid);
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         const chatbox = _converse.chatboxes.get(sender_jid);
         chatbox.ui.set('scrolled', true);
         _converse.windowState = 'hidden';
@@ -89,12 +93,13 @@ describe("A ChatBox's Unread Message Count", function () {
     it("is cleared when the chat was scrolled down and the window become focused",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
         await mock.openChatBoxFor(_converse, sender_jid);
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         const chatbox = _converse.chatboxes.get(sender_jid);
         _converse.windowState = 'hidden';
         const msg = msgFactory();
@@ -131,12 +136,13 @@ describe("A ChatBox's Unread Message Count", function () {
     it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
         await mock.openChatBoxFor(_converse, sender_jid);
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         const chatbox = _converse.chatboxes.get(sender_jid);
         chatbox.ui.set('scrolled', true);
         _converse.windowState = 'hidden';

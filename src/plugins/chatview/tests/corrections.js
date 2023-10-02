@@ -7,6 +7,7 @@ describe("A Chat Message", function () {
     it("can be sent as a correction by using the up arrow",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -43,7 +44,7 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
 
-        spyOn(_converse.connection, 'send');
+        spyOn(api.connection.get(), 'send');
         let new_text = 'But soft, what light through yonder window breaks?';
         textarea.value = new_text;
         message_form.onKeyDown({
@@ -53,8 +54,8 @@ describe("A Chat Message", function () {
         });
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === new_text);
 
-        expect(_converse.connection.send).toHaveBeenCalled();
-        const msg = _converse.connection.send.calls.all()[0].args[0];
+        expect(api.connection.get().send).toHaveBeenCalled();
+        const msg = api.connection.get().send.calls.all()[0].args[0];
         expect(Strophe.serialize(msg))
         .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                 `to="mercutio@montague.lit" type="chat" `+
@@ -167,6 +168,7 @@ describe("A Chat Message", function () {
     it("can be sent as a correction by clicking the pencil icon",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -201,7 +203,7 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
-        spyOn(_converse.connection, 'send');
+        spyOn(api.connection.get(), 'send');
         const text = 'But soft, what light through yonder window breaks?';
         textarea.value = text;
         message_form.onKeyDown({
@@ -210,9 +212,9 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === text);
-        expect(_converse.connection.send).toHaveBeenCalled();
+        expect(api.connection.get().send).toHaveBeenCalled();
 
-        const msg = _converse.connection.send.calls.all()[0].args[0];
+        const msg = api.connection.get().send.calls.all()[0].args[0];
         expect(Strophe.serialize(msg))
         .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                 `to="mercutio@montague.lit" type="chat" `+
@@ -258,7 +260,7 @@ describe("A Chat Message", function () {
         _converse.handleMessageStanza(
             $msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'type': 'chat',
                 'id': u.getUniqueId()
             }).c('body').t('Hello').up()
@@ -297,6 +299,7 @@ describe("A Chat Message", function () {
         it("can be replaced with a correction",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+            const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -304,7 +307,7 @@ describe("A Chat Message", function () {
             const view = await mock.openChatBoxFor(_converse, sender_jid);
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
-                    'to': _converse.connection.jid,
+                    'to': api.connection.get().jid,
                     'type': 'chat',
                     'id': msg_id,
                 }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
@@ -315,7 +318,7 @@ describe("A Chat Message", function () {
 
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
-                    'to': _converse.connection.jid,
+                    'to': api.connection.get().jid,
                     'type': 'chat',
                     'id': u.getUniqueId(),
                 }).c('body').t('But soft, what light through yonder chimney breaks?').up()
@@ -330,7 +333,7 @@ describe("A Chat Message", function () {
 
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
-                    'to': _converse.connection.jid,
+                    'to': api.connection.get().jid,
                     'type': 'chat',
                     'id': u.getUniqueId(),
                 }).c('body').t('But soft, what light through yonder window breaks?').up()

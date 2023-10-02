@@ -25,7 +25,7 @@ describe("A headlines box", function () {
             })
             .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
             .c('body').t('SORRY FOR THIS ADVERT');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => setTimeout(resolve, 100));
         const headlines = await _converse.api.headlines.get();
         expect(headlines.length).toBe(0);
@@ -60,7 +60,7 @@ describe("A headlines box", function () {
             .c('x', {'xmlns': 'jabber:x:oob'})
                 .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
 
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.chatboxviews.keys().includes('notify.example.com'));
         const view = _converse.chatboxviews.get('notify.example.com');
         expect(view.model.get('show_avatar')).toBeFalsy();
@@ -101,7 +101,7 @@ describe("A headlines box", function () {
             .c('x', {'xmlns': 'jabber:x:oob'})
                 .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
 
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         const view = _converse.chatboxviews.get('controlbox');
         await u.waitUntil(() => view.querySelectorAll(".open-headline").length);
         expect(view.querySelectorAll('.open-headline').length).toBe(1);
@@ -138,7 +138,7 @@ describe("A headlines box", function () {
             .c('x', {'xmlns': 'jabber:x:oob'})
                 .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
 
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         const cbview = _converse.chatboxviews.get('controlbox');
         await u.waitUntil(() => cbview.querySelectorAll(".open-headline").length);
         const hlview = _converse.chatboxviews.get('notify.example.com');
@@ -163,7 +163,7 @@ describe("A headlines box", function () {
             })
             .c('nick').t('gpocy').up()
             .c('body').t('Здравствуйте друзья');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_.without('controlbox', _converse.chatboxviews.keys()).length).toBe(0);
     }));
 });

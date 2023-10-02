@@ -19,11 +19,11 @@ describe("A Groupchat Message", function () {
                 'jid': 'newguy@montague.lit/_converse.js-290929789',
                 'role': 'participant'
             }).tree();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         const msg_id = u.getUniqueId();
         await model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'id': msg_id,
             }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
@@ -36,7 +36,7 @@ describe("A Groupchat Message", function () {
 
         await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'id': u.getUniqueId(),
             }).c('body').t('But soft, what light through yonder chimney breaks?').up()
@@ -48,7 +48,7 @@ describe("A Groupchat Message", function () {
 
         await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'id': u.getUniqueId(),
             }).c('body').t('But soft, what light through yonder window breaks?').up()
@@ -84,13 +84,13 @@ describe("A Groupchat Message", function () {
                 'jid': 'newguy@montague.lit/_converse.js-290929789',
                 'role': 'participant'
             }).tree();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         const msg_id = u.getUniqueId();
 
         // Receiving the first message
         await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'id': msg_id,
             }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
@@ -98,7 +98,7 @@ describe("A Groupchat Message", function () {
         // Receiving own message to check order against
         await view.model.handleMessageStanza($msg({
             'from': 'lounge@montague.lit/romeo',
-            'to': _converse.connection.jid,
+            'to': _converse.api.connection.get().jid,
             'type': 'groupchat',
             'id': u.getUniqueId(),
         }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
@@ -113,7 +113,7 @@ describe("A Groupchat Message", function () {
         // First message correction
         await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'id': u.getUniqueId(),
             }).c('body').t('But soft, what light through yonder chimney breaks?').up()
@@ -127,7 +127,7 @@ describe("A Groupchat Message", function () {
         // Second message correction
         await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'id': u.getUniqueId(),
             }).c('body').t('But soft, what light through yonder window breaks?').up()
@@ -136,7 +136,7 @@ describe("A Groupchat Message", function () {
         // Second own message
         await view.model.handleMessageStanza($msg({
             'from': 'lounge@montague.lit/romeo',
-            'to': _converse.connection.jid,
+            'to': _converse.api.connection.get().jid,
             'type': 'groupchat',
             'id': u.getUniqueId(),
         }).c('body').t('But soft, what light through yonder window breaks?').tree());
@@ -195,7 +195,7 @@ describe("A Groupchat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
-        spyOn(_converse.connection, 'send');
+        spyOn(_converse.api.connection.get(), 'send');
         const new_text = 'But soft, what light through yonder window breaks?'
         textarea.value = new_text;
         message_form.onKeyDown({
@@ -206,8 +206,8 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
             .filter(m => m.textContent.replace(/<!-.*?->/g, '') === new_text).length);
 
-        expect(_converse.connection.send).toHaveBeenCalled();
-        const msg = _converse.connection.send.calls.all()[0].args[0];
+        expect(_converse.api.connection.get().send).toHaveBeenCalled();
+        const msg = _converse.api.connection.get().send.calls.all()[0].args[0];
         expect(Strophe.serialize(msg))
         .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                 `to="lounge@montague.lit" type="groupchat" `+
@@ -278,7 +278,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
                 <message
                     xmlns="jabber:server"
                     from="lounge@montague.lit/newguy"
-                    to="_converse.connection.jid"
+                    to="_converse.api.connection.get().jid"
                     type="groupchat"
                     id="${msg_id}">
 
@@ -296,7 +296,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
                 <message
                     xmlns="jabber:server"
                     from="lounge@montague.lit/newguy"
-                    to="_converse.connection.jid"
+                    to="_converse.api.connection.get().jid"
                     type="groupchat"
                     id="${u.getUniqueId()}">
 
@@ -319,7 +319,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
                 <message
                     xmlns="jabber:server"
                     from="lounge@montague.lit/newguy"
-                    to="_converse.connection.jid"
+                    to="_converse.api.connection.get().jid"
                     type="groupchat"
                     id="${u.getUniqueId()}">
 
@@ -360,7 +360,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
                 <message
                     xmlns="jabber:server"
                     from="lounge@montague.lit/${nick}"
-                    to="_converse.connection.jid"
+                    to="_converse.api.connection.get().jid"
                     type="groupchat"
                     id="${msg_id}">
 
@@ -378,7 +378,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
                 <message
                     xmlns="jabber:server"
                     from="lounge@montague.lit/${nick}"
-                    to="_converse.connection.jid"
+                    to="_converse.api.connection.get().jid"
                     type="groupchat"
                     id="${u.getUniqueId()}">
 
@@ -396,7 +396,7 @@ describe('A Groupchat Message XEP-0308 correction ', function () {
                 <message
                     xmlns="jabber:server"
                     from="lounge@montague.lit/${nick}"
-                    to="_converse.connection.jid"
+                    to="_converse.api.connection.get().jid"
                     type="groupchat"
                     id="${u.getUniqueId()}">
 

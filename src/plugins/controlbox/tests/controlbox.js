@@ -77,7 +77,7 @@ describe("The Controlbox", function () {
 
             let msg = $msg({
                     from: sender_jid,
-                    to: _converse.connection.jid,
+                    to: _converse.api.connection.get().jid,
                     type: 'chat',
                     id: u.getUniqueId()
                 }).c('body').t('hello').up()
@@ -90,7 +90,7 @@ describe("The Controlbox", function () {
 
             msg = $msg({
                     from: sender_jid,
-                    to: _converse.connection.jid,
+                    to: _converse.api.connection.get().jid,
                     type: 'chat',
                     id: u.getUniqueId()
                 }).c('body').t('hello again').up()

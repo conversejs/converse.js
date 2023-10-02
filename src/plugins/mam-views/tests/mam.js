@@ -24,34 +24,34 @@ describe("Message Archive Management", function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
             const queryid = stanza.querySelector('query').getAttribute('queryid');
-            let msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
-                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+            let msg = $msg({'id': _converse.api.connection.get().getUniqueId(), 'to': _converse.bare_jid})
+                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.api.connection.get().getUniqueId()})
                             .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                 .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
                                 .c('message', {
                                     'xmlns':'jabber:client',
                                     'to': _converse.bare_jid,
-                                    'id': _converse.connection.getUniqueId(),
+                                    'id': _converse.api.connection.get().getUniqueId(),
                                     'from': contact_jid,
                                     'type':'chat'
                                 }).c('body').t("Meet me at the dance");
-            _converse.connection._dataRecv(mock.createRequest(msg));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
 
-            msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
-                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+            msg = $msg({'id': _converse.api.connection.get().getUniqueId(), 'to': _converse.bare_jid})
+                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.api.connection.get().getUniqueId()})
                             .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                 .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
                                 .c('message', {
                                     'xmlns':'jabber:client',
                                     'to': _converse.bare_jid,
-                                    'id': _converse.connection.getUniqueId(),
+                                    'id': _converse.api.connection.get().getUniqueId(),
                                     'from': contact_jid,
                                     'type':'chat'
                                 }).c('body').t("Thrice the brinded cat hath mew'd.");
-            _converse.connection._dataRecv(mock.createRequest(msg));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
 
             const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
                 .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
@@ -59,7 +59,7 @@ describe("Message Archive Management", function () {
                         .c('first', {'index': '0'}).t('23452-4534-1').up()
                         .c('last').t('09af3-cc343-b409f').up()
                         .c('count').t('16');
-            _converse.connection._dataRecv(mock.createRequest(iq_result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
 
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
             expect(view.model.messages.length).toBe(2);
@@ -85,7 +85,7 @@ describe("Message Archive Management", function () {
                     'muc_clear_messages_on_leave': false,
                 }, async function (_converse) {
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             let view = _converse.chatboxviews.get(muc_jid);
@@ -100,8 +100,8 @@ describe("Message Archive Management", function () {
                     `</query>`+
                 `</iq>`);
 
-            let first_msg_id = _converse.connection.getUniqueId();
-            let last_msg_id = _converse.connection.getUniqueId();
+            let first_msg_id = _converse.api.connection.get().getUniqueId();
+            let last_msg_id = _converse.api.connection.get().getUniqueId();
             let message = u.toStanza(
                 `<message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
@@ -115,7 +115,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             message = u.toStanza(
                 `<message xmlns="jabber:client"
@@ -130,7 +130,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             // Clear so that we don't match the older query
             while (sent_IQs.length) { sent_IQs.pop(); }
@@ -150,7 +150,7 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 2);
             view.close();
             // Clear so that we don't match the older query
@@ -173,8 +173,8 @@ describe("Message Archive Management", function () {
                     `</query>`+
                 `</iq>`);
 
-            first_msg_id = _converse.connection.getUniqueId();
-            last_msg_id = _converse.connection.getUniqueId();
+            first_msg_id = _converse.api.connection.get().getUniqueId();
+            last_msg_id = _converse.api.connection.get().getUniqueId();
             message = u.toStanza(
                 `<message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
@@ -188,7 +188,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             message = u.toStanza(
                 `<message xmlns="jabber:client"
@@ -203,7 +203,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             // Clear so that we don't match the older query
             while (sent_IQs.length) { sent_IQs.pop(); }
@@ -218,7 +218,7 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 4);
 
             iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
@@ -235,7 +235,7 @@ describe("Message Archive Management", function () {
                     `</query>`+
                 `</iq>`);
 
-            const msg_id = _converse.connection.getUniqueId();
+            const msg_id = _converse.api.connection.get().getUniqueId();
             message = u.toStanza(
                 `<message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
@@ -249,7 +249,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             result = u.toStanza(
                 `<iq type='result' id='${iq_get.getAttribute('id')}'>
@@ -261,7 +261,7 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 5);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
@@ -277,7 +277,7 @@ describe("Message Archive Management", function () {
                 }, async function (_converse) {
 
             const { api } = _converse;
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
             const nick = 'romeo';
             const room_creation_promise = api.rooms.open(muc_jid);
@@ -334,36 +334,36 @@ describe("Message Archive Management", function () {
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
-                const sent_IQs = _converse.connection.IQ_stanzas;
+                const sent_IQs = _converse.api.connection.get().IQ_stanzas;
                 const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
                 const queryid = stanza.querySelector('query').getAttribute('queryid');
-                let msg = $msg({'id': _converse.connection.getUniqueId(), 'from': 'impersonator@capulet.lit', 'to': _converse.bare_jid})
-                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                let msg = $msg({'id': _converse.api.connection.get().getUniqueId(), 'from': 'impersonator@capulet.lit', 'to': _converse.bare_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.api.connection.get().getUniqueId()})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
                                     .c('message', {
                                         'xmlns':'jabber:client',
                                         'to': _converse.bare_jid,
-                                        'id': _converse.connection.getUniqueId(),
+                                        'id': _converse.api.connection.get().getUniqueId(),
                                         'from': contact_jid,
                                         'type':'chat'
                                     }).c('body').t("Meet me at the dance");
                 spyOn(converse.env.log, 'warn');
-                _converse.connection._dataRecv(mock.createRequest(msg));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
                 expect(converse.env.log.warn).toHaveBeenCalledWith(`Ignoring alleged MAM message from ${msg.nodeTree.getAttribute('from')}`);
 
-                msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
-                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                msg = $msg({'id': _converse.api.connection.get().getUniqueId(), 'to': _converse.bare_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.api.connection.get().getUniqueId()})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
                                     .c('message', {
                                         'xmlns':'jabber:client',
                                         'to': _converse.bare_jid,
-                                        'id': _converse.connection.getUniqueId(),
+                                        'id': _converse.api.connection.get().getUniqueId(),
                                         'from': contact_jid,
                                         'type':'chat'
                                     }).c('body').t("Thrice the brinded cat hath mew'd.");
-                _converse.connection._dataRecv(mock.createRequest(msg));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
 
                 const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
                     .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
@@ -371,7 +371,7 @@ describe("Message Archive Management", function () {
                             .c('first', {'index': '0'}).t('23452-4534-1').up()
                             .c('last').t('09af3-cc343-b409f').up()
                             .c('count').t('16');
-                _converse.connection._dataRecv(mock.createRequest(iq_result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
 
                 await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
                     .filter(el => el.textContent === "Thrice the brinded cat hath mew'd.").length, 1000);
@@ -389,35 +389,35 @@ describe("Message Archive Management", function () {
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
-                const sent_IQs = _converse.connection.IQ_stanzas;
+                const sent_IQs = _converse.api.connection.get().IQ_stanzas;
                 const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
                 const queryid = stanza.querySelector('query').getAttribute('queryid');
-                let msg = $msg({'id': _converse.connection.getUniqueId(), 'from': _converse.bare_jid, 'to': _converse.bare_jid})
-                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                let msg = $msg({'id': _converse.api.connection.get().getUniqueId(), 'from': _converse.bare_jid, 'to': _converse.bare_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.api.connection.get().getUniqueId()})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
                                     .c('message', {
                                         'xmlns':'jabber:client',
                                         'to': _converse.bare_jid,
-                                        'id': _converse.connection.getUniqueId(),
+                                        'id': _converse.api.connection.get().getUniqueId(),
                                         'from': contact_jid,
                                         'type':'chat'
                                     }).c('body').t("Meet me at the dance");
                 spyOn(converse.env.log, 'warn');
-                _converse.connection._dataRecv(mock.createRequest(msg));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
 
-                msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
-                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                msg = $msg({'id': _converse.api.connection.get().getUniqueId(), 'to': _converse.bare_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.api.connection.get().getUniqueId()})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
                                     .c('message', {
                                         'xmlns':'jabber:client',
                                         'to': _converse.bare_jid,
-                                        'id': _converse.connection.getUniqueId(),
+                                        'id': _converse.api.connection.get().getUniqueId(),
                                         'from': contact_jid,
                                         'type':'chat'
                                     }).c('body').t("Thrice the brinded cat hath mew'd.");
-                _converse.connection._dataRecv(mock.createRequest(msg));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
 
                 const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
                     .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
@@ -425,7 +425,7 @@ describe("Message Archive Management", function () {
                             .c('first', {'index': '0'}).t('23452-4534-1').up()
                             .c('last').t('09af3-cc343-b409f').up()
                             .c('count').t('16');
-                _converse.connection._dataRecv(mock.createRequest(iq_result));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
                 expect(view.model.messages.length).toBe(2);
@@ -446,7 +446,7 @@ describe("Message Archive Management", function () {
                         <body>Hello</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('is_archived')).toBe(false);
@@ -492,7 +492,7 @@ describe("Message Archive Management", function () {
                         <body>negan</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
                 // Not sure whether such a race-condition might pose a problem
                 // in "real-world" situations.
@@ -587,7 +587,7 @@ describe("Message Archive Management", function () {
 
             entity.onFeatureAdded(feature);
 
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('iq[type="get"] prefs[xmlns="urn:xmpp:mam:2"]', s).length).pop());
             expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
@@ -607,7 +607,7 @@ describe("Message Archive Management", function () {
                 .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'roster'})
                 .c('always').c('jid').t('romeo@montague.lit').up().up()
                 .c('never').c('jid').t('montague@montague.lit');
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(() => _converse.onMAMPreferences.calls.count());
             expect(_converse.onMAMPreferences).toHaveBeenCalled();
@@ -638,7 +638,7 @@ describe("Message Archive Management", function () {
                 .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'always'})
                     .c('always').up()
                     .c('never');
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => feature.save.calls.count());
             expect(feature.save).toHaveBeenCalled();
             expect(feature.get('preferences')['default']).toBe('never'); // eslint-disable-line dot-notation
@@ -658,8 +658,8 @@ describe("Chatboxes", function () {
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
 
             let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -687,7 +687,7 @@ describe("Chatboxes", function () {
                                     'from': _converse.bare_jid,
                                     'type':'chat' })
                                 .c('body').t("Call me but love, and I'll be new baptized;");
-            _converse.connection._dataRecv(mock.createRequest(msg1));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg1));
             const msg2 = $msg({'id':'aeb213', 'to': contact_jid})
                         .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73624'})
                             .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
@@ -698,23 +698,23 @@ describe("Chatboxes", function () {
                                     'from': _converse.bare_jid,
                                     'type':'chat' })
                                 .c('body').t("Henceforth I never will be Romeo.");
-            _converse.connection._dataRecv(mock.createRequest(msg2));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg2));
             const stanza = $iq({'type': 'result', 'id': IQ_id})
                 .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
                     .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
                         .c('first', {'index': '0'}).t('23452-4534-1').up()
                         .c('last').t('09af3-cc343-b409f').up()
                         .c('count').t('16');
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         }));
 
         it("will show an error message if the MAM query times out",
                 mock.initConverse(['discoInitialized'], {}, async function (_converse) {
 
-            const sendIQ = _converse.connection.sendIQ;
+            const sendIQ = _converse.api.connection.get().sendIQ;
 
             let timeout_happened = false;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sendIQ.bind(this)(iq, callback, errback);
                 if (!timeout_happened) {
                     if (typeof(iq.tree) === "function") {
@@ -732,7 +732,7 @@ describe("Chatboxes", function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
 
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop());
             let queryid = sent_stanza.querySelector('query').getAttribute('queryid');
 
@@ -756,8 +756,8 @@ describe("Chatboxes", function () {
             let err_message = await u.waitUntil(() => view.querySelector('.message.chat-error'));
             err_message.querySelector('.retry').click();
 
-            while (_converse.connection.IQ_stanzas.length) {
-                _converse.connection.IQ_stanzas.pop();
+            while (_converse.api.connection.get().IQ_stanzas.length) {
+                _converse.api.connection.get().IQ_stanzas.pop();
             }
             sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop());
             queryid = sent_stanza.querySelector('query').getAttribute('queryid');
@@ -782,7 +782,7 @@ describe("Chatboxes", function () {
                                     'from': _converse.bare_jid,
                                     'type':'chat' })
                                 .c('body').t("Call me but love, and I'll be new baptized;");
-            _converse.connection._dataRecv(mock.createRequest(msg1));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg1));
 
             const msg2 = $msg({'id':'aeb213', 'to': contact_jid})
                         .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid': queryid, 'id':'28482-98726-73624'})
@@ -794,7 +794,7 @@ describe("Chatboxes", function () {
                                     'from': _converse.bare_jid,
                                     'type':'chat' })
                                 .c('body').t("Henceforth I never will be Romeo.");
-            _converse.connection._dataRecv(mock.createRequest(msg2));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg2));
 
             const stanza = $iq({'type': 'result', 'id': sent_stanza.getAttribute('id')})
                 .c('fin', {'xmlns': 'urn:xmpp:mam:2', 'complete': true})
@@ -802,7 +802,7 @@ describe("Chatboxes", function () {
                         .c('first', {'index': '0'}).t('28482-98726-73623').up()
                         .c('last').t('28482-98726-73624').up()
                         .c('count').t('2');
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 2, 500);
             err_message = view.querySelector('.message.chat-error');
             expect(err_message).toBe(null);

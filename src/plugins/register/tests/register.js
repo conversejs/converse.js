@@ -54,6 +54,7 @@ describe("The Registration Panel", function () {
               allow_registration: true },
             async function (_converse) {
 
+        const { api } = _converse;
 
         const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
         toggle.click();
@@ -83,7 +84,8 @@ describe("The Registration Panel", function () {
         submit_button.click();
         expect(registerview.onProviderChosen).toHaveBeenCalled();
         expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
-        delete _converse.connection;
+
+        api.connection.destroy();
     }));
 
     it("allows the user to choose an XMPP provider's domain in fullscreen view mode",
@@ -120,7 +122,7 @@ describe("The Registration Panel", function () {
                 })
             .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
             .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.connection._connect_cb(mock.createRequest(stanza));
+        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
         expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
@@ -133,7 +135,7 @@ describe("The Registration Panel", function () {
                 .c('username').up()
                 .c('password').up()
                 .c('email');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(registerview.renderRegistrationForm).toHaveBeenCalled();
 
         await u.waitUntil(() => registerview.querySelectorAll('input').length === 5);
@@ -176,7 +178,7 @@ describe("The Registration Panel", function () {
                 })
             .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
             .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.connection._connect_cb(mock.createRequest(stanza));
+        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
         expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
@@ -189,7 +191,7 @@ describe("The Registration Panel", function () {
                 .c('username').up()
                 .c('password').up()
                 .c('email');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(registerview.onRegistrationFields).toHaveBeenCalled();
         expect(registerview.renderRegistrationForm).toHaveBeenCalled();
 
@@ -231,7 +233,7 @@ describe("The Registration Panel", function () {
                 })
             .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
             .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.connection._connect_cb(mock.createRequest(stanza));
+        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
         stanza = $iq({
                 'type': 'result',
                 'id': 'reg1'
@@ -241,7 +243,7 @@ describe("The Registration Panel", function () {
                 .c('username').up()
                 .c('password').up()
                 .c('email');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(registerview.form_type).toBe('legacy');
 
         const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
@@ -250,15 +252,15 @@ describe("The Registration Panel", function () {
         registerview.querySelector('input[name=password]').value = 'testpassword';
         registerview.querySelector('input[name=email]').value = 'test@email.local';
 
-        spyOn(_converse.connection, 'send');
+        spyOn(_converse.api.connection.get(), 'send');
         registerview.querySelector('input[type=submit]').click();
 
-        expect(_converse.connection.send).toHaveBeenCalled();
-        stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+        expect(_converse.api.connection.get().send).toHaveBeenCalled();
+        stanza = _converse.api.connection.get().send.calls.argsFor(0)[0].tree();
         expect(stanza.querySelector('query').childNodes.length).toBe(3);
         expect(stanza.querySelector('query').firstElementChild.tagName).toBe('username');
 
-        delete _converse.connection;
+        _converse.api.connection.destroy();
     }));
 
     it("will set form_type to xform and submit it as xform",
@@ -293,7 +295,7 @@ describe("The Registration Panel", function () {
                 })
             .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
             .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.connection._connect_cb(mock.createRequest(stanza));
+        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
         stanza = $iq({
                 'type': 'result',
                 'id': 'reg1'
@@ -305,7 +307,7 @@ describe("The Registration Panel", function () {
                     .c('field', {'type': 'text-single', 'var': 'username'}).c('required').up().up()
                     .c('field', {'type': 'text-private', 'var': 'password'}).c('required').up().up()
                     .c('field', {'type': 'text-single', 'var': 'email'}).c('required').up().up();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(registerview.form_type).toBe('xform');
 
         const username_input = await u.waitUntil(() => registerview.querySelector('input[name=username]'));
@@ -314,12 +316,12 @@ describe("The Registration Panel", function () {
         registerview.querySelector('input[name=password]').value = 'testpassword';
         registerview.querySelector('input[name=email]').value = 'test@email.local';
 
-        spyOn(_converse.connection, 'send');
+        spyOn(_converse.api.connection.get(), 'send');
 
         registerview.querySelector('input[type=submit]').click();
 
-        expect(_converse.connection.send).toHaveBeenCalled();
-        stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+        expect(_converse.api.connection.get().send).toHaveBeenCalled();
+        stanza = _converse.api.connection.get().send.calls.argsFor(0)[0].tree();
         expect(Strophe.serialize(stanza).toLocaleString().trim().replace(/(\n|\s{2,})/g, '')).toEqual(
             '<iq id="'+stanza.getAttribute('id')+'" type="set" xmlns="jabber:client">'+
                 '<query xmlns="jabber:iq:register">'+
@@ -338,7 +340,7 @@ describe("The Registration Panel", function () {
             '</iq>'
         );
 
-        delete _converse.connection;
+        _converse.api.connection.destroy();
     }));
 
     it("renders the account registration form",
@@ -368,7 +370,7 @@ describe("The Registration Panel", function () {
                 })
             .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
             .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.connection._connect_cb(mock.createRequest(stanza));
+        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
         stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversations.im" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
@@ -394,14 +396,14 @@ describe("The Registration Panel", function () {
                     <instructions>You need a client that supports x:data and CAPTCHA to register</instructions>
                 </query>
             </iq>`;
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => registerview.querySelectorAll('#converse-register input[required]').length === 3);
         expect(registerview.form_type).toBe('xform');
 
         // Hide the controlbox so that we can see whether the test passed or failed
         u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
-        delete _converse.connection;
+        _converse.api.connection.destroy();
     }));
 
     it("lets you choose a different provider",
@@ -433,7 +435,7 @@ describe("The Registration Panel", function () {
                 })
             .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
             .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.connection._connect_cb(mock.createRequest(stanza));
+        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
         stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversations.im" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
@@ -449,7 +451,7 @@ describe("The Registration Panel", function () {
                     </x>
                 </query>
             </iq>`;
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => registerview.querySelectorAll('#converse-register input[required]').length === 2);
         expect(registerview.form_type).toBe('xform');
@@ -463,7 +465,7 @@ describe("The Registration Panel", function () {
 
         // Hide the controlbox so that we can see whether the test passed or failed
         u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
-        delete _converse.connection;
+        _converse.api.connection.destroy();
     }));
 
     it("renders errors",
@@ -495,7 +497,7 @@ describe("The Registration Panel", function () {
                 })
             .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
             .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-        _converse.connection._connect_cb(mock.createRequest(stanza));
+        _converse.api.connection.get()._connect_cb(mock.createRequest(stanza));
 
         stanza = stx`
             <iq xmlns="jabber:client" type="result" from="conversejs.org" id="ad1e0d50-5adb-4397-a997-5feab56fe418:sendIQ" xml:lang="en">
@@ -521,7 +523,7 @@ describe("The Registration Panel", function () {
                     <instructions>You need a client that supports x:data and CAPTCHA to register</instructions>
                 </query>
             </iq>`;
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         spyOn(view, 'submitRegistrationForm').and.callThrough();
 
@@ -542,12 +544,12 @@ describe("The Registration Panel", function () {
                     <text xml:lang='en' xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>Too many CAPTCHA requests</text>
                 </error>
             </iq>`;
-        _converse.connection._dataRecv(mock.createRequest(response_IQ));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(response_IQ));
 
         const alert = await u.waitUntil(() => view.querySelector('.alert'));
         expect(alert.textContent.trim()).toBe('Too many CAPTCHA requests');
         // Hide the controlbox so that we can see whether the test passed or failed
         u.addClass('hidden', _converse.chatboxviews.get('controlbox'));
-        delete _converse.connection;
+        _converse.api.connection.destroy();
     }));
 });

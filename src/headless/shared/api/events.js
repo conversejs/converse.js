@@ -118,7 +118,7 @@ export default {
             } else {
                 options = options || {};
             }
-            _converse.connection.addHandler(
+            api.connection.get().addHandler(
                 handler,
                 options.ns,
                 name,

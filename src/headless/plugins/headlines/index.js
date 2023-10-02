@@ -40,7 +40,10 @@ converse.plugins.add('converse-headlines', {
         _converse.HeadlinesFeed = HeadlinesFeed;
 
         function registerHeadlineHandler () {
-            _converse.connection.addHandler(m => (onHeadlineMessage(m) || true), null, 'message');
+            api.connection.get()?.addHandler(m => {
+                onHeadlineMessage(m);
+                return true; // keep the handler
+            }, null, 'message');
         }
         api.listen.on('connected', registerHeadlineHandler);
         api.listen.on('reconnected', registerHeadlineHandler);

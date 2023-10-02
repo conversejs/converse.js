@@ -1,12 +1,11 @@
 import debounce from 'lodash-es/debounce';
-import { _converse } from '@converse/headless';
+import { _converse, api } from '@converse/headless';
 import { applyDragResistance } from './utils.js';
 
 const DragResizableMixin = {
     initDragResize () {
-        const view = this;
-        const debouncedSetDimensions = debounce(() => view.setDimensions());
-        window.addEventListener('resize', view.debouncedSetDimensions);
+        const debouncedSetDimensions = debounce(() => this.setDimensions());
+        window.addEventListener('resize', debouncedSetDimensions);
         this.listenTo(this.model, 'destroy', () => window.removeEventListener('resize', debouncedSetDimensions));
 
         // Determine and store the default box size.
@@ -29,7 +28,7 @@ const DragResizableMixin = {
         // Initialize last known mouse position
         this.prev_pageY = 0;
         this.prev_pageX = 0;
-        if (_converse.connection?.connected) {
+        if (api.connection.get()?.connected) {
             this.height = this.model.get('height');
             this.width = this.model.get('width');
         }

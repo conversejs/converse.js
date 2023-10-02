@@ -37,9 +37,9 @@ describe("Emojis", function () {
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
-                    'to': _converse.connection.jid,
+                    'to': _converse.api.connection.get().jid,
                     'type': 'chat',
-                    'id': _converse.connection.getUniqueId()
+                    'id': _converse.api.connection.get().getUniqueId()
                 }).c('body').t('😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
@@ -49,9 +49,9 @@ describe("Emojis", function () {
 
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
-                    'to': _converse.connection.jid,
+                    'to': _converse.api.connection.get().jid,
                     'type': 'chat',
-                    'id': _converse.connection.getUniqueId()
+                    'id': _converse.api.connection.get().getUniqueId()
                 }).c('body').t('😇 Hello world! 😇 😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
@@ -124,9 +124,9 @@ describe("Emojis", function () {
             const contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             _converse.handleMessageStanza($msg({
                     'from': contact_jid,
-                    'to': _converse.connection.jid,
+                    'to': _converse.api.connection.get().jid,
                     'type': 'chat',
-                    'id': _converse.connection.getUniqueId()
+                    'id': _converse.api.connection.get().getUniqueId()
                 }).c('body').t('😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
@@ -158,7 +158,7 @@ describe("Emojis", function () {
             expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path')+'/72x72/1f4a9.png');
             expect(imgs[1].src).toBe(_converse.api.settings.get('emoji_image_path')+'/72x72/1f607.png');
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const sent_stanza = sent_stanzas.filter(s => s.nodeName === 'message').pop();
             expect(sent_stanza.querySelector('body').innerHTML).toBe('💩 😇');
         }));

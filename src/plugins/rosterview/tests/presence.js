@@ -12,7 +12,7 @@ describe("A sent presence stanza", function () {
 
         const { u, Strophe } = converse.env;
         mock.openControlBox(_converse);
-        spyOn(_converse.connection, 'send').and.callThrough();
+        spyOn(_converse.api.connection.get(), 'send').and.callThrough();
 
         const cbview = _converse.chatboxviews.get('controlbox');
         const change_status_el = await u.waitUntil(() => cbview.querySelector('.change-status'));
@@ -23,7 +23,7 @@ describe("A sent presence stanza", function () {
         modal.querySelector('input[name="status_message"]').value = msg;
         modal.querySelector('[type="submit"]').click();
 
-        const sent_stanzas = _converse.connection.sent_stanzas;
+        const sent_stanzas = _converse.api.connection.get().sent_stanzas;
         let sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
         expect(Strophe.serialize(sent_presence))
             .toBe(`<presence xmlns="jabber:client">`+

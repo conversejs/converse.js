@@ -22,10 +22,10 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         expect(view.model.get('hidden')).toBe(false);
 
-        const sent_IQs = _converse.connection.IQ_stanzas;
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
-        const first_msg_id = _converse.connection.getUniqueId();
-        const last_msg_id = _converse.connection.getUniqueId();
+        const first_msg_id = _converse.api.connection.get().getUniqueId();
+        const last_msg_id = _converse.api.connection.get().getUniqueId();
         let message = u.toStanza(
             `<message xmlns="jabber:client"
                     to="romeo@montague.lit/orchard"
@@ -39,7 +39,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                     </forwarded>
                 </result>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
         message = u.toStanza(
             `<message xmlns="jabber:client"
@@ -54,7 +54,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                     </forwarded>
                 </result>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
         const result = u.toStanza(
             `<iq type='result' id='${iq_get.getAttribute('id')}'>
@@ -66,11 +66,11 @@ describe("XEP-0437 Room Activity Indicators", function () {
                     </set>
                 </fin>
             </iq>`);
-        _converse.connection._dataRecv(mock.createRequest(result));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
         await u.waitUntil(() => view.model.messages.length === 2);
 
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         view.model.save({'hidden': true});
         await u.waitUntil(() => sent_stanzas.length === 3);
 
@@ -106,7 +106,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                 </rai>
             </message>
         `);
-        _converse.connection._dataRecv(mock.createRequest(activity_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => view.model.get('has_activity'));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
@@ -125,7 +125,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        const sent_stanzas = _converse.connection.sent_stanzas;
+        const sent_stanzas = _converse.api.connection.get().sent_stanzas;
 
         const muc_creation_promise = await api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
         await mock.getRoomFeatures(_converse, muc_jid, []);
@@ -168,7 +168,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                 </rai>
             </message>
         `);
-        _converse.connection._dataRecv(mock.createRequest(activity_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => model.get('has_activity'));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
@@ -189,7 +189,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         expect(model.get('hidden')).toBe(false);
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         model.save({'hidden': true});
         await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').length === 2);
 
@@ -213,7 +213,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
                 <error type="wait"><resource-constraint xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
             </presence>
         `);
-        _converse.connection._dataRecv(mock.createRequest(activity_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
     }));

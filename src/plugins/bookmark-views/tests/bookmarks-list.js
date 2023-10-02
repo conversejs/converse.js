@@ -19,7 +19,7 @@ describe("The bookmarks list modal", function () {
         const controlbox = _converse.chatboxviews.get('controlbox');
         controlbox.querySelector('.show-bookmark-list-modal').click();
 
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
 
@@ -31,7 +31,7 @@ describe("The bookmarks list modal", function () {
             '</iq>'
         );
 
-        const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
+        const stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
             .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                 .c('items', {'node': 'storage:bookmarks'})
                     .c('item', {'id': 'current'})
@@ -60,7 +60,7 @@ describe("The bookmarks list modal", function () {
                                 'autojoin': 'false',
                                 'jid': 'another@conference.shakespeare.lit'
                             }).c('nick').t('JC').up().up();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const modal = _converse.api.modal.get('converse-bookmark-list-modal');
         await u.waitUntil(() => modal.querySelectorAll('.bookmarks.rooms-list .room-item').length);
@@ -100,10 +100,10 @@ describe("The bookmarks list modal", function () {
         const controlbox = await _converse.chatboxviews.get('controlbox');
         controlbox.querySelector('.show-bookmark-list-modal').click();
 
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
-        const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
+        const stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
             .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                 .c('items', {'node': 'storage:bookmarks'})
                     .c('item', {'id': 'current'})
@@ -118,7 +118,7 @@ describe("The bookmarks list modal", function () {
                                 'autojoin': 'false',
                                 'jid': 'first@conference.shakespeare.lit'
                             }).c('nick').t('JC');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const modal = api.modal.get('converse-bookmark-list-modal');
         await u.waitUntil(() => u.isVisible(modal), 1000);

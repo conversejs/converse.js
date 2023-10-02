@@ -24,7 +24,7 @@ describe("A Chat Message", function () {
                     <body>Have you heard this funny audio?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`)
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
             let msg = view.querySelector('.chat-msg .chat-msg__text');
@@ -44,7 +44,7 @@ describe("A Chat Message", function () {
                     <body>${url}</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             msg = view.querySelector('.chat-msg .chat-msg__text');
@@ -79,7 +79,7 @@ describe("A Chat Message", function () {
                     <body>Have you seen this funny video?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg video').length, 2000)
             let msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(msg.classList.length).toBe(1);
@@ -97,7 +97,7 @@ describe("A Chat Message", function () {
                     <body>https://montague.lit/video.mp4</body>
                     <x xmlns="jabber:x:oob"><url>https://montague.lit/video.mp4</url></x>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             msg = view.querySelector('converse-chat-message .chat-msg__text');
             expect(msg.innerHTML.replace(/<!-.*?->/g, '')).toEqual('Have you seen this funny video?');
@@ -121,7 +121,7 @@ describe("A Chat Message", function () {
                     <body>Have you downloaded this funny file?</body>
                     <x xmlns="jabber:x:oob"><url>https://montague.lit/funny.pdf</url></x>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg a').length, 1000);
             const msg = view.querySelector('.chat-msg .chat-msg__text');
@@ -152,8 +152,8 @@ describe("A Chat Message", function () {
                     <body>Have you seen this funny image?</body>
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg a').length, 1000);
             const msg = view.querySelector('.chat-msg .chat-msg__text');

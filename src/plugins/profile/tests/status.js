@@ -24,7 +24,7 @@ describe("The Controlbox", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
             modal.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
             modal.querySelector('[type="submit"]').click();
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
             expect(Strophe.serialize(sent_presence)).toBe(
                 `<presence xmlns="jabber:client">`+
@@ -51,7 +51,7 @@ describe("The Controlbox", function () {
             const msg = 'I am happy';
             modal.querySelector('input[name="status_message"]').value = msg;
             modal.querySelector('[type="submit"]').click();
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
             expect(Strophe.serialize(sent_presence)).toBe(
                 `<presence xmlns="jabber:client">`+

@@ -51,7 +51,7 @@ function initConverse (promise_names=[], settings=null, func) {
 
 async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, features=[], items=[], type='info') {
     const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
-    const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+    const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
     const stanza = $iq({
         'type': 'result',
         'from': entity_jid,
@@ -62,7 +62,7 @@ async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, featu
     identities?.forEach(identity => stanza.c('identity', {'category': identity.category, 'type': identity.type}).up());
     features?.forEach(feature => stanza.c('feature', {'var': feature}).up());
     items?.forEach(item => stanza.c('item', {'jid': item}).up());
-    _converse.connection._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(stanza));
 }
 
 function createRequest (stanza) {
@@ -112,12 +112,12 @@ async function waitUntilBookmarksReturned (_converse, bookmarks=[]) {
         [{'category': 'pubsub', 'type': 'pep'}],
         ['http://jabber.org/protocol/pubsub#publish-options']
     );
-    const IQ_stanzas = _converse.connection.IQ_stanzas;
+    const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
     const sent_stanza = await u.waitUntil(
         () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop()
     );
     const stanza = $iq({
-        'to': _converse.connection.jid,
+        'to': _converse.api.connection.get().jid,
         'type':'result',
         'id':sent_stanza.getAttribute('id')
     }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
@@ -131,7 +131,7 @@ async function waitUntilBookmarksReturned (_converse, bookmarks=[]) {
             'jid': bookmark.jid
         }).c('nick').t(bookmark.nick).up().up()
     });
-    _converse.connection._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(stanza));
     await _converse.api.waitUntil('bookmarksInitialized');
 }
 
@@ -173,7 +173,7 @@ function openChatRoom (_converse, room, server) {
 async function getRoomFeatures (_converse, muc_jid, features=[]) {
     const room = Strophe.getNodeFromJid(muc_jid);
     muc_jid = muc_jid.toLowerCase();
-    const stanzas = _converse.connection.IQ_stanzas;
+    const stanzas = _converse.api.connection.get().IQ_stanzas;
     const stanza = await u.waitUntil(() => stanzas.filter(
         iq => iq.querySelector(
             `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
@@ -200,12 +200,12 @@ async function getRoomFeatures (_converse, muc_jid, features=[]) {
             .c('value').t('This is the description').up().up()
         .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
             .c('value').t(0);
-    _converse.connection._dataRecv(createRequest(features_stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(features_stanza));
 }
 
 
 async function waitForReservedNick (_converse, muc_jid, nick) {
-    const stanzas = _converse.connection.IQ_stanzas;
+    const stanzas = _converse.api.connection.get().IQ_stanzas;
     const selector = `iq[to="${muc_jid.toLowerCase()}"] query[node="x-roomuser-item"]`;
     const iq = await u.waitUntil(() => stanzas.filter(s => sizzle(selector, s).length).pop());
 
@@ -218,12 +218,12 @@ async function waitForReservedNick (_converse, muc_jid, nick) {
         'type': 'result',
         'id': IQ_id,
         'from': muc_jid,
-        'to': _converse.connection.jid
+        'to': _converse.api.connection.get().jid
     }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'});
     if (nick) {
         stanza.c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
     }
-    _converse.connection._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(stanza));
     if (nick) {
         return u.waitUntil(() => nick);
     }
@@ -234,7 +234,7 @@ async function returnMemberLists (_converse, muc_jid, members=[], affiliations=[
     if (affiliations.length === 0) {
         return;
     }
-    const stanzas = _converse.connection.IQ_stanzas;
+    const stanzas = _converse.api.connection.get().IQ_stanzas;
 
     if (affiliations.includes('member')) {
         const member_IQ = await u.waitUntil(() =>
@@ -253,7 +253,7 @@ async function returnMemberLists (_converse, muc_jid, members=[], affiliations=[
                 'nick': m.nick
             });
         });
-        _converse.connection._dataRecv(createRequest(member_list_stanza));
+        _converse.api.connection.get()._dataRecv(createRequest(member_list_stanza));
     }
 
     if (affiliations.includes('admin')) {
@@ -273,7 +273,7 @@ async function returnMemberLists (_converse, muc_jid, members=[], affiliations=[
                 'nick': m.nick
             });
         });
-        _converse.connection._dataRecv(createRequest(admin_list_stanza));
+        _converse.api.connection.get()._dataRecv(createRequest(admin_list_stanza));
     }
 
     if (affiliations.includes('owner')) {
@@ -293,17 +293,17 @@ async function returnMemberLists (_converse, muc_jid, members=[], affiliations=[
                 'nick': m.nick
             });
         });
-        _converse.connection._dataRecv(createRequest(owner_list_stanza));
+        _converse.api.connection.get()._dataRecv(createRequest(owner_list_stanza));
     }
     return new Promise(resolve => _converse.api.listen.on('membersFetched', resolve));
 }
 
 async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='owner', role='moderator', features=[]) {
-    const sent_stanzas = _converse.connection.sent_stanzas;
+    const sent_stanzas = _converse.api.connection.get().sent_stanzas;
     await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
 
     const presence = $pres({
-            to: _converse.connection.jid,
+            to: _converse.api.connection.get().jid,
             from: `${muc_jid}/${nick}`,
             id: u.getUniqueId()
     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
@@ -317,7 +317,7 @@ async function receiveOwnMUCPresence (_converse, muc_jid, nick, affiliation='own
     if (_converse.xmppstatus.get('status')) {
        presence.c('show').t(_converse.xmppstatus.get('status'));
     }
-    _converse.connection._dataRecv(createRequest(presence));
+    _converse.api.connection.get()._dataRecv(createRequest(presence));
 }
 
 async function openAndEnterChatRoom (
@@ -409,10 +409,10 @@ async function createContacts (_converse, type, length) {
 
 async function waitForRoster (_converse, type='current', length=-1, include_nick=true, grouped=true) {
     const s = `iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`;
-    const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(s, iq).length).pop());
+    const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(iq => sizzle(s, iq).length).pop());
 
     const result = $iq({
-        'to': _converse.connection.jid,
+        'to': _converse.api.connection.get().jid,
         'type': 'result',
         'id': iq.getAttribute('id')
     }).c('query', {
@@ -444,14 +444,14 @@ async function waitForRoster (_converse, type='current', length=-1, include_nick
             result.up();
         });
     }
-    _converse.connection._dataRecv(createRequest(result));
+    _converse.api.connection.get()._dataRecv(createRequest(result));
     await _converse.api.waitUntil('rosterContactsFetched');
 }
 
 function createChatMessage (_converse, sender_jid, message) {
     return $msg({
                 from: sender_jid,
-                to: _converse.connection.jid,
+                to: _converse.api.connection.get().jid,
                 type: 'chat',
                 id: (new Date()).getTime()
             })
@@ -722,25 +722,25 @@ async function _initConverse (settings) {
 async function deviceListFetched (_converse, jid) {
     const selector = `iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
     const stanza = await u.waitUntil(
-        () => Array.from(_converse.connection.IQ_stanzas).filter(iq => iq.querySelector(selector)).pop()
+        () => Array.from(_converse.api.connection.get().IQ_stanzas).filter(iq => iq.querySelector(selector)).pop()
     );
     await u.waitUntil(() => _converse.devicelists.get(jid));
     return stanza;
 }
 
 function ownDeviceHasBeenPublished (_converse) {
-    return Array.from(_converse.connection.IQ_stanzas).filter(
+    return Array.from(_converse.api.connection.get().IQ_stanzas).filter(
         iq => iq.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
     ).pop();
 }
 
 function bundleHasBeenPublished (_converse) {
     const selector = 'publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]';
-    return Array.from(_converse.connection.IQ_stanzas).filter(iq => iq.querySelector(selector)).pop();
+    return Array.from(_converse.api.connection.get().IQ_stanzas).filter(iq => iq.querySelector(selector)).pop();
 }
 
 function bundleFetched (_converse, jid, device_id) {
-    return Array.from(_converse.connection.IQ_stanzas).filter(
+    return Array.from(_converse.api.connection.get().IQ_stanzas).filter(
         iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
     ).pop();
 }
@@ -762,7 +762,7 @@ async function initializedOMEMO (_converse) {
             .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                 .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                     .c('device', {'id': '482886413b977930064a5888b92134fe'});
-    _converse.connection._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(stanza));
     iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse))
 
     stanza = $iq({
@@ -770,7 +770,7 @@ async function initializedOMEMO (_converse) {
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
         'type': 'result'});
-    _converse.connection._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(stanza));
 
     iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse))
 
@@ -779,7 +779,7 @@ async function initializedOMEMO (_converse) {
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
         'type': 'result'});
-    _converse.connection._dataRecv(createRequest(stanza));
+    _converse.api.connection.get()._dataRecv(createRequest(stanza));
     await _converse.api.waitUntil('OMEMOInitialized');
 }
 

@@ -75,7 +75,7 @@ describe("The <converse-muc> component", function () {
         const message = await u.waitUntil(() => muc_el.querySelector('converse-chat-message'));
         expect(message.model.get('body')).toBe('hello from the lounge!');
 
-        _converse.connection.sent_stanzas = [];
+        _converse.api.connection.get().sent_stanzas = [];
 
         const muc2_jid = 'bar@montague.lit';
         const muc2_creation_promise = api.rooms.open(muc2_jid, {nick, 'hidden': true}, false);

@@ -113,7 +113,7 @@ describe("A list of open groupchats", function () {
                 'jid': 'newguy@montague.lit/_converse.js-290929789',
                 'role': 'participant'
             }).tree();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         spyOn(_converse.Bookmarks.prototype, 'fetchBookmarks').and.callThrough();
 
@@ -123,7 +123,7 @@ describe("A list of open groupchats", function () {
             [`${Strophe.NS.PUBSUB}#publish-options`]
         );
 
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
         expect(Strophe.serialize(sent_stanza)).toBe(
             `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
@@ -132,7 +132,7 @@ describe("A list of open groupchats", function () {
             '</pubsub>'+
             '</iq>');
 
-        stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
+        stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
             .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                 .c('items', {'node': 'storage:bookmarks'})
                     .c('item', {'id': 'current'})
@@ -141,7 +141,7 @@ describe("A list of open groupchats", function () {
                                 'name': 'Bookmarked Lounge',
                                 'jid': 'lounge@montague.lit'
                             });
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await _converse.api.waitUntil('roomsListInitialized');
         const controlbox = _converse.chatboxviews.get('controlbox');
@@ -196,7 +196,7 @@ describe("A groupchat shown in the groupchats list", function () {
 
         const { Strophe, $iq, $pres } = converse.env;
         const u = converse.env.utils;
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const room_jid = 'coven@chat.shakespeare.lit';
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
@@ -231,12 +231,12 @@ describe("A groupchat shown in the groupchats list", function () {
                         .c('value').t('This is the description').up().up()
                     .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                         .c('value').t(0);
-        _converse.connection._dataRecv(mock.createRequest(features_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
         const view = _converse.chatboxviews.get(room_jid);
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
         let presence = $pres({
-                to: _converse.connection.jid,
+                to: _converse.api.connection.get().jid,
                 from: 'coven@chat.shakespeare.lit/some1',
                 id: 'DC352437-C019-40EC-B590-AF29E879AF97'
         }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
@@ -246,7 +246,7 @@ describe("A groupchat shown in the groupchats list", function () {
                 role: 'participant'
             }).up()
             .c('status').attrs({code:'110'});
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         const rooms_list = document.querySelector('converse-rooms-list');
         await u.waitUntil(() => rooms_list.querySelectorAll(".open-room").length, 500);
@@ -285,7 +285,7 @@ describe("A groupchat shown in the groupchats list", function () {
                 'jid': 'newguy@montague.lit/_converse.js-290929789',
                 'role': 'participant'
             });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         els = modal.querySelectorAll('p.room-info');
         expect(els[3].textContent).toBe("Online users: 2")

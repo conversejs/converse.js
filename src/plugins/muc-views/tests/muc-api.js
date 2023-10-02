@@ -12,10 +12,12 @@ describe("Groupchats", function () {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
 
-            _converse.connection.IQ_stanzas = [];
+            const { api } = _converse;
+            const connection = api.connection.get();
+            connection.IQ_stanzas = [];
             await mock.openAndEnterChatRoom(_converse, 'leisure@montague.lit', 'romeo');
 
-            _converse.connection.IQ_stanzas = [];
+            connection.IQ_stanzas = [];
             await mock.openAndEnterChatRoom(_converse, 'news@montague.lit', 'romeo');
 
             expect(u.isVisible(_converse.chatboxviews.get('lounge@montague.lit'))).toBeTruthy();
@@ -163,7 +165,7 @@ describe("Groupchats", function () {
             });
             expect(room instanceof Model).toBeTruthy();
 
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const selector = `iq[to="room@conference.example.org"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
             const features_query = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).pop());
 
@@ -175,7 +177,7 @@ describe("Groupchats", function () {
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             /* <presence xmlns="jabber:client" to="romeo@montague.lit/pda" from="room@conference.example.org/yo">
              *  <x xmlns="http://jabber.org/protocol/muc#user">
@@ -197,7 +199,7 @@ describe("Groupchats", function () {
                 }).up()
                 .c('status', {code:'110'}).up()
                 .c('status', {code:'201'});
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop());
             expect(Strophe.serialize(iq)).toBe(
@@ -244,7 +246,7 @@ describe("Groupchats", function () {
 
             mucview = _converse.chatboxviews.get('room@conference.example.org');
             spyOn(mucview.model, 'sendConfiguration').and.callThrough();
-            _converse.connection._dataRecv(mock.createRequest(node));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(node));
             await u.waitUntil(() => mucview.model.sendConfiguration.calls.count() === 1);
 
             const sent_stanza = IQ_stanzas.filter(s => s.getAttribute('type') === 'set').pop();

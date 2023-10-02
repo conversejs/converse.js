@@ -64,7 +64,7 @@ describe("Emojis", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             textarea.value = ':use';
             message_form.onKeyDown(tab_event);

@@ -685,7 +685,7 @@ const ChatBox = ModelWithContact.extend({
                 'id': origin_id,
                 'xmlns': Strophe.NS.FASTEN
             }).c('retract', {xmlns: Strophe.NS.RETRACT})
-        return _converse.connection.send(msg);
+        return api.connection.get().send(msg);
     },
 
     /**
@@ -740,7 +740,7 @@ const ChatBox = ModelWithContact.extend({
 
     sendReceiptStanza (to_jid, id) {
         const receipt_stanza = $msg({
-            'from': _converse.connection.jid,
+            'from': api.connection.get().jid,
             'id': u.getUniqueId(),
             'to': to_jid,
             'type': 'chat',
@@ -768,11 +768,11 @@ const ChatBox = ModelWithContact.extend({
      * Given a {@link _converse.Message} return the XML stanza that represents it.
      * @private
      * @method _converse.ChatBox#createMessageStanza
-     * @param { _converse.Message } message - The message object
+     * @param { Message } message - The message object
      */
     async createMessageStanza (message) {
         const stanza = $msg({
-                'from': _converse.connection.jid,
+                'from': api.connection.get().jid,
                 'to': this.get('jid'),
                 'type': this.get('message_type'),
                 'id': message.get('edited') && u.getUniqueId() || message.get('msgid'),

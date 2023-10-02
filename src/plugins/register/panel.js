@@ -6,7 +6,6 @@ import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse, log } from "@converse/headless";
-import { initConnection } from '@converse/headless/utils/init.js';
 import { setActiveForm } from './utils.js';
 import { webForm2xForm } from "@converse/headless/utils/form";
 
@@ -71,7 +70,7 @@ class RegisterPanel extends CustomElement {
      * requesting the registration fields.
      */
     registerHooks () {
-        const conn = _converse.connection;
+        const conn = api.connection.get();
         const connect_cb = conn._connect_cb.bind(conn);
         conn._connect_cb = (req, callback, raw) => {
             if (!this._registering) {
@@ -89,7 +88,7 @@ class RegisterPanel extends CustomElement {
      * @param { Function } callback - The callback function
      */
     getRegistrationFields (req, _callback) {
-        const conn = _converse.connection;
+        const conn = api.connection.get();
         conn.connected = true;
 
         const body = conn._proto._reqToData(req);
@@ -196,10 +195,10 @@ class RegisterPanel extends CustomElement {
             'domain': Strophe.getDomainFromJid(domain_name),
             '_registering': true
         });
-        initConnection(this.domain);
+        api.connection.init();
         // When testing, the test tears down before the async function
         // above finishes. So we use optional chaining here
-        _converse.connection?.connect(this.domain, "", (s) => this.onConnectStatusChanged(s));
+        api.connection.get()?.connect(this.domain, "", (s) => this.onConnectStatusChanged(s));
         return false;
     }
 
@@ -224,7 +223,7 @@ class RegisterPanel extends CustomElement {
             this.abortRegistration();
         } else if (status_code === Strophe.Status.REGISTERED) {
             log.debug("Registered successfully.");
-            _converse.connection.reset();
+            api.connection.get().reset();
 
             if (["converse/login", "converse/register"].includes(_converse.router.history.getFragment())) {
                 _converse.router.navigate('', {'replace': true});
@@ -233,7 +232,7 @@ class RegisterPanel extends CustomElement {
 
             if (this.fields.password && this.fields.username) {
                 // automatically log the user in
-                _converse.connection.connect(
+                api.connection.get().connect(
                     this.fields.username.toLowerCase()+'@'+this.domain.toLowerCase(),
                     this.fields.password,
                     _converse.onConnectStatusChanged
@@ -311,14 +310,16 @@ class RegisterPanel extends CustomElement {
 
     renderProviderChoiceForm (ev) {
         ev?.preventDefault?.();
-        _converse.connection._proto._abortAllRequests();
-        _converse.connection.reset();
+        const connection = api.connection.get();
+        connection._proto._abortAllRequests();
+        connection.reset();
         this.status = CHOOSE_PROVIDER;
     }
 
     abortRegistration () {
-        _converse.connection._proto._abortAllRequests();
-        _converse.connection.reset();
+        const connection = api.connection.get();
+        connection._proto._abortAllRequests();
+        connection.reset();
         if ([FETCHING_FORM, REGISTRATION_FORM].includes(this.status)) {
             if (api.settings.get('registration_domain')) {
                 this.fetchRegistrationForm(api.settings.get('registration_domain'));
@@ -347,8 +348,10 @@ class RegisterPanel extends CustomElement {
         } else {
             inputs.forEach(input => iq.c(input.getAttribute('name'), {}, input.value));
         }
-        _converse.connection._addSysHandler((iq) => this._onRegisterIQ(iq), null, "iq", null, null);
-        _converse.connection.send(iq);
+
+        const connection = api.connection.get();
+        connection._addSysHandler((iq) => this._onRegisterIQ(iq), null, "iq", null, null);
+        connection.send(iq);
         this.setFields(iq.tree());
     }
 
@@ -410,21 +413,22 @@ class RegisterPanel extends CustomElement {
             log.error("Registration failed.");
             this.reportErrors(stanza);
 
+            const connection = api.connection.get();
             let error = stanza.getElementsByTagName("error");
             if (error.length !== 1) {
-                _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                 return false;
             }
             error = error[0].firstElementChild.tagName.toLowerCase();
             if (error === 'conflict') {
-                _converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
+                connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
             } else if (error === 'not-acceptable') {
-                _converse.connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
+                connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
             } else {
-                _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
+                connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
             }
         } else {
-            _converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
+            connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
         }
         return false;
     }

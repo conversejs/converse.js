@@ -10,7 +10,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
         it("is done automatically", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const IQ_stanzas = api.connection.get().IQ_stanzas;
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
             let selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
             let stanza = await u.waitUntil(() => IQ_stanzas.find(iq => iq.querySelector(selector)), 1000);
@@ -41,7 +41,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     'var': 'http://jabber.org/protocol/disco#info'}).up()
                 .c('feature', {
                     'var': 'http://jabber.org/protocol/disco#items'});
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             // Converse.js sees that the entity has a disco#items feature,
             // so it will make a query for it.
@@ -69,7 +69,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     'jid': 'upload.montague.lit',
                     'name': 'HTTP File Upload'});
 
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             let entities = await api.disco.entities.get();
             expect(entities.length).toBe(3);
@@ -124,7 +124,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                             .c('value').t('urn:xmpp:http:upload:0').up().up()
                         .c('field', {'var':'max-file-size'})
                             .c('value').t('5242880');
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             entities = await _converse.api.disco.entities.get();
             const entity = await api.disco.entities.get('upload.montague.lit');
@@ -186,6 +186,7 @@ describe("XEP-0363: HTTP File Upload", function () {
             describe("when clicked and a file chosen", function () {
 
                 it("is uploaded and sent out", mock.initConverse(['chatBoxesFetched'], {} ,async (_converse) => {
+                    const { api } = _converse;
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
@@ -193,7 +194,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         ['http://jabber.org/protocol/disco#items'], [], 'info');
 
                     const send_backup = XMLHttpRequest.prototype.send;
-                    const IQ_stanzas = _converse.connection.IQ_stanzas;
+                    const IQ_stanzas = api.connection.get().IQ_stanzas;
 
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                     await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
@@ -256,8 +257,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                     });
                     let sent_stanza;
-                    spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
-                    _converse.connection._dataRecv(mock.createRequest(stanza));
+                    spyOn(api.connection.get(), 'send').and.callFake(stanza => (sent_stanza = stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                     await u.waitUntil(() => sent_stanza, 1000);
                     expect(Strophe.serialize(sent_stanza)).toBe(
@@ -286,8 +287,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
                     const { api } = _converse;
-                    const IQ_stanzas = _converse.connection.IQ_stanzas;
-                    const IQ_ids =  _converse.connection.IQ_ids;
+                    const IQ_stanzas = api.connection.get().IQ_stanzas;
+                    const IQ_ids =  api.connection.get().IQ_ids;
 
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                     await u.waitUntil(() => IQ_stanzas.filter(
@@ -311,7 +312,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                             'var': 'http://jabber.org/protocol/disco#info'}).up()
                         .c('feature', {
                             'var': 'http://jabber.org/protocol/disco#items'});
-                    _converse.connection._dataRecv(mock.createRequest(stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                     await u.waitUntil(function () {
                         // Converse.js sees that the entity has a disco#items feature,
@@ -335,7 +336,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                             'jid': 'upload.montague.lit',
                             'name': 'HTTP File Upload'});
 
-                    _converse.connection._dataRecv(mock.createRequest(stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                     let entities = await _converse.api.disco.entities.get();
 
@@ -369,7 +370,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                                     .c('value').t('urn:xmpp:http:upload:0').up().up()
                                 .c('field', {'var':'max-file-size'})
                                     .c('value').t('5242880');
-                    _converse.connection._dataRecv(mock.createRequest(stanza));
+                    api.connection.get()._dataRecv(mock.createRequest(stanza));
                     entities = await _converse.api.disco.entities.get();
                     const entity = await api.disco.entities.get('upload.montague.lit');
                     expect(entity.get('parent_jids')).toEqual(['montague.lit']);
@@ -404,7 +405,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                     [{'category': 'server', 'type':'IM'}],
                     ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const { api } = _converse;
+                const IQ_stanzas = api.connection.get().IQ_stanzas;
 
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                 await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
@@ -464,7 +466,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     expect(view.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 23.46 kB');
                     promise.resolve();
                 });
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await promise;
                 expect(XMLHttpRequest.prototype.setRequestHeader.calls.count()).toBe(2);
                 expect(XMLHttpRequest.prototype.setRequestHeader.calls.all()[0].args[0]).toBe('Content-type');

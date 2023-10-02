@@ -14,7 +14,7 @@ describe("A Message", function () {
         let message = '/me is tired';
         const msg = $msg({
                 from: sender_jid,
-                to: _converse.connection.jid,
+                to: _converse.api.connection.get().jid,
                 type: 'chat',
                 id: u.getUniqueId()
             }).c('body').t(message).up()

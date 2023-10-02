@@ -24,7 +24,7 @@ describe("A received presence stanza", function () {
                 </x>
                 <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T20:26:05Z" from="${contact_jid}/priority-1-resource"/>
             </presence>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(contact.presence.get('show')).toBe('online');
         expect(contact.presence.resources.length).toBe(1);
         expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
@@ -41,7 +41,7 @@ describe("A received presence stanza", function () {
         '       node="http://www.igniterealtime.org/projects/smack/"/>'+
         '    <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T17:02:24Z" from="'+contact_jid+'/priority-0-resource"/>'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(contact.presence.get('show')).toBe('online');
 
         expect(contact.presence.resources.length).toBe(2);
@@ -57,7 +57,7 @@ describe("A received presence stanza", function () {
         '    <priority>2</priority>'+
         '    <show>dnd</show>'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(contact.presence.get('show')).toBe('dnd');
         expect(contact.presence.resources.length).toBe(3);
         expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
@@ -74,7 +74,7 @@ describe("A received presence stanza", function () {
         '    <priority>3</priority>'+
         '    <show>away</show>'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('away');
         expect(contact.presence.resources.length).toBe(4);
         expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
@@ -94,7 +94,7 @@ describe("A received presence stanza", function () {
         '    <show>dnd</show>'+
         '    <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T15:02:24Z" from="'+contact_jid+'/older-priority-1-resource"/>'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('away');
         expect(contact.presence.resources.length).toBe(5);
         expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
@@ -114,7 +114,7 @@ describe("A received presence stanza", function () {
         '          type="unavailable"'+
         '          from="'+contact_jid+'/priority-3-resource">'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('dnd');
         expect(contact.presence.resources.length).toBe(4);
         expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
@@ -132,7 +132,7 @@ describe("A received presence stanza", function () {
         '          type="unavailable"'+
         '          from="'+contact_jid+'/priority-2-resource">'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('online');
         expect(contact.presence.resources.length).toBe(3);
         expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
@@ -148,7 +148,7 @@ describe("A received presence stanza", function () {
         '          type="unavailable"'+
         '          from="'+contact_jid+'/priority-1-resource">'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('dnd');
         expect(contact.presence.resources.length).toBe(2);
         expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
@@ -162,7 +162,7 @@ describe("A received presence stanza", function () {
         '          type="unavailable"'+
         '          from="'+contact_jid+'/older-priority-1-resource">'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('xa');
         expect(contact.presence.resources.length).toBe(1);
         expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
@@ -174,7 +174,7 @@ describe("A received presence stanza", function () {
         '          type="unavailable"'+
         '          from="'+contact_jid+'/priority-0-resource">'+
         '</presence>');
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('offline');
         expect(contact.presence.resources.length).toBe(0);
     }));

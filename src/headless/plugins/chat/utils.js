@@ -78,7 +78,7 @@ export function autoJoinChats () {
 }
 
 export function registerMessageHandlers () {
-    _converse.connection.addHandler(
+    api.connection.get().addHandler(
         stanza => {
             if (
                 ['groupchat', 'error'].includes(stanza.getAttribute('type')) ||
@@ -94,7 +94,7 @@ export function registerMessageHandlers () {
         'message',
     );
 
-    _converse.connection.addHandler(
+    api.connection.get().addHandler(
         stanza => handleErrorMessage(stanza) || true,
         null,
         'message',
@@ -162,7 +162,7 @@ export async function enableCarbons () {
     }
 
     const iq = new Strophe.Builder('iq', {
-        'from': _converse.connection.jid,
+        'from': api.connection.get().jid,
         'type': 'set'
     }).c('enable', {xmlns: Strophe.NS.CARBONS});
 

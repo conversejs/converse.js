@@ -13,7 +13,7 @@ describe("Groupchats", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], false, {'hidden': true});
         const model = _converse.chatboxes.get(muc_jid);
 
-        _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+        _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" id="1" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
                 <body>Romeo oh romeo</body>
             </message>`)));
@@ -21,7 +21,7 @@ describe("Groupchats", function () {
         expect(model.get('num_unread_general')).toBe(1);
         expect(model.get('num_unread')).toBe(1);
 
-        _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+        _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
             <message xmlns="jabber:client" type="groupchat" id="2" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
                 <body>Wherefore art though?</body>
             </message>`)));
@@ -45,7 +45,7 @@ describe("Groupchats", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             _converse.xmppstatus.set('status', 'away');
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             while (sent_stanzas.length) sent_stanzas.pop();
 
             const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -110,9 +110,9 @@ describe("Groupchats", function () {
                         <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-            let sent_stanzas = _converse.connection.sent_stanzas;
+            let sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const iq = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.PING}"]`, s).length).pop());
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" type="get" xmlns="jabber:client">`+
@@ -128,11 +128,11 @@ describe("Groupchats", function () {
                     <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                 </error>
                 </iq>`);
-            sent_stanzas = _converse.connection.sent_stanzas;
+            sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const index = sent_stanzas.length -1;
 
-            _converse.connection.IQ_stanzas = [];
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get().IQ_stanzas = [];
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await mock.getRoomFeatures(_converse, muc_jid);
 
             const pres = await u.waitUntil(

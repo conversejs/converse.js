@@ -97,7 +97,7 @@ describe("The Protocol", function () {
             await mock.waitForRoster(_converse, 'all', 0);
             expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
 
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const roster_set_stanza = IQ_stanzas.filter(s => sizzle('query[xmlns="jabber:iq:roster"]', s)).pop();
 
             expect(Strophe.serialize(roster_set_stanza)).toBe(
@@ -112,7 +112,7 @@ describe("The Protocol", function () {
 
             const sent_stanzas = [];
             let sent_stanza;
-            spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+            spyOn(_converse.api.connection.get(), 'send').and.callFake(function (stanza) {
                 sent_stanza = stanza;
                 sent_stanzas.push(stanza);
             });
@@ -135,7 +135,7 @@ describe("The Protocol", function () {
              *     </query>
              * </iq>
              */
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $iq({'type': 'set'})
                     .c('query', {'xmlns': 'jabber:iq:roster'})
                         .c('item', {
@@ -145,7 +145,7 @@ describe("The Protocol", function () {
                         }).c('group').t('My Buddies')
             ));
 
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $iq({'type': 'result', 'id': roster_set_stanza.getAttribute('id')})
             ));
 
@@ -192,7 +192,7 @@ describe("The Protocol", function () {
              *    </query>
              *  </iq>
              */
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $iq({'type': 'set', 'from': _converse.bare_jid})
                     .c('query', {'xmlns': 'jabber:iq:roster'})
                         .c('item', {
@@ -228,7 +228,7 @@ describe("The Protocol", function () {
              *      from='contact@example.org'
              *      type='subscribed'/>
              */
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stanza = $pres({
                     'to': _converse.bare_jid,
                     'from': 'contact@example.org',
@@ -262,7 +262,7 @@ describe("The Protocol", function () {
              *    </query>
              *  </iq>
              */
-            const IQ_id = _converse.connection.getUniqueId('roster');
+            const IQ_id = _converse.api.connection.get().getUniqueId('roster');
             stanza = $iq({'type': 'set', 'id': IQ_id})
                 .c('query', {'xmlns': 'jabber:iq:roster'})
                 .c('item', {
@@ -270,7 +270,7 @@ describe("The Protocol", function () {
                     'subscription': 'to',
                     'name': 'Nicky'});
 
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             // Check that the IQ set was acknowledged.
             expect(Strophe.serialize(sent_stanza)).toBe( // Strophe adds the xmlns attr (although not in spec)
                 `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="result" xmlns="jabber:client"/>`
@@ -300,7 +300,7 @@ describe("The Protocol", function () {
              *      to='user@example.com/resource'/>
              */
             stanza = $pres({'to': _converse.bare_jid, 'from': 'contact@example.org/resource'});
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             // Now the contact should also be online.
             expect(contact.presence.get('show')).toBe('online');
 
@@ -318,7 +318,7 @@ describe("The Protocol", function () {
                 'to': _converse.bare_jid,
                 'from': 'contact@example.org/resource',
                 'type': 'subscribe'});
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             expect(_converse.roster.handleIncomingSubscription).toHaveBeenCalled();
 
             /* The user's client MUST send a presence stanza of type
@@ -348,7 +348,7 @@ describe("The Protocol", function () {
              *    </query>
              *  </iq>
              */
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
                     .c('item', {
                         'jid': 'contact@example.org',
@@ -379,14 +379,14 @@ describe("The Protocol", function () {
                     'subscription': 'none',
                     'ask': 'subscribe',
                     'name': 'contact@example.org'});
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             // A pending contact should now exist.
             contact = _converse.roster.get('contact@example.org');
             expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
             spyOn(contact, "ackUnsubscribe").and.callThrough();
 
-            spyOn(_converse.connection, 'send').and.callFake(stanza => { sent_stanza = stanza });
-            spyOn(_converse.connection, 'sendIQ').and.callFake(iq => { sent_IQ = iq });
+            spyOn(_converse.api.connection.get(), 'send').and.callFake(stanza => { sent_stanza = stanza });
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(iq => { sent_IQ = iq });
             /* We now assume the contact declines the subscription
              * requests.
              *
@@ -420,7 +420,7 @@ describe("The Protocol", function () {
                 'from': 'contact@example.org',
                 'type': 'unsubscribed'
             });
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             /* Upon receiving the presence stanza of type "unsubscribed",
              * the user SHOULD acknowledge receipt of that subscription
@@ -482,7 +482,7 @@ describe("The Protocol", function () {
              *   </query>
              * </iq>
              */
-            const iq_stanzas = _converse.connection.IQ_stanzas;
+            const iq_stanzas = _converse.api.connection.get().IQ_stanzas;
             await u.waitUntil(() => Strophe.serialize(iq_stanzas.at(-1)) ===
                 `<iq id="${iq_stanzas.at(-1).getAttribute('id')}" type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
@@ -494,7 +494,7 @@ describe("The Protocol", function () {
             // Receive confirmation from the contact's server
             // <iq type='result' id='remove1'/>
             const stanza = $iq({'type': 'result', 'id': sent_iq.getAttribute('id')});
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             // Our contact has now been removed
             await u.waitUntil(() => typeof _converse.roster.get(jid) === "undefined");
         }));
@@ -520,7 +520,7 @@ describe("The Protocol", function () {
             }).t('Clint Contact');
 
 
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => {
                 const header = sizzle('a:contains("Contact requests")', rosterview).pop();

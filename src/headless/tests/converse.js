@@ -11,7 +11,7 @@ describe("Converse", function() {
 
             spyOn(_converse, 'sendCSI').and.callThrough();
             let sent_stanza;
-            spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+            spyOn(_converse.api.connection.get(), 'send').and.callFake(function (stanza) {
                 sent_stanza = stanza;
             });
             let i = 0;
@@ -158,26 +158,24 @@ describe("Converse", function() {
 
     describe("The \"tokens\" API", function () {
 
-        it("has a method for retrieving the next RID", mock.initConverse((_converse) => {
-            mock.createContacts(_converse, 'current');
-            const old_connection = _converse.connection;
-            _converse.connection._proto.rid = '1234';
-            expect(_converse.api.tokens.get('rid')).toBe('1234');
-            _converse.connection = undefined;
-            expect(_converse.api.tokens.get('rid')).toBe(null);
-            // Restore the connection
-            _converse.connection = old_connection;
+        it("has a method for retrieving the next RID",
+                mock.initConverse(['chatBoxesFetched'], {}, ({ api }) => {
+
+            const connection = api.connection.get();
+            connection._proto.rid = '1234';
+            expect(api.tokens.get('rid')).toBe('1234');
+            connection._proto.rid = '1235';
+            expect(api.tokens.get('rid')).toBe('1235');
         }));
 
-        it("has a method for retrieving the SID", mock.initConverse((_converse) => {
-            mock.createContacts(_converse, 'current');
-            const old_connection = _converse.connection;
-            _converse.connection._proto.sid = '1234';
-            expect(_converse.api.tokens.get('sid')).toBe('1234');
-            _converse.connection = undefined;
-            expect(_converse.api.tokens.get('sid')).toBe(null);
-            // Restore the connection
-            _converse.connection = old_connection;
+        it("has a method for retrieving the SID",
+                mock.initConverse(['chatBoxesFetched'], {}, ({ api }) => {
+
+            const connection = api.connection.get();
+            connection._proto.sid = '1234';
+            expect(api.tokens.get('sid')).toBe('1234');
+            connection._proto.sid = '1235';
+            expect(api.tokens.get('sid')).toBe('1235');
         }));
     });
 

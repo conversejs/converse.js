@@ -23,7 +23,7 @@ describe('The "Groupchats" List modal', function () {
             modal.querySelector('input[type="submit"]').click();
             await u.waitUntil(() => _converse.chatboxes.length);
 
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const sent_stanza = await u.waitUntil(() =>
                 IQ_stanzas.filter(s => sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`, s).length).pop()
             );
@@ -53,7 +53,7 @@ describe('The "Groupchats" List modal', function () {
                 .c('item', { jid: 'chamber@chat.shakespeare.lit', name: "Juliet's chamber" }).up()
                 .c('item', { jid: 'public@chat.shakespeare.lit', name: 'A public place' }).up()
                 .c('item', { jid: 'street@chat.shakespeare.lit', name: 'A street' }).nodeTree;
-            _converse.connection._dataRecv(mock.createRequest(iq));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(iq));
 
             await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 11);
             const rooms = modal.querySelectorAll('.available-chatrooms li');
@@ -107,7 +107,7 @@ describe('The "Groupchats" List modal', function () {
                 expect(modal.querySelector('input[type="submit"]')).toBe(null);
                 await u.waitUntil(() => _converse.chatboxes.length);
                 const sent_stanza = await u.waitUntil(() =>
-                    _converse.connection.sent_stanzas
+                    _converse.api.connection.get().sent_stanzas
                         .filter(s => sizzle(`query[xmlns="http://jabber.org/protocol/disco#items"]`, s).length)
                         .pop()
                 );
@@ -127,7 +127,7 @@ describe('The "Groupchats" List modal', function () {
                     .c('item', { jid: 'heath@chat.shakespeare.lit', name: 'A Lonely Heath' }).up()
                     .c('item', { jid: 'coven@chat.shakespeare.lit', name: 'A Dark Cave' }).up()
                     .c('item', { jid: 'forres@chat.shakespeare.lit', name: 'The Palace' }).up();
-                _converse.connection._dataRecv(mock.createRequest(iq));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(iq));
 
                 await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 4);
                 const rooms = modal.querySelectorAll('.available-chatrooms li');

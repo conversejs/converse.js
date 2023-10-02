@@ -187,7 +187,7 @@ export default class MessageForm extends ElementView {
         ) {
             return;
         }
-        if (!_converse.connection.authenticated) {
+        if (!api.connection.get().authenticated) {
             const err_msg = __('Sorry, the connection has been lost, and your message could not be sent');
             api.alert('error', __('Error'), err_msg);
             api.connection.reconnect();

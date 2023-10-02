@@ -31,7 +31,7 @@ const RosterContacts = Collection.extend({
     registerRosterHandler () {
         // Register a handler for roster IQ "set" stanzas, which update
         // roster contacts.
-        _converse.connection.addHandler(iq => {
+        api.connection.get().addHandler(iq => {
             _converse.roster.onRosterPush(iq);
             return true;
         }, Strophe.NS.ROSTER, 'iq', "set");
@@ -41,11 +41,12 @@ const RosterContacts = Collection.extend({
         // Register a handler for RosterX message stanzas, which are
         // used to suggest roster contacts to a user.
         let t = 0;
-        _converse.connection.addHandler(
+        const connection = api.connection.get();
+        connection.addHandler(
             function (msg) {
                 window.setTimeout(
                     function () {
-                        _converse.connection.flush();
+                        connection.flush();
                         _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
                     }, t);
                 t += msg.querySelectorAll('item').length*250;
@@ -104,7 +105,7 @@ const RosterContacts = Collection.extend({
     },
 
     isSelf (jid) {
-        return u.isSameBareJID(jid, _converse.connection.jid);
+        return u.isSameBareJID(jid, api.connection.get().jid);
     },
 
     /**
@@ -206,7 +207,7 @@ const RosterContacts = Collection.extend({
             );
             return;
         }
-        api.send($iq({type: 'result', id, from: _converse.connection.jid}));
+        api.send($iq({type: 'result', id, from: api.connection.get().jid}));
 
         const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
         this.data.save('version', query.getAttribute('ver'));
@@ -367,7 +368,7 @@ const RosterContacts = Collection.extend({
               resource = Strophe.getResourceFromJid(jid),
               presence_type = presence.getAttribute('type');
 
-        if ((_converse.connection.jid !== jid) &&
+        if ((api.connection.get().jid !== jid) &&
                 (presence_type !== 'unavailable') &&
                 (api.settings.get('synchronize_availability') === true ||
                  api.settings.get('synchronize_availability') === resource)) {

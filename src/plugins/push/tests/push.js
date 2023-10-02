@@ -21,7 +21,7 @@ describe("XEP-0357 Push Notifications", function () {
             }, async function (_converse) {
 
         const { api } = _converse;
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
 
         await mock.waitUntilDiscoConfirmed(
@@ -41,8 +41,8 @@ describe("XEP-0357 Push Notifications", function () {
                 '<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
             '</iq>'
         )
-        _converse.connection._dataRecv(mock.createRequest($iq({
-            'to': _converse.connection.jid,
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
             'id': stanza.getAttribute('id')
         })));
@@ -60,7 +60,7 @@ describe("XEP-0357 Push Notifications", function () {
             }, async function (_converse) {
 
         const { api } = _converse;
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         await mock.waitUntilDiscoConfirmed(
             _converse, api.settings.get('push_app_servers')[0].jid,
             [{'category': 'pubsub', 'type':'push'}],
@@ -77,7 +77,7 @@ describe("XEP-0357 Push Notifications", function () {
             `</iq>`
         );
         const result = u.toStanza(`<iq type="result" id="${iq.getAttribute('id')}" to="romeo@montague.lit" />`);
-        _converse.connection._dataRecv(mock.createRequest(result));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
         await u.waitUntil(() => _converse.session.get('push_enabled'));
         expect(_converse.session.get('push_enabled').length).toBe(1);
@@ -96,8 +96,8 @@ describe("XEP-0357 Push Notifications", function () {
                 '<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
             '</iq>'
         );
-        _converse.connection._dataRecv(mock.createRequest($iq({
-            'to': _converse.connection.jid,
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
             'id': iq.getAttribute('id')
         })));
@@ -114,7 +114,7 @@ describe("XEP-0357 Push Notifications", function () {
                 }]
             }, async function (_converse) {
 
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
 
         await mock.waitUntilDiscoConfirmed(
@@ -128,8 +128,8 @@ describe("XEP-0357 Push Notifications", function () {
                 '<disable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
             '</iq>'
         );
-        _converse.connection._dataRecv(mock.createRequest($iq({
-            'to': _converse.connection.jid,
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
             'id': stanza.getAttribute('id')
         })));
@@ -147,7 +147,7 @@ describe("XEP-0357 Push Notifications", function () {
             }, async function (_converse) {
 
         const { api } = _converse;
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         expect(_converse.session.get('push_enabled')).toBeFalsy();
 
         await mock.waitUntilDiscoConfirmed(
@@ -171,8 +171,8 @@ describe("XEP-0357 Push Notifications", function () {
                 '</enable>'+
             '</iq>'
         )
-        _converse.connection._dataRecv(mock.createRequest($iq({
-            'to': _converse.connection.jid,
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
             'id': stanza.getAttribute('id')
         })));

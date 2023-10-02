@@ -145,22 +145,24 @@ function onResumedStanza (el) {
     saveSessionData(el);
     handleAck(el);
     resendUnackedStanzas();
-    _converse.connection.do_bind = false; // No need to bind our resource anymore
-    _converse.connection.authenticated = true;
-    _converse.connection.restored = true;
-    _converse.connection._changeConnectStatus(Strophe.Status.CONNECTED, null);
+    const connection = api.connection.get();
+    connection.do_bind = false; // No need to bind our resource anymore
+    connection.authenticated = true;
+    connection.restored = true;
+    connection._changeConnectStatus(Strophe.Status.CONNECTED, null);
 }
 
 async function sendResumeStanza () {
     const promise = getOpenPromise();
-    _converse.connection._addSysHandler(el => promise.resolve(onResumedStanza(el)), Strophe.NS.SM, 'resumed');
-    _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
+    const connection = api.connection.get();
+    connection._addSysHandler(el => promise.resolve(onResumedStanza(el)), Strophe.NS.SM, 'resumed');
+    connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
     const previous_id = _converse.session.get('smacks_stream_id');
     const h = _converse.session.get('num_stanzas_handled');
     const stanza = u.toStanza(`<resume xmlns="${Strophe.NS.SM}" h="${h}" previd="${previous_id}"/>`);
     api.send(stanza);
-    _converse.connection.flush();
+    connection.flush();
     await promise;
 }
 
@@ -170,13 +172,14 @@ export async function sendEnableStanza () {
     }
     if (await isStreamManagementSupported()) {
         const promise = getOpenPromise();
-        _converse.connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
-        _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
+        const connection = api.connection.get();
+        connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
+        connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
         const resume = api.connection.isType('websocket') || isTestEnv();
         const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);
         api.send(stanza);
-        _converse.connection.flush();
+        connection.flush();
         await promise;
     }
 }
@@ -190,7 +193,7 @@ export async function enableStreamManagement () {
     if (!(await isStreamManagementSupported())) {
         return;
     }
-    const conn = _converse.connection;
+    const conn = api.connection.get();
     while (smacks_handlers.length) {
         conn.deleteHandler(smacks_handlers.pop());
     }

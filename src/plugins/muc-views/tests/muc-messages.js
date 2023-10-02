@@ -39,7 +39,7 @@ describe("A Groupchat Message", function () {
                     <body>hello world</body>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(error));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(error));
             expect(await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent?.trim())).toBe(err_msg_text);
             expect(view.model.messages.length).toBe(1);
             const message = view.model.messages.at(0);
@@ -110,14 +110,14 @@ describe("A Groupchat Message", function () {
         let stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      from="room@muc.example.com/some1"
-                     to="${_converse.connection.jid}"
+                     to="${_converse.api.connection.get().jid}"
                      type="groupchat">
                 <body>Typical body text</body>
                 <stanza-id xmlns="urn:xmpp:sid:0"
                            id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                            by="room@muc.example.com"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.messages.length === 1);
         await u.waitUntil(() => view.model.getStanzaIdQueryAttrs.calls.count() === 1);
         let result = await view.model.getStanzaIdQueryAttrs.calls.all()[0].returnValue;
@@ -128,7 +128,7 @@ describe("A Groupchat Message", function () {
         stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      from="room@muc.example.com/some1"
-                     to="${_converse.connection.jid}"
+                     to="${_converse.api.connection.get().jid}"
                      type="groupchat">
                 <body>Typical body text</body>
                 <stanza-id xmlns="urn:xmpp:sid:0"
@@ -137,7 +137,7 @@ describe("A Groupchat Message", function () {
             </message>`);
         spyOn(view.model, 'updateMessage');
         spyOn(view.model, 'getDuplicateMessage').and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
         result = await view.model.getDuplicateMessage.calls.all()[0].returnValue;
         expect(result instanceof _converse.Message).toBe(true);
@@ -175,7 +175,7 @@ describe("A Groupchat Message", function () {
             }).up()
             .c('status').attrs({code:'110'}).up()
             .c('status').attrs({code:'210'}).nodeTree;
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         await u.waitUntil(() => view.model.messages.length === 4);
 
@@ -203,7 +203,7 @@ describe("A Groupchat Message", function () {
             }).up()
             .c('status').attrs({code:'110'}).up()
             .c('status').attrs({code:'210'}).nodeTree;
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         view.model.sendMessage({'body': 'hello world'});
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 3);
@@ -234,7 +234,7 @@ describe("A Groupchat Message", function () {
                 id: u.getUniqueId()
         }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
             .c('item').attrs({jid: 'some1@montague.lit/orchard'});
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.model.messages.last().occupant);
         expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
         expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
@@ -247,7 +247,7 @@ describe("A Groupchat Message", function () {
                 id: u.getUniqueId()
         }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
             .c('item').attrs({jid: 'some1@montague.lit/orchard'});
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => !view.model.messages.last().occupant);
         expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
         expect(view.model.messages.last().occupant).toBeUndefined();
@@ -258,7 +258,7 @@ describe("A Groupchat Message", function () {
                 id: u.getUniqueId()
         }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
             .c('item').attrs({jid: 'some1@montague.lit/orchard'});
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.model.messages.last().occupant);
         expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
         expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
@@ -288,7 +288,7 @@ describe("A Groupchat Message", function () {
         const stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      from="${msg_obj.get('from')}"
-                     to="${_converse.connection.jid}"
+                     to="${_converse.api.connection.get().jid}"
                      type="groupchat">
                 <body>${msg_obj.get('message')}</body>
                 <stanza-id xmlns="urn:xmpp:sid:0"
@@ -331,7 +331,7 @@ describe("A Groupchat Message", function () {
         let stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      from="${msg_obj.get('from')}"
-                     to="${_converse.connection.jid}"
+                     to="${_converse.api.connection.get().jid}"
                      type="groupchat">
                 <body>${msg_obj.get('message')}</body>
                 <stanza-id xmlns="urn:xmpp:sid:0"
@@ -348,7 +348,7 @@ describe("A Groupchat Message", function () {
                 <received xmlns="urn:xmpp:receipts" id="${msg_obj.get('msgid')}"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="CE08D448-5ED8-4B6A-BB5B-07ED9DFE4FF0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
     }));
 });

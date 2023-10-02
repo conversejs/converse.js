@@ -29,7 +29,7 @@ describe("The 'Add Contact' widget", function () {
         input_name.value = 'Someone';
         modal.querySelector('button[type="submit"]').click();
 
-        const sent_IQs = _converse.connection.IQ_stanzas;
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
         expect(Strophe.serialize(sent_stanza)).toEqual(
             `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
@@ -54,7 +54,7 @@ describe("The 'Add Contact' widget", function () {
         input_jid.value = 'someone@montague.lit';
         modal.querySelector('button[type="submit"]').click();
 
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, s).length).pop()
         );
@@ -110,7 +110,7 @@ describe("The 'Add Contact' widget", function () {
         expect(modal.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
         modal.querySelector('button[type="submit"]').click();
 
-        const sent_IQs = _converse.connection.IQ_stanzas;
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
         expect(Strophe.serialize(sent_stanza)).toEqual(
         `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
@@ -184,7 +184,7 @@ describe("The 'Add Contact' widget", function () {
         input_el.value = 'Marty McFly';
         modal.querySelector('button[type="submit"]').click();
 
-        const sent_IQs = _converse.connection.IQ_stanzas;
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
         expect(Strophe.serialize(sent_stanza)).toEqual(
         `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+

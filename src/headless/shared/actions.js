@@ -1,6 +1,5 @@
 import log from '../log';
 import { Strophe, $msg } from 'strophe.js';
-import _converse from './_converse.js';
 import api, { converse } from './api/index.js';
 
 const u = converse.env.utils;
@@ -33,7 +32,7 @@ export function rejectMessage (stanza, text) {
  */
 export function sendMarker (to_jid, id, type, msg_type) {
     const stanza = $msg({
-        'from': _converse.connection.jid,
+        'from': api.connection.get().jid,
         'id': u.getUniqueId(),
         'to': to_jid,
         'type': msg_type ? msg_type : 'chat'

@@ -1,4 +1,3 @@
-import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import { isTestEnv } from '../../utils/session.js';
 
@@ -19,12 +18,12 @@ function pong (ping) {
     const from = ping.getAttribute('from');
     const id = ping.getAttribute('id');
     const iq = $iq({type: 'result', to: from,id: id});
-    _converse.connection.sendIQ(iq);
+    api.sendIQ(iq);
     return true;
 }
 
 export function registerPongHandler () {
-    const { connection } = _converse;
+    const connection = api.connection.get();
     if (connection.disco) {
         api.disco.own.features.add(Strophe.NS.PING);
     }
@@ -32,7 +31,7 @@ export function registerPongHandler () {
 }
 
 export function registerPingHandler () {
-    _converse.connection.addHandler(() => {
+    api.connection.get()?.addHandler(() => {
         if (api.settings.get('ping_interval') > 0) {
             // Handler on each stanza, saves the received date
             // in order to ping only when needed.

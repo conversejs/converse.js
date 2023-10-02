@@ -1,42 +1,93 @@
-import _converse from '../_converse.js';
+import events_api from '../api/events.js';
+import { Connection, MockConnection } from './index.js';
+import { PREBIND } from '../constants.js';
 import { Strophe } from 'strophe.js';
+import { getConnectionServiceURL, setUpXMLLogging } from './utils.js';
+import { isSameDomain } from '../../utils/jid.js';
+import { isTestEnv } from '../../utils/session.js';
+import { settings_api } from '../settings/api.js';
+
+let connection;
+
+const default_connection_options = { 'explicitResourceBinding': true };
+
 
 /**
  * This grouping collects API functions related to the XMPP connection.
  *
- * @namespace _converse.api.connection
- * @memberOf _converse.api
+ * @namespace api.connection
+ * @memberOf api
  */
 export default {
-
     /**
-     * @method _converse.api.connection.authenticated
-     * @memberOf _converse.api.connection
-     * @returns {boolean} Whether we're authenticated to the XMPP server or not
+     * @method api.connection.init
+     * @memberOf api.connection
+     * @param {string} [jid]
+     * @return {Connection | MockConnection}
      */
-    authenticated () {
-        return _converse?.connection?.authenticated && true;
+    init (jid) {
+        if (jid && connection?.jid && isSameDomain(connection.jid, jid)) return connection;
+
+        if (!settings_api.get('bosh_service_url') && settings_api.get('authentication') === PREBIND) {
+            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+        }
+
+        const XMPPConnection = isTestEnv() ? MockConnection : Connection;
+        connection = new XMPPConnection(
+            getConnectionServiceURL(),
+            Object.assign(default_connection_options, settings_api.get('connection_options'), {
+                'keepalive': settings_api.get('keepalive'),
+            })
+        );
+
+        setUpXMLLogging(connection);
+        /**
+         * Triggered once the `Connection` constructor has been initialized, which
+         * will be responsible for managing the connection to the XMPP server.
+         *
+         * @event connectionInitialized
+         */
+        events_api.trigger('connectionInitialized');
+
+        return connection;
+    },
+
+    get () {
+        return connection;
+    },
+
+    destroy () {
+        this.disconnect();
+        connection?.disconnect();
+        connection = undefined;
     },
 
     /**
-     * @method _converse.api.connection.connected
-     * @memberOf _converse.api.connection
+     * @method api.connection.authenticated
+     * @memberOf api.connection
+     * @returns {boolean} Whether we're authenticated to the XMPP server or not
+     */
+    authenticated () {
+        return connection?.authenticated && true;
+    },
+
+    /**
+     * @method api.connection.connected
+     * @memberOf api.connection
      * @returns {boolean} Whether there is an established connection or not.
      */
     connected () {
-        return _converse?.connection?.connected && true;
+        return connection?.connected && true;
     },
 
     /**
      * Terminates the connection.
      *
-     * @method _converse.api.connection.disconnect
-     * @memberOf _converse.api.connection
+     * @method api.connection.disconnect
+     * @memberOf api.connection
      */
     disconnect () {
-        if (_converse.connection) {
-            _converse.connection.disconnect();
-        }
+        connection?.disconnect();
     },
 
     /**
@@ -46,13 +97,12 @@ export default {
      * attempt to reconnect every two seconds, alternating between BOSH and
      * Websocket if URLs for both were provided.
      * @method reconnect
-     * @memberOf _converse.api.connection
+     * @memberOf api.connection
      */
     reconnect () {
-        const { __, connection } = _converse;
         connection.setConnectionStatus(
             Strophe.Status.RECONNECTING,
-            __('The connection has dropped, attempting to reconnect.')
+            'The connection has dropped, attempting to reconnect.'
         );
         if (connection?.reconnecting) {
             return connection.debouncedReconnect();
@@ -64,10 +114,10 @@ export default {
     /**
      * Utility method to determine the type of connection we have
      * @method isType
-     * @memberOf _converse.api.connection
+     * @memberOf api.connection
      * @returns {boolean}
      */
     isType (type) {
-        return _converse.connection.isType(type);
-    }
+        return connection.isType(type);
+    },
 };

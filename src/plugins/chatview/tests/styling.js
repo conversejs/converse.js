@@ -8,6 +8,7 @@ describe("An incoming chat Message", function () {
         mock.initConverse(['chatBoxesFetched'], {},
             async function (_converse) {
 
+        const { api } = _converse;
         const include_nick = false;
         await mock.waitForRoster(_converse, 'current', 2, include_nick);
         await mock.openControlBox(_converse);
@@ -17,7 +18,7 @@ describe("An incoming chat Message", function () {
         const msg = $msg({
                 'from': sender_jid,
                 'id': u.getUniqueId(),
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'type': 'chat',
                 'xmlns': 'jabber:client'
             }).c('body').t(msg_text).up()
@@ -39,6 +40,7 @@ describe("An incoming chat Message", function () {
         mock.initConverse(['chatBoxesFetched'], {'allow_message_styling': false},
             async function (_converse) {
 
+        const { api } = _converse;
         const include_nick = false;
         await mock.waitForRoster(_converse, 'current', 2, include_nick);
         await mock.openControlBox(_converse);
@@ -48,7 +50,7 @@ describe("An incoming chat Message", function () {
         const msg = $msg({
                 'from': sender_jid,
                 'id': u.getUniqueId(),
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'type': 'chat',
                 'xmlns': 'jabber:client'
             }).c('body').t(msg_text).tree();
@@ -242,6 +244,8 @@ describe("An incoming chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.chatboxviews.get(contact_jid);
 
+        const { api } = _converse;
+
         msg_text = `> https://conversejs.org\n> https://conversejs.org`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
@@ -352,7 +356,7 @@ describe("An incoming chat Message", function () {
         msg_text = '> What do you think of it romeo?\n Did you see this romeo?';
         msg = $msg({
                     from: contact_jid,
-                    to: _converse.connection.jid,
+                    to: api.connection.get().jid,
                     type: 'chat',
                     id: (new Date()).getTime()
                 }).c('body').t(msg_text).up()
@@ -385,6 +389,7 @@ describe("An incoming chat Message", function () {
             mock.initConverse(['chatBoxesFetched'], {},
                 async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
@@ -392,7 +397,7 @@ describe("An incoming chat Message", function () {
         const msg_text = '```\ncode```';
         const msg = $msg({
                     from: contact_jid,
-                    to: _converse.connection.jid,
+                    to: api.connection.get().jid,
                     type: 'chat',
                     id: (new Date()).getTime()
                 }).c('body').t(msg_text).up()
@@ -426,6 +431,7 @@ describe("An XEP-0393 styled message ", function () {
         mock.initConverse(['chatBoxesFetched'], {},
             async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
@@ -435,7 +441,7 @@ describe("An XEP-0393 styled message ", function () {
         const msg_id = u.getUniqueId();
         _converse.handleMessageStanza($msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'type': 'chat',
                 'id': msg_id,
             }).c('body').t(msg_text).tree());
@@ -453,7 +459,7 @@ describe("An XEP-0393 styled message ", function () {
 
         _converse.handleMessageStanza($msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'type': 'chat',
                 'id': u.getUniqueId(),
             }).c('body').t(`A\nhttps://conversejs.org\n\nhttps://opkode.com`).up()

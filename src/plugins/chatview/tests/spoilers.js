@@ -10,6 +10,7 @@ describe("A spoiler message", function () {
     it("can be received with a hint",
         mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
@@ -32,7 +33,7 @@ describe("A spoiler message", function () {
                     'xmlns': 'urn:xmpp:spoiler:0',
                 }).t(spoiler_hint)
             .tree();
-        _converse.connection._dataRecv(mock.createRequest(msg));
+        api.connection.get()._dataRecv(mock.createRequest(msg));
         await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
         const view = _converse.chatboxviews.get(sender_jid);
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
@@ -47,6 +48,7 @@ describe("A spoiler message", function () {
     it("can be received without a hint",
             mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
@@ -66,7 +68,7 @@ describe("A spoiler message", function () {
                 .c('spoiler', {
                     'xmlns': 'urn:xmpp:spoiler:0',
                 }).tree();
-        _converse.connection._dataRecv(mock.createRequest(msg));
+        api.connection.get()._dataRecv(mock.createRequest(msg));
         await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
         const view = _converse.chatboxviews.get(sender_jid);
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
@@ -83,6 +85,7 @@ describe("A spoiler message", function () {
     it("can be sent without a hint",
             mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -98,11 +101,11 @@ describe("A spoiler message", function () {
             'from': contact_jid+'/phone',
             'to': 'romeo@montague.lit'
         });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        api.connection.get()._dataRecv(mock.createRequest(presence));
         await mock.openChatBoxFor(_converse, contact_jid);
         await mock.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
         const view = _converse.chatboxviews.get(contact_jid);
-        spyOn(_converse.connection, 'send');
+        spyOn(api.connection.get(), 'send');
 
         await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
         let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
@@ -130,7 +133,7 @@ describe("A spoiler message", function () {
          *    <spoiler xmlns="urn:xmpp:spoiler:0"/>
          * </message>"
          */
-        const stanza = _converse.connection.send.calls.argsFor(0)[0];
+        const stanza = api.connection.get().send.calls.argsFor(0)[0];
         const spoiler_el = await u.waitUntil(() => stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]'));
         expect(spoiler_el.textContent).toBe('');
 
@@ -159,6 +162,7 @@ describe("A spoiler message", function () {
     it("can be sent with a hint",
             mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -174,7 +178,7 @@ describe("A spoiler message", function () {
             'from': contact_jid+'/phone',
             'to': 'romeo@montague.lit'
         });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        api.connection.get()._dataRecv(mock.createRequest(presence));
         await mock.openChatBoxFor(_converse, contact_jid);
         await mock.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
         const view = _converse.chatboxviews.get(contact_jid);
@@ -183,7 +187,7 @@ describe("A spoiler message", function () {
         let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
         spoiler_toggle.click();
 
-        spyOn(_converse.connection, 'send');
+        spyOn(api.connection.get(), 'send');
 
         const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This is the spoiler';
@@ -198,7 +202,7 @@ describe("A spoiler message", function () {
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
-        const stanza = _converse.connection.send.calls.argsFor(0)[0];
+        const stanza = api.connection.get().send.calls.argsFor(0)[0];
         expect(Strophe.serialize(stanza)).toBe(
             `<message from="romeo@montague.lit/orchard" ` +
                     `id="${stanza.getAttribute('id')}" `+

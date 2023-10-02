@@ -212,7 +212,7 @@ const ChatRoomMixin = {
     async constructJoinPresence (password) {
         let stanza = $pres({
             'id': getUniqueId(),
-            'from': _converse.connection.jid,
+            'from': api.connection.get().jid,
             'to': this.getRoomJIDAndNick()
         }).c('x', { 'xmlns': Strophe.NS.MUC })
           .c('history', {
@@ -614,7 +614,8 @@ const ChatRoomMixin = {
         const muc_jid = this.get('jid');
         const muc_domain = Strophe.getDomainFromJid(muc_jid);
         this.removeHandlers();
-        this.presence_handler = _converse.connection.addHandler(
+        const connection = api.connection.get();
+        this.presence_handler = connection.addHandler(
             stanza => this.onPresence(stanza) || true,
             null,
             'presence',
@@ -624,7 +625,7 @@ const ChatRoomMixin = {
             { 'ignoreNamespaceFragment': true, 'matchBareFromJid': true }
         );
 
-        this.domain_presence_handler = _converse.connection.addHandler(
+        this.domain_presence_handler = connection.addHandler(
             stanza => this.onPresenceFromMUCHost(stanza) || true,
             null,
             'presence',
@@ -633,7 +634,7 @@ const ChatRoomMixin = {
             muc_domain
         );
 
-        this.message_handler = _converse.connection.addHandler(
+        this.message_handler = connection.addHandler(
             stanza => !!this.handleMessageStanza(stanza) || true,
             null,
             'message',
@@ -643,7 +644,7 @@ const ChatRoomMixin = {
             { 'matchBareFromJid': true }
         );
 
-        this.domain_message_handler = _converse.connection.addHandler(
+        this.domain_message_handler = connection.addHandler(
             stanza => this.handleMessageFromMUCHost(stanza) || true,
             null,
             'message',
@@ -652,7 +653,7 @@ const ChatRoomMixin = {
             muc_domain
         );
 
-        this.affiliation_message_handler = _converse.connection.addHandler(
+        this.affiliation_message_handler = connection.addHandler(
             stanza => this.handleAffiliationChangedMessage(stanza) || true,
             Strophe.NS.MUC_USER,
             'message',
@@ -663,26 +664,27 @@ const ChatRoomMixin = {
     },
 
     removeHandlers () {
+        const connection = api.connection.get();
         // Remove the presence and message handlers that were
         // registered for this groupchat.
         if (this.message_handler) {
-            _converse.connection && _converse.connection.deleteHandler(this.message_handler);
+            connection?.deleteHandler(this.message_handler);
             delete this.message_handler;
         }
         if (this.domain_message_handler) {
-            _converse.connection && _converse.connection.deleteHandler(this.domain_message_handler);
+            connection?.deleteHandler(this.domain_message_handler);
             delete this.domain_message_handler;
         }
         if (this.presence_handler) {
-            _converse.connection && _converse.connection.deleteHandler(this.presence_handler);
+            connection?.deleteHandler(this.presence_handler);
             delete this.presence_handler;
         }
         if (this.domain_presence_handler) {
-            _converse.connection && _converse.connection.deleteHandler(this.domain_presence_handler);
+            connection?.deleteHandler(this.domain_presence_handler);
             delete this.domain_presence_handler;
         }
         if (this.affiliation_message_handler) {
-            _converse.connection && _converse.connection.deleteHandler(this.affiliation_message_handler);
+            connection?.deleteHandler(this.affiliation_message_handler);
             delete this.affiliation_message_handler;
         }
         return this;
@@ -727,15 +729,16 @@ const ChatRoomMixin = {
         }
         const promise = getOpenPromise();
         const timeout = api.settings.get('stanza_timeout');
-        const timeoutHandler = _converse.connection.addTimedHandler(timeout, () => {
-            _converse.connection.deleteHandler(handler);
+        const connection = api.connection.get();
+        const timeoutHandler = connection.addTimedHandler(timeout, () => {
+            connection.deleteHandler(handler);
             const err = new TimeoutError('Timeout Error: No response from server');
             promise.resolve(err);
             return false;
         });
-        const handler = _converse.connection.addHandler(
+        const handler = connection.addHandler(
             stanza => {
-                timeoutHandler && _converse.connection.deleteTimedHandler(timeoutHandler);
+                timeoutHandler && connection.deleteTimedHandler(timeoutHandler);
                 promise.resolve(stanza);
             }, null, 'message', ['error', 'groupchat'], id);
         api.send(el);
@@ -1107,7 +1110,7 @@ const ChatRoomMixin = {
             attrs.password = this.get('password');
         }
         const invitation = $msg({
-            'from': _converse.connection.jid,
+            'from': api.connection.get().jid,
             'to': recipient,
             'id': getUniqueId()
         }).c('x', attrs);
@@ -1463,7 +1466,7 @@ const ChatRoomMixin = {
         const jid = Strophe.getBareJidFromJid(this.get('jid'));
         api.send(
             $pres({
-                'from': _converse.connection.jid,
+                'from': api.connection.get().jid,
                 'to': `${jid}/${nick}`,
                 'id': getUniqueId()
             }).tree()
@@ -1610,7 +1613,7 @@ const ChatRoomMixin = {
     async getReservedNick () {
         const stanza = $iq({
             'to': this.get('jid'),
-            'from': _converse.connection.jid,
+            'from': api.connection.get().jid,
             'type': 'get'
         }).c('query', {
             'xmlns': Strophe.NS.DISCO_INFO,
@@ -1880,7 +1883,7 @@ const ChatRoomMixin = {
         api.send(
             $msg({
                 to: this.get('jid'),
-                from: _converse.connection.jid,
+                from: api.connection.get().jid,
                 type: 'groupchat'
             })
                 .c('subject', { xmlns: 'jabber:client' })

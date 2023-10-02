@@ -189,12 +189,12 @@ export class ChatToolbar extends CustomElement {
          * When a call button (i.e. with class .toggle-call) on a chatbox has been clicked.
          * @event _converse#callButtonClicked
          * @type { object }
-         * @property { Strophe.Connection } _converse.connection - The XMPP Connection object
-         * @property { _converse.ChatBox | _converse.ChatRoom } _converse.connection - The XMPP Connection object
+         * @property { Strophe.Connection } connection - The XMPP Connection object
+         * @property { _converse.ChatBox | _converse.ChatRoom } model
          * @example _converse.api.listen.on('callButtonClicked', (connection, model) => { ... });
          */
         api.trigger('callButtonClicked', {
-            connection: _converse.connection,
+            connection: api.connection.get(),
             model: this.model
         });
     }

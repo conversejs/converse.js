@@ -168,7 +168,7 @@ export class Connection extends Strophe.Connection {
         if (api.settings.get("authentication") === ANONYMOUS) {
             await clearSession();
         }
-        return api.user.login();
+        return api.user.login(_converse.jid);
     }
 
     /**
@@ -246,7 +246,8 @@ export class Connection extends Strophe.Connection {
         this.reset();
         tearDown();
         await clearSession();
-        delete _converse.connection;
+        api.connection.destroy();
+
         /**
         * Triggered after converse.js has disconnected from the XMPP server.
         * @event _converse#disconnected

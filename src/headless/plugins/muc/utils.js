@@ -38,7 +38,7 @@ export function getAssignableRoles (occupant) {
 }
 
 export function registerDirectInvitationHandler () {
-    _converse.connection.addHandler(
+    api.connection.get().addHandler(
         message => {
             _converse.onDirectMUCInvitation(message);
             return true;
@@ -222,7 +222,7 @@ export function onStatusInitialized () {
 }
 
 export function onBeforeResourceBinding () {
-    _converse.connection.addHandler(
+    api.connection.get().addHandler(
         stanza => {
             const muc_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
             if (!_converse.chatboxes.get(muc_jid)) {

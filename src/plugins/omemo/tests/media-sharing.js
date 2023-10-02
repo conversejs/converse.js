@@ -15,7 +15,7 @@ describe("The OMEMO module", function() {
             ['http://jabber.org/protocol/disco#items'], [], 'info');
 
         const send_backup = XMLHttpRequest.prototype.send;
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
 
         await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
         await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
@@ -30,14 +30,14 @@ describe("The OMEMO module", function() {
         let stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.getAttribute('id'),
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
                 .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
                     .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
         const devicelist = _converse.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => devicelist.devices.length === 1);
@@ -76,7 +76,7 @@ describe("The OMEMO module", function() {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         });
         let sent_stanza;
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, contact_jid, '555'));
         stanza = $iq({
@@ -96,7 +96,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         iq_stanza = await u.waitUntil(() => mock.bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
         stanza = $iq({
             'from': _converse.bare_jid,
@@ -116,8 +116,8 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
                             .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
 
-        spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        spyOn(_converse.api.connection.get(), 'send').and.callFake(stanza => (sent_stanza = stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => sent_stanza);
 

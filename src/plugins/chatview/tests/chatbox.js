@@ -15,6 +15,7 @@ describe("Chatboxes", function () {
 
         it("has a /help command to show the available commands", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+            const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
 
@@ -32,7 +33,7 @@ describe("Chatboxes", function () {
 
             const msg = $msg({
                     from: contact_jid,
-                    to: _converse.connection.jid,
+                    to: api.connection.get().jid,
                     type: 'chat',
                     id: u.getUniqueId()
                 }).c('body').t('hello world').tree();
@@ -103,6 +104,7 @@ describe("Chatboxes", function () {
                 [], {'allow_non_roster_messaging': true},
                 async function (_converse) {
 
+            const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 0);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const stanza = u.toStanza(`
@@ -113,7 +115,7 @@ describe("Chatboxes", function () {
                 </message>`);
 
             const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve));
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             await u.waitUntil(() => message_promise);
             expect(_converse.chatboxviews.keys().length).toBe(2);
@@ -121,6 +123,7 @@ describe("Chatboxes", function () {
         }));
 
         it("doesn't open when a message without body is received", mock.initConverse([], {}, async function (_converse) {
+            const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const stanza = u.toStanza(`
@@ -130,7 +133,7 @@ describe("Chatboxes", function () {
                     <composing xmlns="http://jabber.org/protocol/chatstates"/>
                 </message>`);
             const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve))
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => message_promise);
             expect(_converse.chatboxviews.keys().length).toBe(1);
         }));
@@ -335,6 +338,7 @@ describe("Chatboxes", function () {
         describe("A Chat Status Notification", function () {
 
             it("does not open a new chatbox", mock.initConverse([], {}, async function (_converse) {
+                const { api } = _converse;
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openControlBox(_converse);
 
@@ -342,13 +346,13 @@ describe("Chatboxes", function () {
                 // <composing> state
                 const stanza = $msg({
                         'from': sender_jid,
-                        'to': _converse.connection.jid,
+                        'to': api.connection.get().jid,
                         'type': 'chat',
                         'id': u.getUniqueId()
                     }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
                 spyOn(_converse.api, "trigger").and.callThrough();
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => _converse.api.trigger.calls.count());
                 expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                 expect(_converse.chatboxviews.keys().length).toBe(1);
@@ -359,17 +363,18 @@ describe("Chatboxes", function () {
                 it("is sent when the user opens a chat box",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openControlBox(_converse);
                     const rosterview = document.querySelector('converse-roster');
                     u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
-                    spyOn(_converse.connection, 'send');
+                    spyOn(api.connection.get(), 'send');
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const model = _converse.chatboxes.get(contact_jid);
                     expect(model.get('chat_state')).toBe('active');
-                    expect(_converse.connection.send).toHaveBeenCalled();
-                    const stanza = _converse.connection.send.calls.argsFor(0)[0];
+                    expect(api.connection.get().send).toHaveBeenCalled();
+                    const stanza = api.connection.get().send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes.length).toBe(3);
                     expect(stanza.childNodes[0].tagName).toBe('active');
@@ -380,6 +385,7 @@ describe("Chatboxes", function () {
                 it("is sent when the user maximizes a minimized a chat box", mock.initConverse(
                         ['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current', 1);
                     await mock.openControlBox(_converse);
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -389,7 +395,7 @@ describe("Chatboxes", function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const model = _converse.chatboxes.get(contact_jid);
                     _converse.minimize.minimize(model);
-                    const sent_stanzas = _converse.connection.sent_stanzas;
+                    const sent_stanzas = api.connection.get().sent_stanzas;
                     sent_stanzas.splice(0, sent_stanzas.length);
                     expect(model.get('chat_state')).toBe('inactive');
                     _converse.minimize.maximize(model);
@@ -410,6 +416,7 @@ describe("Chatboxes", function () {
                 it("is sent as soon as the user starts typing a message which is not a command",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -419,7 +426,7 @@ describe("Chatboxes", function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
-                    spyOn(_converse.connection, 'send');
+                    spyOn(api.connection.get(), 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
 
                     const message_form = view.querySelector('converse-message-form');
@@ -428,9 +435,9 @@ describe("Chatboxes", function () {
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
-                    expect(_converse.connection.send).toHaveBeenCalled();
+                    expect(api.connection.get().send).toHaveBeenCalled();
 
-                    const stanza = _converse.connection.send.calls.argsFor(0)[0];
+                    const stanza = api.connection.get().send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes.length).toBe(3);
                     expect(stanza.childNodes[0].tagName).toBe('composing');
@@ -450,6 +457,7 @@ describe("Chatboxes", function () {
                     mock.initConverse(['chatBoxesFetched'], {'send_chat_state_notifications': []},
                         async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -459,7 +467,7 @@ describe("Chatboxes", function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
-                    spyOn(_converse.connection, 'send');
+                    spyOn(api.connection.get(), 'send');
                     spyOn(_converse.api, "trigger").and.callThrough();
                     const message_form = view.querySelector('converse-message-form');
                     message_form.onKeyDown({
@@ -467,10 +475,11 @@ describe("Chatboxes", function () {
                         keyCode: 1
                     });
                     expect(view.model.get('chat_state')).toBe('composing');
-                    expect(_converse.connection.send).not.toHaveBeenCalled();
+                    expect(api.connection.get().send).not.toHaveBeenCalled();
                 }));
 
                 it("will be shown if received", mock.initConverse([], {}, async function (_converse) {
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
 
@@ -483,12 +492,12 @@ describe("Chatboxes", function () {
                     // <composing> state
                     let msg = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
                     const view = _converse.chatboxviews.get(sender_jid);
                     let csn = mock.cur_names[1] + ' is typing';
                     await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === csn);
@@ -497,17 +506,17 @@ describe("Chatboxes", function () {
                     // <paused> state
                     msg = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
                     csn = mock.cur_names[1] + ' has stopped typing';
                     await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === csn);
 
                     msg = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('body').t('hello world').tree();
@@ -520,6 +529,7 @@ describe("Chatboxes", function () {
                 it("is ignored if it's a composing carbon message sent by this user from a different client",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                     await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
                     await mock.waitForRoster(_converse, 'current');
@@ -532,7 +542,7 @@ describe("Chatboxes", function () {
                     const msg = $msg({
                             'from': _converse.bare_jid,
                             'id': u.getUniqueId(),
-                            'to': _converse.connection.jid,
+                            'to': api.connection.get().jid,
                             'type': 'chat',
                             'xmlns': 'jabber:client'
                         }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
@@ -543,7 +553,7 @@ describe("Chatboxes", function () {
                                 'to': recipient_jid,
                                 'type': 'chat'
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
 
                     await u.waitUntil(() => u.shouldCreateMessage.calls.count());
                     expect(view.model.messages.length).toEqual(0);
@@ -557,6 +567,7 @@ describe("Chatboxes", function () {
                 it("is sent if the user has stopped typing since 30 seconds",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openControlBox(_converse);
@@ -575,7 +586,7 @@ describe("Chatboxes", function () {
                     expect(view.model.get('chat_state')).toBe('composing');
 
                     const xmlns = 'https://jabber.org/protocol/chatstates';
-                    const sent_stanzas = _converse.connection.sent_stanzas;
+                    const sent_stanzas = api.connection.get().sent_stanzas;
                     let stanza = await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`composing`, s).length).pop(), 1000);
 
                     expect(Strophe.serialize(stanza)).toBe(
@@ -615,6 +626,7 @@ describe("Chatboxes", function () {
                 }));
 
                 it("will be shown if received", mock.initConverse([], {}, async function (_converse) {
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
                     const rosterview = document.querySelector('converse-roster');
@@ -627,12 +639,12 @@ describe("Chatboxes", function () {
                     // <paused> state
                     const msg = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
                     const csn = mock.cur_names[1] +  ' has stopped typing';
                     await u.waitUntil( () => view.querySelector('.chat-content__notifications').innerText === csn);
                     expect(view.model.messages.length).toEqual(0);
@@ -641,6 +653,7 @@ describe("Chatboxes", function () {
                 it("will not be shown if it's a paused carbon message that this user sent from a different client",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                     await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
                     await mock.waitForRoster(_converse, 'current');
@@ -651,7 +664,7 @@ describe("Chatboxes", function () {
                     const msg = $msg({
                             'from': _converse.bare_jid,
                             'id': u.getUniqueId(),
-                            'to': _converse.connection.jid,
+                            'to': api.connection.get().jid,
                             'type': 'chat',
                             'xmlns': 'jabber:client'
                         }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
@@ -662,7 +675,7 @@ describe("Chatboxes", function () {
                                 'to': recipient_jid,
                                 'type': 'chat'
                         }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
                     await u.waitUntil(() => u.shouldCreateMessage.calls.count());
                     expect(view.model.messages.length).toEqual(0);
                     const el = view.querySelector('.chat-content__notifications');
@@ -675,7 +688,8 @@ describe("Chatboxes", function () {
                 it("is sent if the user has stopped typing since 2 minutes",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
-                    const sent_stanzas = _converse.connection.sent_stanzas;
+                    const { api } = _converse;
+                    const sent_stanzas = api.connection.get().sent_stanzas;
                     // Make the timeouts shorter so that we can test
                     _converse.TIMEOUTS.PAUSED = 100;
                     _converse.TIMEOUTS.INACTIVE = 100;
@@ -739,17 +753,18 @@ describe("Chatboxes", function () {
                 it("is sent when the user a minimizes a chat box",
                     mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
 
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
-                    spyOn(_converse.connection, 'send');
+                    spyOn(api.connection.get(), 'send');
                     _converse.minimize.minimize(view.model);
                     expect(view.model.get('chat_state')).toBe('inactive');
-                    expect(_converse.connection.send).toHaveBeenCalled();
-                    var stanza = _converse.connection.send.calls.argsFor(0)[0];
+                    expect(api.connection.get().send).toHaveBeenCalled();
+                    var stanza = api.connection.get().send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes[0].tagName).toBe('inactive');
                 }));
@@ -757,6 +772,7 @@ describe("Chatboxes", function () {
                 it("is sent if the user closes a chat box",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await mock.openControlBox(_converse);
@@ -764,11 +780,11 @@ describe("Chatboxes", function () {
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     const view = await mock.openChatBoxFor(_converse, contact_jid);
                     expect(view.model.get('chat_state')).toBe('active');
-                    spyOn(_converse.connection, 'send');
+                    spyOn(api.connection.get(), 'send');
                     view.close();
                     expect(view.model.get('chat_state')).toBe('inactive');
-                    expect(_converse.connection.send).toHaveBeenCalled();
-                    const stanza = _converse.connection.send.calls.argsFor(0)[0];
+                    expect(api.connection.get().send).toHaveBeenCalled();
+                    const stanza = api.connection.get().send.calls.argsFor(0)[0];
                     expect(stanza.getAttribute('to')).toBe(contact_jid);
                     expect(stanza.childNodes.length).toBe(3);
                     expect(stanza.childNodes[0].tagName).toBe('inactive');
@@ -779,6 +795,7 @@ describe("Chatboxes", function () {
                 it("will clear any other chat status notifications",
                         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -796,18 +813,18 @@ describe("Chatboxes", function () {
                             'type': 'chat'})
                         .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                         .tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
                     const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                     expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
                     expect(view.model.messages.length).toBe(0);
 
                     msg = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
 
                     await u.waitUntil(() => !view.querySelector('.chat-content__notifications').textContent);
                 }));
@@ -816,6 +833,7 @@ describe("Chatboxes", function () {
             describe("A gone notification", function () {
 
                 it("will be shown if received", mock.initConverse([], {}, async function (_converse) {
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current', 3);
                     await mock.openControlBox(_converse);
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -823,11 +841,11 @@ describe("Chatboxes", function () {
 
                     const msg = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
 
                     const view = _converse.chatboxviews.get(sender_jid);
                     const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
@@ -838,6 +856,7 @@ describe("Chatboxes", function () {
             describe("On receiving a message correction", function () {
 
                 it("will be removed", mock.initConverse([], {}, async function (_converse) {
+                    const { api } = _converse;
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openControlBox(_converse);
 
@@ -851,14 +870,14 @@ describe("Chatboxes", function () {
                     const original_id = u.getUniqueId();
                     const original = $msg({
                         from: sender_jid,
-                        to: _converse.connection.jid,
+                        to: api.connection.get().jid,
                         type: 'chat',
                         id: original_id,
                         body: "Original message",
                     }).c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
                     spyOn(_converse.api, "trigger").and.callThrough();
-                    _converse.connection._dataRecv(mock.createRequest(original));
+                    api.connection.get()._dataRecv(mock.createRequest(original));
                     await u.waitUntil(() => _converse.api.trigger.calls.count());
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                     const view = _converse.chatboxviews.get(sender_jid);
@@ -867,11 +886,11 @@ describe("Chatboxes", function () {
                     // <composing> state
                     const msg = $msg({
                         from: sender_jid,
-                        to: _converse.connection.jid,
+                        to: api.connection.get().jid,
                         type: 'chat',
                         id: u.getUniqueId()
                     }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    api.connection.get()._dataRecv(mock.createRequest(msg));
 
                     const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                     expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
@@ -879,7 +898,7 @@ describe("Chatboxes", function () {
                     // Edited message
                     const edited = $msg({
                             from: sender_jid,
-                            to: _converse.connection.jid,
+                            to: api.connection.get().jid,
                             type: 'chat',
                             id: u.getUniqueId(),
                             body: "Edited message",

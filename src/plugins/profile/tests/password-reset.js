@@ -28,7 +28,7 @@ describe('The profile modal', function () {
         mock.initConverse([], {}, async function (_converse) {
             await submitPasswordResetForm(_converse);
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const query_iq = await u.waitUntil(() =>
                 sent_IQs.filter(iq => iq.querySelector('iq[type="get"] query[xmlns="jabber:iq:register"]')).pop()
             );
@@ -38,7 +38,7 @@ describe('The profile modal', function () {
                     `</iq>`
             );
 
-            _converse.connection._dataRecv(
+            _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
                     u.toStanza(`
                     <iq type='result' id='${query_iq.getAttribute('id')}'>
@@ -62,7 +62,7 @@ describe('The profile modal', function () {
                     `</iq>`
             );
 
-            _converse.connection._dataRecv(
+            _converse.api.connection.get()._dataRecv(
                 mock.createRequest(u.toStanza(`<iq type='result' id='${set_iq.getAttribute('id')}'></iq>`))
             );
 
@@ -77,7 +77,7 @@ describe('The profile modal', function () {
         mock.initConverse([], {}, async function (_converse) {
             const modal = await submitPasswordResetForm(_converse);
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const query_iq = await u.waitUntil(() =>
                 sent_IQs.filter(iq => iq.querySelector('query[xmlns="jabber:iq:register"]')).pop()
             );
@@ -88,7 +88,7 @@ describe('The profile modal', function () {
                     `</iq>`
             );
 
-            _converse.connection._dataRecv(
+            _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
                     u.toStanza(`
                 <iq type='result' id="${query_iq.getAttribute('id')}">
@@ -107,7 +107,7 @@ describe('The profile modal', function () {
         mock.initConverse([], {}, async function (_converse) {
             const modal = await submitPasswordResetForm(_converse);
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const query_iq = await u.waitUntil(() =>
                 sent_IQs.filter(iq => iq.querySelector('query[xmlns="jabber:iq:register"]')).pop()
             );
@@ -118,7 +118,7 @@ describe('The profile modal', function () {
                     `</iq>`
             );
 
-            _converse.connection._dataRecv(
+            _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
                     u.toStanza(`
                     <iq type='result' id='${query_iq.getAttribute('id')}'>
@@ -142,7 +142,7 @@ describe('The profile modal', function () {
                     `</iq>`
             );
 
-            _converse.connection._dataRecv(
+            _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
                     u.toStanza(`
                 <iq type='result' id="${set_iq.getAttribute('id')}">

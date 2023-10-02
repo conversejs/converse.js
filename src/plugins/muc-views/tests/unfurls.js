@@ -21,7 +21,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -43,7 +43,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);
@@ -66,7 +66,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://mempool.space');
 
@@ -79,7 +79,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="500" />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe('https://conversejs.org/dist/images/custom_emojis/converse.png');
@@ -102,7 +102,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe(unfurl_url);
 
@@ -118,7 +118,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="302" />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(gif_url);
@@ -138,7 +138,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('Check out https://www.youtube.com/watch?v=dQw4w9WgXcQ and https://duckduckgo.com');
 
@@ -160,7 +160,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
         await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 1);
 
         metadata_stanza = u.toStanza(`
@@ -173,7 +173,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="The Internet privacy company that empowers you to seamlessly take control of your personal information online, without any tradeoffs." />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 2);
     }));
@@ -192,7 +192,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -208,7 +208,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
         expect(view.model.handleMetadataFastening.calls.first().returnValue).toBe(false);
@@ -234,7 +234,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -250,7 +250,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         expect(view.querySelector('converse-message-unfurl')).toBe(null);
 
@@ -281,7 +281,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -297,9 +297,9 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
         const unfurls = await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl'));
@@ -326,7 +326,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -340,7 +340,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => !view.querySelector('converse-message-unfurl'));
 
@@ -368,7 +368,7 @@ describe("A Groupchat Message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
@@ -382,7 +382,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:type" content="video.other" />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         let button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-hide-previews'));
@@ -411,7 +411,7 @@ describe("A Groupchat Message", function () {
         const unfurl_image_src = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg";
         const unfurl_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
-        spyOn(_converse.connection, 'send').and.callThrough();
+        spyOn(_converse.api.connection.get(), 'send').and.callThrough();
 
         const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
         const message_form = view.querySelector('converse-muc-message-form');
@@ -428,7 +428,7 @@ describe("A Groupchat Message", function () {
         expect(view.querySelector('.chat-msg__text').textContent)
             .toBe(unfurl_url);
 
-        let msg = _converse.connection.send.calls.all()[1].args[0];
+        let msg = _converse.api.connection.get().send.calls.all()[1].args[0];
         expect(Strophe.serialize(msg))
         .toBe(
             `<message from="${_converse.jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
@@ -458,7 +458,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(metadata_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
         expect(unfurl.querySelector('.card-img-top').getAttribute('src')).toBe(unfurl_image_src);
@@ -474,7 +474,7 @@ describe("A Groupchat Message", function () {
         textarea.value = "never mind";
         message_form.onKeyDown(enter_event);
 
-        const getSentMessages = () => _converse.connection.send.calls.all().map(c => c.args[0]).filter(s => s.nodeName === 'message');
+        const getSentMessages = () => _converse.api.connection.get().send.calls.all().map(c => c.args[0]).filter(s => s.nodeName === 'message');
         await u.waitUntil(() => getSentMessages().length == 2);
         msg = getSentMessages().pop();
         expect(Strophe.serialize(msg))

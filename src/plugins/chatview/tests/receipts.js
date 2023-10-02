@@ -11,14 +11,15 @@ describe("A delivery receipt", function () {
             ['chatBoxesFetched'], {},
             async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msg_id = u.getUniqueId();
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(stanza => sent_stanzas.push(stanza));
+        spyOn(api.connection.get(), 'send').and.callFake(stanza => sent_stanzas.push(stanza));
         const msg = $msg({
                 'from': sender_jid,
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'type': 'chat',
                 'id': msg_id,
             }).c('body').t('Message!').up()
@@ -36,6 +37,7 @@ describe("A delivery receipt", function () {
             ['chatBoxesFetched'], {},
             async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msg_id = u.getUniqueId();
@@ -43,7 +45,7 @@ describe("A delivery receipt", function () {
         spyOn(view.model, 'sendReceiptStanza').and.callThrough();
         const msg = $msg({
                 'from': sender_jid,
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'type': 'chat',
                 'id': u.getUniqueId(),
             }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
@@ -101,6 +103,7 @@ describe("A delivery receipt", function () {
             ['chatBoxesFetched'], {},
             async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
@@ -120,10 +123,10 @@ describe("A delivery receipt", function () {
         let msg_id = msg_obj.get('msgid');
         let msg = $msg({
                 'from': contact_jid,
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'id': u.getUniqueId(),
             }).c('received', {'id': msg_id, xmlns: Strophe.NS.RECEIPTS}).up().tree();
-        _converse.connection._dataRecv(mock.createRequest(msg));
+        api.connection.get()._dataRecv(mock.createRequest(msg));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 1);
 
         // Also handle receipts with type 'chat'. See #1353
@@ -141,10 +144,10 @@ describe("A delivery receipt", function () {
         msg = $msg({
                 'from': contact_jid,
                 'type': 'chat',
-                'to': _converse.connection.jid,
+                'to': api.connection.get().jid,
                 'id': u.getUniqueId(),
             }).c('received', {'id': msg_id, xmlns: Strophe.NS.RECEIPTS}).up().tree();
-        _converse.connection._dataRecv(mock.createRequest(msg));
+        api.connection.get()._dataRecv(mock.createRequest(msg));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 2);
         expect(_converse.handleMessageStanza.calls.count()).toBe(1);
     }));

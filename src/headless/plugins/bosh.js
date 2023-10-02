@@ -56,6 +56,7 @@ converse.plugins.add('converse-bosh', {
             if (!api.settings.get('prebind_url')) {
                 throw new Error("startNewPreboundBOSHSession: If you use prebind then you MUST supply a prebind_url");
             }
+            const connection = api.connection.get();
             const xhr = new XMLHttpRequest();
             xhr.open('GET', api.settings.get('prebind_url'), true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
@@ -63,11 +64,11 @@ converse.plugins.add('converse-bosh', {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
                     const jid = await setUserJID(data.jid);
-                    _converse.connection.attach(
+                    connection.attach(
                         jid,
                         data.sid,
                         data.rid,
-                        _converse.connection.onConnectStatusChanged,
+                        connection.onConnectStatusChanged,
                         BOSH_WAIT
                     );
                 } else {
@@ -75,7 +76,7 @@ converse.plugins.add('converse-bosh', {
                 }
             };
             xhr.onerror = function () {
-                delete _converse.connection;
+                api.connection.destroy();
                 /**
                  * Triggered when fetching prebind tokens failed
                  * @event _converse#noResumeableBOSHSession
@@ -90,9 +91,10 @@ converse.plugins.add('converse-bosh', {
 
         _converse.restoreBOSHSession = async function () {
             const jid = (await initBOSHSession()).get('jid');
-            if (jid && (_converse.connection._proto instanceof Strophe.Bosh)) {
+            const connection = api.connection.get();
+            if (jid && (connection._proto instanceof Strophe.Bosh)) {
                 try {
-                    _converse.connection.restore(jid, _converse.connection.onConnectStatusChanged);
+                    connection.restore(jid, connection.onConnectStatusChanged);
                     return true;
                 } catch (e) {
                     !isTestEnv() && log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);
@@ -144,13 +146,14 @@ converse.plugins.add('converse-bosh', {
                  * @example _converse.api.tokens.get('rid');
                  */
                 get (id) {
-                    if (_converse.connection === undefined) {
+                    const connection = api.connection.get();
+                    if (!connection) {
                         return null;
                     }
                     if (id.toLowerCase() === 'rid') {
-                        return _converse.connection.rid || _converse.connection._proto.rid;
+                        return connection.rid || connection._proto.rid;
                     } else if (id.toLowerCase() === 'sid') {
-                        return _converse.connection.sid || _converse.connection._proto.sid;
+                        return connection.sid || connection._proto.sid;
                     }
                 }
             }

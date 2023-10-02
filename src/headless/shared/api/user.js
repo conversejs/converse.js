@@ -1,8 +1,8 @@
 import _converse from '../_converse.js';
 import presence_api from './presence.js';
-import { isSameDomain } from '../../utils/jid.js';
+import connection_api from '../connection/api.js';
 import { replacePromise } from '../../utils/session.js';
-import { attemptNonPreboundSession, initConnection, setUserJID } from '../../utils/init.js';
+import { attemptNonPreboundSession, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/api.js';
 import { LOGOUT, PREBIND } from '../constants.js';
@@ -24,7 +24,7 @@ export default {
          * @example _converse.api.user.jid())
          */
         jid () {
-            return _converse.connection.jid;
+            return connection_api.get()?.jid;
         },
 
         /**
@@ -47,10 +47,10 @@ export default {
         async login (jid, password, automatic=false) {
             const { api } = _converse;
             jid = jid || api.settings.get('jid');
-            if (!_converse.connection?.jid || (jid && !isSameDomain(_converse.connection.jid, jid))) {
-                initConnection();
-            }
-            if (api.settings.get("connection_options")?.worker && (await _converse.connection.restoreWorkerSession())) {
+
+            const connection = connection_api.init(jid);
+
+            if (api.settings.get("connection_options")?.worker && (await connection.restoreWorkerSession())) {
                 return;
             }
             if (jid) {
@@ -102,10 +102,12 @@ export default {
                 promise.resolve();
             }
 
-            _converse.connection.setDisconnectionCause(LOGOUT, undefined, true);
-            if (_converse.connection !== undefined) {
+            const connection = connection_api.get();
+
+            if (connection) {
+                connection.setDisconnectionCause(LOGOUT, undefined, true);
                 api.listen.once('disconnected', () => complete());
-                _converse.connection.disconnect();
+                connection.disconnect();
             } else {
                 complete();
             }

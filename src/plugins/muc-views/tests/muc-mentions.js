@@ -39,7 +39,7 @@ describe("MUC Mention Notfications", function () {
                 <mentions xmlns='urn:xmpp:mmn:0'>
                     <forwarded xmlns='urn:xmpp:forward:0'>
                         <delay xmlns='urn:xmpp:delay' stamp='${dayjs(base_time).subtract(5, 'minutes').toISOString()}'/>
-                        <message type='groupchat' id='${_converse.connection.getUniqueId()}'
+                        <message type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'
                             to='${muc_jid}'
                             from='${muc_jid}/juliet'
                             xml:lang='en'>
@@ -54,7 +54,7 @@ describe("MUC Mention Notfications", function () {
                 </mentions>
             </message>
         `);
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
         await u.waitUntil(() => Array.from(room_el.classList).includes('unread-msgs'));
         expect(room_el.querySelector('.msgs-indicator')?.textContent.trim()).toBe('1');
@@ -64,7 +64,7 @@ describe("MUC Mention Notfications", function () {
                 <mentions xmlns='urn:xmpp:mmn:0'>
                     <forwarded xmlns='urn:xmpp:forward:0'>
                         <delay xmlns='urn:xmpp:delay' stamp='${dayjs(base_time).subtract(4, 'minutes').toISOString()}'/>
-                        <message type='groupchat' id='${_converse.connection.getUniqueId()}'
+                        <message type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'
                             to='${muc_jid}'
                             from='${muc_jid}/juliet'
                             xml:lang='en'>
@@ -79,7 +79,7 @@ describe("MUC Mention Notfications", function () {
                 </mentions>
             </message>
         `);
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
         await u.waitUntil(() => room_el.querySelector('.msgs-indicator')?.textContent.trim() === '2');
     }));

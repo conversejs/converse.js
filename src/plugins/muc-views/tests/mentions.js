@@ -34,7 +34,7 @@ describe("An incoming groupchat message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
         const view = _converse.chatboxviews.get(muc_jid);
         ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $pres({
                     'to': 'tom@montague.lit/resource',
                     'from': `lounge@montague.lit/${nick}`
@@ -87,7 +87,7 @@ describe("An incoming groupchat message", function () {
         const nick = 'romeo';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
-        _converse.connection._dataRecv(mock.createRequest(
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
             $pres({
                 'to': 'romeo@montague.lit/resource',
                 'from': `lounge@montague.lit/ThUnD3r|Gr33n`
@@ -112,7 +112,7 @@ describe("An incoming groupchat message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-        const sent_stanzas = _converse.connection.sent_stanzas;
+        const sent_stanzas = _converse.api.connection.get().sent_stanzas;
         const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
         expect(Strophe.serialize(msg))
             .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
@@ -135,7 +135,7 @@ describe("An incoming groupchat message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
         const view = _converse.chatboxviews.get(muc_jid);
         ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $pres({
                     'to': 'tom@montague.lit/resource',
                     'from': `lounge@montague.lit/${nick}`
@@ -194,7 +194,7 @@ describe("A sent groupchat message", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', features);
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve', 'robot'].forEach((nick) => {
-                _converse.connection._dataRecv(mock.createRequest(
+                _converse.api.connection.get()._dataRecv(mock.createRequest(
                     $pres({
                         'to': 'tom@montague.lit/resource',
                         'from': `lounge@montague.lit/${nick}`
@@ -211,7 +211,7 @@ describe("A sent groupchat message", function () {
             const stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                         from="${muc_jid}/gh0st"
-                        to="${_converse.connection.bare_jid}"
+                        to="${_converse.api.connection.get().bare_jid}"
                         type="groupchat">
                     <body>Boo!</body>
                 </message>`);
@@ -309,7 +309,7 @@ describe("A sent groupchat message", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
             const view = _converse.chatboxviews.get(muc_jid);
             ['NotAnAdress', 'darnuria'].forEach((nick) => {
-                _converse.connection._dataRecv(mock.createRequest(
+                _converse.api.connection.get()._dataRecv(mock.createRequest(
                     $pres({
                         'to': 'tom@montague.lit/resource',
                         'from': `lounge@montague.lit/${nick}`
@@ -339,7 +339,7 @@ describe("A sent groupchat message", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
             const view = _converse.chatboxviews.get(muc_jid);
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $pres({
                     'to': 'tom@montague.lit/resource',
                     'from': `lounge@montague.lit/Link Mauve`
@@ -362,7 +362,7 @@ describe("A sent groupchat message", function () {
             const message_form = view.querySelector('converse-muc-message-form');
             message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
             expect(Strophe.serialize(msg))
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
@@ -396,7 +396,7 @@ describe("A sent groupchat message", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', features);
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
-                _converse.connection._dataRecv(mock.createRequest(
+                _converse.api.connection.get()._dataRecv(mock.createRequest(
                     $pres({
                         'to': 'tom@montague.lit/resource',
                         'from': `lounge@montague.lit/${nick}`
@@ -430,7 +430,7 @@ describe("A sent groupchat message", function () {
                 '<span class="mention" data-uri="xmpp:mr.robot@montague.lit">mr.robot</span>, how are you?'
             );
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
             expect(Strophe.serialize(msg))
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
@@ -480,7 +480,7 @@ describe("A sent groupchat message", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
-                _converse.connection._dataRecv(mock.createRequest(
+                _converse.api.connection.get()._dataRecv(mock.createRequest(
                     $pres({
                         'to': 'tom@montague.lit/resource',
                         'from': `lounge@montague.lit/${nick}`
@@ -494,7 +494,7 @@ describe("A sent groupchat message", function () {
             });
             await u.waitUntil(() => view.model.occupants.length === 5);
 
-            spyOn(_converse.connection, 'send');
+            spyOn(_converse.api.connection.get(), 'send');
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
             const enter_event = {
@@ -507,7 +507,7 @@ describe("A sent groupchat message", function () {
             message_form.onKeyDown(enter_event);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
-            const msg = _converse.connection.send.calls.all()[1].args[0];
+            const msg = _converse.api.connection.get().send.calls.all()[1].args[0];
             expect(Strophe.serialize(msg))
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+

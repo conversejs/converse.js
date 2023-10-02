@@ -21,7 +21,7 @@ describe("Chatrooms", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            let stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            let stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
             ).pop());
             expect(Strophe.serialize(stanza))
@@ -40,8 +40,8 @@ describe("Chatrooms", function () {
                         'type': 'text-single',
                         'var': 'muc#register_roomnick'
                     }).c('required');
-            _converse.connection._dataRecv(mock.createRequest(result));
-            stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+            stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
             ).pop());
 

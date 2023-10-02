@@ -1,6 +1,6 @@
 import 'shared/components/icons.js';
 import { __ } from 'i18n';
-import { _converse, converse } from "@converse/headless";
+import { _converse, converse, api } from "@converse/headless";
 import { html } from "lit";
 import { isUniView } from '@converse/headless/utils/session.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -36,7 +36,7 @@ function renderContact (contact) {
         extra_classes.push('pending-xmpp-contact');
     } else if (requesting === true) {
         extra_classes.push('requesting-xmpp-contact');
-    } else if (subscription === 'both' || subscription === 'to' || u.isSameBareJID(jid, _converse.connection.jid)) {
+    } else if (subscription === 'both' || subscription === 'to' || u.isSameBareJID(jid, api.connection.get().jid)) {
         extra_classes.push('current-xmpp-contact');
         extra_classes.push(subscription);
         extra_classes.push(contact.presence.get('show'));

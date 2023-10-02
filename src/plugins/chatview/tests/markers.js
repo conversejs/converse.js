@@ -24,8 +24,8 @@ describe("A XEP-0333 Chat Marker", function () {
             </message>`);
 
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => sent_stanzas.length === 2);
         expect(Strophe.serialize(sent_stanzas[0])).toBe(
             `<message from="romeo@montague.lit/orchard" `+
@@ -51,7 +51,7 @@ describe("A XEP-0333 Chat Marker", function () {
             </message>`);
 
         const sent_stanzas = [];
-        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
+        spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s));
         await _converse.handleMessageStanza(stanza);
         const sent_messages = sent_stanzas
             .map(s => s?.nodeTree ?? s)
@@ -88,7 +88,7 @@ describe("A XEP-0333 Chat Marker", function () {
                 <origin-id xmlns="urn:xmpp:sid:0" id="2e972ea0-0050-44b7-a830-f6638a2595b3"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);
@@ -106,7 +106,7 @@ describe("A XEP-0333 Chat Marker", function () {
                 </sent>
             </message>`);
         spyOn(_converse.api, "trigger").and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);

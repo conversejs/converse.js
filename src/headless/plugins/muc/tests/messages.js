@@ -22,7 +22,7 @@ describe("A MUC message", function () {
             </x>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </presence>`);
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         expect(model.getOccupantByNickname('thirdwitch').get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');
 
         const stanza = u.toStanza(`
@@ -34,7 +34,7 @@ describe("A MUC message", function () {
             <body>Harpier cries: 'tis time, 'tis time.</body>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => model.messages.length);
         expect(model.messages.at(0).get('occupant_id')).toBe("dd72603deec90a38ba552f7c68cbcc61bca202cd");
@@ -72,7 +72,7 @@ describe("A MUC message", function () {
         const stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      from="room@muc.example.com/romeo"
-                     to="${_converse.connection.jid}"
+                     to="${_converse.api.connection.get().jid}"
                      type="groupchat">
                 <body>Hello world</body>
                 <stanza-id xmlns="urn:xmpp:sid:0"
@@ -81,7 +81,7 @@ describe("A MUC message", function () {
                 <origin-id xmlns="urn:xmpp:sid:0" id="${msg.get('origin_id')}"/>
             </message>`);
         spyOn(model, 'updateMessage').and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => model.updateMessage.calls.count() === 1);
         expect(model.messages.length).toBe(1);
         expect(model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
@@ -95,7 +95,7 @@ describe("A MUC message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const impersonated_jid = `${muc_jid}/alice`;
         const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                 <forwarded xmlns='urn:xmpp:forward:0'>
                     <delay xmlns='urn:xmpp:delay' stamp='2019-07-10T23:08:25Z'/>
                     <message from='${impersonated_jid}'
@@ -109,7 +109,7 @@ describe("A MUC message", function () {
             </message>
         `);
         spyOn(converse.env.log, 'error').and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(received_stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
         await u.waitUntil(() => converse.env.log.error.calls.count() === 1);
         expect(converse.env.log.error.calls.argsFor(0)[0]?.message).toBe(
             `Ignoring unencapsulated forwarded message from ${muc_jid}/mallory`
@@ -124,8 +124,8 @@ describe("A MUC message", function () {
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}' >
-                <reply xmlns='urn:xmpp:reply:0' id='${_converse.connection.getUniqueId()}' to='${_converse.jid}'/>
+            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}' >
+                <reply xmlns='urn:xmpp:reply:0' id='${_converse.api.connection.get().getUniqueId()}' to='${_converse.jid}'/>
                 <fallback xmlns='urn:xmpp:feature-fallback:0' for='urn:xmpp:reply:0'>
                     <body start='0' end='10'/>
                 </fallback>

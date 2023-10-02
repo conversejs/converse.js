@@ -31,7 +31,7 @@ describe("The occupants sidebar", function () {
                 jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 role: role
             });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         }
 
         await u.waitUntil(() => occupants.querySelectorAll('li').length > 2, 500);
@@ -59,7 +59,7 @@ describe("The occupants sidebar", function () {
                 jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 role: 'none'
             }).nodeTree;
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             expect(occupants.querySelectorAll('li').length).toBe(8);
         }
         const presence = $pres({
@@ -71,7 +71,7 @@ describe("The occupants sidebar", function () {
             jid: 'servant@montague.lit',
             role: 'visitor'
         });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => occupants.querySelectorAll('li').length > 8, 500);
         expect(occupants.querySelectorAll('li').length).toBe(9);
         expect(view.model.occupants.length).toBe(9);
@@ -103,7 +103,7 @@ describe("The occupants sidebar", function () {
                 role: 'participant'
             }).up()
             .c('status');
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         }
 
         await u.waitUntil(() => occupants.querySelectorAll('li').length > 1, 500);
@@ -130,7 +130,7 @@ describe("The occupants sidebar", function () {
                 jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                 role: 'none'
             });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         }
         await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
     }));
@@ -153,7 +153,7 @@ describe("The occupants sidebar", function () {
             role: 'participant'
         }).up()
         .c('status');
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         await u.waitUntil(() => occupants.querySelectorAll('li').length > 1, 500);
         expect(occupants.querySelectorAll('li').length).toBe(2);
@@ -189,7 +189,7 @@ describe("The occupants sidebar", function () {
         }).up()
         .c('status').attrs({code:'110'}).nodeTree;
 
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 1, 500);
         occupants = view.querySelectorAll('.occupant-list li');
         expect(occupants.length).toBe(2);
@@ -213,7 +213,7 @@ describe("The occupants sidebar", function () {
             role: 'visitor',
         }).up()
         .c('status').attrs({code:'110'}).nodeTree;
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length > 2, 500);
         occupants = view.querySelector('.occupant-list').querySelectorAll('li');

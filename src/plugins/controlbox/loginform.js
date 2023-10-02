@@ -3,7 +3,6 @@ import tplLoginPanel from './templates/loginform.js';
 import { ANONYMOUS } from '@converse/headless/shared/constants';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from '@converse/headless';
-import { initConnection } from '@converse/headless/utils/init.js';
 import { updateSettingsWithFormData, validateJID } from './utils.js';
 
 const { Strophe, u } = converse.env;
@@ -68,11 +67,11 @@ class LoginForm extends CustomElement {
         }
         const form_data = new FormData(ev.target);
         const jid = form_data.get('jid');
+        if (jid instanceof File) throw new Error('Found file instead of string for "jid" field in form');
+
         const domain = Strophe.getDomainFromJid(jid);
-        if (!_converse.connection?.jid || (jid && !u.isSameDomain(_converse.connection.jid, jid))) {
-            initConnection();
-        }
-        return _converse.connection.discoverConnectionMethods(domain);
+        api.connection.init(jid);
+        return api.connection.get().discoverConnectionMethods(domain);
     }
 
     initPopovers () {
@@ -90,7 +89,7 @@ class LoginForm extends CustomElement {
         if (['converse/login', 'converse/register'].includes(_converse.router.history.getFragment())) {
             _converse.router.navigate('', { 'replace': true });
         }
-        _converse.connection?.reset();
+        api.connection.get()?.reset();
         api.user.login(jid);
     }
 }

@@ -34,13 +34,13 @@ describe("A XEP-0316 MEP notification", function () {
                 </event>
             </message>`);
 
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
         expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
 
         // Check that duplicates aren't created
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         let promise = u.getOpenPromise();
         setTimeout(() => {
             expect(view.querySelectorAll('.chat-info').length).toBe(1);
@@ -72,13 +72,13 @@ describe("A XEP-0316 MEP notification", function () {
                 </event>
             </message>`);
 
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
         expect(view.querySelector('converse-chat-message:last-child .chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
         expect(view.querySelector('converse-chat-message:last-child .reason').textContent.trim()).toBe(reason);
 
         // Check that duplicates aren't created
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         promise = u.getOpenPromise();
         setTimeout(() => {
             expect(view.querySelectorAll('.chat-info').length).toBe(2);
@@ -118,7 +118,7 @@ describe("A XEP-0316 MEP notification", function () {
                     </items>
                 </event>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => model.messages.length === 1);
         // expect(window.Notification.calls.count()).toBe(1);
 
@@ -156,7 +156,7 @@ describe("A XEP-0316 MEP notification", function () {
                     </items>
                 </event>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(message));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => model.messages.length === 1);
 
         const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
@@ -176,7 +176,7 @@ describe("A XEP-0316 MEP notification", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         const msg = 'An anonymous user has saluted romeo';
         const reason = 'Thank you for helping me yesterday';
-        _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+        _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
             <message from='${muc_jid}'
                     to='${_converse.jid}'
                     type='headline'
@@ -210,7 +210,7 @@ describe("A XEP-0316 MEP notification", function () {
         const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
         submit_button.click();
 
-        const sent_IQs = _converse.connection.IQ_stanzas;
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
         const message = view.model.messages.at(0);
         const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);

@@ -13,7 +13,7 @@ function shouldShowChat (c) {
 export default () => {
     const { chatboxes, CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = _converse;
     const view_mode = api.settings.get('view_mode');
-    const connection = _converse?.connection;
+    const connection = api.connection.get();
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
     return html`
         ${!logged_out && view_mode === 'overlayed' ? html`<converse-minimized-chats></converse-minimized-chats>` : ''}

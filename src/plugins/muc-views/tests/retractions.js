@@ -11,7 +11,7 @@ async function sendAndThenRetractMessage (_converse, view) {
     const reflection_stanza = u.toStanza(`
         <message xmlns="jabber:client"
                 from="${msg_obj.get('from')}"
-                to="${_converse.connection.jid}"
+                to="${_converse.api.connection.get().jid}"
                 type="groupchat">
             <msg_body>${msg_obj.get('message')}</msg_body>
             <stanza-id xmlns="urn:xmpp:sid:0"
@@ -27,7 +27,7 @@ async function sendAndThenRetractMessage (_converse, view) {
     await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
     const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
     submit_button.click();
-    const sent_stanzas = _converse.connection.sent_stanzas;
+    const sent_stanzas = _converse.api.connection.get().sent_stanzas;
     return u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('message apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
 }
 
@@ -44,7 +44,7 @@ describe("Message Retractions", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
             const received_stanza = u.toStanza(`
-                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                     <body>Hello world</body>
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                 </message>
@@ -64,7 +64,7 @@ describe("Message Retractions", function () {
             `);
             spyOn(view.model, 'handleRetraction').and.callThrough();
 
-            _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1);
             expect(await view.model.handleRetraction.calls.first().returnValue).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
@@ -95,7 +95,7 @@ describe("Message Retractions", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             spyOn(converse.env.log, 'warn');
             spyOn(view.model, 'handleRetraction').and.callThrough();
-            _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
 
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1);
             await u.waitUntil(() => view.model.messages.length === 1);
@@ -105,14 +105,14 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('dangling_retraction')).toBe(true);
 
             const received_stanza = u.toStanza(`
-                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                     <body>Hello world</body>
                     <delay xmlns='urn:xmpp:delay' stamp='${date}'/>
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="origin-id-1"/>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(received_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 2);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1, 1000);
             expect(view.model.messages.length).toBe(1);
@@ -150,7 +150,7 @@ describe("Message Retractions", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             spyOn(converse.env.log, 'warn');
             spyOn(view.model, 'handleModeration').and.callThrough();
-            _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
 
             await u.waitUntil(() => view.model.handleModeration.calls.count() === 1);
             await u.waitUntil(() => view.model.messages.length === 1);
@@ -160,7 +160,7 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('dangling_moderation')).toBe(true);
 
             const received_stanza = u.toStanza(`
-                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                     <body>Hello world</body>
                     <delay xmlns='urn:xmpp:delay' stamp='${date}'/>
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
@@ -168,7 +168,7 @@ describe("Message Retractions", function () {
 
             `);
 
-            _converse.connection._dataRecv(mock.createRequest(received_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
             await u.waitUntil(() => view.model.handleModeration.calls.count() === 2);
 
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
@@ -210,7 +210,7 @@ describe("Message Retractions", function () {
                 </message>
             `);
 
-            _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
             const message = view.model.messages.at(0);
             expect(message.get('dangling_retraction')).toBe(true);
@@ -230,7 +230,7 @@ describe("Message Retractions", function () {
                     <origin-id xmlns="urn:xmpp:sid:0" id="2e972ea0-0050-44b7-a830-f6638a2595b3"/>
                     <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 2);
             expect(view.model.messages.length).toBe(1);
             expect(message.get('retracted')).toBeTruthy();
@@ -261,7 +261,7 @@ describe("Message Retractions", function () {
                     <stanza-id xmlns="urn:xmpp:sid:0" id="kxViLhgbnNMcWv10" by="${_converse.bare_jid}"/>
                 </message>`);
 
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
@@ -277,7 +277,7 @@ describe("Message Retractions", function () {
                     <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
                 </message>`);
 
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 2);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
 
@@ -292,7 +292,7 @@ describe("Message Retractions", function () {
                     </apply-to>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
 
             expect(view.model.messages.length).toBe(2);
@@ -328,7 +328,7 @@ describe("Message Retractions", function () {
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
             submit_button.click();
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
 
             const msg_obj = view.model.messages.at(0);
@@ -359,7 +359,7 @@ describe("Message Retractions", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
             const received_stanza = u.toStanza(`
-                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                     <body>Hello world</body>
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                     <origin-id xmlns='urn:xmpp:sid:0' id='origin-id-1' by='${muc_jid}'/>
@@ -378,7 +378,7 @@ describe("Message Retractions", function () {
                     </apply-to>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(retraction_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
 
             // We opportunistically save the message as retracted, even before receiving the retraction message
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
@@ -404,7 +404,7 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
 
             const received_stanza = u.toStanza(`
-                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                     <body>Visit this site to get free Bitcoin!</body>
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                 </message>
@@ -424,7 +424,7 @@ describe("Message Retractions", function () {
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
             submit_button.click();
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
             const message = view.model.messages.at(0);
             const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
@@ -440,7 +440,7 @@ describe("Message Retractions", function () {
                 `</iq>`);
 
             const result_iq = $iq({'from': muc_jid, 'id': stanza.getAttribute('id'), 'to': _converse.bare_jid, 'type': 'result'});
-            _converse.connection._dataRecv(mock.createRequest(result_iq));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
 
             // We opportunistically save the message as retracted, even before receiving the retraction message
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
@@ -485,7 +485,7 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
 
             const received_stanza = u.toStanza(`
-                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                     <body>Visit this site to get free Bitcoin!</body>
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                 </message>
@@ -509,7 +509,7 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
 
             const received_stanza = u.toStanza(`
-                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
                     <body>Visit this site to get free Bitcoin!</body>
                     <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
                 </message>
@@ -528,7 +528,7 @@ describe("Message Retractions", function () {
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
             submit_button.click();
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
             const message = view.model.messages.at(0);
             const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
@@ -554,7 +554,7 @@ describe("Message Retractions", function () {
             expect(qel.textContent).toBe('This content is inappropriate for this forum!');
 
             const result_iq = $iq({'from': muc_jid, 'id': stanza.getAttribute('id'), 'to': _converse.bare_jid, 'type': 'result'});
-            _converse.connection._dataRecv(mock.createRequest(result_iq));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
             expect(view.model.messages.at(0).get('moderated_by')).toBe(_converse.bare_jid);
@@ -602,7 +602,7 @@ describe("Message Retractions", function () {
                 </message>`);
 
             spyOn(view.model, 'handleRetraction').and.callThrough();
-            _converse.connection._dataRecv(mock.createRequest(reflection));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(reflection));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1, 1000);
 
             await u.waitUntil(() => view.model.messages.length === 2, 1000);
@@ -647,7 +647,7 @@ describe("Message Retractions", function () {
                     </apply-to>
                 </message>`);
 
-            _converse.connection._dataRecv(mock.createRequest(error));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(error));
 
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 1, 1000);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 0, 1000);
@@ -707,7 +707,7 @@ describe("Message Retractions", function () {
             const reflection_stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                         from="${msg_obj.get('from')}"
-                        to="${_converse.connection.jid}"
+                        to="${_converse.api.connection.get().jid}"
                         type="groupchat">
                     <msg_body>${msg_obj.get('message')}</msg_body>
                     <stanza-id xmlns="urn:xmpp:sid:0"
@@ -762,7 +762,7 @@ describe("Message Retractions", function () {
             const reflection_stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                         from="${msg_obj.get('from')}"
-                        to="${_converse.connection.jid}"
+                        to="${_converse.api.connection.get().jid}"
                         type="groupchat">
                     <msg_body>${msg_obj.get('message')}</msg_body>
                     <stanza-id xmlns="urn:xmpp:sid:0"
@@ -782,7 +782,7 @@ describe("Message Retractions", function () {
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
             submit_button.click();
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
 
             expect(Strophe.serialize(stanza)).toBe(
@@ -796,7 +796,7 @@ describe("Message Retractions", function () {
                 `</iq>`);
 
             const result_iq = $iq({'from': muc_jid, 'id': stanza.getAttribute('id'), 'to': _converse.bare_jid, 'type': 'result'});
-            _converse.connection._dataRecv(mock.createRequest(result_iq));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
 
             // We opportunistically save the message as retracted, even before receiving the retraction message
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
@@ -841,7 +841,7 @@ describe("Message Retractions", function () {
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
             const queryid = stanza.querySelector('query').getAttribute('queryid');
             const view = _converse.chatboxviews.get(contact_jid);
@@ -861,7 +861,7 @@ describe("Message Retractions", function () {
                     </result>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(first_message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(first_message));
 
             const tombstone = u.toStanza(`
                 <message id='${u.getUniqueId()}' to='${_converse.jid}'>
@@ -876,7 +876,7 @@ describe("Message Retractions", function () {
                     </result>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(tombstone));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(tombstone));
 
             const last_id = u.getUniqueId();
             const retraction = u.toStanza(`
@@ -893,7 +893,7 @@ describe("Message Retractions", function () {
                     </result>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(retraction));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction));
 
             const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
                 .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
@@ -901,7 +901,7 @@ describe("Message Retractions", function () {
                         .c('first', {'index': '0'}).t(first_id).up()
                         .c('last').t(last_id).up()
                         .c('count').t('2');
-            _converse.connection._dataRecv(mock.createRequest(iq_result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
 
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 3);
 
@@ -929,7 +929,7 @@ describe("Message Retractions", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
             const queryid = stanza.querySelector('query').getAttribute('queryid');
 
@@ -948,7 +948,7 @@ describe("Message Retractions", function () {
                 </message>
             `);
             spyOn(view.model, 'handleRetraction').and.callThrough();
-            _converse.connection._dataRecv(mock.createRequest(tombstone));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(tombstone));
 
             const last_id = u.getUniqueId();
             const retraction = u.toStanza(`
@@ -965,7 +965,7 @@ describe("Message Retractions", function () {
                     </result>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(retraction));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction));
 
             const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
                 .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
@@ -973,7 +973,7 @@ describe("Message Retractions", function () {
                         .c('first', {'index': '0'}).t(first_id).up()
                         .c('last').t(last_id).up()
                         .c('count').t('2');
-            _converse.connection._dataRecv(mock.createRequest(iq_result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
 
             await u.waitUntil(() => view.model.messages.length === 1);
             let message = view.model.messages.at(0);
@@ -1004,7 +1004,7 @@ describe("Message Retractions", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
             const queryid = stanza.querySelector('query').getAttribute('queryid');
 
@@ -1025,7 +1025,7 @@ describe("Message Retractions", function () {
                 </message>
             `);
             spyOn(view.model, 'handleModeration').and.callThrough();
-            _converse.connection._dataRecv(mock.createRequest(tombstone));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(tombstone));
 
             const last_id = u.getUniqueId();
             const retraction = u.toStanza(`
@@ -1045,7 +1045,7 @@ describe("Message Retractions", function () {
                     </result>
                 </message>
             `);
-            _converse.connection._dataRecv(mock.createRequest(retraction));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(retraction));
 
             const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
                 .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
@@ -1053,7 +1053,7 @@ describe("Message Retractions", function () {
                         .c('first', {'index': '0'}).t(first_id).up()
                         .c('last').t(last_id).up()
                         .c('count').t('2');
-            _converse.connection._dataRecv(mock.createRequest(iq_result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(iq_result));
 
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.messages.length).toBe(1);

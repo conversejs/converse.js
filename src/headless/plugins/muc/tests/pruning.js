@@ -40,11 +40,11 @@ describe("A Groupchat Message", function () {
         const stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      from="${muc_jid}/juliet"
-                     to="${_converse.connection.jid}"
+                     to="${_converse.api.connection.get().jid}"
                      type="groupchat">
                 <body>1st incoming</body>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => model.messages.length === 4);
         await u.waitUntil(() => model.messages.length === 3, 550);
     }));

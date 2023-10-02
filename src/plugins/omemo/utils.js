@@ -604,7 +604,7 @@ async function updateDevicesFromStanza (stanza) {
 
 export function registerPEPPushHandler () {
     // Add a handler for devices pushed from other connected clients
-    _converse.connection.addHandler(
+    api.connection.get().addHandler(
         async (message) => {
             try {
                 if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {

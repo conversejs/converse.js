@@ -39,7 +39,7 @@ describe("The groupchat moderator tool", function () {
         const modal = await openModtools(_converse, view);
         const tab = modal.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
         tab.click();
         let select = modal.querySelector('.select-affiliation');
         expect(select.value).toBe('owner');
@@ -54,7 +54,7 @@ describe("The groupchat moderator tool", function () {
         expect(user_els[0].querySelector('.list-group-item:nth-child(2n)').textContent.trim()).toBe('Nickname: wiccan');
         expect(user_els[0].querySelector('.list-group-item:nth-child(3n) div').textContent.trim()).toBe('Affiliation: admin');
 
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
         select.value = 'owner';
         button.click();
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
@@ -85,7 +85,7 @@ describe("The groupchat moderator tool", function () {
         submit.click();
 
         spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
-        const sent_IQ = _converse.connection.IQ_stanzas.pop();
+        const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
         expect(Strophe.serialize(sent_IQ)).toBe(
             `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                 `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -95,14 +95,14 @@ describe("The groupchat moderator tool", function () {
                 `</query>`+
             `</iq>`);
 
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
         const stanza = $iq({
             'type': 'result',
             'id': sent_IQ.getAttribute('id'),
             'from': view.model.get('jid'),
-            'to': _converse.connection.jid
+            'to': _converse.api.connection.get().jid
         });
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
 
         members = [
@@ -158,7 +158,7 @@ describe("The groupchat moderator tool", function () {
         await u.waitUntil(() => (view.model.occupants.length === 6), 1000);
 
         // Clear so that we don't match older stanzas
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
         const modal = await openModtools(_converse, view);
         const select = modal.querySelector('.select-affiliation');
         expect(select.value).toBe('owner');
@@ -198,7 +198,7 @@ describe("The groupchat moderator tool", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', []);
         const view = _converse.chatboxviews.get(muc_jid);
-        _converse.connection._dataRecv(mock.createRequest(
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
             $pres({to: _converse.jid, from: `${muc_jid}/nomorenicks`})
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
@@ -207,7 +207,7 @@ describe("The groupchat moderator tool", function () {
                     'role': 'participant'
                 })
         ));
-        _converse.connection._dataRecv(mock.createRequest(
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
             $pres({to: _converse.jid, from: `${muc_jid}/newb`})
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
@@ -216,7 +216,7 @@ describe("The groupchat moderator tool", function () {
                     'role': 'participant'
                 })
         ));
-        _converse.connection._dataRecv(mock.createRequest(
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
             $pres({to: _converse.jid, from: `${muc_jid}/some1`})
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
@@ -225,7 +225,7 @@ describe("The groupchat moderator tool", function () {
                     'role': 'participant'
                 })
         ));
-        _converse.connection._dataRecv(mock.createRequest(
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
             $pres({to: _converse.jid, from: `${muc_jid}/oldhag`})
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
@@ -234,7 +234,7 @@ describe("The groupchat moderator tool", function () {
                     'role': 'participant'
                 })
         ));
-        _converse.connection._dataRecv(mock.createRequest(
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
             $pres({to: _converse.jid, from: `${muc_jid}/crone`})
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
@@ -243,7 +243,7 @@ describe("The groupchat moderator tool", function () {
                     'role': 'participant'
                 })
         ));
-        _converse.connection._dataRecv(mock.createRequest(
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
             $pres({to: _converse.jid, from: `${muc_jid}/tux`})
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
@@ -267,7 +267,7 @@ describe("The groupchat moderator tool", function () {
         tab.click();
 
         // Clear so that we don't match older stanzas
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
 
         const select = modal.querySelector('.select-role');
         expect(select.value).toBe('moderator');
@@ -314,8 +314,8 @@ describe("The groupchat moderator tool", function () {
         const modal = await openModtools(_converse, view);
         const tab = modal.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
-        _converse.connection.IQ_stanzas = [];
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        _converse.api.connection.get().IQ_stanzas = [];
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         tab.click();
         const select = modal.querySelector('.select-affiliation');
         select.value = 'outcast';
@@ -337,7 +337,7 @@ describe("The groupchat moderator tool", function () {
                     <forbidden xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
             </iq>`);
-        _converse.connection._dataRecv(mock.createRequest(error));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(error));
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
 
         const alert = await u.waitUntil(() => modal.querySelector('.alert'));
@@ -361,7 +361,7 @@ describe("The groupchat moderator tool", function () {
         await u.waitUntil(() => (view.model.occupants.length === 2));
         const modal = await openModtools(_converse, view);
         // Clear so that we don't match older stanzas
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
 
         const tab = modal.querySelector('#affiliations-tab');
         tab.click();
@@ -388,7 +388,7 @@ describe("The groupchat moderator tool", function () {
         const submit = form.querySelector('.btn-primary');
         submit.click();
 
-        const sent_IQ = _converse.connection.IQ_stanzas.pop();
+        const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
         expect(Strophe.serialize(sent_IQ)).toBe(
             `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                 `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -408,7 +408,7 @@ describe("The groupchat moderator tool", function () {
                     <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
             </iq>`);
-        _converse.connection._dataRecv(mock.createRequest(error));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(error));
 
     }));
 
@@ -428,7 +428,7 @@ describe("The groupchat moderator tool", function () {
         const modal = await openModtools(_converse, view);
         const tab = modal.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
-        _converse.connection.IQ_stanzas = [];
+        _converse.api.connection.get().IQ_stanzas = [];
         tab.click();
         const show_affiliation_dropdown = modal.querySelector('.select-affiliation');
         show_affiliation_dropdown.value = 'member';

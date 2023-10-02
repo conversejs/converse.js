@@ -20,7 +20,7 @@ describe("an info message", function () {
                 </x>
             </presence>
         `);
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
 
         presence = u.toStanza(`
@@ -32,7 +32,7 @@ describe("an info message", function () {
                 </x>
             </presence>
         `);
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
 
         const messages = view.querySelectorAll('.chat-info');
@@ -61,11 +61,11 @@ describe("an info message", function () {
         // sequentially (i.e. by waiting for promises to resolve)
         // like we do with message stanzas.
         spyOn(view.model, 'createInfoMessages').and.callThrough();
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.model.createInfoMessages.calls.count());
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
 
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.model.createInfoMessages.calls.count() === 2);
         expect(view.querySelectorAll('.chat-info').length).toBe(1);
     }));

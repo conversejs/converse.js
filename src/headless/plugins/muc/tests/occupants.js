@@ -21,7 +21,7 @@ describe("A MUC occupant", function () {
             <x xmlns="http://jabber.org/protocol/muc#user" />
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${id}" />
             </presence>`);
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         expect(model.getOccupantByNickname(name).get('occupant_id')).toBe(undefined);
     }));
 
@@ -49,7 +49,7 @@ describe("A MUC occupant", function () {
                 <x xmlns="http://jabber.org/protocol/muc#user" />
                 <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${id}" />
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             expect(model.getOccupantByNickname(name).get('occupant_id')).toBe(id);
         }
         expect(model.occupants.length).toBe(mock.chatroom_names.length + 1);
@@ -78,7 +78,7 @@ describe("A MUC occupant", function () {
             <body>Harpier cries: 'tis time, 'tis time.</body>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => model.messages.length);
         let message = model.messages.at(0);
@@ -103,7 +103,7 @@ describe("A MUC occupant", function () {
             </x>
             <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
             </presence>`);
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         occupant = await u.waitUntil(() => model.getOccupantByNickname('thirdwitch'));
         expect(occupant.get('occupant_id')).toBe('dd72603deec90a38ba552f7c68cbcc61bca202cd');

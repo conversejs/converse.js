@@ -246,8 +246,10 @@ export default {
                 }
             }
 
+            const connection = api.connection.get();
+
             const messages = [];
-            const message_handler = _converse.connection.addHandler(stanza => {
+            const message_handler = connection.addHandler(stanza => {
                 const result = sizzle(`message > result[xmlns="${NS.MAM}"]`, stanza).pop();
                 if (result === undefined || result.getAttribute('queryid') !== queryid) {
                     return true;
@@ -284,7 +286,7 @@ export default {
                 error = new Error(err_msg);
                 return { messages, error };
             }
-            _converse.connection.deleteHandler(message_handler);
+            connection.deleteHandler(message_handler);
 
             let rsm;
             const fin = iq_result && sizzle(`fin[xmlns="${NS.MAM}"]`, iq_result).pop();

@@ -13,7 +13,7 @@ describe("Chatrooms", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             const room = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
 
-            let stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            let stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
             ).pop());
 
@@ -33,8 +33,8 @@ describe("Chatrooms", function () {
                         'type': 'text-single',
                         'var': 'muc#register_roomnick'
                     }).c('required');
-            _converse.connection._dataRecv(mock.createRequest(result));
-            stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+            stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
             ).pop());
 
@@ -56,7 +56,7 @@ describe("Chatrooms", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             const room = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
 
-            let stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            let stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
             ).pop());
             let result = $iq({
@@ -71,15 +71,15 @@ describe("Chatrooms", function () {
                         'type': 'text-single',
                         'var': 'muc#register_roomnick'
                     }).c('required');
-            _converse.connection._dataRecv(mock.createRequest(result));
-            await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+            await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
             ).pop());
 
-            _converse.connection.IQ_stanzas = [];
+            _converse.api.connection.get().IQ_stanzas = [];
             room.close();
 
-            stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
             ).pop());
             expect(Strophe.serialize(stanza)).toBe(
@@ -93,7 +93,7 @@ describe("Chatrooms", function () {
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('query', {'xmlns': 'jabber:iq:register'});
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
         }));
     });

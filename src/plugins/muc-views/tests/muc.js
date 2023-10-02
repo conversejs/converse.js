@@ -9,7 +9,7 @@ describe("Groupchats", function () {
         it("will be created when muc_instant_rooms is set to true",
                 mock.initConverse(['chatBoxesFetched'], { vcard: { nickname: '' } }, async function (_converse) {
 
-            let IQ_stanzas = _converse.connection.IQ_stanzas;
+            let IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'lounge@montague.lit';
             const nick = 'nicky';
             await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
@@ -24,7 +24,7 @@ describe("Groupchats", function () {
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             spyOn(view.model, 'join').and.callThrough();
@@ -35,7 +35,7 @@ describe("Groupchats", function () {
             view.querySelector('input[type=submit]').click();
             expect(view.model.join).toHaveBeenCalled();
 
-            _converse.connection.IQ_stanzas = [];
+            _converse.api.connection.get().IQ_stanzas = [];
             await mock.getRoomFeatures(_converse, muc_jid);
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
             await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
@@ -65,7 +65,7 @@ describe("Groupchats", function () {
             }).up()
             .c('status').attrs({code:'110'}).up()
             .c('status').attrs({code:'201'}).nodeTree;
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED);
             await mock.returnMemberLists(_converse, muc_jid);
@@ -85,7 +85,7 @@ describe("Groupchats", function () {
              * </iq>
              */
             const selector = `query[xmlns="${Strophe.NS.MUC_OWNER}"]`;
-            IQ_stanzas = _converse.connection.IQ_stanzas;
+            IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(selector)).pop());
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -144,7 +144,7 @@ describe("Groupchats", function () {
             const nick_input = await u.waitUntil(() => view.querySelector('[name="nick"]'));
             nick_input.value = nick;
             view.querySelector('.muc-nickname-form input[type="submit"]').click();
-            _converse.connection.IQ_stanzas = [];
+            _converse.api.connection.get().IQ_stanzas = [];
             await mock.getRoomFeatures(_converse, muc_jid);
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
             await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
@@ -158,13 +158,13 @@ describe("Groupchats", function () {
 
             const { api } = _converse;
             const nick = 'romeo';
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'lounge@montague.lit'
             await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], []);
             const view = _converse.chatboxviews.get(muc_jid);
             let iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
-            const first_msg_id = _converse.connection.getUniqueId();
-            const last_msg_id = _converse.connection.getUniqueId();
+            const first_msg_id = _converse.api.connection.get().getUniqueId();
+            const last_msg_id = _converse.api.connection.get().getUniqueId();
             let message = u.toStanza(
                 `<message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
@@ -178,7 +178,7 @@ describe("Groupchats", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             message = u.toStanza(
                 `<message xmlns="jabber:client"
@@ -193,7 +193,7 @@ describe("Groupchats", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             const result = u.toStanza(
                 `<iq type='result' id='${iq_get.getAttribute('id')}'>
@@ -205,7 +205,7 @@ describe("Groupchats", function () {
                         </set>
                     </fin>
                 </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(()  => view.querySelectorAll('.chat-msg__text').length === 2);
 
             while (sent_IQs.length) { sent_IQs.pop(); } // Clear so that we don't match the older query
@@ -226,7 +226,7 @@ describe("Groupchats", function () {
                     <stanza-id xmlns="urn:xmpp:sid:0" id="88cc9c93-a8f4-4dd5-b02a-d19855eb6303" by="${muc_jid}"/>
                     <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:47Z" from="juliet@shakespeare.lit"/>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             message = u.toStanza(`
                 <message xmlns="jabber:client" type="groupchat" id="awQo6a-mi-Wa6NYh" to="${_converse.jid}" from="${muc_jid}/ews000" xml:lang="en">
@@ -235,7 +235,7 @@ describe("Groupchats", function () {
                     <no-permanent-store xmlns="urn:xmpp:hints"/>
                     <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:54Z" from="juliet@shakespeare.lit"/>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             const affs = api.settings.get('muc_fetch_members');
             const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
@@ -269,7 +269,7 @@ describe("Groupchats", function () {
                 </message>`);
 
             view.model.ui.set('scrolled', true); // hack
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             await u.waitUntil(() => view.model.messages.length);
             const chat_new_msgs_indicator = await u.waitUntil(() => view.querySelector('.new-msgs-indicator'));
@@ -290,7 +290,7 @@ describe("Groupchats", function () {
                         <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
                         <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 await new Promise(resolve => view.model.once('change:subject', resolve));
                 const head_desc = await u.waitUntil(() => view.querySelector('.chat-head__desc'), 1000);
@@ -301,7 +301,7 @@ describe("Groupchats", function () {
                         <subject>This is a message subject</subject>
                         <body>This is a message</body>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 expect(sizzle('.chat-msg__subject', view).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view).pop().textContent.trim()).toBe('This is a message subject');
@@ -319,7 +319,7 @@ describe("Groupchats", function () {
                         <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
                         <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 await new Promise(resolve => view.model.once('change:subject', resolve));
 
@@ -331,7 +331,7 @@ describe("Groupchats", function () {
                         <subject>This is a message subject</subject>
                         <body>This is a message</body>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 expect(sizzle('.chat-msg__subject', view).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view).pop().textContent.trim()).toBe('This is a message subject');
@@ -355,7 +355,7 @@ describe("Groupchats", function () {
                     <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                         <subject>${text}</subject>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 await new Promise(resolve => view.model.once('change:subject', resolve));
 
@@ -375,7 +375,7 @@ describe("Groupchats", function () {
                     <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                         <subject>Another topic</subject>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => u.isVisible(view.querySelector('.chat-head__desc')));
                 topic_el = view.querySelector('.chat-head__desc');
                 expect(topic_el.textContent.trim()).toBe('Another topic');
@@ -387,7 +387,7 @@ describe("Groupchats", function () {
                 await mock.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'romeo');
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
 
-                _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+                _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
                     <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                         <subject>This is an older topic</subject>
                         <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
@@ -399,7 +399,7 @@ describe("Groupchats", function () {
                 const desc = await u.waitUntil(() => view.querySelector('.chat-head__desc'));
                 expect(desc.textContent.trim()).toBe('This is an older topic');
 
-                _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+                _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
                     <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                         <subject>This is a new topic</subject>
                     </message>`)));
@@ -409,7 +409,7 @@ describe("Groupchats", function () {
                 await u.waitUntil(() => desc.textContent.trim()  === 'This is a new topic');
 
                 // Doesn't show multiple subsequent topic change notifications
-                _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+                _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
                     <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                         <subject>Yet another topic</subject>
                     </message>`)));
@@ -418,7 +418,7 @@ describe("Groupchats", function () {
                 expect(sizzle('.chat-info__message', view).length).toBe(1);
 
                 // Sow multiple subsequent topic change notification from someone else
-                _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
+                _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
                     <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/some1">
                         <subject>Some1's topic</subject>
                     </message>`)));
@@ -433,7 +433,7 @@ describe("Groupchats", function () {
                     `<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/some1">
                         <subject/>
                     </message>`);
-                _converse.connection._dataRecv(mock.createRequest(stanza));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 5);
                 await u.waitUntil(() => view.querySelector('.chat-head__desc') === null);
                 await u.waitUntil(() => view.querySelector('converse-chat-message:last-child .chat-info').textContent.trim() === "Topic cleared by some1");
@@ -464,7 +464,7 @@ describe("Groupchats", function () {
             await model.close();
             await u.waitUntil(() => !document.querySelector('converse-chat-message'));
 
-            _converse.connection.IQ_stanzas = [];
+            _converse.api.connection.get().IQ_stanzas = [];
             await mock.openAndEnterChatRoom(_converse, muc_jid , 'romeo');
             await u.waitUntil(() => document.querySelector('converse-chat-message'));
             expect(model.messages.length).toBe(1);
@@ -489,7 +489,7 @@ describe("Groupchats", function () {
             await view.model.handleMessageStanza(msg);
             await view.model.close();
 
-            _converse.connection.IQ_stanzas = [];
+            _converse.api.connection.get().IQ_stanzas = [];
             await mock.openAndEnterChatRoom(_converse, muc_jid , 'romeo');
             expect(view.model.messages.length).toBe(0);
             expect(view.querySelector('converse-chat-history')).toBe(null);
@@ -551,7 +551,7 @@ describe("Groupchats", function () {
                 }).up()
                 .c('status', {code: '110'}).up()
                 .c('status', {code: '100'});
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
             await mock.returnMemberLists(_converse, muc_jid, [], ['member', 'admin', 'owner']);
@@ -572,7 +572,7 @@ describe("Groupchats", function () {
             const nick = 'some1';
             const room_creation_promise = await _converse.api.rooms.open(muc_jid, {nick});
             await mock.getRoomFeatures(_converse, muc_jid);
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
 
             const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
@@ -591,7 +591,7 @@ describe("Groupchats", function () {
                     'jid': 'oldguy@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             /* <presence to="romeo@montague.lit/_converse.js-29092160"
              *           from="coven@chat.shakespeare.lit/some1">
@@ -611,7 +611,7 @@ describe("Groupchats", function () {
                     'role': 'moderator'
                 }).up()
                 .c('status', {code: '110'});
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications')?.textContent);
             expect(csntext.trim()).toEqual("some1 has entered the groupchat");
@@ -630,7 +630,7 @@ describe("Groupchats", function () {
                     'jid': 'newguy@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1 and newguy have entered the groupchat");
 
@@ -640,7 +640,7 @@ describe("Groupchats", function () {
                 'to': 'romeo@montague.lit',
                 'type': 'groupchat'
             }).c('body').t('hello world').tree();
-            _converse.connection._dataRecv(mock.createRequest(msg));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             // Add another entrant, otherwise the above message will be
@@ -655,7 +655,7 @@ describe("Groupchats", function () {
                     'jid': 'newgirl@montague.lit/_converse.js-213098781',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1, newguy and newgirl have entered the groupchat");
 
@@ -669,7 +669,7 @@ describe("Groupchats", function () {
                     'jid': 'newguy@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             /*  <presence
              *      from='coven@chat.shakespeare.lit/thirdwitch'
@@ -695,7 +695,7 @@ describe("Groupchats", function () {
                         'jid': 'newguy@montague.lit/_converse.js-290929789',
                         'role': 'none'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1 and newgirl have entered the groupchat\nnewguy has left the groupchat");
 
@@ -710,7 +710,7 @@ describe("Groupchats", function () {
                     'jid': 'newguy@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1, newgirl and newguy have entered the groupchat");
@@ -726,7 +726,7 @@ describe("Groupchats", function () {
                         'jid': 'newguy@montague.lit/_converse.js-290929789',
                         'role': 'none'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1 and newgirl have entered the groupchat\nnewguy has left the groupchat");
 
@@ -740,7 +740,7 @@ describe("Groupchats", function () {
                     'jid': 'nomorenicks@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat");
 
@@ -754,7 +754,7 @@ describe("Groupchats", function () {
                     'jid': 'nomorenicks@montague.lit/_converse.js-290929789',
                     'role': 'none'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1 and newgirl have entered the groupchat\nnewguy and nomorenicks have left the groupchat");
 
@@ -768,7 +768,7 @@ describe("Groupchats", function () {
                     'jid': 'nomorenicks@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat");
 
@@ -782,7 +782,7 @@ describe("Groupchats", function () {
                     'jid': 'insider@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             /*  <presence
              *      from='coven@chat.shakespeare.lit/thirdwitch'
@@ -808,7 +808,7 @@ describe("Groupchats", function () {
                         'jid': 'insider@montague.lit/_converse.js-290929789',
                         'role': 'none'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1, newgirl and nomorenicks have entered the groupchat\nnewguy and insider have left the groupchat");
 
@@ -828,7 +828,7 @@ describe("Groupchats", function () {
                     'role': 'none'
                 });
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "some1 and nomorenicks have entered the groupchat\nnewguy, insider and newgirl have left the groupchat");
             expect(view.model.occupants.length).toBe(4);
@@ -848,7 +848,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() === "romeo and fabio have entered the groupchat");
 
             presence = u.toStanza(
@@ -857,7 +857,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() === "romeo, fabio and Dele Olajide have entered the groupchat");
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/jcbrand">
@@ -866,7 +866,7 @@ describe("Groupchats", function () {
                         <status code="110"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() === "romeo, fabio and others have entered the groupchat");
 
             presence = u.toStanza(
@@ -875,7 +875,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="none"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, fabio and jcbrand have entered the groupchat\nDele Olajide has left the groupchat");
 
@@ -885,7 +885,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, fabio and others have entered the groupchat");
 
@@ -897,7 +897,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, fabio and others have entered the groupchat");
 
@@ -907,7 +907,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="none"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, fabio and others have entered the groupchat\nfuvuv has left the groupchat");
 
@@ -918,7 +918,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, jcbrand and Dele Olajide have entered the groupchat\nfuvuv and fabio have left the groupchat");
 
@@ -930,7 +930,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, jcbrand and others have entered the groupchat\nfuvuv has left the groupchat");
 
@@ -941,7 +941,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, jcbrand and Dele Olajide have entered the groupchat\nfuvuv and fabio have left the groupchat");
 
@@ -951,7 +951,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="none"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo and jcbrand have entered the groupchat\nfuvuv, fabio and Dele Olajide have left the groupchat");
 
@@ -962,7 +962,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, jcbrand and fabio have entered the groupchat\nfuvuv and Dele Olajide have left the groupchat");
 
@@ -985,7 +985,7 @@ describe("Groupchats", function () {
                     'jid': 'newguy@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() =>  view.model.onOccupantAdded.calls.count() === 2);
             expect(view.model.notifications.get('entered')).toBeFalsy();
             expect(view.querySelector('.chat-content__notifications').textContent.trim()).toBe('');
@@ -998,7 +998,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="none"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() =>  view.model.onOccupantRemoved.calls.count());
             expect(view.model.onOccupantRemoved.calls.count()).toBe(1);
@@ -1024,7 +1024,7 @@ describe("Groupchats", function () {
                     'jid': 'Guus@montague.lit/xxx',
                     'role': 'visitor'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const view = _converse.chatboxviews.get('conversations@conference.siacs.eu');
             const msg = $msg({
@@ -1043,7 +1043,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" role="none"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             stanza = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="conversations@conference.siacs.eu/Guus">
@@ -1055,7 +1055,7 @@ describe("Groupchats", function () {
                         <item affiliation="none" role="visitor"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim()
                 === "romeo and Guus have entered the groupchat");
             expect(1).toBe(1);
@@ -1064,8 +1064,8 @@ describe("Groupchats", function () {
         it("can be configured if you're its owner", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             let sent_IQ, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_IQ = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -1081,7 +1081,7 @@ describe("Groupchats", function () {
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             /* <presence to="romeo@montague.lit/_converse.js-29092160"
              *           from="coven@chat.shakespeare.lit/some1">
@@ -1101,7 +1101,7 @@ describe("Groupchats", function () {
                     'role': 'moderator'
                 }).up()
                 .c('status', {code: '110'});
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.configure-chatroom-button') !== null);
 
             const own_occupant = view.model.getOwnOccupant();
@@ -1109,7 +1109,7 @@ describe("Groupchats", function () {
 
             view.querySelector('.configure-chatroom-button').click();
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const sel = 'iq query[xmlns="http://jabber.org/protocol/muc#owner"]';
             const iq = await u.waitUntil(() => sent_IQs.filter(iq => sizzle(sel, iq).length).pop());
 
@@ -1245,7 +1245,7 @@ describe("Groupchats", function () {
                         'type': 'text-private',
                         'var': 'muc#roomconfig_roomsecret'})
                         .c('value').t('cauldronburn');
-            _converse.connection._dataRecv(mock.createRequest(config_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(config_stanza));
 
             const membersonly = await u.waitUntil(() => view.querySelector('input[name="muc#roomconfig_membersonly"]'));
             expect(membersonly.getAttribute('type')).toBe('checkbox');
@@ -1293,7 +1293,7 @@ describe("Groupchats", function () {
                     .t("We didn't like the name").nodeTree;
 
             const view = _converse.chatboxviews.get('problematic@muc.montague.lit');
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             const msg = await u.waitUntil(() => view.querySelector('.chatroom-body .disconnect-msg'));
             expect(msg.textContent.trim()).toBe('This groupchat no longer exists');
             expect(view.querySelector('.chatroom-body .destroyed-reason').textContent.trim())
@@ -1355,7 +1355,7 @@ describe("Groupchats", function () {
             input.dispatchEvent(evt);
 
             let sent_stanza;
-            spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
+            spyOn(_converse.api.connection.get(), 'send').and.callFake(stanza => (sent_stanza = stanza));
             const hint = await u.waitUntil(() => modal.querySelector('.suggestion-box__results li'));
             expect(input.value).toBe('Balt');
             expect(hint.textContent.trim()).toBe('Balthasar');
@@ -1461,7 +1461,7 @@ describe("Groupchats", function () {
             const stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                         from="lounge@montague.lit/romeo"
-                        to="${_converse.connection.jid}"
+                        to="${_converse.api.connection.get().jid}"
                         type="groupchat">
                     <body>${text}</body>
                     <stanza-id xmlns="urn:xmpp:sid:0"
@@ -1539,7 +1539,7 @@ describe("Groupchats", function () {
                     <status code='170'/>
                 </x>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-info').length);
             const info_messages = view.querySelectorAll('.chat-content .chat-info');
             expect(info_messages[0].textContent.trim()).toBe('Groupchat logging is now enabled');
@@ -1549,7 +1549,7 @@ describe("Groupchats", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const nick = "some1";
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'coven@chat.shakespeare.lit';
 
             await _converse.api.rooms.open(muc_jid, { nick });
@@ -1602,10 +1602,10 @@ describe("Groupchats", function () {
                     .c('feature', {'var': 'muc_open'}).up()
                     .c('feature', {'var': 'muc_unmoderated'}).up()
                     .c('feature', {'var': 'muc_nonanonymous'});
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
             let view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             await u.waitUntil(() => sent_stanzas.filter(s => s.matches(`presence[to="${muc_jid}/${nick}"]`)).pop());
             view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
             expect(view.model.features.get('fetched')).toBeTruthy();
@@ -1666,7 +1666,7 @@ describe("Groupchats", function () {
             modal.querySelector('.close').click();
             view.querySelector('.configure-chatroom-button').click();
 
-            const IQs = _converse.connection.IQ_stanzas;
+            const IQs = _converse.api.connection.get().IQ_stanzas;
             const s = `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_OWNER}"]`;
             let iq = await u.waitUntil(() => IQs.filter(iq => iq.querySelector(s)).pop());
 
@@ -1735,7 +1735,7 @@ describe("Groupchats", function () {
                  </x>
                  </query>
                  </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(response_el));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(response_el));
             await u.waitUntil(() => document.querySelector('.chatroom-form input'));
             expect(view.querySelector('.chatroom-form legend').textContent.trim()).toBe("Configuration for room@conference.example.org");
             sizzle('[name="muc#roomconfig_membersonly"]', view).pop().click();
@@ -1752,7 +1752,7 @@ describe("Groupchats", function () {
             });
 
             IQs.length = 0; // Empty the array
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
             iq = await u.waitUntil(() => IQs.filter(
                 iq => iq.querySelector(
@@ -1789,7 +1789,7 @@ describe("Groupchats", function () {
                 .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                     .c('value').t(0);
 
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             await u.waitUntil(() => new Promise(success => view.model.features.on('change', success)));
 
@@ -1826,10 +1826,10 @@ describe("Groupchats", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             let IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
+            const sendIQ = _converse.api.connection.get().sendIQ;
 
             await mock.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'some1');
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
 
@@ -1841,7 +1841,7 @@ describe("Groupchats", function () {
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
             /* <message xmlns="jabber:client"
@@ -1861,7 +1861,7 @@ describe("Groupchats", function () {
                 }).c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('status', {code: '104'}).up()
                 .c('status', {code: '172'});
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
             await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-info').length);
             const chat_body = view.querySelector('.chatroom-body');
             expect(sizzle('.message:last', chat_body).pop().textContent.trim())
@@ -1906,7 +1906,7 @@ describe("Groupchats", function () {
                 .c('status').attrs({code:'110'}).up()
                 .c('status').attrs({code:'307'}).nodeTree;
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => !u.isVisible(view.querySelector('.chat-area')));
             expect(u.isVisible(view.querySelector('.occupants'))).toBeFalsy();
@@ -1957,7 +1957,7 @@ describe("Groupchats", function () {
                 .c('status').attrs({code:'333'}).up()
                 .c('status').attrs({code:'307'}).nodeTree;
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             await u.waitUntil(() => !u.isVisible(view.querySelector('.chat-area')));
@@ -2031,7 +2031,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo and annoyingGuy have entered the groupchat");
 
@@ -2045,7 +2045,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'visitor'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo has entered the groupchat\nannoyingGuy has been muted");
 
@@ -2059,7 +2059,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo has entered the groupchat\nannoyingGuy has been given a voice");
 
@@ -2075,7 +2075,7 @@ describe("Groupchats", function () {
                         'affiliation': 'none',
                         'role': 'visitor'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() =>
                 Array.from(view.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
                 "annoyingGuy is no longer a member of this groupchat"
@@ -2101,7 +2101,7 @@ describe("Groupchats", function () {
                 'affiliation': 'member',
                 'role': 'none'
             });
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
             await u.waitUntil(() => view.model.occupants.length > 1);
             expect(view.model.occupants.length).toBe(2);
             expect(view.model.occupants.findWhere({'jid': 'absentguy@montague.lit'}).get('affiliation')).toBe('member');
@@ -2117,7 +2117,7 @@ describe("Groupchats", function () {
                 'affiliation': 'none',
                 'role': 'none'
             });
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
             expect(view.model.occupants.length).toBe(2);
             expect(view.model.occupants.findWhere({'jid': 'absentguy@montague.lit'}).get('affiliation')).toBe('none');
 
@@ -2279,12 +2279,12 @@ describe("Groupchats", function () {
                     'jid': 'marc@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             expect(view.model.occupants.length).toBe(2);
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             let sent_stanza;
-            spyOn(_converse.connection, 'send').and.callFake((stanza) => {
+            spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => {
                 sent_stanza = stanza;
             });
 
@@ -2297,7 +2297,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            expect(_converse.connection.send).not.toHaveBeenCalled();
+            expect(_converse.api.connection.get().send).not.toHaveBeenCalled();
             await u.waitUntil(() => view.querySelectorAll('.chat-error').length);
             expect(view.querySelector('.chat-error').textContent.trim())
                 .toBe('Error: couldn\'t find a groupchat participant based on your arguments');
@@ -2325,9 +2325,9 @@ describe("Groupchats", function () {
                 "from": "lounge@muc.montague.lit",
                 "id": sent_stanza.getAttribute('id')
             });
-            _converse.connection.IQ_stanzas = [];
-            _converse.connection._dataRecv(mock.createRequest(result));
-            iq_stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            _converse.api.connection.get().IQ_stanzas = [];
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+            iq_stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector('iq[to="lounge@muc.montague.lit"][type="get"] item[affiliation="member"]')).pop()
             );
 
@@ -2347,10 +2347,10 @@ describe("Groupchats", function () {
                 "id": iq_stanza.getAttribute("id")
             }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
                 .c("item", {"jid": "marc", "affiliation": "member"});
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
             expect(view.model.occupants.length).toBe(2);
-            iq_stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            iq_stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector('iq[to="lounge@muc.montague.lit"][type="get"] item[affiliation="owner"]')).pop()
             );
 
@@ -2370,10 +2370,10 @@ describe("Groupchats", function () {
                 "id": iq_stanza.getAttribute("id")
             }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
                 .c("item", {"jid": "romeo@montague.lit", "affiliation": "owner"});
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
             expect(view.model.occupants.length).toBe(2);
-            iq_stanza = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            iq_stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector('iq[to="lounge@muc.montague.lit"][type="get"] item[affiliation="admin"]')).pop()
             );
 
@@ -2392,7 +2392,7 @@ describe("Groupchats", function () {
                 "from": "lounge@muc.montague.lit",
                 "id": iq_stanza.getAttribute("id")
             }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.querySelectorAll('.occupant').length, 500);
             await u.waitUntil(() => view.querySelectorAll('.badge').length > 1);
             expect(view.model.occupants.length).toBe(2);
@@ -2411,7 +2411,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            const { sent_stanzas } = _converse.connection;
+            const { sent_stanzas } = _converse.api.connection.get();
             await u.waitUntil(() => sent_stanzas.filter(s => s.textContent.trim() === 'This is the groupchat subject'));
 
             // Check /subject
@@ -2476,8 +2476,8 @@ describe("Groupchats", function () {
 
         it("takes /owner to make a user an owner", mock.initConverse([], {}, async function (_converse) {
             let sent_IQ, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_IQ = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -2497,7 +2497,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/owner';
@@ -2513,7 +2513,7 @@ describe("Groupchats", function () {
                 "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
 
             const sel = 'iq[type="set"] query[xmlns="http://jabber.org/protocol/muc#admin"]';
-            const stanzas = _converse.connection.IQ_stanzas.filter(s => sizzle(sel, s).length);
+            const stanzas = _converse.api.connection.get().IQ_stanzas.filter(s => sizzle(sel, s).length);
             expect(stanzas.length).toBe(0);
 
             // XXX: Calling onFormSubmitted directly, trying
@@ -2525,7 +2525,7 @@ describe("Groupchats", function () {
             expect(Array.from(view.querySelectorAll('.chat-error')).pop().textContent.trim()).toBe(
                 "Error: couldn't find a groupchat participant based on your arguments");
 
-            expect(_converse.connection.IQ_stanzas.filter(s => sizzle(sel, s).length).length).toBe(0);
+            expect(_converse.api.connection.get().IQ_stanzas.filter(s => sizzle(sel, s).length).length).toBe(0);
 
             // Call now with the correct of arguments.
             // XXX: Calling onFormSubmitted directly, trying
@@ -2556,7 +2556,7 @@ describe("Groupchats", function () {
                         'affiliation': 'owner',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() =>
                 Array.from(view.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
                 "annoyingGuy is now an owner of this groupchat"
@@ -2565,8 +2565,8 @@ describe("Groupchats", function () {
 
         it("takes /ban to ban a user", mock.initConverse([], {}, async function (_converse) {
             let sent_IQ, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_IQ = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -2586,7 +2586,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/ban';
@@ -2601,7 +2601,7 @@ describe("Groupchats", function () {
                 "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
 
             const sel = 'iq[type="set"] query[xmlns="http://jabber.org/protocol/muc#admin"]';
-            const stanzas = _converse.connection.IQ_stanzas.filter(s => sizzle(sel, s).length);
+            const stanzas = _converse.api.connection.get().IQ_stanzas.filter(s => sizzle(sel, s).length);
             expect(stanzas.length).toBe(0);
 
             // Call now with the correct amount of arguments.
@@ -2635,7 +2635,7 @@ describe("Groupchats", function () {
                     .c('reason').t("You're annoying").up().up()
                 .c('status', {'code': '301'});
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
             expect(view.querySelectorAll('.chat-info__message')[1].textContent.trim()).toBe("annoyingGuy has been banned by romeo");
@@ -2651,7 +2651,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             textarea.value = '/ban joe22';
             message_form.onFormSubmitted(new Event('submit'));
@@ -2662,8 +2662,8 @@ describe("Groupchats", function () {
 
         it("takes a /kick command to kick a user", mock.initConverse([], {}, async function (_converse) {
             let sent_IQ, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_IQ = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -2685,7 +2685,7 @@ describe("Groupchats", function () {
                         'affiliation': 'none',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             textarea.value = '/kick';
@@ -2740,7 +2740,7 @@ describe("Groupchats", function () {
                       .c('reason').t("You're annoying").up().up()
                     .c('status', {'code': '307'});
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
             expect(view.querySelectorAll('.chat-info__message')[1].textContent.trim()).toBe("annoying guy has been kicked out by romeo");
@@ -2755,8 +2755,8 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             let sent_IQ, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_IQ = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -2784,7 +2784,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo and trustworthyguy have entered the groupchat");
 
@@ -2840,7 +2840,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'moderator'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             // Check now that things get restored when the user is given a voice
             await u.waitUntil(
                 () => view.querySelector('.chat-content__notifications').textContent.split('\n', 2).pop()?.trim() ===
@@ -2883,7 +2883,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
             });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.includes("trustworthyguy is no longer a moderator"));
         }));
 
@@ -2894,8 +2894,8 @@ describe("Groupchats", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             var sent_IQ, IQ_id;
-            var sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+            var sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_IQ = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
@@ -2923,7 +2923,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo and annoyingGuy have entered the groupchat");
 
@@ -2978,7 +2978,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'visitor'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.includes("annoyingGuy has been muted"));
 
             // Call now with the correct of arguments.
@@ -3019,7 +3019,7 @@ describe("Groupchats", function () {
                         'affiliation': 'member',
                         'role': 'participant'
                     });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.includes("annoyingGuy has been given a voice"));
         }));
 
@@ -3051,7 +3051,7 @@ describe("Groupchats", function () {
             challenge_el.value = muc_jid;
             submit.click();
 
-            let sent_IQs = _converse.connection.IQ_stanzas;
+            let sent_IQs = _converse.api.connection.get().IQ_stanzas;
             let sent_IQ = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('destroy')).pop());
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${sent_IQ.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
@@ -3068,18 +3068,18 @@ describe("Groupchats", function () {
                 'type': 'result',
                 'id': sent_IQ.getAttribute('id'),
                 'from': view.model.get('jid'),
-                'to': _converse.connection.jid
+                'to': _converse.api.connection.get().jid
             });
             expect(_converse.chatboxes.length).toBe(2);
             spyOn(_converse.api, "trigger").and.callThrough();
-            _converse.connection._dataRecv(mock.createRequest(result_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result_stanza));
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
             await u.waitUntil(() => _converse.chatboxes.length === 1);
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
 
             // Try again without reason or new JID
-            _converse.connection.IQ_stanzas = [];
-            sent_IQs = _converse.connection.IQ_stanzas;
+            _converse.api.connection.get().IQ_stanzas = [];
+            sent_IQs = _converse.api.connection.get().IQ_stanzas;
             await mock.openAndEnterChatRoom(_converse, new_muc_jid, 'romeo');
             view = _converse.chatboxviews.get(new_muc_jid);
             textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -3106,10 +3106,10 @@ describe("Groupchats", function () {
                 'type': 'result',
                 'id': sent_IQ.getAttribute('id'),
                 'from': view.model.get('jid'),
-                'to': _converse.connection.jid
+                'to': _converse.api.connection.get().jid
             });
             expect(_converse.chatboxes.length).toBe(2);
-            _converse.connection._dataRecv(mock.createRequest(result_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result_stanza));
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
             await u.waitUntil(() => _converse.chatboxes.length === 1);
         }));
@@ -3133,7 +3133,7 @@ describe("Groupchats", function () {
                   .c('error').attrs({by:'lounge@montague.lit', type:'auth'})
                       .c('not-authorized').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'});
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const chat_body = view.querySelector('.chatroom-body');
             await u.waitUntil(() => chat_body.querySelectorAll('form.chatroom-form').length === 1);
@@ -3154,7 +3154,7 @@ describe("Groupchats", function () {
             const muc_jid = 'members-only@muc.montague.lit'
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-            const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector(
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
@@ -3176,7 +3176,7 @@ describe("Groupchats", function () {
                     .c('feature', {'var': 'muc_hidden'}).up()
                     .c('feature', {'var': 'muc_temporary'}).up()
                     .c('feature', {'var': 'muc_membersonly'}).up();
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
 
             const presence = $pres().attrs({
@@ -3188,7 +3188,7 @@ describe("Groupchats", function () {
                   .c('error').attrs({by:'lounge@montague.lit', type:'auth'})
                       .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child')?.textContent?.trim() ===
                 'You are not on the member list of this groupchat.');
         }));
@@ -3199,7 +3199,7 @@ describe("Groupchats", function () {
             const muc_jid = 'off-limits@muc.montague.lit'
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
 
-            const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector(
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
@@ -3215,7 +3215,7 @@ describe("Groupchats", function () {
                     .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
                     .c('feature', {'var': 'muc_hidden'}).up()
                     .c('feature', {'var': 'muc_temporary'}).up()
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
@@ -3228,7 +3228,7 @@ describe("Groupchats", function () {
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                   .c('error').attrs({by:'lounge@montague.lit', type:'auth'})
                       .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const el = await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'));
             expect(el.textContent.trim()).toBe('You have been banned from this groupchat');
@@ -3242,7 +3242,7 @@ describe("Groupchats", function () {
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo')
 
             // We pretend this is a new room, so no disco info is returned.
-            const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector(
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
@@ -3253,7 +3253,7 @@ describe("Groupchats", function () {
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
@@ -3266,7 +3266,7 @@ describe("Groupchats", function () {
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                   .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                       .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             const el = await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'));
             expect(el.textContent.trim()).toBe('You are not allowed to create new groupchats.');
         }));
@@ -3277,7 +3277,7 @@ describe("Groupchats", function () {
             const muc_jid = 'nonexistent@muc.montague.lit'
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
 
-            const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector(
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
@@ -3289,7 +3289,7 @@ describe("Groupchats", function () {
                 }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
                     .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
                     .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
@@ -3303,7 +3303,7 @@ describe("Groupchats", function () {
                   .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                       .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             const el = await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'));
             expect(el.textContent.trim()).toBe("This groupchat does not (yet) exist.");
         }));
@@ -3314,7 +3314,7 @@ describe("Groupchats", function () {
             const muc_jid = 'maxed-out@muc.montague.lit'
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo')
 
-            const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(
+            const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => iq.querySelector(
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
@@ -3326,7 +3326,7 @@ describe("Groupchats", function () {
                 }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
                     .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
                     .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
@@ -3340,7 +3340,7 @@ describe("Groupchats", function () {
                   .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                       .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             const el = await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'));
             expect(el.textContent.trim()).toBe("This groupchat has reached its maximum number of participants.");
         }));
@@ -3436,7 +3436,7 @@ describe("Groupchats", function () {
             view.model.setChatState(_converse.ACTIVE);
 
             expect(view.model.sendChatState).toHaveBeenCalled();
-            const last_stanza = _converse.connection.sent_stanzas.pop();
+            const last_stanza = _converse.api.connection.get().sent_stanzas.pop();
             expect(Strophe.serialize(last_stanza)).toBe(
                 `<message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
@@ -3451,15 +3451,15 @@ describe("Groupchats", function () {
                 }).c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {'affiliation': 'none', 'role': 'visitor'}).up()
                 .c('status', {code: '110'});
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
             await u.waitUntil(() => occupant.get('role') === 'visitor');
 
-            spyOn(_converse.connection, 'send');
+            spyOn(_converse.api.connection.get(), 'send');
             view.model.setChatState(_converse.INACTIVE);
             expect(view.model.sendChatState.calls.count()).toBe(2);
-            expect(_converse.connection.send).not.toHaveBeenCalled();
+            expect(_converse.api.connection.get().send).not.toHaveBeenCalled();
         }));
 
 
@@ -3487,7 +3487,7 @@ describe("Groupchats", function () {
                         'jid': 'newguy@montague.lit/_converse.js-290929789',
                         'role': 'participant'
                     });
-                _converse.connection._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
                 await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                     "some1 and newguy have entered the groupchat");
 
@@ -3501,7 +3501,7 @@ describe("Groupchats", function () {
                         'jid': 'nomorenicks@montague.lit/_converse.js-290929789',
                         'role': 'participant'
                     });
-                _converse.connection._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
                 await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                     "some1, newguy and nomorenicks have entered the groupchat", 1000);
 
@@ -3527,7 +3527,7 @@ describe("Groupchats", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                _converse.connection._dataRecv(mock.createRequest(msg));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
 
                 csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent, 1000);
                 expect(csntext.trim()).toEqual('newguy is typing');
@@ -3608,7 +3608,7 @@ describe("Groupchats", function () {
                         'role': 'moderator'
                     }).up()
                     .c('status', {code: '110'});
-                _converse.connection._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
                 const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
                 expect(csntext.trim()).toEqual("some1 has entered the groupchat");
 
@@ -3622,7 +3622,7 @@ describe("Groupchats", function () {
                         'jid': 'newguy@montague.lit/_converse.js-290929789',
                         'role': 'participant'
                     });
-                _converse.connection._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
                 await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                     "some1 and newguy have entered the groupchat");
 
@@ -3636,7 +3636,7 @@ describe("Groupchats", function () {
                         'jid': 'nomorenicks@montague.lit/_converse.js-290929789',
                         'role': 'participant'
                     });
-                _converse.connection._dataRecv(mock.createRequest(presence));
+                _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
                 await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
                     "some1, newguy and nomorenicks have entered the groupchat");
 
@@ -3703,7 +3703,7 @@ describe("Groupchats", function () {
                          from="trollbox@montague.lit">
                     <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent.trim(), 1000);
             expect(view.querySelector('.chat-msg__error').textContent.trim()).toBe(
                 "Your message was not delivered because you weren't allowed to send it.");
@@ -3723,7 +3723,7 @@ describe("Groupchats", function () {
                         <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Thou shalt not!</text>
                     </error>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 2);
             const sel = 'converse-message-history converse-chat-message:last-child .chat-msg__error';
@@ -3756,7 +3756,7 @@ describe("Groupchats", function () {
                     <status code='110'/>
                 </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(() => view.querySelector('.chat-textarea') === null);
             let bottom_panel = view.querySelector('.muc-bottom-panel');
@@ -3792,7 +3792,7 @@ describe("Groupchats", function () {
                     <status code='110'/>
                 </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelector('.muc-bottom-panel') === null);
             expect(textarea === null).toBe(false);
             // Check now that things get restored when the user is given a voice
@@ -3812,7 +3812,7 @@ describe("Groupchats", function () {
                 <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/ralphm">
                     <body>This message will trigger a presence probe</body>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             const view = _converse.chatboxviews.get(muc_jid);
 
             await u.waitUntil(() => view.model.messages.length);
@@ -3822,7 +3822,7 @@ describe("Groupchats", function () {
             expect(occupant.get('affiliation')).toBeUndefined();
             expect(occupant.get('role')).toBeUndefined();
 
-            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             let probe = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence[type="probe"]')).pop());
             expect(Strophe.serialize(probe)).toBe(
                 `<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">`+
@@ -3836,7 +3836,7 @@ describe("Groupchats", function () {
                         <item affiliation="member" jid="ralph@example.org/Conversations.ZvLu" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             expect(occupant.get('affiliation')).toBe('member');
             expect(occupant.get('role')).toBe('participant');
@@ -3846,7 +3846,7 @@ describe("Groupchats", function () {
                 <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/gonePhising">
                     <body>This message from an unavailable user will trigger a presence probe</body>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(() => view.model.messages.length === 2);
             occupant = view.model.messages.at(1)?.occupant;
@@ -3868,7 +3868,7 @@ describe("Groupchats", function () {
                         <item affiliation="member" jid="gonePhishing@example.org/d34dBEEF" role="participant"/>
                     </x>
                 </presence>`);
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             expect(view.model.occupants.length).toBe(3);
             expect(occupant.get('affiliation')).toBe('member');

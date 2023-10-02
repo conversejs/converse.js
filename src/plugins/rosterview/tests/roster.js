@@ -40,7 +40,7 @@ describe("The Contacts Roster", function () {
                     <item subscription="remove" jid="${contact_jid}"/>
                 </query>
             </iq>`);
-        _converse.connection._dataRecv(mock.createRequest(roster_push));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
         expect(converse.env.log.warn.calls.count()).toBe(1);
         expect(converse.env.log.warn).toHaveBeenCalledWith(
             `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`
@@ -51,7 +51,7 @@ describe("The Contacts Roster", function () {
                     <item subscription="both" jid="eve@siacs.eu" name="${mock.cur_names[0]}" />
                 </query>
             </iq>`);
-        _converse.connection._dataRecv(mock.createRequest(roster_push));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
         expect(converse.env.log.warn.calls.count()).toBe(2);
         expect(converse.env.log.warn).toHaveBeenCalledWith(
             `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`
@@ -61,7 +61,7 @@ describe("The Contacts Roster", function () {
     }));
 
     it("is populated once we have registered a presence handler", mock.initConverse([], {}, async function (_converse) {
-        const IQs = _converse.connection.IQ_stanzas;
+        const IQs = _converse.api.connection.get().IQ_stanzas;
         const stanza = await u.waitUntil(
             () => _.filter(IQs, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
 
@@ -70,19 +70,19 @@ describe("The Contacts Roster", function () {
                 `<query xmlns="jabber:iq:roster"/>`+
             `</iq>`);
         const result = $iq({
-            'to': _converse.connection.jid,
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
             'id': stanza.getAttribute('id')
         }).c('query', {
             'xmlns': 'jabber:iq:roster'
         }).c('item', {'jid': 'nurse@example.com'}).up()
           .c('item', {'jid': 'romeo@example.com'})
-        _converse.connection._dataRecv(mock.createRequest(result));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
         await u.waitUntil(() => _converse.promises['rosterContactsFetched'].isResolved === true);
     }));
 
     it("supports roster versioning", mock.initConverse([], {}, async function (_converse) {
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         let stanza = await u.waitUntil(
             () => _.filter(IQ_stanzas, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
         );
@@ -92,7 +92,7 @@ describe("The Contacts Roster", function () {
                 `<query xmlns="jabber:iq:roster"/>`+
             `</iq>`);
         let result = $iq({
-            'to': _converse.connection.jid,
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
             'id': stanza.getAttribute('id')
         }).c('query', {
@@ -100,32 +100,32 @@ describe("The Contacts Roster", function () {
             'ver': 'ver7'
         }).c('item', {'jid': 'nurse@example.com'}).up()
           .c('item', {'jid': 'romeo@example.com'})
-        _converse.connection._dataRecv(mock.createRequest(result));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
         await u.waitUntil(() => _converse.roster.models.length > 1);
         expect(_converse.roster.data.get('version')).toBe('ver7');
         expect(_converse.roster.models.length).toBe(2);
 
         _converse.roster.fetchFromServer();
-        stanza = _converse.connection.IQ_stanzas.pop();
+        stanza = _converse.api.connection.get().IQ_stanzas.pop();
         expect(Strophe.serialize(stanza)).toBe(
             `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                 `<query ver="ver7" xmlns="jabber:iq:roster"/>`+
             `</iq>`);
 
         result = $iq({
-            'to': _converse.connection.jid,
+            'to': _converse.api.connection.get().jid,
             'type': 'result',
             'id': stanza.getAttribute('id')
         });
-        _converse.connection._dataRecv(mock.createRequest(result));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
         const roster_push = $iq({
-            'to': _converse.connection.jid,
+            'to': _converse.api.connection.get().jid,
             'type': 'set',
         }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
             .c('item', {'jid': 'romeo@example.com', 'subscription': 'remove'});
-        _converse.connection._dataRecv(mock.createRequest(roster_push));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
         expect(_converse.roster.data.get('version')).toBe('ver34');
         expect(_converse.roster.models.length).toBe(1);
         expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
@@ -134,10 +134,10 @@ describe("The Contacts Roster", function () {
     it("also contains contacts with subscription of none", mock.initConverse(
         [], {}, async function (_converse) {
 
-        const sent_IQs = _converse.connection.IQ_stanzas;
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
-        _converse.connection._dataRecv(mock.createRequest($iq({
-            to: _converse.connection.jid,
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
+            to: _converse.api.connection.get().jid,
             type: 'result',
             id: stanza.getAttribute('id')
         }).c('query', {
@@ -168,10 +168,10 @@ describe("The Contacts Roster", function () {
     it("can be refreshed", mock.initConverse(
         [], {}, async function (_converse) {
 
-        const sent_IQs = _converse.connection.IQ_stanzas;
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
-        _converse.connection._dataRecv(mock.createRequest($iq({
-            to: _converse.connection.jid,
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
+            to: _converse.api.connection.get().jid,
             type: 'result',
             id: stanza.getAttribute('id')
         }).c('query', {
@@ -197,8 +197,8 @@ describe("The Contacts Roster", function () {
         sync_button.click();
 
         stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
-        _converse.connection._dataRecv(mock.createRequest($iq({
-            to: _converse.connection.jid,
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
+            to: _converse.api.connection.get().jid,
             type: 'result',
             id: stanza.getAttribute('id')
         }).c('query', {
@@ -670,7 +670,7 @@ describe("The Contacts Roster", function () {
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle(`.pending-xmpp-contact .contact-name:contains("${name}")`, rosterview).length, 500);
             let sent_IQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback) {
                 sent_IQ = iq;
                 callback();
             });
@@ -711,7 +711,7 @@ describe("The Contacts Roster", function () {
             remove_el.click();
             expect(_converse.api.confirm).toHaveBeenCalled();
 
-            const iq_stanzas = _converse.connection.IQ_stanzas;
+            const iq_stanzas = _converse.api.connection.get().IQ_stanzas;
             await u.waitUntil(() => Strophe.serialize(iq_stanzas.at(-1)) ===
                 `<iq id="${iq_stanzas.at(-1).getAttribute('id')}" type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
@@ -721,7 +721,7 @@ describe("The Contacts Roster", function () {
 
             const iq = iq_stanzas.at(-1);
             const stanza = u.toStanza(`<iq id="${iq.getAttribute('id')}" to="romeo@montague.lit/orchard" type="result"/>`);
-            _converse.connection._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
         }));
 
@@ -823,23 +823,23 @@ describe("The Contacts Roster", function () {
             expect(icon_el.getAttribute('color')).toBe('var(--subdued-color)');
 
             let pres = $pres({from: 'mercutio@montague.lit/resource'});
-            _converse.connection._dataRecv(mock.createRequest(pres));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-online)');
 
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'away');
-            _converse.connection._dataRecv(mock.createRequest(pres));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-away)');
 
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'xa');
-            _converse.connection._dataRecv(mock.createRequest(pres));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--subdued-color)');
 
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'dnd');
-            _converse.connection._dataRecv(mock.createRequest(pres));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--chat-status-busy)');
 
             pres = $pres({from: 'mercutio@montague.lit/resource', type: 'unavailable'});
-            _converse.connection._dataRecv(mock.createRequest(pres));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
             await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--subdued-color)');
         }));
 
@@ -882,7 +882,7 @@ describe("The Contacts Roster", function () {
             spyOn(contact, 'removeFromRoster').and.callThrough();
 
             let sent_IQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake((iq, callback) => {
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((iq, callback) => {
                 sent_IQ = iq;
                 callback();
             });
@@ -916,11 +916,11 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'removeFromRoster').and.callThrough();
-            spyOn(_converse.connection, 'sendIQ').and.callFake((iq, callback) => callback?.());
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((iq, callback) => callback?.());
             expect(u.isVisible(rosterview.querySelector('.roster-group'))).toBe(true);
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
             expect(_converse.api.confirm).toHaveBeenCalled();
-            await u.waitUntil(() => _converse.connection.sendIQ.calls.count());
+            await u.waitUntil(() => _converse.api.connection.get().sendIQ.calls.count());
             expect(contact.removeFromRoster).toHaveBeenCalled();
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length === 0);
         }));
@@ -1258,12 +1258,12 @@ describe("The Contacts Roster", function () {
         it("are persisted even if other contacts' change their presence ", mock.initConverse(
             [], {}, async function (_converse) {
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
             // Taken from the spec
             // https://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
             const result = $iq({
-                to: _converse.connection.jid,
+                to: _converse.api.connection.get().jid,
                 type: 'result',
                 id: stanza.getAttribute('id')
             }).c('query', {
@@ -1278,10 +1278,10 @@ describe("The Contacts Roster", function () {
                 name: 'Mercutio',
                 subscription:'from'
             }).c('group').t('Friends').up().up()
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
             const pres = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
-            _converse.connection._dataRecv(mock.createRequest(pres));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
 
             expect(_converse.roster.pluck('jid').length).toBe(1);
             const rosterview = document.querySelector('converse-roster');
@@ -1289,7 +1289,7 @@ describe("The Contacts Roster", function () {
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();
 
             const roster_push = $iq({
-                'to': _converse.connection.jid,
+                'to': _converse.api.connection.get().jid,
                 'type': 'set',
             }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
                 .c('item', {
@@ -1297,7 +1297,7 @@ describe("The Contacts Roster", function () {
                     name: 'Benvolio',
                     subscription:'both'
                 }).c('group').t('Friends');
-            _converse.connection._dataRecv(mock.createRequest(roster_push));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
             expect(_converse.roster.data.get('version')).toBe('ver34');
             expect(_converse.roster.models.length).toBe(4);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();

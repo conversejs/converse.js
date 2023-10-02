@@ -14,7 +14,7 @@ describe("A MAM archived message", function () {
 
         const messages = [
             u.toStanza(`
-                <message to="${_converse.connection.jid}" from="${muc_jid}">
+                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="9fe1a9d9-c979-488c-93a4-8a3c4dcbc63e">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:51:20Z"/>
@@ -28,7 +28,7 @@ describe("A MAM archived message", function () {
                 </message>`),
 
             u.toStanza(`
-                <message to="${_converse.connection.jid}" from="${muc_jid}">
+                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="64f68d52-76e6-4fa6-93ef-9fbf96bb237b">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:51:25Z"/>
@@ -42,7 +42,7 @@ describe("A MAM archived message", function () {
                 </message>`),
 
             u.toStanza(`
-                <message to="${_converse.connection.jid}" from="${muc_jid}">
+                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="c2c07703-b285-4529-a4b4-12594f749c58">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:52:17Z"/>
@@ -67,7 +67,7 @@ describe("A MAM archived message", function () {
                 </message>`),
 
             u.toStanza(`
-                <message to="${_converse.connection.jid}" from="${muc_jid}">
+                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="c2b2b039-f808-4b4c-bfbd-607173e012f9">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:52:22Z"/>
@@ -99,14 +99,14 @@ describe("A MAM archived message", function () {
         let stanza = u.toStanza(`
             <message xmlns="jabber:client"
                      from="room@muc.example.com/some1"
-                     to="${_converse.connection.jid}"
+                     to="${_converse.api.connection.get().jid}"
                      type="groupchat">
                 <body>Typical body text</body>
                 <stanza-id xmlns="urn:xmpp:sid:0"
                            id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                            by="room@muc.example.com"/>
             </message>`);
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => model.messages.length === 1);
         await u.waitUntil(() => model.getDuplicateMessage.calls.count() === 1);
         let result = await model.getDuplicateMessage.calls.all()[0].returnValue;
@@ -114,7 +114,7 @@ describe("A MAM archived message", function () {
 
         stanza = u.toStanza(`
             <message xmlns="jabber:client"
-                    to="${_converse.connection.jid}"
+                    to="${_converse.api.connection.get().jid}"
                     from="room@muc.example.com">
                 <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad">
                     <forwarded xmlns="urn:xmpp:forward:0">
@@ -154,7 +154,7 @@ describe("A MAM archived message", function () {
                 'jid': 'newguy@montague.lit/_converse.js-290929789',
                 'role': 'participant'
             }).tree();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         /*
          * <message to="romeo@montague.im/poezio" id="718d40df-3948-4798-a99b-35cc9f03cc4f-641" type="groupchat" from="xsf@muc.xmpp.org/romeo">
          *     <received xmlns="urn:xmpp:carbons:2">
@@ -168,8 +168,8 @@ describe("A MAM archived message", function () {
          */
         const msg = $msg({
                 'from': sender_jid,
-                'id': _converse.connection.getUniqueId(),
-                'to': _converse.connection.jid,
+                'id': _converse.api.connection.get().getUniqueId(),
+                'to': _converse.api.connection.get().jid,
                 'type': 'groupchat',
                 'xmlns': 'jabber:client'
             }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})

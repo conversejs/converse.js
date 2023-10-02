@@ -22,11 +22,11 @@ describe('The MUC Affiliations API', function () {
                     'affiliation': 'member',
                     'role': 'participant'
                 });
-            _converse.connection._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             api.rooms.affiliations.set(muc_jid, { 'jid': user_jid, 'affiliation': 'outcast', 'reason': 'Ban hammer!' });
 
-            const iq = _converse.connection.IQ_stanzas.pop();
+            const iq = _converse.api.connection.get().IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">` +
                     `<query xmlns="http://jabber.org/protocol/muc#admin">` +

@@ -4,8 +4,8 @@ describe("Service Discovery", function () {
 
     it("can be used to set the muc_domain", mock.initConverse( ['discoInitialized'], {}, async function (_converse) {
         const { u, $iq } = converse.env;
-        const IQ_stanzas = _converse.connection.IQ_stanzas;
-        const IQ_ids =  _converse.connection.IQ_ids;
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+        const IQ_ids =  _converse.api.connection.get().IQ_ids;
         const { api } = _converse;
 
         expect(api.settings.get('muc_domain')).toBe(undefined);
@@ -26,14 +26,14 @@ describe("Service Discovery", function () {
             .c('identity', { 'category': 'conference', 'name': 'Play-Specific Chatrooms'}).up()
             .c('feature', { 'var': 'http://jabber.org/protocol/disco#info'}).up()
             .c('feature', { 'var': 'http://jabber.org/protocol/disco#items'}).up();
-        _converse.connection._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
 
         stanza = await u.waitUntil(() => IQ_stanzas.filter(
             iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]')).pop()
         );
 
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
             'type': 'result',
             'from': 'montague.lit',
             'to': 'romeo@montague.lit/orchard',
@@ -44,7 +44,7 @@ describe("Service Discovery", function () {
         stanza = await u.waitUntil(() => IQ_stanzas.filter(
             iq => iq.querySelector('iq[to="chat.shakespeare.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).pop()
         );
-        _converse.connection._dataRecv(mock.createRequest($iq({
+        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
             'type': 'result',
             'from': 'chat.shakespeare.lit',
             'to': 'romeo@montague.lit/orchard',

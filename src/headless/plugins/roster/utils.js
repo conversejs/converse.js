@@ -68,7 +68,8 @@ function updateUnreadCounter (chatbox) {
 
 function registerPresenceHandler () {
     unregisterPresenceHandler();
-    _converse.presence_ref = _converse.connection.addHandler(presence => {
+    const connection = api.connection.get();
+    _converse.presence_ref = connection.addHandler(presence => {
             _converse.roster.presenceHandler(presence);
             return true;
         }, null, 'presence', null);
@@ -76,7 +77,8 @@ function registerPresenceHandler () {
 
 export function unregisterPresenceHandler () {
     if (_converse.presence_ref !== undefined) {
-        _converse.connection.deleteHandler(_converse.presence_ref);
+        const connection = api.connection.get();
+        connection.deleteHandler(_converse.presence_ref);
         delete _converse.presence_ref;
     }
 }
@@ -124,7 +126,7 @@ export function onPresencesInitialized (reconnecting) {
     }
     _converse.roster.onConnected();
     registerPresenceHandler();
-    populateRoster(!_converse.connection.restored);
+    populateRoster(!api.connection.get().restored);
 }
 
 
@@ -137,7 +139,7 @@ export async function onStatusInitialized (reconnecting) {
          // When reconnecting and not resuming a previous session,
          // we clear all cached presence data, since it might be stale
          // and we'll receive new presence updates
-         !_converse.connection.hasResumed() && (await clearPresences());
+         !api.connection.get().hasResumed() && (await clearPresences());
      } else {
          _converse.presences = new _converse.Presences();
          const id = `converse.presences-${_converse.bare_jid}`;

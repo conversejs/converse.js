@@ -16,7 +16,7 @@ describe("Message Archive Management", function () {
                 },
                 async function (_converse) {
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
             const msgid = u.getUniqueId();
 
@@ -50,9 +50,9 @@ describe("Message Archive Management", function () {
             const view = _converse.chatboxviews.get(muc_jid);
 
             let iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
-            const first_msg_id = _converse.connection.getUniqueId();
-            const second_msg_id = _converse.connection.getUniqueId();
-            const third_msg_id = _converse.connection.getUniqueId();
+            const first_msg_id = _converse.api.connection.get().getUniqueId();
+            const second_msg_id = _converse.api.connection.get().getUniqueId();
+            const third_msg_id = _converse.api.connection.get().getUniqueId();
             let message = u.toStanza(
                 `<message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
@@ -66,7 +66,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             message = u.toStanza(
                 `<message xmlns="jabber:client"
@@ -81,7 +81,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             // Clear so that we don't match the older query
             while (sent_IQs.length) { sent_IQs.pop(); }
@@ -96,7 +96,7 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 4);
 
             const msg = view.model.messages.at(1);
@@ -134,7 +134,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             // Clear so that we don't match the older query
             while (sent_IQs.length) { sent_IQs.pop(); }
@@ -149,7 +149,7 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 4);
             await u.waitUntil(() => view.querySelector('converse-mam-placeholder') === null);
         }));
@@ -158,14 +158,14 @@ describe("Message Archive Management", function () {
                 mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2},
                 async function (_converse) {
 
-            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             const iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
 
-            const first_msg_id = _converse.connection.getUniqueId();
-            const last_msg_id = _converse.connection.getUniqueId();
+            const first_msg_id = _converse.api.connection.get().getUniqueId();
+            const last_msg_id = _converse.api.connection.get().getUniqueId();
             let message = u.toStanza(
                 `<message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
@@ -179,7 +179,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             message = u.toStanza(
                 `<message xmlns="jabber:client"
@@ -194,7 +194,7 @@ describe("Message Archive Management", function () {
                         </forwarded>
                     </result>
                 </message>`);
-            _converse.connection._dataRecv(mock.createRequest(message));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
             // Clear so that we don't match the older query
             while (sent_IQs.length) { sent_IQs.pop(); }
@@ -209,7 +209,7 @@ describe("Message Archive Management", function () {
                         </set>
                     </fin>
                 </iq>`);
-            _converse.connection._dataRecv(mock.createRequest(result));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 2);
             expect(true).toBe(true);
         }));

@@ -16,7 +16,7 @@ describe("The nickname autocomplete feature", function () {
 
         // Nicknames from presences
         ['dick', 'harry'].forEach((nick) => {
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $pres({
                     'to': 'tom@montague.lit/resource',
                     'from': `lounge@montague.lit/${nick}`
@@ -69,7 +69,7 @@ describe("The nickname autocomplete feature", function () {
 
         // Nicknames from presences
         ['dick', 'harry'].forEach((nick) => {
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $pres({
                     'to': 'tom@montague.lit/resource',
                     'from': `lounge@montague.lit/${nick}`
@@ -124,7 +124,7 @@ describe("The nickname autocomplete feature", function () {
 
         // Nicknames from presences
         ['dick', 'harry'].forEach((nick) => {
-            _converse.connection._dataRecv(mock.createRequest(
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
                 $pres({
                     'to': 'tom@montague.lit/resource',
                     'from': `lounge@montague.lit/${nick}`
@@ -176,7 +176,7 @@ describe("The nickname autocomplete feature", function () {
 
             // Nicknames from presences
             ['bernard', 'naber', 'helberlo', 'john', 'jones'].forEach((nick) => {
-                _converse.connection._dataRecv(mock.createRequest(
+                _converse.api.connection.get()._dataRecv(mock.createRequest(
                     $pres({
                         'to': 'tom@montague.lit/resource',
                         'from': `lounge@montague.lit/${nick}`
@@ -232,7 +232,7 @@ describe("The nickname autocomplete feature", function () {
                 'jid': 'some1@montague.lit/resource',
                 'role': 'participant'
             });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         expect(view.model.occupants.length).toBe(2);
 
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -276,7 +276,7 @@ describe("The nickname autocomplete feature", function () {
                 'jid': 'some2@montague.lit/resource',
                 'role': 'participant'
             });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         textarea.value = "hello s s";
         message_form.onKeyDown(tab_event);
@@ -315,7 +315,7 @@ describe("The nickname autocomplete feature", function () {
                 'jid': 'z3r0@montague.lit/resource',
                 'role': 'participant'
             });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         textarea.value = "hello z";
         message_form.onKeyDown(tab_event);
         message_form.onKeyUp(tab_event);
@@ -342,7 +342,7 @@ describe("The nickname autocomplete feature", function () {
                 'jid': 'some1@montague.lit/resource',
                 'role': 'participant'
             });
-        _converse.connection._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         expect(view.model.occupants.length).toBe(2);
 
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));

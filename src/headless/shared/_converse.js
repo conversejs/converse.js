@@ -79,7 +79,6 @@ const _converse = {
         INACTIVE: 90000
     },
 
-    default_connection_options: {'explicitResourceBinding': true},
     router: new Router(),
 
 

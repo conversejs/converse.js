@@ -76,7 +76,6 @@
     "autoprefixer": "^10.4.5",
     "babel-loader": "^9.1.0",
     "bootstrap.native-loader": "2.0.0",
-    "circular-dependency-plugin": "^5.2.2",
     "clean-css-cli": "^5.6.2",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",

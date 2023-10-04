@@ -3,7 +3,6 @@ BOOTSTRAP		= ./node_modules/
 BUILDDIR		= ./docs
 KARMA			?= ./node_modules/.bin/karma
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss
-HTTPSERVE	 	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT	?= 8000
 INKSCAPE		?= inkscape
 INSTALL			?= install
@@ -52,11 +51,11 @@ help:
 
 .PHONY: serve
 serve: node_modules dist
-	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
+	npm run serve -- -p $(HTTPSERVE_PORT)
 
 .PHONY: serve_bg
 serve_bg: node_modules
-	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1 -s &
+	npm run serve -- -p $(HTTPSERVE_PORT) -s &
 
 certs:
 	mkdir certs
@@ -151,7 +150,7 @@ dev: node_modules
 
 .PHONY: devserver
 devserver: node_modules
-	npm run serve
+	npm run devserver
 
 ########################################################################
 ## Builds
@@ -257,7 +256,7 @@ docsdev: ./bin/activate requirements.txt
 html: doc
 
 .PHONY: doc
-doc: node_modules docsdev apidoc
+doc: node_modules docsdev
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc

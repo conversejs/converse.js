@@ -38,7 +38,8 @@
     "headless": "webpack --config webpack/webpack.headless.js",
     "headless-dev": "webpack --config webpack/webpack.headless.js --mode=development",
     "nodeps": "webpack --config webpack/webpack.nodeps.js",
-    "serve": "webpack serve --config webpack/webpack.serve.js",
+    "serve": "http-server -c-1",
+    "devserver": "webpack serve --config webpack/webpack.serve.js",
     "watch": "webpack --watch --config webpack/webpack.build.js --mode=development",
     "types": "tsc --declaration --emitDeclarationOnly --allowJs",
     "check:types": "tsc --noEmit"

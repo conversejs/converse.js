@@ -36,8 +36,6 @@ import {
  * @namespace _converse
  */
 const _converse = {
-    log,
-
     VERSION_NAME,
 
     templates: {},

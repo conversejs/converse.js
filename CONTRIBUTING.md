@@ -12,11 +12,6 @@ make serve_bg
 make watch
 ```
 
-Go to http://localhost:8000/dev.html
-
-Then modify `dev.html` so that `converse.initialize()` is called with relevant settings.
-
-
 ### Without GNU Make:
 
 ```
@@ -24,6 +19,10 @@ npm install
 npm run serve &
 npm run watch
 ```
+
+Go to http://localhost:8000/dev.html
+
+Then modify `dev.html` so that `converse.initialize()` is called with relevant settings.
 
 Webpack will "watch" the source files and automatically recreate the build if they
 are modified. So you don't have to do anything to rebuild whenever you've

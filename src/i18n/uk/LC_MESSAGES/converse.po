@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 10:10+0200\n"
-"PO-Revision-Date: 2023-09-28 11:04+0000\n"
-"Last-Translator: sergey solovey <njuton89@gmail.com>\n"
+"PO-Revision-Date: 2023-10-06 11:12+0000\n"
+"Last-Translator: Олександр Кревський <sasha135280@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
 "Language: uk\n"
@@ -53,16 +53,16 @@ msgstr "%1$s друкує"
 
 #: dist/converse-no-dependencies.js:39540
 #: dist/converse-no-dependencies.js:51179
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has stopped typing"
-msgstr "%1$s припинив друкувати"
+msgstr "%1$s припинив(ла) набирати текст"
 
 #: dist/converse-no-dependencies.js:39542
 #: dist/converse-no-dependencies.js:39887
 #: dist/converse-no-dependencies.js:51181
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone away"
-msgstr "%1$s пішов геть"
+msgstr "%1$s відійшов(ла)"
 
 #: dist/converse-no-dependencies.js:39614
 #: dist/converse-no-dependencies.js:49055
@@ -188,13 +188,12 @@ msgid "Error: not allowed to fetch %1s list for MUC %2s"
 msgstr "Помилка: не дозволено отримати список %1s для MUC %2s"
 
 #: dist/converse-no-dependencies.js:49057
-#, fuzzy
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
 msgstr ""
-"Ваше повідомлення не було доставлено, оскільки ви не присутні в гуртовій "
-"бесіді."
+"Ваше повідомлення не було доставлено, оскільки ви не присутні в груповому "
+"чаті."
 
 #: dist/converse-no-dependencies.js:49064
 msgid "Your message was not delivered because you weren't allowed to send it."
@@ -215,7 +214,7 @@ msgstr "Трапилася помилка при спробі змiнити ва
 
 #: dist/converse-no-dependencies.js:50051
 msgid "Sorry, an error happened while running the command."
-msgstr "Вибачте, потрапилась помилка коли виповнювалась комманда"
+msgstr "Вибачте, під час виконання команди сталася помилка."
 
 #: dist/converse-no-dependencies.js:50051
 #: dist/converse-no-dependencies.js:108635
@@ -256,15 +255,13 @@ msgid "Error: couldn't register new nickname in members only room"
 msgstr "Помилка: не вдалося зареєструвати новий нікнейм у кімнаті для учасників"
 
 #: dist/converse-no-dependencies.js:50533
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Вам не дозволено створювати нові кімнати"
+msgstr "Ви не маєте права реєструватися в цьому груповому чаті."
 
 #: dist/converse-no-dependencies.js:50535
-#, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "Вам не дозволено створювати нові кімнати"
+msgstr "Вам не дозволено створювати нові групові чати."
 
 #: dist/converse-no-dependencies.js:50571
 msgid ""

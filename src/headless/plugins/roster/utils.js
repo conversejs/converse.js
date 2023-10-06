@@ -1,6 +1,7 @@
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
+import { Strophe } from 'strophe.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { STATUS_WEIGHTS } from "../../shared/constants";
@@ -240,4 +241,8 @@ export function getGroupsAutoCompleteList () {
     const { roster } = _converse;
     const groups = roster.reduce((groups, contact) => groups.concat(contact.get('groups')), []);
     return [...new Set(groups.filter(i => i))];
+}
+
+export function getJIDsAutoCompleteList () {
+    return [...new Set(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))];
 }

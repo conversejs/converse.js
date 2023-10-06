@@ -24,38 +24,6 @@ export default class AddContactModal extends BaseModal {
         return __('Add a Contact');
     }
 
-    afterRender () {
-        if (typeof api.settings.get('xhr_user_search_url') === 'string') {
-            this.initXHRAutoComplete();
-        } else {
-            this.initJIDAutoComplete();
-        }
-    }
-
-    initJIDAutoComplete () {
-        if (!api.settings.get('autocomplete_add_contact')) {
-            return;
-        }
-        const el = this.querySelector('.suggestion-box__jid').parentElement;
-        this.jid_auto_complete = new _converse.AutoComplete(el, {
-            'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
-            'filter': _converse.FILTER_STARTSWITH,
-            'list': [...new Set(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))]
-        });
-    }
-
-    initGroupAutoComplete () {
-        if (!api.settings.get('autocomplete_add_contact')) {
-            return;
-        }
-        const el = this.querySelector('.suggestion-box__jid').parentElement;
-        this.jid_auto_complete = new _converse.AutoComplete(el, {
-            'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
-            'filter': _converse.FILTER_STARTSWITH,
-            'list': [...new Set(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))]
-        });
-    }
-
     initXHRAutoComplete () {
         if (!api.settings.get('autocomplete_add_contact')) {
             return this.initXHRFetch();

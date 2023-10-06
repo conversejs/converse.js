@@ -14,6 +14,8 @@ import { html } from 'lit';
  *  Should the `focus` attribute be set on the input element?
  * @property { Function } getAutoCompleteList
  *  A function that returns the list of autocomplete suggestions
+ * @property { Function } data
+ *  A function that maps the returned matches into the correct format
  * @property { Array } list
  *  An array of suggestions, to be used instead of the `getAutoCompleteList` *  function
  * @property { Boolean } [auto_evaluate=true]
@@ -46,6 +48,7 @@ export default class AutoCompleteComponent extends CustomElement {
             'position': { type: String },
             'autofocus': { type: Boolean },
             'getAutoCompleteList': { type: Function },
+            'data': { type: Function },
             'list': { type: Array },
             'auto_evaluate': { type: Boolean },
             'auto_first': { type: Boolean },
@@ -54,6 +57,7 @@ export default class AutoCompleteComponent extends CustomElement {
             'min_chars': { type: Number },
             'name': { type: String },
             'placeholder': { type: String },
+            'value': { type: String },
             'triggers': { type: String },
             'required': { type: Boolean },
         };
@@ -61,6 +65,8 @@ export default class AutoCompleteComponent extends CustomElement {
 
     constructor () {
         super();
+        this.data = (a) => a;
+        this.value = '';
         this.position = 'above';
         this.auto_evaluate = true;
         this.auto_first = false;
@@ -86,6 +92,7 @@ export default class AutoCompleteComponent extends CustomElement {
                     @keydown=${this.onKeyDown}
                     @keyup=${this.onKeyUp}
                     class="form-control suggestion-box__input"
+                    value="${this.value}"
                     placeholder="${this.placeholder}"
                 />
                 <span
@@ -106,6 +113,7 @@ export default class AutoCompleteComponent extends CustomElement {
             'filter': this.filter == 'contains' ? FILTER_CONTAINS : FILTER_STARTSWITH,
             'include_triggers': [],
             'list': this.list ?? ((q) => this.getAutoCompleteList(q)),
+            'data': this.data,
             'match_current_word': true,
             'max_items': this.max_items,
             'min_chars': this.min_chars,

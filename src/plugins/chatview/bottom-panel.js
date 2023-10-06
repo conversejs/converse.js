@@ -1,51 +1,45 @@
 import './message-form.js';
-import debounce from 'lodash-es/debounce';
 import tplBottomPanel from './templates/bottom-panel.js';
-import ElementView from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless';
 import { clearMessages } from './utils.js';
-import { render } from 'lit';
 
 import './styles/chat-bottom-panel.scss';
 
 
-export default class ChatBottomPanel extends ElementView {
-    events = {
-        'click .send-button': 'sendButtonClicked',
-        'click .toggle-clear': 'clearMessages'
-    };
-
-    constructor () {
-        super();
-        this.debouncedRender = debounce(this.render, 100);
-    }
+export default class ChatBottomPanel extends CustomElement {
 
     async connectedCallback () {
         super.connectedCallback();
         await this.initialize();
-        this.render(); // don't call in initialize, since the MUCBottomPanel subclasses it
-                       // and we want to render after it has finished as wel.
+        // Don't call in initialize, since the MUCBottomPanel subclasses it
+        // and we want to render after it has finished as well.
+        this.requestUpdate();
     }
 
     async initialize () {
         this.model = await api.chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
-        this.listenTo(this.model, 'change:num_unread', this.debouncedRender)
+        this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
 
         this.addEventListener('focusin', ev => this.emitFocused(ev));
         this.addEventListener('focusout', ev => this.emitBlurred(ev));
+        this.addEventListener('click', ev => this.sendButtonClicked(ev));
     }
 
     render () {
-        render(tplBottomPanel({
+        if (!this.model) return '';
+        return tplBottomPanel({
             'model': this.model,
             'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
-        }), this);
+        });
     }
 
     sendButtonClicked (ev) {
-        this.querySelector('converse-message-form')?.onFormSubmitted(ev);
+        if (ev.delegateTarget?.dataset.action === 'sendMessage') {
+            this.querySelector('converse-message-form')?.onFormSubmitted(ev);
+        }
     }
 
     viewUnreadMessages (ev) {

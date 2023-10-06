@@ -6,12 +6,13 @@ import { getAutoCompleteListItem } from './utils.js';
 
 export default class MUCMessageForm extends MessageForm {
 
-    async connectedCallback () {
-        super.connectedCallback();
+    async initialize() {
+        super.initialize();
         await this.model.initialized;
+        this.initMentionAutoComplete();
     }
 
-    toHTML () {
+    render () {
         return tplMUCMessageForm(
             Object.assign(this.model.toJSON(), {
                 'hint_value': this.querySelector('.spoiler-hint')?.value,
@@ -26,12 +27,9 @@ export default class MUCMessageForm extends MessageForm {
             }));
     }
 
-    afterRender () {
+    shouldAutoComplete () {
         const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
-        const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
-        if (entered && can_edit) {
-            this.initMentionAutoComplete();
-        }
+        return entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
     }
 
     initMentionAutoComplete () {
@@ -56,15 +54,21 @@ export default class MUCMessageForm extends MessageForm {
         return this.model.getAllKnownNicknames().map(nick => ({ 'label': nick, 'value': `@${nick}` }));
     }
 
+    /**
+     * @param {Event} ev
+     */
     onKeyDown (ev) {
-        if (this.mention_auto_complete.onKeyDown(ev)) {
+        if (this.shouldAutoComplete() && this.mention_auto_complete.onKeyDown(ev)) {
             return;
         }
         super.onKeyDown(ev);
     }
 
+    /**
+     * @param {Event} ev
+     */
     onKeyUp (ev) {
-        this.mention_auto_complete.evaluate(ev);
+        if (this.shouldAutoComplete()) this.mention_auto_complete.evaluate(ev);
         super.onKeyUp(ev);
     }
 }

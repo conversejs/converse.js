@@ -1,5 +1,5 @@
 import tplMessageForm from './templates/message-form.js';
-import ElementView from '@converse/skeletor/src/element.js';
+import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 import { parseMessageForCommands } from './utils.js';
@@ -8,14 +8,13 @@ import { prefixMentions } from '@converse/headless/utils/index.js';
 const { u } = converse.env;
 
 
-export default class MessageForm extends ElementView {
+export default class MessageForm extends CustomElement {
 
-    async connectedCallback () {
-        super.connectedCallback();
+    async initialize () {
         this.model = _converse.chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
-        this.listenTo(this.model, 'change:composing_spoiler', () => this.render());
+        this.listenTo(this.model, 'change:composing_spoiler', () => this.requestUpdate());
 
         this.handleEmojiSelection = ({ detail }) => {
             if (this.model.get('jid') === detail.jid) {
@@ -23,7 +22,7 @@ export default class MessageForm extends ElementView {
             }
         }
         document.addEventListener("emojiSelected", this.handleEmojiSelection);
-        this.render();
+        this.requestUpdate();
     }
 
     disconnectedCallback () {
@@ -31,7 +30,7 @@ export default class MessageForm extends ElementView {
         document.removeEventListener("emojiSelected", this.handleEmojiSelection);
     }
 
-    toHTML () {
+    render () {
         return tplMessageForm(
             Object.assign(this.model.toJSON(), {
                 'onDrop': ev => this.onDrop(ev),

@@ -9,9 +9,13 @@ export class CustomElement extends LitElement {
         return this;
     }
 
+    initialize () {
+        return null;
+    }
+
     connectedCallback () {
         super.connectedCallback();
-        this.initialize?.();
+        return this.initialize();
     }
 
     disconnectedCallback () {

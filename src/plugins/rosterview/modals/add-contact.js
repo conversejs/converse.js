@@ -24,6 +24,11 @@ export default class AddContactModal extends BaseModal {
         return __('Add a Contact');
     }
 
+    afterRender () {
+        if (typeof api.settings.get('xhr_user_search_url') === 'string') {
+            this.initXHRAutoComplete();
+        }
+    }
     initXHRAutoComplete () {
         if (!api.settings.get('autocomplete_add_contact')) {
             return this.initXHRFetch();

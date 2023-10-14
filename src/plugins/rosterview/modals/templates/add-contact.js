@@ -39,20 +39,12 @@ export default (el) => {
 
                 <div class="form-group add-xmpp-contact__name">
                     <label class="clearfix" for="name">${i18n_nickname}:</label>
-                    ${api.settings.get('autocomplete_add_contact') && typeof api.settings.get('xhr_user_search_url') === 'string' ?
-                        html`<converse-autocomplete
-                            .list=${getJIDsAutoCompleteList()}
-                            .data=${(text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`}
-                            filter=${_converse.FILTER_STARTSWITH}
-                            value="${el.model.get('nickname') || ''}"
-                            placeholder="${i18n_contact_placeholder}"
-                            name="name"></converse-autocomplete>` :
-
-                        html`<input type="text" name="name"
-                            value="${el.model.get('nickname') || ''}"
-                            class="form-control"
-                            placeholder="${i18n_contact_placeholder}"/>`
-                    }
+                    <div class="suggestion-box suggestion-box__name">
+                        <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
+                        <input type="text" name="name" value="${el.model.get('nickname') || ''}"
+                            class="form-control suggestion-box__input"/>
+                        <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>
+                    </div>
                 </div>
                 <div class="form-group add-xmpp-contact__group">
                     <label class="clearfix" for="name">${i18n_group}:</label>

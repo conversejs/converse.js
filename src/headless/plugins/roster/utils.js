@@ -246,3 +246,32 @@ export function getGroupsAutoCompleteList () {
 export function getJIDsAutoCompleteList () {
     return [...new Set(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))];
 }
+
+
+/**
+ * @param {string} query
+ */
+export async function getNamesAutoCompleteList (query) {
+    const options = {
+        'mode': 'cors',
+        'headers': {
+            'Accept': 'text/json'
+        }
+    };
+    const url = `${api.settings.get('xhr_user_search_url')}q=${encodeURIComponent(query)}`;
+    let response;
+    try {
+        response = await fetch(url, options);
+    } catch (e) {
+        log.error(`Failed to fetch names for query "${query}"`);
+        log.error(e);
+        return [];
+    }
+
+    const json = response.json;
+    if (!Array.isArray(json)) {
+        log.error(`Invalid JSON returned"`);
+        return [];
+    }
+    return json.map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
+}

@@ -10,6 +10,7 @@ class BaseModal extends ElementView {
 
     constructor (options) {
         super();
+        this.model = null;
         this.className = 'modal';
         this.initialized = getOpenPromise();
 

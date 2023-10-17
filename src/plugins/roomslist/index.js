@@ -7,7 +7,7 @@
  */
 import "@converse/headless/plugins/muc/index.js";
 import './view.js';
-import { converse } from "@converse/headless";
+import { api, converse } from "@converse/headless";
 
 
 converse.plugins.add('converse-roomslist', {
@@ -19,5 +19,9 @@ converse.plugins.add('converse-roomslist', {
         "converse-bookmarks"
     ],
 
-    initialize () { }
+    initialize () {
+        api.settings.extend({
+            'muc_grouped_by_domain': false,
+        });
+    }
 });

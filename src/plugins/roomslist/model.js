@@ -10,6 +10,7 @@ class RoomsListModel extends Model {
             'muc_domain': api.settings.get('muc_domain'),
             'nick': _converse.getDefaultMUCNickname(),
             'toggle_state':  _converse.OPENED,
+            'collapsed_domains': [],
         };
     }
 

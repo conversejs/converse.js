@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-23 10:10+0200\n"
+"POT-Creation-Date: 2023-10-17 10:34+0200\n"
 "PO-Revision-Date: 2022-10-02 18:24+0000\n"
 "Last-Translator: Geert van der Meer <geert.v.d.meer@live.nl>\n"
 "Language-Team: Dutch (Belgium) <https://hosted.weblate.org/projects/"
@@ -19,90 +19,85 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.14.1\n"
 
-#: dist/converse-no-dependencies.js:29951
-msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
-"De verbinding is verbroken, wij proberen uw verbinding weer vast te stellen."
-
-#: dist/converse-no-dependencies.js:32315
-#: dist/converse-no-dependencies.js:32372
+#: dist/converse-no-dependencies.js:23324
+#: dist/converse-no-dependencies.js:23381
 msgid "An error occurred while connecting to the chat server."
 msgstr "Der is een fout opgetreden bij het verbinden met de server."
 
-#: dist/converse-no-dependencies.js:32379
+#: dist/converse-no-dependencies.js:23388
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
 "Er is een fout opgetreden met uw gebruikersnaam en/of uw paswoord. Probeer "
 "het nog eens opnieuw."
 
-#: dist/converse-no-dependencies.js:32388
+#: dist/converse-no-dependencies.js:23397
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr "Sorry, we konden geen verbinding maken met dezen XMPP-host: %1$s"
 
-#: dist/converse-no-dependencies.js:32390
+#: dist/converse-no-dependencies.js:23399
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "De XMPP-server bood geen ondersteund authenticatiemechanisme aan"
 
-#: dist/converse-no-dependencies.js:39538
-#: dist/converse-no-dependencies.js:51177
+#: dist/converse-no-dependencies.js:31805
+#: dist/converse-no-dependencies.js:45213
 #, javascript-format
 msgid "%1$s is typing"
 msgstr "%1$s is aan het typen"
 
-#: dist/converse-no-dependencies.js:39540
-#: dist/converse-no-dependencies.js:51179
+#: dist/converse-no-dependencies.js:31807
+#: dist/converse-no-dependencies.js:45215
 #, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s is gestopt met typen"
 
-#: dist/converse-no-dependencies.js:39542
-#: dist/converse-no-dependencies.js:39887
-#: dist/converse-no-dependencies.js:51181
+#: dist/converse-no-dependencies.js:31809
+#: dist/converse-no-dependencies.js:32198
+#: dist/converse-no-dependencies.js:45217
 #, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s is niet meer aanwezig"
 
-#: dist/converse-no-dependencies.js:39614
-#: dist/converse-no-dependencies.js:49055
+#: dist/converse-no-dependencies.js:31886
+#: dist/converse-no-dependencies.js:42842
 msgid "You're not allowed to retract your message."
 msgstr "Je mag je bericht niet intrekken."
 
-#: dist/converse-no-dependencies.js:39616
-#: dist/converse-no-dependencies.js:49059
+#: dist/converse-no-dependencies.js:31888
+#: dist/converse-no-dependencies.js:42846
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "Sorry, er is een fout opgetreden bij het intrekken van je bericht."
 
-#: dist/converse-no-dependencies.js:39621
+#: dist/converse-no-dependencies.js:31893
 msgid "You're not allowed to send a message."
 msgstr "Je hebt geen toelating, om berichten te verzenden."
 
-#: dist/converse-no-dependencies.js:39623
-#: dist/converse-no-dependencies.js:49068
+#: dist/converse-no-dependencies.js:31895
+#: dist/converse-no-dependencies.js:42855
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr "Sorry, er is een fout opgetreden bij het verzenden van uw bericht."
 
-#: dist/converse-no-dependencies.js:39885
+#: dist/converse-no-dependencies.js:32196
 #, javascript-format
 msgid "%1$s has gone offline"
 msgstr "%1$s is momenteel offline"
 
-#: dist/converse-no-dependencies.js:39889
+#: dist/converse-no-dependencies.js:32200
 #, javascript-format
 msgid "%1$s is busy"
 msgstr "%1$s is bezet"
 
-#: dist/converse-no-dependencies.js:39891
+#: dist/converse-no-dependencies.js:32202
 #, javascript-format
 msgid "%1$s is online"
 msgstr "%1$s is online"
 
-#: dist/converse-no-dependencies.js:40705
-#: dist/converse-no-dependencies.js:40724
+#: dist/converse-no-dependencies.js:33115
+#: dist/converse-no-dependencies.js:33134
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "Sorry, bestand upload word niet ondersteund door uwe server."
 
-#: dist/converse-no-dependencies.js:40745
+#: dist/converse-no-dependencies.js:33155
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
@@ -111,19 +106,19 @@ msgstr ""
 "De grootte van het bestand, %1$s, overschrijd het maximum toegelaten door uw "
 "server, %2$s."
 
-#: dist/converse-no-dependencies.js:41392
+#: dist/converse-no-dependencies.js:33989
 msgid "Undecryptable OMEMO message"
 msgstr "Niet ontsleutelbaar OMEMO-bericht"
 
-#: dist/converse-no-dependencies.js:41458
+#: dist/converse-no-dependencies.js:34062
 msgid "Sorry, could not determine upload URL."
 msgstr "Sorry, we konden de geüpload URL niet bepalen."
 
-#: dist/converse-no-dependencies.js:41477
+#: dist/converse-no-dependencies.js:34081
 msgid "Sorry, could not determine file upload URL."
 msgstr "Sorry, wij konden de bestand URL niet bepalen."
 
-#: dist/converse-no-dependencies.js:41540
+#: dist/converse-no-dependencies.js:34150
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
@@ -132,61 +127,61 @@ msgstr ""
 "Sorry, kon het bestand niet uploaden. De server geeft het volgende aan: "
 "‘%1$s’"
 
-#: dist/converse-no-dependencies.js:41542
+#: dist/converse-no-dependencies.js:34152
 msgid "Sorry, could not succesfully upload your file."
 msgstr "Sorry, wij kunnen het bestand niet uploaden."
 
-#: dist/converse-no-dependencies.js:46124
+#: dist/converse-no-dependencies.js:38700
 msgid "Smileys and emotions"
 msgstr "Smileys en emotiecons"
 
-#: dist/converse-no-dependencies.js:46125
+#: dist/converse-no-dependencies.js:38701
 msgid "People"
 msgstr "Personen"
 
-#: dist/converse-no-dependencies.js:46126
+#: dist/converse-no-dependencies.js:38702
 msgid "Activities"
 msgstr "Activiteiten"
 
-#: dist/converse-no-dependencies.js:46127
+#: dist/converse-no-dependencies.js:38703
 msgid "Travel"
 msgstr "Reis"
 
-#: dist/converse-no-dependencies.js:46128
+#: dist/converse-no-dependencies.js:38704
 msgid "Objects"
 msgstr "objecten"
 
-#: dist/converse-no-dependencies.js:46129
+#: dist/converse-no-dependencies.js:38705
 msgid "Animals and nature"
 msgstr "Dieren en natuur"
 
-#: dist/converse-no-dependencies.js:46130
+#: dist/converse-no-dependencies.js:38706
 msgid "Food and drink"
 msgstr "Eten en drinken"
 
-#: dist/converse-no-dependencies.js:46131
+#: dist/converse-no-dependencies.js:38707
 msgid "Symbols"
 msgstr "Symbolen"
 
-#: dist/converse-no-dependencies.js:46132
+#: dist/converse-no-dependencies.js:38708
 msgid "Flags"
 msgstr "Vlaggen"
 
-#: dist/converse-no-dependencies.js:46133
+#: dist/converse-no-dependencies.js:38709
 msgid "Stickers"
 msgstr "De Stickers"
 
-#: dist/converse-no-dependencies.js:47763
+#: dist/converse-no-dependencies.js:40605
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
 msgstr "Fout: time-out tijdens ophalen van %1s lijst voor MUC %2s"
 
-#: dist/converse-no-dependencies.js:47772
+#: dist/converse-no-dependencies.js:40614
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
 msgstr "Fout: niet toegestaan om op te halen %1s lijst voor MUC %2s"
 
-#: dist/converse-no-dependencies.js:49057
+#: dist/converse-no-dependencies.js:42844
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
@@ -194,45 +189,45 @@ msgstr ""
 "Uw bericht werd niet afgeleverd, omdat je niet aanwezig bent in het "
 "groepsgesprek."
 
-#: dist/converse-no-dependencies.js:49064
+#: dist/converse-no-dependencies.js:42851
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
 "Uw bericht werd niet' afgeleverd omdat' je geen toestemming hebt om "
 "berichten te verzenden in dit groepsgesprek."
 
-#: dist/converse-no-dependencies.js:49066
+#: dist/converse-no-dependencies.js:42853
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr ""
 "Uw bericht werd niet afgeleverd omdat je niet aanwezig bent in het "
 "groepsgesprek."
 
-#: dist/converse-no-dependencies.js:49384
+#: dist/converse-no-dependencies.js:43201
 msgid "A timeout happened while while trying to retract your message."
 msgstr "Er is een fout opgetreden bij het verwijderen van uw bericht."
 
-#: dist/converse-no-dependencies.js:50051
+#: dist/converse-no-dependencies.js:43957
 msgid "Sorry, an error happened while running the command."
 msgstr ""
 "Sorry, de is een fout opgetreden bij het opslaan van uw profielgegevens."
 
-#: dist/converse-no-dependencies.js:50051
-#: dist/converse-no-dependencies.js:108635
+#: dist/converse-no-dependencies.js:43957
+#: dist/converse-no-dependencies.js:112904
 msgid "Check your browser's developer console for details."
 msgstr "Controleer de ontwikkelaarsconsole van uw browser voor details."
 
-#: dist/converse-no-dependencies.js:50070
-#: dist/converse-no-dependencies.js:50088
+#: dist/converse-no-dependencies.js:43978
+#: dist/converse-no-dependencies.js:43996
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
 "Fout: kan geen gespreksdeelnemer niet vinden gebaseerd op uw argumenten"
 
-#: dist/converse-no-dependencies.js:50078
+#: dist/converse-no-dependencies.js:43986
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
 "Fout: meerdere groepsgespreksdeelnemers gevonden gebaseerd op uw argumenten"
 
-#: dist/converse-no-dependencies.js:50100
+#: dist/converse-no-dependencies.js:44010
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
@@ -241,33 +236,33 @@ msgstr ""
 "Fout: den opdracht ‘%1$s’ aanvaard twee parameters, den bijnaam van de "
 "gebruiker en optioneel een reden."
 
-#: dist/converse-no-dependencies.js:50155
+#: dist/converse-no-dependencies.js:44069
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
 msgstr "Geen toelating: ge hebt niet de benodigde affiliatie voor dit te doen."
 
-#: dist/converse-no-dependencies.js:50182
+#: dist/converse-no-dependencies.js:44098
 msgid "Forbidden: you do not have the necessary role in order to do that."
 msgstr "Geen toelating: ge hebt niet de benodigde rol voor dit te doen."
 
-#: dist/converse-no-dependencies.js:50260
+#: dist/converse-no-dependencies.js:44187
 msgid "Error: couldn't register new nickname in members only room"
 msgstr ""
 "Fout: kan nieuwe bijnaam niet registreren in de kamer voor alleen leden"
 
-#: dist/converse-no-dependencies.js:50533
+#: dist/converse-no-dependencies.js:44495
 msgid "You're not allowed to register yourself in this groupchat."
 msgstr ""
 "Ge hebt geen toelating voor uw eigen in dit groepsgesprek te registreren."
 
-#: dist/converse-no-dependencies.js:50535
+#: dist/converse-no-dependencies.js:44497
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
 "Ge hebt geen toelating voor uw eigen in dit groepsgesprek te registreren, "
 "omdat het enkel toegankelijk is voor leden."
 
-#: dist/converse-no-dependencies.js:50571
+#: dist/converse-no-dependencies.js:44533
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
@@ -275,169 +270,169 @@ msgstr ""
 "Kan uwen bijnaam niet registreren in dit groepsgesprek met dat het geen "
 "ondersteuning biedt voor registratie."
 
-#: dist/converse-no-dependencies.js:50573
+#: dist/converse-no-dependencies.js:44535
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
 "Kan uwen bijnaam niet registreren in dit groepsgesprek, ongeldige gegevens "
 "ingevoerd."
 
-#: dist/converse-no-dependencies.js:50815
+#: dist/converse-no-dependencies.js:44807
 #, javascript-format
 msgid "Topic set by %1$s"
 msgstr "Onderwerp ingesteld door %1$s"
 
-#: dist/converse-no-dependencies.js:50815
+#: dist/converse-no-dependencies.js:44807
 #, javascript-format
 msgid "Topic cleared by %1$s"
 msgstr "Onderwerp gewist door %1$s"
 
-#: dist/converse-no-dependencies.js:51183
+#: dist/converse-no-dependencies.js:45219
 #, javascript-format
 msgid "%1$s has entered the groupchat"
 msgstr "%1$s neemt deel aan het groepsgesprek"
 
-#: dist/converse-no-dependencies.js:51185
+#: dist/converse-no-dependencies.js:45221
 #, javascript-format
 msgid "%1$s has left the groupchat"
 msgstr "%1$s heeft het groepsgesprek verlaten"
 
-#: dist/converse-no-dependencies.js:51187
+#: dist/converse-no-dependencies.js:45223
 #, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "%1$s is nu ne moderator"
 
-#: dist/converse-no-dependencies.js:51189
+#: dist/converse-no-dependencies.js:45225
 #, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "%1$s is gene moderator meer"
 
-#: dist/converse-no-dependencies.js:51191
+#: dist/converse-no-dependencies.js:45227
 #, javascript-format
 msgid "%1$s has been given a voice"
 msgstr "%1$s heeft een stem gekregen"
 
-#: dist/converse-no-dependencies.js:51193
+#: dist/converse-no-dependencies.js:45229
 #, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s is gedempt"
 
-#: dist/converse-no-dependencies.js:51201
+#: dist/converse-no-dependencies.js:45237
 #, javascript-format
 msgid "%1$s and %2$s"
 msgstr "%1$s en %2$s"
 
-#: dist/converse-no-dependencies.js:51204
+#: dist/converse-no-dependencies.js:45240
 #, javascript-format
 msgid "%1$s are typing"
 msgstr "%1$s is aan het typen"
 
-#: dist/converse-no-dependencies.js:51206
+#: dist/converse-no-dependencies.js:45242
 #, javascript-format
 msgid "%1$s have stopped typing"
 msgstr "%1$s is gestopt met typen"
 
-#: dist/converse-no-dependencies.js:51208
+#: dist/converse-no-dependencies.js:45244
 #, javascript-format
 msgid "%1$s have gone away"
 msgstr "%1$s is niet meet aanwezig"
 
-#: dist/converse-no-dependencies.js:51210
+#: dist/converse-no-dependencies.js:45246
 #, javascript-format
 msgid "%1$s have entered the groupchat"
 msgstr "%1$s neemt deel aan het groep Chat"
 
-#: dist/converse-no-dependencies.js:51212
+#: dist/converse-no-dependencies.js:45248
 #, javascript-format
 msgid "%1$s have left the groupchat"
 msgstr "%1$s heeft het groep Chat verlaten"
 
-#: dist/converse-no-dependencies.js:51214
+#: dist/converse-no-dependencies.js:45250
 #, javascript-format
 msgid "%1$s are now moderators"
 msgstr "%1$s is nu een moderator"
 
-#: dist/converse-no-dependencies.js:51216
+#: dist/converse-no-dependencies.js:45252
 #, javascript-format
 msgid "%1$s are no longer moderators"
 msgstr "%1$s is gene moderator meer"
 
-#: dist/converse-no-dependencies.js:51218
+#: dist/converse-no-dependencies.js:45254
 #, javascript-format
 msgid "%1$s have been given voices"
 msgstr "%1$s heeft een stem gekregen"
 
-#: dist/converse-no-dependencies.js:51220
+#: dist/converse-no-dependencies.js:45256
 #, javascript-format
 msgid "%1$s have been muted"
 msgstr "%1$s is gedempt"
 
-#: dist/converse-no-dependencies.js:51519
+#: dist/converse-no-dependencies.js:45582
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
 msgstr "%1$s is verbannen door %2$s"
 
-#: dist/converse-no-dependencies.js:51519
+#: dist/converse-no-dependencies.js:45582
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s is verbannen"
 
-#: dist/converse-no-dependencies.js:51521
+#: dist/converse-no-dependencies.js:45584
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "Den bijnaam van %1$s is gewijzigd"
 
-#: dist/converse-no-dependencies.js:51523
+#: dist/converse-no-dependencies.js:45586
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
 msgstr "%1$s is verbannen door %2$s"
 
-#: dist/converse-no-dependencies.js:51523
+#: dist/converse-no-dependencies.js:45586
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s is weggeschopt"
 
-#: dist/converse-no-dependencies.js:51525
+#: dist/converse-no-dependencies.js:45588
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s is verwijderd omwille van een wijziging in lidmaatschap"
 
-#: dist/converse-no-dependencies.js:51527
+#: dist/converse-no-dependencies.js:45590
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s is verwijderd omwille van geen lid te zijn"
 
-#: dist/converse-no-dependencies.js:51545
+#: dist/converse-no-dependencies.js:45610
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "%1$s is ge(n)en beheerder meer van dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:51550
+#: dist/converse-no-dependencies.js:45615
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "%1$s is ge(n)en eigenaar meer van dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:51555
+#: dist/converse-no-dependencies.js:45620
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "%1$s is niet meer verbannen uit dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:51561
+#: dist/converse-no-dependencies.js:45626
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
 msgstr "%1$s is geen lid meer van dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:51567
+#: dist/converse-no-dependencies.js:45632
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
 msgstr "%1$s is nu lid van dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:51573
+#: dist/converse-no-dependencies.js:45638
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
 msgstr "%1$s is nu %2$s van dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:51695
+#: dist/converse-no-dependencies.js:45773
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
@@ -445,113 +440,113 @@ msgstr ""
 "Den bijnaam die ge gekozen hebd is gereserveerd of momenteel in gebruik, "
 "kiesd der nen anderen."
 
-#: dist/converse-no-dependencies.js:51720
+#: dist/converse-no-dependencies.js:45801
 msgid "Password incorrect"
 msgstr "Verkeerd wachtwoord"
 
-#: dist/converse-no-dependencies.js:51727
+#: dist/converse-no-dependencies.js:45808
 msgid "You are not on the member list of this groupchat."
 msgstr "Ge staat niet op den deelnemerslijst van dit groepsgesprek."
 
-#: dist/converse-no-dependencies.js:51734
+#: dist/converse-no-dependencies.js:45815
 msgid "You are not allowed to create new groupchats."
 msgstr "Ge hebt geen toelating voor nieuwe groepsgesprekken aan te maken."
 
-#: dist/converse-no-dependencies.js:51737
+#: dist/converse-no-dependencies.js:45818
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Uwen bijnaam stemt niet overeen met het beleid van dit groepsgesprek."
 
-#: dist/converse-no-dependencies.js:51752
+#: dist/converse-no-dependencies.js:45833
 msgid "This groupchat does not (yet) exist."
 msgstr "Dit groepsgesprek bestaat (nog) niet."
 
-#: dist/converse-no-dependencies.js:51755
+#: dist/converse-no-dependencies.js:45836
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "Dit groepsgesprek heeft het maximaal aantal gebruikers bereikt."
 
-#: dist/converse-no-dependencies.js:51758
+#: dist/converse-no-dependencies.js:45839
 msgid "Remote server not found"
 msgstr "Server niet gevonden"
 
-#: dist/converse-no-dependencies.js:51761
+#: dist/converse-no-dependencies.js:45842
 msgid "You're not allowed to enter this groupchat"
 msgstr "Je hebt geen toelating in dit groepsgesprek deel te nemen"
 
-#: dist/converse-no-dependencies.js:51764
+#: dist/converse-no-dependencies.js:45845
 msgid "An error happened while trying to enter this groupchat"
 msgstr "Er is een fout opgetreden bij het betreden van deze groep chat"
 
-#: dist/converse-no-dependencies.js:54356
+#: dist/converse-no-dependencies.js:47713
 msgid "This groupchat is not anonymous"
 msgstr "Dit groepsgesprek is nie anoniem"
 
-#: dist/converse-no-dependencies.js:54357
+#: dist/converse-no-dependencies.js:47714
 msgid "This groupchat now shows unavailable members"
 msgstr "Dit groepsgesprek toond nu nie-beschikbare leden"
 
-#: dist/converse-no-dependencies.js:54358
+#: dist/converse-no-dependencies.js:47715
 msgid "This groupchat does not show unavailable members"
 msgstr "Dit groepsgesprek toond geen nie-beschikbare leden"
 
-#: dist/converse-no-dependencies.js:54359
+#: dist/converse-no-dependencies.js:47716
 msgid "The groupchat configuration has changed"
 msgstr "De configuratie van het groepsgesprek is gewijzigd"
 
-#: dist/converse-no-dependencies.js:54360
+#: dist/converse-no-dependencies.js:47717
 msgid "Groupchat logging is now enabled"
 msgstr "Logboekregistratie voor groep chat is nu ingeschakeld"
 
-#: dist/converse-no-dependencies.js:54361
+#: dist/converse-no-dependencies.js:47718
 msgid "Groupchat logging is now disabled"
 msgstr "Logboekregistratie voor groep chat is uitgeschakeld"
 
-#: dist/converse-no-dependencies.js:54362
+#: dist/converse-no-dependencies.js:47719
 msgid "This groupchat is now no longer anonymous"
 msgstr "Dit groepsgesprek is niet meer anoniem"
 
-#: dist/converse-no-dependencies.js:54363
+#: dist/converse-no-dependencies.js:47720
 msgid "This groupchat is now semi-anonymous"
 msgstr "Dit groepsgesprek is nu semi-anoniem"
 
-#: dist/converse-no-dependencies.js:54364
+#: dist/converse-no-dependencies.js:47721
 msgid "This groupchat is now fully-anonymous"
 msgstr "Dit groepsgesprek is nu volledig anoniem"
 
-#: dist/converse-no-dependencies.js:54365
+#: dist/converse-no-dependencies.js:47722
 msgid "A new groupchat has been created"
 msgstr "Een nieuw groepsgesprek is aangemaakt"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:54369
+#: dist/converse-no-dependencies.js:47726
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "Uwen bijnaam is automatisch ingesteld op %1$s"
 
-#: dist/converse-no-dependencies.js:54370
+#: dist/converse-no-dependencies.js:47727
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Uwen bijnaam is gewijzigd naar %1$s"
 
-#: dist/converse-no-dependencies.js:54373
+#: dist/converse-no-dependencies.js:47730
 msgid "You have been banned from this groupchat"
 msgstr "Ge zijt uit dit groepsgesprek verbannen"
 
-#: dist/converse-no-dependencies.js:54374
+#: dist/converse-no-dependencies.js:47731
 msgid "You have exited this groupchat due to a technical problem"
 msgstr "Je hebt deze groep chat verlaten vanwege een technisch probleem"
 
-#: dist/converse-no-dependencies.js:54375
+#: dist/converse-no-dependencies.js:47732
 msgid "You have been kicked from this groupchat"
 msgstr "Ge zijt uit dit groepsgesprek geschopt"
 
-#: dist/converse-no-dependencies.js:54376
+#: dist/converse-no-dependencies.js:47733
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr ""
 "Ge zijt uit dit groepsgesprek verwijderd omwille van een wijziging in "
 "lidmaatschap"
 
-#: dist/converse-no-dependencies.js:54377
+#: dist/converse-no-dependencies.js:47734
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
@@ -559,7 +554,7 @@ msgstr ""
 "Ge zijt uit dit groepsgesprek verwijderd omdat het nu enkel toegankelijk is "
 "voor leden, en ge geen lid zijt"
 
-#: dist/converse-no-dependencies.js:54378
+#: dist/converse-no-dependencies.js:47735
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
@@ -567,30 +562,30 @@ msgstr ""
 "Ge zijt uit dit groepsgesprek verwijderd omdat de server hosting is "
 "uitgeschakeld"
 
-#: dist/converse-no-dependencies.js:54916
-#: dist/converse-no-dependencies.js:82896
-#: dist/converse-no-dependencies.js:82900
-#: dist/converse-no-dependencies.js:82987
-#: dist/converse-no-dependencies.js:90312
-#: dist/converse-no-dependencies.js:97287
-#: dist/converse-no-dependencies.js:108636
-#: dist/converse-no-dependencies.js:117483
-#: dist/converse-no-dependencies.js:117485
-#: dist/converse-no-dependencies.js:118694
-#: dist/converse-no-dependencies.js:120085
-#: dist/converse-no-dependencies.js:129381
+#: dist/converse-no-dependencies.js:48531
+#: dist/converse-no-dependencies.js:87624
+#: dist/converse-no-dependencies.js:87628
+#: dist/converse-no-dependencies.js:87715
+#: dist/converse-no-dependencies.js:94502
+#: dist/converse-no-dependencies.js:101480
+#: dist/converse-no-dependencies.js:112905
+#: dist/converse-no-dependencies.js:121832
+#: dist/converse-no-dependencies.js:121834
+#: dist/converse-no-dependencies.js:123045
+#: dist/converse-no-dependencies.js:124435
+#: dist/converse-no-dependencies.js:134791
 msgid "Error"
 msgstr "Fout"
 
-#: dist/converse-no-dependencies.js:54916
+#: dist/converse-no-dependencies.js:48531
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "Sorry, der ging iets mis bij het opslaan van uwen bladwijzer."
 
-#: dist/converse-no-dependencies.js:54971
+#: dist/converse-no-dependencies.js:48602
 msgid "Timeout Error"
 msgstr "Timeout fout"
 
-#: dist/converse-no-dependencies.js:54971
+#: dist/converse-no-dependencies.js:48602
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
@@ -598,152 +593,146 @@ msgstr ""
 "De server heeft uw bladwijzers niet binnen de toegestane tijd geretourneerd. "
 "U kunt de pagina opnieuw laden om ze opnieuw op te vragen."
 
-#: dist/converse-no-dependencies.js:58367
+#: dist/converse-no-dependencies.js:62058
 #, fuzzy
 msgid "An error occurred while trying to fetch the command form"
 msgstr ""
 "Sorry, er is een fout opgetreden bij het verzenden van het "
 "configuratieformulier."
 
-#: dist/converse-no-dependencies.js:58409
+#: dist/converse-no-dependencies.js:62100
 msgid "A timeout occurred"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:60849
+#: dist/converse-no-dependencies.js:64561
 msgid "Timeout while trying to fetch archived messages."
 msgstr "Er is een fout opgetreden bij het verwijderen van de berichten."
 
-#: dist/converse-no-dependencies.js:60862
+#: dist/converse-no-dependencies.js:64574
 msgid "An error occurred while querying for archived messages."
 msgstr "Er is een fout opgetreden bij het verwijderen van de berichten."
 
-#: dist/converse-no-dependencies.js:65825
+#: dist/converse-no-dependencies.js:69995
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr "Sorry, der trad een fout op bij het toevoegen van %1$s als contact."
 
-#: dist/converse-no-dependencies.js:66072
+#: dist/converse-no-dependencies.js:70268
 msgid "This client does not allow presence subscriptions"
 msgstr "Deze cliënt bied geen ondersteuning voor aanwezigheidsabonnementen"
 
-#: dist/converse-no-dependencies.js:66734
+#: dist/converse-no-dependencies.js:71488
 msgid "My contacts"
 msgstr "Mijn contacten"
 
-#: dist/converse-no-dependencies.js:66735
+#: dist/converse-no-dependencies.js:71489
 msgid "Pending contacts"
 msgstr "Contacten in afwachting"
 
-#: dist/converse-no-dependencies.js:66736
+#: dist/converse-no-dependencies.js:71490
 msgid "Contact requests"
 msgstr "Contactverzoeken"
 
-#: dist/converse-no-dependencies.js:66737
+#: dist/converse-no-dependencies.js:71491
 msgid "Ungrouped"
 msgstr "Ongegroepeerd"
 
-#: dist/converse-no-dependencies.js:66738
-#: dist/converse-no-dependencies.js:91530
+#: dist/converse-no-dependencies.js:71492
+#: dist/converse-no-dependencies.js:95725
 msgid "New messages"
 msgstr "Nieuwe Berichten"
 
-#. harmony default export
-#: dist/converse-no-dependencies.js:69836
-#, javascript-format
-msgid "Download file \"%1$s\""
-msgstr "Bestand ‘%1$s’ downloaden"
-
-#: dist/converse-no-dependencies.js:70777
-#: dist/converse-no-dependencies.js:70778
-#: dist/converse-no-dependencies.js:96031
-#: dist/converse-no-dependencies.js:102358
+#: dist/converse-no-dependencies.js:74607
+#: dist/converse-no-dependencies.js:74608
+#: dist/converse-no-dependencies.js:100225
+#: dist/converse-no-dependencies.js:106645
 msgid "Close"
 msgstr "Sluiten"
 
-#: dist/converse-no-dependencies.js:71957
+#: dist/converse-no-dependencies.js:75886
 msgid "OK"
 msgstr "Ok"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:71957
-#: dist/converse-no-dependencies.js:74184
-#: dist/converse-no-dependencies.js:108070
-#: dist/converse-no-dependencies.js:124132
+#: dist/converse-no-dependencies.js:75886
+#: dist/converse-no-dependencies.js:78128
+#: dist/converse-no-dependencies.js:112340
+#: dist/converse-no-dependencies.js:129227
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: dist/converse-no-dependencies.js:74178
+#: dist/converse-no-dependencies.js:78122
 msgid "Execute"
 msgstr "Uitvoeren"
 
-#: dist/converse-no-dependencies.js:74179
+#: dist/converse-no-dependencies.js:78123
 msgid "Previous"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74180
+#: dist/converse-no-dependencies.js:78124
 msgid "Next"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74181
+#: dist/converse-no-dependencies.js:78125
 msgid "Complete"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:76835
+#: dist/converse-no-dependencies.js:80786
 #, fuzzy
 msgid "Add to Contacts"
 msgstr "Voeg een contact toe"
 
-#: dist/converse-no-dependencies.js:76845
-#: dist/converse-no-dependencies.js:90215
-#: dist/converse-no-dependencies.js:106064
-#: dist/converse-no-dependencies.js:111025
-#: dist/converse-no-dependencies.js:114846
-#: dist/converse-no-dependencies.js:125799
+#: dist/converse-no-dependencies.js:80796
+#: dist/converse-no-dependencies.js:94406
+#: dist/converse-no-dependencies.js:110355
+#: dist/converse-no-dependencies.js:115294
+#: dist/converse-no-dependencies.js:119242
+#: dist/converse-no-dependencies.js:131008
 msgid "Nickname"
 msgstr "Bijnaam"
 
-#: dist/converse-no-dependencies.js:76845
-#: dist/converse-no-dependencies.js:78912
-#: dist/converse-no-dependencies.js:90212
-#: dist/converse-no-dependencies.js:99529
-#: dist/converse-no-dependencies.js:109733
-#: dist/converse-no-dependencies.js:114845
-#: dist/converse-no-dependencies.js:127685
+#: dist/converse-no-dependencies.js:80796
+#: dist/converse-no-dependencies.js:82862
+#: dist/converse-no-dependencies.js:94403
+#: dist/converse-no-dependencies.js:103708
+#: dist/converse-no-dependencies.js:114002
+#: dist/converse-no-dependencies.js:119241
+#: dist/converse-no-dependencies.js:132869
 msgid "XMPP Address"
 msgstr "XMPP-adres"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:76845
-#: dist/converse-no-dependencies.js:77137
+#: dist/converse-no-dependencies.js:80796
+#: dist/converse-no-dependencies.js:81088
 msgid "Affiliation"
 msgstr "Verbondenheid"
 
-#: dist/converse-no-dependencies.js:76847
-#: dist/converse-no-dependencies.js:77141
-#: dist/converse-no-dependencies.js:90217
-#: dist/converse-no-dependencies.js:114847
+#: dist/converse-no-dependencies.js:80798
+#: dist/converse-no-dependencies.js:81092
+#: dist/converse-no-dependencies.js:94408
+#: dist/converse-no-dependencies.js:119243
 msgid "Role"
 msgstr "Rol"
 
-#: dist/converse-no-dependencies.js:76849
+#: dist/converse-no-dependencies.js:80800
 msgid "Hats"
 msgstr "hoeden"
 
-#: dist/converse-no-dependencies.js:76849
+#: dist/converse-no-dependencies.js:80800
 msgid "Occupant Id"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:77002
-#: dist/converse-no-dependencies.js:77666
+#: dist/converse-no-dependencies.js:80953
+#: dist/converse-no-dependencies.js:81617
 msgid "Affiliation changed"
 msgstr "Verbondenheid veranderd"
 
-#: dist/converse-no-dependencies.js:77005
+#: dist/converse-no-dependencies.js:80956
 #, fuzzy
 msgid "role changed"
 msgstr "Rol veranderd"
 
-#: dist/converse-no-dependencies.js:77099
+#: dist/converse-no-dependencies.js:81050
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
@@ -751,17 +740,17 @@ msgstr ""
 "Moderators zijn bevoorrechte gebruikers die de rollen van andere gebruikers "
 "kunnen wijzigen (behalve die met beheerders- of eigenaarsaffiliaties."
 
-#: dist/converse-no-dependencies.js:77101
+#: dist/converse-no-dependencies.js:81052
 msgid "The default role, implies that you can read and write messages."
 msgstr "De standaardrol houdt in dat u berichten kunt lezen en schrijven."
 
-#: dist/converse-no-dependencies.js:77103
+#: dist/converse-no-dependencies.js:81054
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
 "Bezoekers mogen geen berichten schrijven in een gemodereerde multi-user chat."
 
-#: dist/converse-no-dependencies.js:77108
+#: dist/converse-no-dependencies.js:81059
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
@@ -769,7 +758,7 @@ msgstr ""
 "Eigenaar is de hoogste affiliatie. Eigenaren kunnen de rollen en voorkeuren "
 "van alle andere gebruikers wijzigen."
 
-#: dist/converse-no-dependencies.js:77110
+#: dist/converse-no-dependencies.js:81061
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
@@ -777,29 +766,29 @@ msgstr ""
 "Admin is de 2e hoogste aansluiting. Beheerders kunnen de rollen en "
 "voorkeuren van alle andere gebruikers wijzigen, behalve eigenaren."
 
-#: dist/converse-no-dependencies.js:77112
+#: dist/converse-no-dependencies.js:81063
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
 "Gebruiker verbannen door diens affiliatie te veranderen naar verschoppeling "
 "\"outcast\"."
 
-#: dist/converse-no-dependencies.js:77138
+#: dist/converse-no-dependencies.js:81089
 msgid "No users with that affiliation found."
 msgstr "Geen gebruikers met die aansluiting gevonden."
 
-#: dist/converse-no-dependencies.js:77139
+#: dist/converse-no-dependencies.js:81090
 msgid "No users with that role found."
 msgstr "Geen gebruikers met deze rol gevonden."
 
-#: dist/converse-no-dependencies.js:77140
+#: dist/converse-no-dependencies.js:81091
 msgid "Type here to filter the search results"
 msgstr "Typ hier om de zoekresultaten te filteren"
 
-#: dist/converse-no-dependencies.js:77142
+#: dist/converse-no-dependencies.js:81093
 msgid "Show users"
 msgstr "Gebruikers tonen"
 
-#: dist/converse-no-dependencies.js:77143
+#: dist/converse-no-dependencies.js:81094
 msgid ""
 "Roles are assigned to users to grant or deny them certain abilities in a "
 "multi-user chat. They're assigned either explicitly or implicitly as part of "
@@ -812,7 +801,7 @@ msgstr ""
 "die niet het gevolg is van een affiliatie, is alleen geldig voor de duur van "
 "de sessie van de gebruiker."
 
-#: dist/converse-no-dependencies.js:77144
+#: dist/converse-no-dependencies.js:81095
 msgid ""
 "An affiliation is a long-lived entitlement which typically implies a certain "
 "role and which grants privileges and responsibilities. For example admins "
@@ -822,21 +811,21 @@ msgstr ""
 "inhoudt en dat privileges en verantwoordelijkheden verleent. Beheerders en "
 "eigenaren hebben bijvoorbeeld automatisch de rol van moderator."
 
-#: dist/converse-no-dependencies.js:77671
+#: dist/converse-no-dependencies.js:81622
 msgid "Role changed"
 msgstr "Rol veranderd"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:78123
+#: dist/converse-no-dependencies.js:82074
 msgid "Moderator Tools"
 msgstr "Moderator instellingen"
 
-#: dist/converse-no-dependencies.js:78546
+#: dist/converse-no-dependencies.js:82496
 #, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s heeft u uitgenodigd in het groepsgesprek ‘%2$s’"
 
-#: dist/converse-no-dependencies.js:78548
+#: dist/converse-no-dependencies.js:82498
 #, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
@@ -845,46 +834,46 @@ msgstr ""
 "%1$s heeft u uitgenodigd in het groepsgesprek ‘%2$s’ en gaf volgende reden: "
 "“%3$s”"
 
-#: dist/converse-no-dependencies.js:78565
+#: dist/converse-no-dependencies.js:82515
 msgid "Are you sure you want to destroy this groupchat?"
 msgstr "ben je zeker om deze groepchat te verwijderen?"
 
-#: dist/converse-no-dependencies.js:78568
+#: dist/converse-no-dependencies.js:82518
 msgid "Please enter the XMPP address of this groupchat to confirm"
 msgstr "Voer de XMPP-leverancier in waarbij da’ ge u wild registreren"
 
-#: dist/converse-no-dependencies.js:78570
-#: dist/converse-no-dependencies.js:127681
+#: dist/converse-no-dependencies.js:82520
+#: dist/converse-no-dependencies.js:132866
 msgid "name@example.org"
 msgstr "gebruiker@voorbeeld.be"
 
-#: dist/converse-no-dependencies.js:78574
+#: dist/converse-no-dependencies.js:82524
 msgid "Optional reason for destroying this groupchat"
 msgstr "Geef een reden waarom ge de groepchat wil verwijderen"
 
-#: dist/converse-no-dependencies.js:78575
-#: dist/converse-no-dependencies.js:104634
-#: dist/converse-no-dependencies.js:105224
+#: dist/converse-no-dependencies.js:82525
+#: dist/converse-no-dependencies.js:108920
+#: dist/converse-no-dependencies.js:109509
 msgid "Reason"
 msgstr "Reden"
 
-#: dist/converse-no-dependencies.js:78578
+#: dist/converse-no-dependencies.js:82528
 msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr "Optioneel XMPP-adres voor een nieuwe groep chat die deze vervangt"
 
-#: dist/converse-no-dependencies.js:78579
+#: dist/converse-no-dependencies.js:82529
 msgid "replacement@example.org"
 msgstr "gebruiker@voorbeeld.be"
 
-#: dist/converse-no-dependencies.js:78583
-#: dist/converse-no-dependencies.js:82857
-#: dist/converse-no-dependencies.js:82933
-#: dist/converse-no-dependencies.js:82961
-#: dist/converse-no-dependencies.js:111102
+#: dist/converse-no-dependencies.js:82533
+#: dist/converse-no-dependencies.js:87585
+#: dist/converse-no-dependencies.js:87661
+#: dist/converse-no-dependencies.js:87689
+#: dist/converse-no-dependencies.js:115371
 msgid "Confirm"
 msgstr "Bevestigen"
 
-#: dist/converse-no-dependencies.js:78741
+#: dist/converse-no-dependencies.js:82691
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
@@ -893,21 +882,21 @@ msgstr ""
 "verlaten."
 
 #. e.g. Your nickname is "coolguy69"
-#: dist/converse-no-dependencies.js:78847
+#: dist/converse-no-dependencies.js:82797
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
 msgstr "Uwen bijnaam is \"%1$s\""
 
-#: dist/converse-no-dependencies.js:78865
+#: dist/converse-no-dependencies.js:82815
 msgid "Error: invalid number of arguments"
 msgstr "Fout: ongeldig aantal argumenten"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:78908
+#: dist/converse-no-dependencies.js:82858
 msgid "On which entity do you want to run commands?"
 msgstr "Op welke entiteit wilt u opdrachten uitvoeren?"
 
-#: dist/converse-no-dependencies.js:78909
+#: dist/converse-no-dependencies.js:82859
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
@@ -915,29 +904,35 @@ msgstr ""
 "Bepaalde XMPP-services en -entiteiten stellen bevoorrechte gebruikers in "
 "staat ad-hoc opdrachten op hen uit te voeren."
 
-#: dist/converse-no-dependencies.js:78910
+#: dist/converse-no-dependencies.js:82860
 msgid "Commands found"
 msgstr "Reacties gevonden"
 
-#: dist/converse-no-dependencies.js:78911
+#: dist/converse-no-dependencies.js:82861
 msgid "List available commands"
 msgstr "Lijst beschikbare opdrachten"
 
-#: dist/converse-no-dependencies.js:78913
+#: dist/converse-no-dependencies.js:82863
 msgid "No commands found"
 msgstr "Geen reacties gevonden"
 
-#: dist/converse-no-dependencies.js:79441
+#. harmony default export
+#: dist/converse-no-dependencies.js:82899
+#, javascript-format
+msgid "Download file \"%1$s\""
+msgstr "Bestand ‘%1$s’ downloaden"
+
+#: dist/converse-no-dependencies.js:84234
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr ""
 "Sorry, er is een fout opgetreden bij het zoeken naar reacties voor die "
 "entiteit."
 
-#: dist/converse-no-dependencies.js:79450
+#: dist/converse-no-dependencies.js:84243
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:79557
+#: dist/converse-no-dependencies.js:84350
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
@@ -945,17 +940,17 @@ msgstr ""
 "Sorry, der is een fout opgetreden bij het uitvoeren van de opdracht. "
 "Controleert den ontwikkelaarsconsole van uwen browser voor details"
 
-#: dist/converse-no-dependencies.js:79561
+#: dist/converse-no-dependencies.js:84354
 #, fuzzy
 msgid "Executing"
 msgstr "Uitvoeren"
 
-#: dist/converse-no-dependencies.js:79568
-#: dist/converse-no-dependencies.js:79573
+#: dist/converse-no-dependencies.js:84361
+#: dist/converse-no-dependencies.js:84366
 msgid "Completed"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:79614
+#: dist/converse-no-dependencies.js:84407
 #, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
@@ -964,87 +959,87 @@ msgstr ""
 "Sorry, der is een fout opgetreden bij het uitvoeren van de opdracht. "
 "Controleert den ontwikkelaarsconsole van uwen browser voor details"
 
-#: dist/converse-no-dependencies.js:79621
+#: dist/converse-no-dependencies.js:84414
 msgid "Error: unexpected result"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:80123
+#: dist/converse-no-dependencies.js:84850
 msgid "Bookmark this groupchat"
 msgstr "Gesprek toevoegen aan bladwijzers"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:80124
-#: dist/converse-no-dependencies.js:81320
-#: dist/converse-no-dependencies.js:126565
+#: dist/converse-no-dependencies.js:84851
+#: dist/converse-no-dependencies.js:86049
+#: dist/converse-no-dependencies.js:131749
 msgid "Bookmark"
 msgstr "Bladwijzers"
 
-#: dist/converse-no-dependencies.js:80156
+#: dist/converse-no-dependencies.js:84883
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Zijt ge zeker dat ge den bladwijzer ‘%1$s’ wild verwijderen?"
 
-#: dist/converse-no-dependencies.js:80206
+#: dist/converse-no-dependencies.js:84935
 msgid "Unbookmark this groupchat"
 msgstr "Bladwijzer voor dit gesprek verwijderen"
 
-#: dist/converse-no-dependencies.js:80207
-#: dist/converse-no-dependencies.js:126172
-#: dist/converse-no-dependencies.js:126579
+#: dist/converse-no-dependencies.js:84936
+#: dist/converse-no-dependencies.js:131358
+#: dist/converse-no-dependencies.js:131763
 msgid "Click to open this groupchat"
 msgstr "Klikt voor dit groepsgesprek te openen"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:80231
-#: dist/converse-no-dependencies.js:129477
+#: dist/converse-no-dependencies.js:84960
+#: dist/converse-no-dependencies.js:134887
 msgid "Filter"
 msgstr "Filteren"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:80958
+#: dist/converse-no-dependencies.js:85687
 msgid "Bookmarks"
 msgstr "Bladwijzers"
 
-#: dist/converse-no-dependencies.js:80983
+#: dist/converse-no-dependencies.js:85712
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
 msgstr "Bladwijzers voor \"%1$s\""
 
-#: dist/converse-no-dependencies.js:80984
+#: dist/converse-no-dependencies.js:85713
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "Wild u automatisch deelnemen aan dit groepsgesprek bij opstarten?"
 
-#: dist/converse-no-dependencies.js:80985
+#: dist/converse-no-dependencies.js:85714
 msgid "Remove"
 msgstr "Verwijderen"
 
-#: dist/converse-no-dependencies.js:80986
+#: dist/converse-no-dependencies.js:85715
 msgid "The name for this bookmark:"
 msgstr "De naam voor dezen bladwijzer:"
 
-#: dist/converse-no-dependencies.js:80987
+#: dist/converse-no-dependencies.js:85716
 msgid "What should your nickname for this groupchat be?"
 msgstr "Wat moet uwen bijnaam in dit groepsgesprek zijn?"
 
-#: dist/converse-no-dependencies.js:80988
+#: dist/converse-no-dependencies.js:85717
 msgid "Update"
 msgstr "Update"
 
-#: dist/converse-no-dependencies.js:80988
-#: dist/converse-no-dependencies.js:108069
-#: dist/converse-no-dependencies.js:114373
+#: dist/converse-no-dependencies.js:85717
+#: dist/converse-no-dependencies.js:112339
+#: dist/converse-no-dependencies.js:118769
 msgid "Save"
 msgstr "Opslaan"
 
-#: dist/converse-no-dependencies.js:82811
+#: dist/converse-no-dependencies.js:87539
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
 "Ge hebt een overzonden bericht dat verloren zal gaan als ge verder gaat. "
 "Zijde zeker?"
 
-#: dist/converse-no-dependencies.js:82851
-#: dist/converse-no-dependencies.js:82923
+#: dist/converse-no-dependencies.js:87579
+#: dist/converse-no-dependencies.js:87651
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
@@ -1053,25 +1048,25 @@ msgstr ""
 "intrekkingen mogelijk nog niet ondersteunen en dat dit bericht mogelijk niet "
 "overal wordt verwijderd."
 
-#: dist/converse-no-dependencies.js:82852
-#: dist/converse-no-dependencies.js:82928
-#: dist/converse-no-dependencies.js:82956
+#: dist/converse-no-dependencies.js:87580
+#: dist/converse-no-dependencies.js:87656
+#: dist/converse-no-dependencies.js:87684
 msgid "Are you sure you want to retract this message?"
 msgstr "Weet u zeker dat u dit bericht wilt intrekken?"
 
-#: dist/converse-no-dependencies.js:82895
+#: dist/converse-no-dependencies.js:87623
 msgid "A timeout occurred while trying to retract the message"
 msgstr "Er is een fout opgetreden bij het verwijderen van het bericht"
 
-#: dist/converse-no-dependencies.js:82899
+#: dist/converse-no-dependencies.js:87627
 msgid "Sorry, you're not allowed to retract this message."
 msgstr "Je hebt geen toelating voor nieuwe groepsgesprekken aan te maken."
 
-#: dist/converse-no-dependencies.js:82973
+#: dist/converse-no-dependencies.js:87701
 msgid "You are about to retract this message."
 msgstr "U staat op het punt dit bericht in te trekken."
 
-#: dist/converse-no-dependencies.js:82973
+#: dist/converse-no-dependencies.js:87701
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
@@ -1079,240 +1074,240 @@ msgstr ""
 "U kunt optioneel een bericht opnemen waarin de reden voor de intrekking "
 "wordt uitgelegd."
 
-#: dist/converse-no-dependencies.js:82978
+#: dist/converse-no-dependencies.js:87706
 msgid "Message Retraction"
 msgstr "Bericht intrekken"
 
-#: dist/converse-no-dependencies.js:82978
+#: dist/converse-no-dependencies.js:87706
 msgid "Optional reason"
 msgstr "Optionele reden"
 
-#: dist/converse-no-dependencies.js:82986
+#: dist/converse-no-dependencies.js:87714
 msgid "Sorry, you're not allowed to retract this message"
 msgstr "Sorry, je mag dit bericht niet intrekken"
 
-#: dist/converse-no-dependencies.js:83102
+#: dist/converse-no-dependencies.js:87830
 msgid "Show media"
 msgstr "Media tonen"
 
-#: dist/converse-no-dependencies.js:83102
+#: dist/converse-no-dependencies.js:87830
 msgid "Hide media"
 msgstr "Media verbergen"
 
-#: dist/converse-no-dependencies.js:83133
+#: dist/converse-no-dependencies.js:87861
 msgid "Cancel Editing"
 msgstr "Bewerken annuleren"
 
-#: dist/converse-no-dependencies.js:83133
+#: dist/converse-no-dependencies.js:87861
 msgid "Edit"
 msgstr "Bewerken"
 
-#: dist/converse-no-dependencies.js:83156
+#: dist/converse-no-dependencies.js:87884
 msgid "Retract"
 msgstr "intrekken"
 
-#: dist/converse-no-dependencies.js:83417
+#: dist/converse-no-dependencies.js:88145
 msgid "Image: "
 msgstr "Afbeelding: "
 
-#: dist/converse-no-dependencies.js:89948
+#: dist/converse-no-dependencies.js:94139
 #, fuzzy
 msgid "Older versions"
 msgstr "Berichtversies"
 
-#: dist/converse-no-dependencies.js:89950
+#: dist/converse-no-dependencies.js:94141
 #, fuzzy
 msgid "No older versions found"
 msgstr "Server niet gevonden"
 
-#: dist/converse-no-dependencies.js:89950
+#: dist/converse-no-dependencies.js:94141
 msgid "Current version"
 msgstr ""
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:90111
+#: dist/converse-no-dependencies.js:94302
 msgid "Message versions"
 msgstr "Berichtversies"
 
-#: dist/converse-no-dependencies.js:90194
+#: dist/converse-no-dependencies.js:94385
 msgid "Remove as contact"
 msgstr "Contact verwijderen"
 
-#: dist/converse-no-dependencies.js:90201
+#: dist/converse-no-dependencies.js:94392
 msgid "Refresh"
 msgstr "Vernieuwen"
 
-#: dist/converse-no-dependencies.js:90213
-#: dist/converse-no-dependencies.js:114843
+#: dist/converse-no-dependencies.js:94404
+#: dist/converse-no-dependencies.js:119239
 msgid "Email"
 msgstr "E-mail"
 
-#: dist/converse-no-dependencies.js:90214
-#: dist/converse-no-dependencies.js:114844
+#: dist/converse-no-dependencies.js:94405
+#: dist/converse-no-dependencies.js:119240
 msgid "Full Name"
 msgstr "Volledige naam"
 
-#: dist/converse-no-dependencies.js:90216
-#: dist/converse-no-dependencies.js:95774
+#: dist/converse-no-dependencies.js:94407
+#: dist/converse-no-dependencies.js:99968
 msgid "The User's Profile Image"
 msgstr "Profielafbeelding van gebruiker"
 
-#: dist/converse-no-dependencies.js:90218
-#: dist/converse-no-dependencies.js:114850
+#: dist/converse-no-dependencies.js:94409
+#: dist/converse-no-dependencies.js:119246
 msgid "URL"
 msgstr "URL"
 
-#: dist/converse-no-dependencies.js:90312
-#: dist/converse-no-dependencies.js:129381
+#: dist/converse-no-dependencies.js:94502
+#: dist/converse-no-dependencies.js:134791
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr "Sorry, der trad een fout op bij het verwijderen van %1$s als contact."
 
-#: dist/converse-no-dependencies.js:90969
+#: dist/converse-no-dependencies.js:95158
 msgid "Sorry, something went wrong while trying to refresh"
 msgstr "Sorry, der ging iets mis bij het verversen"
 
-#: dist/converse-no-dependencies.js:91001
-#: dist/converse-no-dependencies.js:129363
+#: dist/converse-no-dependencies.js:95190
+#: dist/converse-no-dependencies.js:134773
 msgid "Are you sure you want to remove this contact?"
 msgstr "Zijt ge zeker dat ge dit contact wild verwijderen?"
 
-#: dist/converse-no-dependencies.js:91048
+#: dist/converse-no-dependencies.js:95237
 msgid "Uploading file:"
 msgstr "Bestand uploaden:"
 
-#: dist/converse-no-dependencies.js:91071
+#: dist/converse-no-dependencies.js:95260
 msgid "Retry"
 msgstr "Opnieuw proberen"
 
-#: dist/converse-no-dependencies.js:91561
+#: dist/converse-no-dependencies.js:95756
 msgid "This message has been edited"
 msgstr "Dit bericht is bewerkt"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:91568
+#: dist/converse-no-dependencies.js:95763
 msgid "Show more"
 msgstr "Meer tonen"
 
-#: dist/converse-no-dependencies.js:91570
+#: dist/converse-no-dependencies.js:95765
 msgid "Show less"
 msgstr "Minder tonen"
 
-#: dist/converse-no-dependencies.js:92363
-#: dist/converse-no-dependencies.js:92365
+#: dist/converse-no-dependencies.js:96557
+#: dist/converse-no-dependencies.js:96559
 #, javascript-format
 msgid "%1$s has removed this message"
 msgstr "%1$s heeft het bericht verwijderd"
 
-#: dist/converse-no-dependencies.js:93695
+#: dist/converse-no-dependencies.js:97889
 msgid "Search results"
 msgstr "Zoekresultaten"
 
-#: dist/converse-no-dependencies.js:93721
+#: dist/converse-no-dependencies.js:97915
 msgid "Search"
 msgstr "Zoeken"
 
-#: dist/converse-no-dependencies.js:94539
+#: dist/converse-no-dependencies.js:98733
 msgid "Insert emojis"
 msgstr "Voeg smiley’s in"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:95159
+#: dist/converse-no-dependencies.js:99353
 msgid "Message characters remaining"
 msgstr "Resterende berichttekens"
 
-#: dist/converse-no-dependencies.js:95356
+#: dist/converse-no-dependencies.js:99550
 msgid "Send the message"
 msgstr "Bericht verzenden"
 
-#: dist/converse-no-dependencies.js:95595
+#: dist/converse-no-dependencies.js:99789
 msgid "Start a call"
 msgstr "Plaatst een oproep"
 
-#: dist/converse-no-dependencies.js:95610
+#: dist/converse-no-dependencies.js:99804
 msgid "Hide participants"
 msgstr "Deelnemers verbergen"
 
-#: dist/converse-no-dependencies.js:95611
+#: dist/converse-no-dependencies.js:99805
 msgid "Show participants"
 msgstr "Toon Deelnemers"
 
-#: dist/converse-no-dependencies.js:95632
+#: dist/converse-no-dependencies.js:99826
 msgid "Choose a file to send"
 msgstr "Kies een bestand voor te verzenden"
 
-#: dist/converse-no-dependencies.js:95649
+#: dist/converse-no-dependencies.js:99843
 msgid "Click to write as a normal (non-spoiler) message"
 msgstr "Klikt hier voor een gewoon (niet-verborgen) bericht te schrijven"
 
-#: dist/converse-no-dependencies.js:95651
+#: dist/converse-no-dependencies.js:99845
 msgid "Click to write your message as a spoiler"
 msgstr "Klikt hier voor een verborgen bericht te schrijven"
 
-#: dist/converse-no-dependencies.js:96019
-#: dist/converse-no-dependencies.js:111003
+#: dist/converse-no-dependencies.js:100213
+#: dist/converse-no-dependencies.js:115272
 msgid "Details"
 msgstr "Details"
 
-#: dist/converse-no-dependencies.js:96020
+#: dist/converse-no-dependencies.js:100214
 msgid "See more information about this person"
 msgstr "Toon meer informatie over dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:96032
+#: dist/converse-no-dependencies.js:100226
 msgid "Close and end this conversation"
 msgstr "Sluit en beëindig dit gesprek"
 
-#: dist/converse-no-dependencies.js:96445
+#: dist/converse-no-dependencies.js:100639
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "Zijt ge zeker dat ge de berichten in dit gesprek wild wissen?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:96569
-#: dist/converse-no-dependencies.js:105448
+#: dist/converse-no-dependencies.js:100763
+#: dist/converse-no-dependencies.js:109732
 msgid "Hidden message"
 msgstr "Verborgen bericht"
 
-#: dist/converse-no-dependencies.js:96569
-#: dist/converse-no-dependencies.js:105448
+#: dist/converse-no-dependencies.js:100763
+#: dist/converse-no-dependencies.js:109732
 msgid "Message"
 msgstr "Bericht"
 
-#: dist/converse-no-dependencies.js:96570
-#: dist/converse-no-dependencies.js:105449
+#: dist/converse-no-dependencies.js:100764
+#: dist/converse-no-dependencies.js:109733
 msgid "Optional hint"
 msgstr "Operationele tip"
 
-#: dist/converse-no-dependencies.js:97286
+#: dist/converse-no-dependencies.js:101479
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr ""
 "Sorry, de verbinding is verbroken en je bericht kon niet worden verzonden"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:97382
-#: dist/converse-no-dependencies.js:106317
-#: dist/converse-no-dependencies.js:106329
+#: dist/converse-no-dependencies.js:101575
+#: dist/converse-no-dependencies.js:110608
+#: dist/converse-no-dependencies.js:110620
 msgid "You have unread messages"
 msgstr "Ge hebt ongelezen berichten"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:98927
+#: dist/converse-no-dependencies.js:103106
 msgid "Remove messages"
 msgstr "Berichten verwijderen"
 
-#: dist/converse-no-dependencies.js:98927
+#: dist/converse-no-dependencies.js:103106
 msgid "Close this chat"
 msgstr "Dit Chat gespreksvenster sluiten"
 
-#: dist/converse-no-dependencies.js:98927
+#: dist/converse-no-dependencies.js:103106
 msgid "Write in the third person"
 msgstr "Schrijf in de derde persoon"
 
-#: dist/converse-no-dependencies.js:98927
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:103106
+#: dist/converse-no-dependencies.js:112181
 msgid "Show this menu"
 msgstr "Toon dit menu"
 
-#: dist/converse-no-dependencies.js:99502
+#: dist/converse-no-dependencies.js:103681
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1327,283 +1322,283 @@ msgstr ""
 "achterblijven. Let op, als je een niet-vertrouwd apparaat gebruikt is OMEMO-"
 "versleuteling NIET beschikbaar."
 
-#: dist/converse-no-dependencies.js:99503
+#: dist/converse-no-dependencies.js:103682
 msgid "This is a trusted device"
 msgstr "Dit is een vertrouwd apparaat"
 
-#: dist/converse-no-dependencies.js:99507
+#: dist/converse-no-dependencies.js:103686
 msgid "Connection URL"
 msgstr "Verbinding URL"
 
-#: dist/converse-no-dependencies.js:99508
+#: dist/converse-no-dependencies.js:103687
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
 "HTTP- of websocket-URL die wordt gebruikt om verbinding te maken met uw XMPP-"
 "server"
 
-#: dist/converse-no-dependencies.js:99509
+#: dist/converse-no-dependencies.js:103688
 msgid "e.g. wss://example.org/xmpp-websocket"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:99514
+#: dist/converse-no-dependencies.js:103693
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: dist/converse-no-dependencies.js:99518
+#: dist/converse-no-dependencies.js:103697
 msgid "Create an account"
 msgstr "Account aanmaken"
 
-#: dist/converse-no-dependencies.js:99519
+#: dist/converse-no-dependencies.js:103698
 msgid "Don't have a chat account?"
 msgstr "Heb je genen account?"
 
-#: dist/converse-no-dependencies.js:99528
+#: dist/converse-no-dependencies.js:103707
 msgid "Log in"
 msgstr "Inloggen"
 
-#: dist/converse-no-dependencies.js:99532
+#: dist/converse-no-dependencies.js:103711
 msgid "Username"
 msgstr "Gebruikersnaam"
 
-#: dist/converse-no-dependencies.js:99532
+#: dist/converse-no-dependencies.js:103711
 msgid "user@domain"
 msgstr "gebruiker@domein"
 
-#: dist/converse-no-dependencies.js:99538
+#: dist/converse-no-dependencies.js:103717
 msgid "Disconnected"
 msgstr "Verbinding verbroken"
 
-#: dist/converse-no-dependencies.js:99539
+#: dist/converse-no-dependencies.js:103718
 msgid "Click here to log in anonymously"
 msgstr "Klikt hier voor anoniem aan te melden"
 
-#: dist/converse-no-dependencies.js:99650
-#: dist/converse-no-dependencies.js:109732
-#: dist/converse-no-dependencies.js:127682
+#: dist/converse-no-dependencies.js:103829
+#: dist/converse-no-dependencies.js:114001
+#: dist/converse-no-dependencies.js:133393
 msgid "Please enter a valid XMPP address"
 msgstr "Voer een geldig XMPP-adres in"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:100492
+#: dist/converse-no-dependencies.js:104794
 msgid "Chat Contacts"
 msgstr "Chat Gesprekscontacten"
 
-#: dist/converse-no-dependencies.js:100492
+#: dist/converse-no-dependencies.js:104794
 msgid "Toggle chat"
 msgstr "Chat Gesprek openen"
 
-#: dist/converse-no-dependencies.js:102359
+#: dist/converse-no-dependencies.js:106646
 msgid "Close these announcements"
 msgstr "Dit groepsgesprek sluiten"
 
-#: dist/converse-no-dependencies.js:102974
+#: dist/converse-no-dependencies.js:107261
 msgid "Click to open this server message"
 msgstr "Klikt voor dit server groepsgesprek te openen"
 
-#: dist/converse-no-dependencies.js:102983
+#: dist/converse-no-dependencies.js:107270
 msgid "Announcements"
 msgstr "Aankondigingen"
 
-#: dist/converse-no-dependencies.js:103623
+#: dist/converse-no-dependencies.js:107910
 msgid "Click to load missing messages"
 msgstr "Klik om ontbrekende berichten te laden"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:104632
+#: dist/converse-no-dependencies.js:108918
 msgid "Change affiliation"
 msgstr "Lidmaatschap wijzigen"
 
-#: dist/converse-no-dependencies.js:104633
+#: dist/converse-no-dependencies.js:108919
 msgid "New affiliation"
 msgstr "Nieuwe verbondenheid"
 
-#: dist/converse-no-dependencies.js:105146
+#: dist/converse-no-dependencies.js:109431
 msgid "Timeout error while trying to set the affiliation"
 msgstr "Sorry, der ging iets mis bij het verversen verbondenheid"
 
-#: dist/converse-no-dependencies.js:105148
+#: dist/converse-no-dependencies.js:109433
 msgid "Sorry, you're not allowed to make that change"
 msgstr "Je hebt geen rechten om dit te wijzigen"
 
-#: dist/converse-no-dependencies.js:105150
+#: dist/converse-no-dependencies.js:109435
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr "Sorry, er ging iets mis om de verbondenheid te veranderen"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:105222
+#: dist/converse-no-dependencies.js:109507
 msgid "Change role"
 msgstr "Rol Instellingen wijzigen"
 
-#: dist/converse-no-dependencies.js:105223
+#: dist/converse-no-dependencies.js:109508
 msgid "New Role"
 msgstr "Nieuwe Rol"
 
-#: dist/converse-no-dependencies.js:105397
+#: dist/converse-no-dependencies.js:109681
 msgid "You're not allowed to make that change"
 msgstr "Je bent niet gemachtigd om dit te veranderen"
 
-#: dist/converse-no-dependencies.js:105399
+#: dist/converse-no-dependencies.js:109683
 msgid "Sorry, something went wrong while trying to set the role"
 msgstr "Sorry, der ging iets mis bij het veranderen van de rol"
 
-#: dist/converse-no-dependencies.js:106065
+#: dist/converse-no-dependencies.js:110356
 msgid "Change nickname"
 msgstr "Wijzig uwen bijnaam"
 
-#: dist/converse-no-dependencies.js:106065
+#: dist/converse-no-dependencies.js:110356
 msgid "Enter groupchat"
 msgstr "Deelnemen aan groepsgesprek"
 
-#: dist/converse-no-dependencies.js:106066
+#: dist/converse-no-dependencies.js:110357
 msgid "Choose a nickname to enter"
 msgstr "Kies een bijnaam om binnen te komen"
 
-#: dist/converse-no-dependencies.js:106066
+#: dist/converse-no-dependencies.js:110357
 msgid "Please choose your nickname"
 msgstr "Kies uw bijnaam"
 
-#: dist/converse-no-dependencies.js:106331
+#: dist/converse-no-dependencies.js:110622
 msgid "You're not allowed to send messages in this room"
 msgstr "Ge hebt geen toelating om berichten te verzenden in deze kamer"
 
-#: dist/converse-no-dependencies.js:106978
+#: dist/converse-no-dependencies.js:111248
 #, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "Klikt voor %1$s in uw bericht te vermelden."
 
-#: dist/converse-no-dependencies.js:106983
+#: dist/converse-no-dependencies.js:111253
 msgid "This user is a moderator."
 msgstr "Deze gebruiker is ne moderator."
 
-#: dist/converse-no-dependencies.js:106984
+#: dist/converse-no-dependencies.js:111254
 msgid "This user can send messages in this groupchat."
 msgstr "Deze gebruiker kan berichten sturen in dit groepsgesprek."
 
-#: dist/converse-no-dependencies.js:106985
+#: dist/converse-no-dependencies.js:111255
 msgid "This user can NOT send messages in this groupchat."
 msgstr "Deze gebruiker kan GEEN berichten sturen in dit groepsgesprek."
 
-#: dist/converse-no-dependencies.js:107001
+#: dist/converse-no-dependencies.js:111271
 msgid "Admin"
 msgstr "Beheerder"
 
-#: dist/converse-no-dependencies.js:107002
+#: dist/converse-no-dependencies.js:111272
 msgid "Member"
 msgstr "Lid"
 
-#: dist/converse-no-dependencies.js:107003
+#: dist/converse-no-dependencies.js:111273
 msgid "Moderator"
 msgstr "Moderator hoofdbewerker"
 
-#: dist/converse-no-dependencies.js:107004
+#: dist/converse-no-dependencies.js:111274
 msgid "Owner"
 msgstr "Eigenaar"
 
-#: dist/converse-no-dependencies.js:107005
+#: dist/converse-no-dependencies.js:111275
 msgid "Visitor"
 msgstr "Bezoeker"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:107043
+#: dist/converse-no-dependencies.js:111313
 #, fuzzy
 msgid "Participant"
 msgstr "Deelnemers"
 
-#: dist/converse-no-dependencies.js:107043
+#: dist/converse-no-dependencies.js:111313
 msgid "Participants"
 msgstr "Deelnemers"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Change user's affiliation to admin"
 msgstr "Lidmaatschap van gebruiker wijzigen naar beheerder"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Ban user by changing their affiliation to outcast"
 msgstr ""
 "Gebruiker verbannen door diens affiliatie te veranderen naar verschoppeling"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Clear the chat area"
 msgstr "De gespreksruimte leegmaken"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Close this groupchat"
 msgstr "Dit groepchat sluiten"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Change user role to participant"
 msgstr "Rol van gebruiker wijzigen naar deelnemer"
 
-#: dist/converse-no-dependencies.js:107911
-#: dist/converse-no-dependencies.js:111079
+#: dist/converse-no-dependencies.js:112181
+#: dist/converse-no-dependencies.js:115348
 msgid "Remove this groupchat"
 msgstr "Dit groepsgesprek verwijderen"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Kick user from groupchat"
 msgstr "Gebruiker uit groepsgesprek schoppen"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Write in 3rd person"
 msgstr "Schrijfd in den derde persoon"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Grant membership to a user"
 msgstr "Verleend lidmaatschap aan ne gebruiker"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Opens up the moderator tools GUI"
 msgstr "Opent de GUI van de moderatortools"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Remove user's ability to post messages"
 msgstr "Mogelijkheid van gebruiker voor berichten te schrijven verwijderen"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:107911
-#: dist/converse-no-dependencies.js:110091
+#: dist/converse-no-dependencies.js:112181
+#: dist/converse-no-dependencies.js:114360
 msgid "Change your nickname"
 msgstr "Wijzigd uwen bijnaam"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Grant moderator role to user"
 msgstr "Rol van gebruiker wijzigen naar moderator"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Grant ownership of this groupchat"
 msgstr "Eigendom van dit groepsgesprek verlenen"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Register your nickname"
 msgstr "Uwen bijnaam registreren"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Revoke the user's current affiliation"
 msgstr "De affiliatie van de gebruiker intrekken"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Set groupchat subject"
 msgstr "Gespreksonderwerp instellen"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Set groupchat subject (alias for /subject)"
 msgstr "Gespreksonderwerp instellen (alias voor /subject)"
 
-#: dist/converse-no-dependencies.js:107911
+#: dist/converse-no-dependencies.js:112181
 msgid "Allow muted user to post messages"
 msgstr "Gedempte gebruikers berichten laten schrijven"
 
-#: dist/converse-no-dependencies.js:108067
+#: dist/converse-no-dependencies.js:112337
 msgid "Loading configuration form"
 msgstr "Configuratieformulier laden"
 
-#: dist/converse-no-dependencies.js:108635
+#: dist/converse-no-dependencies.js:112904
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr ""
 "Sorry, er is een fout opgetreden bij het verzenden van het "
 "configuratieformulier."
 
-#: dist/converse-no-dependencies.js:108689
+#: dist/converse-no-dependencies.js:112958
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
 msgstr ""
@@ -1611,373 +1606,373 @@ msgstr ""
 "binnen te komen."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:108695
+#: dist/converse-no-dependencies.js:112964
 msgid "This groupchat no longer exists"
 msgstr "Dit groepsChat bestaat niet meer"
 
-#: dist/converse-no-dependencies.js:108696
+#: dist/converse-no-dependencies.js:112965
 #, javascript-format
 msgid "The following reason was given: \"%1$s\""
 msgstr "De volgende reden is opgegeven: \"%1$s\""
 
-#: dist/converse-no-dependencies.js:109422
+#: dist/converse-no-dependencies.js:113691
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Deze actie is uitgevoerd door %1$s."
 
-#: dist/converse-no-dependencies.js:109426
+#: dist/converse-no-dependencies.js:113695
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "D’opgegeven reden is: ‘%1$s’."
 
-#: dist/converse-no-dependencies.js:109458
+#: dist/converse-no-dependencies.js:113727
 msgid "Topic"
 msgstr "Onderwerp"
 
-#: dist/converse-no-dependencies.js:109459
+#: dist/converse-no-dependencies.js:113728
 msgid "Topic author"
 msgstr "Auteur van het onderwerp"
 
-#: dist/converse-no-dependencies.js:109469
+#: dist/converse-no-dependencies.js:113738
 msgid "XMPP address"
 msgstr "XMPP adres"
 
-#: dist/converse-no-dependencies.js:109470
+#: dist/converse-no-dependencies.js:113739
 msgid "Message archiving"
 msgstr "Berichtarchivering"
 
-#: dist/converse-no-dependencies.js:109471
+#: dist/converse-no-dependencies.js:113740
 msgid "Messages are archived on the server"
 msgstr "Berichten worden gearchiveerd op de server"
 
-#: dist/converse-no-dependencies.js:109472
+#: dist/converse-no-dependencies.js:113741
 msgid "Description"
 msgstr "Beschrijving"
 
-#: dist/converse-no-dependencies.js:109473
+#: dist/converse-no-dependencies.js:113742
 msgid "Features"
 msgstr "Functies"
 
-#: dist/converse-no-dependencies.js:109474
-#: dist/converse-no-dependencies.js:126137
+#: dist/converse-no-dependencies.js:113743
+#: dist/converse-no-dependencies.js:131323
 msgid "Hidden"
 msgstr "Verborgen"
 
-#: dist/converse-no-dependencies.js:109475
+#: dist/converse-no-dependencies.js:113744
 msgid "This groupchat is not publicly searchable"
 msgstr "Dit groepsgesprek is niet openbaar vindbaar"
 
-#: dist/converse-no-dependencies.js:109476
+#: dist/converse-no-dependencies.js:113745
 msgid "This groupchat is restricted to members only"
 msgstr "Dit groepsgesprek is enkel toegankelijk voor leden"
 
-#: dist/converse-no-dependencies.js:109477
+#: dist/converse-no-dependencies.js:113746
 msgid "Members only"
 msgstr "Alleen-leden"
 
-#: dist/converse-no-dependencies.js:109478
-#: dist/converse-no-dependencies.js:126139
+#: dist/converse-no-dependencies.js:113747
+#: dist/converse-no-dependencies.js:131325
 msgid "Moderated"
 msgstr "Gemodereerd"
 
-#: dist/converse-no-dependencies.js:109479
+#: dist/converse-no-dependencies.js:113748
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
 "Deelnemers aan dit groepsgesprek hebben toestemming nodig voordat ze "
 "berichten kunnen sturen"
 
-#: dist/converse-no-dependencies.js:109480
-#: dist/converse-no-dependencies.js:127684
+#: dist/converse-no-dependencies.js:113749
+#: dist/converse-no-dependencies.js:132868
 msgid "Name"
 msgstr "Naam"
 
-#: dist/converse-no-dependencies.js:109481
+#: dist/converse-no-dependencies.js:113750
 msgid "This groupchat does not require a password upon entry"
 msgstr "Dit groepsgesprek vereist geen paswoord voor toegang"
 
-#: dist/converse-no-dependencies.js:109482
+#: dist/converse-no-dependencies.js:113751
 msgid "No password required"
 msgstr "Geen paswoord nodig"
 
-#: dist/converse-no-dependencies.js:109483
+#: dist/converse-no-dependencies.js:113752
 msgid "Not anonymous"
 msgstr "Niet-anoniem"
 
-#: dist/converse-no-dependencies.js:109484
+#: dist/converse-no-dependencies.js:113753
 msgid "All other groupchat participants can see your XMPP address"
 msgstr "Alle gebruikers in dit groepsgesprek kunnen uwen XMPP-adres zien"
 
-#: dist/converse-no-dependencies.js:109485
+#: dist/converse-no-dependencies.js:113754
 msgid "Not moderated"
 msgstr "Niet gemodereerd"
 
-#: dist/converse-no-dependencies.js:109486
+#: dist/converse-no-dependencies.js:113755
 msgid "Participants entering this groupchat can write right away"
 msgstr "Deelnemers aan dit groepsgesprek kunnen onmiddellijk berichten sturen"
 
-#: dist/converse-no-dependencies.js:109487
+#: dist/converse-no-dependencies.js:113756
 msgid "Online users"
 msgstr "Gebruikers online"
 
-#: dist/converse-no-dependencies.js:109488
-#: dist/converse-no-dependencies.js:126141
+#: dist/converse-no-dependencies.js:113757
+#: dist/converse-no-dependencies.js:131327
 msgid "Open"
 msgstr "Open"
 
-#: dist/converse-no-dependencies.js:109489
+#: dist/converse-no-dependencies.js:113758
 msgid "Anyone can join this groupchat"
 msgstr "Iedereen kan deelnemen aan dit gesprek"
 
-#: dist/converse-no-dependencies.js:109490
+#: dist/converse-no-dependencies.js:113759
 msgid "This groupchat requires a password before entry"
 msgstr "Dit groepsgesprek vereist een paswoord voor toegang"
 
-#: dist/converse-no-dependencies.js:109491
+#: dist/converse-no-dependencies.js:113760
 msgid "Password protected"
 msgstr "Beveiligd met paswoord"
 
-#: dist/converse-no-dependencies.js:109492
+#: dist/converse-no-dependencies.js:113761
 msgid "Persistent"
 msgstr "Blijvend"
 
-#: dist/converse-no-dependencies.js:109493
+#: dist/converse-no-dependencies.js:113762
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "Dit groepsgesprek blijft bestaan, zelfs als der niemand aanwezig is"
 
-#: dist/converse-no-dependencies.js:109494
-#: dist/converse-no-dependencies.js:126143
+#: dist/converse-no-dependencies.js:113763
+#: dist/converse-no-dependencies.js:131329
 msgid "Public"
 msgstr "Openbaar"
 
-#: dist/converse-no-dependencies.js:109495
-#: dist/converse-no-dependencies.js:126144
+#: dist/converse-no-dependencies.js:113764
+#: dist/converse-no-dependencies.js:131330
 msgid "Semi-anonymous"
 msgstr "Semi-anoniem"
 
-#: dist/converse-no-dependencies.js:109496
+#: dist/converse-no-dependencies.js:113765
 msgid "Only moderators can see your XMPP address"
 msgstr "Enkel moderatoren kunnen uwen XMPP-adres zien"
 
-#: dist/converse-no-dependencies.js:109497
-#: dist/converse-no-dependencies.js:126145
+#: dist/converse-no-dependencies.js:113766
+#: dist/converse-no-dependencies.js:131331
 msgid "Temporary"
 msgstr "Tijdelijk"
 
-#: dist/converse-no-dependencies.js:109498
+#: dist/converse-no-dependencies.js:113767
 msgid "This groupchat will disappear once the last person leaves"
 msgstr ""
 "Dit groepsgesprek zal verdwijnen van zodra dat de laatsten deelnemer het "
 "verlaat"
 
-#: dist/converse-no-dependencies.js:109499
+#: dist/converse-no-dependencies.js:113768
 msgid "This groupchat is publicly searchable"
 msgstr "Dit groepsgesprek is openbaar vindbaar"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:109708
+#: dist/converse-no-dependencies.js:113977
 #, javascript-format
 msgid "Groupchat info for %1$s"
 msgstr "Info over groepsgesprek %1$s"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:109730
-#: dist/converse-no-dependencies.js:111038
+#: dist/converse-no-dependencies.js:113999
+#: dist/converse-no-dependencies.js:115307
 msgid "Invite"
 msgstr "Uitnodigen"
 
-#: dist/converse-no-dependencies.js:109731
+#: dist/converse-no-dependencies.js:114000
 msgid "user@example.org"
 msgstr "gebruiker@voorbeeld.org"
 
-#: dist/converse-no-dependencies.js:109734
+#: dist/converse-no-dependencies.js:114003
 msgid "Optional reason for the invitation"
 msgstr "Optionele reden voor de uitnodiging"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:109909
+#: dist/converse-no-dependencies.js:114178
 msgid "Invite someone to this groupchat"
 msgstr "Nodig iemand uit voor deze groepChat"
 
-#: dist/converse-no-dependencies.js:110381
+#: dist/converse-no-dependencies.js:114650
 msgid "Hide the groupchat topic"
 msgstr "Verberg het groep chat onderwerp"
 
-#: dist/converse-no-dependencies.js:110382
+#: dist/converse-no-dependencies.js:114651
 #, fuzzy
 msgid "This groupchat is bookmarked"
 msgstr "Dit groepsgesprek word gemodereerd"
 
-#: dist/converse-no-dependencies.js:111004
+#: dist/converse-no-dependencies.js:115273
 msgid "Show more information about this groupchat"
 msgstr "Toon meer informatie over dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:111014
+#: dist/converse-no-dependencies.js:115283
 msgid "Configure"
 msgstr "Configureren"
 
-#: dist/converse-no-dependencies.js:111015
+#: dist/converse-no-dependencies.js:115284
 msgid "Configure this groupchat"
 msgstr "Configureerd dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:111026
+#: dist/converse-no-dependencies.js:115295
 msgid "Change the nickname you're using in this groupchat"
 msgstr "Verander de gebruikersnaam voor dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:111039
+#: dist/converse-no-dependencies.js:115308
 msgid "Invite someone to join this groupchat"
 msgstr "Iemand uitnodigen voor deze groep chat"
 
-#: dist/converse-no-dependencies.js:111051
+#: dist/converse-no-dependencies.js:115320
 msgid "Show topic"
 msgstr "Onderwerp tonen"
 
-#: dist/converse-no-dependencies.js:111051
+#: dist/converse-no-dependencies.js:115320
 msgid "Hide topic"
 msgstr "Verberg onderwerp"
 
-#: dist/converse-no-dependencies.js:111052
+#: dist/converse-no-dependencies.js:115321
 msgid "Show the topic message in the heading"
 msgstr "Toon het onderwerp bericht bovenaan"
 
-#: dist/converse-no-dependencies.js:111052
+#: dist/converse-no-dependencies.js:115321
 msgid "Hide the topic in the heading"
 msgstr "Verberg het onderwerp bericht bovenaan"
 
-#: dist/converse-no-dependencies.js:111066
+#: dist/converse-no-dependencies.js:115335
 msgid "Moderate"
 msgstr "Modereren"
 
-#: dist/converse-no-dependencies.js:111067
+#: dist/converse-no-dependencies.js:115336
 msgid "Moderate this groupchat"
 msgstr "Modereer deze groep chat"
 
-#: dist/converse-no-dependencies.js:111078
+#: dist/converse-no-dependencies.js:115347
 msgid "Destroy"
 msgstr "Kapot maken"
 
-#: dist/converse-no-dependencies.js:111091
+#: dist/converse-no-dependencies.js:115360
 msgid "Leave"
 msgstr "Vertrekken"
 
-#: dist/converse-no-dependencies.js:111092
+#: dist/converse-no-dependencies.js:115361
 msgid "Leave and close this groupchat"
 msgstr "Deze groep chat verlatenen sluit de groep chat"
 
-#: dist/converse-no-dependencies.js:111100
+#: dist/converse-no-dependencies.js:115369
 msgid "Are you sure you want to leave this groupchat?"
 msgstr "Ben je zeker uit deze groep chat te verlaten?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:111152
+#: dist/converse-no-dependencies.js:115421
 msgid "This groupchat requires a password"
 msgstr "Dit groepsgesprek vereist een paswoord"
 
-#: dist/converse-no-dependencies.js:111153
+#: dist/converse-no-dependencies.js:115422
 msgid "Password: "
 msgstr "Wachtwoord: "
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:111154
-#: dist/converse-no-dependencies.js:114890
+#: dist/converse-no-dependencies.js:115423
+#: dist/converse-no-dependencies.js:119286
 msgid "Submit"
 msgstr "Indienen"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:112425
+#: dist/converse-no-dependencies.js:116820
 msgid "Minimized"
 msgstr "Geminimaliseerd"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:113030
+#: dist/converse-no-dependencies.js:117425
 msgid "Click to restore this chat"
 msgstr "Klikt voor dit gesprek te herstellen"
 
-#: dist/converse-no-dependencies.js:113179
-#: dist/converse-no-dependencies.js:113197
+#: dist/converse-no-dependencies.js:117575
+#: dist/converse-no-dependencies.js:117593
 msgid "Minimize"
 msgstr "Minimaliseren"
 
-#: dist/converse-no-dependencies.js:113180
+#: dist/converse-no-dependencies.js:117576
 msgid "Minimize this chat"
 msgstr "De Chat minimaliseren"
 
-#: dist/converse-no-dependencies.js:113198
+#: dist/converse-no-dependencies.js:117594
 msgid "Minimize this groupchat"
 msgstr "Groep chat minimaliseren"
 
-#: dist/converse-no-dependencies.js:114125
+#: dist/converse-no-dependencies.js:118521
 msgid "has gone offline"
 msgstr "is offline"
 
-#: dist/converse-no-dependencies.js:114127
+#: dist/converse-no-dependencies.js:118523
 msgid "has gone away"
 msgstr "is afwezig"
 
-#: dist/converse-no-dependencies.js:114129
+#: dist/converse-no-dependencies.js:118525
 msgid "is busy"
 msgstr "is bezet"
 
-#: dist/converse-no-dependencies.js:114131
+#: dist/converse-no-dependencies.js:118527
 msgid "has come online"
 msgstr "is online"
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:114166
-#: dist/converse-no-dependencies.js:114172
+#: dist/converse-no-dependencies.js:118562
+#: dist/converse-no-dependencies.js:118568
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "Melding van %1$s"
 
-#: dist/converse-no-dependencies.js:114174
-#: dist/converse-no-dependencies.js:114182
-#: dist/converse-no-dependencies.js:114185
+#: dist/converse-no-dependencies.js:118570
+#: dist/converse-no-dependencies.js:118578
+#: dist/converse-no-dependencies.js:118581
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s zegd"
 
-#: dist/converse-no-dependencies.js:114293
+#: dist/converse-no-dependencies.js:118689
 msgid "wants to be your contact"
 msgstr "wild uw contact zijn"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:114370
-#: dist/converse-no-dependencies.js:129486
+#: dist/converse-no-dependencies.js:118766
+#: dist/converse-no-dependencies.js:134896
 msgid "Away"
 msgstr "Afwezig"
 
-#: dist/converse-no-dependencies.js:114371
-#: dist/converse-no-dependencies.js:129485
+#: dist/converse-no-dependencies.js:118767
+#: dist/converse-no-dependencies.js:134895
 msgid "Busy"
 msgstr "Bezet"
 
-#: dist/converse-no-dependencies.js:114372
-#: dist/converse-no-dependencies.js:129483
+#: dist/converse-no-dependencies.js:118768
+#: dist/converse-no-dependencies.js:134893
 msgid "Online"
 msgstr "Online"
 
-#: dist/converse-no-dependencies.js:114374
+#: dist/converse-no-dependencies.js:118770
 msgid "Away for long"
 msgstr "Langdurig afwezig"
 
-#: dist/converse-no-dependencies.js:114375
+#: dist/converse-no-dependencies.js:118771
 msgid "Personal status message"
 msgstr "Persoonlijk statusbericht"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:114552
+#: dist/converse-no-dependencies.js:118948
 msgid "Change chat status"
 msgstr "Gespreksstatus wijzigen"
 
-#: dist/converse-no-dependencies.js:114710
+#: dist/converse-no-dependencies.js:119106
 msgid "Your profile picture"
 msgstr "Uw profiel foto"
 
-#: dist/converse-no-dependencies.js:114848
+#: dist/converse-no-dependencies.js:119244
 msgid "Save and close"
 msgstr "Opslaan en sluiten"
 
-#: dist/converse-no-dependencies.js:114849
+#: dist/converse-no-dependencies.js:119245
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -1985,154 +1980,154 @@ msgstr ""
 "Gebruikt komma’s voor meerdere rollen op te geven. Uw rollen worden naast "
 "uwe naam op uw berichten weergegeven."
 
-#: dist/converse-no-dependencies.js:114851
+#: dist/converse-no-dependencies.js:119247
 msgid "OMEMO"
 msgstr "OMEMO"
 
-#: dist/converse-no-dependencies.js:114852
+#: dist/converse-no-dependencies.js:119248
 msgid "Profile"
 msgstr "Uw profiel"
 
-#: dist/converse-no-dependencies.js:114853
+#: dist/converse-no-dependencies.js:119249
 #, fuzzy
 msgid "Reset Password"
 msgstr "Wachtwoord"
 
-#: dist/converse-no-dependencies.js:114891
+#: dist/converse-no-dependencies.js:119287
 msgid "The new passwords must match"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:114892
+#: dist/converse-no-dependencies.js:119288
 #, fuzzy
 msgid "New password"
 msgstr "Geen paswoord"
 
-#: dist/converse-no-dependencies.js:114893
+#: dist/converse-no-dependencies.js:119289
 #, fuzzy
 msgid "Confirm new password"
 msgstr "Geen paswoord"
 
-#: dist/converse-no-dependencies.js:115415
+#: dist/converse-no-dependencies.js:119810
 #, fuzzy
 msgid "Timeout error"
 msgstr "Timeout fout"
 
-#: dist/converse-no-dependencies.js:115422
-msgid "Your server does not support in-band password reset"
+#: dist/converse-no-dependencies.js:119817
+msgid "Your server does not support password reset"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115429
+#: dist/converse-no-dependencies.js:119824
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115448
+#: dist/converse-no-dependencies.js:119843
 #, fuzzy
 msgid "Timeout error while trying to set your password"
 msgstr "Sorry, der ging iets mis bij het verversen verbondenheid"
 
-#: dist/converse-no-dependencies.js:115450
-msgid "Your server does not allow in-band password reset"
+#: dist/converse-no-dependencies.js:119845
+msgid "Your server does not allow password reset"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115452
-#: dist/converse-no-dependencies.js:115454
+#: dist/converse-no-dependencies.js:119847
+#: dist/converse-no-dependencies.js:119849
 #, fuzzy
 msgid "You are not allowed to change your password"
 msgstr "Ge hebt geen toelating voor nieuwe groepsgesprekken aan te maken."
 
-#: dist/converse-no-dependencies.js:115456
+#: dist/converse-no-dependencies.js:119851
 msgid "Success"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115456
+#: dist/converse-no-dependencies.js:119851
 #, fuzzy
 msgid "Your new password has been set"
 msgstr "Een nieuw groepsgesprek is aangemaakt"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:116001
+#: dist/converse-no-dependencies.js:120395
 msgid "Your Profile"
 msgstr "Uw profiel"
 
-#: dist/converse-no-dependencies.js:116020
+#: dist/converse-no-dependencies.js:120414
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr ""
 "Sorry, der is een fout opgetreden bij het opslaan van uw profielgegevens."
 
-#: dist/converse-no-dependencies.js:116020
+#: dist/converse-no-dependencies.js:120414
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 "Ge kunt de ontwikkelaarsconsole van uwen browser nakijken voor foutenuitvoer."
 
-#: dist/converse-no-dependencies.js:116094
+#: dist/converse-no-dependencies.js:120488
 msgid "About"
 msgstr "Info"
 
-#: dist/converse-no-dependencies.js:116095
+#: dist/converse-no-dependencies.js:120489
 msgid "Commands"
 msgstr "Reacties"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:116103
+#: dist/converse-no-dependencies.js:120497
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr "%1$s Vrije %2$s XMPP-chatcliënt gemaakt door %3$s Opkode %2$s"
 
-#: dist/converse-no-dependencies.js:116104
+#: dist/converse-no-dependencies.js:120498
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr "%1$s Vertaalt %2$s het in uw eigen taal"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:116254
+#: dist/converse-no-dependencies.js:120648
 msgid "Settings"
 msgstr "Instellingen"
 
-#: dist/converse-no-dependencies.js:116614
-#: dist/converse-no-dependencies.js:116624
+#: dist/converse-no-dependencies.js:121008
+#: dist/converse-no-dependencies.js:121018
 msgid "online"
 msgstr "online"
 
-#: dist/converse-no-dependencies.js:116616
+#: dist/converse-no-dependencies.js:121010
 msgid "busy"
 msgstr "bezet"
 
-#: dist/converse-no-dependencies.js:116618
+#: dist/converse-no-dependencies.js:121012
 msgid "away for long"
 msgstr "langdurig afwezig"
 
-#: dist/converse-no-dependencies.js:116620
+#: dist/converse-no-dependencies.js:121014
 msgid "away"
 msgstr "afwezig"
 
-#: dist/converse-no-dependencies.js:116622
+#: dist/converse-no-dependencies.js:121016
 msgid "offline"
 msgstr "offline"
 
-#: dist/converse-no-dependencies.js:116638
+#: dist/converse-no-dependencies.js:121032
 msgid "Are you sure you want to log out?"
 msgstr "Zij’ ge zeker da’ g’u wild afmelden?"
 
-#: dist/converse-no-dependencies.js:116670
+#: dist/converse-no-dependencies.js:121064
 msgid "Log out"
 msgstr "Afmelden"
 
-#: dist/converse-no-dependencies.js:116674
+#: dist/converse-no-dependencies.js:121068
 msgid "Show details about this chat client"
 msgstr "Toont meer informatie over dezen chatcliënt"
 
-#: dist/converse-no-dependencies.js:116680
+#: dist/converse-no-dependencies.js:121074
 #, javascript-format
 msgid "I am %1$s"
 msgstr "Ik ben %1$s"
 
-#: dist/converse-no-dependencies.js:116681
+#: dist/converse-no-dependencies.js:121075
 msgid "Click to change your chat status"
 msgstr "Klikt hier voor uw gespreksstatus te wijzigen"
 
-#: dist/converse-no-dependencies.js:117476
+#: dist/converse-no-dependencies.js:121825
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
@@ -2142,7 +2137,7 @@ msgstr ""
 "ge geabonneerd zijt op zijn/haar aanwezigheid voor zijn/haar OMEMO-"
 "informatie te bekijken"
 
-#: dist/converse-no-dependencies.js:117478
+#: dist/converse-no-dependencies.js:121827
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
@@ -2151,11 +2146,11 @@ msgstr ""
 "Sorry, we kunnen geen versleutelde berichten sturen omdat den externe server "
 "voor %1$s niet kon gevonden worden"
 
-#: dist/converse-no-dependencies.js:117480
+#: dist/converse-no-dependencies.js:121829
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Kan geen versleutelde berichten sturen door een onverwachte fout."
 
-#: dist/converse-no-dependencies.js:117493
+#: dist/converse-no-dependencies.js:121842
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -2163,13 +2158,13 @@ msgstr ""
 "Dit is een OMEMO-versleuteld bericht, wat dat uwe cliënt niet ondersteunt. "
 "Meer informatie op https://conversations.im/omemo"
 
-#: dist/converse-no-dependencies.js:117724
+#: dist/converse-no-dependencies.js:122073
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:117930
+#: dist/converse-no-dependencies.js:122279
 msgid ""
 "Sorry, could not decrypt a received OMEMO message because we don't have the "
 "XMPP address for that user."
@@ -2177,12 +2172,12 @@ msgstr ""
 "Sorry, door en fout kon het ontvangen OMEMO-bericht niet wij hebben het "
 "adres XMPP voor deze gebruiker niet."
 
-#: dist/converse-no-dependencies.js:117995
+#: dist/converse-no-dependencies.js:122344
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
 "Sorry, door en fout kon het ontvangen OMEMO-bericht niet ontsleuteld worden."
 
-#: dist/converse-no-dependencies.js:118626
+#: dist/converse-no-dependencies.js:122977
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
@@ -2192,7 +2187,7 @@ msgstr ""
 "Het gaat niet meer mogelijk zijn van versleutelde berichten te sturen in dit "
 "groepsgesprek."
 
-#: dist/converse-no-dependencies.js:118690
+#: dist/converse-no-dependencies.js:123041
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
@@ -2200,7 +2195,7 @@ msgstr ""
 "Kan geen end-naar-end encryptie gebruiken in deze groep chat, of de groep "
 "chat heeft enige anonimiteit of niet alle deelnemers ondersteunen OMEMO."
 
-#: dist/converse-no-dependencies.js:118692
+#: dist/converse-no-dependencies.js:123043
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
@@ -2209,15 +2204,15 @@ msgstr ""
 "Kan geen eind-tot-eind-versleuteling gebruiken omdat %1$s ne cliënt gebruikt "
 "die dat geen ondersteuning biedt voor OMEMO."
 
-#: dist/converse-no-dependencies.js:118705
+#: dist/converse-no-dependencies.js:123056
 msgid "Messages are being sent in plaintext"
 msgstr "Berichten worden onversleuteld verzonden"
 
-#: dist/converse-no-dependencies.js:118706
+#: dist/converse-no-dependencies.js:123057
 msgid "Messages are sent encrypted"
 msgstr "Uw berichten zijn niet meer versleuteld"
 
-#: dist/converse-no-dependencies.js:118709
+#: dist/converse-no-dependencies.js:123060
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
@@ -2225,77 +2220,77 @@ msgstr ""
 "Deze groep chat moet alleen voor leden en niet-anoniem zijn om OMEMO-"
 "gecodeerde berichten te ondersteunen"
 
-#: dist/converse-no-dependencies.js:118711
+#: dist/converse-no-dependencies.js:123062
 msgid "OMEMO encryption is not supported"
 msgstr "OMEMO codering wordt niet ondersteund"
 
-#: dist/converse-no-dependencies.js:118735
+#: dist/converse-no-dependencies.js:123086
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 "Sorry, geen apparaten gevonden naarwaar we een OMEMO-versleuteld bericht "
 "kunnen verzenden."
 
-#: dist/converse-no-dependencies.js:118925
+#: dist/converse-no-dependencies.js:123276
 msgid "Trusted"
 msgstr "Vertrouwd"
 
-#: dist/converse-no-dependencies.js:118926
+#: dist/converse-no-dependencies.js:123277
 msgid "Untrusted"
 msgstr "Onvertrouwd"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:118934
+#: dist/converse-no-dependencies.js:123285
 msgid "OMEMO Fingerprints"
 msgstr "OMEMO-vingerafdrukken"
 
-#: dist/converse-no-dependencies.js:118935
+#: dist/converse-no-dependencies.js:123286
 msgid "No OMEMO-enabled devices found"
 msgstr "Geen OMEMO compatibele apparaten gevonden"
 
-#: dist/converse-no-dependencies.js:119483
+#: dist/converse-no-dependencies.js:123834
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "Selectievakske voor het selecteren van de volgende vingerafdruk"
 
-#: dist/converse-no-dependencies.js:119487
+#: dist/converse-no-dependencies.js:123838
 msgid "Device without a fingerprint"
 msgstr "Apparaat zonder vingerafdruk"
 
-#: dist/converse-no-dependencies.js:119488
+#: dist/converse-no-dependencies.js:123839
 msgid "Checkbox for selecting the following device"
 msgstr "Selectievakje voor het selecteren van het volgende apparaat"
 
-#: dist/converse-no-dependencies.js:119496
+#: dist/converse-no-dependencies.js:123847
 msgid "Other OMEMO-enabled devices"
 msgstr "Overige OMEMO-apparaten"
 
-#: dist/converse-no-dependencies.js:119497
+#: dist/converse-no-dependencies.js:123848
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
 "Selectievakske voor vingerafdrukken van alle andere OMEMO-apparaten te "
 "selecteren"
 
-#: dist/converse-no-dependencies.js:119498
+#: dist/converse-no-dependencies.js:123849
 msgid "Remove checked devices and close"
 msgstr "Geselecteerde apparaten verwijderen en sluiten"
 
-#: dist/converse-no-dependencies.js:119499
+#: dist/converse-no-dependencies.js:123850
 msgid "Select all"
 msgstr "Alles selecteren"
 
-#: dist/converse-no-dependencies.js:119508
+#: dist/converse-no-dependencies.js:123859
 msgid "This device's OMEMO fingerprint"
 msgstr "De OMEMO-vingerafdruk van dit apparaat"
 
-#: dist/converse-no-dependencies.js:119509
+#: dist/converse-no-dependencies.js:123860
 msgid "Generate new keys and fingerprint"
 msgstr "Nieuwe sleutels en vingerafdruk genereren"
 
-#: dist/converse-no-dependencies.js:120085
+#: dist/converse-no-dependencies.js:124435
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Der is een fout opgetreden bij het verwijderen van de apparaten."
 
-#: dist/converse-no-dependencies.js:120112
+#: dist/converse-no-dependencies.js:124462
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -2306,54 +2301,54 @@ msgstr ""
 "ontsleutelbaar zijn op dit apparaat."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:124081
-#: dist/converse-no-dependencies.js:124150
+#: dist/converse-no-dependencies.js:129176
+#: dist/converse-no-dependencies.js:129245
 msgid "Already have a chat account?"
 msgstr "Hebd’ al nen account?"
 
-#: dist/converse-no-dependencies.js:124082
-#: dist/converse-no-dependencies.js:124151
+#: dist/converse-no-dependencies.js:129177
+#: dist/converse-no-dependencies.js:129246
 msgid "Log in here"
 msgstr "Meld u hier aan"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:124102
+#: dist/converse-no-dependencies.js:129197
 msgid "Choose a different provider"
 msgstr "Kiesd nen andere leverancier"
 
-#: dist/converse-no-dependencies.js:124103
+#: dist/converse-no-dependencies.js:129198
 msgid "Account Registration:"
 msgstr "Accountregistratie:"
 
-#: dist/converse-no-dependencies.js:124104
+#: dist/converse-no-dependencies.js:129199
 msgid "Register"
 msgstr "Registreren"
 
-#: dist/converse-no-dependencies.js:124143
+#: dist/converse-no-dependencies.js:129238
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Tip: der is ne lijst met openbare XMPP-leveranciers beschikbaar"
 
-#: dist/converse-no-dependencies.js:124144
+#: dist/converse-no-dependencies.js:129239
 msgid "here"
 msgstr "hier"
 
-#: dist/converse-no-dependencies.js:124149
+#: dist/converse-no-dependencies.js:129244
 msgid "Fetch registration form"
 msgstr "Registratieformulier ophalen"
 
-#: dist/converse-no-dependencies.js:124156
+#: dist/converse-no-dependencies.js:129251
 msgid "Create your account"
 msgstr "Maakt uwen account aan"
 
-#: dist/converse-no-dependencies.js:124157
+#: dist/converse-no-dependencies.js:129252
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Voerd den XMPP-leverancier in waarbij da’ g’u wild registreren:"
 
-#: dist/converse-no-dependencies.js:124860
+#: dist/converse-no-dependencies.js:129921
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Sorry, we konden geen verbinding maken met uwe gekozen leverancier."
 
-#: dist/converse-no-dependencies.js:124872
+#: dist/converse-no-dependencies.js:129933
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -2361,15 +2356,15 @@ msgstr ""
 "Sorry, den opgegeven leverancier bied geen ondersteuning voor "
 "inbandaccountregistratie. Probeerd nen andere leverancier."
 
-#: dist/converse-no-dependencies.js:125009
+#: dist/converse-no-dependencies.js:130068
 msgid "Now logging you in"
 msgstr "Bezig met aanmelden"
 
-#: dist/converse-no-dependencies.js:125011
+#: dist/converse-no-dependencies.js:130070
 msgid "Registered successfully"
 msgstr "Geregistreerd"
 
-#: dist/converse-no-dependencies.js:125092
+#: dist/converse-no-dependencies.js:130151
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -2377,262 +2372,267 @@ msgstr ""
 "De leverancier weigerde uw registratieverzoek. Controleerd de waarden die "
 "g’invoerde."
 
-#: dist/converse-no-dependencies.js:125311
+#: dist/converse-no-dependencies.js:130373
 msgid " e.g. conversejs.org"
 msgstr " bv. conversejs.org"
 
-#: dist/converse-no-dependencies.js:125800
+#: dist/converse-no-dependencies.js:131009
 msgid "This field is required"
 msgstr "Dees veld is verplicht"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:125804
+#: dist/converse-no-dependencies.js:131013
 msgid "Join"
 msgstr "Deelnemen"
 
-#: dist/converse-no-dependencies.js:125808
+#: dist/converse-no-dependencies.js:131017
 msgid "name@conference.example.org"
 msgstr "naam@groepsgesprek.voorbeeld.be"
 
-#: dist/converse-no-dependencies.js:125810
+#: dist/converse-no-dependencies.js:131019
 msgid "Groupchat name"
 msgstr "Gespreksnaam"
 
-#: dist/converse-no-dependencies.js:125810
+#: dist/converse-no-dependencies.js:131019
 msgid "Groupchat address"
 msgstr "Gespreksadres"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:126024
+#: dist/converse-no-dependencies.js:131233
 msgid "Enter a new Groupchat"
 msgstr "Deelnemen aan nieuw groepsgesprek"
 
-#: dist/converse-no-dependencies.js:126083
+#: dist/converse-no-dependencies.js:131292
 msgid "Groupchat id is invalid."
 msgstr "Groep chat ID is ongeldig."
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:126132
+#: dist/converse-no-dependencies.js:131318
 msgid "Description:"
 msgstr "Beschrijving:"
 
-#: dist/converse-no-dependencies.js:126133
+#: dist/converse-no-dependencies.js:131319
 msgid "Groupchat XMPP Address:"
 msgstr "Groep XMPP adres:"
 
-#: dist/converse-no-dependencies.js:126134
+#: dist/converse-no-dependencies.js:131320
 msgid "Participants:"
 msgstr "Deelnemers:"
 
-#: dist/converse-no-dependencies.js:126135
+#: dist/converse-no-dependencies.js:131321
 msgid "Features:"
 msgstr "Functies:"
 
-#: dist/converse-no-dependencies.js:126136
+#: dist/converse-no-dependencies.js:131322
 msgid "Requires authentication"
 msgstr "Authenticatie vereist"
 
-#: dist/converse-no-dependencies.js:126138
+#: dist/converse-no-dependencies.js:131324
 msgid "Requires an invitation"
 msgstr "Uitnodiging vereist"
 
-#: dist/converse-no-dependencies.js:126140
+#: dist/converse-no-dependencies.js:131326
 msgid "Non-anonymous"
 msgstr "Nie-anoniem"
 
-#: dist/converse-no-dependencies.js:126142
+#: dist/converse-no-dependencies.js:131328
 msgid "Permanent"
 msgstr "Blijvend"
 
-#: dist/converse-no-dependencies.js:126146
+#: dist/converse-no-dependencies.js:131332
 msgid "Unmoderated"
 msgstr "Nie’ gemodereerd"
 
-#: dist/converse-no-dependencies.js:126166
+#: dist/converse-no-dependencies.js:131352
 msgid "Show groupchats"
 msgstr "Groepsgesprekken tonen"
 
-#: dist/converse-no-dependencies.js:126167
+#: dist/converse-no-dependencies.js:131353
 msgid "Server address"
 msgstr "Serveradres"
 
-#: dist/converse-no-dependencies.js:126171
-#: dist/converse-no-dependencies.js:126581
+#: dist/converse-no-dependencies.js:131357
+#: dist/converse-no-dependencies.js:131765
 msgid "Show more information on this groupchat"
 msgstr "Toond meer informatie over dit groepsgesprek"
 
-#: dist/converse-no-dependencies.js:126413
+#: dist/converse-no-dependencies.js:131597
 msgid "conference.example.org"
 msgstr "groepsgesprek.voorbeeld.be"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:126434
+#: dist/converse-no-dependencies.js:131618
 msgid "Query for Groupchats"
 msgstr "Zoeken naar gesprekken"
 
-#: dist/converse-no-dependencies.js:126474
+#: dist/converse-no-dependencies.js:131658
 msgid "Groupchats found"
 msgstr "Groepsgesprekken gevonden"
 
-#: dist/converse-no-dependencies.js:126482
+#: dist/converse-no-dependencies.js:131666
 msgid "No groupchats found"
 msgstr "Geen groepsgesprekken gevonden"
 
-#: dist/converse-no-dependencies.js:126577
+#: dist/converse-no-dependencies.js:131761
 msgid "Leave this groupchat"
 msgstr "Dit gesprek verlaten"
 
-#: dist/converse-no-dependencies.js:126597
+#: dist/converse-no-dependencies.js:131781
 msgid "Click to toggle the list of open groupchats"
 msgstr "Klikt voor de lijst me’ groepsgesprekken te tonen/verbergen"
 
-#: dist/converse-no-dependencies.js:126598
+#: dist/converse-no-dependencies.js:131782
 msgid "Groupchats"
 msgstr "Groepgesprekken"
 
-#: dist/converse-no-dependencies.js:126599
+#: dist/converse-no-dependencies.js:131783
 msgid "Query for groupchats"
 msgstr "Zoeken naar gesprekken"
 
-#: dist/converse-no-dependencies.js:126600
+#: dist/converse-no-dependencies.js:131784
 msgid "Add a new groupchat"
 msgstr "Nieuw groepsgesprek toevoegen"
 
-#: dist/converse-no-dependencies.js:126601
+#: dist/converse-no-dependencies.js:131785
 #, fuzzy
 msgid "Show bookmarked groupchats"
 msgstr "Groepsgesprekken tonen"
 
-#: dist/converse-no-dependencies.js:127178
+#: dist/converse-no-dependencies.js:132363
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Zijt ge zeker dat ge het gesprek ‘%1$s’ wilt verlaten?"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:127680
+#: dist/converse-no-dependencies.js:132865
 msgid "Add"
 msgstr "Toevoegen"
 
-#: dist/converse-no-dependencies.js:127683
+#: dist/converse-no-dependencies.js:132867
 #, fuzzy
 msgid "Group"
 msgstr "Groepen"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:127892
+#: dist/converse-no-dependencies.js:133385
 msgid "Add a Contact"
 msgstr "Voeg een contact toe"
 
-#: dist/converse-no-dependencies.js:127991
-msgid "Sorry, could not find a contact with that name"
-msgstr "Sorry, kon geen contact vinden met die naam"
-
-#: dist/converse-no-dependencies.js:128013
+#: dist/converse-no-dependencies.js:133396
 msgid "This contact has already been added"
 msgstr "Dees contact werd al toegevoegd"
 
+#: dist/converse-no-dependencies.js:133436
+msgid "Sorry, could not find a contact with that name"
+msgstr "Sorry, kon geen contact vinden met die naam"
+
 #. harmony default export
-#: dist/converse-no-dependencies.js:128106
+#: dist/converse-no-dependencies.js:133517
 msgid "Click to hide these contacts"
 msgstr "Klikt voor deze contacten te verbergen"
 
 #. harmony default export
-#: dist/converse-no-dependencies.js:128134
+#: dist/converse-no-dependencies.js:133545
 msgid "Contacts"
 msgstr "Contacten"
 
-#: dist/converse-no-dependencies.js:128135
+#: dist/converse-no-dependencies.js:133546
 #, fuzzy
 msgid "Click to toggle contacts"
 msgstr "Klikt voor deze contacten te verbergen"
 
-#: dist/converse-no-dependencies.js:128136
+#: dist/converse-no-dependencies.js:133547
 msgid "Add a contact"
 msgstr "Voeg een contact toe"
 
-#: dist/converse-no-dependencies.js:128137
+#: dist/converse-no-dependencies.js:133548
 msgid "Re-sync your contacts"
 msgstr "Hersynchroniseert uw contacten"
 
-#: dist/converse-no-dependencies.js:128783
+#: dist/converse-no-dependencies.js:134194
 msgid "This contact is busy"
 msgstr "Dit contact is bezet"
 
-#: dist/converse-no-dependencies.js:128784
+#: dist/converse-no-dependencies.js:134195
 msgid "This contact is online"
 msgstr "Dit contact is online"
 
-#: dist/converse-no-dependencies.js:128785
+#: dist/converse-no-dependencies.js:134196
 msgid "This contact is offline"
 msgstr "Dit contact is offline"
 
-#: dist/converse-no-dependencies.js:128786
+#: dist/converse-no-dependencies.js:134197
 msgid "This contact is unavailable"
 msgstr "Dit contact is nie beschikbaar"
 
-#: dist/converse-no-dependencies.js:128787
+#: dist/converse-no-dependencies.js:134198
 msgid "This contact is away for an extended period"
 msgstr "Dit contact is uitgebreid afwezig"
 
-#: dist/converse-no-dependencies.js:128788
+#: dist/converse-no-dependencies.js:134199
 msgid "This contact is away"
 msgstr "Dit contact is afwezig"
 
-#: dist/converse-no-dependencies.js:128808
+#: dist/converse-no-dependencies.js:134219
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Klikt voor %1$s als contact te verwijderen"
 
-#: dist/converse-no-dependencies.js:128831
+#: dist/converse-no-dependencies.js:134242
 #, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "Klikt voor te chatten met %1$s (XMPP adres: %2$s)"
 
-#: dist/converse-no-dependencies.js:129332
+#: dist/converse-no-dependencies.js:134742
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Klikt voor het contactverzoek van %1$s t’aanvaarden"
 
-#: dist/converse-no-dependencies.js:129333
+#: dist/converse-no-dependencies.js:134743
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Klikt voor het contactverzoek van %1$s te weigeren"
 
-#: dist/converse-no-dependencies.js:129430
+#: dist/converse-no-dependencies.js:134840
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Zij’ ge zeker da’ ge dit contactverzoek wild weigeren?"
 
-#: dist/converse-no-dependencies.js:129478
+#: dist/converse-no-dependencies.js:134888
 msgid "Filter by contact name"
 msgstr "Filteren op contactnaam"
 
-#: dist/converse-no-dependencies.js:129479
+#: dist/converse-no-dependencies.js:134889
 msgid "Filter by group name"
 msgstr "Filteren op groepsnaam"
 
-#: dist/converse-no-dependencies.js:129480
+#: dist/converse-no-dependencies.js:134890
 msgid "Filter by status"
 msgstr "Filteren op status"
 
-#: dist/converse-no-dependencies.js:129481
+#: dist/converse-no-dependencies.js:134891
 msgid "Any"
 msgstr "Elke"
 
-#: dist/converse-no-dependencies.js:129482
+#: dist/converse-no-dependencies.js:134892
 msgid "Unread"
 msgstr "Ongelezen"
 
-#: dist/converse-no-dependencies.js:129484
+#: dist/converse-no-dependencies.js:134894
 msgid "Chatty"
 msgstr "Spraakzaam"
 
-#: dist/converse-no-dependencies.js:129487
+#: dist/converse-no-dependencies.js:134897
 msgid "Extended Away"
 msgstr "Uitgebreid afwezig"
 
-#: dist/converse-no-dependencies.js:129488
+#: dist/converse-no-dependencies.js:134898
 msgid "Offline"
 msgstr "Offline"
+
+#~ msgid "The connection has dropped, attempting to reconnect."
+#~ msgstr ""
+#~ "De verbinding is verbroken, wij proberen uw verbinding weer vast te "
+#~ "stellen."
 
 #~ msgid "Roles"
 #~ msgstr "Rollen"

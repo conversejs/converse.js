@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2022-11-05 01:37+0000\n"
+"PO-Revision-Date: 2023-10-17 12:40+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -956,7 +956,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:84414
 msgid "Error: unexpected result"
-ssgstr "Fout: onverwagse resultaat"
+msgstr "Fout: onverwagse resultaat"
 
 #: dist/converse-no-dependencies.js:84850
 msgid "Bookmark this groupchat"

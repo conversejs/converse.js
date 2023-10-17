@@ -73,7 +73,7 @@ describe('The profile modal', function () {
     );
 
     it(
-        'informs you if you cannot reset your password due to in-band registration not being supported',
+        'informs you if you cannot reset your password due to registration not being supported',
         mock.initConverse([], {}, async function (_converse) {
             const modal = await submitPasswordResetForm(_converse);
 
@@ -98,7 +98,7 @@ describe('The profile modal', function () {
             );
 
             const alert = await u.waitUntil(() => modal.querySelector('.alert-danger'));
-            expect(alert.textContent).toBe('Your server does not support in-band password reset');
+            expect(alert.textContent).toBe('Your server does not support password reset');
         })
     );
 

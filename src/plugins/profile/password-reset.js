@@ -45,7 +45,7 @@ class PasswordReset extends CustomElement {
             this.alert_message = __('Timeout error');
             return;
         } else if (sizzle(`error service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, iq_response).length) {
-            this.alert_message = __('Your server does not support in-band password reset');
+            this.alert_message = __('Your server does not support password reset');
             return;
         } else if (u.isErrorStanza(iq_response)) {
             this.alert_message = __('Your server responded with an unknown error, check the console for details');
@@ -68,7 +68,7 @@ class PasswordReset extends CustomElement {
         if (iq_result === null) {
             this.alert_message = __('Timeout error while trying to set your password');
         } else if (sizzle(`error not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, iq_result).length) {
-            this.alert_message = __('Your server does not allow in-band password reset');
+            this.alert_message = __('Your server does not allow password reset');
         } else if (sizzle(`error forbidden[xmlns="${Strophe.NS.STANZAS}"]`, iq_result).length) {
             this.alert_message = __('You are not allowed to change your password');
         } else if (u.isErrorStanza(iq_result)) {

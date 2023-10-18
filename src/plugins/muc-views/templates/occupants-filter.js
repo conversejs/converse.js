@@ -1,5 +1,6 @@
 import { html } from "lit";
 import { __ } from 'i18n';
+import { api } from '@converse/headless';
 
 /**
  * @param {import('shared/components/contacts-filter').ContactsFilter} el
@@ -20,10 +21,12 @@ export default (el) => {
     const filter_text = el.filter.get('filter_text');
     const filter_type = el.filter.get('filter_type');
 
+    const is_overlay_mode = api.settings.get('view_mode') === 'overlayed';
+
     return html`
         <form class="contacts-filter-form input-button-group ${ (!el.shouldBeVisible()) ? 'hidden' : 'fade-in' }"
               @submit=${ev => el.submitFilter(ev)}>
-            <div class="form-inline flex-nowrap">
+            <div class="form-inline ${is_overlay_mode ? '' : 'flex-nowrap'}">
                 <div class="filter-by d-flex flex-nowrap">
                     <converse-icon
                             size="1em"

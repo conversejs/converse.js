@@ -9,7 +9,6 @@ import "./modals/add-contact.js";
 import './rosterview.js';
 import RosterContactView from './contactview.js';
 import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
-import { RosterFilterView } from './filterview.js';
 import { _converse, api, converse } from "@converse/headless";
 import { highlightRosterItem } from './utils.js';
 
@@ -32,7 +31,6 @@ converse.plugins.add('converse-rosterview', {
         api.promises.add('rosterViewInitialized');
 
         _converse.RosterFilter = RosterFilter;
-        _converse.RosterFilterView = RosterFilterView;
         _converse.RosterContactView = RosterContactView;
 
         /* -------- Event Handlers ----------- */

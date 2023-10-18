@@ -5,6 +5,7 @@ import { _converse, api } from "@converse/headless";
 import { html } from "lit";
 import { isUniView } from '@converse/headless/utils/session.js';
 import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
+import { tplRoomDomainGroupList } from 'plugins/roomslist/templates/groups.js';
 
 
 function isCurrentlyOpen (room) {
@@ -33,7 +34,7 @@ const tplUnreadIndicator = (room) => html`<span class="list-item-badge badge bad
 const tplActivityIndicator = () => html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
 
 
-function tplRoomItem (el, room) {
+export function tplRoomItem (el, room) {
     const i18n_leave_room = __('Leave this groupchat');
     const has_unread_msgs = room.get('num_unread_general') || room.get('has_activity');
     return html`
@@ -67,44 +68,11 @@ function tplRoomItem (el, room) {
         </div>`;
 }
 
-function tplRoomDomainGroup (el, domain, rooms) {
-    const i18n_title = __('Click to hide these rooms');
-    const collapsed = el.model.get('collapsed_domains');
-    const is_collapsed = collapsed.includes(domain);
-    return html`
-    <div class="muc-domain-group" data-domain="${domain}">
-        <a href="#" class="list-toggle muc-domain-group-toggle controlbox-padded" title="${i18n_title}" @click=${ev => el.toggleDomainList(ev, domain)}>
-            <converse-icon
-                class="fa ${ is_collapsed ? 'fa-caret-right' : 'fa-caret-down' }"
-                size="1em"
-                color="var(--muc-group-color)"></converse-icon>
-            ${domain}
-        </a>
-        <ul class="items-list muc-domain-group ${ is_collapsed ? 'collapsed' : '' }" data-domain="${domain}">
-            ${ rooms.map(room => tplRoomItem(el, room)) }
-        </ul>
-    </div>`;
-}
-
 export default (el) => {
     const { chatboxes, CHATROOMS_TYPE, CLOSED } = _converse;
     const group_by_domain = api.settings.get('muc_grouped_by_domain');
     const rooms = chatboxes.filter(m => m.get('type') === CHATROOMS_TYPE);
     rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
-    // The rooms should stay sorted as they are iterated and added in order
-    const grouped_rooms = new Map();
-    if (group_by_domain) {
-        for (const room of rooms) {
-            const roomdomain = room.get('jid').split('@').at(-1).toLowerCase();
-            if (grouped_rooms.has(roomdomain)) {
-                grouped_rooms.get(roomdomain).push(room);
-            } else {
-                grouped_rooms.set(roomdomain, [room]);
-            }
-        }
-    }
-    const sorted_domains = Array.from(grouped_rooms.keys());
-    sorted_domains.sort();
 
     const i18n_desc_rooms = __('Click to toggle the list of open groupchats');
     const i18n_heading_chatrooms = __('Groupchats');
@@ -146,7 +114,7 @@ export default (el) => {
         <div class="list-container list-container--openrooms ${ rooms.length ? '' : 'hidden' }">
             <div class="items-list rooms-list open-rooms-list ${ is_closed ? 'collapsed' : '' }">
                 ${ group_by_domain ?
-                    sorted_domains.map(domain => tplRoomDomainGroup(el, domain, grouped_rooms.get(domain))) :
+                    tplRoomDomainGroupList(el, rooms) :
                     rooms.map(room => tplRoomItem(el, room))
                 }
             </div>

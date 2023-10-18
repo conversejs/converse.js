@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-06-25 02:53+0000\n"
+"PO-Revision-Date: 2023-10-21 02:15+0000\n"
 "Last-Translator: Eric <hamburger2048@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.1\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -1918,9 +1918,8 @@ msgid "Timeout error"
 msgstr "超时错误"
 
 #: dist/converse-no-dependencies.js:119817
-#, fuzzy
 msgid "Your server does not support password reset"
-msgstr "你的服务器不支持带内密码重置"
+msgstr "你的服务器不支持密码重置"
 
 #: dist/converse-no-dependencies.js:119824
 msgid ""
@@ -1932,9 +1931,8 @@ msgid "Timeout error while trying to set your password"
 msgstr "尝试设置密码时出现超时错误"
 
 #: dist/converse-no-dependencies.js:119845
-#, fuzzy
 msgid "Your server does not allow password reset"
-msgstr "你的服务器不允许带内密码重置"
+msgstr "你的服务器不允许密码重置"
 
 #: dist/converse-no-dependencies.js:119847
 #: dist/converse-no-dependencies.js:119849

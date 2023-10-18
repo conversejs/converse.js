@@ -17,7 +17,6 @@ describe("The occupants sidebar", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => view.model.occupants.length === 2);
 
-        const occupants = view.querySelector('.occupant-list');
         for (let i=0; i<mock.chatroom_names.length; i++) {
             const name = mock.chatroom_names[i];
             const role = mock.chatroom_roles[name].role;
@@ -34,6 +33,7 @@ describe("The occupants sidebar", function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         }
 
+        const occupants = view.querySelector('.occupant-list');
         await u.waitUntil(() => occupants.querySelectorAll('li').length > 2, 500);
         expect(occupants.querySelectorAll('li').length).toBe(2+mock.chatroom_names.length);
         expect(view.model.occupants.length).toBe(2+mock.chatroom_names.length);

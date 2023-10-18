@@ -3,6 +3,7 @@
 ## 11.0.0 (Unreleased)
 
 - #2716: Fix issue with chat display when opening via URL
+- Add an occupants filter to the MUC sidebar
 
 ### Breaking changes:
 

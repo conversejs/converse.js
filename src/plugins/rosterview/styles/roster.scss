@@ -39,29 +39,6 @@
             }
         }
 
-        .roster-filter-form {
-            width: 100%;
-
-            .button-group {
-                padding: 0.2em;
-            }
-
-            converse-icon {
-                padding: 0.25em;
-            }
-
-            .roster-filter {
-                width: 100%;
-                margin: 0.2em;
-                font-size: calc(var(--font-size) - 2px);
-            }
-
-            .state-type {
-                font-size: calc(var(--font-size) - 2px);
-                width: 100%;
-            }
-        }
-
         .roster-contacts {
             padding: 0;
             margin: 0 0 0.2em 0;

@@ -223,7 +223,7 @@ describe("The Contacts Roster", function () {
         await mock.waitForRoster(_converse, 'current');
 
         const rosterview = document.querySelector('converse-roster');
-        const filter = rosterview.querySelector('.roster-filter');
+        const filter = rosterview.querySelector('.contacts-filter');
         const roster = rosterview.querySelector('.roster-contacts');
 
         await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 800);
@@ -275,7 +275,7 @@ describe("The Contacts Roster", function () {
                 return el.isConnected && flyout.offsetHeight < panel.scrollHeight;
             }
             const rosterview = document.querySelector('converse-roster');
-            const filter = rosterview.querySelector('.roster-filter');
+            const filter = rosterview.querySelector('.contacts-filter');
             const el = rosterview.querySelector('.roster-contacts');
             await u.waitUntil(() => hasScrollBar(el) ? u.isVisible(filter) : !u.isVisible(filter), 900);
         }));
@@ -288,7 +288,7 @@ describe("The Contacts Roster", function () {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
             const rosterview = document.querySelector('converse-roster');
-            let filter = rosterview.querySelector('.roster-filter');
+            let filter = rosterview.querySelector('.contacts-filter');
             const roster = rosterview.querySelector('.roster-contacts');
 
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 600);
@@ -305,7 +305,7 @@ describe("The Contacts Roster", function () {
             const visible_group = sizzle('.roster-group', roster).filter(u.isVisible).pop();
             expect(visible_group.querySelector('a.group-toggle').textContent.trim()).toBe('friends & acquaintences');
 
-            filter = rosterview.querySelector('.roster-filter');
+            filter = rosterview.querySelector('.contacts-filter');
             filter.value = "j";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 2), 700);
@@ -318,14 +318,14 @@ describe("The Contacts Roster", function () {
             expect(visible_groups[0].textContent.trim()).toBe('friends & acquaintences');
             expect(visible_groups[1].textContent.trim()).toBe('Ungrouped');
 
-            filter = rosterview.querySelector('.roster-filter');
+            filter = rosterview.querySelector('.contacts-filter');
             filter.value = "xxx";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 0), 600);
             visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
             expect(visible_groups.length).toBe(0);
 
-            filter = rosterview.querySelector('.roster-filter');
+            filter = rosterview.querySelector('.contacts-filter');
             filter.value = "";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 600);
@@ -344,7 +344,7 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 600);
             expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(5);
 
-            let filter = rosterview.querySelector('.roster-filter');
+            let filter = rosterview.querySelector('.contacts-filter');
             filter.value = "colleagues";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
 
@@ -354,13 +354,13 @@ describe("The Contacts Roster", function () {
             // Check that all contacts under the group are shown
             expect(sizzle('div.roster-group:not(.collapsed) li', roster).filter(l => !u.isVisible(l)).length).toBe(0);
 
-            filter = rosterview.querySelector('.roster-filter');
+            filter = rosterview.querySelector('.contacts-filter');
             filter.value = "xxx";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
 
             await u.waitUntil(() => (roster.querySelectorAll('.roster-group').length === 0), 700);
 
-            filter = rosterview.querySelector('.roster-filter');
+            filter = rosterview.querySelector('.contacts-filter');
             filter.value = ""; // Check that groups are shown again, when the filter string is cleared.
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (roster.querySelectorAll('div.roster-group.collapsed').length === 0), 700);
@@ -374,16 +374,16 @@ describe("The Contacts Roster", function () {
             await mock.waitForRoster(_converse, 'current');
 
             const rosterview = document.querySelector('converse-roster');
-            const filter = rosterview.querySelector('.roster-filter');
+            const filter = rosterview.querySelector('.contacts-filter');
             filter.value = "xxx";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             expect(_.includes(filter.classList, "x")).toBeFalsy();
-            expect(u.hasClass('hidden', rosterview.querySelector('.roster-filter-form .clear-input'))).toBeTruthy();
+            expect(u.hasClass('hidden', rosterview.querySelector('.contacts-filter-form .clear-input'))).toBeTruthy();
 
             const isHidden = (el) => u.hasClass('hidden', el);
-            await u.waitUntil(() => !isHidden(rosterview.querySelector('.roster-filter-form .clear-input')), 900);
+            await u.waitUntil(() => !isHidden(rosterview.querySelector('.contacts-filter-form .clear-input')), 900);
             rosterview.querySelector('.clear-input').click();
-            await u.waitUntil(() => document.querySelector('.roster-filter').value == '');
+            await u.waitUntil(() => document.querySelector('.contacts-filter').value == '');
         }));
 
         // Disabling for now, because since recently this test consistently

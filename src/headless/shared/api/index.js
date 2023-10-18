@@ -28,6 +28,7 @@ const api = {
     ...promise_api,
 
     disco: null,
+    elements: null,
 };
 
 export default api;

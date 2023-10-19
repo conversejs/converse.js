@@ -1,0 +1,44 @@
+name: 'XMPP Notifier'
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  notif-script:
+    runs-on: ubuntu-latest
+    name: job that pushes repo news to xmpp
+    steps:
+      - name: push_info_step
+        id: push
+        uses: conversejs/github-action-xmpp-notifier@master
+        if: github.event_name == 'push'
+        with: # Set the secrets as inputs
+          # jid expects the bot's bare jid (user@domain)
+          jid: ${{ secrets.jid }}
+          password: ${{ secrets.password }}
+          server_host: ${{ secrets.server_host }}
+          recipient: ${{ secrets.recipient }}
+          server_port: ${{ secrets.server_port }}
+          message: |
+            *${{ github.actor }}* pushed commits to ${{ github.event.ref }} with message(s):
+            > ${{ join(github.event.commits.*.message, '\n\n> ') }}
+
+            ${{ github.event.compare }}
+          recipient_is_room: true
+
+      - name: pr_open_info_step
+        id: pull_request_open
+        uses: conversejs/github-action-xmpp-notifier@master
+        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        with: # Set the secrets as inputs
+          jid: ${{ secrets.jid }}
+          password: ${{ secrets.password }}
+          server_host: ${{ secrets.server_host }}
+          recipient: ${{ secrets.recipient }}
+          message: |
+            *${{ github.actor }}* opened a PR ${{ github.event.pull_request.html_url }}
+            > ${{ github.event.pull_request.title }}
+          recipient_is_room: true

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-08-19 15:16+0000\n"
+"PO-Revision-Date: 2023-10-21 02:15+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -1962,9 +1962,8 @@ msgid "Timeout error"
 msgstr "Erro por caducidade"
 
 #: dist/converse-no-dependencies.js:119817
-#, fuzzy
 msgid "Your server does not support password reset"
-msgstr "O teu servidor non ten soporte para cambiar o contrasinal desde aquí"
+msgstr "O teu servidor non permite cambiar o contrasinal"
 
 #: dist/converse-no-dependencies.js:119824
 msgid ""
@@ -1978,9 +1977,8 @@ msgid "Timeout error while trying to set your password"
 msgstr "Erro por caducidade ao intentar establecer o contrasinal"
 
 #: dist/converse-no-dependencies.js:119845
-#, fuzzy
 msgid "Your server does not allow password reset"
-msgstr "O teu servidor non permite cambiar o contrasinal desde o cliente"
+msgstr "O teu servidor non permite restablecer o contrasinal"
 
 #: dist/converse-no-dependencies.js:119847
 #: dist/converse-no-dependencies.js:119849

@@ -1,16 +1,19 @@
+import EventEmitter from '@converse/skeletor/src/eventemitter.js';
 import _converse from '../_converse.js';
 import isEqual from "lodash-es/isEqual.js";
 import log from '../../log.js';
 import pick from 'lodash-es/pick';
-import { merge } from '../../utils/object.js';
 import { DEFAULT_SETTINGS } from './constants.js';
-import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { initStorage } from '../../utils/storage.js';
+import { merge } from '../../utils/object.js';
+
 
 let app_settings;
 let init_settings = {}; // Container for settings passed in via converse.initialize
 let user_settings; // User settings, populated via api.users.settings
+
+class AppSettings extends EventEmitter(Object) {}
 
 export function getAppSettings () {
     return app_settings;
@@ -19,8 +22,7 @@ export function getAppSettings () {
 export function initAppSettings (settings) {
     init_settings = settings;
 
-    app_settings = {};
-    Object.assign(app_settings, Events);
+    app_settings = new AppSettings();
 
     // Allow only whitelisted settings to be overwritten via converse.initialize
     const allowed_settings = pick(settings, Object.keys(DEFAULT_SETTINGS));

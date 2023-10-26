@@ -5,6 +5,7 @@ import pick from "lodash-es/pick";
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
+import { PRIVATE_CHAT_TYPE } from '@converse/headless/shared/constants.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { debouncedPruneHistory, handleCorrection } from '../../shared/chat/utils.js';
 import { filesize } from "filesize";
@@ -12,10 +13,10 @@ import { getMediaURLsMetadata } from '../../shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '../../utils/storage.js';
 import { isEmptyMessage } from '../../utils/index.js';
+import { isNewMessage } from './utils.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import { isNewMessage } from './utils.js';
 
 const { Strophe, $msg } = converse.env;
 
@@ -38,7 +39,7 @@ class ChatBox extends ModelWithContact {
             'num_unread': 0,
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
             'time_sent': (new Date(0)).toISOString(),
-            'type': _converse.PRIVATE_CHAT_TYPE,
+            'type': PRIVATE_CHAT_TYPE,
             'url': ''
         }
     }
@@ -62,7 +63,7 @@ class ChatBox extends ModelWithContact {
         this.initUI();
         this.initMessages();
 
-        if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        if (this.get('type') === PRIVATE_CHAT_TYPE) {
             this.presence = _converse.presences.get(jid) || _converse.presences.create({ jid });
             await this.setRosterContact(jid);
             this.presence.on('change:show', item => this.onPresenceChanged(item));

@@ -1,7 +1,6 @@
 import i18n from './i18n.js';
-import log from '../log.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
-import { Events } from '@converse/skeletor/src/events.js';
+import { EventEmitter } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 
 import {
@@ -30,60 +29,68 @@ import {
 
 
 /**
- * A private, closured object containing the private api (via {@link _converse.api})
+ * A private, closured namespace containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
  * @global
  * @namespace _converse
  */
-const _converse = {
-    VERSION_NAME,
+class ConverseNamespace extends EventEmitter(Object) {
 
-    templates: {},
-    promises: {
-        'initialized': getOpenPromise()
-    },
+    constructor () {
+        super();
 
-    // TODO: remove constants in next major release
-    ANONYMOUS,
-    CLOSED,
-    EXTERNAL,
-    LOGIN,
-    LOGOUT,
-    OPENED,
-    PREBIND,
+        this.VERSION_NAME = VERSION_NAME;
 
-    SUCCESS,
-    FAILURE,
+        this.templates = {};
+        this.promises = {
+            'initialized': getOpenPromise()
+        };
 
-    DEFAULT_IMAGE_TYPE,
-    DEFAULT_IMAGE,
 
-    INACTIVE,
-    ACTIVE,
-    COMPOSING,
-    PAUSED,
-    GONE,
+        Object.assign(this, {
+            ANONYMOUS,
+            CLOSED,
+            EXTERNAL,
+            LOGIN,
+            LOGOUT,
+            OPENED,
+            PREBIND,
 
-    PRIVATE_CHAT_TYPE,
-    CHATROOMS_TYPE,
-    HEADLINES_TYPE,
-    CONTROLBOX_TYPE,
+            SUCCESS,
+            FAILURE,
 
-    // Set as module attr so that we can override in tests.
-    // TODO: replace with config settings
-    TIMEOUTS: {
-        PAUSED: 10000,
-        INACTIVE: 90000
-    },
+            DEFAULT_IMAGE_TYPE,
+            DEFAULT_IMAGE,
+
+            INACTIVE,
+            ACTIVE,
+            COMPOSING,
+            PAUSED,
+            GONE,
+
+            PRIVATE_CHAT_TYPE,
+            CHATROOMS_TYPE,
+            HEADLINES_TYPE,
+            CONTROLBOX_TYPE,
+
+            // Set as module attr so that we can override in tests.
+            // TODO: replace with config settings
+            TIMEOUTS: {
+                PAUSED: 10000,
+                INACTIVE: 90000
+            },
+        });
+    }
 
     /**
      * Translate the given string based on the current locale.
      * @method __
-     * @private
      * @memberOf _converse
      * @param { ...String } args
      */
-    '__': (...args) => i18n.__(...args),
+    __ (...args) {
+        return i18n.__(...args);
+    }
 
     /**
      * A no-op method which is used to signal to gettext that the passed in string
@@ -97,15 +104,15 @@ const _converse = {
      * and we don't yet have the variables at scan time.
      *
      * @method ___
-     * @private
      * @memberOf _converse
      * @param { String } str
      */
-    '___': str => str
+    ___ (str) {
+        return str;
+    }
 }
 
-// Make _converse an event emitter
-Object.assign(_converse, Events);
+const _converse = new ConverseNamespace();
 
 // Make _converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');

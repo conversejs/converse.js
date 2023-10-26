@@ -29,6 +29,7 @@ const api = {
 
     disco: null,
     elements: null,
+    contacts: null,
 };
 
 export default api;

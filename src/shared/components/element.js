@@ -1,8 +1,8 @@
+import { EventEmitter } from '@converse/skeletor';
 import { LitElement } from 'lit';
-import { Events } from '@converse/skeletor/src/events.js';
 
 
-export class CustomElement extends LitElement {
+export class CustomElement extends EventEmitter(LitElement) {
 
     createRenderRoot () {
         // Render without the shadow DOM
@@ -23,5 +23,3 @@ export class CustomElement extends LitElement {
         this.stopListening();
     }
 }
-
-Object.assign(CustomElement.prototype, Events);

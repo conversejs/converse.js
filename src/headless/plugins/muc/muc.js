@@ -25,7 +25,7 @@ import { getUniqueId, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import { shouldCreateGroupchatMessage } from './utils.js';
+import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
 
 const { u } = converse.env;
 
@@ -316,7 +316,7 @@ class MUC extends ChatBox {
 
     onOccupantAdded (occupant) {
         if (
-            _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED) &&
+            isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED) &&
             this.session.get('connection_status') === ROOMSTATUS.ENTERED &&
             occupant.get('show') === 'online'
         ) {
@@ -326,7 +326,7 @@ class MUC extends ChatBox {
 
     onOccupantRemoved (occupant) {
         if (
-            _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED) &&
+            isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED) &&
             this.isEntered() &&
             occupant.get('show') === 'online'
         ) {
@@ -338,9 +338,9 @@ class MUC extends ChatBox {
         if (occupant.get('states').includes('303')) {
             return;
         }
-        if (occupant.get('show') === 'offline' && _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED)) {
+        if (occupant.get('show') === 'offline' && isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.EXITED);
-        } else if (occupant.get('show') === 'online' && _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED)) {
+        } else if (occupant.get('show') === 'online' && isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
         }
     }
@@ -2390,19 +2390,19 @@ class MUC extends ChatBox {
         }
 
         const current_affiliation = occupant.get('affiliation');
-        if (previous_affiliation === 'admin' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXADMIN)) {
+        if (previous_affiliation === 'admin' && isInfoVisible(converse.AFFILIATION_CHANGES.EXADMIN)) {
             this.createMessage({
                 'type': 'info',
                 'message': __('%1$s is no longer an admin of this groupchat', occupant.get('nick'))
             });
-        } else if (previous_affiliation === 'owner' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXOWNER)) {
+        } else if (previous_affiliation === 'owner' && isInfoVisible(converse.AFFILIATION_CHANGES.EXOWNER)) {
             this.createMessage({
                 'type': 'info',
                 'message': __('%1$s is no longer an owner of this groupchat', occupant.get('nick'))
             });
         } else if (
             previous_affiliation === 'outcast' &&
-            _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXOUTCAST)
+            isInfoVisible(converse.AFFILIATION_CHANGES.EXOUTCAST)
         ) {
             this.createMessage({
                 'type': 'info',
@@ -2413,7 +2413,7 @@ class MUC extends ChatBox {
         if (
             current_affiliation === 'none' &&
             previous_affiliation === 'member' &&
-            _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXMEMBER)
+            isInfoVisible(converse.AFFILIATION_CHANGES.EXMEMBER)
         ) {
             this.createMessage({
                 'type': 'info',
@@ -2421,14 +2421,14 @@ class MUC extends ChatBox {
             });
         }
 
-        if (current_affiliation === 'member' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.MEMBER)) {
+        if (current_affiliation === 'member' && isInfoVisible(converse.AFFILIATION_CHANGES.MEMBER)) {
             this.createMessage({
                 'type': 'info',
                 'message': __('%1$s is now a member of this groupchat', occupant.get('nick'))
             });
         } else if (
-            (current_affiliation === 'admin' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.ADMIN)) ||
-            (current_affiliation == 'owner' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.OWNER))
+            (current_affiliation === 'admin' && isInfoVisible(converse.AFFILIATION_CHANGES.ADMIN)) ||
+            (current_affiliation == 'owner' && isInfoVisible(converse.AFFILIATION_CHANGES.OWNER))
         ) {
             // For example: AppleJack is now an (admin|owner) of this groupchat
             this.createMessage({
@@ -2444,17 +2444,17 @@ class MUC extends ChatBox {
             return;
         }
         const previous_role = occupant._previousAttributes.role;
-        if (previous_role === 'moderator' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.DEOP)) {
+        if (previous_role === 'moderator' && isInfoVisible(converse.MUC_ROLE_CHANGES.DEOP)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.DEOP);
-        } else if (previous_role === 'visitor' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.VOICE)) {
+        } else if (previous_role === 'visitor' && isInfoVisible(converse.MUC_ROLE_CHANGES.VOICE)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.VOICE);
         }
-        if (occupant.get('role') === 'visitor' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.MUTE)) {
+        if (occupant.get('role') === 'visitor' && isInfoVisible(converse.MUC_ROLE_CHANGES.MUTE)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.MUTE);
         } else if (occupant.get('role') === 'moderator') {
             if (
                 !['owner', 'admin'].includes(occupant.get('affiliation')) &&
-                _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.OP)
+                isInfoVisible(converse.MUC_ROLE_CHANGES.OP)
             ) {
                 // Oly show this message if the user isn't already
                 // an admin or owner, otherwise this isn't new information.
@@ -2474,7 +2474,7 @@ class MUC extends ChatBox {
     createInfoMessage (code, stanza, is_self) {
         const __ = _converse.__;
         const data = { 'type': 'info', 'is_ephemeral': true };
-        if (!_converse.isInfoVisible(code)) {
+        if (!isInfoVisible(code)) {
             return;
         }
         if (code === '110' || (code === '100' && !is_self)) {

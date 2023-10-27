@@ -886,8 +886,8 @@ class ChatBox extends ModelWithContact {
      * will be editable. Otherwise no messages will be editable.
      * @method ChatBox#setEditable
      * @memberOf ChatBox
-     * @param { Object } attrs An object containing message attributes.
-     * @param { String } send_time - time when the message was sent
+     * @param {Object} attrs An object containing message attributes.
+     * @param {String} send_time - time when the message was sent
      */
     setEditable (attrs, send_time) {
         if (attrs.is_headline || isEmptyMessage(attrs) || attrs.sender !== 'me') {
@@ -906,10 +906,8 @@ class ChatBox extends ModelWithContact {
      * Queue the creation of a message, to make sure that we don't run
      * into a race condition whereby we're creating a new message
      * before the collection has been fetched.
-     * @async
-     * @private
      * @method ChatBox#createMessage
-     * @param { Object } attrs
+     * @param {Object} attrs
      */
     async createMessage (attrs, options) {
         attrs.time = attrs.time || (new Date()).toISOString();
@@ -919,11 +917,10 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Responsible for sending off a text message inside an ongoing chat conversation.
-     * @private
      * @method ChatBox#sendMessage
      * @memberOf ChatBox
-     * @param { Object } [attrs] - A map of attributes to be saved on the message
-     * @returns { Promise<Message> }
+     * @param {Object} [attrs] - A map of attributes to be saved on the message
+     * @returns {Promise<Message>}
      * @example
      * const chat = api.chats.get('buddy1@example.org');
      * chat.sendMessage({'body': 'hello world'});

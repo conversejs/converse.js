@@ -10,6 +10,10 @@
 
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
 - The connection is no longer available on the `_converse` object. Instead, use `api.connection.get()`.
+- Add a new `exports` attribute on the `_converse` object which is meant for
+  providing access for 3rd party plugins to code (e.g. classes) from
+  converse.js. Some classes that were on the `_converse` object, like
+  `CustomElement` are not on `_converse.exports`.
 
 ## 10.1.6 (2023-08-31)
 

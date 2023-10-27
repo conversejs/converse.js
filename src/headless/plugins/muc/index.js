@@ -180,12 +180,16 @@ converse.plugins.add('converse-muc', {
         routeToRoom();
         addEventListener('hashchange', routeToRoom);
 
+        // TODO: DEPRECATED
         _converse.ChatRoom = MUC;
         _converse.ChatRoomMessage = MUCMessage;
         _converse.ChatRoomOccupants = ChatRoomOccupants;
         _converse.ChatRoomOccupant = ChatRoomOccupant;
 
-        api.chatboxes.registry.add(CHATROOMS_TYPE, MUC);
+        const exports = { MUC, MUCMessage, ChatRoomOccupants, ChatRoomOccupant };
+        Object.assign(_converse.exports, exports);
+
+        /** @type {module:shared-api.APIEndpoint} */(api.chatboxes.registry).add(CHATROOMS_TYPE, MUC);
 
         Object.assign(_converse, {
             getDefaultMUCNickname,

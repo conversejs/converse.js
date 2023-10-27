@@ -6,6 +6,7 @@ import sizzle from 'sizzle';
 import { Strophe, $iq } from 'strophe.js';
 import { parseMUCMessage } from '../../plugins/muc/parsers';
 import { parseMessage } from '../../plugins/chat/parsers';
+import { CHATROOMS_TYPE } from '../../shared/constants.js';
 
 const { NS } = Strophe;
 const u = converse.env.utils;
@@ -77,7 +78,7 @@ export function preMUCJoinMAMFetch (muc) {
 
 export async function handleMAMResult (model, result, query, options, should_page) {
     await api.emojis.initialize();
-    const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
+    const is_muc = model.get('type') === CHATROOMS_TYPE;
     const doParseMessage = s => is_muc ? parseMUCMessage(s, model) : parseMessage(s);
     const messages = await Promise.all(result.messages.map(doParseMessage));
     result.messages = messages;
@@ -128,7 +129,7 @@ export async function fetchArchivedMessages (model, options = {}, should_page = 
     if (model.disable_mam) {
         return;
     }
-    const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
+    const is_muc = model.get('type') === CHATROOMS_TYPE;
     const mam_jid = is_muc ? model.get('jid') : _converse.bare_jid;
     if (!(await api.disco.supports(NS.MAM, mam_jid))) {
         return;

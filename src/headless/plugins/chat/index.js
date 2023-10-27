@@ -8,6 +8,7 @@ import Messages from './messages.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import chat_api from './api.js';
+import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
 import {
     autoJoinChats,
     enableCarbons,
@@ -41,10 +42,7 @@ converse.plugins.add('converse-chat', {
         Object.assign(_converse, { ChatBox, Message, Messages, handleMessageStanza });
         Object.assign(api, chat_api);
 
-        api.chatboxes.registry.add(
-            _converse.PRIVATE_CHAT_TYPE,
-            ChatBox
-        );
+        api.chatboxes.registry.add(PRIVATE_CHAT_TYPE, ChatBox);
 
         routeToChat();
         addEventListener('hashchange', routeToChat);

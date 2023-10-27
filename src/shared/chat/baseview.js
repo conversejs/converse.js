@@ -1,6 +1,7 @@
 import { CustomElement } from '../components/element.js';
 import { _converse, api } from '@converse/headless';
 import { onScrolledDown } from './utils.js';
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
 
 
 export default class BaseChatView extends CustomElement {
@@ -72,7 +73,7 @@ export default class BaseChatView extends CustomElement {
     }
 
     getBottomPanel () {
-        if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
+        if (this.model.get('type') === CHATROOMS_TYPE) {
             return this.querySelector('converse-muc-bottom-panel');
         } else {
             return this.querySelector('converse-chat-bottom-panel');
@@ -80,7 +81,7 @@ export default class BaseChatView extends CustomElement {
     }
 
     getMessageForm () {
-        if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
+        if (this.model.get('type') === CHATROOMS_TYPE) {
             return this.querySelector('converse-muc-message-form');
         } else {
             return this.querySelector('converse-message-form');

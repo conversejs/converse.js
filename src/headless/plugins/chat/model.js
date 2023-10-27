@@ -5,7 +5,7 @@ import pick from "lodash-es/pick";
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { PRIVATE_CHAT_TYPE } from '@converse/headless/shared/constants.js';
+import { PRIVATE_CHAT_TYPE, COMPOSING, INACTIVE, PAUSED, GONE } from '@converse/headless/shared/constants.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { debouncedPruneHistory, handleCorrection } from '../../shared/chat/utils.js';
 import { filesize } from "filesize";
@@ -110,11 +110,11 @@ class ChatBox extends ModelWithContact {
 
     getNotificationsText () {
         const { __ } = _converse;
-        if (this.notifications?.get('chat_state') === _converse.COMPOSING) {
+        if (this.notifications?.get('chat_state') === COMPOSING) {
             return __('%1$s is typing', this.getDisplayName());
-        } else if (this.notifications?.get('chat_state') === _converse.PAUSED) {
+        } else if (this.notifications?.get('chat_state') === PAUSED) {
             return __('%1$s has stopped typing', this.getDisplayName());
-        } else if (this.notifications?.get('chat_state') === _converse.GONE) {
+        } else if (this.notifications?.get('chat_state') === GONE) {
             return __('%1$s has gone away', this.getDisplayName());
         } else {
             return '';
@@ -481,17 +481,17 @@ class ChatBox extends ModelWithContact {
             window.clearTimeout(this.chat_state_timeout);
             delete this.chat_state_timeout;
         }
-        if (state === _converse.COMPOSING) {
+        if (state === COMPOSING) {
             this.chat_state_timeout = window.setTimeout(
                 this.setChatState.bind(this),
                 _converse.TIMEOUTS.PAUSED,
-                _converse.PAUSED
+                PAUSED
             );
-        } else if (state === _converse.PAUSED) {
+        } else if (state === PAUSED) {
             this.chat_state_timeout = window.setTimeout(
                 this.setChatState.bind(this),
                 _converse.TIMEOUTS.INACTIVE,
-                _converse.INACTIVE
+                INACTIVE
             );
         }
         this.set('chat_state', state, options);

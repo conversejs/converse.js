@@ -6,6 +6,7 @@ import log from '../../log.js';
 import { isArchived, isHeadline, isServerMessage, } from '../../shared/parsers';
 import { parseMessage } from './parsers.js';
 import { shouldClearCache } from '../../utils/session.js';
+import { CONTROLBOX_TYPE, PRIVATE_CHAT_TYPE } from "../../shared/constants.js";
 
 const { Strophe, u } = converse.env;
 
@@ -26,7 +27,7 @@ export async function onClearSession () {
         await Promise.all(
             _converse.chatboxes.map(c => c.messages && c.messages.clearStore({ 'silent': true }))
         );
-        const filter = o => o.get('type') !== _converse.CONTROLBOX_TYPE;
+        const filter = o => o.get('type') !== CONTROLBOX_TYPE;
         _converse.chatboxes.clearStore({ 'silent': true }, filter);
     }
 }
@@ -53,7 +54,7 @@ async function handleErrorMessage (stanza) {
         return;
     }
     const chatbox = await api.chatboxes.get(from_jid);
-    if (chatbox?.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+    if (chatbox?.get('type') === PRIVATE_CHAT_TYPE) {
         chatbox?.handleErrorMessageStanza(stanza);
     }
 }

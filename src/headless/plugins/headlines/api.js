@@ -1,5 +1,6 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
+import { HEADLINES_TYPE } from '../../shared/constants.js';
 
 export default {
     /**
@@ -26,7 +27,7 @@ export default {
                 if (!model && create) {
                     model = await api.chatboxes.create(jid, attrs, _converse.HeadlinesFeed);
                 } else {
-                    model = (model && model.get('type') === _converse.HEADLINES_TYPE) ? model : null;
+                    model = (model && model.get('type') === HEADLINES_TYPE) ? model : null;
                     if (model && Object.keys(attrs).length) {
                         model.save(attrs);
                     }
@@ -35,7 +36,7 @@ export default {
             }
             if (jids === undefined) {
                 const chats = await api.chatboxes.get();
-                return chats.filter(c => (c.get('type') === _converse.HEADLINES_TYPE));
+                return chats.filter(c => (c.get('type') === HEADLINES_TYPE));
             } else if (typeof jids === 'string') {
                 return _get(jids);
             }

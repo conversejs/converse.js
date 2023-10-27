@@ -8,6 +8,7 @@ import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor/src/model.js';
 import { ROOMSTATUS } from './constants.js';
+import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
@@ -86,7 +87,7 @@ class MUC extends ChatBox {
             'roomconfig': {},
             'time_opened': this.get('time_opened') || new Date().getTime(),
             'time_sent': new Date(0).toISOString(),
-            'type': _converse.CHATROOMS_TYPE
+            'type': CHATROOMS_TYPE
         };
     }
 

@@ -4,6 +4,7 @@ import { _converse, api, converse } from "@converse/headless";
 import { html } from "lit";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { until } from 'lit/directives/until.js';
+import { CHATROOMS_TYPE } from "@converse/headless/shared/constants.js";
 
 const u = converse.env.utils;
 
@@ -38,7 +39,7 @@ export default class EmojiDropdown extends DropdownBase {
     }
 
     render() {
-        const is_groupchat = this.chatview.model.get('type') === _converse.CHATROOMS_TYPE;
+        const is_groupchat = this.chatview.model.get('type') === CHATROOMS_TYPE;
         const color = is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
         return html`
             <div class="dropup">

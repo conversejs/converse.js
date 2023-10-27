@@ -3,6 +3,7 @@ import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
 import { ROLES } from './constants.js';
 import { safeSave } from '../../utils/index.js';
+import { CHATROOMS_TYPE } from '../../shared/constants.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -54,7 +55,7 @@ export function disconnectChatRooms () {
      * when fetched from session storage.
      */
     return _converse.chatboxes
-        .filter(m => m.get('type') === _converse.CHATROOMS_TYPE)
+        .filter(m => m.get('type') === CHATROOMS_TYPE)
         .forEach(m => m.session.save({ 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
@@ -89,7 +90,7 @@ export async function routeToRoom (event) {
  * "chatroom".
  */
 export async function openChatRoom (jid, settings) {
-    settings.type = _converse.CHATROOMS_TYPE;
+    settings.type = CHATROOMS_TYPE;
     settings.id = jid;
     const chatbox = await api.rooms.get(jid, settings, true);
     chatbox.maybeShow(true);
@@ -210,7 +211,7 @@ export function onAddClientFeatures () {
 
 export function onBeforeTearDown () {
     _converse.chatboxes
-        .where({ 'type': _converse.CHATROOMS_TYPE })
+        .where({ 'type': CHATROOMS_TYPE })
         .forEach(muc => safeSave(muc.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 

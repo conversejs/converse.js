@@ -1,17 +1,17 @@
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { _converse, api } from '@converse/headless';
+import { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } from '@converse/headless/shared/constants';
 
 
 function shouldShowChat (c) {
-    const { CONTROLBOX_TYPE } = _converse;
     const is_minimized = (api.settings.get('view_mode') === 'overlayed' && c.get('minimized'));
     return c.get('type') === CONTROLBOX_TYPE || !(c.get('hidden') || is_minimized);
 }
 
 
 export default () => {
-    const { chatboxes, CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = _converse;
+    const { chatboxes } = _converse;
     const view_mode = api.settings.get('view_mode');
     const connection = api.connection.get();
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;

@@ -12,6 +12,9 @@
 //
 // Once the rest converse.js has been loaded, window.converse will be replaced
 // with the full-fledged public API.
+/**
+ * @typedef {module:shared_converse.ConversePrivateGlobal} ConversePrivateGlobal
+ */
 
 const plugins = {};
 
@@ -55,6 +58,8 @@ const converse = {
      */
     load (settings={}) {
         if (settings.assets_path) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             __webpack_public_path__ = settings.assets_path; // eslint-disable-line no-undef
         }
         require('./index.js');
@@ -63,7 +68,10 @@ const converse = {
     }
 }
 
-window.converse = converse;
+/**
+ * @typedef {Window & {converse: ConversePrivateGlobal} } window
+ */
+window['converse'] = converse;
 
 /**
  * Once Converse.js has loaded, it'll dispatch a custom event with the name `converse-loaded`.

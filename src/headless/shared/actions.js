@@ -28,7 +28,7 @@ export function rejectMessage (stanza, text) {
  * @param { String } to_jid
  * @param { String } id - The id of the message being marked
  * @param { String } type - The marker type
- * @param { String } msg_type
+ * @param { String } [msg_type]
  */
 export function sendMarker (to_jid, id, type, msg_type) {
     const stanza = $msg({

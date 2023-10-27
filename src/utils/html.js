@@ -19,6 +19,7 @@ import u from '../headless/utils/index.js';
 import { converse, log } from '@converse/headless';
 import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';
+import { queryChildren } from '@converse/headless/utils/html.js';
 
 const { sizzle, Strophe } = converse.env;
 
@@ -527,15 +528,15 @@ u.fadeIn = function (el, callback) {
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
  * @method u#xForm2TemplateResult
- * @param { Element } field - the field to convert
- * @param { Element } stanza - the containing stanza
- * @param { Object } options
- * @returns { TemplateResult }
+ * @param {HTMLElement} field - the field to convert
+ * @param {Element} stanza - the containing stanza
+ * @param {Object} options
+ * @returns {import('lit').TemplateResult}
  */
-u.xForm2TemplateResult = function (field, stanza, options={}) {
+export function xForm2TemplateResult (field, stanza, options={}) {
     if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
-        const values = u.queryChildren(field, 'value').map(el => el?.textContent);
-        const options = u.queryChildren(field, 'option').map(option => {
+        const values = queryChildren(field, 'value').map(el => el?.textContent);
+        const options = queryChildren(field, 'option').map(/** @type {HTMLElement} */(option) => {
             const value = option.querySelector('value')?.textContent;
             return {
                 'value': value,

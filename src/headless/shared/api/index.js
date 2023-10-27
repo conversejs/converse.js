@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('../_converse.js').default} _converse
+ * @typedef {module:shared-api.APIEndpoint} APIEndpoint
+ */
 import connection_api from '../connection/api.js';
 import events_api from './events.js';
 import promise_api from './promise.js';
@@ -17,7 +21,10 @@ import { settings_api } from '../settings/api.js';
  *
  * @memberOf _converse
  * @namespace api
- * @property {Object} disco
+ * @typedef {Record<string, Function>} module:shared-api.APIEndpoint
+ * @typedef {Record<string, APIEndpoint|Function>} APINamespace
+ * @typedef {Record<string, APINamespace|APIEndpoint|Function>} API
+ * @type {API}
  */
 const api = {
     connection: connection_api,

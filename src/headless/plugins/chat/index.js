@@ -39,7 +39,10 @@ converse.plugins.add('converse-chat', {
             'send_chat_state_notifications': true,
         });
 
-        Object.assign(_converse, { ChatBox, Message, Messages, handleMessageStanza });
+        const exports = { ChatBox, Message, Messages, handleMessageStanza };
+        Object.assign(_converse, exports); // TODO: DEPRECATED
+        Object.assign(_converse.exports, exports);
+
         Object.assign(api, chat_api);
 
         api.chatboxes.registry.add(PRIVATE_CHAT_TYPE, ChatBox);

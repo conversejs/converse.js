@@ -6,6 +6,7 @@ import { html } from "lit";
 import { isUniView } from '@converse/headless/utils/session.js';
 import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
 import { tplRoomDomainGroupList } from 'plugins/roomslist/templates/groups.js';
+import { CHATROOMS_TYPE, CLOSED } from '@converse/headless/shared/constants.js';
 
 
 function isCurrentlyOpen (room) {
@@ -69,8 +70,8 @@ export function tplRoomItem (el, room) {
 }
 
 export default (el) => {
-    const { chatboxes, CHATROOMS_TYPE, CLOSED } = _converse;
     const group_by_domain = api.settings.get('muc_grouped_by_domain');
+    const { chatboxes } = _converse;
     const rooms = chatboxes.filter(m => m.get('type') === CHATROOMS_TYPE);
     rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
 

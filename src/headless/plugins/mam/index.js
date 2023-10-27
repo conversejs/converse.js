@@ -8,6 +8,7 @@ import MAMPlaceholderMessage from './placeholder.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import mam_api from './api.js';
+import { PRIVATE_CHAT_TYPE } from '../..//shared/constants.js';
 import { Strophe } from 'strophe.js';
 import {
     onMAMError,
@@ -49,13 +50,13 @@ converse.plugins.add('converse-mam', {
         api.listen.on('enteredNewRoom', muc => muc.features.get('mam_enabled') && fetchNewestMessages(muc));
 
         api.listen.on('chatReconnected', chat => {
-            if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+            if (chat.get('type') === PRIVATE_CHAT_TYPE) {
                 fetchNewestMessages(chat);
             }
         });
 
         api.listen.on('afterMessagesFetched', chat => {
-            if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+            if (chat.get('type') === PRIVATE_CHAT_TYPE) {
                 fetchNewestMessages(chat);
             }
         });

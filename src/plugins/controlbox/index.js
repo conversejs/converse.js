@@ -12,6 +12,7 @@ import ControlBoxView from './controlbox.js';
 import controlbox_api from './api.js';
 import { _converse, api, converse, log } from '@converse/headless';
 import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
+import { CONTROLBOX_TYPE } from "@converse/headless/shared/constants.js";
 
 import './styles/_controlbox.scss';
 import './styles/controlbox-head.scss';
@@ -50,10 +51,7 @@ converse.plugins.add('converse-controlbox', {
         _converse.ControlBox = ControlBox;
         _converse.ControlBoxToggle = ControlBoxToggle;
 
-        api.chatboxes.registry.add(
-            _converse.CONTROLBOX_TYPE,
-            ControlBox
-        );
+        api.chatboxes.registry.add(CONTROLBOX_TYPE, ControlBox);
 
         api.listen.on('chatBoxesFetched', onChatBoxesFetched);
         api.listen.on('clearSession', clearSession);

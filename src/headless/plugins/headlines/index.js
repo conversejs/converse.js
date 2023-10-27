@@ -7,6 +7,7 @@ import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import headlines_api from './api.js';
 import { onHeadlineMessage } from './utils.js';
+import { HEADLINES_TYPE } from '../../shared/constants.js';
 
 converse.plugins.add('converse-headlines', {
     dependencies: ["converse-chat"],
@@ -31,9 +32,6 @@ converse.plugins.add('converse-headlines', {
 
         Object.assign(api, headlines_api);
 
-        api.chatboxes.registry.add(
-            _converse.HEADLINES_TYPE,
-            HeadlinesFeed
-        );
+        api.chatboxes.registry.add(HEADLINES_TYPE, HeadlinesFeed);
     }
 });

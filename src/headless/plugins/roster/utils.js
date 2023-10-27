@@ -4,7 +4,7 @@ import log from "../../log.js";
 import { Strophe } from 'strophe.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { RosterFilter } from '../../plugins/roster/filter.js';
-import { STATUS_WEIGHTS } from "../../shared/constants";
+import { STATUS_WEIGHTS, PRIVATE_CHAT_TYPE } from "../../shared/constants";
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
 
@@ -169,7 +169,7 @@ export function onChatBoxesInitialized () {
     _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
 
     _converse.chatboxes.on('add', chatbox => {
-        if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
             chatbox.setRosterContact(chatbox.get('jid'));
         }
     });

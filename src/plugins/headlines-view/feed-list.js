@@ -1,6 +1,7 @@
 import tplFeedsList from './templates/feeds-list.js';
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless';
+import { HEADLINES_TYPE } from '@converse/headless/shared/constants.js';
 
 /**
  * Custom element which renders a list of headline feeds
@@ -23,7 +24,7 @@ export class HeadlinesFeedsList extends CustomElement {
     }
 
     renderIfHeadline (model) {
-        return model?.get('type') === _converse.HEADLINES_TYPE && this.requestUpdate();
+        return model?.get('type') === HEADLINES_TYPE && this.requestUpdate();
     }
 
     async openHeadline (ev) { // eslint-disable-line class-methods-use-this

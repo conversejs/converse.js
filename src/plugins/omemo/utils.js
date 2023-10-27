@@ -11,6 +11,7 @@ import { html } from 'lit';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isError } from '@converse/headless/utils/object.js';
 import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
+import { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } from '@converse/headless/shared/constants.js';
 import { until } from 'lit/directives/until.js';
 import {
     appendArrayBuffer,
@@ -296,7 +297,7 @@ export async function parseEncryptedMessage (stanza, attrs) {
 export function onChatBoxesInitialized () {
     _converse.chatboxes.on('add', chatbox => {
         checkOMEMOSupported(chatbox);
-        if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+        if (chatbox.get('type') === CHATROOMS_TYPE) {
             chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
             chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
         }
@@ -695,10 +696,10 @@ async function onOccupantAdded (chatroom, occupant) {
 
 async function checkOMEMOSupported (chatbox) {
     let supported;
-    if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+    if (chatbox.get('type') === CHATROOMS_TYPE) {
         await api.waitUntil('OMEMOInitialized');
         supported = chatbox.features.get('nonanonymous') && chatbox.features.get('membersonly');
-    } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+    } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
         supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
     }
     chatbox.set('omemo_supported', supported);
@@ -713,7 +714,7 @@ function toggleOMEMO (ev) {
     const toolbar_el = u.ancestor(ev.target, 'converse-chat-toolbar');
     if (!toolbar_el.model.get('omemo_supported')) {
         let messages;
-        if (toolbar_el.model.get('type') === _converse.CHATROOMS_TYPE) {
+        if (toolbar_el.model.get('type') === CHATROOMS_TYPE) {
             messages = [
                 __(
                     'Cannot use end-to-end encryption in this groupchat, ' +
@@ -735,7 +736,7 @@ function toggleOMEMO (ev) {
 
 export function getOMEMOToolbarButton (toolbar_el, buttons) {
     const model = toolbar_el.model;
-    const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
+    const is_muc = model.get('type') === CHATROOMS_TYPE;
     let title;
     if (model.get('omemo_supported')) {
         const i18n_plaintext = __('Messages are being sent in plaintext');
@@ -777,10 +778,10 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
 async function getBundlesAndBuildSessions (chatbox) {
     const no_devices_err = __('Sorry, no devices found to which we can send an OMEMO encrypted message.');
     let devices;
-    if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+    if (chatbox.get('type') === CHATROOMS_TYPE) {
         const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
         devices = collections.reduce((a, b) => a.concat(b.models), []);
-    } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+    } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
         const their_devices = await getDevicesForContact(chatbox.get('jid'));
         if (their_devices.length === 0) {
             const err = new Error(no_devices_err);

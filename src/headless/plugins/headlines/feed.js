@@ -1,18 +1,18 @@
 import ChatBox from '../../plugins/chat/model.js';
-import _converse from '../../shared/_converse.js';
 import api from "../../shared/api/index.js";
+import { HEADLINES_TYPE } from '../../shared/constants.js';
 
 
 export default class HeadlinesFeed extends ChatBox {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
             'bookmarked': false,
             'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
             'message_type': 'headline',
             'num_unread': 0,
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
-            'type': _converse.HEADLINES_TYPE
+            'type': HEADLINES_TYPE
         }
     }
 

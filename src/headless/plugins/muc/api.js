@@ -3,6 +3,7 @@ import api from '../../shared/api/index.js';
 import log from '../../log';
 import { Strophe } from 'strophe.js';
 import { getJIDFromURI } from '../../utils/jid.js';
+import { CHATROOMS_TYPE } from '../../shared/constants.js';
 
 
 export default {
@@ -146,7 +147,7 @@ export default {
                 if (!model && create) {
                     model = await api.chatboxes.create(jid, attrs, _converse.ChatRoom);
                 } else {
-                    model = model && model.get('type') === _converse.CHATROOMS_TYPE ? model : null;
+                    model = model && model.get('type') === CHATROOMS_TYPE ? model : null;
                     if (model && Object.keys(attrs).length) {
                         model.save(attrs);
                     }
@@ -155,7 +156,7 @@ export default {
             }
             if (jids === undefined) {
                 const chats = await api.chatboxes.get();
-                return chats.filter(c => c.get('type') === _converse.CHATROOMS_TYPE);
+                return chats.filter(c => c.get('type') === CHATROOMS_TYPE);
             } else if (typeof jids === 'string') {
                 return _get(jids);
             }

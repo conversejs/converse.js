@@ -2,6 +2,7 @@ import MAMPlaceholderMessage from '@converse/headless/plugins/mam/placeholder.js
 import { _converse, api, log } from '@converse/headless';
 import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
 import { html } from 'lit/html.js';
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
 
 
 export function getPlaceholderTemplate (message, tpl) {
@@ -17,7 +18,7 @@ export async function fetchMessagesOnScrollUp (view) {
         return;
     }
     if (view.model.messages.length) {
-        const is_groupchat = view.model.get('type') === _converse.CHATROOMS_TYPE;
+        const is_groupchat = view.model.get('type') === CHATROOMS_TYPE;
         const oldest_message = view.model.getOldestMessage();
         if (oldest_message) {
             const by_jid = is_groupchat ? view.model.get('jid') : _converse.bare_jid;

@@ -1,10 +1,11 @@
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless';
 import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
 
 
 export function getHeadingButtons (view, buttons) {
-    if (api.settings.get('allow_bookmarks') && view.model.get('type') === _converse.CHATROOMS_TYPE) {
+    if (api.settings.get('allow_bookmarks') && view.model.get('type') === CHATROOMS_TYPE) {
         const data = {
             'i18n_title': __('Bookmark this groupchat'),
             'i18n_text': __('Bookmark'),

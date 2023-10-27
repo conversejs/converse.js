@@ -15,6 +15,7 @@ import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
+import { CHATROOMS_TYPE } from '../..//shared/constants.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -184,10 +185,7 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoomOccupants = ChatRoomOccupants;
         _converse.ChatRoomOccupant = ChatRoomOccupant;
 
-        api.chatboxes.registry.add(
-            _converse.CHATROOMS_TYPE,
-            MUC
-        );
+        api.chatboxes.registry.add(CHATROOMS_TYPE, MUC);
 
         Object.assign(_converse, {
             getDefaultMUCNickname,

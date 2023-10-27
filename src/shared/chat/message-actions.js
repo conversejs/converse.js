@@ -3,6 +3,7 @@ import { __ } from 'i18n';
 import { _converse, api, converse, log } from '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
 import { html } from 'lit';
 import { isMediaURLDomainAllowed, isDomainWhitelisted } from '@converse/headless/utils/url.js';
 import { until } from 'lit/directives/until.js';
@@ -166,7 +167,7 @@ class MessageActions extends CustomElement {
     onMessageRetractButtonClicked (ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
-        if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+        if (chatbox.get('type') === CHATROOMS_TYPE) {
             this.onMUCMessageRetractButtonClicked();
         } else {
             this.onDirectMessageRetractButtonClicked();

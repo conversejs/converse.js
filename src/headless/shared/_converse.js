@@ -6,23 +6,19 @@ import { getOpenPromise } from '@converse/openpromise';
 import {
     ACTIVE,
     ANONYMOUS,
-    CHATROOMS_TYPE,
     CLOSED,
     COMPOSING,
-    CONTROLBOX_TYPE,
     DEFAULT_IMAGE,
     DEFAULT_IMAGE_TYPE,
     EXTERNAL,
     FAILURE,
     GONE,
-    HEADLINES_TYPE,
     INACTIVE,
     LOGIN,
     LOGOUT,
     OPENED,
     PAUSED,
     PREBIND,
-    PRIVATE_CHAT_TYPE,
     SUCCESS,
     VERSION_NAME
 } from './constants';
@@ -34,7 +30,7 @@ import {
  * @global
  * @namespace _converse
  */
-class ConverseNamespace extends EventEmitter(Object) {
+class ConversePrivateGlobal extends EventEmitter(Object) {
 
     constructor () {
         super();
@@ -46,40 +42,34 @@ class ConverseNamespace extends EventEmitter(Object) {
             'initialized': getOpenPromise()
         };
 
+        this.ANONYMOUS = ANONYMOUS;
+        this.CLOSED = CLOSED;
+        this.EXTERNAL = EXTERNAL;
+        this.LOGIN = LOGIN;
+        this.LOGOUT = LOGOUT;
+        this.OPENED = OPENED;
+        this.PREBIND = PREBIND;
 
-        Object.assign(this, {
-            ANONYMOUS,
-            CLOSED,
-            EXTERNAL,
-            LOGIN,
-            LOGOUT,
-            OPENED,
-            PREBIND,
+        this.SUCCESS = SUCCESS;
+        this.FAILURE = FAILURE;
 
-            SUCCESS,
-            FAILURE,
+        this.DEFAULT_IMAGE_TYPE = DEFAULT_IMAGE_TYPE;
+        this.DEFAULT_IMAGE = DEFAULT_IMAGE;
 
-            DEFAULT_IMAGE_TYPE,
-            DEFAULT_IMAGE,
+        this.INACTIVE = INACTIVE;
+        this.ACTIVE = ACTIVE;
+        this.COMPOSING = COMPOSING;
+        this.PAUSED = PAUSED;
+        this.GONE = GONE;
 
-            INACTIVE,
-            ACTIVE,
-            COMPOSING,
-            PAUSED,
-            GONE,
+        // Set as module attr so that we can override in tests.
+        // TODO: replace with config settings
+        this.TIMEOUTS =  {
+            PAUSED: 10000,
+            INACTIVE: 90000
+        }
 
-            PRIVATE_CHAT_TYPE,
-            CHATROOMS_TYPE,
-            HEADLINES_TYPE,
-            CONTROLBOX_TYPE,
-
-            // Set as module attr so that we can override in tests.
-            // TODO: replace with config settings
-            TIMEOUTS: {
-                PAUSED: 10000,
-                INACTIVE: 90000
-            },
-        });
+        this.chatboxes = null;
     }
 
     /**
@@ -112,7 +102,7 @@ class ConverseNamespace extends EventEmitter(Object) {
     }
 }
 
-const _converse = new ConverseNamespace();
+const _converse = new ConversePrivateGlobal();
 
 // Make _converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');

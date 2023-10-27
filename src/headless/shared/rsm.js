@@ -103,6 +103,3 @@ export class RSM {
         return new RSM(options);
     }
 }
-
-_converse.RSM_ATTRIBUTES = RSM_ATTRIBUTES;
-_converse.RSM = RSM;

@@ -1,6 +1,6 @@
 import './message-history';
 import tplSpinner from "templates/spinner.js";
-import { CustomElement } from 'shared/components/element.js';
+import { CustomElement } from '../components/element.js';
 import { api } from '@converse/headless';
 import { html } from 'lit';
 import { markScrolled } from './utils.js';

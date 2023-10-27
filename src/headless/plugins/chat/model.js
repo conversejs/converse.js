@@ -1,9 +1,16 @@
+/**
+ * @typedef {import('./message.js').default} Message
+ * @typedef {import('../muc/muc.js').default} MUC
+ * @typedef {import('../muc/message.js').default} MUCMessage
+ * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ */
 import ModelWithContact from './model-with-contact.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import isMatch from "lodash-es/isMatch";
 import log from '../../log.js';
 import pick from "lodash-es/pick";
-import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { PRIVATE_CHAT_TYPE, COMPOSING, INACTIVE, PAUSED, GONE } from '@converse/headless/shared/constants.js';
 import { TimeoutError } from '../../shared/errors.js';
@@ -18,13 +25,12 @@ import { isUniView } from '../../utils/session.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
 
-const { Strophe, $msg } = converse.env;
+const { Strophe, $msg, u } = converse.env;
 
-const u = converse.env.utils;
 
 /**
  * Represents an open/ongoing chat conversation.
- * @namespace _converse.ChatBox
+ * @namespace ChatBox
  * @memberOf _converse
  */
 class ChatBox extends ModelWithContact {
@@ -73,9 +79,9 @@ class ChatBox extends ModelWithContact {
 
         await this.fetchMessages();
         /**
-         * Triggered once a {@link _converse.ChatBox} has been created and initialized.
+         * Triggered once a {@link ChatBox} has been created and initialized.
          * @event _converse#chatBoxInitialized
-         * @type { _converse.ChatBox}
+         * @type { ChatBox}
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
         await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
@@ -96,8 +102,8 @@ class ChatBox extends ModelWithContact {
         this.messages.chatbox = this;
         initStorage(this.messages, this.getMessagesCacheKey());
 
-        this.listenTo(this.messages, 'change:upload', this.onMessageUploadChanged, this);
-        this.listenTo(this.messages, 'add', this.onMessageAdded, this);
+        this.listenTo(this.messages, 'change:upload', m => this.onMessageUploadChanged(m));
+        this.listenTo(this.messages, 'add', m => this.onMessageAdded(m));
     }
 
     initUI () {
@@ -124,10 +130,10 @@ class ChatBox extends ModelWithContact {
     afterMessagesFetched () {
         this.pruneHistoryWhenScrolledDown();
         /**
-         * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
+         * Triggered whenever a { @link ChatBox } or ${ @link MUC }
          * has fetched its messages from the local cache.
          * @event _converse#afterMessagesFetched
-         * @type { _converse.ChatBox| _converse.ChatRoom }
+         * @type { ChatBox| MUC }
          * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
          */
         api.trigger('afterMessagesFetched', this);
@@ -190,7 +196,7 @@ class ChatBox extends ModelWithContact {
      * Queue an incoming `chat` message stanza for processing.
      * @async
      * @private
-     * @method _converse.ChatBox#queueMessage
+     * @method ChatBox#queueMessage
      * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
      */
     queueMessage (attrs) {
@@ -203,7 +209,7 @@ class ChatBox extends ModelWithContact {
     /**
      * @async
      * @private
-     * @method _converse.ChatBox#onMessage
+     * @method ChatBox#onMessage
      * @param { MessageAttributes } attrs_promse - A promise which resolves to the message attributes.
      */
     async onMessage (attrs) {
@@ -289,7 +295,7 @@ class ChatBox extends ModelWithContact {
         /**
          * Triggered once a chatbox has been closed.
          * @event _converse#chatBoxClosed
-         * @type {_converse.ChatBox | _converse.ChatRoom}
+         * @type {ChatBox | MUC}
          * @example _converse.api.listen.on('chatBoxClosed', chat => { ... });
          */
         api.trigger('chatBoxClosed', this);
@@ -297,9 +303,9 @@ class ChatBox extends ModelWithContact {
 
     announceReconnection () {
         /**
-         * Triggered whenever a `_converse.ChatBox` instance has reconnected after an outage
+         * Triggered whenever a `ChatBox` instance has reconnected after an outage
          * @event _converse#onChatReconnected
-         * @type {_converse.ChatBox | _converse.ChatRoom}
+         * @type {ChatBox | MUC}
          * @example _converse.api.listen.on('onChatReconnected', chat => { ... });
          */
         api.trigger('chatReconnected', this);
@@ -473,7 +479,7 @@ class ChatBox extends ModelWithContact {
      * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
      * See XEP-0085 Chat State Notifications.
      * @private
-     * @method _converse.ChatBox#setChatState
+     * @method ChatBox#setChatState
      * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
      */
     setChatState (state, options) {
@@ -510,7 +516,7 @@ class ChatBox extends ModelWithContact {
 
     /**
      * @private
-     * @method _converse.ChatBox#shouldShowErrorMessage
+     * @method ChatBox#shouldShowErrorMessage
      * @returns {boolean}
      */
     shouldShowErrorMessage (attrs) {
@@ -522,7 +528,7 @@ class ChatBox extends ModelWithContact {
             // See https://github.com/conversejs/converse.js/issues/1317
             return;
         }
-        // Gets overridden in ChatRoom
+        // Gets overridden in MUC
         return true;
     }
 
@@ -536,10 +542,10 @@ class ChatBox extends ModelWithContact {
      * probably hasn't been applied to anything yet, given that the
      * relevant message is only coming in now.
      * @private
-     * @method _converse.ChatBox#findDanglingRetraction
+     * @method ChatBox#findDanglingRetraction
      * @param { object } attrs - Attributes representing a received
      *  message, as returned by {@link parseMessage}
-     * @returns { _converse.Message }
+     * @returns { Message }
      */
     findDanglingRetraction (attrs) {
         if (!attrs.origin_id || !this.messages.length) {
@@ -563,7 +569,7 @@ class ChatBox extends ModelWithContact {
     /**
      * Handles message retraction based on the passed in attributes.
      * @private
-     * @method _converse.ChatBox#handleRetraction
+     * @method ChatBox#handleRetraction
      * @param { object } attrs - Attributes representing a received
      *  message, as returned by {@link parseMessage}
      * @returns { Boolean } Returns `true` or `false` depending on
@@ -601,10 +607,10 @@ class ChatBox extends ModelWithContact {
      * Returns an already cached message (if it exists) based on the
      * passed in attributes map.
      * @private
-     * @method _converse.ChatBox#getDuplicateMessage
+     * @method ChatBox#getDuplicateMessage
      * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMessage}
-     * @returns {Promise<_converse.Message>}
+     * @returns {Promise<Message>}
      */
     getDuplicateMessage (attrs) {
         const queries = [
@@ -649,8 +655,8 @@ class ChatBox extends ModelWithContact {
     /**
      * Retract one of your messages in this chat
      * @private
-     * @method _converse.ChatBoxView#retractOwnMessage
-     * @param { _converse.Message } message - The message which we're retracting.
+     * @method ChatBoxView#retractOwnMessage
+     * @param { Message } message - The message which we're retracting.
      */
     retractOwnMessage (message) {
         this.sendRetractionMessage(message)
@@ -666,8 +672,8 @@ class ChatBox extends ModelWithContact {
     /**
      * Sends a message stanza to retract a message in this chat
      * @private
-     * @method _converse.ChatBox#sendRetractionMessage
-     * @param { _converse.Message } message - The message which we're retracting.
+     * @method ChatBox#sendRetractionMessage
+     * @param { Message } message - The message which we're retracting.
      */
     sendRetractionMessage (message) {
         const origin_id = message.get('origin_id');
@@ -702,7 +708,7 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Given the passed in message object, send a XEP-0333 chat marker.
-     * @param { _converse.Message } msg
+     * @param { Message } msg
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
@@ -764,9 +770,9 @@ class ChatBox extends ModelWithContact {
     }
 
     /**
-     * Given a {@link _converse.Message} return the XML stanza that represents it.
+     * Given a {@link Message} return the XML stanza that represents it.
      * @private
-     * @method _converse.ChatBox#createMessageStanza
+     * @method ChatBox#createMessageStanza
      * @param { Message } message - The message object
      */
     async createMessageStanza (message) {
@@ -822,10 +828,10 @@ class ChatBox extends ModelWithContact {
         /**
          * *Hook* which allows plugins to update an outgoing message stanza
          * @event _converse#createMessageStanza
-         * @param { _converse.ChatBox | _converse.ChatRoom } - The chat from
+         * @param { ChatBox | MUC } chat - The chat from
          *      which this message stanza is being sent.
          * @param { Object } data - Message data
-         * @param { _converse.Message | _converse.ChatRoomMessage } data.message
+         * @param { Message | MUCMessage } data.message
          *      The message object from which the stanza is created and which gets persisted to storage.
          * @param { Strophe.Builder } data.stanza
          *      The stanza that will be sent out, as a Strophe.Builder object.
@@ -861,12 +867,12 @@ class ChatBox extends ModelWithContact {
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.
-         * These attributes get set on the { @link _converse.Message } or
-         * { @link _converse.ChatRoomMessage } and persisted to storage.
+         * These attributes get set on the {@link Message} or
+         * {@link MUCMessage} and persisted to storage.
          * @event _converse#getOutgoingMessageAttributes
-         * @param { _converse.ChatBox | _converse.ChatRoom } chat
+         * @param {ChatBox|MUC} chat
          *      The chat from which this message will be sent.
-         * @param { MessageAttributes } attrs
+         * @param {MessageAttributes} attrs
          *      The message attributes, from which the stanza will be created.
          */
         attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
@@ -878,8 +884,8 @@ class ChatBox extends ModelWithContact {
      * If api.settings.get('allow_message_corrections') is "last", then only the last
      * message sent from me will be editable. If set to "all" all messages
      * will be editable. Otherwise no messages will be editable.
-     * @method _converse.ChatBox#setEditable
-     * @memberOf _converse.ChatBox
+     * @method ChatBox#setEditable
+     * @memberOf ChatBox
      * @param { Object } attrs An object containing message attributes.
      * @param { String } send_time - time when the message was sent
      */
@@ -902,7 +908,7 @@ class ChatBox extends ModelWithContact {
      * before the collection has been fetched.
      * @async
      * @private
-     * @method _converse.ChatBox#createMessage
+     * @method ChatBox#createMessage
      * @param { Object } attrs
      */
     async createMessage (attrs, options) {
@@ -914,10 +920,10 @@ class ChatBox extends ModelWithContact {
     /**
      * Responsible for sending off a text message inside an ongoing chat conversation.
      * @private
-     * @method _converse.ChatBox#sendMessage
-     * @memberOf _converse.ChatBox
+     * @method ChatBox#sendMessage
+     * @memberOf ChatBox
      * @param { Object } [attrs] - A map of attributes to be saved on the message
-     * @returns { _converse.Message }
+     * @returns { Promise<Message> }
      * @example
      * const chat = api.chats.get('buddy1@example.org');
      * chat.sendMessage({'body': 'hello world'});
@@ -962,8 +968,8 @@ class ChatBox extends ModelWithContact {
         * @event _converse#sendMessage
         * @type { Object }
         * @param { Object } data
-        * @property { (_converse.ChatBox | _converse.ChatRoom) } data.chatbox
-        * @property { (_converse.Message | _converse.ChatRoomMessage) } data.message
+        * @property { (ChatBox | MUC) } data.chatbox
+        * @property { (Message | MUCMessage) } data.message
         */
         api.trigger('sendMessage', {'chatbox': this, message});
         return message;
@@ -971,9 +977,9 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Sends a message with the current XEP-0085 chat state of the user
-     * as taken from the `chat_state` attribute of the {@link _converse.ChatBox}.
+     * as taken from the `chat_state` attribute of the {@link ChatBox}.
      * @private
-     * @method _converse.ChatBox#sendChatState
+     * @method ChatBox#sendChatState
      */
     sendChatState () {
         if (api.settings.get('send_chat_state_notifications') && this.get('chat_state')) {
@@ -1023,10 +1029,8 @@ class ChatBox extends ModelWithContact {
              * *Hook* which allows plugins to transform files before they'll be
              * uploaded. The main use-case is to encrypt the files.
              * @event _converse#beforeFileUpload
-             * @param { _converse.ChatBox | _converse.ChatRoom } chat
-             *      The chat from which this file will be uploaded.
-             * @param { File } file
-             *      The file that will be uploaded
+             * @param {ChatBox|MUC} chat - The chat from which this file will be uploaded.
+             * @param {File} file - The file that will be uploaded
              */
             file = await api.hook('beforeFileUpload', this, file);
 
@@ -1084,11 +1088,11 @@ class ChatBox extends ModelWithContact {
     }
 
     /**
-     * Given a newly received {@link _converse.Message} instance,
+     * Given a newly received {@link Message} instance,
      * update the unread counter if necessary.
      * @private
-     * @method _converse.ChatBox#handleUnreadMessage
-     * @param {_converse.Message} message
+     * @method ChatBox#handleUnreadMessage
+     * @param {Message} message
      */
     handleUnreadMessage (message) {
         if (!message?.get('body')) {

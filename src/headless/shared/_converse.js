@@ -1,3 +1,6 @@
+/**
+ * @module:shared_converse
+ */
 import i18n from './i18n.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { EventEmitter } from '@converse/skeletor';

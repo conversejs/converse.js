@@ -1,3 +1,7 @@
+/**
+ * @module:plugin-chat-parsers
+ * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import dayjs from 'dayjs';
@@ -102,8 +106,8 @@ export async function parseMessage (stanza) {
         }
     }
     /**
-     * @typedef { Object } MessageAttributes
      * The object which {@link parseMessage} returns
+     * @typedef {Object} module:plugin-chat-parsers.MessageAttributes
      * @property { ('me'|'them') } sender - Whether the message was sent by the current user or someone else
      * @property { Array<Object> } references - A list of objects representing XEP-0372 references
      * @property { Boolean } editable - Is this message editable via XEP-0308?

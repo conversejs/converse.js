@@ -617,18 +617,19 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
             'value': field.querySelector('value')?.textContent
         });
     }
-};
+}
 
 Object.assign(u, {
-    hasClass,
     addClass,
     ancestor,
     getOOBURLMarkup,
+    hasClass,
     isEqualNode,
     removeClass,
     removeElement,
     slideIn,
     slideOut,
+    xForm2TemplateResult,
 });
 
 export default u;

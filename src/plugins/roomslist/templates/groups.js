@@ -15,7 +15,7 @@ function tplRoomDomainGroup (el, domain, rooms) {
                 color="var(--muc-group-color)"></converse-icon>
             ${domain}
         </a>
-        <ul class="items-list muc-domain-group ${ is_collapsed ? 'collapsed' : '' }" data-domain="${domain}">
+        <ul class="items-list muc-domain-group-rooms ${ is_collapsed ? 'collapsed' : '' }" data-domain="${domain}">
             ${ rooms.map(room => tplRoomItem(el, room)) }
         </ul>
     </div>`;

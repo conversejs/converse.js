@@ -4,7 +4,7 @@ const { $msg, u } = converse.env;
 
 
 describe("The list of MUC domains", function () {
-    fit("is shown in controlbox", mock.initConverse(
+    it("is shown in controlbox", mock.initConverse(
             ['chatBoxesFetched'],
             { muc_grouped_by_domain: true,
               allow_bookmarks: false // Makes testing easier, otherwise we
@@ -82,7 +82,7 @@ describe("The list of MUC domains", function () {
 });
 
 describe("A MUC domain group", function () {
-    fit("is collapsible", mock.initConverse(
+    it("is collapsible", mock.initConverse(
             ['chatBoxesFetched'],
             { muc_grouped_by_domain: true,
               allow_bookmarks: false // Makes testing easier, otherwise we

@@ -111,6 +111,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/push/tests/push.js", type: 'module' },
       { pattern: "src/plugins/register/tests/register.js", type: 'module' },
       { pattern: "src/plugins/roomslist/tests/roomslist.js", type: 'module' },
+      { pattern: "src/plugins/roomslist/tests/grouplists.js", type: 'module' },
       { pattern: "src/plugins/rootview/tests/root.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/add-contact-modal.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },

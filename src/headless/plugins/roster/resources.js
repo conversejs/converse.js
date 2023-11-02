@@ -1,4 +1,4 @@
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from "@converse/skeletor";
 import Resource from "./resource";
 
 class Resources extends Collection {

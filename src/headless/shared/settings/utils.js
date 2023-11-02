@@ -4,7 +4,7 @@ import isEqual from "lodash-es/isEqual.js";
 import log from '../../log.js';
 import pick from 'lodash-es/pick';
 import { DEFAULT_SETTINGS } from './constants.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { initStorage } from '../../utils/storage.js';
 import { merge } from '../../utils/object.js';
 

@@ -11,7 +11,7 @@ import api, { converse } from '../../shared/api/index.js';
 import isMatch from "lodash-es/isMatch";
 import log from '../../log.js';
 import pick from "lodash-es/pick";
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { PRIVATE_CHAT_TYPE, COMPOSING, INACTIVE, PAUSED, GONE } from '@converse/headless/shared/constants.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { debouncedPruneHistory, handleCorrection } from '../../shared/chat/utils.js';

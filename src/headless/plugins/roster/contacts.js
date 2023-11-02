@@ -2,8 +2,8 @@ import RosterContact from './contact.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
-import { Collection } from "@converse/skeletor/src/collection";
-import { Model } from "@converse/skeletor/src/model";
+import { Collection } from "@converse/skeletor";
+import { Model } from "@converse/skeletor";
 import { initStorage } from '../../utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 

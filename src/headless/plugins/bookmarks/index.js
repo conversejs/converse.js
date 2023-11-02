@@ -53,8 +53,9 @@ converse.plugins.add('converse-bookmarks', {
 
         api.promises.add('bookmarksInitialized');
 
-        _converse.Bookmark = Bookmark;
-        _converse.Bookmarks = Bookmarks;
+        const exports  = { Bookmark, Bookmarks };
+        Object.assign(_converse, exports); // TODO: DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         api.listen.on('addClientFeatures', () => {
             if (api.settings.get('allow_bookmarks')) {
@@ -72,7 +73,8 @@ converse.plugins.add('converse-bookmarks', {
 
         api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
-            api.connection.get().addHandler(handleBookmarksPush, null, 'message', 'headline', null, _converse.bare_jid);
+            const bare_jid = _converse.session.get('bare_jid');
+            api.connection.get().addHandler(handleBookmarksPush, null, 'message', 'headline', null, bare_jid);
             await Promise.all([api.waitUntil('chatBoxesFetched')]);
             initBookmarks();
         });

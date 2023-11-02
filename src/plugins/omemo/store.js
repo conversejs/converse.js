@@ -1,6 +1,6 @@
 /* global libsignal */
 import range from 'lodash-es/range';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { generateDeviceID } from './utils.js';
 import { _converse, api, converse, log } from '@converse/headless';
 

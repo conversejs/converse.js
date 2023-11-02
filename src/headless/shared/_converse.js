@@ -3,7 +3,7 @@
  */
 import i18n from './i18n.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
-import { EventEmitter } from '@converse/skeletor';
+import { EventEmitter, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 
 import {
@@ -72,7 +72,11 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
             INACTIVE: 90000
         };
 
+        // TODO: DEPRECATED
+        this.bookmarks = null;
         this.chatboxes = null;
+
+        this.api = /** @type {module:shared-api.APIEndpoint} */ null;
 
         /**
          * Namespace for storing code that might be useful to 3rd party
@@ -80,14 +84,27 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
          * access to code (e.g. classes) from converse.js without having to add
          * converse.js as a dependency.
          */
-        this.exports = /** @type { Record<string, Object> } */{};
+        this.exports = /** @type {Record<string, Object>} */{};
+
+        /**
+         * Namespace for storing the state, as represented by instances of
+         * Models and Collections.
+         */
+        this.state = /** @type {Record<string, Model|Collection>} */{};
+
+        this.initSession();
+    }
+
+    initSession () {
+        this.session?.destroy();
+        this.session = new Model();
     }
 
     /**
      * Translate the given string based on the current locale.
      * @method __
      * @memberOf _converse
-     * @param { ...String } args
+     * @param {...String} args
      */
     __ (...args) {
         return i18n.__(...args);
@@ -106,7 +123,7 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
      *
      * @method ___
      * @memberOf _converse
-     * @param { String } str
+     * @param {String} str
      */
     ___ (str) {
         return str;

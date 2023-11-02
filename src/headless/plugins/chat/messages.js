@@ -1,5 +1,5 @@
 import Message from './message.js';
-import { Collection } from '@converse/skeletor/src/collection';
+import { Collection } from '@converse/skeletor';
 
 class Messages extends Collection {
 

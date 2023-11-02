@@ -1,4 +1,4 @@
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 
 /**
  * Represents a participant in a MUC

@@ -1,5 +1,5 @@
 import { _converse, api, converse } from '@converse/headless';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { CONTROLBOX_TYPE } from '@converse/headless/shared/constants';
 
 const { dayjs } = converse.env;

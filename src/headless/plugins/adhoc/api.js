@@ -72,7 +72,7 @@ export default {
          * @param { String } sessionid
          * @param { 'execute' | 'cancel' | 'prev' | 'next' | 'complete' } action
          * @param { String } node
-         * @param { Array<{ string: string }> } inputs
+         * @param { Array<{ [k:string]: string }> } inputs
          */
         async runCommand (jid, sessionid, node, action, inputs) {
             const iq =

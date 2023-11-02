@@ -5,11 +5,12 @@ import log from "../../log.js";
 const { Strophe, sizzle } = converse.env;
 
 export async function checkBookmarksSupport () {
-    const identity = await api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid);
+    const bare_jid = _converse.session.get('bare_jid');
+    const identity = await api.disco.getIdentity('pubsub', 'pep', bare_jid);
     if (api.settings.get('allow_public_bookmarks')) {
         return !!identity;
     } else {
-        return api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid);
+        return api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', bare_jid);
     }
 }
 
@@ -18,7 +19,9 @@ export async function initBookmarks () {
         return;
     }
     if (await checkBookmarksSupport()) {
-        _converse.bookmarks = new _converse.Bookmarks();
+        _converse.state.bookmarks = new _converse.exports.Bookmarks();
+        // TODO: DEPRECATED
+        _converse.bookmarks = _converse.state.bookmarks;
     }
 }
 
@@ -26,13 +29,13 @@ export function getNicknameFromBookmark (jid) {
     if (!api.settings.get('allow_bookmarks')) {
         return null;
     }
-    return _converse.bookmarks?.get(jid)?.get('nick');
+    return _converse.state.bookmarks?.get(jid)?.get('nick');
 }
 
 export function handleBookmarksPush (message) {
     if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"] items[node="${Strophe.NS.BOOKMARKS}"]`, message).length) {
         api.waitUntil('bookmarksInitialized')
-            .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
+            .then(() => _converse.state.bookmarks.createBookmarksFromStanza(message))
             .catch(e => log.fatal(e));
     }
     return true;

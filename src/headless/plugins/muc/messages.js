@@ -1,5 +1,5 @@
 import MUCMessage from './message';
-import { Collection } from '@converse/skeletor/src/collection';
+import { Collection } from '@converse/skeletor';
 
 /**
  * Collection which stores MUC messages

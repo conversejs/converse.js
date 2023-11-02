@@ -1,4 +1,4 @@
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { getUniqueId } from '../../utils/index.js';
 
 export default class MAMPlaceholderMessage extends Model {

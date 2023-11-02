@@ -1,6 +1,6 @@
 import './alert.js';
 import Confirm from './confirm.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 
 let modals = [];
 let modals_map = {};

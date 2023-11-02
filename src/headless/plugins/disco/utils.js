@@ -1,6 +1,6 @@
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from "@converse/skeletor";
 import { createStore } from '../../utils/storage.js';
 
 const { Strophe, $iq } = converse.env;

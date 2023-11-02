@@ -8,7 +8,7 @@ describe("A sent presence stanza", function () {
     beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
-    it("includes a entity capabilities node",
+    it("includes an entity capabilities node",
             mock.initConverse([], {}, async (_converse) => {
 
         await mock.waitForRoster(_converse, 'current', 0);

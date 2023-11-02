@@ -5,9 +5,9 @@
         }
 
         .muc-domain-group-toggle, .muc-domain-group-toggle .fa {
-            color: var(--groupchats-header-color) !important;
+            color: var(--groupchats-header-color);
             &:hover {
-                color: var(--chatroom-head-bg-color-dark) !important;
+                color: var(--chatroom-head-bg-color-dark);
             }
         }
     }

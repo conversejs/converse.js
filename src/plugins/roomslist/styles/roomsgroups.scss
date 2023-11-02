@@ -1,0 +1,14 @@
+.conversejs {
+    #chatrooms {
+        .muc-domain-group-toggle {
+            margin: 0.75em 0 0.25em 0;
+        }
+
+        .muc-domain-group-toggle, .muc-domain-group-toggle .fa {
+            color: var(--groupchats-header-color) !important;
+            &:hover {
+                color: var(--chatroom-head-bg-color-dark) !important;
+            }
+        }
+    }
+}

@@ -2,6 +2,8 @@ import { __ } from 'i18n';
 import { html } from "lit";
 import { tplRoomItem } from 'plugins/roomslist/templates/roomslist.js'
 
+import '../styles/roomsgroups.scss';
+
 function tplRoomDomainGroup (el, domain, rooms) {
     const i18n_title = __('Click to hide these rooms');
     const collapsed = el.model.get('collapsed_domains');
@@ -12,7 +14,7 @@ function tplRoomDomainGroup (el, domain, rooms) {
             <converse-icon
                 class="fa ${ is_collapsed ? 'fa-caret-right' : 'fa-caret-down' }"
                 size="1em"
-                color="var(--muc-group-color)"></converse-icon>
+                color="var(--groupchats-header-color)"></converse-icon>
             ${domain}
         </a>
         <ul class="items-list muc-domain-group-rooms ${ is_collapsed ? 'collapsed' : '' }" data-domain="${domain}">

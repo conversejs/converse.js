@@ -1,6 +1,6 @@
 import DiscoEntity from './entity.js';
 import log from "../../log.js";
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from "@converse/skeletor";
 
 
 class DiscoEntities extends Collection {

@@ -3,7 +3,7 @@ import Bookmark from './model.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
-import { Collection } from "@converse/skeletor/src/collection.js";
+import { Collection } from "@converse/skeletor";
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '../../utils/storage.js';
 
@@ -13,13 +13,8 @@ const { Strophe, $iq, sizzle } = converse.env;
 class Bookmarks extends Collection {
 
     constructor () {
-        super();
+        super([], { comparator: (/** @type {Bookmark} */b) => b.get('name').toLowerCase() });
         this.model = Bookmark;
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    comparator (item) {
-        return item.get('name').toLowerCase();
     }
 
     async initialize () {
@@ -31,7 +26,8 @@ class Bookmarks extends Collection {
         this.on('remove', this.markRoomAsUnbookmarked, this);
         this.on('remove', this.sendBookmarkStanza, this);
 
-        const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
+        const { session } = _converse;
+        const cache_key = `converse.room-bookmarks${session.get('bare_jid')}`;
         this.fetched_flag = cache_key+'fetched';
         initStorage(this, cache_key);
 
@@ -41,7 +37,7 @@ class Bookmarks extends Collection {
          * Triggered once the _converse.Bookmarks collection
          * has been created and cached bookmarks have been fetched.
          * @event _converse#bookmarksInitialized
-         * @type { _converse.Bookmarks }
+         * @type { Bookmarks }
          * @example _converse.api.listen.on('bookmarksInitialized', (bookmarks) => { ... });
          */
         api.trigger('bookmarksInitialized', this);
@@ -157,7 +153,7 @@ class Bookmarks extends Collection {
 
     onBookmarksReceived (deferred, iq) {
         this.createBookmarksFromStanza(iq);
-        window.sessionStorage.setItem(this.fetched_flag, true);
+        window.sessionStorage.setItem(this.fetched_flag, 'true');
         if (deferred !== undefined) {
             return deferred.resolve();
         }
@@ -174,7 +170,7 @@ class Bookmarks extends Collection {
         } else if (deferred) {
             if (iq.querySelector('error[type="cancel"] item-not-found')) {
                 // Not an exception, the user simply doesn't have any bookmarks.
-                window.sessionStorage.setItem(this.fetched_flag, true);
+                window.sessionStorage.setItem(this.fetched_flag, 'true');
                 return deferred.resolve();
             } else {
                 log.error('Error while fetching bookmarks');

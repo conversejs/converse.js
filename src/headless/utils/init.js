@@ -7,7 +7,7 @@ import log from '../log.js';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from '../shared/constants.js';
 import { Connection } from '../shared/connection/index.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
 import { getConnectionServiceURL } from '../shared/connection/utils';
@@ -131,10 +131,13 @@ function saveJIDtoSession (_converse, jid) {
     if (_converse.api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + Connection.generateResource();
     }
+
+    // TODO: Storing directly on _converse is deprecated
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
     _converse.resource = Strophe.getResourceFromJid(jid);
     _converse.domain = Strophe.getDomainFromJid(jid);
+
     _converse.session.save({
        'jid': jid,
        'bare_jid': _converse.bare_jid,
@@ -183,7 +186,7 @@ export async function initSession (_converse, jid) {
     if (_converse.session?.get('id') !== id) {
         initPersistentStorage(_converse, bare_jid);
 
-        _converse.session = new Model({ id });
+        _converse.session.set({ id });
         initStorage(_converse.session, id, is_shared_session ? "persistent" : "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
 

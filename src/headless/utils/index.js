@@ -4,7 +4,7 @@
  * @description This is the core utilities module.
  */
 import log, { LEVELS } from '../log.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { saveWindowState, shouldClearCache } from './session.js';

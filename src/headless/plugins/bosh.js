@@ -8,7 +8,7 @@ import _converse from '../shared/_converse.js';
 import api, { converse } from '../shared/api/index.js';
 import log from "../log.js";
 import { BOSH_WAIT } from '../shared/constants.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { setUserJID, } from '../utils/init.js';
 import { isTestEnv } from '../utils/session.js';
 import { createStore } from '../utils/storage.js';
@@ -16,6 +16,8 @@ import { createStore } from '../utils/storage.js';
 const { Strophe } = converse.env;
 
 const BOSH_SESSION_ID = 'converse.bosh-session';
+
+let bosh_session;
 
 
 converse.plugins.add('converse-bosh', {
@@ -33,22 +35,24 @@ converse.plugins.add('converse-bosh', {
 
         async function initBOSHSession () {
             const id = BOSH_SESSION_ID;
-            if (!_converse.bosh_session) {
-                _converse.bosh_session = new Model({id});
-                _converse.bosh_session.browserStorage = createStore(id, "session");
-                await new Promise(resolve => _converse.bosh_session.fetch({'success': resolve, 'error': resolve}));
+            if (!bosh_session) {
+                bosh_session = new Model({id});
+                bosh_session.browserStorage = createStore(id, "session");
+                await new Promise(resolve => bosh_session.fetch({'success': resolve, 'error': resolve}));
             }
-            if (_converse.jid) {
-                if (_converse.bosh_session.get('jid') !== _converse.jid) {
-                    const jid = await setUserJID(_converse.jid);
-                    _converse.bosh_session.clear({'silent': true });
-                    _converse.bosh_session.save({jid});
+
+            let jid = _converse.session.get('jid');
+            if (jid) {
+                if (bosh_session.get('jid') !== jid) {
+                    jid = await setUserJID(jid);
+                    bosh_session.clear({'silent': true });
+                    bosh_session.save({jid});
                 }
             } else { // Keepalive
-                const jid = _converse.bosh_session.get('jid');
+                const jid = bosh_session.get('jid');
                 jid && await setUserJID(jid);
             }
-            return _converse.bosh_session;
+            return bosh_session;
         }
 
 
@@ -107,21 +111,21 @@ converse.plugins.add('converse-bosh', {
 
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('clearSession', () => {
-            if (_converse.bosh_session === undefined) {
+            if (bosh_session === undefined) {
                 // Remove manually, even if we don't have the corresponding
                 // model, to avoid trying to reconnect to a stale BOSH session
                 const id = BOSH_SESSION_ID;
                 sessionStorage.removeItem(id);
                 sessionStorage.removeItem(`${id}-${id}`);
             } else {
-                _converse.bosh_session.destroy();
-                delete _converse.bosh_session;
+                bosh_session.destroy();
+                bosh_session = undefined;
             }
         });
 
         api.listen.on('setUserJID', () => {
-            if (_converse.bosh_session !== undefined) {
-                _converse.bosh_session.save({'jid': _converse.jid});
+            if (bosh_session !== undefined) {
+                bosh_session.save({'jid': _converse.session.get('jid')});
             }
         });
 

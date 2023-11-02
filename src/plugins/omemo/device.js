@@ -1,5 +1,5 @@
 import { IQError } from './errors.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { UNDECIDED } from './consts.js';
 import { _converse, api, converse, log } from '@converse/headless';
 import { getRandomInt } from '@converse/headless/utils/index.js';

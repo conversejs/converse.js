@@ -2,7 +2,7 @@ import debounce from "lodash-es/debounce";
 import tplBookmarksList from './templates/list.js';
 import tplSpinner from "templates/spinner.js";
 import { CustomElement } from 'shared/components/element.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { _converse, api } from '@converse/headless';
 import { initStorage } from '@converse/headless/utils/storage.js';
 

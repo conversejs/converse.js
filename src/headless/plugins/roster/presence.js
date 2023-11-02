@@ -1,5 +1,5 @@
 import Resources from "./resources.js";
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { converse } from '../../shared/api/index.js';
 import { initStorage } from '../../utils/storage.js';
 

@@ -1,6 +1,6 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from "@converse/skeletor";
 import { initStorage } from '../../utils/storage.js';
 
 class ChatBoxes extends Collection {

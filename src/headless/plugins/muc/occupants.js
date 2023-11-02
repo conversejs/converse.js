@@ -1,9 +1,9 @@
 import ChatRoomOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
-import { Collection } from '@converse/skeletor/src/collection.js';
+import { Collection } from '@converse/skeletor';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import { getAffiliationList } from './affiliations/utils.js';
 import { getAutoFetchedAffiliationLists } from './utils.js';

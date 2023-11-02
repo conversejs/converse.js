@@ -2,7 +2,7 @@ import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
 import { Strophe } from 'strophe.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { STATUS_WEIGHTS, PRIVATE_CHAT_TYPE } from "../../shared/constants";
 import { initStorage } from '../../utils/storage.js';

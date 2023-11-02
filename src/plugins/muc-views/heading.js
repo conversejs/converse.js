@@ -3,7 +3,7 @@ import './modals/muc-invite.js';
 import './modals/nickname.js';
 import tplMUCHead from './templates/muc-head.js';
 import { CustomElement } from 'shared/components/element.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 import { destroyMUC, showModeratorToolsModal } from './utils.js';

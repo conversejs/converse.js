@@ -8,8 +8,9 @@ export const bookmarkableChatRoomView = {
      * @private
      */
     setBookmarkState () {
-        if (_converse.bookmarks !== undefined) {
-            const models = _converse.bookmarks.where({ 'jid': this.model.get('jid') });
+        const { bookmarks } = _converse.state;
+        if (bookmarks) {
+            const models = bookmarks.where({ 'jid': this.model.get('jid') });
             if (!models.length) {
                 this.model.save('bookmarked', false);
             } else {

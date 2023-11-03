@@ -79,6 +79,16 @@ export class RoomsList extends CustomElement {
             u.slideIn(list_el).then(() => this.model.save({'toggle_state': _converse.CLOSED}));
         }
     }
+
+    toggleDomainList (ev, domain) {
+        ev?.preventDefault?.();
+        const collapsed = this.model.get('collapsed_domains');
+        if (collapsed.includes(domain)) {
+            this.model.save({'collapsed_domains': collapsed.filter(d => d !== domain)});
+        } else {
+            this.model.save({'collapsed_domains': [...collapsed, domain]});
+        }
+    }
 }
 
 api.elements.define('converse-rooms-list', RoomsList);

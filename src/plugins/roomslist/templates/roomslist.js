@@ -5,6 +5,7 @@ import { _converse, api } from "@converse/headless";
 import { html } from "lit";
 import { isUniView } from '@converse/headless/utils/session.js';
 import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
+import { tplRoomDomainGroupList } from 'plugins/roomslist/templates/groups.js';
 
 
 function isCurrentlyOpen (room) {
@@ -33,7 +34,7 @@ const tplUnreadIndicator = (room) => html`<span class="list-item-badge badge bad
 const tplActivityIndicator = () => html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
 
 
-function tplRoomItem (el, room) {
+export function tplRoomItem (el, room) {
     const i18n_leave_room = __('Leave this groupchat');
     const has_unread_msgs = room.get('num_unread_general') || room.get('has_activity');
     return html`
@@ -69,6 +70,7 @@ function tplRoomItem (el, room) {
 
 export default (el) => {
     const { chatboxes, CHATROOMS_TYPE, CLOSED } = _converse;
+    const group_by_domain = api.settings.get('muc_grouped_by_domain');
     const rooms = chatboxes.filter(m => m.get('type') === CHATROOMS_TYPE);
     rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
 
@@ -111,7 +113,10 @@ export default (el) => {
 
         <div class="list-container list-container--openrooms ${ rooms.length ? '' : 'hidden' }">
             <div class="items-list rooms-list open-rooms-list ${ is_closed ? 'collapsed' : '' }">
-                ${ rooms.map(room => tplRoomItem(el, room)) }
+                ${ group_by_domain ?
+                    tplRoomDomainGroupList(el, rooms) :
+                    rooms.map(room => tplRoomItem(el, room))
+                }
             </div>
         </div>`;
 }

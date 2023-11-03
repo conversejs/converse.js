@@ -1278,6 +1278,14 @@ By fetching member lists, Converse.js will always show these users as
 participants of the MUC, giving them a permanent "presence" in the MUC.
 
 
+muc_grouped_by_domain
+---------------------
+
+* Default: ``false``
+
+If ``true``, displays MUCS of a same domain together, in collapsible groups.
+
+
 muc_history_max_stanzas
 -----------------------
 

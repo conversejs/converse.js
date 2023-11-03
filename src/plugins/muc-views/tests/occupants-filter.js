@@ -4,7 +4,7 @@ const { $pres, u } = converse.env;
 
 describe("The MUC occupants filter", function () {
 
-    fit("can be used to filter which occupants are shown",
+    it("can be used to filter which occupants are shown",
         mock.initConverse(
             [], {},
             async function (_converse) {

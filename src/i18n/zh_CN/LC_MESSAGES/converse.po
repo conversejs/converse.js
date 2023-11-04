@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-11-04 02:32+0000\n"
+"PO-Revision-Date: 2023-11-05 08:33+0000\n"
 "Last-Translator: Sketch6580 <sky@openmbox.net>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -230,7 +230,7 @@ msgstr "被禁止：您没有这样做所需的角色。"
 
 #: dist/converse-no-dependencies.js:44187
 msgid "Error: couldn't register new nickname in members only room"
-msgstr "错误：无法在仅成员参与的房间注册新昵称"
+msgstr "错误：无法在仅成员进入的房间注册新昵称"
 
 #: dist/converse-no-dependencies.js:44495
 msgid "You're not allowed to register yourself in this groupchat."
@@ -239,7 +239,7 @@ msgstr "不允许您在此群聊中注册。"
 #: dist/converse-no-dependencies.js:44497
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "不允许您注册，因为此群聊仅成员参与。"
+msgstr "不允许您注册，因为此群聊仅成员进入。"
 
 #: dist/converse-no-dependencies.js:44533
 msgid ""
@@ -521,7 +521,7 @@ msgstr "由于从属关系改变，您已被此群聊移除"
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
-msgstr "您已被此群聊移除，因为群聊已更改为仅成员参与，而您不是成员"
+msgstr "您已被此群聊移除，因为群聊已更改为仅成员进入，而您不是成员"
 
 #: dist/converse-no-dependencies.js:47735
 msgid ""
@@ -1578,11 +1578,11 @@ msgstr "此群聊不可公开搜索"
 
 #: dist/converse-no-dependencies.js:113745
 msgid "This groupchat is restricted to members only"
-msgstr "此群聊仅成员参与"
+msgstr "此群聊仅成员进入"
 
 #: dist/converse-no-dependencies.js:113746
 msgid "Members only"
-msgstr "仅限成员"
+msgstr "仅成员进入"
 
 #: dist/converse-no-dependencies.js:113747
 #: dist/converse-no-dependencies.js:131325
@@ -2099,7 +2099,7 @@ msgstr "消息是加密发送的"
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
-msgstr "为了支持 OMEMO 加密消息，此群聊需要仅成员参与且非匿名"
+msgstr "为了支持 OMEMO 加密消息，此群聊需要仅成员进入且非匿名"
 
 #: dist/converse-no-dependencies.js:123062
 msgid "OMEMO encryption is not supported"

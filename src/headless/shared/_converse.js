@@ -1,6 +1,7 @@
 /**
  * @module:shared_converse
  */
+import log from '../log.js';
 import i18n from './i18n.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { EventEmitter, Model } from '@converse/skeletor';
@@ -27,6 +28,27 @@ import {
 } from './constants';
 
 
+const DEPRECATED_ATTRS = {
+    chatboxes: null,
+    bookmarks: null,
+
+    ANONYMOUS,
+    CLOSED,
+    EXTERNAL,
+    LOGIN,
+    LOGOUT,
+    OPENED,
+    PREBIND,
+    SUCCESS,
+    FAILURE,
+    INACTIVE,
+    ACTIVE,
+    COMPOSING,
+    PAUSED,
+    GONE,
+}
+
+
 /**
  * A private, closured namespace containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
@@ -37,7 +59,21 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
 
     constructor () {
         super();
+        const proxy = new Proxy(this, {
+            get: (target, key) => {
+                if (typeof key === 'string') {
+                    if (Object.keys(DEPRECATED_ATTRS).includes(key)) {
+                        log.warn(`Accessing ${key} on _converse is DEPRECATED`);
+                    }
+                }
+                return Reflect.get(target, key)
+            }
+        });
+        proxy.initialize();
+        return proxy;
+    }
 
+    initialize () {
         this.VERSION_NAME = VERSION_NAME;
 
         this.templates = {};
@@ -45,25 +81,8 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
             'initialized': getOpenPromise()
         };
 
-        this.ANONYMOUS = ANONYMOUS;
-        this.CLOSED = CLOSED;
-        this.EXTERNAL = EXTERNAL;
-        this.LOGIN = LOGIN;
-        this.LOGOUT = LOGOUT;
-        this.OPENED = OPENED;
-        this.PREBIND = PREBIND;
-
-        this.SUCCESS = SUCCESS;
-        this.FAILURE = FAILURE;
-
         this.DEFAULT_IMAGE_TYPE = DEFAULT_IMAGE_TYPE;
         this.DEFAULT_IMAGE = DEFAULT_IMAGE;
-
-        this.INACTIVE = INACTIVE;
-        this.ACTIVE = ACTIVE;
-        this.COMPOSING = COMPOSING;
-        this.PAUSED = PAUSED;
-        this.GONE = GONE;
 
         // Set as module attr so that we can override in tests.
         // TODO: replace with config settings
@@ -72,9 +91,7 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
             INACTIVE: 90000
         };
 
-        // TODO: DEPRECATED
-        this.bookmarks = null;
-        this.chatboxes = null;
+        Object.assign(this, DEPRECATED_ATTRS);
 
         this.api = /** @type {module:shared-api.APIEndpoint} */ null;
 

@@ -711,8 +711,7 @@ async function _initConverse (settings) {
     }
 
     if (settings?.auto_login !== false) {
-        _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
-        await _converse.api.waitUntil('afterResourceBinding');
+        await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
     }
     window.converse_disable_effects = true;
     return _converse;

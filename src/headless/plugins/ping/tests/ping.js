@@ -30,7 +30,8 @@ describe("XMPP Ping", function () {
                 `</iq>`);
         }));
 
-        it("is not sent out if we're not connected", mock.initConverse(async (_converse) => {
+        it("is not sent out if we're not connected", mock.initConverse(
+                [], {auto_login: false}, async (_converse) => {
             spyOn(_converse.api.connection.get(), 'send');
             expect(await _converse.api.ping()).toBe(null);
             expect(_converse.api.connection.get().send.calls.count()).toBe(0);

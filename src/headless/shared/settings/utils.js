@@ -123,6 +123,9 @@ export async function updateUserSettings (data, options) {
 }
 
 export async function clearUserSettings () {
-    await initUserSettings();
-    return user_settings.clear();
+    if (_converse.bare_jid) {
+        await initUserSettings();
+        return user_settings.clear();
+    }
+    user_settings = undefined;
 }

@@ -6,6 +6,8 @@ const { Strophe, sizzle } = converse.env;
 
 export async function checkBookmarksSupport () {
     const bare_jid = _converse.session.get('bare_jid');
+    if (!bare_jid) return false;
+
     const identity = await api.disco.getIdentity('pubsub', 'pep', bare_jid);
     if (api.settings.get('allow_public_bookmarks')) {
         return !!identity;

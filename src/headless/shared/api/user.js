@@ -88,7 +88,6 @@ export default {
             const complete = () => {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach(replacePromise);
-                delete _converse.jid
 
                 // Remove the session JID, otherwise the user would just be logged
                 // in again upon reload. See #2759

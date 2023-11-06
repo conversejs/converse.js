@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-07-12 17:45+0000\n"
+"PO-Revision-Date: 2023-11-08 09:33+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -1967,9 +1967,8 @@ msgid "Timeout error"
 msgstr "Zaman aşımı hatası"
 
 #: dist/converse-no-dependencies.js:119817
-#, fuzzy
 msgid "Your server does not support password reset"
-msgstr "Sunucunuz bant içi parola sıfırlamayı desteklemiyor"
+msgstr "Sunucunuz parola sıfırlamayı desteklemiyor"
 
 #: dist/converse-no-dependencies.js:119824
 msgid ""
@@ -1982,9 +1981,8 @@ msgid "Timeout error while trying to set your password"
 msgstr "Parolanızı ayarlamaya çalışırken zaman aşımı hatası"
 
 #: dist/converse-no-dependencies.js:119845
-#, fuzzy
 msgid "Your server does not allow password reset"
-msgstr "Sunucunuz bant içi parola sıfırlamaya izin vermiyor"
+msgstr "Sunucunuz parola sıfırlamaya izin vermiyor"
 
 #: dist/converse-no-dependencies.js:119847
 #: dist/converse-no-dependencies.js:119849

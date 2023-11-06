@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ */
 import _converse from '../../shared/_converse.js';
 import { converse } from '../../shared/api/index.js';
 import { arrayBufferToBase64, stringToArrayBuffer  } from '../../utils/arraybuffer.js';
@@ -38,7 +41,7 @@ async function createCapsNode () {
 
 /**
  * Given a stanza, adds a XEP-0115 CAPS element
- * @param { Element } stanza
+ * @param {Strophe.Builder} stanza
  */
 export async function addCapsNode (stanza) {
     const caps_el = await createCapsNode();

@@ -5,7 +5,7 @@ import tplVideo from 'templates/video.js';
 import { api } from '@converse/headless';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import { getEmojiMarkup } from './chat/utils.js';
-import { getHyperlinkTemplate } from 'utils/html.js';
+import { getHyperlinkTemplate } from '../utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import {
@@ -59,9 +59,9 @@ export class RichText extends String {
      *  from the start of the original message text. This is necessary because
      *  RichText instances can be nested when templates call directives
      *  which create new RichText instances (as happens with XEP-393 styling directives).
-     * @param { Object } options
-     * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
-     * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
+     * @param { Object } [options]
+     * @param { String } [options.nick] - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
+     * @param { Boolean } [options.render_styling] - Whether XEP-0393 message styling should be applied to the message
      * @param { Boolean } [options.embed_audio] - Whether audio URLs should be rendered as <audio> elements.
      *  If set to `true`, then audio files will always be rendered with an
      *  audio player. If set to `false`, they won't, and if not defined, then the `embed_audio` setting
@@ -123,11 +123,27 @@ export class RichText extends String {
      *  offset from the start of the original message stanza's body text).
      */
     addHyperlinks (text, local_offset) {
+        console.warn('-------------');
+        console.warn('addHyperlinks');
+        console.warn('-------------');
+
         const full_offset = local_offset + this.offset;
         const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
         const media_urls = getMediaURLs(urls_meta, text, full_offset);
 
+        console.warn('text');
+        console.warn(text);
+        console.warn('local_offset');
+        console.warn(local_offset);
+        console.warn('media_urls.length');
+        console.warn(media_urls.length);
+        console.warn(media_urls);
+        console.warn('-------------');
+
         media_urls.filter(o => !o.is_encrypted).forEach(url_obj => {
+            console.warn('url_obj');
+            console.warn(url_obj);
+
             const url_text = url_obj.url;
             const filtered_url = filterQueryParamsFromURL(url_text);
             let template;
@@ -146,6 +162,7 @@ export class RichText extends String {
             } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
                 template = tplAudio(filtered_url, this.hide_media_urls);
             } else {
+                console.warn('calling getHyperlinkTemplate');
                 template = getHyperlinkTemplate(filtered_url);
             }
             this.addTemplateResult(url_obj.start + local_offset, url_obj.end + local_offset, template);
@@ -299,6 +316,13 @@ export class RichText extends String {
         this.render_styling && this.addStyling();
         this.addAnnotations(this.addMentions);
         this.addAnnotations(this.addHyperlinks);
+
+        console.warn('this.references');
+        console.warn(this.references);
+
+        console.warn('this.marshall()');
+        console.warn(this.marshall().map(item => (isString(item) ? item : item.template)));
+
         this.addAnnotations(this.addMapURLs);
 
         await api.emojis.initialize();
@@ -335,6 +359,7 @@ export class RichText extends String {
      * @param { Object } template - The lit TemplateResult instance
      */
     addTemplateResult (begin, end, template) {
+        console.log(`addTemplateResult called with ${begin}, ${end}, ${template}`);
         this.references.push({ begin, end, template });
     }
 

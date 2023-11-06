@@ -64,7 +64,7 @@ converse.plugins.add('converse-bosh', {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', api.settings.get('prebind_url'), true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
-            xhr.onload = async function () {
+            xhr.onload = async function (event) {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
                     const jid = await setUserJID(data.jid);
@@ -76,7 +76,7 @@ converse.plugins.add('converse-bosh', {
                         BOSH_WAIT
                     );
                 } else {
-                    xhr.onerror();
+                    xhr.onerror(event);
                 }
             };
             xhr.onerror = function () {

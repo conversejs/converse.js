@@ -3,12 +3,26 @@ import log from '../log.js';
 import api from '../shared/api/index.js';
 
 /**
+ * Will return false if URL is malformed or contains disallowed characters
+ * @param {string} text
+ * @returns {boolean}
+ */
+export function isValidURL (text) {
+    try {
+        return !!(new URL(text));
+    } catch (error) {
+        log.error(error);
+        return false;
+    }
+}
+
+/**
  * Given a url, check whether the protocol being used is allowed for rendering
  * the media in the chat (as opposed to just rendering a URL hyperlink).
  * @param {string} url
  * @returns {boolean}
  */
-export function isAllowedProtocolForMedia(url) {
+export function isAllowedProtocolForMedia (url) {
     const uri = getURI(url);
     const { protocol } = window.location;
     if (['chrome-extension:','file:'].includes(protocol)) {
@@ -20,6 +34,9 @@ export function isAllowedProtocolForMedia(url) {
     );
 }
 
+/**
+ * @param {string|URI} url
+ */
 export function getURI (url) {
     try {
         return url instanceof URI ? url : new URI(url);

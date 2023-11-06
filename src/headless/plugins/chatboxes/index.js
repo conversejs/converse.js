@@ -23,10 +23,10 @@ converse.plugins.add('converse-chatboxes', {
             'privateChatsAutoJoined'
         ]);
 
-        Object.assign(api, { 'chatboxes': chatboxes_api});
+        Object.assign(api, { chatboxes: chatboxes_api});
 
-        _converse.ChatBoxes = ChatBoxes;
-
+        Object.assign(_converse, { ChatBoxes }); // TODO: DEPRECATED
+        Object.assign(_converse.exports, { ChatBoxes });
 
         api.listen.on('addClientFeatures', () => {
             api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
@@ -34,8 +34,13 @@ converse.plugins.add('converse-chatboxes', {
             api.disco.own.features.add(Strophe.NS.OUTOFBAND);
         });
 
+        let chatboxes;
+
         api.listen.on('pluginsInitialized', () => {
-            _converse.chatboxes = new _converse.ChatBoxes();
+            chatboxes = new _converse.exports.ChatBoxes();
+            Object.assign(_converse, { chatboxes }); // TODO: DEPRECATED
+            Object.assign(_converse.state, { chatboxes });
+
             /**
              * Triggered once the _converse.ChatBoxes collection has been initialized.
              * @event _converse#chatBoxesInitialized
@@ -45,7 +50,7 @@ converse.plugins.add('converse-chatboxes', {
             api.trigger('chatBoxesInitialized');
         });
 
-        api.listen.on('presencesInitialized', (reconnecting) => _converse.chatboxes.onConnected(reconnecting));
-        api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
+        api.listen.on('presencesInitialized', (reconnecting) => chatboxes.onConnected(reconnecting));
+        api.listen.on('reconnected', () => chatboxes.forEach(m => m.onReconnection()));
     }
 });

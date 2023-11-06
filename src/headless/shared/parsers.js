@@ -151,6 +151,10 @@ export function getOpenGraphMetadata (stanza) {
 }
 
 
+/**
+ * @param {string} text
+ * @param {number} offset
+ */
 export function getMediaURLsMetadata (text, offset=0) {
     const objs = [];
     if (!text) {

@@ -64,10 +64,11 @@ converse.plugins.add('converse-bookmarks', {
         })
 
         api.listen.on('clearSession', () => {
-            if (_converse.bookmarks) {
-                _converse.bookmarks.clearStore({'silent': true});
-                window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
-                delete _converse.bookmarks;
+            const { state } = _converse;
+            if (state.bookmarks) {
+                state.bookmarks.clearStore({'silent': true});
+                window.sessionStorage.removeItem(state.bookmarks.fetched_flag);
+                delete state.bookmarks;
             }
         });
 

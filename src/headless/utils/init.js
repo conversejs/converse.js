@@ -132,17 +132,14 @@ function saveJIDtoSession (_converse, jid) {
         jid = jid.toLowerCase() + Connection.generateResource();
     }
 
-    // TODO: Storing directly on _converse is deprecated
-    _converse.jid = jid;
-    _converse.bare_jid = Strophe.getBareJidFromJid(jid);
-    _converse.resource = Strophe.getResourceFromJid(jid);
-    _converse.domain = Strophe.getDomainFromJid(jid);
+    const bare_jid = Strophe.getBareJidFromJid(jid);
+    const resource = Strophe.getResourceFromJid(jid);
+    const domain = Strophe.getDomainFromJid(jid);
 
-    _converse.session.save({
-       'jid': jid,
-       'bare_jid': _converse.bare_jid,
-       'resource': _converse.resource,
-       'domain': _converse.domain,
+    // TODO: Storing directly on _converse is deprecated
+    Object.assign(_converse, { jid, bare_jid, resource, domain });
+
+    _converse.session.save({ jid, bare_jid, resource, domain,
         // We use the `active` flag to determine whether we should use the values from sessionStorage.
         // When "cloning" a tab (e.g. via middle-click), the `active` flag will be set and we'll create
         // a new empty user session, otherwise it'll be false and we can re-use the user session.

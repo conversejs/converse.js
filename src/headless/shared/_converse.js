@@ -77,8 +77,9 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.VERSION_NAME = VERSION_NAME;
 
         this.templates = {};
+
         this.promises = {
-            'initialized': getOpenPromise()
+            'initialized': getOpenPromise(),
         };
 
         this.DEFAULT_IMAGE_TYPE = DEFAULT_IMAGE_TYPE;
@@ -115,6 +116,12 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
     initSession () {
         this.session?.destroy();
         this.session = new Model();
+
+        // TODO: DEPRECATED
+        delete this.jid;
+        delete this.bare_jid;
+        delete this.domain;
+        delete this.resource;
     }
 
     /**

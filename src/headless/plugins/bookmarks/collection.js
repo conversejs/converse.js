@@ -43,7 +43,9 @@ class Bookmarks extends Collection {
         api.trigger('bookmarksInitialized', this);
     }
 
-    // eslint-disable-next-line class-methods-use-this
+    /**
+     * @param {Bookmark} bookmark
+     */
     async openBookmarkedRoom (bookmark) {
         if ( api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
             const groupchat = await api.rooms.create(
@@ -123,22 +125,31 @@ class Bookmarks extends Collection {
         );
     }
 
-    // eslint-disable-next-line class-methods-use-this
+    /**
+     * @param {Bookmark} bookmark
+     */
     markRoomAsBookmarked (bookmark) {
-        const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
+        const { chatboxes } = _converse.state;
+        const groupchat = chatboxes.get(bookmark.get('jid'));
         groupchat?.save('bookmarked', true);
     }
 
-    // eslint-disable-next-line class-methods-use-this
+    /**
+     * @param {Bookmark} bookmark
+     */
     markRoomAsUnbookmarked (bookmark) {
-        const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
+        const { chatboxes } = _converse.state;
+        const groupchat = chatboxes.get(bookmark.get('jid'));
         groupchat?.save('bookmarked', false);
     }
 
+    /**
+     * @param {Element} stanza
+     */
     createBookmarksFromStanza (stanza) {
         const xmlns = Strophe.NS.BOOKMARKS;
         const sel = `items[node="${xmlns}"] item storage[xmlns="${xmlns}"] conference`;
-        sizzle(sel, stanza).forEach(el => {
+        sizzle(sel, stanza).forEach(/** @type {Element} */(el) => {
             const jid = el.getAttribute('jid');
             const bookmark = this.get(jid);
             const attrs = {
@@ -186,7 +197,8 @@ class Bookmarks extends Collection {
     async getUnopenedBookmarks () {
         await api.waitUntil('bookmarksInitialized')
         await api.waitUntil('chatBoxesFetched')
-        return this.filter(b => !_converse.chatboxes.get(b.get('jid')));
+        const { chatboxes } = _converse.state;
+        return this.filter(b => !chatboxes.get(b.get('jid')));
     }
 }
 

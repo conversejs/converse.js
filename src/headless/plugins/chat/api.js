@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('./model.js').default} ChatBox
+ */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from "../../log.js";
@@ -14,7 +17,7 @@ export default {
     chats: {
         /**
          * @method api.chats.create
-         * @param {string|string[]} jid|jids An jid or array of jids
+         * @param {string|string[]} jids An jid or array of jids
          * @param { object } [attrs] An object containing configuration attributes.
          */
         async create (jids, attrs) {
@@ -106,7 +109,7 @@ export default {
          * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
          * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
          * @param { Boolean } [create=false] - Whether the chat should be created if it's not found.
-         * @returns { Promise<_converse.ChatBox> }
+         * @returns { Promise<ChatBox> }
          *
          * @example
          * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
@@ -127,7 +130,7 @@ export default {
             async function _get (jid) {
                 let model = await api.chatboxes.get(jid);
                 if (!model && create) {
-                    model = await api.chatboxes.create(jid, attrs, _converse.ChatBox);
+                    model = await api.chatboxes.create(jid, attrs, _converse.exports.ChatBox);
                 } else {
                     model = (model && model.get('type') === PRIVATE_CHAT_TYPE) ? model : null;
                     if (model && Object.keys(attrs).length) {

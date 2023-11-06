@@ -22,8 +22,7 @@ export async function initBookmarks () {
     }
     if (await checkBookmarksSupport()) {
         _converse.state.bookmarks = new _converse.exports.Bookmarks();
-        // TODO: DEPRECATED
-        _converse.bookmarks = _converse.state.bookmarks;
+        Object.assign(_converse, { bookmarks: _converse.state.bookmarks }); // TODO: DEPRECATED
     }
 }
 

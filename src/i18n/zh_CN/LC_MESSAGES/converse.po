@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-11-05 08:33+0000\n"
+"PO-Revision-Date: 2023-11-08 09:33+0000\n"
 "Last-Translator: Sketch6580 <sky@openmbox.net>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -265,7 +265,7 @@ msgstr "%1$s 清空了话题"
 #: dist/converse-no-dependencies.js:45219
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr "%1$s 已加入群聊"
+msgstr "%1$s 已进入群聊"
 
 #: dist/converse-no-dependencies.js:45221
 #, javascript-format
@@ -315,7 +315,7 @@ msgstr "%1$s 已离开"
 #: dist/converse-no-dependencies.js:45246
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr "%1$s 已加入群聊"
+msgstr "%1$s 已进入群聊"
 
 #: dist/converse-no-dependencies.js:45248
 #, javascript-format
@@ -723,7 +723,7 @@ msgstr "管理员是第二高的从属关系。管理员可以修改除所有者
 
 #: dist/converse-no-dependencies.js:81063
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr "要封禁用户，你将其从属关系设为“被驱逐者”。"
+msgstr "要封禁用户，您需要将其从属关系设为“被驱逐者”。"
 
 #: dist/converse-no-dependencies.js:81089
 msgid "No users with that affiliation found."
@@ -968,7 +968,7 @@ msgstr "保存"
 #: dist/converse-no-dependencies.js:87539
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
-msgstr "您有一条未发送的消息，如果继续，此消息将丢失。你确定吗？"
+msgstr "您有一条未发送的消息，如果继续，此消息将丢失。是否确定？"
 
 #: dist/converse-no-dependencies.js:87579
 #: dist/converse-no-dependencies.js:87651
@@ -2271,7 +2271,7 @@ msgstr "群聊地址"
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:131233
 msgid "Enter a new Groupchat"
-msgstr "输入新群聊"
+msgstr "进入新群聊"
 
 #: dist/converse-no-dependencies.js:131292
 msgid "Groupchat id is invalid."

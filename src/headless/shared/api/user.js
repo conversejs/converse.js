@@ -1,3 +1,6 @@
+/**
+ * @module:shared.api.user
+ */
 import _converse from '../_converse.js';
 import presence_api from './presence.js';
 import connection_api from '../connection/api.js';
@@ -5,9 +8,9 @@ import { replacePromise } from '../../utils/session.js';
 import { attemptNonPreboundSession, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/api.js';
-import { LOGOUT, PREBIND } from '../constants.js';
+import { LOGOUT } from '../constants.js';
 
-export default {
+const api = {
     /**
      * This grouping collects API functions related to the current logged in user.
      *
@@ -57,15 +60,31 @@ export default {
                 jid = await setUserJID(jid);
             }
 
-            // See whether there is a BOSH session to re-attach to
-            const bosh_plugin = _converse.pluggable.plugins['converse-bosh'];
-            if (bosh_plugin?.enabled()) {
-                if (await _converse.restoreBOSHSession()) {
-                    return;
-                } else if (api.settings.get("authentication") === PREBIND && (!automatic || api.settings.get("auto_login"))) {
-                    return _converse.startNewPreboundBOSHSession();
-                }
-            }
+            /**
+             * *Hook* which allows 3rd party code to attempt logging in before
+             * the core code attempts it.
+             *
+             * Note: If the hook handler has logged the user in, it should set the
+             * `success` flag on the payload to `true`.
+             *
+             * @typedef {Object} LoginHookPayload
+             * @property {string} jid
+             * @property {string} password
+             * @property {boolean} [automatic] - An internally used flag that indicates whether
+             *  this method was called automatically once the connection has been initialized.
+             * @property {boolean} [success] - A flag which indicates whether
+             * login has succeeded. If a hook handler receives a payload with
+             * this flag, it should NOT attempt to log in.
+             * If a handler has successfully logged in, it should return the
+             * payload with this flag set to true.
+             *
+             * @event _converse#login
+             * @param {typeof api.user} context
+             * @param {LoginHookPayload} payload
+             */
+            const { success } = await _converse.api.hook('login', this, { jid, password, automatic });
+            if (success) return;
+
             password = password || api.settings.get("password");
             const credentials = (jid && password) ? { jid, password } : null;
             attemptNonPreboundSession(credentials, automatic);
@@ -114,3 +133,5 @@ export default {
         }
     }
 }
+
+export default api;

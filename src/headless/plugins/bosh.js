@@ -2,12 +2,14 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
+ *
+ * @typedef {module:shared.api.user} LoginHookPayload
  */
 import 'strophe.js/src/bosh';
 import _converse from '../shared/_converse.js';
 import api, { converse } from '../shared/api/index.js';
 import log from "../log.js";
-import { BOSH_WAIT } from '../shared/constants.js';
+import { BOSH_WAIT, PREBIND } from '../shared/constants.js';
 import { Model } from '@converse/skeletor';
 import { setUserJID, } from '../utils/init.js';
 import { isTestEnv } from '../utils/session.js';
@@ -56,7 +58,7 @@ converse.plugins.add('converse-bosh', {
         }
 
 
-        _converse.startNewPreboundBOSHSession = function () {
+        function startNewPreboundBOSHSession () {
             if (!api.settings.get('prebind_url')) {
                 throw new Error("startNewPreboundBOSHSession: If you use prebind then you MUST supply a prebind_url");
             }
@@ -93,7 +95,7 @@ converse.plugins.add('converse-bosh', {
         }
 
 
-        _converse.restoreBOSHSession = async function () {
+        async function restoreBOSHSession () {
             const jid = (await initBOSHSession()).get('jid');
             const connection = api.connection.get();
             if (jid && (connection._proto instanceof Strophe.Bosh)) {
@@ -128,6 +130,26 @@ converse.plugins.add('converse-bosh', {
                 bosh_session.save({'jid': _converse.session.get('jid')});
             }
         });
+
+        api.listen.on('login',
+            /**
+             * @param {unknown} _
+             * @param {LoginHookPayload} payload
+             */
+            async (_, payload) => {
+                if (payload.success) return payload;
+
+                const { automatic } = payload;
+                // See whether there is a BOSH session to re-attach to
+                if (await restoreBOSHSession()) {
+                    return { ...payload, success: true };
+                } else if (api.settings.get("authentication") === PREBIND && (!automatic || api.settings.get("auto_login"))) {
+                    startNewPreboundBOSHSession();
+                    return { ...payload, success: true };
+                }
+                return payload;
+            }
+        );
 
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.BOSH));
 

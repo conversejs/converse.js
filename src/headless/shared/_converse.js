@@ -1,5 +1,5 @@
 /**
- * @module:shared_converse
+ * @module:shared.converse
  */
 import log from '../log.js';
 import i18n from './i18n.js';

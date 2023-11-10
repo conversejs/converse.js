@@ -9,6 +9,8 @@ export default class ModeratorToolsModal extends BaseModal {
     constructor (options) {
         super(options);
         this.id = "converse-modtools-modal";
+        this.affiliation = options.affiliation;
+        this.jid = options.jid;
     }
 
     renderModal () {

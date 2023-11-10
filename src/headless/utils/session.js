@@ -18,18 +18,17 @@ export function isTestEnv () {
     return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
 }
 
-export function setUnloadEvent () {
+export function getUnloadEvent () {
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
         // gets thrown when the page is cached and not just
         // closed/destroyed. It's the only viable event on mobile Safari.
         // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-        _converse.unloadevent = 'pagehide';
+        return 'pagehide';
     } else if ('onbeforeunload' in window) {
-        _converse.unloadevent = 'beforeunload';
-    } else if ('onunload' in window) {
-        _converse.unloadevent = 'unload';
+        return 'beforeunload';
     }
+    return 'unload';
 }
 
 export function replacePromise (name) {
@@ -48,7 +47,7 @@ export function replacePromise (name) {
 
 export function shouldClearCache () {
     const { api } = _converse;
-    return !_converse.config.get('trusted') ||
+    return !_converse.state.config.get('trusted') ||
         api.settings.get('clear_cache_on_logout') ||
         isTestEnv();
 }
@@ -57,12 +56,6 @@ export function shouldClearCache () {
 export async function tearDown () {
     const { api } = _converse;
     await api.trigger('beforeTearDown', {'synchronous': true});
-    window.removeEventListener('click', _converse.onUserActivity);
-    window.removeEventListener('focus', _converse.onUserActivity);
-    window.removeEventListener('keypress', _converse.onUserActivity);
-    window.removeEventListener('mousemove', _converse.onUserActivity);
-    window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
-    window.clearInterval(_converse.everySecondTrigger);
     api.trigger('afterTearDown');
     return _converse;
 }

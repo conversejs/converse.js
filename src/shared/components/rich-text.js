@@ -52,6 +52,10 @@ export default class RichText extends CustomElement {
 
     constructor () {
         super();
+        this.nick = null;
+        this.onImgClick = null;
+        this.onImgLoad = null;
+        this.text = null;
         this.embed_audio = false;
         this.embed_videos = false;
         this.hide_media_urls = false;

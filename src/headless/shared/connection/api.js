@@ -23,7 +23,7 @@ export default {
      * @method api.connection.init
      * @memberOf api.connection
      * @param {string} [jid]
-     * @return {Connection | MockConnection}
+     * @return {Connection|MockConnection}
      */
     init (jid) {
         if (jid && connection?.jid && isSameDomain(connection.jid, jid)) return connection;

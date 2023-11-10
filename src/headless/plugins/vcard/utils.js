@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('../muc/occupant.js').default} ChatRoomOccupant
+ * @typedef {import('../chat/model-with-contact.js').default} ModelWithContact
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
@@ -7,7 +11,10 @@ import { shouldClearCache } from '../../utils/session.js';
 const { Strophe, $iq, u } = converse.env;
 
 
-async function onVCardData (jid, iq) {
+/**
+ * @param {Element} iq
+ */
+async function onVCardData (iq) {
     const vcard = iq.querySelector('vCard');
     let result = {};
     if (vcard !== null) {
@@ -21,7 +28,8 @@ async function onVCardData (jid, iq) {
             'role': vcard.querySelector('ROLE')?.textContent,
             'email': vcard.querySelector('EMAIL USERID')?.textContent,
             'vcard_updated': (new Date()).toISOString(),
-            'vcard_error': undefined
+            'vcard_error': undefined,
+            image_hash: undefined,
         };
     }
     if (result.image) {
@@ -44,20 +52,26 @@ export function createStanza (type, jid, vcard_el) {
 }
 
 
+/**
+ * @param {ChatRoomOccupant} occupant
+ */
 export function onOccupantAvatarChanged (occupant) {
     const hash = occupant.get('image_hash');
     const vcards = [];
     if (occupant.get('jid')) {
-        vcards.push(_converse.vcards.get(occupant.get('jid')));
+        vcards.push(_converse.state.vcards.get(occupant.get('jid')));
     }
-    vcards.push(_converse.vcards.get(occupant.get('from')));
+    vcards.push(_converse.state.vcards.get(occupant.get('from')));
     vcards.forEach(v => (hash && v?.get('image_hash') !== hash) && api.vcard.update(v, true));
 }
 
 
+/**
+ * @param {ModelWithContact} model
+ */
 export async function setVCardOnModel (model) {
     let jid;
-    if (model instanceof _converse.Message) {
+    if (model instanceof _converse.exports.Message) {
         if (['error', 'info'].includes(model.get('type'))) {
             return;
         }
@@ -72,22 +86,24 @@ export async function setVCardOnModel (model) {
     }
 
     await api.waitUntil('VCardsInitialized');
-    model.vcard = _converse.vcards.get(jid) || _converse.vcards.create({ jid });
+    const { vcards } = _converse.state;
+    model.vcard = vcards.get(jid) || vcards.create({ jid });
     model.vcard.on('change', () => model.trigger('vcard:change'));
     model.trigger('vcard:add');
 }
 
 
 function getVCardForOccupant (occupant) {
+    const { vcards, xmppstatus } = _converse.state;
     const muc = occupant?.collection?.chatroom;
     const nick = occupant.get('nick');
 
     if (nick && muc?.get('nick') === nick) {
-        return _converse.xmppstatus.vcard;
+        return xmppstatus.vcard;
     } else {
         const jid = occupant.get('jid') || occupant.get('from');
         if (jid) {
-            return _converse.vcards.get(jid) || _converse.vcards.create({ jid });
+            return vcards.get(jid) || vcards.create({ jid });
         } else {
             log.warn(`Could not get VCard for occupant because no JID found!`);
             return;
@@ -106,15 +122,16 @@ export async function setVCardOnOccupant (occupant) {
 
 
 function getVCardForMUCMessage (message) {
+    const { vcards, xmppstatus } = _converse.state;
     const muc = message?.collection?.chatbox;
     const nick = Strophe.getResourceFromJid(message.get('from'));
 
     if (nick && muc?.get('nick') === nick) {
-        return _converse.xmppstatus.vcard;
+        return xmppstatus.vcard;
     } else {
         const jid = message.occupant?.get('jid') || message.get('from');
         if (jid) {
-            return _converse.vcards.get(jid) || _converse.vcards.create({ jid });
+            return vcards.get(jid) || vcards.create({ jid });
         } else {
             log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get('msgid')}`);
             return;
@@ -137,24 +154,24 @@ export async function setVCardOnMUCMessage (message) {
 
 
 export async function initVCardCollection () {
-    _converse.vcards = new _converse.VCards();
-    const id = `${_converse.bare_jid}-converse.vcards`;
-    initStorage(_converse.vcards, id);
+    const vcards = new _converse.exports.VCards();
+    _converse.state.vcards = vcards;
+    Object.assign(_converse, { vcards }); // XXX DEPRECATED
+
+    const bare_jid = _converse.session.get('bare_jid');
+    const id = `${bare_jid}-converse.vcards`;
+    initStorage(vcards, id);
     await new Promise(resolve => {
-        _converse.vcards.fetch({
+        vcards.fetch({
             'success': resolve,
             'error': resolve
         }, {'silent': true});
     });
-    const vcards = _converse.vcards;
-    if (_converse.session) {
-        const jid = _converse.session.get('bare_jid');
-        const status = _converse.xmppstatus;
-        status.vcard = vcards.get(jid) || vcards.create({'jid': jid});
-        if (status.vcard) {
-            status.vcard.on('change', () => status.trigger('vcard:change'));
-            status.trigger('vcard:add');
-        }
+    const { xmppstatus } = _converse.state;
+    xmppstatus.vcard = vcards.get(bare_jid) || vcards.create({'jid': bare_jid});
+    if (xmppstatus.vcard) {
+        xmppstatus.vcard.on('change', () => xmppstatus.trigger('vcard:change'));
+        xmppstatus.trigger('vcard:add');
     }
     /**
      * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
@@ -167,15 +184,17 @@ export async function initVCardCollection () {
 export function clearVCardsSession () {
     if (shouldClearCache()) {
         api.promises.add('VCardsInitialized');
-        if (_converse.vcards) {
-            _converse.vcards.clearStore();
-            delete _converse.vcards;
+        if (_converse.state.vcards) {
+            _converse.state.vcards.clearStore();
+            Object.assign(_converse, { vcards: undefined }); // XXX DEPRECATED
+            delete _converse.state.vcards;
         }
     }
 }
 
 export async function getVCard (jid) {
-    const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+    const bare_jid = _converse.session.get('bare_jid');
+    const to = Strophe.getBareJidFromJid(jid) === bare_jid ? null : jid;
     let iq;
     try {
         iq = await api.sendIQ(createStanza("get", to))
@@ -186,5 +205,5 @@ export async function getVCard (jid) {
             'vcard_error': (new Date()).toISOString()
         }
     }
-    return onVCardData(jid, iq);
+    return onVCardData(iq);
 }

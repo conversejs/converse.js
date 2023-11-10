@@ -34,7 +34,9 @@ converse.plugins.add('converse-mam', {
 
         Object.assign(api, mam_api);
         // This is mainly done to aid with tests
-        Object.assign(_converse, { onMAMError, onMAMPreferences, handleMAMResult, MAMPlaceholderMessage });
+        const exports = { onMAMError, onMAMPreferences, handleMAMResult, MAMPlaceholderMessage };
+        Object.assign(_converse, exports); // XXX DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         /************************ Event Handlers ************************/
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(NS.MAM));

@@ -4,6 +4,11 @@ import { api } from "@converse/headless";
 
 export class Fingerprints extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             'jid': { type: String }

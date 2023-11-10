@@ -63,7 +63,7 @@ export default class RosterView extends CustomElement {
 
     toggleRoster (ev) {
         ev?.preventDefault?.();
-        const list_el = this.querySelector('.list-container.roster-contacts');
+        const list_el = /** @type {HTMLElement} */(this.querySelector('.list-container.roster-contacts'));
         if (this.model.get('toggle_state') === _converse.CLOSED) {
             slideOut(list_el).then(() => this.model.save({'toggle_state': _converse.OPENED}));
         } else {

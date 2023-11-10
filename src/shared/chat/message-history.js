@@ -9,6 +9,12 @@ import { until } from 'lit/directives/until.js';
 
 export default class MessageHistory extends CustomElement {
 
+    constructor () {
+        super();
+        this.model = null;
+        this.messages = [];
+    }
+
     static get properties () {
         return {
             model: { type: Object },

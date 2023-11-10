@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('@converse/skeletor').Model} Model
+ */
 import log from '../../log.js';
 import {
     clearUserSettings,

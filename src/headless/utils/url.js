@@ -1,3 +1,6 @@
+/**
+ * @typedef {module:headless-shared-chat-utils.MediaURLData} MediaURLData
+ */
 import URI from 'urijs';
 import log from '../log.js';
 import api from '../shared/api/index.js';
@@ -107,9 +110,9 @@ export function isDomainAllowed (url, setting) {
 }
 
 /**
- * Accepts a {@link MediaURL} object and then checks whether its domain is
+ * Accepts a {@link MediaURLData} object and then checks whether its domain is
  * allowed for rendering in the chat.
- * @param {MediaURL} o
+ * @param {MediaURLData} o
  * @returns {boolean}
  */
 export function isMediaURLDomainAllowed (o) {

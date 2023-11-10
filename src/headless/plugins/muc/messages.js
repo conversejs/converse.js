@@ -3,17 +3,11 @@ import { Collection } from '@converse/skeletor';
 
 /**
  * Collection which stores MUC messages
- * @namespace _converse.ChatRoomMessages
- * @memberOf _converse
  */
 class MUCMessages extends Collection {
 
-    get comparator () {
-        return 'time';
-    }
-
-    constructor () {
-        super();
+    constructor (attrs, options={}) {
+        super(attrs, Object.assign({ comparator: 'time' }, options));
         this.model = MUCMessage;
     }
 }

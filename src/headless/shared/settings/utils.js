@@ -95,21 +95,22 @@ export function updateAppSettings (key, val) {
 }
 
 /**
- * @async
+ * @returns {Promise<void>|void} A promise when the user settings object
+ *  is created anew and it's contents fetched from storage.
  */
 function initUserSettings () {
-    if (!_converse.bare_jid) {
+    const bare_jid = _converse.session.get('bare_jid');
+    if (!bare_jid) {
         const msg = "No JID to fetch user settings for";
         log.error(msg);
         throw Error(msg);
     }
-    if (!user_settings?.fetched) {
-        const id = `converse.user-settings.${_converse.bare_jid}`;
+    const id = `converse.user-settings.${bare_jid}`;
+    if (user_settings?.get('id') !== id) {
         user_settings = new Model({id});
         initStorage(user_settings, id);
-        user_settings.fetched = user_settings.fetch({'promise': true});
+        return user_settings.fetch({'promise': true});
     }
-    return user_settings.fetched;
 }
 
 export async function getUserSettings () {
@@ -123,7 +124,8 @@ export async function updateUserSettings (data, options) {
 }
 
 export async function clearUserSettings () {
-    if (_converse.bare_jid) {
+    const bare_jid = _converse.session.get('bare_jid');
+    if (bare_jid) {
         await initUserSettings();
         return user_settings.clear();
     }

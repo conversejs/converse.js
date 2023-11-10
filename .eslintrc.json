@@ -184,7 +184,7 @@
         "no-underscore-dangle": "off",
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "off",
-        "no-unused-vars": "error",
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
         "no-unused-expressions": "off",
         "no-use-before-define": "off",
         "no-useless-call": "error",

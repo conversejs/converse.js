@@ -10,6 +10,11 @@ import './styles/chat-content.scss';
 
 export default class ChatContent extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             jid: { type: String }

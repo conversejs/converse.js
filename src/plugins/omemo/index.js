@@ -39,11 +39,14 @@ Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO + '.verification');
 Strophe.addNamespace('OMEMO_WHITELISTED', Strophe.NS.OMEMO + '.whitelisted');
 Strophe.addNamespace('OMEMO_BUNDLES', Strophe.NS.OMEMO + '.bundles');
 
+/**
+ * @typedef {Window & globalThis & {libsignal: any} } window
+ */
 
 converse.plugins.add('converse-omemo', {
     enabled (_converse) {
         return (
-            window.libsignal &&
+            /** @type window */(window).libsignal &&
             _converse.config.get('trusted') &&
             !api.settings.get('clear_cache_on_logout') &&
             !_converse.api.settings.get('blacklisted_plugins').includes('converse-omemo')

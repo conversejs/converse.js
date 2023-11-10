@@ -3,7 +3,7 @@ import tplMUCDescription from "../templates/muc-description.js";
 import tplMUCList from "../templates/muc-list.js";
 import tplSpinner from "templates/spinner.js";
 import { __ } from 'i18n';
-import { _converse, api, converse, log } from "@converse/headless";
+import { api, converse, log } from "@converse/headless";
 import { getAttributes } from '@converse/headless/shared/parsers';
 
 const { Strophe, $iq, sizzle } = converse.env;
@@ -43,7 +43,7 @@ function insertRoomInfo (el, stanza) {
 /**
  * Show/hide extra information about a groupchat in a listing.
  * @function toggleRoomInfo
- * @param { Event }
+ * @param { Event } ev
  */
 function toggleRoomInfo (ev) {
     const parent_el = u.ancestor(ev.target, '.room-item');
@@ -56,7 +56,7 @@ function toggleRoomInfo (ev) {
             'beforeend',
             u.getElementFromTemplateResult(tplSpinner())
         );
-        api.disco.info(ev.target.getAttribute('data-room-jid'), null)
+        api.disco.info(/** @type HTMLElement */(ev.target).getAttribute('data-room-jid'), null)
             .then(stanza => insertRoomInfo(parent_el, stanza))
             .catch(e => log.error(e));
     }
@@ -107,7 +107,7 @@ export default class MUCListModal extends BaseModal {
         api.rooms.open(jid, {'name': name}, true);
     }
 
-    toggleRoomInfo (ev) { // eslint-disable-line
+    toggleRoomInfo (ev) {
         ev.preventDefault();
         toggleRoomInfo(ev);
     }
@@ -119,9 +119,8 @@ export default class MUCListModal extends BaseModal {
     /**
      * Handle the IQ stanza returned from the server, containing
      * all its public groupchats.
-     * @private
      * @method _converse.ChatRoomView#onRoomsFound
-     * @param { HTMLElement } iq
+     * @param { HTMLElement } [iq]
      */
     onRoomsFound (iq) {
         this.loading_items = false;

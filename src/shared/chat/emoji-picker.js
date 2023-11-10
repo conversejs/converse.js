@@ -1,3 +1,7 @@
+/**
+ * @module emoji-picker
+ * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
+ */
 import "./emoji-picker-content.js";
 import './emoji-dropdown.js';
 import DOMNavigator from "shared/dom-navigator";
@@ -27,14 +31,17 @@ export default class EmojiPicker extends CustomElement {
         }
     }
 
-    firstUpdated () {
-        super.firstUpdated();
+    firstUpdated (changed) {
+        super.firstUpdated(changed);
         this.listenTo(this.model, 'change', o => this.onModelChanged(o.changed));
         this.initArrowNavigation();
     }
 
     constructor () {
         super();
+        this.render_emojis = null;
+        this.chatview = null;
+        this.model = null;
         this.query = '';
         this._search_results = [];
         this.debouncedFilter = debounce(input => this.model.set({'query': input.value}), 250);
@@ -85,7 +92,7 @@ export default class EmojiPicker extends CustomElement {
         }
         const el = this.querySelector('.emoji-lists__container--browse');
         const heading = this.querySelector(`#emoji-picker-${this.current_category}`);
-        if (heading) {
+        if (heading instanceof HTMLElement) {
             // +4 due to 2px padding on list elements
             el.scrollTop = heading.offsetTop - heading.offsetHeight*3 + 4;
         }
@@ -232,7 +239,7 @@ export default class EmojiPicker extends CustomElement {
     initArrowNavigation () {
         if (!this.navigator) {
             const default_selector = 'li:not(.hidden):not(.emoji-skintone), .emoji-search';
-            const options = {
+            const options = /** @type DOMNavigatorOptions */({
                 'jump_to_picked': '.emoji-category',
                 'jump_to_picked_selector': '.emoji-category.picked',
                 'jump_to_picked_direction': DOMNavigator.DIRECTION.down,
@@ -251,7 +258,7 @@ export default class EmojiPicker extends CustomElement {
                     el.matches('.insert-emoji, .emoji-category') && el.firstElementChild.focus();
                     el.matches('.emoji-search') && el.focus();
                 }
-            };
+            });
             this.navigator = new DOMNavigator(this, options);
         }
     }

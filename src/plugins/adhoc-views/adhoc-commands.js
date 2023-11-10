@@ -32,15 +32,24 @@ export default class AdHocCommands extends CustomElement {
         return tplAdhoc(this)
     }
 
+    /**
+     * @param {SubmitEvent} ev
+     */
     async fetchCommands (ev) {
         ev.preventDefault();
+
+        if (!(ev.target instanceof HTMLFormElement)) {
+            this.alert_type = 'danger';
+            this.alert = 'Form could not be submitted';
+            return;
+        }
+
+        this.fetching = true;
         delete this.alert_type;
         delete this.alert;
 
-        this.fetching = true;
-
         const form_data = new FormData(ev.target);
-        const jid = form_data.get('jid').trim();
+        const jid = /** @type {string} */(form_data.get('jid')).trim();
         let supported;
         try {
             supported = await api.disco.supports(Strophe.NS.ADHOC, jid);
@@ -109,8 +118,8 @@ export default class AdHocCommands extends CustomElement {
 
     async runCommand (form, action) {
         const form_data = new FormData(form);
-        const jid = form_data.get('command_jid').trim();
-        const node = form_data.get('command_node').trim();
+        const jid = /** @type {string} */(form_data.get('command_jid')).trim();
+        const node = /** @type {string} */(form_data.get('command_node')).trim();
 
         const cmd = this.commands.filter(c => c.node === node)[0];
         delete cmd.alert;
@@ -159,8 +168,8 @@ export default class AdHocCommands extends CustomElement {
         this.requestUpdate();
 
         const form_data = new FormData(ev.target.form);
-        const jid = form_data.get('command_jid').trim();
-        const node = form_data.get('command_node').trim();
+        const jid = /** @type {string} */(form_data.get('command_jid')).trim();
+        const node = /** @type {string} */(form_data.get('command_node')).trim();
 
         const cmd = this.commands.filter(c => c.node === node)[0];
         delete cmd.alert;

@@ -72,8 +72,9 @@ converse.plugins.add('converse-vcard', {
     initialize () {
         api.promises.add('VCardsInitialized');
 
-        _converse.VCard = VCard;
-        _converse.VCards = VCards;
+        const exports = { VCard, VCards };
+        Object.assign(_converse, exports); // XXX DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         api.listen.on('chatRoomInitialized', (m) => {
             setVCardOnModel(m)

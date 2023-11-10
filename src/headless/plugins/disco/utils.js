@@ -18,7 +18,7 @@ function onDiscoInfoRequest (stanza) {
     }
 
     iqresult.c('query', attrs);
-    _converse.disco._identities.forEach(identity => {
+    _converse.state.disco._identities.forEach(identity => {
         const attrs = {
             'category': identity.category,
             'type': identity.type
@@ -31,7 +31,7 @@ function onDiscoInfoRequest (stanza) {
         }
         iqresult.c('identity', attrs).up();
     });
-    _converse.disco._features.forEach(f => iqresult.c('feature', {'var': f}).up());
+    _converse.state.disco._features.forEach(f => iqresult.c('feature', {'var': f}).up());
     api.send(iqresult.tree());
     return true;
 }
@@ -64,14 +64,22 @@ export async function initializeDisco () {
         'iq', 'get', null, null
     );
 
-    _converse.disco_entities = new _converse.DiscoEntities();
-    const id = `converse.disco-entities-${_converse.bare_jid}`;
-    _converse.disco_entities.browserStorage = createStore(id, 'session');
+    const disco_entities = new _converse.exports.DiscoEntities();
 
-    const collection = await _converse.disco_entities.fetchEntities();
-    if (collection.length === 0 || !collection.get(_converse.domain)) {
+    Object.assign(_converse, { disco_entities }); // XXX: DEPRECATED
+    Object.assign(_converse.state, { disco_entities });
+
+    const bare_jid = _converse.session.get('bare_jid');
+    const id = `converse.disco-entities-${bare_jid}`;
+
+    disco_entities.browserStorage = createStore(id, 'session');
+    const collection = await disco_entities.fetchEntities();
+
+    const domain = _converse.session.get('domain');
+
+    if (collection.length === 0 || !collection.get(domain)) {
         // If we don't have an entity for our own XMPP server, create one.
-        api.disco.entities.create({'jid': _converse.domain}, {'ignore_cache': true});
+        api.disco.entities.create({'jid': domain}, {'ignore_cache': true});
     }
     /**
      * Triggered once the `converse-disco` plugin has been initialized and the
@@ -89,12 +97,15 @@ export function initStreamFeatures () {
     // features from cache.
     // Otherwise the features will be created once we've received them
     // from the server (see populateStreamFeatures).
-    if (!_converse.stream_features) {
-        const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
+    if (!_converse.state.stream_features) {
+        const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.stream-features-${bare_jid}`;
         api.promises.add('streamFeaturesAdded');
-        _converse.stream_features = new Collection();
-        _converse.stream_features.browserStorage = createStore(id, "session");
+
+        const stream_features = new Collection();
+        stream_features.browserStorage = createStore(id, "session");
+        Object.assign(_converse, { stream_features }); // XXX: DEPRECATED
+        Object.assign(_converse.state, { stream_features });
     }
 }
 
@@ -113,11 +124,11 @@ export function populateStreamFeatures () {
     // Strophe.js sets the <stream:features> element on the
     // Strophe.Connection instance.
     //
-    // Once this is we populate the _converse.stream_features collection
+    // Once this is we populate the stream_features collection
     // and trigger streamFeaturesAdded.
     initStreamFeatures();
     Array.from(api.connection.get().features.childNodes).forEach(feature => {
-        _converse.stream_features.create({
+        _converse.state.stream_features.create({
             'name': feature.nodeName,
             'xmlns': feature.getAttribute('xmlns')
         });
@@ -126,10 +137,12 @@ export function populateStreamFeatures () {
 }
 
 export function clearSession () {
-    _converse.disco_entities?.forEach(e => e.features.clearStore());
-    _converse.disco_entities?.forEach(e => e.identities.clearStore());
-    _converse.disco_entities?.forEach(e => e.dataforms.clearStore());
-    _converse.disco_entities?.forEach(e => e.fields.clearStore());
-    _converse.disco_entities?.clearStore();
-    delete _converse.disco_entities;
+    const { disco_entities } = _converse.state;
+    disco_entities?.forEach(e => e.features.clearStore());
+    disco_entities?.forEach(e => e.identities.clearStore());
+    disco_entities?.forEach(e => e.dataforms.clearStore());
+    disco_entities?.forEach(e => e.fields.clearStore());
+    disco_entities?.clearStore();
+    delete _converse.state.disco_entities;
+    Object.assign(_converse, { disco_entities: undefined });
 }

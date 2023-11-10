@@ -58,7 +58,7 @@ class Device extends Model {
      */
     getBundle () {
         if (this.get('bundle')) {
-            return Promise.resolve(this.get('bundle'), this);
+            return Promise.resolve(this.get('bundle'));
         } else {
             return this.fetchBundleFromServer();
         }

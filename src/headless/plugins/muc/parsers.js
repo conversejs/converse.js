@@ -1,3 +1,8 @@
+/**
+ * @module:plugin-muc-parsers
+ * @typedef {import('../muc/muc.js').default} MUC
+ * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
+ */
 import dayjs from 'dayjs';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
@@ -72,10 +77,9 @@ function getJIDFromMUCUserData (stanza) {
 
 /**
  * @private
- * @param { Element } stanza - The message stanza
- * @param { Element } original_stanza - The original stanza, that contains the
+ * @param {Element} stanza - The message stanza
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @returns { Object }
+ * @returns {Object}
  */
 function getModerationAttributes (stanza) {
     const fastening = sizzle(`apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
@@ -121,9 +125,9 @@ function getOccupantID (stanza, chatbox) {
 /**
  * Determines whether the sender of this MUC message is the current user or
  * someone else.
- * @param { MUCMessageAttributes } attrs
- * @param { _converse.ChatRoom } chatbox
- * @returns { 'me'|'them' }
+ * @param {MUCMessageAttributes} attrs
+ * @param {MUC} chatbox
+ * @returns {'me'|'them'}
  */
 function getSender (attrs, chatbox) {
     let is_me;
@@ -132,7 +136,8 @@ function getSender (attrs, chatbox) {
     if (own_occupant_id) {
         is_me = attrs.occupant_id === own_occupant_id;
     } else if (attrs.from_real_jid) {
-        is_me = Strophe.getBareJidFromJid(attrs.from_real_jid) === _converse.bare_jid;
+        const bare_jid = _converse.session.get('bare_jid');
+        is_me = Strophe.getBareJidFromJid(attrs.from_real_jid) === bare_jid;
     } else {
         is_me = attrs.nick === chatbox.get('nick')
     }
@@ -141,12 +146,9 @@ function getSender (attrs, chatbox) {
 
 /**
  * Parses a passed in message stanza and returns an object of attributes.
- * @param { Element } stanza - The message stanza
- * @param { Element } original_stanza - The original stanza, that contains the
- *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @param { _converse.ChatRoom } chatbox
- * @param { _converse } _converse
- * @returns { Promise<MUCMessageAttributes|Error> }
+ * @param {Element} stanza - The message stanza
+ * @param {MUC} chatbox
+ * @returns {Promise<MUCMessageAttributes|Error>}
  */
 export async function parseMUCMessage (stanza, chatbox) {
     throwErrorIfInvalidForward(stanza);
@@ -257,7 +259,7 @@ export async function parseMUCMessage (stanza, chatbox) {
         getOpenGraphMetadata(stanza),
         getRetractionAttributes(stanza, original_stanza),
         getModerationAttributes(stanza),
-        getEncryptionAttributes(stanza, _converse),
+        getEncryptionAttributes(stanza),
     );
 
     await api.emojis.initialize();
@@ -303,20 +305,19 @@ export async function parseMUCMessage (stanza, chatbox) {
 /**
  * Given an IQ stanza with a member list, create an array of objects containing
  * known member data (e.g. jid, nick, role, affiliation).
- * @private
+ *
+ * @typedef {Object} MemberListItem
+ * Either the JID or the nickname (or both) will be available.
+ * @property {string} affiliation
+ * @property {string} [role]
+ * @property {string} [jid]
+ * @property {string} [nick]
+ *
  * @method muc_utils#parseMemberListIQ
  * @returns { MemberListItem[] }
  */
 export function parseMemberListIQ (iq) {
     return sizzle(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`, iq).map(item => {
-        /**
-         * @typedef {Object} MemberListItem
-         * Either the JID or the nickname (or both) will be available.
-         * @property {string} affiliation
-         * @property {string} [role]
-         * @property {string} [jid]
-         * @property {string} [nick]
-         */
         const data = {
             'affiliation': item.getAttribute('affiliation')
         };
@@ -343,21 +344,28 @@ export function parseMemberListIQ (iq) {
 /**
  * Parses a passed in MUC presence stanza and returns an object of attributes.
  * @method parseMUCPresence
- * @param { Element } stanza - The presence stanza
- * @param { _converse.ChatRoom } chatbox
- * @returns { MUCPresenceAttributes }
+ * @param {Element} stanza - The presence stanza
+ * @param {MUC} chatbox
+ * @returns {MUCPresenceAttributes}
  */
 export function parseMUCPresence (stanza, chatbox) {
     /**
-     * @typedef { Object } MUCPresenceAttributes
+     * Object representing a XEP-0371 Hat
+     * @typedef {Object} MUCHat
+     * @property {string} title
+     * @property {string} uri
+     *
      * The object which {@link parseMUCPresence} returns
-     * @property { ("offline|online") } show
-     * @property { Array<MUCHat> } hats - An array of XEP-0317 hats
-     * @property { Array<string> } states
-     * @property { String } from - The sender JID (${muc_jid}/${nick})
-     * @property { String } nick - The nickname of the sender
-     * @property { String } occupant_id - The XEP-0421 occupant ID
-     * @property { String } type - The type of presence
+     * @typedef {Object} MUCPresenceAttributes
+     * @property {string} show
+     * @property {Array<MUCHat>} hats - An array of XEP-0317 hats
+     * @property {Array<string>} states
+     * @property {String} from - The sender JID (${muc_jid}/${nick})
+     * @property {String} nick - The nickname of the sender
+     * @property {String} occupant_id - The XEP-0421 occupant ID
+     * @property {String} type - The type of presence
+     * @property {String} [jid]
+     * @property {boolean} [is_me]
      */
     const from = stanza.getAttribute('from');
     const type = stanza.getAttribute('type');
@@ -391,12 +399,6 @@ export function parseMUCPresence (stanza, chatbox) {
         } else if (child.matches('x') && child.getAttribute('xmlns') === Strophe.NS.VCARDUPDATE) {
             data.image_hash = child.querySelector('photo')?.textContent;
         } else if (child.matches('hats') && child.getAttribute('xmlns') === Strophe.NS.MUC_HATS) {
-            /**
-             * @typedef { Object } MUCHat
-             * Object representing a XEP-0371 Hat
-             * @property { String } title
-             * @property { String } uri
-             */
             data['hats'] = Array.from(child.children).map(
                 c =>
                     c.matches('hat') && {

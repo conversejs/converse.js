@@ -130,7 +130,7 @@ describe("A delivery receipt", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 1);
 
         // Also handle receipts with type 'chat'. See #1353
-        spyOn(_converse, 'handleMessageStanza').and.callThrough();
+        spyOn(_converse.exports, 'handleMessageStanza').and.callThrough();
         textarea.value = 'Another message';
         message_form.onKeyDown({
             target: textarea,
@@ -149,6 +149,6 @@ describe("A delivery receipt", function () {
             }).c('received', {'id': msg_id, xmlns: Strophe.NS.RECEIPTS}).up().tree();
         api.connection.get()._dataRecv(mock.createRequest(msg));
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 2);
-        expect(_converse.handleMessageStanza.calls.count()).toBe(1);
+        expect(_converse.exports.handleMessageStanza.calls.count()).toBe(1);
     }));
 });

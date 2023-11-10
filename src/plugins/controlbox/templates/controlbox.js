@@ -6,7 +6,7 @@ const { Strophe } = converse.env;
 
 
 function whenNotConnected (o) {
-    const connection_status = _converse.connfeedback.get('connection_status');
+    const connection_status = _converse.state.connfeedback.get('connection_status');
     if ([Strophe.Status.RECONNECTING, Strophe.Status.CONNECTING].includes(connection_status)) {
         return tplSpinner();
     }

@@ -27,6 +27,16 @@ export class ChatToolbar extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.model = null;
+        this.is_groupchat = null;
+        this.hidden_occupants = null;
+        this.show_spoiler_button = null;
+        this.show_call_button = null;
+        this.show_emoji_button = null;
+    }
+
     connectedCallback () {
         super.connectedCallback();
         this.listenTo(this.model, 'change:composing_spoiler', () => this.requestUpdate());
@@ -163,11 +173,14 @@ export class ChatToolbar extends CustomElement {
     toggleFileUpload (ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
-        this.querySelector('.fileupload').click();
+        /** @type {HTMLInputElement} */(this.querySelector('.fileupload')).click();
     }
 
+    /**
+     * @param {InputEvent} evt
+     */
     onFileSelection (evt) {
-        this.model.sendFiles(evt.target.files);
+        this.model.sendFiles(/** @type {HTMLInputElement} */(evt.target).files);
     }
 
     toggleComposeSpoilerMessage (ev) {

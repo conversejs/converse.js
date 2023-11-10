@@ -15,7 +15,7 @@ import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
 import { getConnectionServiceURL } from '../shared/connection/utils';
 import { isValidJID } from './jid.js';
-import { isTestEnv } from './session.js';
+import { getUnloadEvent, isTestEnv } from './session.js';
 
 
 /**
@@ -77,9 +77,13 @@ export async function initClientConfig (_converse) {
      * user sessions.
      */
     const id = 'converse.client-config';
-    _converse.config = new Model({ id, 'trusted': true });
-    _converse.config.browserStorage = createStore(id, "session");
-    await new Promise(r => _converse.config.fetch({'success': r, 'error': r}));
+    const config = new Model({ id, 'trusted': true });
+    config.browserStorage = createStore(id, "session");
+
+    Object.assign(_converse, { config }); // XXX DEPRECATED
+    Object.assign(_converse.state, { config });
+
+    await new Promise(r => config.fetch({'success': r, 'error': r}));
     /**
      * Triggered once the XMPP-client configuration has been initialized.
      * The client configuration is independent of any particular and its values
@@ -98,13 +102,11 @@ export async function initClientConfig (_converse) {
  */
 export async function initSessionStorage (_converse) {
     await Storage.sessionStorageInitialized;
-    _converse.storage = {
-        'session': Storage.localForage.createInstance({
-            'name': isTestEnv() ? 'converse-test-session' : 'converse-session',
-            'description': 'sessionStorage instance',
-            'driver': ['sessionStorageWrapper']
-        })
-    };
+    _converse.storage['session'] = Storage.localForage.createInstance({
+        'name': isTestEnv() ? 'converse-test-session' : 'converse-session',
+        'description': 'sessionStorage instance',
+        'driver': ['sessionStorageWrapper']
+    });
 }
 
 
@@ -224,7 +226,7 @@ export async function initSession (_converse, jid) {
         saveJIDtoSession(_converse, jid);
 
         // Set `active` flag to false when the tab gets reloaded
-        window.addEventListener(_converse.unloadevent, () => _converse.session?.save('active', false));
+        window.addEventListener(getUnloadEvent(), () => _converse.session?.save('active', false));
 
         /**
          * Triggered once the user's session has been initialized. The session is a
@@ -372,6 +374,7 @@ export async function attemptNonPreboundSession (credentials, automatic) {
     const { api } = _converse;
 
     if (api.settings.get("authentication") === LOGIN) {
+        const jid = _converse.session.get('jid');
         // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
         // ``authentication`` is set to ``login``, then Converse will try to log the user in,
         // since we don't have a way to distinguish between wether we're
@@ -384,7 +387,7 @@ export async function attemptNonPreboundSession (credentials, automatic) {
             // We give credentials_url preference, because
             // connection.pass might be an expired token.
             return connect(await getLoginCredentialsFromURL());
-        } else if (_converse.jid && (api.settings.get("password") || api.connection.get().pass)) {
+        } else if (jid && (api.settings.get("password") || api.connection.get().pass)) {
             return connect();
         }
 
@@ -437,9 +440,10 @@ export async function savedLoginInfo (jid) {
  */
 async function connect (credentials) {
     const { api } = _converse;
+    const jid = _converse.session.get('jid');
     const connection = api.connection.get();
     if ([ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication"))) {
-        if (!_converse.jid) {
+        if (!jid) {
             throw new Error("Config Error: when using anonymous login " +
                 "you need to provide the server's domain via the 'jid' option. " +
                 "Either when calling converse.initialize, or when calling " +
@@ -448,7 +452,7 @@ async function connect (credentials) {
         if (!connection.reconnecting) {
             connection.reset();
         }
-        connection.connect(_converse.jid.toLowerCase());
+        connection.connect(jid.toLowerCase());
     } else if (api.settings.get("authentication") === LOGIN) {
         const password = credentials?.password ?? (connection?.pass || api.settings.get("password"));
         if (!password) {
@@ -466,24 +470,25 @@ async function connect (credentials) {
         }
 
         let callback;
-
         // Save the SCRAM data if we're not already logged in with SCRAM
         if (
-            _converse.config.get('trusted') &&
-            _converse.jid &&
+            _converse.state.config.get('trusted') &&
+            jid &&
             api.settings.get("reuse_scram_keys") &&
             !password?.ck
         ) {
             // Store scram keys in scram storage
-            const login_info = await savedLoginInfo(_converse.jid);
+            const login_info = await savedLoginInfo(jid);
 
-            callback = (status) => {
-                const { scram_keys } = connection;
-                if (scram_keys) login_info.save({ scram_keys });
-                connection.onConnectStatusChanged(status);
-            };
+            callback =
+                /** @param {string} status */
+                (status) => {
+                    const { scram_keys } = connection;
+                    if (scram_keys) login_info.save({ scram_keys });
+                    connection.onConnectStatusChanged(status);
+                };
         }
 
-        connection.connect(_converse.jid, password, callback);
+        connection.connect(jid, password, callback);
     }
 }

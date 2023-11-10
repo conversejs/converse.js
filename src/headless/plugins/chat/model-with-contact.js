@@ -7,6 +7,8 @@ class ModelWithContact extends Model {
     initialize () {
         super.initialize();
         this.rosterContactAdded = getOpenPromise();
+        this.contact = null;
+        this.vcard = null;
     }
 
     /**

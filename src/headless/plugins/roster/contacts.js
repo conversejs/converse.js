@@ -2,8 +2,7 @@ import RosterContact from './contact.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
-import { Collection } from "@converse/skeletor";
-import { Model } from "@converse/skeletor";
+import { Collection, Model } from "@converse/skeletor";
 import { initStorage } from '../../utils/storage.js';
 import { rejectPresenceSubscription } from './utils.js';
 
@@ -13,10 +12,12 @@ class RosterContacts extends Collection {
     constructor () {
         super();
         this.model = RosterContact;
+        this.data = null;
     }
 
     initialize () {
-        const id = `roster.state-${_converse.bare_jid}-${this.get('jid')}`;
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `roster.state-${bare_jid}-${this.get('jid')}`;
         this.state = new Model({ id, 'collapsed_groups': [] });
         initStorage(this.state, id);
         this.state.fetch();
@@ -39,7 +40,7 @@ class RosterContacts extends Collection {
         // Register a handler for roster IQ "set" stanzas, which update
         // roster contacts.
         api.connection.get().addHandler(iq => {
-            _converse.roster.onRosterPush(iq);
+            _converse.state.roster.onRosterPush(iq);
             return true;
         }, Strophe.NS.ROSTER, 'iq', "set");
     }
@@ -54,9 +55,10 @@ class RosterContacts extends Collection {
         const connection = api.connection.get();
         connection.addHandler(
             function (msg) {
+                const { roster } = _converse.state;
                 window.setTimeout(function () {
-                    _converse.connection.flush();
-                    _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
+                    api.connection.get().flush();
+                    roster.subscribeToSuggestedItems(msg);
                 }, t);
                 t += msg.querySelectorAll('item').length * 250;
                 return true;
@@ -98,18 +100,19 @@ class RosterContacts extends Collection {
              */
             api.trigger('cachedRoster', result);
         } else {
-            _converse.send_initial_presence = true;
-            return _converse.roster.fetchFromServer();
+            api.connection.get().send_initial_presence = true;
+            return _converse.state.roster.fetchFromServer();
         }
     }
 
     // eslint-disable-next-line class-methods-use-this
     subscribeToSuggestedItems (msg) {
+        const { xmppstatus } = _converse.state;
         Array.from(msg.querySelectorAll('item')).forEach((item) => {
             if (item.getAttribute('action') === 'add') {
-                _converse.roster.addAndSubscribe(
+                _converse.state.roster.addAndSubscribe(
                     item.getAttribute('jid'),
-                    _converse.xmppstatus.getNickname() || _converse.xmppstatus.getFullname()
+                    xmppstatus.getNickname() || xmppstatus.getFullname()
                 );
             }
         });
@@ -133,7 +136,7 @@ class RosterContacts extends Collection {
      */
     async addAndSubscribe (jid, name, groups, message, attributes) {
         const contact = await this.addContactToRoster(jid, name, groups, attributes);
-        if (contact instanceof _converse.RosterContact) {
+        if (contact instanceof _converse.exports.RosterContact) {
             contact.subscribe(message);
         }
     }
@@ -192,13 +195,14 @@ class RosterContacts extends Collection {
 
     async subscribeBack (bare_jid, presence) {
         const contact = this.get(bare_jid);
-        if (contact instanceof _converse.RosterContact) {
+        const { RosterContact } = _converse.exports;
+        if (contact instanceof RosterContact) {
             contact.authorize().subscribe();
         } else {
             // Can happen when a subscription is retried or roster was deleted
             const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
             const contact = await this.addContactToRoster(bare_jid, nickname, [], { 'subscription': 'from' });
-            if (contact instanceof _converse.RosterContact) {
+            if (contact instanceof RosterContact) {
                 contact.authorize().subscribe();
             }
         }
@@ -213,7 +217,8 @@ class RosterContacts extends Collection {
     onRosterPush (iq) {
         const id = iq.getAttribute('id');
         const from = iq.getAttribute('from');
-        if (from && from !== _converse.bare_jid) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (from && from !== bare_jid) {
             // https://tools.ietf.org/html/rfc6121#page-15
             //
             // A receiving client MUST ignore the stanza unless it has no 'from'
@@ -342,7 +347,7 @@ class RosterContacts extends Collection {
         /**
          * Triggered when someone has requested to subscribe to your presence (i.e. to be your contact).
          * @event _converse#contactRequest
-         * @type { _converse.RosterContact }
+         * @type {RosterContact}
          * @example _converse.api.listen.on('contactRequest', contact => { ... });
          */
         api.trigger('contactRequest', this.create(user_data));
@@ -378,9 +383,10 @@ class RosterContacts extends Collection {
 
     // eslint-disable-next-line class-methods-use-this
     handleOwnPresence (presence) {
-        const jid = presence.getAttribute('from'),
-            resource = Strophe.getResourceFromJid(jid),
-            presence_type = presence.getAttribute('type');
+        const jid = presence.getAttribute('from');
+        const resource = Strophe.getResourceFromJid(jid);
+        const presence_type = presence.getAttribute('type');
+        const { xmppstatus } = _converse.state;
 
         if ((api.connection.get().jid !== jid) &&
                 (presence_type !== 'unavailable') &&
@@ -390,12 +396,12 @@ class RosterContacts extends Collection {
             // synchronize_availability option set to update,
             // we'll update ours as well.
             const show = presence.querySelector('show')?.textContent || 'online';
-            _converse.xmppstatus.save({ 'status': show }, { 'silent': true });
+            xmppstatus.save({ 'status': show }, { 'silent': true });
 
             const status_message = presence.querySelector('status')?.textContent;
-            if (status_message) _converse.xmppstatus.save({ status_message });
+            if (status_message) xmppstatus.save({ status_message });
         }
-        if (_converse.jid === jid && presence_type === 'unavailable') {
+        if (_converse.session.get('jid') === jid && presence_type === 'unavailable') {
             // XXX: We've received an "unavailable" presence from our
             // own resource. Apparently this happens due to a
             // Prosody bug, whereby we send an IQ stanza to remove

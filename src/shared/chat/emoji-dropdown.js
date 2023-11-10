@@ -13,7 +13,9 @@ export default class EmojiDropdown extends DropdownBase {
 
     static get properties() {
         return {
-            chatview: { type: Object }
+            chatview: { type: Object },
+            icon_classes: { type: String },
+            items: { type: Array }
         };
     }
 
@@ -21,6 +23,7 @@ export default class EmojiDropdown extends DropdownBase {
         super();
         // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
         this.render_emojis = false;
+        this.chatview = null;
     }
 
     initModel () {
@@ -95,7 +98,7 @@ export default class EmojiDropdown extends DropdownBase {
             await this.updateComplete;
         }
         super.showMenu();
-        setTimeout(() => this.querySelector('.emoji-search')?.focus());
+        setTimeout(() => /** @type {HTMLInputElement} */(this.querySelector('.emoji-search'))?.focus());
     }
 }
 

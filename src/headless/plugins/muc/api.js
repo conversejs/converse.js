@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('./muc.js').default} MUC
+ */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '../../log';
@@ -22,15 +25,16 @@ export default {
          * the chatroom in the background (i.e. doesn't cause a view to open).
          *
          * @method api.rooms.create
-         * @param {(string[]|string)} jid|jids The JID or array of
+         * @param {(string[]|string)} jids The JID or array of
          *     JIDs of the chatroom(s) to create
-         * @param { object } [attrs] attrs The room attributes
-         * @returns {Promise} Promise which resolves with the Model representing the chat.
+         * @param {object} [attrs] attrs The room attributes
+         * @returns {Promise[]} Promise which resolves with the Model representing the chat.
          */
         create (jids, attrs = {}) {
             attrs = typeof attrs === 'string' ? { 'nick': attrs } : attrs || {};
             if (!attrs.nick && api.settings.get('muc_nickname_from_jid')) {
-                attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
+                const bare_jid = _converse.session.get('bare_jid');
+                attrs.nick = Strophe.getNodeFromJid(bare_jid);
             }
             if (jids === undefined) {
                 throw new TypeError('rooms.create: You need to provide at least one JID');
@@ -46,30 +50,31 @@ export default {
          * Similar to {@link api.chats.open}, but for groupchats.
          *
          * @method api.rooms.open
-         * @param { string } jid The room JID or JIDs (if not specified, all
+         * @param {string|string[]} jids The room JID or JIDs (if not specified, all
          *     currently open rooms will be returned).
-         * @param { string } attrs A map  containing any extra room attributes.
-         * @param { string } [attrs.nick] The current user's nickname for the MUC
-         * @param { boolean } [attrs.auto_configure] A boolean, indicating
+         * @param {object} attrs A map  containing any extra room attributes.
+         * @param {string} [attrs.nick] The current user's nickname for the MUC
+         * @param {boolean} [attrs.hidden]
+         * @param {boolean} [attrs.auto_configure] A boolean, indicating
          *     whether the room should be configured automatically or not.
          *     If set to `true`, then it makes sense to pass in configuration settings.
-         * @param { object } [attrs.roomconfig] A map of configuration settings to be used when the room gets
+         * @param {object} [attrs.roomconfig] A map of configuration settings to be used when the room gets
          *     configured automatically. Currently it doesn't make sense to specify
          *     `roomconfig` values if `auto_configure` is set to `false`.
          *     For a list of configuration values that can be passed in, refer to these values
          *     in the [XEP-0045 MUC specification](https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
          *     The values should be named without the `muc#roomconfig_` prefix.
-         * @param { boolean } [attrs.minimized] A boolean, indicating whether the room should be opened minimized or not.
-         * @param { boolean } [attrs.bring_to_foreground] A boolean indicating whether the room should be
+         * @param {boolean} [attrs.minimized] A boolean, indicating whether the room should be opened minimized or not.
+         * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
          *     brought to the foreground and therefore replace the currently shown chat.
          *     If there is no chat currently open, then this option is ineffective.
-         * @param { Boolean } [force=false] - By default, a minimized
+         * @param {boolean} [force=false] - By default, a minimized
          *   room won't be maximized (in `overlayed` view mode) and in
          *   `fullscreen` view mode a newly opened room won't replace
          *   another chat already in the foreground.
          *   Set `force` to `true` if you want to force the room to be
          *   maximized or shown.
-         * @returns {Promise} Promise which resolves with the Model representing the chat.
+         * @returns {Promise<MUC[]>} Promise which resolves with the Model representing the chat.
          *
          * @example
          * api.rooms.open('group@muc.example.com')
@@ -120,14 +125,14 @@ export default {
          * Fetches the object representing a MUC chatroom (aka groupchat)
          *
          * @method api.rooms.get
-         * @param { String } [jid] The room JID (if not specified, all rooms will be returned).
-         * @param { Object } [attrs] A map containing any extra room attributes
+         * @param {string|string[]} [jids] The room JID (if not specified, all rooms will be returned).
+         * @param {object} [attrs] A map containing any extra room attributes
          *  to be set if `create` is set to `true`
-         * @param { String } [attrs.nick] Specify the nickname
-         * @param { String } [attrs.password ] Specify a password if needed to enter a new room
-         * @param { Boolean } create A boolean indicating whether the room should be created
+         * @param {string} [attrs.nick] Specify the nickname
+         * @param {string} [attrs.password ] Specify a password if needed to enter a new room
+         * @param {boolean} create A boolean indicating whether the room should be created
          *     if not found (default: `false`)
-         * @returns { Promise<_converse.ChatRoom> }
+         * @returns {Promise<MUC[]>}
          * @example
          * api.waitUntil('roomsAutoJoined').then(() => {
          *     const create_if_not_found = true;
@@ -145,7 +150,7 @@ export default {
                 jid = getJIDFromURI(jid);
                 let model = await api.chatboxes.get(jid);
                 if (!model && create) {
-                    model = await api.chatboxes.create(jid, attrs, _converse.ChatRoom);
+                    model = await api.chatboxes.create(jid, attrs, _converse.exports.MUC);
                 } else {
                     model = model && model.get('type') === CHATROOMS_TYPE ? model : null;
                     if (model && Object.keys(attrs).length) {

@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
+ */
 import tplMessageForm from './templates/message-form.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
@@ -16,7 +19,7 @@ export default class MessageForm extends CustomElement {
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model, 'change:composing_spoiler', () => this.requestUpdate());
 
-        this.handleEmojiSelection = ({ detail }) => {
+        this.handleEmojiSelection = (/** @type { CustomEvent } */{ detail }) => {
             if (this.model.get('jid') === detail.jid) {
                 this.insertIntoTextArea(detail.value, detail.autocompleting, false, detail.ac_position);
             }
@@ -34,13 +37,12 @@ export default class MessageForm extends CustomElement {
         return tplMessageForm(
             Object.assign(this.model.toJSON(), {
                 'onDrop': ev => this.onDrop(ev),
-                'hint_value': this.querySelector('.spoiler-hint')?.value,
-                'message_value': this.querySelector('.chat-textarea')?.value,
+                'hint_value': /** @type {HTMLInputElement} */(this.querySelector('.spoiler-hint'))?.value,
+                'message_value': /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'))?.value,
                 'onChange': ev => this.model.set({'draft': ev.target.value}),
                 'onKeyDown': ev => this.onKeyDown(ev),
                 'onKeyUp': ev => this.onKeyUp(ev),
-                'onPaste': ev => this.onPaste(ev),
-                'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
+                'onPaste': ev => this.onPaste(ev)
             })
         );
     }
@@ -56,7 +58,7 @@ export default class MessageForm extends CustomElement {
      *  replaced with the new value.
      */
     insertIntoTextArea (value, replace = false, correcting = false, position) {
-        const textarea = this.querySelector('.chat-textarea');
+        const textarea = /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'));
         if (correcting) {
             u.addClass('correcting', textarea);
         } else {
@@ -120,6 +122,16 @@ export default class MessageForm extends CustomElement {
         this.model.set({'draft': ev.clipboardData.getData('text/plain')});
     }
 
+    onDrop (evt) {
+        if (evt.dataTransfer.files.length == 0) {
+            // There are no files to be dropped, so this isn’t a file
+            // transfer operation.
+            return;
+        }
+        evt.preventDefault();
+        this.model.sendFiles(evt.dataTransfer.files);
+    }
+
     onKeyUp (ev) {
         this.model.set({'draft': ev.target.value});
     }
@@ -141,11 +153,11 @@ export default class MessageForm extends CustomElement {
                 // Forward slash is used to run commands. Nothing to do here.
                 return;
             } else if (ev.keyCode === converse.keycodes.ESCAPE) {
-                return this.onEscapePressed(ev, this);
+                return this.onEscapePressed(ev);
             } else if (ev.keyCode === converse.keycodes.ENTER) {
                 return this.onFormSubmitted(ev);
             } else if (ev.keyCode === converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
-                const textarea = this.querySelector('.chat-textarea');
+                const textarea = /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'));
                 if (!textarea.value || u.hasClass('correcting', textarea)) {
                     return this.model.editEarlierMessage();
                 }
@@ -178,7 +190,7 @@ export default class MessageForm extends CustomElement {
     async onFormSubmitted (ev) {
         ev?.preventDefault?.();
 
-        const textarea = this.querySelector('.chat-textarea');
+        const textarea = /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'));
         const message_text = textarea.value.trim();
         if (
             (api.settings.get('message_limit') && message_text.length > api.settings.get('message_limit')) ||
@@ -195,12 +207,12 @@ export default class MessageForm extends CustomElement {
         let spoiler_hint,
             hint_el = {};
         if (this.model.get('composing_spoiler')) {
-            hint_el = this.querySelector('form.sendXMPPMessage input.spoiler-hint');
+            hint_el = /** @type {HTMLInputElement} */(this.querySelector('form.sendXMPPMessage input.spoiler-hint'));
             spoiler_hint = hint_el.value;
         }
         u.addClass('disabled', textarea);
         textarea.setAttribute('disabled', 'disabled');
-        this.querySelector('converse-emoji-dropdown')?.hideMenu();
+        /** @type {EmojiDropdown} */(this.querySelector('converse-emoji-dropdown'))?.hideMenu();
 
         const is_command = await parseMessageForCommands(this.model, message_text);
         const message = is_command ? null : await this.model.sendMessage({'body': message_text, spoiler_hint});

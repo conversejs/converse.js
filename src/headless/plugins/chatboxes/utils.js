@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('../chat/model.js').default} ChatBox
+ */
 import _converse from '../../shared/_converse.js';
 import { converse } from '../../shared/api/index.js';
 import log from "../../log";
@@ -5,12 +8,17 @@ import log from "../../log";
 const { Strophe } = converse.env;
 
 
+/**
+ * @param {string} jid
+ * @param {object} attrs
+ * @param {new (attrs: object, options: object) => ChatBox} Model
+ */
 export async function createChatBox (jid, attrs, Model) {
     jid = Strophe.getBareJidFromJid(jid.toLowerCase());
     Object.assign(attrs, {'jid': jid, 'id': jid});
     let chatbox;
     try {
-        chatbox = new Model(attrs, {'collection': _converse.chatboxes});
+        chatbox = new Model(attrs, {'collection': _converse.state.chatboxes});
     } catch (e) {
         log.error(e);
         return null;
@@ -20,6 +28,6 @@ export async function createChatBox (jid, attrs, Model) {
         chatbox.destroy();
         return null;
     }
-    _converse.chatboxes.add(chatbox);
+    _converse.state.chatboxes.add(chatbox);
     return chatbox;
 }

@@ -13,16 +13,23 @@ const { $pres } = converse.env;
 
 function initRoster () {
     // Initialize the collections that represent the roster contacts and groups
-    const roster = _converse.roster = new _converse.RosterContacts();
-    let id = `converse.contacts-${_converse.bare_jid}`;
+    const roster = new _converse.exports.RosterContacts();
+    Object.assign(_converse, { roster }); // XXX Deprecated
+    Object.assign(_converse.state, { roster });
+
+    const bare_jid = _converse.session.get('bare_jid');
+    let id = `converse.contacts-${bare_jid}`;
     initStorage(roster, id);
 
-    const filter = _converse.roster_filter = new RosterFilter();
-    filter.id = `_converse.rosterfilter-${_converse.bare_jid}`;
-    initStorage(filter, filter.id);
-    filter.fetch();
+    const roster_filter = new RosterFilter();
+    Object.assign(_converse, { roster_filter }); // XXX Deprecated
+    Object.assign(_converse.state, { roster_filter });
 
-    id = `converse-roster-model-${_converse.bare_jid}`;
+    roster_filter.id = `_converse.rosterfilter-${bare_jid}`;
+    initStorage(roster_filter, roster_filter.id);
+    roster_filter.fetch();
+
+    id = `converse-roster-model-${bare_jid}`;
     roster.data = new Model();
     roster.data.id = id;
     initStorage(roster.data, id);
@@ -42,50 +49,52 @@ function initRoster () {
 /**
  * Fetch all the roster groups, and then the roster contacts.
  * Emit an event after fetching is done in each case.
- * @private
- * @param { Bool } ignore_cache - If set to to true, the local cache
+ * @param {boolean} ignore_cache - If set to to true, the local cache
  *      will be ignored it's guaranteed that the XMPP server
  *      will be queried for the roster.
  */
 async function populateRoster (ignore_cache=false) {
+    const connection = api.connection.get();
     if (ignore_cache) {
-        _converse.send_initial_presence = true;
+        connection.send_initial_presence = true;
     }
     try {
-        await _converse.roster.fetchRosterContacts();
+        await _converse.state.roster.fetchRosterContacts();
         api.trigger('rosterContactsFetched');
     } catch (reason) {
         log.error(reason);
     } finally {
-        _converse.send_initial_presence && api.user.presence.send();
+        connection.send_initial_presence && api.user.presence.send();
     }
 }
 
 
 function updateUnreadCounter (chatbox) {
-    const contact = _converse.roster?.get(chatbox.get('jid'));
+    const contact = _converse.state.roster?.get(chatbox.get('jid'));
     contact?.save({'num_unread': chatbox.get('num_unread')});
 }
+
+let presence_ref;
 
 function registerPresenceHandler () {
     unregisterPresenceHandler();
     const connection = api.connection.get();
-    _converse.presence_ref = connection.addHandler(presence => {
-            _converse.roster.presenceHandler(presence);
+    presence_ref = connection.addHandler(presence => {
+            _converse.state.roster.presenceHandler(presence);
             return true;
         }, null, 'presence', null);
 }
 
 export function unregisterPresenceHandler () {
-    if (_converse.presence_ref !== undefined) {
+    if (presence_ref) {
         const connection = api.connection.get();
-        connection.deleteHandler(_converse.presence_ref);
-        delete _converse.presence_ref;
+        connection.deleteHandler(presence_ref);
+        presence_ref = null;
     }
 }
 
 async function clearPresences () {
-    await _converse.presences?.clearStore();
+    await _converse.state.presences?.clearStore();
 }
 
 
@@ -95,14 +104,12 @@ async function clearPresences () {
 export async function onClearSession () {
     await clearPresences();
     if (shouldClearCache()) {
-        if (_converse.rostergroups) {
-            await _converse.rostergroups.clearStore();
-            delete _converse.rostergroups;
-        }
-        if (_converse.roster) {
-            _converse.roster.data?.destroy();
-            await _converse.roster.clearStore();
-            delete _converse.roster;
+        const { roster } = _converse.state;
+        if (roster) {
+            roster.data?.destroy();
+            await roster.clearStore();
+            delete _converse.state.roster;
+            Object.assign(_converse, { roster: undefined }); // XXX DEPRECATED
         }
     }
 }
@@ -125,7 +132,7 @@ export function onPresencesInitialized (reconnecting) {
     } else {
         initRoster();
     }
-    _converse.roster.onConnected();
+    _converse.state.roster.onConnected();
     registerPresenceHandler();
     populateRoster(!api.connection.get().restored);
 }
@@ -142,12 +149,17 @@ export async function onStatusInitialized (reconnecting) {
          // and we'll receive new presence updates
          !api.connection.get().hasResumed() && (await clearPresences());
      } else {
-         _converse.presences = new _converse.Presences();
-         const id = `converse.presences-${_converse.bare_jid}`;
-         initStorage(_converse.presences, id, 'session');
+         const presences = new _converse.exports.Presences();
+         Object.assign(_converse, { presences });
+         Object.assign(_converse.state, { presences });
+
+         const bare_jid = _converse.session.get('bare_jid');
+         const id = `converse.presences-${bare_jid}`;
+
+         initStorage(presences, id, 'session');
          // We might be continuing an existing session, so we fetch
          // cached presence data.
-         _converse.presences.fetch();
+         presences.fetch();
      }
      /**
       * Triggered once the _converse.Presences collection has been
@@ -155,7 +167,7 @@ export async function onStatusInitialized (reconnecting) {
       * Returns a boolean indicating whether this event has fired due to
       * Converse having reconnected.
       * @event _converse#presencesInitialized
-      * @type { bool }
+      * @type {boolean}
       * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
       */
      api.trigger('presencesInitialized', reconnecting);
@@ -166,9 +178,10 @@ export async function onStatusInitialized (reconnecting) {
  * Roster specific event handler for the chatBoxesInitialized event
  */
 export function onChatBoxesInitialized () {
-    _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+    const { chatboxes } = _converse.state;
+    chatboxes.on('change:num_unread', updateUnreadCounter);
 
-    _converse.chatboxes.on('add', chatbox => {
+    chatboxes.on('add', chatbox => {
         if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
             chatbox.setRosterContact(chatbox.get('jid'));
         }
@@ -180,10 +193,10 @@ export function onChatBoxesInitialized () {
  * Roster specific handler for the rosterContactsFetched promise
  */
 export function onRosterContactsFetched () {
-    _converse.roster.on('add', contact => {
+    _converse.state.roster.on('add', contact => {
         // When a new contact is added, check if we already have a
         // chatbox open for it, and if so attach it to the chatbox.
-        const chatbox = _converse.chatboxes.findWhere({ 'jid': contact.get('jid') });
+        const chatbox = _converse.state.chatboxes.findWhere({ 'jid': contact.get('jid') });
         chatbox?.setRosterContact(contact.get('jid'));
     });
 }
@@ -214,11 +227,19 @@ export function contactsComparator (contact1, contact2) {
 
 export function groupsComparator (a, b) {
     const HEADER_WEIGHTS = {};
-    HEADER_WEIGHTS[_converse.HEADER_UNREAD] = 0;
-    HEADER_WEIGHTS[_converse.HEADER_REQUESTING_CONTACTS] = 1;
-    HEADER_WEIGHTS[_converse.HEADER_CURRENT_CONTACTS]    = 2;
-    HEADER_WEIGHTS[_converse.HEADER_UNGROUPED]           = 3;
-    HEADER_WEIGHTS[_converse.HEADER_PENDING_CONTACTS]    = 4;
+    const {
+        HEADER_UNREAD,
+        HEADER_REQUESTING_CONTACTS,
+        HEADER_CURRENT_CONTACTS,
+        HEADER_UNGROUPED,
+        HEADER_PENDING_CONTACTS,
+    } = _converse.labels;
+
+    HEADER_WEIGHTS[HEADER_UNREAD] = 0;
+    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 1;
+    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 2;
+    HEADER_WEIGHTS[HEADER_UNGROUPED]           = 3;
+    HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 4;
 
     const WEIGHTS =  HEADER_WEIGHTS;
     const special_groups = Object.keys(HEADER_WEIGHTS);
@@ -229,22 +250,22 @@ export function groupsComparator (a, b) {
     } else if (a_is_special && b_is_special) {
         return WEIGHTS[a] < WEIGHTS[b] ? -1 : (WEIGHTS[a] > WEIGHTS[b] ? 1 : 0);
     } else if (!a_is_special && b_is_special) {
-        const a_header = _converse.HEADER_CURRENT_CONTACTS;
+        const a_header = HEADER_CURRENT_CONTACTS;
         return WEIGHTS[a_header] < WEIGHTS[b] ? -1 : (WEIGHTS[a_header] > WEIGHTS[b] ? 1 : 0);
     } else if (a_is_special && !b_is_special) {
-        const b_header = _converse.HEADER_CURRENT_CONTACTS;
+        const b_header = HEADER_CURRENT_CONTACTS;
         return WEIGHTS[a] < WEIGHTS[b_header] ? -1 : (WEIGHTS[a] > WEIGHTS[b_header] ? 1 : 0);
     }
 }
 
 export function getGroupsAutoCompleteList () {
-    const { roster } = _converse;
+    const { roster } = _converse.state;
     const groups = roster.reduce((groups, contact) => groups.concat(contact.get('groups')), []);
     return [...new Set(groups.filter(i => i))];
 }
 
 export function getJIDsAutoCompleteList () {
-    return [...new Set(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))];
+    return [...new Set(_converse.state.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))];
 }
 
 
@@ -253,7 +274,7 @@ export function getJIDsAutoCompleteList () {
  */
 export async function getNamesAutoCompleteList (query) {
     const options = {
-        'mode': 'cors',
+        'mode': /** @type {RequestMode} */('cors'),
         'headers': {
             'Accept': 'text/json'
         }

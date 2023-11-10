@@ -1,6 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse, log } from '@converse/headless';
+import { api, converse, log } from '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
@@ -10,6 +10,16 @@ import { until } from 'lit/directives/until.js';
 
 import './styles/message-actions.scss';
 
+/**
+ * @typedef { Object } MessageActionAttributes
+ * An object which represents a message action (as shown in the message dropdown);
+ * @property { String } i18n_text
+ * @property { Function } handler
+ * @property { String } button_class
+ * @property { String } icon_class
+ * @property { String } name
+ */
+
 const { Strophe, u } = converse.env;
 
 class MessageActions extends CustomElement {
@@ -18,6 +28,12 @@ class MessageActions extends CustomElement {
             is_retracted: { type: Boolean },
             model: { type: Object }
         };
+    }
+
+    constructor () {
+        super();
+        this.model = null;
+        this.is_retracted = null;
     }
 
     initialize () {
@@ -105,9 +121,7 @@ class MessageActions extends CustomElement {
 
     /**
      * Retract someone else's message in this groupchat.
-     * @private
-     * @param { _converse.Message } message - The message which we're retracting.
-     * @param { string } [reason] - The reason for retracting the message.
+     * @param {string} [reason] - The reason for retracting the message.
      */
     async retractOtherMessage (reason) {
         const chatbox = this.model.collection.chatbox;
@@ -259,22 +273,13 @@ class MessageActions extends CustomElement {
     async getActionButtons () {
         const buttons = [];
         if (this.model.get('editable')) {
-            /**
-             * @typedef { Object } MessageActionAttributes
-             * An object which represents a message action (as shown in the message dropdown);
-             * @property { String } i18n_text
-             * @property { Function } handler
-             * @property { String } button_class
-             * @property { String } icon_class
-             * @property { String } name
-             */
-            buttons.push({
+            buttons.push(/** @type {MessageActionAttributes} */({
                 'i18n_text': this.model.get('correcting') ? __('Cancel Editing') : __('Edit'),
                 'handler': ev => this.onMessageEditButtonClicked(ev),
                 'button_class': 'chat-msg__action-edit',
                 'icon_class': 'fa fa-pencil-alt',
                 'name': 'edit',
-            });
+            }));
         }
 
         const may_be_moderated = ['groupchat', 'mep'].includes(this.model.get('type')) &&

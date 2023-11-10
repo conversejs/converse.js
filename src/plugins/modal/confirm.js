@@ -33,7 +33,7 @@ export default class Confirm extends BaseModal {
         const form_data = new FormData(ev.target);
         const fields = (this.model.get('fields') || [])
             .map(field => {
-                const value = form_data.get(field.name).trim();
+                const value = /** @type {string }*/(form_data.get(field.name)).trim();
                 field.value = value;
                 if (field.challenge) {
                     field.challenge_failed = (value !== field.challenge);
@@ -51,7 +51,7 @@ export default class Confirm extends BaseModal {
         this.modal.hide();
     }
 
-    renderModalFooter () { // eslint-disable-line class-methods-use-this
+    renderModalFooter () {
         return '';
     }
 }

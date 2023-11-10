@@ -48,7 +48,7 @@ export default class BaseChatView extends CustomElement {
     focus () {
         const textarea_el = this.getElementsByClassName('chat-textarea')[0];
         if (textarea_el && document.activeElement !== textarea_el) {
-            textarea_el.focus();
+            /** @type {HTMLTextAreaElement} */(textarea_el).focus();
         }
         return this;
     }

@@ -43,8 +43,8 @@ export default {
          * via {@link _converse.api.listen}).
          *
          * @method _converse.api.promises.add
-         * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
-         * @param { boolean } [replace=true] Whether this promise should be replaced with a new one when the user logs out.
+         * @param {string|array} [promises] The name or an array of names for the promise(s) to be added
+         * @param {boolean} [replace=true] Whether this promise should be replaced with a new one when the user logs out.
          * @example _converse.api.promises.add('foo-completed');
          */
         add (promises, replace=true) {
@@ -67,7 +67,7 @@ export default {
      */
     waitUntil (condition) {
         if (isFunction(condition)) {
-            return waitUntil(condition);
+            return waitUntil(/** @type {Function} */(condition));
         } else {
             const promise = _converse.promises[condition];
             if (promise === undefined) {

@@ -18,7 +18,8 @@ export default {
         /**
          * @method api.chats.create
          * @param {string|string[]} jids An jid or array of jids
-         * @param { object } [attrs] An object containing configuration attributes.
+         * @param {object} [attrs] An object containing configuration attributes.
+         * @returns {Promise<ChatBox|ChatBox[]>}
          */
         async create (jids, attrs) {
             if (typeof jids === 'string') {
@@ -34,7 +35,7 @@ export default {
                 return chatbox;
             }
             if (Array.isArray(jids)) {
-                return Promise.all(jids.forEach(async jid => {
+                return Promise.all(jids.map(async jid => {
                     const contact = await api.contacts.get(jids);
                     attrs.fullname = contact?.attributes?.fullname;
                     return api.chats.get(jid, attrs, true).maybeShow();
@@ -48,10 +49,10 @@ export default {
          * Opens a new one-on-one chat.
          *
          * @method api.chats.open
-         * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
-         * @param { Boolean } [attrs.minimized] - Should the chat be created in minimized state.
-         * @param { Boolean } [force=false] - By default, a minimized
+         * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+         * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
+         * @param {Boolean} [attrs.minimized] - Should the chat be created in minimized state.
+         * @param {Boolean} [force=false] - By default, a minimized
          *   chat won't be maximized (in `overlayed` view mode) and in
          *   `fullscreen` view mode a newly opened chat won't replace
          *   another chat already in the foreground.
@@ -109,7 +110,7 @@ export default {
          * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
          * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
          * @param { Boolean } [create=false] - Whether the chat should be created if it's not found.
-         * @returns { Promise<ChatBox> }
+         * @returns { Promise<ChatBox[]> }
          *
          * @example
          * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
@@ -127,6 +128,7 @@ export default {
         async get (jids, attrs={}, create=false) {
             await api.waitUntil('chatBoxesFetched');
 
+            /** @param {string} jid */
             async function _get (jid) {
                 let model = await api.chatboxes.get(jid);
                 if (!model && create) {

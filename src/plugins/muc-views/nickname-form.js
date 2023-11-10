@@ -7,6 +7,11 @@ import './styles/nickname-form.scss';
 
 class MUCNicknameForm extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             'jid': { type: String }

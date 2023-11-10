@@ -1,5 +1,6 @@
-import { __ } from '../i18n';
-import { directive, html } from "lit";
+import { __ } from 'i18n';
+import { directive } from "lit/directive";
+import { html } from "lit";
 
 
 const i18n_retract_message = __('Retract this message');
@@ -14,7 +15,7 @@ const tplRetract = (o) => html`
 `;
 
 
-export const renderRetractionLink = directive(o => async part => {
+export const renderRetractionLink = directive((o) => async (part) => {
     const may_be_moderated = o.model.get('type') === 'groupchat' && await o.model.mayBeModerated();
     const retractable = !o.is_retracted && (o.model.mayBeRetracted() || may_be_moderated);
 

@@ -5,6 +5,11 @@ import { api } from "@converse/headless";
 
 class ControlBoxNavback extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             'jid': { type: String }

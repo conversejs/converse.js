@@ -1,14 +1,17 @@
-import tplMUCPasswordForm from "./templates/muc-password-form.js";
+import tplMUCPasswordForm from './templates/muc-password-form.js';
 import { CustomElement } from 'shared/components/element';
-import { _converse, api } from "@converse/headless";
-
+import { _converse, api } from '@converse/headless';
 
 class MUCPasswordForm extends CustomElement {
-
     static get properties () {
         return {
-            'jid': { type: String }
-        }
+            'jid': { type: String },
+        };
+    }
+
+    constructor () {
+        super();
+        this.jid = null;
     }
 
     connectedCallback () {
@@ -21,14 +24,14 @@ class MUCPasswordForm extends CustomElement {
     render () {
         return tplMUCPasswordForm({
             'jid': this.model.get('jid'),
-            'submitPassword': ev => this.submitPassword(ev),
-            'validation_message':  this.model.get('password_validation_message')
+            'submitPassword': (ev) => this.submitPassword(ev),
+            'validation_message': this.model.get('password_validation_message'),
         });
     }
 
     submitPassword (ev) {
         ev.preventDefault();
-        const password = this.querySelector('input[type=password]').value;
+        const password = /** @type {HTMLInputElement} */ (this.querySelector('input[type=password]')).value;
         this.model.join(this.model.get('nick'), password);
         this.model.set('password_validation_message', null);
     }

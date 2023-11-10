@@ -462,16 +462,16 @@ describe("The groupchat moderator tool", function () {
         await u.waitUntil(() => _converse.api.modal.get('converse-modtools-modal'));
         const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
 
-        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
+        expect(_converse.exports.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner']);
-        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['admin', 'member', 'outcast', 'none']);
+        expect(_converse.exports.getAssignableAffiliations(occupant)).toEqual(['admin', 'member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin']);
-        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['member', 'outcast', 'none']);
+        expect(_converse.exports.getAssignableAffiliations(occupant)).toEqual(['member', 'outcast', 'none']);
 
         _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin', 'outcast']);
-        expect(_converse.getAssignableAffiliations(occupant)).toEqual(['member', 'none']);
+        expect(_converse.exports.getAssignableAffiliations(occupant)).toEqual(['member', 'none']);
 
         expect(_converse.getAssignableRoles(occupant)).toEqual(['moderator', 'participant', 'visitor']);
 

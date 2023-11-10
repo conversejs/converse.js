@@ -4,6 +4,11 @@ import { api } from '@converse/headless';
 
 export default class MessageLimitIndicator extends CustomElement {
 
+    constructor () {
+        super();
+        this.model = null;
+    }
+
     static get properties () {
         return {
             model: { type: Object }

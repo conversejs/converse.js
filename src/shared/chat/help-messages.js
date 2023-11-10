@@ -8,6 +8,13 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 export default class ChatHelp extends CustomElement {
 
+    constructor () {
+        super();
+        this.messages = [];
+        this.model = null;
+        this.type = null;
+    }
+
     static get properties () {
         return {
             chat_type: { type: String },

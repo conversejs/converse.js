@@ -20,8 +20,6 @@ class RichTextRenderer {
         } catch (e) {
             log.error(e);
         }
-        console.warn('text.payload');
-        console.warn(text.payload);
         return text.payload;
     }
 

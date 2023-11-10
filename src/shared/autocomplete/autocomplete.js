@@ -26,14 +26,14 @@ export class AutoComplete extends EventEmitter(Object) {
         this.is_opened = false;
         this.auto_evaluate = true; // evaluate automatically without any particular key as trigger
         this.match_current_word = false; // Match only the current word, otherwise all input is matched
-        this.sort = config.sort === false ? false : SORT_BY_QUERY_POSITION;
+        this.sort = config.sort === false ? null : SORT_BY_QUERY_POSITION;
         this.filter = FILTER_CONTAINS;
         this.ac_triggers = []; // Array of keys (`ev.key`) values that will trigger auto-complete
         this.include_triggers = []; // Array of trigger keys which should be included in the returned value
         this.min_chars = 2;
         this.max_items = 10;
         this.auto_first = false; // Should the first element be automatically selected?
-        this.data = (a) => a;
+        this.data = (a, _v) => a;
         this.item = ITEM;
 
         if (u.hasClass('suggestion-box', el)) {
@@ -41,7 +41,7 @@ export class AutoComplete extends EventEmitter(Object) {
         } else {
             this.container = el.querySelector('.suggestion-box');
         }
-        this.input = this.container.querySelector('.suggestion-box__input');
+        this.input = /** @type {HTMLInputElement} */(this.container.querySelector('.suggestion-box__input'));
         this.input.setAttribute("aria-autocomplete", "list");
 
         this.ul = this.container.querySelector('.suggestion-box__results');
@@ -165,9 +165,13 @@ export class AutoComplete extends EventEmitter(Object) {
         this.goto(this.selected && pos !== -1 ? pos : count - 1);
     }
 
+    /**
+     * @param {number} i
+     * @param {boolean} scroll=true
+     */
     goto (i, scroll=true) {
         // Should not be used directly, highlights specific item without any checks!
-        const list = this.ul.children;
+        const list = /** @type HTMLElement[] */(Array.from(this.ul.children).filter(el => el instanceof HTMLElement));
         if (this.selected) {
             list[this.index].setAttribute("aria-selected", "false");
         }
@@ -216,7 +220,7 @@ export class AutoComplete extends EventEmitter(Object) {
         const li = u.ancestor(ev.target, 'li');
         if (li) {
             ev.preventDefault();
-            this.select(li, ev.target);
+            this.select(li);
         }
     }
 
@@ -261,6 +265,9 @@ export class AutoComplete extends EventEmitter(Object) {
         }
     }
 
+    /**
+     * @param {KeyboardEvent} [ev]
+     */
     async evaluate (ev) {
         const selecting = this.selected && ev && (
             ev.keyCode === converse.keycodes.UP_ARROW ||
@@ -298,7 +305,7 @@ export class AutoComplete extends EventEmitter(Object) {
                 .map(item => new Suggestion(this.data(item, value), value))
                 .filter(item => this.filter(item, value));
 
-            if (this.sort !== false) {
+            if (this.sort) {
                 this.suggestions = this.suggestions.sort(this.sort);
             }
             this.suggestions = this.suggestions.slice(0, this.max_items);

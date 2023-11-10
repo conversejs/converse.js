@@ -36,7 +36,8 @@ export default class MUCBottomPanel extends BottomPanel {
 
     sendButtonClicked (ev) {
         if (ev.delegateTarget?.dataset.action === 'sendMessage') {
-            this.querySelector('converse-muc-message-form')?.onFormSubmitted(ev);
+            const form = /** @type {HTMLFormElement} */(this.querySelector('converse-muc-message-form'));
+            form?.onFormSubmitted(ev);
         }
     }
 }

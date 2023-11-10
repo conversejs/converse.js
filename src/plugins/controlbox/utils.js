@@ -52,21 +52,21 @@ export function onChatBoxesFetched () {
 /**
  * Given the login `<form>` element, parse its data and update the
  * converse settings with the supplied JID, password and connection URL.
- * @param { HTMLElement } form
- * @param { Object } settings - Extra settings that may be passed in and will
+ * @param {HTMLFormElement} form
+ * @param {Object} settings - Extra settings that may be passed in and will
  *  also be set together with the form settings.
  */
 export function updateSettingsWithFormData (form, settings={}) {
     const form_data = new FormData(form);
 
-    const connection_url  = form_data.get('connection-url');
+    const connection_url  = /** @type {string} */(form_data.get('connection-url'));
     if (connection_url?.startsWith('ws')) {
         settings['websocket_url'] = connection_url;
     } else if (connection_url?.startsWith('http')) {
         settings['bosh_service_url'] = connection_url;
     }
 
-    let jid = form_data.get('jid');
+    let jid = /** @type {string} */(form_data.get('jid'));
     if (api.settings.get('locked_domain')) {
         const last_part = '@' + api.settings.get('locked_domain');
         if (jid.endsWith(last_part)) {
@@ -85,8 +85,11 @@ export function updateSettingsWithFormData (form, settings={}) {
 }
 
 
+/**
+ * @param {HTMLFormElement} form
+ */
 export function validateJID (form) {
-    const jid_element = form.querySelector('input[name=jid]');
+    const jid_element = /** @type {HTMLInputElement} */(form.querySelector('input[name=jid]'));
     if (
         jid_element.value &&
         !api.settings.get('locked_domain') &&
@@ -99,4 +102,3 @@ export function validateJID (form) {
     jid_element.setCustomValidity('');
     return true;
 }
-

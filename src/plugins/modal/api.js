@@ -16,9 +16,9 @@ const modal_api = {
          * Shows a modal of type `ModalClass` to the user.
          * Will create a new instance of that class if an existing one isn't
          * found.
-         * @param { Class } ModalClass
-         * @param { Object } [properties] - Optional properties that will be set on a newly created modal instance.
-         * @param { Event } [event] - The DOM event that causes the modal to be shown.
+         * @param {string|any} name
+         * @param {Object} [properties] - Optional properties that will be set on a newly created modal instance.
+         * @param {Event} [ev] - The DOM event that causes the modal to be shown.
          */
         show (name, properties, ev) {
             let modal;
@@ -45,8 +45,8 @@ const modal_api = {
 
         /**
          * Create a modal of the passed-in type.
-         * @param { String } name
-         * @param { Object } [properties] - Optional properties that will be
+         * @param {String} name
+         * @param {Object} [properties] - Optional properties that will be
          *  set on the modal instance.
          */
         create (name, properties) {
@@ -89,6 +89,14 @@ const modal_api = {
             modals_map = {};
         }
     },
+    /**
+     * @typedef Field
+     * @property { String } Field.label - The form label for the input field.
+     * @property { String } Field.name - The name for the input field.
+     * @property { String } [Field.challenge] - A challenge value that must be provided by the user.
+     * @property { String } [Field.placeholder] - The placeholder for the input field.
+     * @property { Boolean} [Field.required] - Whether the field is required or not
+     */
 
     /**
      * Show a confirm modal to the user.
@@ -96,11 +104,6 @@ const modal_api = {
      * @param { String } title - The header text for the confirmation dialog
      * @param { (Array<String>|String) } messages - The text to show to the user
      * @param { Array<Field> } fields - An object representing a fields presented to the user.
-     * @property { String } Field.label - The form label for the input field.
-     * @property { String } Field.name - The name for the input field.
-     * @property { String } [Field.challenge] - A challenge value that must be provided by the user.
-     * @property { String } [Field.placeholder] - The placeholder for the input field.
-     * @property { Boolean} [Field.required] - Whether the field is required or not
      * @returns { Promise<Array|false> } A promise which resolves with an array of
      *  filled in fields or `false` if the confirm dialog was closed or canceled.
      */

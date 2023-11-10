@@ -25,6 +25,9 @@ export function isSameDomain (jid1, jid2) {
     return Strophe.getDomainFromJid(jid1).toLowerCase() === Strophe.getDomainFromJid(jid2).toLowerCase();
 }
 
+/**
+ * @param {string} jid
+ */
 export function getJIDFromURI (jid) {
     return jid.startsWith('xmpp:') && jid.endsWith('?join')
         ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '')

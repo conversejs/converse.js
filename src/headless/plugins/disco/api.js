@@ -30,16 +30,18 @@ export default {
              */
             async getFeature (name, xmlns) {
                 await api.waitUntil('streamFeaturesAdded');
+
+                const { stream_features } = _converse.state;
                 if (!name || !xmlns) {
                     throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
                 }
-                if (_converse.stream_features === undefined && !api.connection.connected()) {
+                if (stream_features === undefined && !api.connection.connected()) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
-                    const msg = `Tried to get feature ${name} ${xmlns} but _converse.stream_features has been torn down`;
+                    const msg = `Tried to get feature ${name} ${xmlns} but stream_features has been torn down`;
                     log.warn(msg);
                     return;
                 }
-                return _converse.stream_features.findWhere({'name': name, 'xmlns': xmlns});
+                return stream_features.findWhere({'name': name, 'xmlns': xmlns});
             }
         },
 
@@ -65,15 +67,16 @@ export default {
                  * @example _converse.api.disco.own.identities.clear();
                  */
                 add (category, type, name, lang) {
-                    for (var i=0; i<_converse.disco._identities.length; i++) {
-                        if (_converse.disco._identities[i].category == category &&
-                            _converse.disco._identities[i].type == type &&
-                            _converse.disco._identities[i].name == name &&
-                            _converse.disco._identities[i].lang == lang) {
+                    const { disco } = _converse.state;
+                    for (var i=0; i<disco._identities.length; i++) {
+                        if (disco._identities[i].category == category &&
+                                disco._identities[i].type == type &&
+                                disco._identities[i].name == name &&
+                                disco._identities[i].lang == lang) {
                             return false;
                         }
                     }
-                    _converse.disco._identities.push({category: category, type: type, name: name, lang: lang});
+                    disco._identities.push({category: category, type: type, name: name, lang: lang});
                 },
                 /**
                  * Clears all previously registered identities.
@@ -81,7 +84,7 @@ export default {
                  * @example _converse.api.disco.own.identities.clear();
                  */
                 clear () {
-                    _converse.disco._identities = []
+                    _converse.state.disco._identities = []
                 },
                 /**
                  * Returns all of the identities registered for this client
@@ -90,7 +93,7 @@ export default {
                  * @example const identities = api.disco.own.identities.get();
                  */
                 get () {
-                    return _converse.disco._identities;
+                    return _converse.state.disco._identities;
                 }
             },
 
@@ -106,10 +109,11 @@ export default {
                  * @example _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
                  */
                 add (name) {
-                    for (var i=0; i<_converse.disco._features.length; i++) {
-                        if (_converse.disco._features[i] == name) { return false; }
+                    const { disco } = _converse.state;
+                    for (var i=0; i<disco._features.length; i++) {
+                        if (disco._features[i] == name) { return false; }
                     }
-                    _converse.disco._features.push(name);
+                    disco._features.push(name);
                 },
                 /**
                  * Clears all previously registered features.
@@ -117,7 +121,7 @@ export default {
                  * @example _converse.api.disco.own.features.clear();
                  */
                 clear () {
-                    _converse.disco._features = []
+                    _converse.state.disco._features = []
                 },
                 /**
                  * Returns all of the features registered for this client (i.e. instance of Converse).
@@ -125,7 +129,7 @@ export default {
                  * @example const features = api.disco.own.features.get();
                  */
                 get () {
-                    return _converse.disco._features;
+                    return _converse.state.disco._features;
                 }
             }
         },
@@ -190,15 +194,16 @@ export default {
              */
             async get (jid, create=false) {
                 await api.waitUntil('discoInitialized');
+                const { disco_entities } = _converse.state;
                 if (!jid) {
-                    return _converse.disco_entities;
+                    return disco_entities;
                 }
-                if (_converse.disco_entities === undefined) {
+                if (disco_entities === undefined) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
-                    log.warn(`Tried to look up entity ${jid} but _converse.disco_entities has been torn down`);
+                    log.warn(`Tried to look up entity ${jid} but disco_entities has been torn down`);
                     return;
                 }
-                const entity = _converse.disco_entities.get(jid);
+                const entity = disco_entities.get(jid);
                 if (entity || !create) {
                     return entity;
                 }
@@ -209,11 +214,11 @@ export default {
              * Return any disco items advertised on this entity
              *
              * @method api.disco.entities.items
-             * @param { string } jid The Jabber ID of the entity for which we want to fetch items
+             * @param { string } jid - The Jabber ID of the entity for which we want to fetch items
              * @example api.disco.entities.items(jid);
              */
             items (jid) {
-                return _converse.disco_entities.filter(e => e.get('parent_jids')?.includes(jid));
+                return _converse.state.disco_entities.filter(e => e.get('parent_jids')?.includes(jid));
             },
 
             /**
@@ -235,7 +240,7 @@ export default {
              * @example _converse.api.disco.entities.create({ jid }, {'ignore_cache': true});
              */
             create (data, options) {
-                return _converse.disco_entities.create(data, options);
+                return _converse.state.disco_entities.create(data, options);
             }
         },
 
@@ -266,7 +271,7 @@ export default {
 
                 const entity = await api.disco.entities.get(jid, true);
 
-                if (_converse.disco_entities === undefined && !api.connection.connected()) {
+                if (_converse.state.disco_entities === undefined && !api.connection.connected()) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
                     log.warn(`Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`);
                     return [];
@@ -300,7 +305,7 @@ export default {
 
                 const entity = await api.disco.entities.get(jid, true);
 
-                if (_converse.disco_entities === undefined && !api.connection.connected()) {
+                if (_converse.state.disco_entities === undefined && !api.connection.connected()) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
                     log.warn(`Tried to check if ${jid} supports feature ${feature}`);
                     return false;
@@ -424,15 +429,15 @@ export default {
          * XEP-0163: https://xmpp.org/extensions/xep-0163.html#support
          *
          * @method api.disco.getIdentity
-         * @param { string } The identity category.
+         * @param {string} category -The identity category.
          *     In the XML stanza, this is the `category`
          *     attribute of the `<identity>` element.
          *     For example: 'pubsub'
-         * @param { string } type The identity type.
+         * @param {string} type - The identity type.
          *     In the XML stanza, this is the `type`
          *     attribute of the `<identity>` element.
          *     For example: 'pep'
-         * @param { string } jid The JID of the entity which might have the identity
+         * @param {string} jid - The JID of the entity which might have the identity
          * @returns {promise} A promise which resolves with a map indicating
          *     whether an identity with a given type is provided by the entity.
          * @example

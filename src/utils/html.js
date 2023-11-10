@@ -18,7 +18,7 @@ import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
 import u from '../headless/utils/index.js';
-import { converse, log } from '@converse/headless';
+import { api, converse, log } from '@converse/headless';
 import { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';
 import { queryChildren } from '@converse/headless/utils/html.js';
@@ -66,7 +66,7 @@ function stripEmptyTextNodes (el) {
         return NodeFilter.FILTER_ACCEPT;
     });
     while (n = walker.nextNode()) text_nodes.push(n);
-    text_nodes.forEach((n) => EMPTY_TEXT_REGEX.test(n.data) && n.parentElement.removeChild(n))
+    text_nodes.forEach((n) => EMPTY_TEXT_REGEX.test(/** @type {Text} */(n).data) && n.parentElement.removeChild(n))
 
     return el;
 }
@@ -372,7 +372,7 @@ export function slideOut (el, duration = 200) {
             cancelAnimationFrame(Number(marker));
         }
         const end_height = calculateElementHeight(el);
-        if (window.converse_disable_effects) {
+        if (api.settings.get('disable_effects')) {
             // Effects are disabled (for tests)
             el.style.height = end_height + 'px';
             slideOutWrapup(el);
@@ -424,7 +424,7 @@ export function slideIn (el, duration = 200) {
             return reject(new Error(err));
         } else if (hasClass('collapsed', el)) {
             return resolve(el);
-        } else if (window.converse_disable_effects) {
+        } else if (api.settings.get('disable_effects')) {
             // Effects are disabled (for tests)
             el.classList.add('collapsed');
             el.style.height = '';

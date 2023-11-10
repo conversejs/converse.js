@@ -1,30 +1,34 @@
 import 'shared/autocomplete/index.js';
-import BaseModal from "plugins/modal/modal.js";
-import tplAddContactModal from "./templates/add-contact.js";
+import BaseModal from 'plugins/modal/modal.js';
+import tplAddContactModal from './templates/add-contact.js';
 import { Strophe } from 'strophe.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless";
-import {getNamesAutoCompleteList} from '@converse/headless/plugins/roster/utils.js';
+import { _converse, api } from '@converse/headless';
+import { getNamesAutoCompleteList } from '@converse/headless/plugins/roster/utils.js';
 
 export default class AddContactModal extends BaseModal {
-
     initialize () {
         super.initialize();
         this.listenTo(this.model, 'change', () => this.render());
         this.render();
-        this.addEventListener('shown.bs.modal', () => this.querySelector('input[name="jid"]')?.focus(), false);
+        this.addEventListener(
+            'shown.bs.modal',
+            () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="jid"]'))?.focus(),
+            false
+        );
     }
 
     renderModal () {
         return tplAddContactModal(this);
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    getModalTitle () {
+        // eslint-disable-line class-methods-use-this
         return __('Add a Contact');
     }
 
     validateSubmission (jid) {
-        if (!jid || jid.split('@').filter(s => !!s).length < 2) {
+        if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
             this.model.set('error', __('Please enter a valid XMPP address'));
             return false;
         } else if (_converse.roster.get(Strophe.getBareJidFromJid(jid))) {
@@ -47,8 +51,8 @@ export default class AddContactModal extends BaseModal {
     async addContactFromForm (ev) {
         ev.preventDefault();
         const data = new FormData(ev.target);
-        let name = (/** @type {string} */(data.get('name')) || '').trim();
-        let jid = (/** @type {string} */(data.get('jid')) || '').trim();
+        let name = /** @type {string} */ (data.get('name') || '').trim();
+        let jid = /** @type {string} */ (data.get('jid') || '').trim();
 
         if (!jid && typeof api.settings.get('xhr_user_search_url') === 'string') {
             const list = await getNamesAutoCompleteList(name);

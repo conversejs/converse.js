@@ -2,8 +2,7 @@ import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
 import sizzle from 'sizzle';
-import { Collection } from '@converse/skeletor';
-import { Model } from '@converse/skeletor';
+import { Collection, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 import { createStore } from '../../utils/storage.js';
 
@@ -50,7 +49,6 @@ class DiscoEntity extends Model {
     /**
      * Returns a Promise which resolves with a map indicating
      * whether a given identity is provided by this entity.
-     * @private
      * @method _converse.DiscoEntity#getIdentity
      * @param { String } category - The identity category
      * @param { String } type - The identity type
@@ -66,7 +64,6 @@ class DiscoEntity extends Model {
     /**
      * Returns a Promise which resolves with a map indicating
      * whether a given feature is supported.
-     * @private
      * @method _converse.DiscoEntity#getFeature
      * @param { String } feature - The feature that might be supported.
      */
@@ -133,6 +130,9 @@ class DiscoEntity extends Model {
         this.onInfo(stanza);
     }
 
+    /**
+     * @param {Element} stanza
+     */
     onDiscoItems (stanza) {
         sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza).forEach(item => {
             if (item.getAttribute('node')) {
@@ -141,7 +141,7 @@ class DiscoEntity extends Model {
                 return;
             }
             const jid = item.getAttribute('jid');
-            const entity = _converse.disco_entities.get(jid);
+            const entity = _converse.state.disco_entities.get(jid);
             if (entity) {
                 entity.set({ parent_jids: [this.get('jid')] });
             } else {
@@ -155,7 +155,7 @@ class DiscoEntity extends Model {
     }
 
     async queryForItems () {
-        if (this.identities.where({ 'category': 'server' }).length === 0) {
+        if (this.identities.where({ category: 'server' }).length === 0) {
             // Don't fetch features and items if this is not a
             // server or a conference component.
             return;
@@ -164,6 +164,9 @@ class DiscoEntity extends Model {
         this.onDiscoItems(stanza);
     }
 
+    /**
+     * @param {Element} stanza
+     */
     async onInfo (stanza) {
         Array.from(stanza.querySelectorAll('identity')).forEach(identity => {
             this.identities.create({

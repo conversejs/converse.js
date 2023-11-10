@@ -15,7 +15,7 @@ class Feedback extends Model {
     initialize () {
         super.initialize();
         const { api } = _converse;
-        this.on('change', () => api.trigger('connfeedback', _converse.connfeedback));
+        this.on('change', () => api.trigger('connfeedback', _converse.state.connfeedback));
     }
 }
 

@@ -5,6 +5,11 @@ import { _converse, api } from "@converse/headless";
 
 class MUCBookmarkForm extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             'jid': { type: String }

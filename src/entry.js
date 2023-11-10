@@ -12,9 +12,6 @@
 //
 // Once the rest converse.js has been loaded, window.converse will be replaced
 // with the full-fledged public API.
-/**
- * @typedef {module:shared.converse.ConversePrivateGlobal} ConversePrivateGlobal
- */
 
 const plugins = {};
 
@@ -68,9 +65,6 @@ const converse = {
     }
 }
 
-/**
- * @typedef {Window & {converse: ConversePrivateGlobal} } window
- */
 window['converse'] = converse;
 
 /**

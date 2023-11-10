@@ -57,7 +57,7 @@ export default class ProfileModal extends BaseModal {
         ev.preventDefault();
         const reader = new FileReader();
         const form_data = new FormData(ev.target);
-        const image_file = form_data.get('image');
+        const image_file = /** @type {File} */(form_data.get('image'));
         const data = {
             'fn': form_data.get('fn'),
             'nickname': form_data.get('nickname'),
@@ -77,7 +77,7 @@ export default class ProfileModal extends BaseModal {
                 const { photo, } = conversions[0];
                 reader.onloadend = () => {
                     Object.assign(data, {
-                        'image': btoa(reader.result),
+                        'image': btoa(/** @type {string} */(reader.result)),
                         'image_type': image_file.type
                     });
                     this.setVCard(data);

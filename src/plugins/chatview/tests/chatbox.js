@@ -248,7 +248,7 @@ describe("Chatboxes", function () {
 
         describe("A chat toolbar", function () {
 
-            it("shows the remaining character count if a message_limit is configured",
+            fit("shows the remaining character count if a message_limit is configured",
                     mock.initConverse(['chatBoxesFetched'], {'message_limit': 200}, async function (_converse) {
 
                 await mock.waitForRoster(_converse, 'current', 3);

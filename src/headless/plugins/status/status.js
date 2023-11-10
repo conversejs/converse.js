@@ -1,12 +1,13 @@
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import { Model } from '@converse/skeletor';
+import { isIdle, getIdleSeconds } from './utils.js';
 
 const { Strophe, $pres } = converse.env;
 
 export default class XMPPStatus extends Model {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return { "status":  api.settings.get("default_state") }
     }
 
@@ -22,14 +23,14 @@ export default class XMPPStatus extends Model {
     }
 
     getDisplayName () {
-        return this.getFullname() || this.getNickname() || _converse.bare_jid;
+        return this.getFullname() || this.getNickname() || _converse.session.get('bare_jid');
     }
 
-    getNickname () { // eslint-disable-line class-methods-use-this
+    getNickname () {
         return api.settings.get('nickname');
     }
 
-    getFullname () { // eslint-disable-line class-methods-use-this
+    getFullname () {
         return ''; // Gets overridden in converse-vcard
     }
 
@@ -46,7 +47,7 @@ export default class XMPPStatus extends Model {
 
         if (type === 'subscribe') {
             presence = $pres({ to, type });
-            const { xmppstatus } = _converse;
+            const { xmppstatus } = _converse.state;
             const nick = xmppstatus.getNickname();
             if (nick) presence.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
 
@@ -73,10 +74,9 @@ export default class XMPPStatus extends Model {
         const priority = api.settings.get("priority");
         presence.c('priority').t(Number.isNaN(Number(priority)) ? 0 : priority).up();
 
-        const { idle, idle_seconds } = _converse;
-        if (idle) {
+        if (isIdle()) {
             const idle_since = new Date();
-            idle_since.setSeconds(idle_since.getSeconds() - idle_seconds);
+            idle_since.setSeconds(idle_since.getSeconds() - getIdleSeconds());
             presence.c('idle', { xmlns: Strophe.NS.IDLE, since: idle_since.toISOString() });
         }
 

@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ */
 import _converse from '../_converse.js';
 import api from '../../shared/api/index.js';
 
@@ -21,7 +24,7 @@ export default {
             if (child_nodes && !Array.isArray(child_nodes)) {
                 child_nodes = [child_nodes];
             }
-            const model = _converse.xmppstatus
+            const model = _converse.state.xmppstatus
             const presence = await model.constructPresence(type, to, status);
             child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             api.send(presence);

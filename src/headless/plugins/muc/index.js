@@ -30,7 +30,7 @@ import {
     registerDirectInvitationHandler,
     routeToRoom,
 } from './utils.js';
-import { computeAffiliationsDelta } from './affiliations/utils.js';
+import { computeAffiliationsDelta, getAssignableAffiliations } from './affiliations/utils.js';
 import {
     AFFILIATION_CHANGES,
     AFFILIATION_CHANGES_LIST,
@@ -145,7 +145,7 @@ converse.plugins.add('converse-muc', {
          * 322 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because the groupchat has been changed to members-only and the user is not a member
          * 332 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of a system shutdown
          */
-        _converse.muc = {
+        const MUC_FEEDBACK_MESSAGES = {
             info_messages: {
                 100: __('This groupchat is not anonymous'),
                 102: __('This groupchat now shows unavailable members'),
@@ -177,28 +177,36 @@ converse.plugins.add('converse-muc', {
             },
         };
 
+        const labels = { muc: MUC_FEEDBACK_MESSAGES };
+        Object.assign(_converse.labels, labels);
+        Object.assign(_converse, labels); // XXX DEPRECATED
+
         routeToRoom();
         addEventListener('hashchange', routeToRoom);
 
         // TODO: DEPRECATED
-        _converse.ChatRoom = MUC;
-        _converse.ChatRoomMessage = MUCMessage;
-        _converse.ChatRoomOccupants = ChatRoomOccupants;
-        _converse.ChatRoomOccupant = ChatRoomOccupant;
+        const legacy_exports = {
+            ChatRoom: MUC,
+            ChatRoomMessage: MUCMessage,
+        };
+        Object.assign(_converse, legacy_exports);
 
-        const exports = { MUC, MUCMessage, ChatRoomOccupants, ChatRoomOccupant };
-        Object.assign(_converse.exports, exports);
-
-        /** @type {module:shared-api.APIEndpoint} */(api.chatboxes.registry).add(CHATROOMS_TYPE, MUC);
-
-        Object.assign(_converse, {
+        const exports = {
+            MUC,
+            MUCMessage,
+            ChatRoomOccupants,
+            ChatRoomOccupant,
+            getAssignableAffiliations,
             getDefaultMUCNickname,
             isInfoVisible,
             onDirectMUCInvitation,
             ChatRoomMessages: MUCMessages,
-        });
+        };
+        Object.assign(_converse.exports, exports);
+        Object.assign(_converse, exports); // XXX DEPRECATED
 
-        /************************ BEGIN Event Handlers ************************/
+        /** @type {module:shared-api.APIEndpoint} */(api.chatboxes.registry).add(CHATROOMS_TYPE, MUC);
+
 
         if (api.settings.get('allow_muc_invitations')) {
             api.listen.on('connected', registerDirectInvitationHandler);

@@ -1,8 +1,19 @@
+/**
+ * @module:headless-shared-chat-utils
+ * @typedef {import('../../plugins/muc/muc.js').default} MUC
+ * @typedef {import('../../plugins/chat/model.js').default} ChatBox
+ * @typedef {import('../../plugins/chat/message.js').default} Message
+ * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
+ * @typedef {module:headless-shared-chat-utils.MediaURLData} MediaURLData
+ */
 import debounce from 'lodash-es/debounce.js';
 import api, { converse } from '../../shared/api/index.js';
 
 const { u } = converse.env;
 
+/**
+ * @param {ChatBox|MUC} model
+ */
 export function pruneHistory (model) {
     const max_history = api.settings.get('prune_messages_above');
     if (max_history && typeof max_history === 'number') {
@@ -17,7 +28,7 @@ export function pruneHistory (model) {
                  * once older messages have been removed to keep the
                  * number of messages below the value set in `prune_messages_above`.
                  * @event _converse#historyPruned
-                 * @type { _converse.ChatBox | _converse.ChatRoom }
+                 * @type { ChatBox | MUC }
                  * @example _converse.api.listen.on('historyPruned', this => { ... });
                  */
                 api.trigger('historyPruned', model);
@@ -29,20 +40,20 @@ export function pruneHistory (model) {
 /**
  * Given an array of {@link MediaURLMetadata} objects and text, return an
  * array of {@link MediaURL} objects.
- * @param { Array<MediaURLMetadata> } arr
- * @param { String } text
- * @returns{ Array<MediaURL> }
+ * @param {Array<MediaURLMetadata>} arr
+ * @param {String} text
+ * @returns{Array<MediaURLData>}
  */
 export function getMediaURLs (arr, text, offset=0) {
     /**
-     * @typedef { Object } MediaURLData
+     * @typedef {Object} MediaURLData
      * An object representing a URL found in a chat message
-     * @property { Boolean } is_audio
-     * @property { Boolean } is_image
-     * @property { Boolean } is_video
-     * @property { String } end
-     * @property { String } start
-     * @property { String } url
+     * @property {Boolean} is_audio
+     * @property {Boolean} is_image
+     * @property {Boolean} is_video
+     * @property {String} end
+     * @property {String} start
+     * @property {String} url
      */
     return arr.map(o => {
         const start = o.start - offset;
@@ -63,11 +74,11 @@ export function getMediaURLs (arr, text, offset=0) {
  * Determines whether the given attributes of an incoming message
  * represent a XEP-0308 correction and, if so, handles it appropriately.
  * @private
- * @method _converse.ChatBox#handleCorrection
- * @param { _converse.ChatBox | _converse.ChatRoom }
- * @param { object } attrs - Attributes representing a received
+ * @method ChatBox#handleCorrection
+ * @param {ChatBox|MUC} model
+ * @param {object} attrs - Attributes representing a received
  *  message, as returned by {@link parseMessage}
- * @returns { _converse.Message|undefined } Returns the corrected
+ * @returns {Promise<Message|void>} Returns the corrected
  *  message or `undefined` if not applicable.
  */
 export async function handleCorrection (model, attrs) {

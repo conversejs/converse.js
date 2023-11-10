@@ -68,25 +68,25 @@ converse.plugins.add('converse-dragresize', {
         }
 
         /**
-         * This function registers mousedown and mouseup events hadlers to 
+         * This function registers mousedown and mouseup events hadlers to
          * all iframes in the DOM when converse UI resizing events are called
          * to prevent mouse drag stutter effect which is bad user experience.
          * @function dragresizeOverIframeHandler
          * @param {Object} e - dragging node element.
          */
         function dragresizeOverIframeHandler (e) {
-          const iframes = document.getElementsByTagName('iframe');
-          for (let iframe of iframes) {
+          const iframes = Array.from(document.getElementsByTagName('iframe'));
+          for (const iframe of iframes) {
             e.addEventListener('mousedown', () => {
                 iframe.style.pointerEvents  = 'none';
             }, { once: true });
-            
+
             e.addEventListener('mouseup', () => {
                 iframe.style.pointerEvents  = 'initial';
             }, { once: true });
           }
         }
-        
+
         api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
         api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
         api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());

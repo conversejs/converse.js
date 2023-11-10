@@ -1,6 +1,8 @@
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import { initStorage } from '../../utils/storage.js';
+import { getUnloadEvent } from '../../utils/session.js';
+import { ACTIVE, INACTIVE } from '../../shared/constants.js';
 
 const { Strophe, $build } = converse.env;
 
@@ -17,14 +19,15 @@ function onStatusInitialized (reconnecting) {
 export function initStatus (reconnecting) {
     // If there's no xmppstatus obj, then we were never connected to
     // begin with, so we set reconnecting to false.
-    reconnecting = _converse.xmppstatus === undefined ? false : reconnecting;
+    reconnecting = _converse.state.xmppstatus === undefined ? false : reconnecting;
     if (reconnecting) {
         onStatusInitialized(reconnecting);
     } else {
-        const id = `converse.xmppstatus-${_converse.bare_jid}`;
-        _converse.xmppstatus = new _converse.XMPPStatus({ id });
-        initStorage(_converse.xmppstatus, id, 'session');
-        _converse.xmppstatus.fetch({
+        const id = `converse.xmppstatus-${_converse.session.get('bare_jid')}`;
+        _converse.state.xmppstatus = new _converse.exports.XMPPStatus({ id });
+        Object.assign(_converse, { xmppstatus: _converse.state.xmppstatus });
+        initStorage(_converse.state.xmppstatus, id, 'session');
+        _converse.state.xmppstatus.fetch({
             'success': () => onStatusInitialized(reconnecting),
             'error': () => onStatusInitialized(reconnecting),
             'silent': true
@@ -32,28 +35,43 @@ export function initStatus (reconnecting) {
     }
 }
 
+let idle_seconds = 0;
+let idle = false;
+let auto_changed_status = false;
+let inactive = false;
+
+export function isIdle () {
+    return idle;
+}
+
+export function getIdleSeconds () {
+    return idle_seconds;
+}
+
+/**
+ * Resets counters and flags relating to CSI and auto_away/auto_xa
+ */
 export function onUserActivity () {
-    /* Resets counters and flags relating to CSI and auto_away/auto_xa */
-    if (_converse.idle_seconds > 0) {
-        _converse.idle_seconds = 0;
+    if (idle_seconds > 0) {
+        idle_seconds = 0;
     }
     if (!api.connection.get()?.authenticated) {
         // We can't send out any stanzas when there's no authenticated connection.
         // This can happen when the connection reconnects.
         return;
     }
-    if (_converse.inactive) {
-        _converse.sendCSI(_converse.ACTIVE);
-    }
-    if (_converse.idle) {
-        _converse.idle = false;
+    if (inactive) sendCSI(ACTIVE);
+
+    if (idle) {
+        idle = false;
         api.user.presence.send();
     }
-    if (_converse.auto_changed_status === true) {
-        _converse.auto_changed_status = false;
+
+    if (auto_changed_status === true) {
+        auto_changed_status = false;
         // XXX: we should really remember the original state here, and
         // then set it back to that...
-        _converse.xmppstatus.set('status', api.settings.get("default_state"));
+        _converse.state.xmppstatus.set('status', api.settings.get("default_state"));
     }
 }
 
@@ -66,29 +84,30 @@ export function onEverySecond () {
         // This can happen when the connection reconnects.
         return;
     }
-    const stat = _converse.xmppstatus.get('status');
-    _converse.idle_seconds++;
+    const { xmppstatus } = _converse.state;
+    const stat = xmppstatus.get('status');
+    idle_seconds++;
     if (api.settings.get("csi_waiting_time") > 0 &&
-            _converse.idle_seconds > api.settings.get("csi_waiting_time") &&
-            !_converse.inactive) {
-        _converse.sendCSI(_converse.INACTIVE);
+            idle_seconds > api.settings.get("csi_waiting_time") &&
+            !inactive) {
+        sendCSI(INACTIVE);
     }
     if (api.settings.get("idle_presence_timeout") > 0 &&
-            _converse.idle_seconds > api.settings.get("idle_presence_timeout") &&
-            !_converse.idle) {
-        _converse.idle = true;
+            idle_seconds > api.settings.get("idle_presence_timeout") &&
+            !idle) {
+        idle = true;
         api.user.presence.send();
     }
     if (api.settings.get("auto_away") > 0 &&
-            _converse.idle_seconds > api.settings.get("auto_away") &&
+            idle_seconds > api.settings.get("auto_away") &&
             stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
-        _converse.auto_changed_status = true;
-        _converse.xmppstatus.set('status', 'away');
+        auto_changed_status = true;
+        xmppstatus.set('status', 'away');
     } else if (api.settings.get("auto_xa") > 0 &&
-            _converse.idle_seconds > api.settings.get("auto_xa") &&
+            idle_seconds > api.settings.get("auto_xa") &&
             stat !== 'xa' && stat !== 'dnd') {
-        _converse.auto_changed_status = true;
-        _converse.xmppstatus.set('status', 'xa');
+        auto_changed_status = true;
+        xmppstatus.set('status', 'xa');
     }
 }
 
@@ -99,8 +118,10 @@ export function onEverySecond () {
  */
 export function sendCSI (stat) {
     api.send($build(stat, {xmlns: Strophe.NS.CSI}));
-    _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
+    inactive = (stat === INACTIVE) ? true : false;
 }
+
+let everySecondTrigger;
 
 /**
  * Set an interval of one second and register a handler for it.
@@ -116,20 +137,33 @@ export function registerIntervalHandler () {
         // Waiting time of less then one second means features aren't used.
         return;
     }
-    _converse.idle_seconds = 0;
-    _converse.auto_changed_status = false; // Was the user's status changed by Converse?
+    idle_seconds = 0;
+    auto_changed_status = false; // Was the user's status changed by Converse?
 
-    const { unloadevent } = _converse;
-    window.addEventListener('click', _converse.onUserActivity);
-    window.addEventListener('focus', _converse.onUserActivity);
-    window.addEventListener('keypress', _converse.onUserActivity);
-    window.addEventListener('mousemove', _converse.onUserActivity);
-    window.addEventListener(unloadevent, _converse.onUserActivity, {'once': true, 'passive': true});
-    _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
+    const { onUserActivity, onEverySecond } = _converse.exports;
+    window.addEventListener('click', onUserActivity);
+    window.addEventListener('focus', onUserActivity);
+    window.addEventListener('keypress', onUserActivity);
+    window.addEventListener('mousemove', onUserActivity);
+    window.addEventListener(getUnloadEvent(), onUserActivity, {'once': true, 'passive': true});
+    everySecondTrigger = window.setInterval(onEverySecond, 1000);
+}
+
+export function tearDown () {
+    const { onUserActivity } = _converse.exports;
+    window.removeEventListener('click', onUserActivity);
+    window.removeEventListener('focus', onUserActivity);
+    window.removeEventListener('keypress', onUserActivity);
+    window.removeEventListener('mousemove', onUserActivity);
+    window.removeEventListener(getUnloadEvent(), onUserActivity);
+    if (everySecondTrigger) {
+        window.clearInterval(everySecondTrigger);
+        everySecondTrigger = null;
+    }
 }
 
 export function addStatusToMUCJoinPresence (_, stanza) {
-    const { xmppstatus } = _converse;
+    const { xmppstatus } = _converse.state;
 
     const status = xmppstatus.get('status');
     if (['away', 'chat', 'dnd', 'xa'].includes(status)) {

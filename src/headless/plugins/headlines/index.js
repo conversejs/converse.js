@@ -13,13 +13,9 @@ converse.plugins.add('converse-headlines', {
     dependencies: ["converse-chat"],
 
     initialize () {
-        /**
-         * Shows headline messages
-         * @class
-         * @namespace _converse.HeadlinesFeed
-         * @memberOf _converse
-         */
-        _converse.HeadlinesFeed = HeadlinesFeed;
+        const exports = { HeadlinesFeed };
+        Object.assign(_converse, exports); // XXX: DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         function registerHeadlineHandler () {
             api.connection.get()?.addHandler(m => {

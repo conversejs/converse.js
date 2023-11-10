@@ -1,3 +1,6 @@
+/**
+ * @typedef {import("strophe.js/src/request.js").default} Request
+ */
 import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
@@ -39,6 +42,9 @@ class RegisterPanel extends CustomElement {
 
     constructor () {
         super();
+        this.urls = [];
+        this.fields = {};
+        this.domain = null;
         this.alert_type = 'info';
         this.setErrorMessage = (m) => this.setMessage(m, 'danger');
         this.setFeedbackMessage = (m) => this.setMessage(m, 'info');
@@ -84,10 +90,10 @@ class RegisterPanel extends CustomElement {
     /**
      * Send an IQ stanza to the XMPP server asking for the registration fields.
      * @method _converse.RegisterPanel#getRegistrationFields
-     * @param { Strophe.Request } req - The current request
-     * @param { Function } callback - The callback function
+     * @param {Request} req - The current request
+     * @param {Function} callback - The callback function
      */
-    getRegistrationFields (req, _callback) {
+    getRegistrationFields (req, callback) {
         const conn = api.connection.get();
         conn.connected = true;
 
@@ -101,7 +107,7 @@ class RegisterPanel extends CustomElement {
         const register = body.getElementsByTagName("register");
         const mechanisms = body.getElementsByTagName("mechanism");
         if (register.length === 0 && mechanisms.length === 0) {
-            conn._proto._no_auth_received(_callback);
+            conn._proto._no_auth_received(callback);
             return false;
         }
         if (register.length === 0) {
@@ -162,14 +168,15 @@ class RegisterPanel extends CustomElement {
     /**
      * Event handler when the #converse-register form is submitted.
      * Depending on the available input fields, we delegate to other methods.
-     * @param { Event } ev
+     * @param {Event} ev
      */
     onFormSubmission (ev) {
         ev?.preventDefault?.();
-        if (ev.target.querySelector('input[name=domain]') === null) {
-            this.submitRegistrationForm(ev.target);
+        const form = /** @type {HTMLFormElement} */(ev.target);
+        if (form.querySelector('input[name=domain]') === null) {
+            this.submitRegistrationForm(form);
         } else {
-            this.onProviderChosen(ev.target);
+            this.onProviderChosen(form);
         }
 
     }
@@ -180,7 +187,7 @@ class RegisterPanel extends CustomElement {
      * @param { HTMLElement } form - The form that was submitted
      */
     onProviderChosen (form) {
-        const domain = form.querySelector('input[name=domain]')?.value;
+        const domain = /** @type {HTMLInputElement} */(form.querySelector('input[name=domain]'))?.value;
         if (domain) this.fetchRegistrationForm(domain.trim());
     }
 
@@ -409,17 +416,18 @@ class RegisterPanel extends CustomElement {
      * @param { Element } stanza - The IQ stanza.
      */
     _onRegisterIQ (stanza) {
+        const connection = api.connection.get();
         if (stanza.getAttribute("type") === "error") {
             log.error("Registration failed.");
             this.reportErrors(stanza);
 
-            const connection = api.connection.get();
-            let error = stanza.getElementsByTagName("error");
-            if (error.length !== 1) {
+            const error_els = stanza.getElementsByTagName("error");
+            if (error_els.length !== 1) {
                 connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                 return false;
             }
-            error = error[0].firstElementChild.tagName.toLowerCase();
+
+            const error = error_els[0].firstElementChild.tagName.toLowerCase();
             if (error === 'conflict') {
                 connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
             } else if (error === 'not-acceptable') {

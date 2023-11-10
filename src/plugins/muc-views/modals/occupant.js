@@ -8,8 +8,9 @@ const { u } = converse.env;
 
 export default class OccupantModal extends BaseModal {
 
-    constructor () {
+    constructor (options) {
         super();
+        this.message = options.message;
         this.addEventListener("affiliationChanged", () => this.alert(__('Affiliation changed')));
         this.addEventListener("roleChanged", () => this.alert(__('role changed')));
     }

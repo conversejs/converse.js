@@ -10,21 +10,21 @@ export default {
      *
      * Some events also double as promises and can be waited on via {@link _converse.api.waitUntil}.
      *
-     * @method _converse.api.trigger
-     * @param { string } name - The event name
-     * @param {...any} [argument] - Argument to be passed to the event handler
-     * @param { object } [options]
-     * @param { boolean } [options.synchronous] - Whether the event is synchronous or not.
+     * @typedef {object} Options
+     * @property {boolean} [Options.synchronous] - Whether the event is synchronous or not.
      *  When a synchronous event is fired, a promise will be returned
      *  by {@link _converse.api.trigger} which resolves once all the
      *  event handlers' promises have been resolved.
+     *
+     * @method _converse.api.trigger
+     * @param { string } name - The event name
      */
     async trigger (name) {
         if (!_converse._events) {
             return;
         }
         const args = Array.from(arguments);
-        const options = args.pop();
+        const options = /** @type {Options} */(args.pop());
         if (options && options.synchronous) {
             const events = _converse._events[name] || [];
             const event_args = args.splice(1);
@@ -118,7 +118,7 @@ export default {
             } else {
                 options = options || {};
             }
-            api.connection.get().addHandler(
+            _converse.api.connection.get().addHandler(
                 handler,
                 options.ns,
                 name,

@@ -9,7 +9,6 @@ class HeadlinesFeedView extends BaseChatView {
         _converse.chatboxviews.add(this.jid, this);
 
         this.model = _converse.chatboxes.get(this.jid);
-        this.model.disable_mam = true; // Don't do MAM queries for this box
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model.messages, 'add', () => this.requestUpdate());

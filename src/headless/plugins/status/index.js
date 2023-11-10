@@ -13,6 +13,7 @@ import {
     onEverySecond,
     onUserActivity,
     registerIntervalHandler,
+    tearDown,
     sendCSI
 } from './utils.js';
 
@@ -35,28 +36,23 @@ converse.plugins.add('converse-status', {
         });
         api.promises.add(['statusInitialized']);
 
-        _converse.XMPPStatus = XMPPStatus;
-        _converse.onUserActivity = onUserActivity;
-        _converse.onEverySecond = onEverySecond;
-        _converse.sendCSI = sendCSI;
-        _converse.registerIntervalHandler = registerIntervalHandler;
-
+        const exports = { XMPPStatus, onUserActivity, onEverySecond, sendCSI, registerIntervalHandler };
+        Object.assign(_converse, exports); // Deprecated
+        Object.assign(_converse.exports, exports);
         Object.assign(_converse.api.user, status_api);
 
         if (api.settings.get("idle_presence_timeout") > 0) {
             api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.IDLE));
         }
 
-        api.listen.on('presencesInitialized', (reconnecting) => {
-            if (!reconnecting) {
-                _converse.registerIntervalHandler();
-            }
-        });
+        api.listen.on('presencesInitialized', (reconnecting) => (!reconnecting && registerIntervalHandler()));
+        api.listen.on('beforeTearDown', tearDown);
 
         api.listen.on('clearSession', () => {
-            if (shouldClearCache() && _converse.xmppstatus) {
-                _converse.xmppstatus.destroy();
-                delete _converse.xmppstatus;
+            if (shouldClearCache() && _converse.state.xmppstatus) {
+                _converse.state.xmppstatus.destroy();
+                delete _converse.state.xmppstatus;
+                Object.assign(_converse, { xmppstatus: undefined }); // XXX DEPRECATED
                 api.promises.add(['statusInitialized']);
             }
         });

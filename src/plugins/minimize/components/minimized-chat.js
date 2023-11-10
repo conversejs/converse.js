@@ -15,6 +15,14 @@ export default class MinimizedChat extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.model = null;
+        this.num_unread = null;
+        this.type = null;
+        this.title = null;
+    }
+
     render () {
         const data = {
             'close': ev => this.close(ev),

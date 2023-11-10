@@ -1,26 +1,29 @@
-import BaseModal from "plugins/modal/modal.js";
-import tplChatStatusModal from "../templates/chat-status-modal.js";
+import BaseModal from 'plugins/modal/modal.js';
+import tplChatStatusModal from '../templates/chat-status-modal.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless";
+import { _converse, api, converse } from '@converse/headless';
 
 const u = converse.env.utils;
 
-
 export default class ChatStatusModal extends BaseModal {
-
     initialize () {
         super.initialize();
         this.render();
-        this.addEventListener('shown.bs.modal', () => {
-            this.querySelector('input[name="status_message"]').focus();
-        }, false);
+        this.addEventListener(
+            'shown.bs.modal',
+            () => {
+                /** @type {HTMLInputElement} */ (this.querySelector('input[name="status_message"]')).focus();
+            },
+            false
+        );
     }
 
     renderModal () {
         return tplChatStatusModal(this);
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    getModalTitle () {
+        // eslint-disable-line class-methods-use-this
         return __('Change chat status');
     }
 
@@ -29,7 +32,7 @@ export default class ChatStatusModal extends BaseModal {
             ev.preventDefault();
             u.hideElement(this.querySelector('.clear-input'));
         }
-        const roster_filter = this.querySelector('input[name="status_message"]');
+        const roster_filter = /** @type {HTMLInputElement} */ (this.querySelector('input[name="status_message"]'));
         roster_filter.value = '';
     }
 
@@ -38,7 +41,7 @@ export default class ChatStatusModal extends BaseModal {
         const data = new FormData(ev.target);
         this.model.save({
             'status_message': data.get('status_message'),
-            'status': data.get('chat_status')
+            'status': data.get('chat_status'),
         });
         this.modal.hide();
     }

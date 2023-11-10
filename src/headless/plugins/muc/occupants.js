@@ -1,12 +1,14 @@
+/**
+ * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
+ */
 import ChatRoomOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';
+import log from '../../log';
 import api, { converse } from '../../shared/api/index.js';
-import { Collection } from '@converse/skeletor';
-import { MUC_ROLE_WEIGHTS } from './constants.js';
-import { Model } from '@converse/skeletor';
+import { Collection, Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import { getAffiliationList } from './affiliations/utils.js';
-import { getAutoFetchedAffiliationLists } from './utils.js';
+import { getAutoFetchedAffiliationLists, occupantsComparator } from './utils.js';
 import { getUniqueId } from '../../utils/index.js';
 
 const { u } = converse.env;
@@ -19,18 +21,17 @@ const { u } = converse.env;
  * @memberOf _converse
  */
 class ChatRoomOccupants extends Collection {
-    model = ChatRoomOccupant;
 
-    comparator (occupant1, occupant2) { // eslint-disable-line class-methods-use-this
-        const role1 = occupant1.get('role') || 'none';
-        const role2 = occupant2.get('role') || 'none';
-        if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
-            const nick1 = occupant1.getDisplayName().toLowerCase();
-            const nick2 = occupant2.getDisplayName().toLowerCase();
-            return nick1 < nick2 ? -1 : nick1 > nick2 ? 1 : 0;
-        } else {
-            return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
-        }
+    constructor (attrs, options) {
+        super(
+            attrs,
+            Object.assign({ comparator: occupantsComparator }, options)
+        );
+        this.chatroom = null;
+    }
+
+    get model() {
+        return ChatRoomOccupant;
     }
 
     create (attrs, options) {
@@ -52,12 +53,31 @@ class ChatRoomOccupants extends Collection {
         }
         const muc_jid = this.chatroom.get('jid');
         const aff_lists = await Promise.all(affiliations.map(a => getAffiliationList(a, muc_jid)));
-        const new_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
+
+
+        const new_members = aff_lists.reduce(
+            /**
+             * @param {MemberListItem[]} acc
+             * @param {MemberListItem[]|Error} val
+             * @returns {MemberListItem[]}
+             */
+            (acc, val) => {
+                if (val instanceof Error) {
+                    log.error(val);
+                    return acc;
+                }
+                return [...val, ...acc];
+            }, []
+        );
+
         const known_affiliations = affiliations.filter(
             a => !u.isErrorObject(aff_lists[affiliations.indexOf(a)])
         );
-        const new_jids = new_members.map(m => m.jid).filter(m => m !== undefined);
-        const new_nicks = new_members.map(m => (!m.jid && m.nick) || undefined).filter(m => m !== undefined);
+        const new_jids = /** @type {MemberListItem[]} */(new_members).map(m => m.jid).filter(m => m !== undefined);
+
+        const new_nicks = /** @type {MemberListItem[]} */(new_members).map(
+            (m) => (!m.jid && m.nick) || undefined).filter(m => m !== undefined);
+
         const removed_members = this.filter(m => {
             return (
                 known_affiliations.includes(m.get('affiliation')) &&
@@ -65,8 +85,10 @@ class ChatRoomOccupants extends Collection {
                 !new_jids.includes(m.get('jid'))
             );
         });
+
+        const bare_jid = _converse.session.get('bare_jid');
         removed_members.forEach(occupant => {
-            if (occupant.get('jid') === _converse.bare_jid) {
+            if (occupant.get('jid') === bare_jid) {
                 return;
             } else if (occupant.get('show') === 'offline') {
                 occupant.destroy();
@@ -74,7 +96,7 @@ class ChatRoomOccupants extends Collection {
                 occupant.save('affiliation', null);
             }
         });
-        new_members.forEach(attrs => {
+        /** @type {MemberListItem[]} */(new_members).forEach(attrs => {
             const occupant = this.findOccupant(attrs);
             occupant ? occupant.save(attrs) : this.create(attrs);
         });
@@ -117,14 +139,15 @@ class ChatRoomOccupants extends Collection {
     }
 
     /**
-     * Get the {@link _converse.ChatRoomOccupant} instance which
+     * Get the {@link ChatRoomOccupant} instance which
      * represents the current user.
      * @method _converse.ChatRoomOccupants#getOwnOccupant
-     * @returns { _converse.ChatRoomOccupant }
+     * @returns {ChatRoomOccupant}
      */
     getOwnOccupant () {
+        const bare_jid = _converse.session.get('bare_jid');
         return this.findOccupant({
-            'jid': _converse.bare_jid,
+            'jid': bare_jid,
             'occupant_id': this.chatroom.get('occupant_id')
         });
     }

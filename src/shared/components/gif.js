@@ -32,6 +32,7 @@ export default class ConverseGIFElement extends CustomElement {
         this.autoplay = false;
         this.noloop = false;
         this.fallback = 'url';
+        this.progress_color = null;
     }
 
     initGIF () {

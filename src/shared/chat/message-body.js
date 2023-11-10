@@ -1,5 +1,4 @@
 import 'shared/registry.js';
-import ImageModal from 'shared/modals/image.js';
 import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless";
@@ -19,6 +18,13 @@ export default class MessageBody extends CustomElement {
             model: { type: Object },
             text: { type: String },
         }
+    }
+
+    constructor () {
+        super();
+        this.text = null;
+        this.model = null;
+        this.hide_url_previews = null;
     }
 
     initialize () {

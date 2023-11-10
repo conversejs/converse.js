@@ -51,6 +51,7 @@ import {
 /**
  * The utils object
  * @namespace u
+ * @type {Record<string, Function>}
  */
 const u = {};
 

@@ -63,7 +63,7 @@ export function onEverySecond () {
     if (ping_interval > 0) {
         const now = new Date();
         lastStanzaDate = lastStanzaDate ?? now;
-        if ((now - lastStanzaDate)/1000 > ping_interval) {
+        if ((now.valueOf() - lastStanzaDate.valueOf())/1000 > ping_interval) {
             api.ping();
         }
     }

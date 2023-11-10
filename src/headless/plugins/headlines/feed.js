@@ -3,6 +3,12 @@ import api from "../../shared/api/index.js";
 import { HEADLINES_TYPE } from '../../shared/constants.js';
 
 
+/**
+ * Shows headline messages
+ * @class
+ * @namespace _converse.HeadlinesFeed
+ * @memberOf _converse
+ */
 export default class HeadlinesFeed extends ChatBox {
 
     defaults () {
@@ -12,8 +18,14 @@ export default class HeadlinesFeed extends ChatBox {
             'message_type': 'headline',
             'num_unread': 0,
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
+            'time_sent': undefined,
             'type': HEADLINES_TYPE
         }
+    }
+
+    constructor (attrs, options) {
+        super(attrs, options);
+        this.disable_mam = true; // Don't do MAM queries for this box
     }
 
     async initialize () {

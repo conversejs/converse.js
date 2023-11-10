@@ -10,6 +10,11 @@ import './styles/image.scss';
 
 export default class ImageModal extends BaseModal {
 
+    constructor (options) {
+        super(options);
+        this.src = options.src;
+    }
+
     renderModal () {
         return tplImageModal({ 'src': this.src });
     }

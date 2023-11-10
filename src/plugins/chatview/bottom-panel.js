@@ -1,3 +1,8 @@
+/**
+ * @typedef {import('shared/chat/emoji-picker.js').default} EmojiPicker
+ * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
+ * @typedef {import('./message-form.js').default} MessageForm
+ */
 import './message-form.js';
 import tplBottomPanel from './templates/bottom-panel.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -38,7 +43,8 @@ export default class ChatBottomPanel extends CustomElement {
 
     sendButtonClicked (ev) {
         if (ev.delegateTarget?.dataset.action === 'sendMessage') {
-            this.querySelector('converse-message-form')?.onFormSubmitted(ev);
+            const form = /** @type {MessageForm} */(this.querySelector('converse-message-form'));
+            form?.onFormSubmitted(ev);
         }
     }
 
@@ -55,16 +61,6 @@ export default class ChatBottomPanel extends CustomElement {
         _converse.chatboxviews.get(this.getAttribute('jid'))?.emitBlurred(ev);
     }
 
-    onDrop (evt) {
-        if (evt.dataTransfer.files.length == 0) {
-            // There are no files to be dropped, so this isn’t a file
-            // transfer operation.
-            return;
-        }
-        evt.preventDefault();
-        this.model.sendFiles(evt.dataTransfer.files);
-    }
-
     onDragOver (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
     }
@@ -76,14 +72,14 @@ export default class ChatBottomPanel extends CustomElement {
 
     async autocompleteInPicker (input, value) {
         await api.emojis.initialize();
-        const emoji_picker = this.querySelector('converse-emoji-picker');
+        const emoji_picker = /** @type {EmojiPicker} */(this.querySelector('converse-emoji-picker'));
         if (emoji_picker) {
             emoji_picker.model.set({
                 'ac_position': input.selectionStart,
                 'autocompleting': value,
                 'query': value
             });
-            const emoji_dropdown = this.querySelector('converse-emoji-dropdown');
+            const emoji_dropdown = /** @type {EmojiDropdown} */(this.querySelector('converse-emoji-dropdown'));
             emoji_dropdown?.showMenu();
         }
     }

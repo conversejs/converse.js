@@ -5,13 +5,13 @@ import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from '@converse/headless';
 import { updateSettingsWithFormData, validateJID } from './utils.js';
 
-const { Strophe, u } = converse.env;
+const { Strophe } = converse.env;
 
 
 class LoginForm extends CustomElement {
 
     initialize () {
-        this.listenTo(_converse.connfeedback, 'change', () => this.requestUpdate());
+        this.listenTo(_converse.state.connfeedback, 'change', () => this.requestUpdate());
         this.handler = () => this.requestUpdate()
     }
 

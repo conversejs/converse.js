@@ -1,3 +1,6 @@
+/**
+ * @typedef {module:shared-api-public.ConversePrivateGlobal} ConversePrivateGlobal
+ */
 import ConnectionFeedback from './../connection/feedback.js';
 import URI from 'urijs';
 import _converse from '../_converse.js';
@@ -7,9 +10,8 @@ import log from '../../log.js';
 import sizzle from 'sizzle';
 import u, { setLogLevelFromRoute } from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
-import { setUnloadEvent, isTestEnv } from '../../utils/session.js';
-import { Collection } from "@converse/skeletor";
-import { Model } from '@converse/skeletor';
+import { isTestEnv } from '../../utils/session.js';
+import { Collection, Model } from "@converse/skeletor";
 import { Strophe, $build, $iq, $msg, $pres, stx } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
 import { filesize } from 'filesize';
@@ -26,6 +28,8 @@ import {
 } from '../../utils/init.js';
 
 /**
+ * @typedef {Window & {converse: ConversePrivateGlobal} } window
+ *
  * ### The Public API
  *
  * This namespace contains public API methods which are are
@@ -38,7 +42,7 @@ import {
  * @global
  * @namespace converse
  */
-export const converse = Object.assign(window.converse || {}, {
+export const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).converse || {}, {
 
     CHAT_STATES,
 
@@ -68,7 +72,6 @@ export const converse = Object.assign(window.converse || {}, {
         const { api } = _converse;
         await cleanup(_converse);
 
-        setUnloadEvent();
         initAppSettings(settings);
         _converse.strict_plugin_dependencies = settings.strict_plugin_dependencies; // Needed by pluggable.js
         log.setLogLevel(api.settings.get("loglevel"));
@@ -84,16 +87,9 @@ export const converse = Object.assign(window.converse || {}, {
         setLogLevelFromRoute();
         addEventListener('hashchange', setLogLevelFromRoute);
 
-        _converse.connfeedback = new ConnectionFeedback();
-
-        /* When reloading the page:
-         * For new sessions, we need to send out a presence stanza to notify
-         * the server/network that we're online.
-         * When re-attaching to an existing session we don't need to again send out a presence stanza,
-         * because it's as if "we never left" (see onConnectStatusChanged).
-         * https://github.com/conversejs/converse.js/issues/521
-         */
-        _converse.send_initial_presence = true;
+        const connfeedback = new ConnectionFeedback();
+        Object.assign(_converse, { connfeedback }); // XXX: DEPRECATED
+        Object.assign(_converse.state, { connfeedback });
 
         await initSessionStorage(_converse);
         await initClientConfig(_converse);

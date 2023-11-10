@@ -18,6 +18,15 @@ export default class MessageUnfurl extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.jid = null;
+        this.url = null;
+        this.title = null;
+        this.image = null;
+        this.description = null;
+    }
+
     initialize () {
         const settings = getAppSettings();
         this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());

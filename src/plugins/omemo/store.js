@@ -28,7 +28,7 @@ class OMEMOStore extends Model {
         return Promise.resolve(parseInt(this.get('device_id'), 10));
     }
 
-    isTrustedIdentity (identifier, identity_key, direction) { // eslint-disable-line no-unused-vars
+    isTrustedIdentity (identifier, identity_key, _direction) {
         if (identifier === null || identifier === undefined) {
             throw new Error("Can't check identity key for invalid key");
         }

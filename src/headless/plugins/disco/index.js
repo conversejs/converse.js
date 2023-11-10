@@ -25,19 +25,23 @@ converse.plugins.add('converse-disco', {
         api.promises.add('discoInitialized');
         api.promises.add('streamFeaturesAdded');
 
-        _converse.DiscoEntity = DiscoEntity;
-        _converse.DiscoEntities = DiscoEntities;
+        const exports = { DiscoEntity, DiscoEntities };
 
-        _converse.disco = {
+        Object.assign(_converse, exports); // XXX: DEPRECATED
+        Object.assign(_converse.exports, exports);
+
+        const disco = {
             _identities: [],
             _features: []
         };
+        Object.assign(_converse, { disco }); // XXX: DEPRECATED
+        Object.assign(_converse.state, { disco });
 
         api.listen.on('userSessionInitialized', async () => {
             initStreamFeatures();
-            if (_converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED) {
+            if (_converse.state.connfeedback.get('connection_status') === Strophe.Status.ATTACHED) {
                 // When re-attaching to a BOSH session, we fetch the stream features from the cache.
-                await new Promise((success, error) => _converse.stream_features.fetch({ success, error }));
+                await new Promise((success, error) => _converse.state.stream_features.fetch({ success, error }));
                 notifyStreamFeaturesAdded();
             }
         });
@@ -47,9 +51,12 @@ converse.plugins.add('converse-disco', {
 
         api.listen.on('beforeTearDown', async () => {
             api.promises.add('streamFeaturesAdded');
-            if (_converse.stream_features) {
-                await _converse.stream_features.clearStore();
-                delete _converse.stream_features;
+
+            const { stream_features } = _converse.state;
+            if (stream_features) {
+                await stream_features.clearStore();
+                delete _converse.state.stream_features;
+                Object.assign(_converse, { stream_features: undefined }); // XXX: DEPRECATED
             }
         });
 

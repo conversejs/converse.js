@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('./feed.js').default} HeadlinesFeed
+ */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { HEADLINES_TYPE } from '../../shared/constants.js';
@@ -19,13 +22,18 @@ export default {
          * @param {String|String[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
          * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
          * @param { Boolean } [create=false] - Whether the chat should be created if it's not found.
-         * @returns { Promise<_converse.HeadlinesFeed> }
+         * @returns { Promise<HeadlinesFeed[]|HeadlinesFeed> }
          */
         async get (jids, attrs={}, create=false) {
+            /**
+             * @param {string} jid
+             * @returns {Promise<HeadlinesFeed>}
+             */
             async function _get (jid) {
                 let model = await api.chatboxes.get(jid);
                 if (!model && create) {
-                    model = await api.chatboxes.create(jid, attrs, _converse.HeadlinesFeed);
+                    const { HeadlinesFeed } = _converse.exports;
+                    model = await api.chatboxes.create(jid, attrs, HeadlinesFeed);
                 } else {
                     model = (model && model.get('type') === HEADLINES_TYPE) ? model : null;
                     if (model && Object.keys(attrs).length) {
@@ -34,6 +42,7 @@ export default {
                 }
                 return model;
             }
+
             if (jids === undefined) {
                 const chats = await api.chatboxes.get();
                 return chats.filter(c => (c.get('type') === HEADLINES_TYPE));

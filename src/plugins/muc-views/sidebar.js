@@ -12,6 +12,11 @@ const { u } = converse.env;
 
 export default class MUCSidebar extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             jid: { type: String }

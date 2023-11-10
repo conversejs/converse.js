@@ -1,11 +1,13 @@
 /**
  * @module:shared.converse
+ * @typedef {import('@converse/skeletor/src/storage.js').Storage} Storage
  */
 import log from '../log.js';
 import i18n from './i18n.js';
 import pluggable from 'pluggable.js/src/pluggable.js';
 import { EventEmitter, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
+import { isTestEnv } from '../utils/session.js';
 
 import {
     ACTIVE,
@@ -61,7 +63,7 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         super();
         const proxy = new Proxy(this, {
             get: (target, key) => {
-                if (typeof key === 'string') {
+                if (!isTestEnv() && typeof key === 'string') {
                     if (Object.keys(DEPRECATED_ATTRS).includes(key)) {
                         log.warn(`Accessing ${key} on _converse is DEPRECATED`);
                     }
@@ -76,7 +78,13 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
     initialize () {
         this.VERSION_NAME = VERSION_NAME;
 
+        this.strict_plugin_dependencies = false;
+
+        this.pluggable = null;
+
         this.templates = {};
+
+        this.storage = /** @type {Record<string, Storage.LocalForage>} */{};
 
         this.promises = {
             'initialized': getOpenPromise(),
@@ -95,6 +103,15 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         Object.assign(this, DEPRECATED_ATTRS);
 
         this.api = /** @type {module:shared-api.APIEndpoint} */ null;
+
+        /**
+         * Namespace for storing translated strings.
+         */
+        this.labels =
+            /**
+             * @typedef {Record<string, string>} UserMessage
+             * @typedef {Record<string, string|UserMessage>} UserMessage
+             * @type {UserMessages} */{};
 
         /**
          * Namespace for storing code that might be useful to 3rd party
@@ -117,11 +134,15 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.session?.destroy();
         this.session = new Model();
 
-        // TODO: DEPRECATED
-        delete this.jid;
-        delete this.bare_jid;
-        delete this.domain;
-        delete this.resource;
+        // XXX DEPRECATED
+        Object.assign(
+            this, {
+                jid: undefined,
+                bare_jid: undefined,
+                domain: undefined,
+                resource: undefined
+            }
+        );
     }
 
     /**

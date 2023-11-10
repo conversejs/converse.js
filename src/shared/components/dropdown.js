@@ -1,3 +1,6 @@
+/**
+ * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
+ */
 import 'shared/components/icons.js';
 import DOMNavigator from "shared/dom-navigator.js";
 import DropdownBase from 'shared/components/dropdownbase.js';
@@ -13,14 +16,15 @@ export default class Dropdown extends DropdownBase {
 
     static get properties () {
         return {
-            'icon_classes': { type: String },
-            'items': { type: Array }
+            icon_classes: { type: String },
+            items: { type: Array }
         }
     }
 
     constructor () {
         super();
         this.icon_classes = 'fa fa-bars';
+        this.items = [];
     }
 
     render () {
@@ -57,11 +61,11 @@ export default class Dropdown extends DropdownBase {
 
     initArrowNavigation () {
         if (!this.navigator) {
-            const options = {
+            const options = /** @type DOMNavigatorOptions */({
                 'selector': '.dropdown-item',
                 'onSelected': el => el.focus()
-            };
-            this.navigator = new DOMNavigator(this.menu, options);
+            });
+            this.navigator = new DOMNavigator(/** @type HTMLElement */(this.menu), options);
         }
     }
 
@@ -71,7 +75,7 @@ export default class Dropdown extends DropdownBase {
             ev.stopPropagation();
         }
         this.navigator.enable();
-        this.navigator.select(this.menu.firstElementChild);
+        this.navigator.select(/** @type HTMLElement */(this.menu.firstElementChild));
     }
 
     handleKeyUp (ev) {

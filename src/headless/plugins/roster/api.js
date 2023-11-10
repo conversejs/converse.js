@@ -43,9 +43,10 @@ export default {
          */
         async get (jids) {
             await api.waitUntil('rosterContactsFetched');
-            const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
+            const { roster } = _converse.state;
+            const _getter = jid => roster.get(Strophe.getBareJidFromJid(jid));
             if (jids === undefined) {
-                jids = _converse.roster.pluck('jid');
+                jids = roster.pluck('jid');
             } else if (typeof jids === 'string') {
                 return _getter(jids);
             }
@@ -68,7 +69,7 @@ export default {
             if (typeof jid !== 'string' || !jid.includes('@')) {
                 throw new TypeError('contacts.add: invalid jid');
             }
-            return _converse.roster.addAndSubscribe(jid, name);
+            return _converse.state.roster.addAndSubscribe(jid, name);
         }
     }
 }

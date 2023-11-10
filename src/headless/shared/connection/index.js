@@ -23,6 +23,11 @@ export class Connection extends Strophe.Connection {
 
     constructor (service, options) {
         super(service, options);
+        // For new sessions, we need to send out a presence stanza to notify
+        // the server/network that we're online.
+        // When re-attaching to an existing session we don't need to again send out a presence stanza,
+        // because it's as if "we never left" (see onConnectStatusChanged).
+        this.send_initial_presence = true;
         this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 
@@ -68,11 +73,12 @@ export class Connection extends Strophe.Connection {
      * connection of their own XMPP server instead of a proxy provided by the
      * host of Converse.js.
      * @method Connnection.discoverConnectionMethods
+     * @param {string} domain
      */
     async discoverConnectionMethods (domain) {
         // Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
         const options = {
-            'mode': 'cors',
+            'mode': /** @type {RequestMode} */('cors'),
             'headers': {
                 'Accept': 'application/xrd+xml, text/xml'
             }
@@ -97,9 +103,9 @@ export class Connection extends Strophe.Connection {
      * Establish a new XMPP session by logging in with the supplied JID and
      * password.
      * @method Connnection.connect
-     * @param { String } jid
-     * @param { String } password
-     * @param { Funtion } callback
+     * @param {String} jid
+     * @param {String} password
+     * @param {Function} callback
      */
     async connect (jid, password, callback) {
         if (api.settings.get("discover_connection_methods")) {
@@ -113,6 +119,14 @@ export class Connection extends Strophe.Connection {
     }
 
     /**
+     * @param {string} reason
+     */
+    disconnect(reason) {
+        super.disconnect(reason);
+        this.send_initial_presence = true;
+    }
+
+    /**
      * Switch to a different transport if a service URL is available for it.
      *
      * When reconnecting with a new transport, we call setUserJID
@@ -123,8 +137,9 @@ export class Connection extends Strophe.Connection {
      * for the old transport are removed.
      */
     async switchTransport () {
+        const bare_jid = _converse.session.get('bare_jid');
         if (api.connection.isType('websocket') && api.settings.get('bosh_service_url')) {
-            await setUserJID(_converse.bare_jid);
+            await setUserJID(bare_jid);
             this._proto._doDisconnect();
             this._proto = new Strophe.Bosh(this);
             this.service = api.settings.get('bosh_service_url');
@@ -135,7 +150,7 @@ export class Connection extends Strophe.Connection {
                 // (now failed) session.
                 await setUserJID(api.settings.get("jid"));
             } else {
-                await setUserJID(_converse.bare_jid);
+                await setUserJID(bare_jid);
             }
             this._proto._doDisconnect();
             this._proto = new Strophe.Websocket(this);
@@ -148,7 +163,7 @@ export class Connection extends Strophe.Connection {
         this.reconnecting = true;
         await tearDown();
 
-        const conn_status = _converse.connfeedback.get('connection_status');
+        const conn_status = _converse.state.connfeedback.get('connection_status');
         if (conn_status === Strophe.Status.CONNFAIL) {
             this.switchTransport();
         } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === ANONYMOUS) {
@@ -168,14 +183,15 @@ export class Connection extends Strophe.Connection {
         if (api.settings.get("authentication") === ANONYMOUS) {
             await clearSession();
         }
-        return api.user.login(_converse.jid);
+        const jid = _converse.session.get('jid');
+        return api.user.login(jid);
     }
 
     /**
      * Called as soon as a new connection has been established, either
      * by logging in or by attaching to an existing BOSH session.
      * @method Connection.onConnected
-     * @param { Boolean } reconnecting - Whether Converse.js reconnected from an earlier dropped session.
+     * @param {Boolean} [reconnecting] - Whether Converse.js reconnected from an earlier dropped session.
      */
     async onConnected (reconnecting) {
         delete this.reconnecting;
@@ -184,8 +200,9 @@ export class Connection extends Strophe.Connection {
 
         // Save the current JID in persistent storage so that we can attempt to
         // recreate the session from SCRAM keys
-        if (_converse.config.get('trusted')) {
-            localStorage.setItem('conversejs-session-jid', _converse.bare_jid);
+        if (_converse.state.config.get('trusted')) {
+            const bare_jid = _converse.session.get('bare_jid');
+            localStorage.setItem('conversejs-session-jid', bare_jid);
         }
 
         /**
@@ -218,10 +235,10 @@ export class Connection extends Strophe.Connection {
      * Used to keep track of why we got disconnected, so that we can
      * decide on what the next appropriate action is (in onDisconnected)
      * @method Connection.setDisconnectionCause
-     * @param { Number } cause - The status number as received from Strophe.
-     * @param { String } [reason] - An optional user-facing message as to why
+     * @param {Number|'logout'} [cause] - The status number as received from Strophe.
+     * @param {String} [reason] - An optional user-facing message as to why
      *  there was a disconnection.
-     * @param { Boolean } [override] - An optional flag to replace any previous
+     * @param {Boolean} [override] - An optional flag to replace any previous
      *  disconnection cause and reason.
      */
     setDisconnectionCause (cause, reason, override) {
@@ -234,9 +251,13 @@ export class Connection extends Strophe.Connection {
         }
     }
 
+    /**
+     * @param {Number} [status] - The status number as received from Strophe.
+     * @param {String} [message] - An optional user-facing message
+     */
     setConnectionStatus (status, message) {
         this.status = status;
-        _converse.connfeedback.set({'connection_status': status, message });
+        _converse.state.connfeedback.set({'connection_status': status, message });
     }
 
     async finishDisconnection () {
@@ -306,8 +327,8 @@ export class Connection extends Strophe.Connection {
      * Callback method called by Strophe as the Connection goes
      * through various states while establishing or tearing down a
      * connection.
-     * @param { Number } status
-     * @param { String } message
+     * @param {Number} status
+     * @param {String} message
      */
     onConnectStatusChanged (status, message) {
         const { __ } = _converse;
@@ -324,8 +345,6 @@ export class Connection extends Strophe.Connection {
             this.setConnectionStatus(status);
             this.worker_attach_promise?.resolve(true);
 
-            // By default we always want to send out an initial presence stanza.
-            _converse.send_initial_presence = true;
             this.setDisconnectionCause();
             if (this.reconnecting) {
                 log.debug(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
@@ -335,7 +354,7 @@ export class Connection extends Strophe.Connection {
                 if (this.restored) {
                     // No need to send an initial presence stanza when
                     // we're restoring an existing session.
-                    _converse.send_initial_presence = false;
+                    this.send_initial_presence = false;
                 }
                 this.onConnected();
             }
@@ -375,6 +394,9 @@ export class Connection extends Strophe.Connection {
         }
     }
 
+    /**
+     * @param {string} type
+     */
     isType (type) {
         if (type.toLowerCase() === 'websocket') {
             return this._proto instanceof Strophe.Websocket;
@@ -385,7 +407,7 @@ export class Connection extends Strophe.Connection {
 
     hasResumed () {
         if (api.settings.get("connection_options")?.worker || this.isType('bosh')) {
-            return _converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
+            return _converse.state.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
         } else {
             // Not binding means that the session was resumed.
             return !this.do_bind;
@@ -425,10 +447,12 @@ export class MockConnection extends Connection {
                 '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
                     '<optional/>'+
                 '</session>'+
-            '</stream:features>').firstChild;
+            '</stream:features>').firstElementChild;
 
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         this._proto._processRequest = () => {};
         this._proto._disconnect = () => this._onDisconnectTimeout();
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         this._proto._onDisconnectTimeout = () => {};
         this._proto._connect = () => {
             this.connected = true;
@@ -460,8 +484,6 @@ export class MockConnection extends Connection {
     async bind () {
         await api.trigger('beforeResourceBinding', {'synchronous': true});
         this.authenticated = true;
-        if (!_converse.no_connection_on_bind) {
-            this._changeConnectStatus(Strophe.Status.CONNECTED);
-        }
+        this._changeConnectStatus(Strophe.Status.CONNECTED);
     }
 }

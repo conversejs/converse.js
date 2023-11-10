@@ -14,6 +14,11 @@ class Placeholder extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.model = null;
+    }
+
     render () {
         return tplPlaceholder(this);
     }

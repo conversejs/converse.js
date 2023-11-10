@@ -689,19 +689,20 @@ async function _initConverse (settings) {
     await clearIndexedDB();
 
     _converse = await converse.initialize(Object.assign({
-        'animate': false,
-        'auto_subscribe': false,
-        'bosh_service_url': 'montague.lit/http-bind',
-        'discover_connection_methods': false,
-        'enable_smacks': false,
-        'i18n': 'en',
-        'loglevel': 'warn',
-        'no_trimming': true,
-        'persistent_store': 'localStorage',
-        'play_sounds': false,
-        'theme': theme,
-        'use_emojione': false,
-        'view_mode': view_mode
+        animate: false,
+        disable_effects: true,
+        auto_subscribe: false,
+        bosh_service_url: 'montague.lit/http-bind',
+        discover_connection_methods: false,
+        enable_smacks: false,
+        i18n: 'en',
+        loglevel: window.location.pathname === 'debug.html' ? 'debug' : 'warn',
+        no_trimming: true,
+        persistent_store: 'localStorage',
+        play_sounds: false,
+        use_emojione: false,
+        theme,
+        view_mode
     }, settings || {}));
 
     window._converse = _converse;
@@ -713,7 +714,6 @@ async function _initConverse (settings) {
     if (settings?.auto_login !== false) {
         await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
     }
-    window.converse_disable_effects = true;
     return _converse;
 }
 

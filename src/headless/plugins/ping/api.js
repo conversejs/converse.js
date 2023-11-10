@@ -9,11 +9,11 @@ export default {
     /**
      * Pings the entity represented by the passed in JID by sending an IQ stanza to it.
      * @method api.ping
-     * @param { String } [jid] - The JID of the service to ping
+     * @param {string} [jid] - The JID of the service to ping
      *  If the ping is sent out to the user's bare JID and no response is received it will attempt to reconnect.
-     * @param { number } [timeout] - The amount of time in
+     * @param {number} [timeout] - The amount of time in
      *  milliseconds to wait for a response. The default is 10000;
-     * @returns { Boolean | null }
+     * @returns {Promise<boolean|null>}
      *  Whether the pinged entity responded with a non-error IQ stanza.
      *  If we already know we're not connected, no ping is sent out and `null` is returned.
      */
@@ -27,7 +27,8 @@ export default {
         // However, some servers don't advertise while still responding to pings
         // const feature = _converse.disco_entities[_converse.domain].features.findWhere({'var': Strophe.NS.PING});
         setLastStanzaDate(new Date());
-        jid = jid || Strophe.getDomainFromJid(_converse.bare_jid);
+        const bare_jid = _converse.session.get('bare_jid');
+        jid = jid || Strophe.getDomainFromJid(bare_jid);
         const iq = $iq({
                 'type': 'get',
                 'to': jid,
@@ -37,7 +38,7 @@ export default {
         const result = await api.sendIQ(iq, timeout || 10000, false);
         if (result === null) {
             log.warn(`Timeout while pinging ${jid}`);
-            if (jid === Strophe.getDomainFromJid(_converse.bare_jid)) {
+            if (jid === Strophe.getDomainFromJid(bare_jid)) {
                 api.connection.reconnect();
             }
             return false;

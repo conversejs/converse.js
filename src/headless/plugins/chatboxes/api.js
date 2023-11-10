@@ -1,10 +1,13 @@
+/**
+ * @typedef {import('@converse/skeletor').Model} Model
+ * @typedef {import('../chat/model.js').default} ChatBox
+ */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { createChatBox } from './utils.js';
 
 const _chatBoxTypes = {};
 
-/** @typedef {import('@converse/skeletor').Model} Model */
 
 /**
  * The "chatboxes" namespace.
@@ -17,7 +20,7 @@ export default {
      * @method api.chatboxes.create
      * @param {string|string[]} jids - A JID or array of JIDs
      * @param {Object} attrs An object containing configuration attributes
-     * @param {Model} model - The type of chatbox that should be created
+     * @param {new (attrs: object, options: object) => ChatBox} model - The type of chatbox that should be created
      */
     async create (jids=[], attrs={}, model) {
         await api.waitUntil('chatBoxesFetched');
@@ -34,13 +37,14 @@ export default {
      */
     async get (jids) {
         await api.waitUntil('chatBoxesFetched');
+        const { chatboxes } = _converse.state;
         if (jids === undefined) {
-            return _converse.chatboxes.models;
+            return chatboxes.models;
         } else if (typeof jids === 'string') {
-            return _converse.chatboxes.get(jids.toLowerCase());
+            return chatboxes.get(jids.toLowerCase());
         } else {
             jids = jids.map(j => j.toLowerCase());
-            return _converse.chatboxes.models.filter(m => jids.includes(m.get('jid')));
+            return chatboxes.models.filter(m => jids.includes(m.get('jid')));
         }
     },
 

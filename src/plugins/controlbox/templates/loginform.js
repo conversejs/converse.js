@@ -143,13 +143,14 @@ const form_fields = (el) => {
 };
 
 export default (el) => {
-    const connection_status = _converse.connfeedback.get('connection_status');
+    const { connfeedback } = _converse.state;
+    const connection_status = connfeedback.get('connection_status');
     let feedback_class, pretty_status;
     if (REPORTABLE_STATUSES.includes(connection_status)) {
         pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
         feedback_class = CONNECTION_STATUS_CSS_CLASS[connection_status];
     }
-    const conn_feedback_message = _converse.connfeedback.get('message');
+    const conn_feedback_message = connfeedback.get('message');
     return html` <converse-brand-heading></converse-brand-heading>
         <form id="converse-login" class="converse-form" method="post" @submit=${el.onLoginFormSubmitted}>
             <div class="conn-feedback fade-in ${!pretty_status ? 'hidden' : feedback_class}">

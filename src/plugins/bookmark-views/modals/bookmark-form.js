@@ -6,6 +6,11 @@ import { api } from "@converse/headless";
 
 export default class BookmarkFormModal extends BaseModal {
 
+    constructor (options) {
+        super(options);
+        this.jid = null;
+    }
+
     renderModal () {
         return html`
             <converse-muc-bookmark-form class="muc-form-container" jid="${this.jid}">

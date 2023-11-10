@@ -56,27 +56,33 @@ function fromCodePoint (codepoint) {
 }
 
 
+/**
+ * Converts unicode code points and code pairs to their respective characters
+ * @param {string} unicode
+ */
 function convert (unicode) {
-    // Converts unicode code points and code pairs to their respective characters
     if (unicode.indexOf("-") > -1) {
-        const parts = [],
-              s = unicode.split('-');
+        const parts = [];
+        const s = unicode.split('-');
+
         for (let i = 0; i < s.length; i++) {
-            let part = parseInt(s[i], 16);
+            const part = parseInt(s[i], 16);
             if (part >= 0x10000 && part <= 0x10FFFF) {
                 const hi = Math.floor((part - 0x10000) / 0x400) + 0xD800;
                 const lo = ((part - 0x10000) % 0x400) + 0xDC00;
-                part = (String.fromCharCode(hi) + String.fromCharCode(lo));
+                parts.push(String.fromCharCode(hi) + String.fromCharCode(lo));
             } else {
-                part = String.fromCharCode(part);
+                parts.push(String.fromCharCode(part));
             }
-            parts.push(part);
         }
         return parts.join('');
     }
     return fromCodePoint(unicode);
 }
 
+/**
+ * @param {string} str
+ */
 export function convertASCII2Emoji (str) {
     // Replace ASCII smileys
     return str.replace(ASCII_REPLACE_REGEX, (entire, _, m2, m3) => {
@@ -90,6 +96,9 @@ export function convertASCII2Emoji (str) {
     });
 }
 
+/**
+ * @param {string} text
+ */
 export function getShortnameReferences (text) {
     if (!converse.emojis.initialized) {
         throw new Error(
@@ -111,16 +120,24 @@ export function getShortnameReferences (text) {
 }
 
 
+/**
+ * @param {string} str
+ * @param {Function} callback
+ */
 function parseStringForEmojis(str, callback) {
     const UFE0Fg = /\uFE0F/g;
     const U200D = String.fromCharCode(0x200D);
     return String(str).replace(CODEPOINTS_REGEX, (emoji, _, offset) => {
         const icon_id = toCodePoint(emoji.indexOf(U200D) < 0 ? emoji.replace(UFE0Fg, '') : emoji);
         if (icon_id) callback(icon_id, emoji, offset);
+        return emoji;
     });
 }
 
 
+/**
+ * @param {string} text
+ */
 export function getCodePointReferences (text) {
     const references = [];
     parseStringForEmojis(text, (icon_id, emoji, offset) => {

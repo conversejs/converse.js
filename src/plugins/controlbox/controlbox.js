@@ -34,8 +34,8 @@ class ControlBox extends CustomElement {
     }
 
     setModel () {
-        this.model = _converse.chatboxes.get('controlbox');
-        this.listenTo(_converse.connfeedback, 'change:connection_status', () => this.requestUpdate());
+        this.model = _converse.state.chatboxes.get('controlbox');
+        this.listenTo(_converse.state.connfeedback, 'change:connection_status', () => this.requestUpdate());
         this.listenTo(this.model, 'change:active-form', () => this.requestUpdate());
         this.listenTo(this.model, 'change:connected', () => this.requestUpdate());
         this.listenTo(this.model, 'change:closed', () => !this.model.get('closed') && this.afterShown());

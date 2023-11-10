@@ -1,6 +1,9 @@
+/**
+ * @typedef {import('lit-html').TemplateResult} TemplateResult
+ */
 import bootstrap from "bootstrap.native";
 import tplModal from './templates/modal.js';
-import ElementView from '@converse/skeletor/src/element.js';
+import { ElementView } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 
 
@@ -34,7 +37,10 @@ class BaseModal extends ElementView {
         return tplModal(this);
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    /**
+     * @returns {string|TemplateResult}
+     */
+    getModalTitle () {
         // Intended to be overwritten
         return '';
     }
@@ -52,7 +58,7 @@ class BaseModal extends ElementView {
 
     insertIntoDOM () {
         const container_el = document.querySelector("#converse-modals");
-        container_el.insertAdjacentElement('beforeEnd', this);
+        container_el.insertAdjacentElement('beforeend', this);
     }
 
     alert (message, type='primary') {

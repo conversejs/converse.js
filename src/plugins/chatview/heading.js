@@ -1,3 +1,17 @@
+/**
+ * @typedef { Object } HeadingButtonAttributes
+ * An object representing a chat heading button
+ * @property { Boolean } standalone
+ *  True if shown on its own, false if it must be in the dropdown menu.
+ * @property { Function } handler
+ *  A handler function to be called when the button is clicked.
+ * @property { String } a_class - HTML classes to show on the button
+ * @property { String } i18n_text - The user-visiible name of the button
+ * @property { String } i18n_title - The tooltip text for this button
+ * @property { String } icon_class - What kind of CSS class to use for the icon
+ * @property { String } name - The internal name of the button
+ */
+
 import 'shared/modals/user-details.js';
 import tplChatboxHead from './templates/chat-head.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -8,6 +22,11 @@ import './styles/chat-head.scss';
 
 
 export default class ChatHeading extends CustomElement {
+
+    constructor () {
+        super();
+        this.jid = null;
+    }
 
     static get properties () {
         return {
@@ -54,19 +73,7 @@ export default class ChatHeading extends CustomElement {
      */
     getHeadingButtons () {
         const buttons = [
-            /**
-             * @typedef { Object } HeadingButtonAttributes
-             * An object representing a chat heading button
-             * @property { Boolean } standalone
-             *  True if shown on its own, false if it must be in the dropdown menu.
-             * @property { Function } handler
-             *  A handler function to be called when the button is clicked.
-             * @property { String } a_class - HTML classes to show on the button
-             * @property { String } i18n_text - The user-visiible name of the button
-             * @property { String } i18n_title - The tooltip text for this button
-             * @property { String } icon_class - What kind of CSS class to use for the icon
-             * @property { String } name - The internal name of the button
-             */
+            /** @type {HeadingButtonAttributes} */
             {
                 'a_class': 'show-user-details-modal',
                 'handler': ev => this.showUserDetailsModal(ev),

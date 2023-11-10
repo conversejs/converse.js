@@ -73,7 +73,9 @@ converse.plugins.add('converse-emoji', {
             }
         }
 
-        _converse.EmojiPicker = EmojiPicker;
+        const exports = { EmojiPicker };
+        Object.assign(_converse, exports); // XXX: DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         // We extend the default converse.js API to add methods specific to MUC groupchats.
         Object.assign(api, {

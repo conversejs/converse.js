@@ -1,7 +1,10 @@
+/**
+ * @typedef {import('@converse/skeletor').Model} Model
+ */
 import { CustomElement } from '../components/element.js';
 import { _converse, api } from '@converse/headless';
 import { onScrolledDown } from './utils.js';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
+import { CHATROOMS_TYPE, INACTIVE } from '@converse/headless/shared/constants.js';
 
 
 export default class BaseChatView extends CustomElement {
@@ -10,6 +13,12 @@ export default class BaseChatView extends CustomElement {
         return {
             jid: { type: String }
         }
+    }
+
+    constructor () {
+        super();
+        this.jid = /** @type {string} */ null;
+        this.model = /** @type {Model} */ null;
     }
 
     disconnectedCallback () {
@@ -52,7 +61,7 @@ export default class BaseChatView extends CustomElement {
         /**
          * Triggered when the focus has been removed from a particular chat.
          * @event _converse#chatBoxBlurred
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+         * @type {BaseChatView}
          * @example _converse.api.listen.on('chatBoxBlurred', (view, event) => { ... });
          */
         api.trigger('chatBoxBlurred', this, ev);
@@ -66,7 +75,7 @@ export default class BaseChatView extends CustomElement {
         /**
          * Triggered when the focus has been moved to a particular chat.
          * @event _converse#chatBoxFocused
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+         * @type {BaseChatView}
          * @example _converse.api.listen.on('chatBoxFocused', (view, event) => { ... });
          */
         api.trigger('chatBoxFocused', this, ev);
@@ -104,14 +113,14 @@ export default class BaseChatView extends CustomElement {
         onScrolledDown(this.model);
     }
 
-    onWindowStateChanged (data) {
-        if (data.state === 'visible') {
+    onWindowStateChanged () {
+        if (document.hidden) {
+            this.model.setChatState(INACTIVE, { 'silent': true });
+            this.model.sendChatState();
+        } else {
             if (!this.model.isHidden()) {
                 this.model.clearUnreadMsgCounter();
             }
-        } else if (data.state === 'hidden') {
-            this.model.setChatState(_converse.INACTIVE, { 'silent': true });
-            this.model.sendChatState();
         }
     }
 }

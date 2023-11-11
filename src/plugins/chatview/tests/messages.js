@@ -17,7 +17,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => view.querySelector('converse-chat-message .chat-msg__text')?.textContent === 'This message will be read');
         expect(view.model.get('num_unread')).toBe(0);
 
-        _converse.windowState = 'hidden';
+        spyOn(view.model, 'isHidden').and.returnValue(true);
         await _converse.handleMessageStanza(mock.createChatMessage(_converse, contact_jid, 'This message will be new'));
 
         await u.waitUntil(() => view.model.messages.length);

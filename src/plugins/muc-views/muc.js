@@ -12,17 +12,17 @@ export default class MUCView extends BaseChatView {
         _converse.chatboxviews.add(this.jid, this);
         this.setAttribute('id', this.model.get('box_id'));
 
-        this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
-        this.listenTo(this.model, 'change:composing_spoiler', this.requestUpdateMessageForm);
         this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
         this.listenTo(this.model.session, 'change:view', () => this.requestUpdate());
+
+        document.addEventListener('visibilitychange',  () => this.onWindowStateChanged());
 
         this.onConnectionStatusChanged();
         this.model.maybeShow();
         /**
-         * Triggered once a {@link _converse.ChatRoomView} has been opened
+         * Triggered once a {@link MUCView} has been opened
          * @event _converse#chatRoomViewInitialized
-         * @type { _converse.ChatRoomView }
+         * @type {MUCView}
          * @example _converse.api.listen.on('chatRoomViewInitialized', view => { ... });
          */
         api.trigger('chatRoomViewInitialized', this);

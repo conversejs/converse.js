@@ -59,8 +59,8 @@ export function disconnectChatRooms () {
         .forEach(m => m.session.save({ 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
-export async function onWindowStateChanged (data) {
-    if (data.state === 'visible' && api.connection.connected()) {
+export async function onWindowStateChanged () {
+    if (!document.hidden && api.connection.connected()) {
         const rooms = await api.rooms.get();
         rooms.forEach(room => room.rejoinIfNecessary());
     }

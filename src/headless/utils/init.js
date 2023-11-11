@@ -1,3 +1,6 @@
+/**
+ * @typedef {module:shared.converse.ConversePrivateGlobal} ConversePrivateGlobal
+ */
 import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '../shared/_converse';
 import api from '../shared/api/index.js';
@@ -12,9 +15,15 @@ import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
 import { getConnectionServiceURL } from '../shared/connection/utils';
 import { isValidJID } from './jid.js';
-import { saveWindowState, isTestEnv } from './session.js';
+import { isTestEnv } from './session.js';
 
 
+/**
+ * Initializes the plugins for the Converse instance.
+ * @param {ConversePrivateGlobal} _converse
+ * @fires _converse#pluginsInitialized - Triggered once all plugins have been initialized.
+ * @memberOf _converse
+ */
 export function initPlugins (_converse) {
     // If initialize gets called a second time (e.g. during tests), then we
     // need to re-apply all plugins (for a new converse instance), and we
@@ -58,6 +67,9 @@ export function initPlugins (_converse) {
 }
 
 
+/**
+ * @param {ConversePrivateGlobal} _converse
+ */
 export async function initClientConfig (_converse) {
     /* The client config refers to configuration of the client which is
      * independent of any particular user.
@@ -81,6 +93,9 @@ export async function initClientConfig (_converse) {
 }
 
 
+/**
+ * @param {ConversePrivateGlobal} _converse
+ */
 export async function initSessionStorage (_converse) {
     await Storage.sessionStorageInitialized;
     _converse.storage = {
@@ -93,6 +108,11 @@ export async function initSessionStorage (_converse) {
 }
 
 
+/**
+ * Initializes persistent storage
+ * @param {ConversePrivateGlobal} _converse
+ * @param {string} store_name - The name of the store.
+ */
 function initPersistentStorage (_converse, store_name) {
     if (_converse.api.settings.get('persistent_store') === 'sessionStorage') {
         return;
@@ -126,6 +146,10 @@ function initPersistentStorage (_converse, store_name) {
 }
 
 
+/**
+ * @param {ConversePrivateGlobal} _converse
+ * @param {string} jid
+ */
 function saveJIDtoSession (_converse, jid) {
     jid = _converse.session.get('jid') || jid;
     if (_converse.api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
@@ -161,7 +185,7 @@ function saveJIDtoSession (_converse, jid) {
  * connection is set up.
  *
  * @emits _converse#setUserJID
- * @params { String } jid
+ * @param {string} jid
  */
 export async function setUserJID (jid) {
     await initSession(_converse, jid);
@@ -175,6 +199,10 @@ export async function setUserJID (jid) {
 }
 
 
+/**
+ * @param {ConversePrivateGlobal} _converse
+ * @param {string} jid
+ */
 export async function initSession (_converse, jid) {
     const is_shared_session = _converse.api.settings.get('connection_options').worker;
 
@@ -211,13 +239,12 @@ export async function initSession (_converse, jid) {
 }
 
 
+/**
+ * @param {ConversePrivateGlobal} _converse
+ */
 export function registerGlobalEventHandlers (_converse) {
-    document.addEventListener("visibilitychange", saveWindowState);
-    saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
     /**
-     * Called once Converse has registered its global event handlers
-     * (for events such as window resize or unload).
-     * Plugins can listen to this event as cue to register their own
+     * Plugins can listen to this event as cue to register their
      * global event handlers.
      * @event _converse#registeredGlobalEventHandlers
      * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
@@ -226,15 +253,19 @@ export function registerGlobalEventHandlers (_converse) {
 }
 
 
+/**
+ * @param {ConversePrivateGlobal} _converse
+ */
 function unregisterGlobalEventHandlers (_converse) {
-    const { api } = _converse;
-    document.removeEventListener("visibilitychange", saveWindowState);
-    api.trigger('unregisteredGlobalEventHandlers');
+    _converse.api.trigger('unregisteredGlobalEventHandlers');
 }
 
 
-// Make sure everything is reset in case this is a subsequent call to
-// converse.initialize (happens during tests).
+/**
+ * Make sure everything is reset in case this is a subsequent call to
+ * converse.initialize (happens during tests).
+ * @param {ConversePrivateGlobal} _converse
+ */
 export async function cleanup (_converse) {
     const { api } = _converse;
     await api.trigger('cleanup', {'synchronous': true});
@@ -248,6 +279,14 @@ export async function cleanup (_converse) {
 }
 
 
+/**
+ * Fetches login credentials from the server.
+ * @param {number} [wait=0]
+ *  The time to wait and debounce subsequent calls to this function before making the request.
+ * @returns {Promise<{jid: string, password: string}>}
+ *  A promise that resolves with the provided login credentials (JID and password).
+ * @throws {Error} If the request fails or returns an error status.
+ */
 function fetchLoginCredentials (wait=0) {
     return new Promise(
         debounce(async (resolve, reject) => {

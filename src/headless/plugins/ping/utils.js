@@ -5,8 +5,8 @@ const { Strophe, $iq } = converse.env;
 
 let lastStanzaDate;
 
-export function onWindowStateChanged (data) {
-    data.state === 'visible' && api.ping(null, 5000);
+export function onWindowStateChanged () {
+    if (!document.hidden) api.ping(null, 5000);
 }
 
 export function setLastStanzaDate (date) {

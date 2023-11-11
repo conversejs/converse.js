@@ -10,19 +10,20 @@ class HeadlinesFeedView extends BaseChatView {
 
         this.model = _converse.chatboxes.get(this.jid);
         this.model.disable_mam = true; // Don't do MAM queries for this box
-        this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model.messages, 'add', () => this.requestUpdate());
         this.listenTo(this.model.messages, 'remove', () => this.requestUpdate());
         this.listenTo(this.model.messages, 'reset', () => this.requestUpdate());
 
+        document.addEventListener('visibilitychange',  () => this.onWindowStateChanged());
+
         await this.model.messages.fetched;
         this.model.maybeShow();
         /**
-         * Triggered once the { @link _converse.HeadlinesFeedView } has been initialized
+         * Triggered once the {@link HeadlinesFeedView} has been initialized
          * @event _converse#headlinesBoxViewInitialized
-         * @type { _converse.HeadlinesFeedView }
+         * @type {HeadlinesFeedView}
          * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
          */
         api.trigger('headlinesBoxViewInitialized', this);
@@ -32,6 +33,9 @@ class HeadlinesFeedView extends BaseChatView {
         return tplHeadlines(this.model);
     }
 
+    /**
+     * @param {Event} ev
+     */
     async close (ev) {
         ev?.preventDefault?.();
         if (location.hash === 'converse/chat?jid=' + this.model.get('jid')) {

@@ -1080,8 +1080,7 @@ class ChatBox extends ModelWithContact {
      * @returns {boolean}
      */
     isHidden () {
-        // Note: This methods gets overridden by converse-minimize
-        return this.get('hidden') || this.isScrolledUp() || _converse.windowState === 'hidden';
+        return this.get('hidden') || this.isScrolledUp() || document.hidden;
     }
 
     /**

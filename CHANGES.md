@@ -14,6 +14,8 @@
   providing access for 3rd party plugins to code (e.g. classes) from
   converse.js. Some classes that were on the `_converse` object, like
   `CustomElement` are not on `_converse.exports`.
+- The `windowStateChanged` event has been removed. If you used it, rely on the
+  `visibilitychange` event on `document` instead.
 
 ## 10.1.6 (2023-08-31)
 

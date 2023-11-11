@@ -27,6 +27,7 @@ converse.plugins.add('converse-ping', {
         api.listen.on('connected', registerHandlers);
         api.listen.on('reconnected', registerHandlers);
         api.listen.on('disconnected', unregisterIntervalHandler);
-        api.listen.on('windowStateChanged', onWindowStateChanged);
+
+        document.addEventListener('visibilitychange', onWindowStateChanged);
     }
 });

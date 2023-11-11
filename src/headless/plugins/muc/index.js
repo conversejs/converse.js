@@ -15,7 +15,7 @@ import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
-import { CHATROOMS_TYPE } from '../..//shared/constants.js';
+import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -212,6 +212,7 @@ converse.plugins.add('converse-muc', {
         api.listen.on('chatBoxesFetched', autoJoinRooms);
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
-        api.listen.on('windowStateChanged', onWindowStateChanged);
+
+        document.addEventListener('visibilitychange', onWindowStateChanged);
     },
 });

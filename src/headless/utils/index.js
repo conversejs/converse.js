@@ -7,7 +7,7 @@ import log, { LEVELS } from '../log.js';
 import { Model } from '@converse/skeletor';
 import { toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { saveWindowState, shouldClearCache } from './session.js';
+import { shouldClearCache } from './session.js';
 import { merge, isError, isFunction } from './object.js';
 import { createStore, getDefaultStore } from './storage.js';
 import { waitUntil } from './promise.js';
@@ -226,7 +226,6 @@ export default Object.assign({
     queryChildren,
     replaceCurrentWord,
     safeSave,
-    saveWindowState,
     shouldClearCache,
     shouldCreateMessage,
     shouldRenderMediaFromURL,

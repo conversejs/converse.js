@@ -18,37 +18,6 @@ export function isTestEnv () {
     return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
 }
 
-export function saveWindowState (ev) {
-    // XXX: eventually we should be able to just use
-    // document.visibilityState (when we drop support for older
-    // browsers).
-    let state;
-    const event_map = {
-        'focus': "visible",
-        'focusin': "visible",
-        'pageshow': "visible",
-        'blur': "hidden",
-        'focusout': "hidden",
-        'pagehide': "hidden"
-    };
-    ev = ev || document.createEvent('Events');
-    if (ev.type in event_map) {
-        state = event_map[ev.type];
-    } else {
-        state = document.hidden ? "hidden" : "visible";
-    }
-    _converse.windowState = state;
-    /**
-     * Triggered when window state has changed.
-     * Used to determine when a user left the page and when came back.
-     * @event _converse#windowStateChanged
-     * @type { object }
-     * @property{ string } state - Either "hidden" or "visible"
-     * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
-     */
-    _converse.api.trigger('windowStateChanged', {state});
-}
-
 export function setUnloadEvent () {
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it

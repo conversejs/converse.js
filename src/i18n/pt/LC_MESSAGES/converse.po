@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-06-29 05:51+0000\n"
+"PO-Revision-Date: 2023-12-21 15:06+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -724,9 +724,8 @@ msgid "Affiliation changed"
 msgstr "Afiliação alterada"
 
 #: dist/converse-no-dependencies.js:80956
-#, fuzzy
 msgid "role changed"
-msgstr "Função alterada"
+msgstr "função alterada"
 
 #: dist/converse-no-dependencies.js:81050
 msgid ""
@@ -1995,9 +1994,8 @@ msgid "Timeout error"
 msgstr "Erro de tempo de espera"
 
 #: dist/converse-no-dependencies.js:119817
-#, fuzzy
 msgid "Your server does not support password reset"
-msgstr "O seu servidor não suporta a redefinição de palavra-passe aqui"
+msgstr "O seu servidor não suporta a redefinição de palavra-passe"
 
 #: dist/converse-no-dependencies.js:119824
 msgid ""
@@ -2011,9 +2009,8 @@ msgid "Timeout error while trying to set your password"
 msgstr "O tempo esgotou ao tentar definir a sua palavra-passe"
 
 #: dist/converse-no-dependencies.js:119845
-#, fuzzy
 msgid "Your server does not allow password reset"
-msgstr "O seu servidor não suporta a redefinição de palavra-passe aqui"
+msgstr "O seu servidor não permite a redefinição de palavra-passe"
 
 #: dist/converse-no-dependencies.js:119847
 #: dist/converse-no-dependencies.js:119849

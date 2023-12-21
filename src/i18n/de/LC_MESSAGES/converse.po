@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-08-16 01:15+0000\n"
-"Last-Translator: W L <wl@mailhole.de>\n"
+"PO-Revision-Date: 2023-12-22 19:08+0000\n"
+"Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -2019,10 +2019,8 @@ msgid "Timeout error"
 msgstr "Zeitüberschreitungsfehler"
 
 #: dist/converse-no-dependencies.js:119817
-#, fuzzy
 msgid "Your server does not support password reset"
-msgstr ""
-"Ihr Server unterstützt nicht das integrierte Zurücksetzen des Passworts"
+msgstr "Ihr Server unterstützt das Zurücksetzen des Passworts nicht"
 
 #: dist/converse-no-dependencies.js:119824
 msgid ""
@@ -2036,9 +2034,8 @@ msgid "Timeout error while trying to set your password"
 msgstr "Zeitüberschreitungsfehler beim Versuch, Ihr Passwort festzulegen"
 
 #: dist/converse-no-dependencies.js:119845
-#, fuzzy
 msgid "Your server does not allow password reset"
-msgstr "Ihr Server erlaubt nicht das integrierte Zurücksetzen des Passworts"
+msgstr "Ihr Server erlaubt nicht die Zurücksetzung des Passworts"
 
 #: dist/converse-no-dependencies.js:119847
 #: dist/converse-no-dependencies.js:119849

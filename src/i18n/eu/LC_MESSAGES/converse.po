@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2022-01-15 04:23+0000\n"
+"PO-Revision-Date: 2023-12-25 15:10+0000\n"
 "Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -464,14 +464,12 @@ msgid "Remote server not found"
 msgstr "Ez da urruneko zerbitzaria aurkitu"
 
 #: dist/converse-no-dependencies.js:45842
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr "Ez duzu baimenik zure burua gela honetan erregistratzeko."
+msgstr "Ez zaude baimendua talde-berriketa honetan sartzeko."
 
 #: dist/converse-no-dependencies.js:45845
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr "Errore bat gertatu da zure profileko datuak gordetzen saiatzean."
+msgstr "Errore bat gertatu talde-berriketa honetan sartzerakoan."
 
 #: dist/converse-no-dependencies.js:47713
 msgid "This groupchat is not anonymous"

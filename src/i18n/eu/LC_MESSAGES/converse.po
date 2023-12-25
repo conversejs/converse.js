@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-12-25 15:10+0000\n"
+"PO-Revision-Date: 2023-12-26 16:06+0000\n"
 "Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
 msgid "An error occurred while connecting to the chat server."
-msgstr "Akats bat izan da txat zerbitzariarekin konektatzean."
+msgstr "Errore bat gertatu da berriketa zerbitzariarekin konektatzean."
 
 #: dist/converse-no-dependencies.js:23388
 msgid "Your XMPP address and/or password is incorrect. Please try again."
@@ -586,14 +586,12 @@ msgstr ""
 "birkargatu dezakezu eskaera berriro egiteko."
 
 #: dist/converse-no-dependencies.js:62058
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr ""
-"Barkatu, errore bat gertatu da konfiguraketa galdetegia bidaltzerakoan."
+msgstr "Errore bat gertatu da komando galdetegia berreskuratzerakoan."
 
 #: dist/converse-no-dependencies.js:62100
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Itxaron-denbora agortu da"
 
 #: dist/converse-no-dependencies.js:64561
 msgid "Timeout while trying to fetch archived messages."
@@ -658,20 +656,19 @@ msgstr "Exekutatu"
 
 #: dist/converse-no-dependencies.js:78123
 msgid "Previous"
-msgstr ""
+msgstr "Aurrekoa"
 
 #: dist/converse-no-dependencies.js:78124
 msgid "Next"
-msgstr ""
+msgstr "Hurrengoa"
 
 #: dist/converse-no-dependencies.js:78125
 msgid "Complete"
-msgstr ""
+msgstr "Osatua"
 
 #: dist/converse-no-dependencies.js:80786
-#, fuzzy
 msgid "Add to Contacts"
-msgstr "Kontaktu bat gehitu"
+msgstr "Kontaktuetara gehitu"
 
 #: dist/converse-no-dependencies.js:80796
 #: dist/converse-no-dependencies.js:94406
@@ -934,27 +931,25 @@ msgstr ""
 "garatzaile kontsola xehetasunetarako"
 
 #: dist/converse-no-dependencies.js:84354
-#, fuzzy
 msgid "Executing"
-msgstr "Exekutatu"
+msgstr "Exekutatzen"
 
 #: dist/converse-no-dependencies.js:84361
 #: dist/converse-no-dependencies.js:84366
 msgid "Completed"
-msgstr ""
+msgstr "Osatua"
 
 #: dist/converse-no-dependencies.js:84407
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Barkatu, errore bat gertatu da komandoa exekutatzerakoan. Begiratu "
-"garatzaile kontsola xehetasunetarako"
+"Errore bat gertatu da komandoa bertan-behera uzterakoan. Begiratu garatzaile "
+"kontsola xehetasunetarako"
 
 #: dist/converse-no-dependencies.js:84414
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Errorea: ustekabeko emaitza"
 
 #: dist/converse-no-dependencies.js:84850
 msgid "Bookmark this groupchat"
@@ -996,7 +991,7 @@ msgstr "Laster-markak"
 #: dist/converse-no-dependencies.js:85712
 #, fuzzy, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Laster-markak"
+msgstr "\"%1$s\" -(r)entzako laster-marka"
 
 #: dist/converse-no-dependencies.js:85713
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -1004,7 +999,7 @@ msgstr "Gela honetan automatikoki sartu nahiko zenuke abioan?"
 
 #: dist/converse-no-dependencies.js:85714
 msgid "Remove"
-msgstr ""
+msgstr "Kendu"
 
 #: dist/converse-no-dependencies.js:85715
 msgid "The name for this bookmark:"
@@ -1016,7 +1011,7 @@ msgstr "Zein izango litzateke gela honetarako zure ezizena?"
 
 #: dist/converse-no-dependencies.js:85717
 msgid "Update"
-msgstr ""
+msgstr "Eguneratu"
 
 #: dist/converse-no-dependencies.js:85717
 #: dist/converse-no-dependencies.js:112339
@@ -1103,18 +1098,16 @@ msgid "Image: "
 msgstr "Irudia: "
 
 #: dist/converse-no-dependencies.js:94139
-#, fuzzy
 msgid "Older versions"
-msgstr "Mezuaren bertsioak"
+msgstr "Bertsio zaharragoak"
 
 #: dist/converse-no-dependencies.js:94141
-#, fuzzy
 msgid "No older versions found"
-msgstr "Ez da urruneko zerbitzaria aurkitu"
+msgstr "Ez da bertsio zaharragorik aurkitu"
 
 #: dist/converse-no-dependencies.js:94141
 msgid "Current version"
-msgstr ""
+msgstr "Uneko bertsioa"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:94302
@@ -1313,19 +1306,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:103682
 msgid "This is a trusted device"
-msgstr "Hau gailu fidagarria da"
+msgstr "Gailu hau fidagarria da"
 
 #: dist/converse-no-dependencies.js:103686
 msgid "Connection URL"
-msgstr ""
+msgstr "Konexio URL-a"
 
 #: dist/converse-no-dependencies.js:103687
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
-msgstr ""
+msgstr "XMPP zerbitzarira konektatzeko erabilitako HTTP edo websocket URL-a"
 
 #: dist/converse-no-dependencies.js:103688
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "adib. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:103693
 msgid "Password"
@@ -1429,9 +1422,8 @@ msgid "Sorry, something went wrong while trying to set the role"
 msgstr "Barkatu, zerbaitek huts egin du rola ezartzerakoan"
 
 #: dist/converse-no-dependencies.js:110356
-#, fuzzy
 msgid "Change nickname"
-msgstr "Zure ezizena aldatu"
+msgstr "Ezizena aldatu"
 
 #: dist/converse-no-dependencies.js:110356
 msgid "Enter groupchat"
@@ -1488,9 +1480,8 @@ msgstr "Bisitaria"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:111313
-#, fuzzy
 msgid "Participant"
-msgstr "Parte-hartzaileak"
+msgstr "Parte-hartzailea"
 
 #: dist/converse-no-dependencies.js:111313
 msgid "Participants"
@@ -1620,9 +1611,8 @@ msgid "Topic author"
 msgstr "Mintzagaiaren egilea"
 
 #: dist/converse-no-dependencies.js:113738
-#, fuzzy
 msgid "XMPP address"
-msgstr "XMPP Helbidea"
+msgstr "XMPP helbidea"
 
 #: dist/converse-no-dependencies.js:113739
 msgid "Message archiving"
@@ -1799,9 +1789,8 @@ msgid "Configure this groupchat"
 msgstr "Konfiguratu gela hau"
 
 #: dist/converse-no-dependencies.js:115295
-#, fuzzy
 msgid "Change the nickname you're using in this groupchat"
-msgstr "Erregistratu gela honetarako ezizen bat"
+msgstr "Talde-berriketa honetan erabiltzen ari zaren ezizena aldatu"
 
 #: dist/converse-no-dependencies.js:115308
 msgid "Invite someone to join this groupchat"
@@ -1973,61 +1962,57 @@ msgid "Profile"
 msgstr "Profila"
 
 #: dist/converse-no-dependencies.js:119249
-#, fuzzy
 msgid "Reset Password"
-msgstr "Pasahitza"
+msgstr "Pasahitza berrezarri"
 
 #: dist/converse-no-dependencies.js:119287
+#, fuzzy
 msgid "The new passwords must match"
-msgstr ""
+msgstr "Pasahitz berriak bat etorri behar dira"
 
 #: dist/converse-no-dependencies.js:119288
-#, fuzzy
 msgid "New password"
-msgstr "Pasahitzik gabe"
+msgstr "Pasahitz berria"
 
 #: dist/converse-no-dependencies.js:119289
-#, fuzzy
 msgid "Confirm new password"
-msgstr "Pasahitzik gabe"
+msgstr "Pasahitz berria baieztatu"
 
 #: dist/converse-no-dependencies.js:119810
-#, fuzzy
 msgid "Timeout error"
-msgstr "Denbora muga Errorea"
+msgstr "Denbora-muga errorea"
 
 #: dist/converse-no-dependencies.js:119817
 msgid "Your server does not support password reset"
-msgstr ""
+msgstr "Zure zerbitzariak ez du pasahitz berrezartzea onartzen"
 
 #: dist/converse-no-dependencies.js:119824
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
+"Zure zerbitzariak errore ezezagun batekin erantzun du, begiratu kontsola "
+"xehetasunetarako"
 
 #: dist/converse-no-dependencies.js:119843
-#, fuzzy
 msgid "Timeout error while trying to set your password"
-msgstr "Denbora-muga errorea afiliazioa ezartzerakoan"
+msgstr "Denbora-muga errorea pasahitza ezartzerakoan"
 
 #: dist/converse-no-dependencies.js:119845
 msgid "Your server does not allow password reset"
-msgstr ""
+msgstr "Zure zerbitzariak ez du pasahitz berrezartzea onartzen"
 
 #: dist/converse-no-dependencies.js:119847
 #: dist/converse-no-dependencies.js:119849
-#, fuzzy
 msgid "You are not allowed to change your password"
-msgstr "Ez duzu baimenik gela berriak sortzeko."
+msgstr "Ez duzu baimenik zure pasahitza aldatzeko"
 
 #: dist/converse-no-dependencies.js:119851
 msgid "Success"
-msgstr ""
+msgstr "Bikain"
 
 #: dist/converse-no-dependencies.js:119851
-#, fuzzy
 msgid "Your new password has been set"
-msgstr "Gela berri bat sortu da"
+msgstr "Pasahitz berria ezarri da"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:120395
@@ -2149,6 +2134,8 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Errorea: ezin izan da fitxategi zifratua deszifratu, deskargatzea ezinezkoa "
+"izan delako"
 
 #: dist/converse-no-dependencies.js:122279
 msgid ""
@@ -2475,9 +2462,8 @@ msgid "Add a new groupchat"
 msgstr "Gehitu gela berri bat"
 
 #: dist/converse-no-dependencies.js:131785
-#, fuzzy
 msgid "Show bookmarked groupchats"
-msgstr "Erakutsi gelak"
+msgstr "Erakutsi laster-markaturiko talde-berriketak"
 
 #: dist/converse-no-dependencies.js:132363
 #, javascript-format
@@ -2490,9 +2476,8 @@ msgid "Add"
 msgstr "Gehitu"
 
 #: dist/converse-no-dependencies.js:132867
-#, fuzzy
 msgid "Group"
-msgstr "Taldeak"
+msgstr "Taldea"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:133385
@@ -2518,9 +2503,8 @@ msgid "Contacts"
 msgstr "Kontaktuak"
 
 #: dist/converse-no-dependencies.js:133546
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Klikatu kontaktu hauek ezkutatzeko"
+msgstr "Klikatu kontaktuak txandakatzeko"
 
 #: dist/converse-no-dependencies.js:133547
 msgid "Add a contact"

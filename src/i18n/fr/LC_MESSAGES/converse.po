@@ -7,8 +7,9 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-12-29 06:13+0000\n"
-"Last-Translator: ButterflyOfFire <boffire@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2024-01-15 15:34+0000\n"
+"Last-Translator: John Livingston <JohnLivingston@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -614,7 +615,7 @@ msgstr "Une erreur est survenue en récupérant le formulaire de configuration"
 
 #: dist/converse-no-dependencies.js:62100
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Délai d'attente dépassé"
 
 #: dist/converse-no-dependencies.js:64561
 msgid "Timeout while trying to fetch archived messages."
@@ -953,9 +954,8 @@ msgstr ""
 "Vérifiez la console de développement de votre navigateur pour plus de détails"
 
 #: dist/converse-no-dependencies.js:84354
-#, fuzzy
 msgid "Executing"
-msgstr "Exécuter"
+msgstr "En cours d'exécution"
 
 #: dist/converse-no-dependencies.js:84361
 #: dist/converse-no-dependencies.js:84366
@@ -963,12 +963,11 @@ msgid "Completed"
 msgstr "Complété"
 
 #: dist/converse-no-dependencies.js:84407
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Désolé, une erreur s’est produite lors de l’exécution de la commande. "
+"Désolé, une erreur s’est produite en tentant d'exécuter la commande. "
 "Vérifiez la console de développement de votre navigateur pour plus de détails"
 
 #: dist/converse-no-dependencies.js:84414
@@ -2016,31 +2015,28 @@ msgid "Confirm new password"
 msgstr "Confirmer le nouveau mot de passe"
 
 #: dist/converse-no-dependencies.js:119810
-#, fuzzy
 msgid "Timeout error"
 msgstr "Erreur de délai d'attente dépassé"
 
 #: dist/converse-no-dependencies.js:119817
-#, fuzzy
 msgid "Your server does not support password reset"
-msgstr "Votre serveur ne gère pas le changement de mot de passe"
+msgstr "Votre serveur ne gère pas la réinitialisation de mot de passe"
 
 #: dist/converse-no-dependencies.js:119824
-#, fuzzy
 msgid ""
 "Your server responded with an unknown error, check the console for details"
-msgstr "Votre serveur a répondu une erreur inconnue"
+msgstr ""
+"Votre serveur a répondu une erreur inconnue, vérifiez la console pour plus "
+"de détails"
 
 #: dist/converse-no-dependencies.js:119843
-#, fuzzy
 msgid "Timeout error while trying to set your password"
 msgstr ""
-"Un problème de délai est survenu lors de la modification de l'affiliation"
+"Un problème de délai est survenu lors de l'enregistrement du mot de passe"
 
 #: dist/converse-no-dependencies.js:119845
-#, fuzzy
 msgid "Your server does not allow password reset"
-msgstr "Votre serveur n’autorise pas le changement de mot de passe"
+msgstr "Votre serveur n’autorise pas la réinitialisation de mot de passe"
 
 #: dist/converse-no-dependencies.js:119847
 #: dist/converse-no-dependencies.js:119849
@@ -2549,9 +2545,8 @@ msgid "Contacts"
 msgstr "Contacts"
 
 #: dist/converse-no-dependencies.js:133546
-#, fuzzy
 msgid "Click to toggle contacts"
-msgstr "Cliquez pour cacher ces contacts"
+msgstr "Cliquez pour ouvrir les contacts"
 
 #: dist/converse-no-dependencies.js:133547
 msgid "Add a contact"

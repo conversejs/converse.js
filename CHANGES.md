@@ -6,6 +6,7 @@
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - Add an occupants filter to the MUC sidebar
 - #3302: debounce MUC sidebar rendering
+- Fix: refresh the MUC sidebar when participants collection is sorted
 
 ### Breaking changes:
 

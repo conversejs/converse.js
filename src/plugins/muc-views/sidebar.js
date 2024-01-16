@@ -4,6 +4,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from "@converse/headless";
 import { RosterFilter } from 'headless/plugins/roster/filter.js';
 import { initStorage } from "headless/utils/storage";
+import debounce from 'lodash-es/debounce.js';
 
 import 'shared/styles/status.scss';
 import './styles/muc-occupants.scss';
@@ -26,11 +27,18 @@ export default class MUCSidebar extends CustomElement {
         this.filter.fetch();
 
         this.model = _converse.chatboxes.get(this.jid);
-        this.listenTo(this.model.occupants, 'add', () => this.requestUpdate());
-        this.listenTo(this.model.occupants, 'remove', () => this.requestUpdate());
-        this.listenTo(this.model.occupants, 'change', () => this.requestUpdate());
-        this.listenTo(this.model.occupants, 'vcard:change', () => this.requestUpdate());
-        this.listenTo(this.model.occupants, 'vcard:add', () => this.requestUpdate());
+
+        // To avoid rendering continuously the participant list in case of massive joins/leaves:
+        const debouncedRequestUpdate = debounce(() => this.requestUpdate(), 200, {
+            maxWait: 1000
+        })
+
+        this.listenTo(this.model.occupants, 'add', debouncedRequestUpdate);
+        this.listenTo(this.model.occupants, 'remove', debouncedRequestUpdate);
+        this.listenTo(this.model.occupants, 'change', debouncedRequestUpdate);
+        this.listenTo(this.model.occupants, 'vcard:change', debouncedRequestUpdate);
+        this.listenTo(this.model.occupants, 'vcard:add', debouncedRequestUpdate);
+
         this.model.initialized.then(() => this.requestUpdate());
     }
 

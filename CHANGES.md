@@ -5,6 +5,7 @@
 - #2716: Fix issue with chat display when opening via URL
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - Add an occupants filter to the MUC sidebar
+- #3302: debounce MUC sidebar rendering
 
 ### Breaking changes:
 

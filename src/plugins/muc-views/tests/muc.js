@@ -2394,7 +2394,7 @@ describe("Groupchats", function () {
             }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
             _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.querySelectorAll('.occupant').length, 500);
-            await u.waitUntil(() => view.querySelectorAll('.badge').length > 1);
+            await u.waitUntil(() => view.querySelectorAll('.badge').length > 2);
             expect(view.model.occupants.length).toBe(2);
             expect(view.querySelectorAll('.occupant').length).toBe(2);
         }));

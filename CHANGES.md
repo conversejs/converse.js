@@ -4,9 +4,11 @@
 
 - #2716: Fix issue with chat display when opening via URL
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
+- #3302: debounce MUC sidebar rendering
 - #3307: Fix inconsistency between browsers on textarea outlines
 - Add an occupants filter to the MUC sidebar
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
+- Fix: refresh the MUC sidebar when participants collection is sorted
 
 ### Breaking changes:
 

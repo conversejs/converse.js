@@ -4,6 +4,7 @@
 
 - #2716: Fix issue with chat display when opening via URL
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
+- #3300: Adding the maxWait option for `debouncedPruneHistory`
 - #3302: debounce MUC sidebar rendering
 - #3307: Fix inconsistency between browsers on textarea outlines
 - Add an occupants filter to the MUC sidebar

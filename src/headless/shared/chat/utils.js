@@ -108,4 +108,6 @@ export async function handleCorrection (model, attrs) {
 }
 
 
-export const debouncedPruneHistory = debounce(pruneHistory, 500);
+export const debouncedPruneHistory = debounce(pruneHistory, 500, {
+    maxWait: 2000
+});

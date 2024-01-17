@@ -34,6 +34,11 @@ class ChatRoomOccupants extends Collection {
         return ChatRoomOccupant;
     }
 
+    initialize() {
+        this.on('change:nick', () => this.sort());
+        this.on('change:role', () => this.sort());
+    }
+
     create (attrs, options) {
         if (attrs.id || attrs instanceof Model) {
             return super.create(attrs, options);

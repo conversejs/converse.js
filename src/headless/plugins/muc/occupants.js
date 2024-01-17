@@ -21,6 +21,11 @@ const { u } = converse.env;
 class ChatRoomOccupants extends Collection {
     model = ChatRoomOccupant;
 
+    initialize() {
+        this.on('change:nick', () => this.sort());
+        this.on('change:role', () => this.sort());
+    }
+
     comparator (occupant1, occupant2) { // eslint-disable-line class-methods-use-this
         const role1 = occupant1.get('role') || 'none';
         const role2 = occupant2.get('role') || 'none';

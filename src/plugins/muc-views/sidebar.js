@@ -31,7 +31,7 @@ export default class MUCSidebar extends CustomElement {
         // To avoid rendering continuously the participant list in case of massive joins/leaves:
         const debouncedRequestUpdate = debounce(() => this.requestUpdate(), 200, {
             maxWait: 1000
-        })
+        });
 
         this.listenTo(this.model.occupants, 'add', debouncedRequestUpdate);
         this.listenTo(this.model.occupants, 'remove', debouncedRequestUpdate);

@@ -8,89 +8,96 @@ msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-01-21 14:01+0000\n"
+"Last-Translator: flac <flac_twin@keemail.me>\n"
+"Language-Team: Belarusian <https://hosted.weblate.org/projects/conversejs/"
+"translations/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "Адбылася памылка пад час злучэння з серверам."
 
 #: dist/converse-no-dependencies.js:23388
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
+"Ваш XMPP адрас і/або пароль уведзены няправільна. Калі ласка паспрабуйце "
+"ізноў."
 
 #: dist/converse-no-dependencies.js:23397
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "Прабачце, мы не здолелі далучыцца да XMPP сервера з даменам: %1$s"
 
 #: dist/converse-no-dependencies.js:23399
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "XMPP сервер не прапаноўвае падтрымліваемы спосаб аутэнтыфікацыі"
 
 #: dist/converse-no-dependencies.js:31805
 #: dist/converse-no-dependencies.js:45213
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s піша"
 
 #: dist/converse-no-dependencies.js:31807
 #: dist/converse-no-dependencies.js:45215
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s спыняе пісаць"
 
 #: dist/converse-no-dependencies.js:31809
 #: dist/converse-no-dependencies.js:32198
 #: dist/converse-no-dependencies.js:45217
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr ""
+msgstr "%1$s адыйшоў"
 
 #: dist/converse-no-dependencies.js:31886
 #: dist/converse-no-dependencies.js:42842
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Вы не можаце адмяніць сваё паведамленне."
 
 #: dist/converse-no-dependencies.js:31888
 #: dist/converse-no-dependencies.js:42846
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr ""
+msgstr "Прабачце, адбылася памылка пад час спробы адмяніць ваша паведамленне."
 
 #: dist/converse-no-dependencies.js:31893
 msgid "You're not allowed to send a message."
-msgstr ""
+msgstr "Вам не дазволена адпраўляць паведамленні."
 
 #: dist/converse-no-dependencies.js:31895
 #: dist/converse-no-dependencies.js:42855
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr ""
+msgstr "Прабачце, адбылася памылка пад час спробы адправіць ваша паведамленне."
 
 #: dist/converse-no-dependencies.js:32196
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "%1$s выйшаў з сеткі"
 
 #: dist/converse-no-dependencies.js:32200
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "%1$s заняты"
 
 #: dist/converse-no-dependencies.js:32202
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "%1$s у сетцы"
 
 #: dist/converse-no-dependencies.js:33115
 #: dist/converse-no-dependencies.js:33134
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
+"Прабачце, хутчэй за ўсё запампоўка файлаў не падтрымліваецца вашым серверам."
 
 #: dist/converse-no-dependencies.js:33155
 #, javascript-format
@@ -98,18 +105,20 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Памер файла, %1$s, пераважае за максімальны памер дазволены на вашам "
+"серверы, %2$s."
 
 #: dist/converse-no-dependencies.js:33989
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "Не Расшыфроўваемае OMEMO-паведамленне"
 
 #: dist/converse-no-dependencies.js:34062
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Прабачце, не магчыма вызначыць URL запампоўкі."
 
 #: dist/converse-no-dependencies.js:34081
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Прабачце, не магчыма вызначыць URL запампоўкі файлу."
 
 #: dist/converse-no-dependencies.js:34150
 #, javascript-format

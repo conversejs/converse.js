@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 5.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-02-10 18:37+0000\n"
-"Last-Translator: koukei <koukei_hitou@yahoo.co.jp>\n"
+"PO-Revision-Date: 2024-01-28 00:01+0000\n"
+"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
 "translations/id/>\n"
 "Language: id\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -587,13 +587,12 @@ msgstr ""
 "dapat memuat ulang halaman untuk memintanya lagi."
 
 #: dist/converse-no-dependencies.js:62058
-#, fuzzy
 msgid "An error occurred while trying to fetch the command form"
-msgstr "Maaf, terjadi kesalahan saat mencoba mengirimkan formulir konfigurasi."
+msgstr "Terjadi error saat mencoba mengambil formulir perintah"
 
 #: dist/converse-no-dependencies.js:62100
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Waktu habis"
 
 #: dist/converse-no-dependencies.js:64561
 msgid "Timeout while trying to fetch archived messages."
@@ -658,15 +657,15 @@ msgstr "Eksekusi"
 
 #: dist/converse-no-dependencies.js:78123
 msgid "Previous"
-msgstr ""
+msgstr "Sebelumnya"
 
 #: dist/converse-no-dependencies.js:78124
 msgid "Next"
-msgstr ""
+msgstr "Selanjutnya"
 
 #: dist/converse-no-dependencies.js:78125
 msgid "Complete"
-msgstr ""
+msgstr "Selesai"
 
 #: dist/converse-no-dependencies.js:80786
 msgid "Add to Contacts"
@@ -718,9 +717,8 @@ msgid "Affiliation changed"
 msgstr "Afiliasi berubah"
 
 #: dist/converse-no-dependencies.js:80956
-#, fuzzy
 msgid "role changed"
-msgstr "Peran berubah"
+msgstr "peran berubah"
 
 #: dist/converse-no-dependencies.js:81050
 msgid ""
@@ -908,7 +906,7 @@ msgstr "Perintah tidak ditemukan"
 #: dist/converse-no-dependencies.js:82899
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "Unduh file \"%1$s\""
 
 #: dist/converse-no-dependencies.js:84234
 msgid "Sorry, an error occurred while looking for commands on that entity."
@@ -927,27 +925,25 @@ msgstr ""
 "pengembang untuk detailnya"
 
 #: dist/converse-no-dependencies.js:84354
-#, fuzzy
 msgid "Executing"
-msgstr "Eksekusi"
+msgstr "Mengeksekusi"
 
 #: dist/converse-no-dependencies.js:84361
 #: dist/converse-no-dependencies.js:84366
 msgid "Completed"
-msgstr ""
+msgstr "Selesai"
 
 #: dist/converse-no-dependencies.js:84407
-#, fuzzy
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
 msgstr ""
-"Maaf, terjadi kesalahan saat mencoba menjalankan perintah. Lihat konsol "
-"pengembang untuk detailnya"
+"Terjadi error saat mencoba membatalkan perintah. Lihat konsol pengembang "
+"untuk detailnya"
 
 #: dist/converse-no-dependencies.js:84414
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Error: hasil yang tidak diharapkan"
 
 #: dist/converse-no-dependencies.js:84850
 msgid "Bookmark this groupchat"
@@ -1038,7 +1034,6 @@ msgstr ""
 #: dist/converse-no-dependencies.js:87580
 #: dist/converse-no-dependencies.js:87656
 #: dist/converse-no-dependencies.js:87684
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
 msgstr "Anda yakin ingin menarik pesan ini?"
 
@@ -1051,9 +1046,8 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr "Maaf, Anda tidak diperbolehkan menarik kembali pesan ini."
 
 #: dist/converse-no-dependencies.js:87701
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "Anda yakin ingin menarik pesan ini?"
+msgstr "Anda akan menarik kembali pesan ini."
 
 #: dist/converse-no-dependencies.js:87701
 msgid ""

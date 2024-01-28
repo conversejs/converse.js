@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2024-01-21 14:01+0000\n"
+"PO-Revision-Date: 2024-01-29 13:01+0000\n"
 "Last-Translator: flac <flac_twin@keemail.me>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/conversejs/"
 "translations/be/>\n"
@@ -126,6 +126,8 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
+"Прабачце, не магчыма паспяхова заладаваць ваш файл. Адказ з вашага сервера: "
+"\"%1$s\""
 
 #: dist/converse-no-dependencies.js:34152
 msgid "Sorry, could not succesfully upload your file."
@@ -1397,15 +1399,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:111271
 msgid "Admin"
-msgstr ""
+msgstr "Адмін"
 
 #: dist/converse-no-dependencies.js:111272
 msgid "Member"
-msgstr ""
+msgstr "Карыстальнік"
 
 #: dist/converse-no-dependencies.js:111273
 msgid "Moderator"
-msgstr ""
+msgstr "Мадэратар"
 
 #: dist/converse-no-dependencies.js:111274
 msgid "Owner"

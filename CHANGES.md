@@ -16,6 +16,7 @@
   `CustomElement` are not on `_converse.exports`.
 - The `windowStateChanged` event has been removed. If you used it, rely on the
   `visibilitychange` event on `document` instead.
+- `api.modal.create` no longer takes a class, instead it takes the name of a custom DOM element.
 
 ## 10.1.6 (2023-08-31)
 

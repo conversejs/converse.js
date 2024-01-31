@@ -50,16 +50,8 @@ const modal_api = {
          *  set on the modal instance.
          */
         create (name, properties) {
-            let modal;
-            if (typeof name === 'string') {
-                const ModalClass = customElements.get(name);
-                modal = modals_map[name] = new ModalClass(properties);
-            } else {
-                // Legacy...
-                const ModalClass = name;
-                modal = new ModalClass(properties);
-                modals.push(modal);
-            }
+            const ModalClass = customElements.get(name);
+            const modal = modals_map[name] = new ModalClass(properties);
             return modal;
         },
 

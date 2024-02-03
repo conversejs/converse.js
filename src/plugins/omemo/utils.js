@@ -1,4 +1,6 @@
-/* global libsignal */
+/**
+ * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
+ */
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplImage from 'templates/image.js';
@@ -449,11 +451,9 @@ export function addKeysToMessageStanza (stanza, dicts, iv) {
                 stanza.attrs({ 'prekey': prekey });
             }
             stanza.up();
-            if (i == dicts.length - 1) {
-                stanza.c('iv').t(iv).up().up();
-            }
         }
     }
+    stanza.c('iv').t(iv).up().up();
     return Promise.resolve(stanza);
 }
 
@@ -497,6 +497,8 @@ export async function getDevicesForContact (jid) {
 }
 
 export async function generateDeviceID () {
+    const { libsignal } = /** @type WindowWithLibsignal */(window);
+
     /* Generates a device ID, making sure that it's unique */
     const devicelist = await api.omemo.devicelists.get(_converse.bare_jid, true);
     const existing_ids = devicelist.devices.pluck('id');
@@ -516,6 +518,7 @@ export async function generateDeviceID () {
 }
 
 async function buildSession (device) {
+    const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
     const prekey = device.getRandomPreKey();
@@ -541,6 +544,8 @@ export async function getSession (device) {
         log.error(`Could not build an OMEMO session for device ${device.get('id')} because we don't have its bundle`);
         return null;
     }
+
+    const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const session = await _converse.omemo_store.loadSession(address.toString());
     if (session) {

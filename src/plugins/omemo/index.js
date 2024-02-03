@@ -1,6 +1,9 @@
 /**
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
+ *
+ * @module plugins-omemo-index
+ * @typedef {Window & globalThis & {libsignal: any} } WindowWithLibsignal
  */
 import './fingerprints.js';
 import './profile.js';
@@ -39,14 +42,11 @@ Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO + '.verification');
 Strophe.addNamespace('OMEMO_WHITELISTED', Strophe.NS.OMEMO + '.whitelisted');
 Strophe.addNamespace('OMEMO_BUNDLES', Strophe.NS.OMEMO + '.bundles');
 
-/**
- * @typedef {Window & globalThis & {libsignal: any} } window
- */
 
 converse.plugins.add('converse-omemo', {
     enabled (_converse) {
         return (
-            /** @type window */(window).libsignal &&
+            /** @type WindowWithLibsignal */(window).libsignal &&
             _converse.config.get('trusted') &&
             !api.settings.get('clear_cache_on_logout') &&
             !_converse.api.settings.get('blacklisted_plugins').includes('converse-omemo')

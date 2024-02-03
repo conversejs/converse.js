@@ -50,7 +50,7 @@ export default (el) => {
             <div class="d-flex xmpp-status">
                 <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${el.showStatusChangeModal}>
                     <span class="${chat_status} w-100 align-self-center" data-value="${chat_status}">
-                    <converse-icon color="var(--${color})" style="margin-top: -0.1em" size="0.82em" class="${classes}"></converse-icon> ${status_message}</span>
+                    <converse-icon color="var(--${color})" css="margin-top: -0.1em" size="0.82em" class="${classes}"></converse-icon> ${status_message}</span>
                 </a>
             </div>
         </div>`

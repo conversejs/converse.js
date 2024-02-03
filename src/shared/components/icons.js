@@ -5,7 +5,6 @@
  *  https://github.com/obsidiansoft-io/fa-icons/blob/master/LICENSE
  * @license Mozilla Public License (MPLv2)
  */
-
 import { CustomElement } from './element.js';
 import { api } from '@converse/headless';
 import { html } from 'lit';
@@ -17,17 +16,17 @@ class ConverseIcon extends CustomElement {
 
     static get properties () {
         return {
-            color: String,
+            color: { type: String },
             class_name: { attribute: "class" },
-            style: String,
-            size: String
+            css: { type: String },
+            size: { type: String }
         };
     }
 
     constructor () {
         super();
         this.class_name = "";
-        this.style = "";
+        this.css = "";
         this.size = "";
         this.color = "";
     }
@@ -43,7 +42,7 @@ class ConverseIcon extends CustomElement {
             ${this.size ? `width: ${this.size};` : ''}
             ${this.size ? `height: ${this.size};` : ''}
             ${color ? `fill: ${color};` : ''}
-            ${this.style}
+            ${this.css}
         `;
     }
 

@@ -1,4 +1,4 @@
-import { IQError } from './errors.js';
+import { IQError } from 'shared/errors.js';
 import { Model } from '@converse/skeletor';
 import { UNDECIDED } from './consts.js';
 import { _converse, api, converse, log } from '@converse/headless';

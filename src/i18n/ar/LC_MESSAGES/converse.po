@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2023-07-26 21:39+0000\n"
+"PO-Revision-Date: 2024-02-06 08:15+0000\n"
 "Last-Translator: ButterflyOfFire <boffire@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -2025,7 +2025,7 @@ msgstr "لا يسمح لك بتغيير كلمة المرور الخاصة بك"
 
 #: dist/converse-no-dependencies.js:119851
 msgid "Success"
-msgstr ""
+msgstr "تم بنجاح"
 
 #: dist/converse-no-dependencies.js:119851
 #, fuzzy
@@ -2051,7 +2051,7 @@ msgstr "عن"
 
 #: dist/converse-no-dependencies.js:120489
 msgid "Commands"
-msgstr ""
+msgstr "الأوامر"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:120497

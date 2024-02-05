@@ -1305,7 +1305,7 @@ describe("Groupchats", function () {
         }));
 
         it("allows the user to invite their roster contacts to enter the groupchat",
-                mock.initConverse(['chatBoxesFetched'], {'view_mode': 'fullscreen'}, async function (_converse) {
+                mock.initConverse(['chatBoxesFetched'], {'view_mode': 'overlayed'}, async function (_converse) {
 
             // We need roster contacts, so that we have someone to invite
             await mock.waitForRoster(_converse, 'current');

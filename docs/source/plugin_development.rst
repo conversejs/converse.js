@@ -351,7 +351,7 @@ All configuration settings have default values which can be overridden when
 gets called.
 
 Plugins often need their own additional configuration settings and you can add
-these settings with the `_converse.api.settings.update </docs/html/api/-_converse.api.settings.html#.update>`_
+these settings with the `_converse.api.settings.extend </docs/html/api/-_converse.api.settings.html#.extend>`_
 method.
 
 Exposing promises

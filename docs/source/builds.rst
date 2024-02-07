@@ -48,8 +48,9 @@ One reason you might want to create your own bundles, is because you want to
 remove some of the core plugins of Converse, or perhaps you want to include
 your own.
 
-To add or remove plugins from the build, you need to modify the
-`src/converse.js <https://github.com/conversejs/converse.js/blob/master/src/converse.js>`_ file.
+To add or remove plugins from the build, you need to modify
+`src/index.js <https://github.com/conversejs/converse.js/blob/master/src/index.js>`_ or
+`src/headless/index.js <https://github.com/conversejs/converse.js/blob/master/src/index.js>`_.
 
 You'll find a section marked ``/* START: Removable components`` and
 ``/* END: Removable components */``.

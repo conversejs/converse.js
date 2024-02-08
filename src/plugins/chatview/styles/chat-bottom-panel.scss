@@ -40,8 +40,9 @@
                 }
 
                 .chat-textarea, input {
+                    outline: 1px solid var(--chat-head-color);
                     &:active, &:focus{
-                        outline-color: var(--chat-head-color);
+                        outline-width: 2px;
                     }
                     &.correcting {
                         background-color: var(--chat-correcting-color);

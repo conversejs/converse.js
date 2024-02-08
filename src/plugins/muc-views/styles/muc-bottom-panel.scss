@@ -31,8 +31,9 @@
                     bottom: 4.5em;
                 }
                 .chat-textarea, input {
+                    outline: 1px solid var(--chatroom-head-bg-color) !important;
                     &:active, &:focus{
-                        outline-color: var(--chatroom-head-bg-color) !important;
+                        outline-width: 2px !important;
                     }
                     &.correcting {
                         background-color: var(--chatroom-correcting-color);

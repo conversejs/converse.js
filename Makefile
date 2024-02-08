@@ -234,7 +234,7 @@ eslint: node_modules
 	npm run lint
 
 .PHONY: check
-check: eslint types | dist/converse.js dist/converse.css
+check: eslint | dist/converse.js dist/converse.css
 	npm run test -- $(ARGS)
 
 .PHONY: test

@@ -30,10 +30,10 @@ export function toggleGroup (ev, name) {
 
 export function isContactFiltered (contact, groupname) {
     const filter = _converse.roster_filter;
-    const type = filter.get('filter_type');
+    const type = filter.get('type');
     const q = (type === 'state') ?
-        filter.get('chat_state').toLowerCase() :
-        filter.get('filter_text').toLowerCase();
+        filter.get('state').toLowerCase() :
+        filter.get('text').toLowerCase();
 
     if (!q) return false;
 
@@ -51,7 +51,7 @@ export function isContactFiltered (contact, groupname) {
         } else {
             return !contact.presence.get('show').includes(q);
         }
-    } else if (type === 'contacts')  {
+    } else if (type === 'items')  {
         return !contact.getFilterCriteria().includes(q);
     }
 }
@@ -72,9 +72,9 @@ export function shouldShowContact (contact, groupname) {
 
 export function shouldShowGroup (group) {
     const filter = _converse.roster_filter;
-    const type = filter.get('filter_type');
+    const type = filter.get('type');
     if (type === 'groups') {
-        const q = filter.get('filter_text')?.toLowerCase();
+        const q = filter.get('text')?.toLowerCase();
         if (!q) {
             return true;
         }

@@ -1,8 +1,8 @@
-converse-contacts-filter {
+converse-list-filter {
     display: block;
     margin-bottom: 1em;
 
-    .contacts-filter-form {
+    .items-filter-form {
         width: 100%;
 
         .button-group {
@@ -13,7 +13,7 @@ converse-contacts-filter {
             padding: 0.25em;
         }
 
-        .contacts-filter {
+        .items-filter {
             width: 100%;
             margin: 0.2em;
             font-size: calc(var(--font-size) - 2px);
@@ -31,7 +31,7 @@ converse-contacts-filter {
 }
 
 .converse-overlayed  {
-    .contacts-filter-form {
+    .items-filter-form {
         .button-group {
             padding: 0.1em;
         }
@@ -40,7 +40,7 @@ converse-contacts-filter {
             padding: 0.15em;
         }
 
-        .contacts-filter {
+        .items-filter {
             width: 100%;
             margin: 0.1em;
             font-size: calc(var(--font-size) - 4px);

@@ -74,7 +74,7 @@
     "@babel/preset-env": "^7.18.2",
     "@converse/headless": "file:src/headless",
     "@types/webappsec-credential-management": "^0.6.8",
-    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
     "autoprefixer": "^10.4.5",
     "babel-loader": "^9.1.0",
     "bootstrap.native-loader": "2.0.0",

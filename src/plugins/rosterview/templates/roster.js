@@ -47,12 +47,12 @@ export default (el) => {
         </div>
 
         <div class="list-container roster-contacts ${ is_closed ? 'hidden' : '' }">
-            <converse-contacts-filter
+            <converse-list-filter
                     @update=${() => el.requestUpdate()}
                     .promise=${api.waitUntil('rosterInitialized')}
-                    .contacts=${_converse.roster}
+                    .items=${_converse.roster}
                     .template=${tplRosterFilter}
-                    .filter=${_converse.roster_filter}></converse-contacts-filter>
+                    .model=${_converse.roster_filter}></converse-list-filter>
 
             ${ repeat(groupnames, (n) => n, (name) => {
                 const contacts = contacts_map[name].filter(c => shouldShowContact(c, name));

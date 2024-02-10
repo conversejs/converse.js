@@ -23,7 +23,7 @@ describe("The MUC occupants filter", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => view.model.occupants.length === 3);
 
-        let filter_el = view.querySelector('converse-contacts-filter');
+        let filter_el = view.querySelector('converse-list-filter');
         expect(u.isVisible(filter_el.firstElementChild)).toBe(false);
 
         for (let i=0; i<mock.chatroom_names.length; i++) {
@@ -53,10 +53,10 @@ describe("The MUC occupants filter", function () {
             expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(name);
         });
 
-        filter_el = view.querySelector('converse-contacts-filter');
+        filter_el = view.querySelector('converse-list-filter');
         expect(u.isVisible(filter_el.firstElementChild)).toBe(true);
 
-        const filter = view.querySelector('.contacts-filter');
+        const filter = filter_el.querySelector('.items-filter');
         filter.value = "j";
         u.triggerEvent(filter, "keydown", "KeyboardEvent");
         await u.waitUntil(() => [...view.querySelectorAll('li')].filter(u.isVisible).length === 1);

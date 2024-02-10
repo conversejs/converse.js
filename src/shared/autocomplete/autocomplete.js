@@ -1,51 +1,53 @@
 /**
  * @copyright Lea Verou and the Converse.js contributors
- * @description
- *  Started as a fork of Lea Verou's "Awesomplete"
- *  https://leaverou.github.io/awesomplete/
+ * @description Started as a fork of Lea Verou's "Awesomplete"
  * @license Mozilla Public License (MPLv2)
  */
 
 import Suggestion from './suggestion.js';
-import { Events } from '@converse/skeletor/src/events.js';
+import { EventEmitter } from '@converse/skeletor';
 import { converse } from "@converse/headless";
 import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.js';
 import { siblingIndex } from '@converse/headless/utils/html.js';
 
-
 const u = converse.env.utils;
 
 
-export class AutoComplete {
+export class AutoComplete extends EventEmitter(Object) {
 
+    /**
+     * @param {HTMLElement} el
+     * @param {any} config
+     */
     constructor (el, config={}) {
+        super();
+
         this.suggestions = [];
         this.is_opened = false;
+        this.auto_evaluate = true; // evaluate automatically without any particular key as trigger
+        this.match_current_word = false; // Match only the current word, otherwise all input is matched
+        this.sort = config.sort === false ? null : SORT_BY_QUERY_POSITION;
+        this.filter = FILTER_CONTAINS;
+        this.ac_triggers = []; // Array of keys (`ev.key`) values that will trigger auto-complete
+        this.include_triggers = []; // Array of trigger keys which should be included in the returned value
+        this.min_chars = 2;
+        this.max_items = 10;
+        this.auto_first = false; // Should the first element be automatically selected?
+        this.data = (a, _v) => a;
+        this.item = ITEM;
 
         if (u.hasClass('suggestion-box', el)) {
             this.container = el;
         } else {
             this.container = el.querySelector('.suggestion-box');
         }
-        this.input = this.container.querySelector('.suggestion-box__input');
+        this.input = /** @type {HTMLInputElement} */(this.container.querySelector('.suggestion-box__input'));
         this.input.setAttribute("aria-autocomplete", "list");
 
         this.ul = this.container.querySelector('.suggestion-box__results');
         this.status = this.container.querySelector('.suggestion-box__additions');
 
-        Object.assign(this, {
-            'match_current_word': false, // Match only the current word, otherwise all input is matched
-            'ac_triggers': [], // Array of keys (`ev.key`) values that will trigger auto-complete
-            'include_triggers': [], // Array of trigger keys which should be included in the returned value
-            'min_chars': 2,
-            'max_items': 10,
-            'auto_evaluate': true, // Should evaluation happen automatically without any particular key as trigger?
-            'auto_first': false, // Should the first element be automatically selected?
-            'data': a => a,
-            'filter': FILTER_CONTAINS,
-            'sort': config.sort === false ? false : SORT_BY_QUERY_POSITION,
-            'item': ITEM
-        }, config);
+        Object.assign(this, config);
 
         this.index = -1;
 
@@ -163,9 +165,13 @@ export class AutoComplete {
         this.goto(this.selected && pos !== -1 ? pos : count - 1);
     }
 
+    /**
+     * @param {number} i
+     * @param {boolean} scroll=true
+     */
     goto (i, scroll=true) {
         // Should not be used directly, highlights specific item without any checks!
-        const list = this.ul.children;
+        const list = /** @type HTMLElement[] */(Array.from(this.ul.children).filter(el => el instanceof HTMLElement));
         if (this.selected) {
             list[this.index].setAttribute("aria-selected", "false");
         }
@@ -214,7 +220,7 @@ export class AutoComplete {
         const li = u.ancestor(ev.target, 'li');
         if (li) {
             ev.preventDefault();
-            this.select(li, ev.target);
+            this.select(li);
         }
     }
 
@@ -259,6 +265,9 @@ export class AutoComplete {
         }
     }
 
+    /**
+     * @param {KeyboardEvent} [ev]
+     */
     async evaluate (ev) {
         const selecting = this.selected && ev && (
             ev.keyCode === converse.keycodes.UP_ARROW ||
@@ -296,7 +305,7 @@ export class AutoComplete {
                 .map(item => new Suggestion(this.data(item, value), value))
                 .filter(item => this.filter(item, value));
 
-            if (this.sort !== false) {
+            if (this.sort) {
                 this.suggestions = this.suggestions.sort(this.sort);
             }
             this.suggestions = this.suggestions.slice(0, this.max_items);
@@ -315,8 +324,5 @@ export class AutoComplete {
         }
     }
 }
-
-// Make it an event emitter
-Object.assign(AutoComplete.prototype, Events);
 
 export default AutoComplete;

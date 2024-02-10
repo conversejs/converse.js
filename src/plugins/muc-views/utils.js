@@ -3,6 +3,7 @@ import './modals/moderator-tools.js';
 import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { _converse, api, converse, log } from "@converse/headless";
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
 import { html } from "lit";
 import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
@@ -241,7 +242,7 @@ export function showOccupantModal (ev, occupant) {
 export function parseMessageForMUCCommands (data, handled) {
     const model = data.model;
     if (handled ||
-            model.get('type') !== _converse.CHATROOMS_TYPE || (
+            model.get('type') !== CHATROOMS_TYPE || (
             api.settings.get('muc_disable_slash_commands') &&
             !Array.isArray(api.settings.get('muc_disable_slash_commands'))
     )) {

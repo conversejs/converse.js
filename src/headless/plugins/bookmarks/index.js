@@ -53,8 +53,9 @@ converse.plugins.add('converse-bookmarks', {
 
         api.promises.add('bookmarksInitialized');
 
-        _converse.Bookmark = Bookmark;
-        _converse.Bookmarks = Bookmarks;
+        const exports  = { Bookmark, Bookmarks };
+        Object.assign(_converse, exports); // TODO: DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         api.listen.on('addClientFeatures', () => {
             if (api.settings.get('allow_bookmarks')) {
@@ -63,16 +64,18 @@ converse.plugins.add('converse-bookmarks', {
         })
 
         api.listen.on('clearSession', () => {
-            if (_converse.bookmarks) {
-                _converse.bookmarks.clearStore({'silent': true});
-                window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
-                delete _converse.bookmarks;
+            const { state } = _converse;
+            if (state.bookmarks) {
+                state.bookmarks.clearStore({'silent': true});
+                window.sessionStorage.removeItem(state.bookmarks.fetched_flag);
+                delete state.bookmarks;
             }
         });
 
         api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
-            api.connection.get().addHandler(handleBookmarksPush, null, 'message', 'headline', null, _converse.bare_jid);
+            const bare_jid = _converse.session.get('bare_jid');
+            api.connection.get().addHandler(handleBookmarksPush, null, 'message', 'headline', null, bare_jid);
             await Promise.all([api.waitUntil('chatBoxesFetched')]);
             initBookmarks();
         });

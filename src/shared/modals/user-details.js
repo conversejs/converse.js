@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('headless/plugins/chat/model.js').default} ChatBox
+ */
 import BaseModal from "plugins/modal/modal.js";
 import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";
 import { __ } from 'i18n';
@@ -17,7 +20,7 @@ export default class UserDetailsModal extends BaseModal {
         /**
          * Triggered once the UserDetailsModal has been initialized
          * @event _converse#userDetailsModalInitialized
-         * @type { _converse.ChatBox }
+         * @type {ChatBox}
          * @example _converse.api.listen.on('userDetailsModalInitialized', (chatbox) => { ... });
          */
         api.trigger('userDetailsModalInitialized', this.model);
@@ -48,7 +51,7 @@ export default class UserDetailsModal extends BaseModal {
 
     async refreshContact (ev) {
         if (ev && ev.preventDefault) { ev.preventDefault(); }
-        const refresh_icon = this.el.querySelector('.fa-refresh');
+        const refresh_icon = this.querySelector('.fa-refresh');
         u.addClass('fa-spin', refresh_icon);
         try {
             await api.vcard.update(this.model.contact.vcard, true);

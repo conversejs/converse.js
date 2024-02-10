@@ -8,6 +8,7 @@ import './components/minimized-chat.js';
 import debounce from 'lodash-es/debounce';
 import MinimizedChatsToggle from './toggle.js';
 import { _converse, api, converse } from '@converse/headless';
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
 import {
     addMinimizeButtonToChat,
     addMinimizeButtonToMUC,
@@ -104,7 +105,7 @@ converse.plugins.add('converse-minimize', {
         api.listen.on('chatRoomInitialized', onChatInitialized);
 
         api.listen.on('getHeadingButtons', (view, buttons) => {
-            if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
+            if (view.model.get('type') === CHATROOMS_TYPE) {
                 return addMinimizeButtonToMUC(view, buttons);
             } else {
                 return addMinimizeButtonToChat(view, buttons);

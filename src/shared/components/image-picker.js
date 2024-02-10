@@ -8,6 +8,12 @@ const i18n_profile_picture = __('Your profile picture');
 
 export default class ImagePicker extends CustomElement {
 
+    constructor () {
+        super();
+        this.width = null;
+        this.height = null;
+    }
+
     static get properties () {
         return {
             'height': { type: Number },
@@ -27,7 +33,7 @@ export default class ImagePicker extends CustomElement {
 
     openFileSelection (ev) {
         ev.preventDefault();
-        this.querySelector('input[type="file"]').click();
+        /** @type {HTMLInputElement} */(this.querySelector('input[type="file"]')).click();
     }
 
     updateFilePreview (ev) {

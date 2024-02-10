@@ -13,6 +13,11 @@ export default class RosterContact extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.model = null;
+    }
+
     initialize () {
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model, 'highlight', () => this.requestUpdate());

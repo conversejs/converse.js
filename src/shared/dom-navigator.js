@@ -27,8 +27,8 @@ function inViewport(el) {
 
 /**
  * Return the absolute offset top of an element.
- * @param el { Element } The element.
- * @return { Number } The offset top.
+ * @param el {HTMLElement} The element.
+ * @return {Number} The offset top.
  */
 function absoluteOffsetTop(el) {
     let offsetTop = 0;
@@ -36,14 +36,14 @@ function absoluteOffsetTop(el) {
         if (!isNaN(el.offsetTop)) {
             offsetTop += el.offsetTop;
         }
-    } while ((el = el.offsetParent));
+    } while ((el = /** @type {HTMLElement} */(el.offsetParent)));
     return offsetTop;
 }
 
 /**
  * Return the absolute offset left of an element.
- * @param el { Element } The element.
- * @return { Number } The offset left.
+ * @param el {HTMLElement} The element.
+ * @return {Number} The offset left.
  */
 function absoluteOffsetLeft(el) {
     let offsetLeft = 0;
@@ -51,10 +51,19 @@ function absoluteOffsetLeft(el) {
         if (!isNaN(el.offsetLeft)) {
             offsetLeft += el.offsetLeft;
         }
-    } while ((el = el.offsetParent));
+    } while ((el = /** @type {HTMLElement} */(el.offsetParent)));
     return offsetLeft;
 }
 
+/**
+ * @typedef {Object} DOMNavigatorDirection
+ * @property {string} DOMNavigatorOptions.down
+ * @property {string} DOMNavigatorOptions.end
+ * @property {string} DOMNavigatorOptions.home
+ * @property {string} DOMNavigatorOptions.left
+ * @property {string} DOMNavigatorOptions.right
+ * @property {string} DOMNavigatorOptions.up
+ */
 
 /**
  * Adds the ability to navigate the DOM with the arrow keys
@@ -63,33 +72,36 @@ function absoluteOffsetLeft(el) {
 class DOMNavigator {
     /**
      * Directions.
-     * @returns {{left: string, up: string, right: string, down: string}}
+     * @returns {DOMNavigatorDirection}
      * @constructor
      */
     static get DIRECTION () {
-        return {
+        return ({
             down: 'down',
             end: 'end',
             home: 'home',
             left: 'left',
             right: 'right',
             up: 'up'
-        };
+        });
     }
 
     /**
      * The default options for the DOM navigator.
      * @returns {{
-     *     down: number,
+     *     home: string[],
+     *     end: string[],
+     *     down: number[],
      *     getSelector: null,
      *     jump_to_picked: null,
      *     jump_to_picked_direction: null,
      *     jump_to_picked_selector: string,
-     *     left: number,
+     *     left: number[],
      *     onSelected: null,
-     *     right: number,
+     *     right: number[],
      *     selected: string,
-     *     up: number
+     *     selector: string,
+     *     up: number[]
      * }}
      */
     static get DEFAULTS () {
@@ -130,35 +142,45 @@ class DOMNavigator {
     }
 
     /**
-     * Create a new DOM Navigator.
-     * @param { Element } container The container of the element to navigate.
-     * @param { Object } options The options to configure the DOM navigator.
-     * @param { Function } options.getSelector
-     * @param { Number } [options.down] - The keycode for navigating down
-     * @param { Number } [options.left] - The keycode for navigating left
-     * @param { Number } [options.right] - The keycode for navigating right
-     * @param { Number } [options.up] - The keycode for navigating up
-     * @param { String } [options.selected] - The class that should be added to the currently selected DOM element.
-     * @param { String } [options.jump_to_picked] - A selector, which if
+     * @typedef {Object} DOMNavigatorOptions
+     * @property {Function} DOMNavigatorOptions.getSelector
+     * @property {string[]} [DOMNavigatorOptions.end]
+     * @property {string[]} [DOMNavigatorOptions.home]
+     * @property {number[]} [DOMNavigatorOptions.down] - The keycode for navigating down
+     * @property {number[]} [DOMNavigatorOptions.left] - The keycode for navigating left
+     * @property {number[]} [DOMNavigatorOptions.right] - The keycode for navigating right
+     * @property {number[]} [DOMNavigatorOptions.up] - The keycode for navigating up
+     * @property {String} [DOMNavigatorOptions.selector]
+     * @property {String} [DOMNavigatorOptions.selected] - The class that should be added to the currently selected DOM element.
+     * @property {String} [DOMNavigatorOptions.jump_to_picked] - A selector, which if
      * matched by the next element being navigated to, based on the direction
      * given by `jump_to_picked_direction`, will cause navigation
      * to jump to the element that matches the `jump_to_picked_selector`.
      * For example, this is useful when navigating to tabs. You want to
      * immediately navigate to the currently active tab instead of just
      * navigating to the first tab.
-     * @param { String } [options.jump_to_picked_selector=picked] - The selector
+     * @property {String} [DOMNavigatorOptions.jump_to_picked_selector=picked] - The selector
      * indicating the currently picked element to jump to.
-     * @param { String } [options.jump_to_picked_direction] - The direction for
+     * @property {String} [DOMNavigatorOptions.jump_to_picked_direction] - The direction for
      * which jumping to the picked element should be enabled.
-     * @param { Function } [options.onSelected] - The callback function which
+     * @property {Function} [DOMNavigatorOptions.onSelected] - The callback function which
      * should be called when en element gets selected.
-     * @constructor
+     * @property {HTMLElement} [DOMNavigatorOptions.scroll_container]
+     */
+
+    /**
+     * Create a new DOM Navigator.
+     * @param {HTMLElement} container The container of the element to navigate.
+     * @param {DOMNavigatorOptions} options The options to configure the DOM navigator.
      */
     constructor (container, options) {
         this.doc = window.document;
         this.container = container;
         this.scroll_container = options.scroll_container || container;
+
+        /** @type {DOMNavigatorOptions} */
         this.options = Object.assign({}, DOMNavigator.DEFAULTS, options);
+
         this.init();
     }
 
@@ -206,14 +228,11 @@ class DOMNavigator {
      */
     destroy () {
         this.disable();
-        if (this.container.domNavigator) {
-            delete this.container.domNavigator;
-        }
     }
 
     /**
      * @param {'down'|'right'|'left'|'up'} direction
-     * @returns { HTMLElement }
+     * @returns {HTMLElement}
      */
     getNextElement (direction) {
         let el;
@@ -263,8 +282,8 @@ class DOMNavigator {
 
     /**
      * Select the given element.
-     * @param { Element } el The DOM element to select.
-     * @param { string } [direction] The direction.
+     * @param {HTMLElement} el The DOM element to select.
+     * @param {string} [direction] The direction.
      */
     select (el, direction) {
         if (!el || el === this.selected) {
@@ -293,8 +312,8 @@ class DOMNavigator {
 
     /**
      * Scroll the container to an element.
-     * @param { HTMLElement } el The destination element.
-     * @param { String } direction The direction of the current navigation.
+     * @param {HTMLElement} el The destination element.
+     * @param {String} direction The direction of the current navigation.
      * @return void.
      */
     scrollTo (el, direction) {
@@ -339,8 +358,8 @@ class DOMNavigator {
 
     /**
      * Indicate if an element is in the container viewport.
-     * @param { HTMLElement } el The element to check.
-     * @return { Boolean } true if the given element is in the container viewport, otherwise false.
+     * @param {HTMLElement} el The element to check.
+     * @return {Boolean} true if the given element is in the container viewport, otherwise false.
      */
     inScrollContainerViewport(el) {
         const container = this.scroll_container;
@@ -376,9 +395,9 @@ class DOMNavigator {
 
     /**
      * Return an array of navigable elements after an offset.
-     * @param { number } left The left offset.
-     * @param { number } top The top offset.
-     * @return { Array } An array of elements.
+     * @param {number} left The left offset.
+     * @param {number} top The top offset.
+     * @return {Array} An array of elements.
      */
     elementsAfter (left, top) {
         return this.getElements(DOMNavigator.DIRECTION.down).filter(el => el.offsetLeft >= left && el.offsetTop >= top);
@@ -386,9 +405,9 @@ class DOMNavigator {
 
     /**
      * Return an array of navigable elements before an offset.
-     * @param { number } left The left offset.
-     * @param { number } top The top offset.
-     * @return { Array } An array of elements.
+     * @param {number} left The left offset.
+     * @param {number} top The top offset.
+     * @return {Array} An array of elements.
      */
     elementsBefore (left, top) {
         return this.getElements(DOMNavigator.DIRECTION.up).filter(el => el.offsetLeft <= left && el.offsetTop <= top);
@@ -396,7 +415,7 @@ class DOMNavigator {
 
     /**
      * Handle the key down event.
-     * @param { Event } event The event object.
+     * @param {KeyboardEvent} ev - The event object.
      */
     handleKeydown (ev) {
         const keys = keycodes;
@@ -404,7 +423,7 @@ class DOMNavigator {
         if (direction) {
             ev.preventDefault();
             ev.stopPropagation();
-            const next = this.getNextElement(direction, ev);
+            const next = this.getNextElement(direction);
             this.select(next, direction);
         }
     }

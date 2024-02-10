@@ -1,8 +1,13 @@
+/**
+ * @typedef {import('@converse/skeletor').Model} Model
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
-import { ROLES } from './constants.js';
+import { ROLES, MUC_ROLE_WEIGHTS } from './constants.js';
 import { safeSave } from '../../utils/index.js';
+import { CHATROOMS_TYPE } from '../../shared/constants.js';
+import { getUnloadEvent } from '../../utils/session.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -14,16 +19,27 @@ export function shouldCreateGroupchatMessage (attrs) {
     return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
 }
 
-
 export function getAutoFetchedAffiliationLists () {
     const affs = api.settings.get('muc_fetch_members');
     return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
 }
 
+export function occupantsComparator (occupant1, occupant2) {
+    const role1 = occupant1.get('role') || 'none';
+    const role2 = occupant2.get('role') || 'none';
+    if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
+        const nick1 = occupant1.getDisplayName().toLowerCase();
+        const nick2 = occupant2.getDisplayName().toLowerCase();
+        return nick1 < nick2 ? -1 : nick1 > nick2 ? 1 : 0;
+    } else {
+        return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
+    }
+}
+
 /**
  * Given an occupant model, see which roles may be assigned to that user.
- * @param { Model } occupant
- * @returns { Array<('moderator'|'participant'|'visitor')> } - An array of assignable roles
+ * @param {Model} occupant
+ * @returns {typeof ROLES} - An array of assignable roles
  */
 export function getAssignableRoles (occupant) {
     let disabled = api.settings.get('modtools_disable_assign');
@@ -40,7 +56,7 @@ export function getAssignableRoles (occupant) {
 export function registerDirectInvitationHandler () {
     api.connection.get().addHandler(
         message => {
-            _converse.onDirectMUCInvitation(message);
+            _converse.exports.onDirectMUCInvitation(message);
             return true;
         },
         'jabber:x:conference',
@@ -53,13 +69,13 @@ export function disconnectChatRooms () {
      * disconnected, so that they will be properly entered again
      * when fetched from session storage.
      */
-    return _converse.chatboxes
-        .filter(m => m.get('type') === _converse.CHATROOMS_TYPE)
+    return _converse.state.chatboxes
+        .filter(m => m.get('type') === CHATROOMS_TYPE)
         .forEach(m => m.session.save({ 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
-export async function onWindowStateChanged (data) {
-    if (data.state === 'visible' && api.connection.connected()) {
+export async function onWindowStateChanged () {
+    if (!document.hidden && api.connection.connected()) {
         const rooms = await api.rooms.get();
         rooms.forEach(room => room.rejoinIfNecessary());
     }
@@ -89,7 +105,7 @@ export async function routeToRoom (event) {
  * "chatroom".
  */
 export async function openChatRoom (jid, settings) {
-    settings.type = _converse.CHATROOMS_TYPE;
+    settings.type = CHATROOMS_TYPE;
     settings.id = jid;
     const chatbox = await api.rooms.get(jid, settings, true);
     chatbox.maybeShow(true);
@@ -115,7 +131,7 @@ export async function onDirectMUCInvitation (message) {
         result = true;
     } else {
         // Invite request might come from someone not your roster list
-        const contact = _converse.roster.get(from)?.getDisplayName() ?? from;
+        const contact = _converse.state.roster.get(from)?.getDisplayName() ?? from;
 
         /**
          * *Hook* which is used to gather confirmation whether a direct MUC
@@ -132,7 +148,7 @@ export async function onDirectMUCInvitation (message) {
     if (result) {
         const chatroom = await openChatRoom(room_jid, { 'password': x_el.getAttribute('password') });
         if (chatroom.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-            _converse.chatboxes.get(room_jid).rejoin();
+            _converse.state.chatboxes.get(room_jid).rejoin();
         }
     }
 }
@@ -140,16 +156,18 @@ export async function onDirectMUCInvitation (message) {
 export function getDefaultMUCNickname () {
     // XXX: if anything changes here, update the docs for the
     // locked_muc_nickname setting.
-    if (!_converse.xmppstatus) {
+    const { xmppstatus } = _converse.state;
+    if (!xmppstatus) {
         throw new Error(
             "Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired."
         );
     }
-    const nick = _converse.xmppstatus.getNickname();
+    const nick = xmppstatus.getNickname();
     if (nick) {
         return nick;
     } else if (api.settings.get('muc_nickname_from_jid')) {
-        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+        const bare_jid = _converse.session.get('bare_jid');
+        return Strophe.unescapeNode(Strophe.getNodeFromJid(bare_jid));
     }
 }
 
@@ -177,7 +195,7 @@ export async function autoJoinRooms () {
     await Promise.all(
         api.settings.get('auto_join_rooms').map(muc => {
             if (typeof muc === 'string') {
-                if (_converse.chatboxes.where({ 'jid': muc }).length) {
+                if (_converse.state.chatboxes.where({ 'jid': muc }).length) {
                     return Promise.resolve();
                 }
                 return api.rooms.open(muc);
@@ -209,13 +227,13 @@ export function onAddClientFeatures () {
 }
 
 export function onBeforeTearDown () {
-    _converse.chatboxes
-        .where({ 'type': _converse.CHATROOMS_TYPE })
+    _converse.state.chatboxes
+        .where({ 'type': CHATROOMS_TYPE })
         .forEach(muc => safeSave(muc.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
 export function onStatusInitialized () {
-    window.addEventListener(_converse.unloadevent, () => {
+    window.addEventListener(getUnloadEvent(), () => {
         const using_websocket = api.connection.isType('websocket');
         if (
             using_websocket &&
@@ -233,9 +251,9 @@ export function onBeforeResourceBinding () {
     api.connection.get().addHandler(
         stanza => {
             const muc_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
-            if (!_converse.chatboxes.get(muc_jid)) {
+            if (!_converse.state.chatboxes.get(muc_jid)) {
                 api.waitUntil('chatBoxesFetched').then(async () => {
-                    const muc = _converse.chatboxes.get(muc_jid);
+                    const muc = _converse.state.chatboxes.get(muc_jid);
                     if (muc) {
                         await muc.initialized;
                         muc.message_handler.run(stanza);

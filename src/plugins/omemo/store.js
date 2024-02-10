@@ -1,6 +1,8 @@
-/* global libsignal */
+/**
+ * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
+ */
 import range from 'lodash-es/range';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { generateDeviceID } from './utils.js';
 import { _converse, api, converse, log } from '@converse/headless';
 
@@ -28,7 +30,7 @@ class OMEMOStore extends Model {
         return Promise.resolve(parseInt(this.get('device_id'), 10));
     }
 
-    isTrustedIdentity (identifier, identity_key, direction) { // eslint-disable-line no-unused-vars
+    isTrustedIdentity (identifier, identity_key, _direction) {
         if (identifier === null || identifier === undefined) {
             throw new Error("Can't check identity key for invalid key");
         }
@@ -53,6 +55,7 @@ class OMEMOStore extends Model {
         if (identifier === null || identifier === undefined) {
             throw new Error("Can't save identity_key for invalid identifier");
         }
+        const { libsignal } = /** @type WindowWithLibsignal */(window);
         const address = new libsignal.SignalProtocolAddress.fromString(identifier);
         const existing = this.get('identity_key' + address.getName());
         const b64_idkey = u.arrayBufferToBase64(identity_key);
@@ -97,7 +100,7 @@ class OMEMOStore extends Model {
         return Promise.resolve();
     }
 
-    loadSignedPreKey (keyId) { // eslint-disable-line no-unused-vars
+    loadSignedPreKey (_keyId) {
         const res = this.get('signed_prekey');
         if (res) {
             return Promise.resolve({
@@ -184,6 +187,9 @@ class OMEMOStore extends Model {
     }
 
     async generateMissingPreKeys () {
+        const { libsignal } = /** @type WindowWithLibsignal */(window);
+        const { KeyHelper } = libsignal;
+
         const prekeyIds = Object.keys(this.getPreKeys());
         const missing_keys = range(0, _converse.NUM_PREKEYS)
             .map(id => id.toString())
@@ -193,15 +199,20 @@ class OMEMOStore extends Model {
             log.warn('No missing prekeys to generate for our own device');
             return Promise.resolve();
         }
+
         const keys = await Promise.all(
-            missing_keys.map(id => libsignal.KeyHelper.generatePreKey(parseInt(id, 10)))
+            missing_keys.map(id => KeyHelper.generatePreKey(parseInt(id, 10)))
         );
         keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
-        const marshalled_keys = Object.keys(this.getPreKeys()).map(k => ({
-            'id': k.keyId,
-            'key': u.arrayBufferToBase64(k.pubKey)
+
+        const prekeys = this.getPreKeys();
+        const marshalled_keys = Object.keys(prekeys).map((id) => ({
+            id,
+            key: prekeys[id].pubKey
         }));
-        const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
+
+        const bare_jid = _converse.session.get('bare_jid');
+        const devicelist = await api.omemo.devicelists.get(bare_jid);
         const device = devicelist.devices.get(this.get('device_id'));
         const bundle = await device.getBundle();
         device.save('bundle', Object.assign(bundle, { 'prekeys': marshalled_keys }));
@@ -219,6 +230,7 @@ class OMEMOStore extends Model {
      */
     async generatePreKeys () {
         const amount = _converse.NUM_PREKEYS;
+        const { libsignal } = /** @type WindowWithLibsignal */(window);
         const { KeyHelper } = libsignal;
         const keys = await Promise.all(
             range(0, amount).map(id => KeyHelper.generatePreKey(id))
@@ -241,6 +253,8 @@ class OMEMOStore extends Model {
      * even if we're offline at that time.
      */
     async generateBundle () {
+        const { libsignal } = /** @type WindowWithLibsignal */(window);
+
         // The first thing that needs to happen if a client wants to
         // start using OMEMO is they need to generate an IdentityKey
         // and a Device ID.

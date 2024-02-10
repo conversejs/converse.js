@@ -1,3 +1,8 @@
+/**
+ * @module:headless-shared-parsers
+ * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
+ * @typedef {module:headless-shared-parsers.Reference} Reference
+ */
 import URI from 'urijs';
 import _converse from './_converse.js';
 import api from './api/index.js';
@@ -18,8 +23,12 @@ import {
 const { NS } = Strophe;
 
 export class StanzaParseError extends Error {
+    /**
+     * @param {string} message
+     * @param {Element} stanza
+     */
     constructor (message, stanza) {
-        super(message, stanza);
+        super(message);
         this.name = 'StanzaParseError';
         this.stanza = stanza;
     }
@@ -28,9 +37,10 @@ export class StanzaParseError extends Error {
 /**
  * Extract the XEP-0359 stanza IDs from the passed in stanza
  * and return a map containing them.
- * @private
- * @param { Element } stanza - The message stanza
- * @returns { Object }
+ * @param {Element} stanza - The message stanza
+ * @param {Element} original_stanza - The encapsulating stanza which contains
+ *      the message stanza.
+ * @returns {Object}
  */
 export function getStanzaIDs (stanza, original_stanza) {
     const attrs = {};
@@ -45,7 +55,8 @@ export function getStanzaIDs (stanza, original_stanza) {
     // Store the archive id
     const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
     if (result) {
-        const by_jid = original_stanza.getAttribute('from') || _converse.bare_jid;
+        const bare_jid = _converse.session.get('bare_jid');
+        const by_jid = original_stanza.getAttribute('from') || bare_jid;
         attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
     }
 
@@ -57,6 +68,9 @@ export function getStanzaIDs (stanza, original_stanza) {
     return attrs;
 }
 
+/**
+ * @param {Element} stanza
+ */
 export function getEncryptionAttributes (stanza) {
     const eme_tag = sizzle(`encryption[xmlns="${Strophe.NS.EME}"]`, stanza).pop();
     const namespace = eme_tag?.getAttribute('namespace');
@@ -151,6 +165,10 @@ export function getOpenGraphMetadata (stanza) {
 }
 
 
+/**
+ * @param {string} text
+ * @param {number} offset
+ */
 export function getMediaURLsMetadata (text, offset=0) {
     const objs = [];
     if (!text) {
@@ -241,7 +259,7 @@ export function getErrorAttributes (stanza) {
 
 /**
  * Given a message stanza, find and return any XEP-0372 references
- * @param { Element } stana - The message stanza
+ * @param {Element} stanza - The message stanza
  * @returns { Reference }
  */
 export function getReferences (stanza) {
@@ -272,6 +290,9 @@ export function getReferences (stanza) {
     }).filter(r => r);
 }
 
+/**
+ * @param {Element} stanza
+ */
 export function getReceiptId (stanza) {
     const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop();
     return receipt?.getAttribute('id');
@@ -333,10 +354,9 @@ export function throwErrorIfInvalidForward (stanza) {
 
 /**
  * Determines whether the passed in stanza is a XEP-0333 Chat Marker
- * @private
  * @method getChatMarker
- * @param { Element } stanza - The message stanza
- * @returns { Boolean }
+ * @param {Element} stanza - The message stanza
+ * @returns {Element}
  */
 export function getChatMarker (stanza) {
     // If we receive more than one marker (which shouldn't happen), we take
@@ -349,10 +369,16 @@ export function getChatMarker (stanza) {
     ).pop();
 }
 
+/**
+ * @param {Element} stanza
+ */
 export function isHeadline (stanza) {
     return stanza.getAttribute('type') === 'headline';
 }
 
+/**
+ * @param {Element} stanza
+ */
 export function isServerMessage (stanza) {
     if (sizzle(`mentions[xmlns="${Strophe.NS.MENTIONS}"]`, stanza).pop()) {
         return false;
@@ -370,10 +396,9 @@ export function isServerMessage (stanza) {
 
 /**
  * Determines whether the passed in stanza is a XEP-0313 MAM stanza
- * @private
  * @method isArchived
- * @param { Element } stanza - The message stanza
- * @returns { Boolean }
+ * @param {Element} original_stanza - The message stanza
+ * @returns {boolean}
  */
 export function isArchived (original_stanza) {
     return !!sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
@@ -383,8 +408,8 @@ export function isArchived (original_stanza) {
 /**
  * Returns an object containing all attribute names and values for a particular element.
  * @method getAttributes
- * @param { Element } stanza
- * @returns { Object }
+ * @param {Element} stanza
+ * @returns {object}
  */
 export function getAttributes (stanza) {
     return stanza.getAttributeNames().reduce((acc, name) => {

@@ -4,10 +4,10 @@
  * @description This is the core utilities module.
  */
 import log, { LEVELS } from '../log.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { saveWindowState, shouldClearCache } from './session.js';
+import { shouldClearCache } from './session.js';
 import { merge, isError, isFunction } from './object.js';
 import { createStore, getDefaultStore } from './storage.js';
 import { waitUntil } from './promise.js';
@@ -51,6 +51,7 @@ import {
 /**
  * The utils object
  * @namespace u
+ * @type {Record<string, Function>}
  */
 const u = {};
 
@@ -226,7 +227,6 @@ export default Object.assign({
     queryChildren,
     replaceCurrentWord,
     safeSave,
-    saveWindowState,
     shouldClearCache,
     shouldCreateMessage,
     shouldRenderMediaFromURL,

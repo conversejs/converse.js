@@ -1,6 +1,6 @@
 import BaseModal from "plugins/modal/modal.js";
 import tplOccupantModal from "./templates/occupant.js";
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 
@@ -8,8 +8,9 @@ const { u } = converse.env;
 
 export default class OccupantModal extends BaseModal {
 
-    constructor () {
+    constructor (options) {
         super();
+        this.message = options.message;
         this.addEventListener("affiliationChanged", () => this.alert(__('Affiliation changed')));
         this.addEventListener("roleChanged", () => this.alert(__('role changed')));
     }

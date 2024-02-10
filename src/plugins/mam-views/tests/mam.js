@@ -577,7 +577,7 @@ describe("Message Archive Management", function () {
             const { api } = _converse;
 
             const entity = await _converse.api.disco.entities.get(_converse.domain);
-            spyOn(_converse, 'onMAMPreferences').and.callThrough();
+            spyOn(_converse.exports, 'onMAMPreferences').and.callThrough();
             api.settings.set('message_archiving', 'never');
 
             const feature = new Model({
@@ -609,8 +609,8 @@ describe("Message Archive Management", function () {
                 .c('never').c('jid').t('montague@montague.lit');
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-            await u.waitUntil(() => _converse.onMAMPreferences.calls.count());
-            expect(_converse.onMAMPreferences).toHaveBeenCalled();
+            await u.waitUntil(() => _converse.exports.onMAMPreferences.calls.count());
+            expect(_converse.exports.onMAMPreferences).toHaveBeenCalled();
 
             sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('iq[type="set"] prefs[xmlns="urn:xmpp:mam:2"]', s).length).pop());
             expect(Strophe.serialize(sent_stanza)).toBe(

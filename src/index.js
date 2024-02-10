@@ -38,8 +38,7 @@ import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized b
 import "./plugins/fullscreen/index.js";
 /* END: Removable components */
 
-
-_converse.CustomElement = CustomElement;
+_converse.exports.CustomElement = CustomElement;
 
 const initialize = converse.initialize;
 

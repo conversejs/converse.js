@@ -6,6 +6,11 @@ import { _converse, api } from "@converse/headless";
 
 export default class HeadlinesHeading extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             'jid': { type: String },

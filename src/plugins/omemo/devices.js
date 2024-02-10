@@ -1,5 +1,5 @@
 import Device from './device.js';
-import { Collection } from '@converse/skeletor/src/collection';
+import { Collection } from '@converse/skeletor';
 
 class Devices extends Collection {
 

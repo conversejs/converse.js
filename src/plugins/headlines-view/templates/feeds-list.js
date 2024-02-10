@@ -1,6 +1,6 @@
 import { __ } from 'i18n';
-import { _converse } from '@converse/headless';
 import { html } from "lit";
+import { HEADLINES_TYPE } from '@converse/headless/shared/constants';
 
 function tplHeadlinesFeedsListItem (el, feed) {
     const open_title = __('Click to open this server message');
@@ -17,7 +17,7 @@ function tplHeadlinesFeedsListItem (el, feed) {
 }
 
 export default (el) => {
-    const feeds = el.model.filter(m => m.get('type') === _converse.HEADLINES_TYPE);
+    const feeds = el.model.filter(m => m.get('type') === HEADLINES_TYPE);
     const heading_headline  = __('Announcements');
     return html`
         <div class="controlbox-section" id="headline">

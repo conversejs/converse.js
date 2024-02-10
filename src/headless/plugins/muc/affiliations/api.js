@@ -1,3 +1,6 @@
+/**
+ * @module:plugin-muc-affiliations-api
+ */
 import { setAffiliations } from './utils.js';
 
 export default {
@@ -11,15 +14,16 @@ export default {
     affiliations: {
         /**
          * Set the given affliation for the given JIDs in the specified MUCs
+         * @typedef {Object} User
+         * @property {string} User.jid - The JID of the user whose affiliation will change
+         * @property {Array} User.affiliation - The new affiliation for this user
+         * @property {string} [User.reason] - An optional reason for the affiliation change
          *
-         * @param { String|Array<String> } muc_jids - The JIDs of the MUCs in
+         * @param {String|Array<String>} muc_jids - The JIDs of the MUCs in
          *  which the affiliation should be set.
-         * @param { Object[] } users - An array of objects representing users
+         * @param {User[]} users - An array of objects representing users
          *  for whom the affiliation is to be set.
-         * @param { String } users[].jid - The JID of the user whose affiliation will change
-         * @param { ('outcast'|'member'|'admin'|'owner') } users[].affiliation - The new affiliation for this user
-         * @param { String } [users[].reason] - An optional reason for the affiliation change
-         * @returns { Promise }
+         * @returns {Promise}
          *
          * @example
          *  api.rooms.affiliations.set(

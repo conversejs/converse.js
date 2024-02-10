@@ -1,6 +1,23 @@
+/**
+ * @typedef {module:headless-shared-chat-utils.MediaURLData} MediaURLData
+ */
 import URI from 'urijs';
 import log from '../log.js';
 import api from '../shared/api/index.js';
+
+/**
+ * Will return false if URL is malformed or contains disallowed characters
+ * @param {string} text
+ * @returns {boolean}
+ */
+export function isValidURL (text) {
+    try {
+        return !!(new URL(text));
+    } catch (error) {
+        log.error(error);
+        return false;
+    }
+}
 
 /**
  * Given a url, check whether the protocol being used is allowed for rendering
@@ -8,7 +25,7 @@ import api from '../shared/api/index.js';
  * @param {string} url
  * @returns {boolean}
  */
-export function isAllowedProtocolForMedia(url) {
+export function isAllowedProtocolForMedia (url) {
     const uri = getURI(url);
     const { protocol } = window.location;
     if (['chrome-extension:','file:'].includes(protocol)) {
@@ -20,6 +37,9 @@ export function isAllowedProtocolForMedia(url) {
     );
 }
 
+/**
+ * @param {string|URI} url
+ */
 export function getURI (url) {
     try {
         return url instanceof URI ? url : new URI(url);
@@ -90,9 +110,9 @@ export function isDomainAllowed (url, setting) {
 }
 
 /**
- * Accepts a {@link MediaURL} object and then checks whether its domain is
+ * Accepts a {@link MediaURLData} object and then checks whether its domain is
  * allowed for rendering in the chat.
- * @param {MediaURL} o
+ * @param {MediaURLData} o
  * @returns {boolean}
  */
 export function isMediaURLDomainAllowed (o) {

@@ -1,6 +1,9 @@
+/**
+ * @typedef {import('../../headless/plugins/chat/message.js').default} Message
+ */
 import debounce from 'lodash-es/debounce';
 import tplNewDay from "./templates/new-day.js";
-import { _converse, api, converse } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import {
@@ -118,7 +121,7 @@ export const markScrolled = debounce((ev) => _markScrolled(ev), 50);
 /**
  * Given a message object, returns a TemplateResult indicating a new day if
  * the passed in message is more than a day later than its predecessor.
- * @param { _converse.Message }
+ * @param {Message} message
  */
 export function getDayIndicator (message) {
     const messages = message.collection?.models;
@@ -172,6 +175,14 @@ export function getTonedEmojis () {
     return converse.emojis.toned;
 }
 
+/**
+ * @typedef {object} EmojiMarkupOptions
+ * @property {boolean} [unicode_only=false]
+ * @property {boolean} [add_title_wrapper=false]
+ *
+ * @param {object} data
+ * @param {EmojiMarkupOptions} options
+ */
 export function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: false}) {
     const emoji = data.emoji;
     const shortname = data.shortname;

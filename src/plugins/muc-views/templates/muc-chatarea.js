@@ -2,7 +2,7 @@ import '../bottom-panel.js';
 import '../sidebar.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
-import { _converse } from '@converse/headless';
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
 import { html } from "lit";
 
 export default (o) => html`
@@ -18,7 +18,7 @@ export default (o) => html`
                         .model=${o.model}
                         .messages=${o.getHelpMessages()}
                         type="info"
-                        chat_type="${_converse.CHATROOMS_TYPE}"
+                        chat_type="${CHATROOMS_TYPE}"
                     ></converse-chat-help></div>` : '' }
         </div>
         <converse-muc-bottom-panel jid="${o.jid}" class="bottom-panel"></converse-muc-bottom-panel>

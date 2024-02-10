@@ -1,4 +1,5 @@
 import { _converse, api, converse, log } from "@converse/headless";
+import { CHATROOMS_TYPE } from "@converse/headless/shared/constants";
 
 const { Strophe, $iq } = converse.env;
 
@@ -87,7 +88,7 @@ export async function enablePush (domain) {
 }
 
 export function onChatBoxAdded (model) {
-    if (model.get('type') == _converse.CHATROOMS_TYPE) {
+    if (model.get('type') == CHATROOMS_TYPE) {
         enablePush(Strophe.getDomainFromJid(model.get('jid')));
     }
 }

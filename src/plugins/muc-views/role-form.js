@@ -7,6 +7,7 @@ import { isErrorObject } from '@converse/headless/utils/index.js';
 const { Strophe, sizzle } = converse.env;
 
 class RoleForm extends CustomElement {
+
     static get properties () {
         return {
             muc: { type: Object },
@@ -15,6 +16,11 @@ class RoleForm extends CustomElement {
             alert_message: { type: String, attribute: false },
             alert_type: { type: String, attribute: false },
         };
+    }
+
+    constructor () {
+        super();
+        this.muc = null;
     }
 
     render () {

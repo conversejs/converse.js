@@ -1,4 +1,5 @@
 import tplGroup from "./group.js";
+import tplRosterFilter from "./roster_filter.js";
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless";
 import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
@@ -46,7 +47,13 @@ export default (el) => {
         </div>
 
         <div class="list-container roster-contacts ${ is_closed ? 'hidden' : '' }">
-            <converse-roster-filter @update=${() => el.requestUpdate()}></converse-roster-filter>
+            <converse-contacts-filter
+                    @update=${() => el.requestUpdate()}
+                    .promise=${api.waitUntil('rosterInitialized')}
+                    .contacts=${_converse.roster}
+                    .template=${tplRosterFilter}
+                    .filter=${_converse.roster_filter}></converse-contacts-filter>
+
             ${ repeat(groupnames, (n) => n, (name) => {
                 const contacts = contacts_map[name].filter(c => shouldShowContact(c, name));
                 contacts.sort(contactsComparator);

@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@converse/openpromise": "^0.0.1",
-    "@converse/skeletor": "conversejs/skeletor#c845797101e21a163ac403fc65eac6db069a16b1",
+    "@converse/skeletor": "conversejs/skeletor#4ff728207fa30721686021d11fb8b5245c54a6b4",
     "dayjs": "^1.11.8",
     "dompurify": "^2.3.1",
     "filesize": "^10.0.7",
@@ -41,7 +41,7 @@
     "pluggable.js": "3.0.1",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "strophe/strophejs#6b24a2a2121884b2d02aeb5756142f7dcaf05d9e",
+    "strophe.js": "strophe/strophejs#a75895308216e81b28f58d276395a01b15c9e645",
     "urijs": "^1.19.10"
   },
   "devDependencies": {}

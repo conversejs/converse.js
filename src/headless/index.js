@@ -17,7 +17,7 @@ dayjs.extend(advancedFormat);
  */
 
 import "./plugins/bookmarks/index.js";  // XEP-0199 XMPP Ping
-import "./plugins/bosh.js";             // XEP-0206 BOSH
+import "./plugins/bosh/index.js";       // XEP-0206 BOSH
 import "./plugins/caps/index.js";       // XEP-0115 Entity Capabilities
 import "./plugins/chat/index.js";       // RFC-6121 Instant messaging
 import "./plugins/chatboxes/index.js";

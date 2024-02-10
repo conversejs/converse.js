@@ -1,4 +1,4 @@
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from "@converse/skeletor";
 import Presence from "./presence.js";
 
 class Presences extends Collection {

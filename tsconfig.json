@@ -11,6 +11,10 @@
     "target": "es2016",
     "module": "esnext",
 
+    "types": [
+      "@types/webappsec-credential-management"
+    ],
+
     "lib": [
       "ES2020",
       "dom"

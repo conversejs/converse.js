@@ -3,16 +3,13 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import { Strophe } from 'strophe.js';
 
-/**
- * @namespace _converse.ChatRoomMessage
- * @memberOf _converse
- */
+
 class MUCMessage extends Message {
 
-    initialize () {
-        if (!this.checkValidity()) {
-            return;
-        }
+    async initialize () { // eslint-disable-line require-await
+        this.chatbox = this.collection?.chatbox;
+        if (!this.checkValidity()) return;
+
         if (this.get('file')) {
             this.on('change:put', () => this.uploadFile());
         }
@@ -20,13 +17,12 @@ class MUCMessage extends Message {
         this.on('change:type', () => this.setOccupant());
         this.on('change:is_ephemeral', () => this.setTimerForEphemeralMessage());
 
-        this.chatbox = this.collection?.chatbox;
         this.setTimerForEphemeralMessage();
         this.setOccupant();
         /**
-         * Triggered once a { @link _converse.ChatRoomMessage } has been created and initialized.
+         * Triggered once a { @link MUCMessage} has been created and initialized.
          * @event _converse#chatRoomMessageInitialized
-         * @type { _converse.ChatRoomMessages}
+         * @type {MUCMessage}
          * @example _converse.api.listen.on('chatRoomMessageInitialized', model => { ... });
          */
         api.trigger('chatRoomMessageInitialized', this);
@@ -41,7 +37,7 @@ class MUCMessage extends Message {
      * based on configuration settings and server support.
      * @async
      * @method _converse.ChatRoomMessages#mayBeModerated
-     * @returns { Boolean }
+     * @returns {boolean}
      */
     mayBeModerated () {
         if (typeof this.get('from_muc')  === 'undefined') {
@@ -57,7 +53,7 @@ class MUCMessage extends Message {
     }
 
     checkValidity () {
-        const result = _converse.Message.prototype.checkValidity.call(this);
+        const result = _converse.exports.Message.prototype.checkValidity.call(this);
         !result && this.chatbox.debouncedRejoin();
         return result;
     }

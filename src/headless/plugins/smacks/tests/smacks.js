@@ -213,6 +213,8 @@ describe("XEP-0198 Stream Management", function () {
             },
             async function (_converse) {
 
+        const { api } = _converse;
+
         const key = "converse-test-session/converse.session-romeo@montague.lit-converse.session-romeo@montague.lit";
         sessionStorage.setItem(
             key,
@@ -251,15 +253,26 @@ describe("XEP-0198 Stream Management", function () {
             })
         );
 
-        _converse.no_connection_on_bind = true; // XXX Don't trigger CONNECTED in MockConnection
-        await _converse.api.user.login('romeo@montague.lit', 'secret');
+        const proto = Object.getPrototypeOf(api.connection.get())
+        const _changeConnectStatus = proto._changeConnectStatus;
+        let count = 0;
+        spyOn(proto, '_changeConnectStatus').and.callFake((status) => {
+            if (status === Strophe.Status.CONNECTED && count === 0) {
+                // Don't trigger CONNECTED
+                count++;
+                return;
+            }
+            _changeConnectStatus.call(api.connection.get(), status);
+        });
 
-        const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+        await api.user.login('romeo@montague.lit', 'secret');
+
+        const sent_stanzas = api.connection.get().sent_stanzas;
         const stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
         expect(Strophe.serialize(stanza)).toEqual('<resume h="580" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
 
         const result = u.toStanza(`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`);
-        _converse.api.connection.get()._dataRecv(mock.createRequest(result));
+        api.connection.get()._dataRecv(mock.createRequest(result));
         expect(_converse.session.get('smacks_enabled')).toBe(true);
 
         const nick = 'romeo';
@@ -278,9 +291,9 @@ describe("XEP-0198 Stream Management", function () {
                 type: 'groupchat'
             }).c('body').t('First message').tree();
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest(msg));
+        api.connection.get()._dataRecv(mock.createRequest(msg));
 
-        await _converse.api.waitUntil('chatBoxesFetched');
+        await api.waitUntil('chatBoxesFetched');
         const muc = _converse.chatboxes.get(muc_jid);
         await mock.getRoomFeatures(_converse, muc_jid);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
@@ -288,6 +301,5 @@ describe("XEP-0198 Stream Management", function () {
         await muc.messages.fetched;
         await u.waitUntil(() => muc.messages.length);
         expect(muc.messages.at(0).get('message')).toBe('First message')
-        delete _converse.no_connection_on_bind;
     }));
 });

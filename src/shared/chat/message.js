@@ -23,6 +23,12 @@ const { Strophe, dayjs } = converse.env;
 
 export default class Message extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+        this.mid = null;
+    }
+
     static get properties () {
         return {
             jid: { type: String },

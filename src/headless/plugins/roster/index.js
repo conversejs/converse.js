@@ -36,16 +36,19 @@ converse.plugins.add('converse-roster', {
         Object.assign(_converse.api, roster_api);
 
         const { __ } = _converse;
-        _converse.HEADER_CURRENT_CONTACTS = __('My contacts');
-        _converse.HEADER_PENDING_CONTACTS = __('Pending contacts');
-        _converse.HEADER_REQUESTING_CONTACTS = __('Contact requests');
-        _converse.HEADER_UNGROUPED = __('Ungrouped');
-        _converse.HEADER_UNREAD = __('New messages');
+        const labels = {
+            HEADER_CURRENT_CONTACTS: __('My contacts'),
+            HEADER_PENDING_CONTACTS: __('Pending contacts'),
+            HEADER_REQUESTING_CONTACTS: __('Contact requests'),
+            HEADER_UNGROUPED: __('Ungrouped'),
+            HEADER_UNREAD: __('New messages'),
+        };
+        Object.assign(_converse, labels); // XXX DEPRECATED
+        Object.assign(_converse.labels, labels);
 
-        _converse.Presence = Presence;
-        _converse.Presences = Presences;
-        _converse.RosterContact = RosterContact;
-        _converse.RosterContacts = RosterContacts;
+        const exports = { Presence, Presences, RosterContact, RosterContacts };
+        Object.assign(_converse, exports);  // XXX DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         api.listen.on('beforeTearDown', () => unregisterPresenceHandler());
         api.listen.on('chatBoxesInitialized', onChatBoxesInitialized);

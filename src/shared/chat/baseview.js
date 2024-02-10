@@ -1,6 +1,10 @@
-import { CustomElement } from 'shared/components/element.js';
+/**
+ * @typedef {import('@converse/skeletor').Model} Model
+ */
+import { CustomElement } from '../components/element.js';
 import { _converse, api } from '@converse/headless';
 import { onScrolledDown } from './utils.js';
+import { CHATROOMS_TYPE, INACTIVE } from '@converse/headless/shared/constants.js';
 
 
 export default class BaseChatView extends CustomElement {
@@ -9,6 +13,12 @@ export default class BaseChatView extends CustomElement {
         return {
             jid: { type: String }
         }
+    }
+
+    constructor () {
+        super();
+        this.jid = /** @type {string} */ null;
+        this.model = /** @type {Model} */ null;
     }
 
     disconnectedCallback () {
@@ -38,7 +48,7 @@ export default class BaseChatView extends CustomElement {
     focus () {
         const textarea_el = this.getElementsByClassName('chat-textarea')[0];
         if (textarea_el && document.activeElement !== textarea_el) {
-            textarea_el.focus();
+            /** @type {HTMLTextAreaElement} */(textarea_el).focus();
         }
         return this;
     }
@@ -51,7 +61,7 @@ export default class BaseChatView extends CustomElement {
         /**
          * Triggered when the focus has been removed from a particular chat.
          * @event _converse#chatBoxBlurred
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+         * @type {BaseChatView}
          * @example _converse.api.listen.on('chatBoxBlurred', (view, event) => { ... });
          */
         api.trigger('chatBoxBlurred', this, ev);
@@ -65,14 +75,14 @@ export default class BaseChatView extends CustomElement {
         /**
          * Triggered when the focus has been moved to a particular chat.
          * @event _converse#chatBoxFocused
-         * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+         * @type {BaseChatView}
          * @example _converse.api.listen.on('chatBoxFocused', (view, event) => { ... });
          */
         api.trigger('chatBoxFocused', this, ev);
     }
 
     getBottomPanel () {
-        if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
+        if (this.model.get('type') === CHATROOMS_TYPE) {
             return this.querySelector('converse-muc-bottom-panel');
         } else {
             return this.querySelector('converse-chat-bottom-panel');
@@ -80,7 +90,7 @@ export default class BaseChatView extends CustomElement {
     }
 
     getMessageForm () {
-        if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
+        if (this.model.get('type') === CHATROOMS_TYPE) {
             return this.querySelector('converse-muc-message-form');
         } else {
             return this.querySelector('converse-message-form');
@@ -103,14 +113,14 @@ export default class BaseChatView extends CustomElement {
         onScrolledDown(this.model);
     }
 
-    onWindowStateChanged (data) {
-        if (data.state === 'visible') {
+    onWindowStateChanged () {
+        if (document.hidden) {
+            this.model.setChatState(INACTIVE, { 'silent': true });
+            this.model.sendChatState();
+        } else {
             if (!this.model.isHidden()) {
                 this.model.clearUnreadMsgCounter();
             }
-        } else if (data.state === 'hidden') {
-            this.model.setChatState(_converse.INACTIVE, { 'silent': true });
-            this.model.sendChatState();
         }
     }
 }

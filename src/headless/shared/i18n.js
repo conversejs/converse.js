@@ -4,6 +4,7 @@ import { sprintf } from 'sprintf-js';
  * @namespace i18n
  */
 export default {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     initialize () {},
 
     /**
@@ -18,7 +19,6 @@ export default {
      * @method __
      * @private
      * @memberOf i18n
-     * @param { String } str
      */
     __ (...args) {
         return sprintf(...args);

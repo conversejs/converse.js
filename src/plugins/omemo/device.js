@@ -1,5 +1,5 @@
-import { IQError } from './errors.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { IQError } from 'shared/errors.js';
+import { Model } from '@converse/skeletor';
 import { UNDECIDED } from './consts.js';
 import { _converse, api, converse, log } from '@converse/headless';
 import { getRandomInt } from '@converse/headless/utils/index.js';
@@ -58,7 +58,7 @@ class Device extends Model {
      */
     getBundle () {
         if (this.get('bundle')) {
-            return Promise.resolve(this.get('bundle'), this);
+            return Promise.resolve(this.get('bundle'));
         } else {
             return this.fetchBundleFromServer();
         }

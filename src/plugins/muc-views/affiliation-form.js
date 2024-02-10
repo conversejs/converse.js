@@ -17,6 +17,12 @@ class AffiliationForm extends CustomElement {
         };
     }
 
+    constructor () {
+        super();
+        this.jid = null;
+        this.muc = null;
+    }
+
     render () {
         return tplAffiliationForm(this);
     }
@@ -32,10 +38,10 @@ class AffiliationForm extends CustomElement {
         this.alert(); // clear alert messages
 
         const data = new FormData(ev.target);
-        const affiliation = data.get('affiliation');
+        const affiliation = /** @type {string} */(data.get('affiliation'));
         const attrs = {
             jid: this.jid,
-            reason: data.get('reason'),
+            reason: /** @type {string} */(data.get('reason')),
         };
         const muc_jid = this.muc.get('jid');
         try {

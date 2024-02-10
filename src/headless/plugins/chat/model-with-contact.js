@@ -1,5 +1,5 @@
 import api from "../../shared/api/index.js";
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 
 class ModelWithContact extends Model {
@@ -7,8 +7,13 @@ class ModelWithContact extends Model {
     initialize () {
         super.initialize();
         this.rosterContactAdded = getOpenPromise();
+        this.contact = null;
+        this.vcard = null;
     }
 
+    /**
+     * @param {string} jid
+     */
     async setRosterContact (jid) {
         const contact = await api.contacts.get(jid);
         if (contact) {

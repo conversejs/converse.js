@@ -1,4 +1,9 @@
-/* global libsignal */
+/**
+ * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
+ * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('@converse/headless/plugins/chat/model.js').default} ChatBox
+ */
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplImage from 'templates/image.js';
@@ -11,6 +16,7 @@ import { html } from 'lit';
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isError } from '@converse/headless/utils/object.js';
 import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
+import { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } from '@converse/headless/shared/constants.js';
 import { until } from 'lit/directives/until.js';
 import {
     appendArrayBuffer,
@@ -21,6 +27,8 @@ import {
     hexToArrayBuffer,
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
+import MUC from 'headless/plugins/muc/muc.js';
+import {IQError, UserFacingError} from 'shared/errors.js';
 
 const { Strophe, URI, sizzle, u } = converse.env;
 
@@ -33,8 +41,12 @@ export function formatFingerprint (fp) {
     return fp;
 }
 
+/**
+ * @param {Error|IQError|UserFacingError} e
+ * @param {ChatBox} chat
+ */
 export function handleMessageSendError (e, chat) {
-    if (e.name === 'IQError') {
+    if (e instanceof IQError) {
         chat.save('omemo_supported', false);
 
         const err_msgs = [];
@@ -58,7 +70,7 @@ export function handleMessageSendError (e, chat) {
             err_msgs.push(e.iq.outerHTML);
         }
         api.alert('error', __('Error'), err_msgs);
-    } else if (e.user_facing) {
+    } else if (e instanceof UserFacingError) {
         api.alert('error', __('Error'), [e.message]);
     }
     throw e;
@@ -76,6 +88,9 @@ export function getOutgoingMessageAttributes (chat, attrs) {
     return attrs;
 }
 
+/**
+ * @param {string} plaintext
+ */
 async function encryptMessage (plaintext) {
     // The client MUST use fresh, randomly generated key/IV pairs
     // with AES-128 in Galois/Counter Mode (GCM).
@@ -119,13 +134,18 @@ async function decryptMessage (obj) {
     return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
 }
 
+/**
+ * @param {File} file
+ * @returns {Promise<File>}
+ */
 export async function encryptFile (file) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256, }, true, ['encrypt', 'decrypt']);
     const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, }, key, await file.arrayBuffer());
     const exported_key = await window.crypto.subtle.exportKey('raw', key);
     const encrypted_file = new File([encrypted], file.name, { type: file.type, lastModified: file.lastModified });
-    encrypted_file.xep454_ivkey = arrayBufferToHex(iv) + arrayBufferToHex(exported_key);
+
+    Object.assign(encrypted_file, { xep454_ivkey: arrayBufferToHex(iv) + arrayBufferToHex(exported_key) });
     return encrypted_file;
 }
 
@@ -296,7 +316,7 @@ export async function parseEncryptedMessage (stanza, attrs) {
 export function onChatBoxesInitialized () {
     _converse.chatboxes.on('add', chatbox => {
         checkOMEMOSupported(chatbox);
-        if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+        if (chatbox.get('type') === CHATROOMS_TYPE) {
             chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
             chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
         }
@@ -324,8 +344,9 @@ export function onChatInitialized (el) {
 }
 
 export function getSessionCipher (jid, id) {
+    const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(jid, id);
-    return new window.libsignal.SessionCipher(_converse.omemo_store, address);
+    return new libsignal.SessionCipher(_converse.omemo_store, address);
 }
 
 function getJIDForDecryption (attrs) {
@@ -448,11 +469,9 @@ export function addKeysToMessageStanza (stanza, dicts, iv) {
                 stanza.attrs({ 'prekey': prekey });
             }
             stanza.up();
-            if (i == dicts.length - 1) {
-                stanza.c('iv').t(iv).up().up();
-            }
         }
     }
+    stanza.c('iv').t(iv).up().up();
     return Promise.resolve(stanza);
 }
 
@@ -496,6 +515,8 @@ export async function getDevicesForContact (jid) {
 }
 
 export async function generateDeviceID () {
+    const { libsignal } = /** @type WindowWithLibsignal */(window);
+
     /* Generates a device ID, making sure that it's unique */
     const devicelist = await api.omemo.devicelists.get(_converse.bare_jid, true);
     const existing_ids = devicelist.devices.pluck('id');
@@ -515,6 +536,7 @@ export async function generateDeviceID () {
 }
 
 async function buildSession (device) {
+    const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
     const prekey = device.getRandomPreKey();
@@ -540,6 +562,8 @@ export async function getSession (device) {
         log.error(`Could not build an OMEMO session for device ${device.get('id')} because we don't have its bundle`);
         return null;
     }
+
+    const { libsignal } = /** @type WindowWithLibsignal */(window);
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const session = await _converse.omemo_store.loadSession(address.toString());
     if (session) {
@@ -695,10 +719,10 @@ async function onOccupantAdded (chatroom, occupant) {
 
 async function checkOMEMOSupported (chatbox) {
     let supported;
-    if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+    if (chatbox.get('type') === CHATROOMS_TYPE) {
         await api.waitUntil('OMEMOInitialized');
         supported = chatbox.features.get('nonanonymous') && chatbox.features.get('membersonly');
-    } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+    } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
         supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
     }
     chatbox.set('omemo_supported', supported);
@@ -713,7 +737,7 @@ function toggleOMEMO (ev) {
     const toolbar_el = u.ancestor(ev.target, 'converse-chat-toolbar');
     if (!toolbar_el.model.get('omemo_supported')) {
         let messages;
-        if (toolbar_el.model.get('type') === _converse.CHATROOMS_TYPE) {
+        if (toolbar_el.model.get('type') === CHATROOMS_TYPE) {
             messages = [
                 __(
                     'Cannot use end-to-end encryption in this groupchat, ' +
@@ -735,7 +759,7 @@ function toggleOMEMO (ev) {
 
 export function getOMEMOToolbarButton (toolbar_el, buttons) {
     const model = toolbar_el.model;
-    const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
+    const is_muc = model.get('type') === CHATROOMS_TYPE;
     let title;
     if (model.get('omemo_supported')) {
         const i18n_plaintext = __('Messages are being sent in plaintext');
@@ -774,18 +798,19 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
 }
 
 
+/**
+ * @param {MUC|ChatBox} chatbox
+ */
 async function getBundlesAndBuildSessions (chatbox) {
     const no_devices_err = __('Sorry, no devices found to which we can send an OMEMO encrypted message.');
     let devices;
-    if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+    if (chatbox instanceof MUC) {
         const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
         devices = collections.reduce((a, b) => a.concat(b.models), []);
-    } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+    } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
         const their_devices = await getDevicesForContact(chatbox.get('jid'));
         if (their_devices.length === 0) {
-            const err = new Error(no_devices_err);
-            err.user_facing = true;
-            throw err;
+            throw new UserFacingError(no_devices_err);
         }
         const own_list = await api.omemo.devicelists.get(_converse.bare_jid)
         const own_devices = own_list.devices;
@@ -803,9 +828,7 @@ async function getBundlesAndBuildSessions (chatbox) {
         // We couldn't build a session for certain devices.
         devices = devices.filter(d => sessions[devices.indexOf(d)]);
         if (devices.length === 0) {
-            const err = new Error(no_devices_err);
-            err.user_facing = true;
-            throw err;
+            throw new UserFacingError(no_devices_err);
         }
     }
     return devices;

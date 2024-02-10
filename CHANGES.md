@@ -3,11 +3,25 @@
 ## 11.0.0 (Unreleased)
 
 - #2716: Fix issue with chat display when opening via URL
+- #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
+- #3300: Adding the maxWait option for `debouncedPruneHistory`
+- #3302: debounce MUC sidebar rendering
+- #3307: Fix inconsistency between browsers on textarea outlines
+- Add an occupants filter to the MUC sidebar
+- Fix: MUC occupant list does not sort itself on nicknames or roles changes
+- Fix: refresh the MUC sidebar when participants collection is sorted
 
 ### Breaking changes:
 
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
 - The connection is no longer available on the `_converse` object. Instead, use `api.connection.get()`.
+- Add a new `exports` attribute on the `_converse` object which is meant for
+  providing access for 3rd party plugins to code (e.g. classes) from
+  converse.js. Some classes that were on the `_converse` object, like
+  `CustomElement` are not on `_converse.exports`.
+- The `windowStateChanged` event has been removed. If you used it, rely on the
+  `visibilitychange` event on `document` instead.
+- `api.modal.create` no longer takes a class, instead it takes the name of a custom DOM element.
 
 ## 10.1.6 (2023-08-31)
 

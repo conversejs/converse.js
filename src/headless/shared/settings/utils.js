@@ -1,16 +1,19 @@
+import EventEmitter from '@converse/skeletor/src/eventemitter.js';
 import _converse from '../_converse.js';
 import isEqual from "lodash-es/isEqual.js";
 import log from '../../log.js';
 import pick from 'lodash-es/pick';
-import { merge } from '../../utils/object.js';
 import { DEFAULT_SETTINGS } from './constants.js';
-import { Events } from '@converse/skeletor/src/events.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { initStorage } from '../../utils/storage.js';
+import { merge } from '../../utils/object.js';
+
 
 let app_settings;
 let init_settings = {}; // Container for settings passed in via converse.initialize
 let user_settings; // User settings, populated via api.users.settings
+
+class AppSettings extends EventEmitter(Object) {}
 
 export function getAppSettings () {
     return app_settings;
@@ -19,8 +22,7 @@ export function getAppSettings () {
 export function initAppSettings (settings) {
     init_settings = settings;
 
-    app_settings = {};
-    Object.assign(app_settings, Events);
+    app_settings = new AppSettings();
 
     // Allow only whitelisted settings to be overwritten via converse.initialize
     const allowed_settings = pick(settings, Object.keys(DEFAULT_SETTINGS));
@@ -93,21 +95,22 @@ export function updateAppSettings (key, val) {
 }
 
 /**
- * @async
+ * @returns {Promise<void>|void} A promise when the user settings object
+ *  is created anew and it's contents fetched from storage.
  */
 function initUserSettings () {
-    if (!_converse.bare_jid) {
+    const bare_jid = _converse.session.get('bare_jid');
+    if (!bare_jid) {
         const msg = "No JID to fetch user settings for";
         log.error(msg);
         throw Error(msg);
     }
-    if (!user_settings?.fetched) {
-        const id = `converse.user-settings.${_converse.bare_jid}`;
+    const id = `converse.user-settings.${bare_jid}`;
+    if (user_settings?.get('id') !== id) {
         user_settings = new Model({id});
         initStorage(user_settings, id);
-        user_settings.fetched = user_settings.fetch({'promise': true});
+        return user_settings.fetch({'promise': true});
     }
-    return user_settings.fetched;
 }
 
 export async function getUserSettings () {
@@ -121,6 +124,10 @@ export async function updateUserSettings (data, options) {
 }
 
 export async function clearUserSettings () {
-    await initUserSettings();
-    return user_settings.clear();
+    const bare_jid = _converse.session.get('bare_jid');
+    if (bare_jid) {
+        await initUserSettings();
+        return user_settings.clear();
+    }
+    user_settings = undefined;
 }

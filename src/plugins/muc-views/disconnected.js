@@ -6,6 +6,11 @@ import { _converse, api } from "@converse/headless";
 
 class MUCDisconnected extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             'jid': { type: String }

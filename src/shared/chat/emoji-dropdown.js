@@ -4,6 +4,7 @@ import { _converse, api, converse } from "@converse/headless";
 import { html } from "lit";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { until } from 'lit/directives/until.js';
+import { CHATROOMS_TYPE } from "@converse/headless/shared/constants.js";
 
 const u = converse.env.utils;
 
@@ -12,7 +13,9 @@ export default class EmojiDropdown extends DropdownBase {
 
     static get properties() {
         return {
-            chatview: { type: Object }
+            chatview: { type: Object },
+            icon_classes: { type: String },
+            items: { type: Array }
         };
     }
 
@@ -20,6 +23,7 @@ export default class EmojiDropdown extends DropdownBase {
         super();
         // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
         this.render_emojis = false;
+        this.chatview = null;
     }
 
     initModel () {
@@ -38,7 +42,7 @@ export default class EmojiDropdown extends DropdownBase {
     }
 
     render() {
-        const is_groupchat = this.chatview.model.get('type') === _converse.CHATROOMS_TYPE;
+        const is_groupchat = this.chatview.model.get('type') === CHATROOMS_TYPE;
         const color = is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
         return html`
             <div class="dropup">
@@ -94,7 +98,7 @@ export default class EmojiDropdown extends DropdownBase {
             await this.updateComplete;
         }
         super.showMenu();
-        setTimeout(() => this.querySelector('.emoji-search')?.focus());
+        setTimeout(() => /** @type {HTMLInputElement} */(this.querySelector('.emoji-search'))?.focus());
     }
 }
 

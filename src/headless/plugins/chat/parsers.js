@@ -1,3 +1,7 @@
+/**
+ * @module:plugin-chat-parsers
+ * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import dayjs from 'dayjs';
@@ -41,17 +45,19 @@ export async function parseMessage (stanza) {
 
     let to_jid = stanza.getAttribute('to');
     const to_resource = Strophe.getResourceFromJid(to_jid);
-    if (api.settings.get('filter_by_resource') && to_resource && to_resource !== _converse.resource) {
+    const resource = _converse.session.get('resource');
+    if (api.settings.get('filter_by_resource') && to_resource && to_resource !== resource) {
         return new StanzaParseError(
             `Ignoring incoming message intended for a different resource: ${to_jid}`,
             stanza
         );
     }
 
+    const bare_jid = _converse.session.get('bare_jid');
     const original_stanza = stanza;
-    let from_jid = stanza.getAttribute('from') || _converse.bare_jid;
+    let from_jid = stanza.getAttribute('from') || bare_jid;
     if (isCarbon(stanza)) {
-        if (from_jid === _converse.bare_jid) {
+        if (from_jid === bare_jid) {
             const selector = `[xmlns="${Strophe.NS.CARBONS}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
             stanza = sizzle(selector, stanza).pop();
             to_jid = stanza.getAttribute('to');
@@ -65,7 +71,7 @@ export async function parseMessage (stanza) {
 
     const is_archived = isArchived(stanza);
     if (is_archived) {
-        if (from_jid === _converse.bare_jid) {
+        if (from_jid === bare_jid) {
             const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
             stanza = sizzle(selector, stanza).pop();
             to_jid = stanza.getAttribute('to');
@@ -79,7 +85,7 @@ export async function parseMessage (stanza) {
     }
 
     const from_bare_jid = Strophe.getBareJidFromJid(from_jid);
-    const is_me = from_bare_jid === _converse.bare_jid;
+    const is_me = from_bare_jid === bare_jid;
     if (is_me && to_jid === null) {
         return new StanzaParseError(
             `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
@@ -102,8 +108,8 @@ export async function parseMessage (stanza) {
         }
     }
     /**
-     * @typedef { Object } MessageAttributes
      * The object which {@link parseMessage} returns
+     * @typedef {Object} MessageAttributes
      * @property { ('me'|'them') } sender - Whether the message was sent by the current user or someone else
      * @property { Array<Object> } references - A list of objects representing XEP-0372 references
      * @property { Boolean } editable - Is this message editable via XEP-0308?
@@ -186,12 +192,12 @@ export async function parseMessage (stanza) {
         getCorrectionAttributes(stanza, original_stanza),
         getStanzaIDs(stanza, original_stanza),
         getRetractionAttributes(stanza, original_stanza),
-        getEncryptionAttributes(stanza, _converse)
+        getEncryptionAttributes(stanza)
     );
 
     if (attrs.is_archived) {
         const from = original_stanza.getAttribute('from');
-        if (from && from !== _converse.bare_jid) {
+        if (from && from !== bare_jid) {
             return new StanzaParseError(`Invalid Stanza: Forged MAM message from ${from}`, stanza);
         }
     }

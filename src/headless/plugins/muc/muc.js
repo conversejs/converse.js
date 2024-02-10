@@ -1,3 +1,13 @@
+/**
+ * @module:headless-plugins-muc-muc
+ * @typedef {import('./message.js').default} MUCMessage
+ * @typedef {import('./occupant.js').default} ChatRoomOccupant
+ * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
+ * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
+ * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import ChatBox from '../chat/model';
@@ -6,8 +16,9 @@ import log from '../../log';
 import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { ROOMSTATUS } from './constants.js';
+import { CHATROOMS_TYPE, GONE } from '../../shared/constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from './affiliations/utils.js';
@@ -15,11 +26,11 @@ import { getOpenPromise } from '@converse/openpromise';
 import { handleCorrection } from '../../shared/chat/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
 import { isArchived, getMediaURLsMetadata } from '../../shared/parsers.js';
-import { getUniqueId, safeSave } from '../../utils/index.js';
+import { getUniqueId, isErrorObject, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import { shouldCreateGroupchatMessage } from './utils.js';
+import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
 
 const { u } = converse.env;
 
@@ -50,7 +61,7 @@ const METADATA_ATTRIBUTES = [
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 
 class MUCSession extends Model {
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
             'connection_status': ROOMSTATUS.DISCONNECTED
         };
@@ -59,12 +70,12 @@ class MUCSession extends Model {
 
 /**
  * Represents an open/ongoing groupchat conversation.
- * @namespace _converse.ChatRoom
+ * @namespace MUC
  * @memberOf _converse
  */
 class MUC extends ChatBox {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
             'bookmarked': false,
             'chat_state': undefined,
@@ -78,7 +89,7 @@ class MUC extends ChatBox {
             // user.
             //
             // To keep things simple, we reuse `num_unread` from
-            // _converse.ChatBox to indicate unread messages which
+            // ChatBox to indicate unread messages which
             // mention the user and `num_unread_general` to indicate
             // generally unread messages (which *includes* mentions!).
             'num_unread_general': 0,
@@ -86,7 +97,7 @@ class MUC extends ChatBox {
             'roomconfig': {},
             'time_opened': this.get('time_opened') || new Date().getTime(),
             'time_sent': new Date(0).toISOString(),
-            'type': _converse.CHATROOMS_TYPE
+            'type': CHATROOMS_TYPE
         };
     }
 
@@ -121,9 +132,9 @@ class MUC extends ChatBox {
             this.join();
         }
         /**
-         * Triggered once a {@link _converse.ChatRoom} has been created and initialized.
+         * Triggered once a {@link MUC} has been created and initialized.
          * @event _converse#chatRoomInitialized
-         * @type { _converse.ChatRoom }
+         * @type { MUC }
          * @example _converse.api.listen.on('chatRoomInitialized', model => { ... });
          */
         await api.trigger('chatRoomInitialized', this, { 'Synchronous': true });
@@ -136,7 +147,7 @@ class MUC extends ChatBox {
 
     /**
      * Checks whether this MUC qualifies for subscribing to XEP-0437 Room Activity Indicators (RAI)
-     * @method _converse.ChatRoom#isRAICandidate
+     * @method MUC#isRAICandidate
      * @returns { Boolean }
      */
     isRAICandidate () {
@@ -146,8 +157,8 @@ class MUC extends ChatBox {
     /**
      * Checks whether we're still joined and if so, restores the MUC state from cache.
      * @private
-     * @method _converse.ChatRoom#restoreFromCache
-     * @returns { Boolean } Returns `true` if we're still joined, otherwise returns `false`.
+     * @method MUC#restoreFromCache
+     * @returns {Promise<boolean>} Returns `true` if we're still joined, otherwise returns `false`.
      */
     async restoreFromCache () {
         if (this.isEntered()) {
@@ -172,8 +183,8 @@ class MUC extends ChatBox {
     /**
      * Join the MUC
      * @private
-     * @method _converse.ChatRoom#join
-     * @param { String } nick - The user's nickname
+     * @method MUC#join
+     * @param { String } [nick] - The user's nickname
      * @param { String } [password] - Optional password, if required by the groupchat.
      *  Will fall back to the `password` value stored in the room
      *  model (if available).
@@ -202,7 +213,7 @@ class MUC extends ChatBox {
     /**
      * Clear stale cache and re-join a MUC we've been in before.
      * @private
-     * @method _converse.ChatRoom#rejoin
+     * @method MUC#rejoin
      */
     rejoin () {
         this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
@@ -211,6 +222,9 @@ class MUC extends ChatBox {
         return this.join();
     }
 
+    /**
+     * @param {string} password
+     */
     async constructJoinPresence (password) {
         let stanza = $pres({
             'id': getUniqueId(),
@@ -229,8 +243,7 @@ class MUC extends ChatBox {
          /**
           * *Hook* which allows plugins to update an outgoing MUC join presence stanza
           * @event _converse#constructedMUCPresence
-          * @param { _converse.ChatRoom } - The MUC from which this message stanza is being sent.
-          * @param { Element } stanza - The stanza which will be sent out
+          * @type {Element} The stanza which will be sent out
           */
         stanza = await api.hook('constructedMUCPresence', this, stanza);
         return stanza;
@@ -248,7 +261,7 @@ class MUC extends ChatBox {
 
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
-     * @param { _converse.MUCMessage } msg
+     * @param { MUCMessage } msg
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
@@ -277,7 +290,7 @@ class MUC extends ChatBox {
      * called after the MUC has been left and we don't have that information
      * anymore.
      * @private
-     * @method _converse.ChatRoom#enableRAI
+     * @method MUC#enableRAI
      */
     enableRAI () {
         if (api.settings.get('muc_subscribe_to_rai')) {
@@ -289,7 +302,7 @@ class MUC extends ChatBox {
     /**
      * Handler that gets called when the 'hidden' flag is toggled.
      * @private
-     * @method _converse.ChatRoom#onHiddenChange
+     * @method MUC#onHiddenChange
      */
     async onHiddenChange () {
         const roomstatus = ROOMSTATUS;
@@ -310,7 +323,7 @@ class MUC extends ChatBox {
 
     onOccupantAdded (occupant) {
         if (
-            _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED) &&
+            isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED) &&
             this.session.get('connection_status') === ROOMSTATUS.ENTERED &&
             occupant.get('show') === 'online'
         ) {
@@ -320,7 +333,7 @@ class MUC extends ChatBox {
 
     onOccupantRemoved (occupant) {
         if (
-            _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED) &&
+            isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED) &&
             this.isEntered() &&
             occupant.get('show') === 'online'
         ) {
@@ -332,9 +345,9 @@ class MUC extends ChatBox {
         if (occupant.get('states').includes('303')) {
             return;
         }
-        if (occupant.get('show') === 'offline' && _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED)) {
+        if (occupant.get('show') === 'offline' && isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.EXITED);
-        } else if (occupant.get('show') === 'online' && _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED)) {
+        } else if (occupant.get('show') === 'online' && isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
         }
     }
@@ -382,18 +395,20 @@ class MUC extends ChatBox {
     }
 
     getMessagesCollection () {
-        return new _converse.ChatRoomMessages();
+        return new _converse.exports.ChatRoomMessages();
     }
 
     restoreSession () {
-        const id = `muc.session-${_converse.bare_jid}-${this.get('jid')}`;
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `muc.session-${bare_jid}-${this.get('jid')}`;
         this.session = new MUCSession({ id });
         initStorage(this.session, id, 'session');
         return new Promise(r => this.session.fetch({ 'success': r, 'error': r }));
     }
 
     initDiscoModels () {
-        let id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
+        const bare_jid = _converse.session.get('bare_jid');
+        let id = `converse.muc-features-${bare_jid}-${this.get('jid')}`;
         this.features = new Model(
             Object.assign(
                 { id },
@@ -406,15 +421,16 @@ class MUC extends ChatBox {
         this.features.browserStorage = createStore(id, 'session');
         this.features.listenTo(_converse, 'beforeLogout', () => this.features.browserStorage.flush());
 
-        id = `converse.muc-config-${_converse.bare_jid}-${this.get('jid')}`;
+        id = `converse.muc-config-${bare_jid}-${this.get('jid')}`;
         this.config = new Model({ id });
         this.config.browserStorage = createStore(id, 'session');
         this.config.listenTo(_converse, 'beforeLogout', () => this.config.browserStorage.flush());
     }
 
     initOccupants () {
-        this.occupants = new _converse.ChatRoomOccupants();
-        const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
+        this.occupants = new _converse.exports.ChatRoomOccupants();
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `converse.occupants-${bare_jid}${this.get('jid')}`;
         this.occupants.browserStorage = createStore(id, 'session');
         this.occupants.chatroom = this;
         this.occupants.listenTo(_converse, 'beforeLogout', () => this.occupants.browserStorage.flush());
@@ -458,6 +474,9 @@ class MUC extends ChatBox {
         }
     }
 
+    /**
+     * @param {Element} stanza
+     */
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
         const attrs = await parseMUCMessage(stanza, this);
@@ -510,7 +529,7 @@ class MUC extends ChatBox {
     /**
      * Handles incoming message stanzas from the service that hosts this MUC
      * @private
-     * @method _converse.ChatRoom#handleMessageFromMUCHost
+     * @method MUC#handleMessageFromMUCHost
      * @param { Element } stanza
      */
     handleMessageFromMUCHost (stanza) {
@@ -531,7 +550,7 @@ class MUC extends ChatBox {
     /**
      * Handles XEP-0452 MUC Mention Notification messages
      * @private
-     * @method _converse.ChatRoom#handleForwardedMentions
+     * @method MUC#handleForwardedMentions
      * @param { Element } stanza
      */
     handleForwardedMentions (stanza) {
@@ -561,8 +580,8 @@ class MUC extends ChatBox {
     /**
      * Parses an incoming message stanza and queues it for processing.
      * @private
-     * @method _converse.ChatRoom#handleMessageStanza
-     * @param { Element } stanza
+     * @method MUC#handleMessageStanza
+     * @param {Strophe.Builder|Element} stanza
      */
     async handleMessageStanza (stanza) {
         stanza = stanza.tree?.() ?? stanza;
@@ -583,13 +602,6 @@ class MUC extends ChatBox {
         } else if (!type) {
             return this.handleForwardedMentions(stanza);
         }
-        /**
-         * @typedef { Object } MUCMessageData
-         * An object containing the parsed {@link MUCMessageAttributes} and
-         * current {@link ChatRoom}.
-         * @property { MUCMessageAttributes } attrs
-         * @property { ChatRoom } chatbox
-         */
         let attrs;
         try {
             attrs = await parseMUCMessage(stanza, this);
@@ -598,10 +610,15 @@ class MUC extends ChatBox {
         }
         const data = { stanza, attrs, 'chatbox': this };
         /**
+         * An object containing the parsed {@link MUCMessageAttributes} and current {@link MUC}.
+         * @typedef {object} MUCMessageData
+         * @property {MUCMessageAttributes} attrs
+         * @property {MUC} chatbox
+         *
          * Triggered when a groupchat message stanza has been received and parsed.
          * @event _converse#message
-         * @type { object }
-         * @property { module:converse-muc~MUCMessageData } data
+         * @type {object}
+         * @property {MUCMessageData} data
          */
         api.trigger('message', data);
         return attrs && this.queueMessage(attrs);
@@ -610,7 +627,7 @@ class MUC extends ChatBox {
     /**
      * Register presence and message handlers relevant to this groupchat
      * @private
-     * @method _converse.ChatRoom#registerHandlers
+     * @method MUC#registerHandlers
      */
     registerHandlers () {
         const muc_jid = this.get('jid');
@@ -618,7 +635,10 @@ class MUC extends ChatBox {
         this.removeHandlers();
         const connection = api.connection.get();
         this.presence_handler = connection.addHandler(
-            stanza => this.onPresence(stanza) || true,
+            /** @param {Element} stanza */(stanza) => {
+                this.onPresence(stanza);
+                return true;
+            },
             null,
             'presence',
             null,
@@ -628,7 +648,10 @@ class MUC extends ChatBox {
         );
 
         this.domain_presence_handler = connection.addHandler(
-            stanza => this.onPresenceFromMUCHost(stanza) || true,
+            /** @param {Element} stanza */(stanza) => {
+                this.onPresenceFromMUCHost(stanza);
+                return true;
+            },
             null,
             'presence',
             null,
@@ -637,7 +660,10 @@ class MUC extends ChatBox {
         );
 
         this.message_handler = connection.addHandler(
-            stanza => !!this.handleMessageStanza(stanza) || true,
+            /** @param {Element} stanza */(stanza) => {
+                this.handleMessageStanza(stanza);
+                return true;
+            },
             null,
             'message',
             null,
@@ -647,7 +673,10 @@ class MUC extends ChatBox {
         );
 
         this.domain_message_handler = connection.addHandler(
-            stanza => this.handleMessageFromMUCHost(stanza) || true,
+            /** @param {Element} stanza */(stanza) => {
+                this.handleMessageFromMUCHost(stanza);
+                return true;
+            },
             null,
             'message',
             null,
@@ -656,7 +685,10 @@ class MUC extends ChatBox {
         );
 
         this.affiliation_message_handler = connection.addHandler(
-            stanza => this.handleAffiliationChangedMessage(stanza) || true,
+            (stanza) => {
+                this.handleAffiliationChangedMessage(stanza);
+                return true;
+            },
             Strophe.NS.MUC_USER,
             'message',
             null,
@@ -714,19 +746,18 @@ class MUC extends ChatBox {
      * Sends a message stanza to the XMPP server and expects a reflection
      * or error message within a specific timeout period.
      * @private
-     * @method _converse.ChatRoom#sendTimedMessage
-     * @param { _converse.Message|Element } message
+     * @method MUC#sendTimedMessage
+     * @param {Strophe.Builder|Element } message
      * @returns { Promise<Element>|Promise<TimeoutError> } Returns a promise
-     *  which resolves with the reflected message stanza or with an error stanza or {@link TimeoutError}.
+     *  which resolves with the reflected message stanza or with an error stanza or
+     *  {@link TimeoutError}.
      */
-    sendTimedMessage (el) {
-        if (typeof el.tree === 'function') {
-            el = el.tree();
-        }
+    sendTimedMessage (message) {
+        const el = message instanceof Element ? message : message.tree();
         let id = el.getAttribute('id');
         if (!id) {
             // inject id if not found
-            id = this.getUniqueId('sendIQ');
+            id = getUniqueId('sendIQ');
             el.setAttribute('id', id);
         }
         const promise = getOpenPromise();
@@ -749,9 +780,8 @@ class MUC extends ChatBox {
 
     /**
      * Retract one of your messages in this groupchat
-     * @private
-     * @method _converse.ChatRoom#retractOwnMessage
-     * @param { _converse.Message } message - The message which we're retracting.
+     * @method MUC#retractOwnMessage
+     * @param {MUCMessage} message - The message which we're retracting.
      */
     async retractOwnMessage (message) {
         const __ = _converse.__;
@@ -799,10 +829,9 @@ class MUC extends ChatBox {
 
     /**
      * Retract someone else's message in this groupchat.
-     * @private
-     * @method _converse.ChatRoom#retractOtherMessage
-     * @param { _converse.ChatRoomMessage } message - The message which we're retracting.
-     * @param { string } [reason] - The reason for retracting the message.
+     * @method MUC#retractOtherMessage
+     * @param {MUCMessage} message - The message which we're retracting.
+     * @param {string} [reason] - The reason for retracting the message.
      * @example
      *  const room = await api.rooms.get(jid);
      *  const message = room.messages.findWhere({'body': 'Get rich quick!'});
@@ -810,10 +839,11 @@ class MUC extends ChatBox {
      */
     async retractOtherMessage (message, reason) {
         const editable = message.get('editable');
+        const bare_jid = _converse.session.get('bare_jid');
         // Optimistic save
         message.save({
             'moderated': 'retracted',
-            'moderated_by': _converse.bare_jid,
+            'moderated_by': bare_jid,
             'moderated_id': message.get('msgid'),
             'moderation_reason': reason,
             'editable': false
@@ -835,9 +865,9 @@ class MUC extends ChatBox {
     /**
      * Sends an IQ stanza to the XMPP server to retract a message in this groupchat.
      * @private
-     * @method _converse.ChatRoom#sendRetractionIQ
-     * @param { _converse.ChatRoomMessage } message - The message which we're retracting.
-     * @param { string } [reason] - The reason for retracting the message.
+     * @method MUC#sendRetractionIQ
+     * @param {MUCMessage} message - The message which we're retracting.
+     * @param {string} [reason] - The reason for retracting the message.
      */
     sendRetractionIQ (message, reason) {
         const iq = $iq({ 'to': this.get('jid'), 'type': 'set' })
@@ -855,10 +885,10 @@ class MUC extends ChatBox {
 
     /**
      * Sends an IQ stanza to the XMPP server to destroy this groupchat. Not
-     * to be confused with the {@link _converse.ChatRoom#destroy}
+     * to be confused with the {@link MUC#destroy}
      * method, which simply removes the room from the local browser storage cache.
      * @private
-     * @method _converse.ChatRoom#sendDestroyIQ
+     * @method MUC#sendDestroyIQ
      * @param { string } [reason] - The reason for destroying the groupchat.
      * @param { string } [new_jid] - The JID of the new groupchat which replaces this one.
      */
@@ -882,7 +912,7 @@ class MUC extends ChatBox {
     /**
      * Leave the groupchat.
      * @private
-     * @method _converse.ChatRoom#leave
+     * @method MUC#leave
      * @param { string } [exit_msg] - Message to indicate your reason for leaving
      */
     async leave (exit_msg) {
@@ -898,7 +928,7 @@ class MUC extends ChatBox {
             );
         }
         // Delete disco entity
-        const disco_entity = _converse.disco_entities?.get(this.get('jid'));
+        const disco_entity = _converse.state.disco_entities?.get(this.get('jid'));
         if (disco_entity) {
             await new Promise(resolve => disco_entity.destroy({
                 'success': resolve,
@@ -929,7 +959,7 @@ class MUC extends ChatBox {
                 'error': (_, e) => { log.error(e); resolve(); }
             })
         );
-        return _converse.ChatBox.prototype.close.call(this);
+        return _converse.exports.ChatBox.prototype.close.call(this);
     }
 
     canModerateMessages () {
@@ -940,7 +970,7 @@ class MUC extends ChatBox {
     /**
      * Return an array of unique nicknames based on all occupants and messages in this MUC.
      * @private
-     * @method _converse.ChatRoom#getAllKnownNicknames
+     * @method MUC#getAllKnownNicknames
      * @returns { String[] }
      */
     getAllKnownNicknames () {
@@ -1043,7 +1073,7 @@ class MUC extends ChatBox {
     /**
      * Utility method to construct the JID for the current user as occupant of the groupchat.
      * @private
-     * @method _converse.ChatRoom#getRoomJIDAndNick
+     * @method MUC#getRoomJIDAndNick
      * @returns {string} - The groupchat JID with the user's nickname added at the end.
      * @example groupchat@conference.example.org/nickname
      */
@@ -1055,9 +1085,8 @@ class MUC extends ChatBox {
 
     /**
      * Sends a message with the current XEP-0085 chat state of the user
-     * as taken from the `chat_state` attribute of the {@link _converse.ChatRoom}.
-     * @private
-     * @method _converse.ChatRoom#sendChatState
+     * as taken from the `chat_state` attribute of the {@link MUC}.
+     * @method MUC#sendChatState
      */
     sendChatState () {
         if (
@@ -1073,7 +1102,7 @@ class MUC extends ChatBox {
             return;
         }
         const chat_state = this.get('chat_state');
-        if (chat_state === _converse.GONE) {
+        if (chat_state === GONE) {
             // <gone/> is not applicable within MUC context
             return;
         }
@@ -1090,7 +1119,7 @@ class MUC extends ChatBox {
     /**
      * Send a direct invitation as per XEP-0249
      * @private
-     * @method _converse.ChatRoom#directInvite
+     * @method MUC#directInvite
      * @param { String } recipient - JID of the person being invited
      * @param { String } [reason] - Reason for the invitation
      */
@@ -1122,7 +1151,7 @@ class MUC extends ChatBox {
          * to a roster contact, asking them to join a room.
          * @event _converse#chatBoxMaximized
          * @type {object}
-         * @property {_converse.ChatRoom} room
+         * @property {MUC} room
          * @property {string} recipient - The JID of the person being invited
          * @property {string} reason - The original reason for the invitation
          * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
@@ -1135,9 +1164,9 @@ class MUC extends ChatBox {
     }
 
     /**
-     * Refresh the disco identity, features and fields for this {@link _converse.ChatRoom}.
-     * *features* are stored on the features {@link Model} attribute on this {@link _converse.ChatRoom}.
-     * *fields* are stored on the config {@link Model} attribute on this {@link _converse.ChatRoom}.
+     * Refresh the disco identity, features and fields for this {@link MUC}.
+     * *features* are stored on the features {@link Model} attribute on this {@link MUC}.
+     * *fields* are stored on the config {@link Model} attribute on this {@link MUC}.
      * @private
      * @returns {Promise}
      */
@@ -1152,7 +1181,7 @@ class MUC extends ChatBox {
      * Fetch the *extended* MUC info from the server and cache it locally
      * https://xmpp.org/extensions/xep-0045.html#disco-roominfo
      * @private
-     * @method _converse.ChatRoom#getDiscoInfo
+     * @method MUC#getDiscoInfo
      * @returns {Promise}
      */
     getDiscoInfo () {
@@ -1169,7 +1198,7 @@ class MUC extends ChatBox {
      * in the `config` {@link Model} attribute.
      * See: https://xmpp.org/extensions/xep-0045.html#disco-roominfo
      * @private
-     * @method _converse.ChatRoom#getDiscoInfoFields
+     * @method MUC#getDiscoInfoFields
      * @returns {Promise}
      */
     async getDiscoInfoFields () {
@@ -1186,9 +1215,9 @@ class MUC extends ChatBox {
 
     /**
      * Use converse-disco to populate the features {@link Model} which
-     * is stored as an attibute on this {@link _converse.ChatRoom}.
+     * is stored as an attibute on this {@link MUC}.
      * The results may be cached. If you want to force fetching the features from the
-     * server, call {@link _converse.ChatRoom#refreshDiscoInfo} instead.
+     * server, call {@link MUC#refreshDiscoInfo} instead.
      * @private
      * @returns {Promise}
      */
@@ -1219,8 +1248,9 @@ class MUC extends ChatBox {
      * Given a <field> element, return a copy with a <value> child if
      * we can find a value for it in this rooms config.
      * @private
-     * @method _converse.ChatRoom#addFieldValue
-     * @returns { Element }
+     * @method MUC#addFieldValue
+     * @param {Element} field
+     * @returns {Element}
      */
     addFieldValue (field) {
         const type = field.getAttribute('type');
@@ -1250,8 +1280,8 @@ class MUC extends ChatBox {
      * Automatically configure the groupchat based on this model's
      * 'roomconfig' data.
      * @private
-     * @method _converse.ChatRoom#autoConfigureChatRoom
-     * @returns { Promise<Element> }
+     * @method MUC#autoConfigureChatRoom
+     * @returns {Promise<Element>}
      * Returns a promise which resolves once a response IQ has
      * been received.
      */
@@ -1269,7 +1299,7 @@ class MUC extends ChatBox {
      * Returns a promise which resolves once the response IQ
      * has been received.
      * @private
-     * @method _converse.ChatRoom#fetchRoomConfiguration
+     * @method MUC#fetchRoomConfiguration
      * @returns { Promise<Element> }
      */
     fetchRoomConfiguration () {
@@ -1279,7 +1309,7 @@ class MUC extends ChatBox {
     /**
      * Sends an IQ stanza with the groupchat configuration.
      * @private
-     * @method _converse.ChatRoom#sendConfiguration
+     * @method MUC#sendConfiguration
      * @param { Array } config - The groupchat configuration
      * @returns { Promise<Element> } - A promise which resolves with
      * the `result` stanza received from the XMPP server.
@@ -1310,7 +1340,8 @@ class MUC extends ChatBox {
         if (!args.startsWith('@')) {
             args = '@' + args;
         }
-        const [_text, references] = this.parseTextForReferences(args); // eslint-disable-line no-unused-vars
+        const result = this.parseTextForReferences(args);
+        const references = result[1];
         if (!references.length) {
             const message = __("Error: couldn't find a groupchat participant based on your arguments");
             this.createMessage({ message, 'type': 'error' });
@@ -1349,7 +1380,8 @@ class MUC extends ChatBox {
         if (this.config.get('changesubject') || ['owner', 'admin'].includes(this.getOwnAffiliation())) {
             allowed_commands = [...allowed_commands, ...['subject', 'topic']];
         }
-        const occupant = this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        const bare_jid = _converse.session.get('bare_jid');
+        const occupant = this.occupants.findWhere({ 'jid': bare_jid });
         if (this.verifyAffiliations(['owner'], occupant, false)) {
             allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
         } else if (this.verifyAffiliations(['admin'], occupant, false)) {
@@ -1377,7 +1409,8 @@ class MUC extends ChatBox {
         if (!affiliations.length) {
             return true;
         }
-        occupant = occupant || this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        const bare_jid = _converse.session.get('bare_jid');
+        occupant = occupant || this.occupants.findWhere({ 'jid': bare_jid });
         if (occupant) {
             const a = occupant.get('affiliation');
             if (affiliations.includes(a)) {
@@ -1399,7 +1432,8 @@ class MUC extends ChatBox {
         if (!roles.length) {
             return true;
         }
-        occupant = occupant || this.occupants.findWhere({ 'jid': _converse.bare_jid });
+        const bare_jid = _converse.session.get('bare_jid');
+        occupant = occupant || this.occupants.findWhere({ 'jid': bare_jid });
         if (occupant) {
             const role = occupant.get('role');
             if (roles.includes(role)) {
@@ -1416,28 +1450,28 @@ class MUC extends ChatBox {
     /**
      * Returns the `role` which the current user has in this MUC
      * @private
-     * @method _converse.ChatRoom#getOwnRole
+     * @method MUC#getOwnRole
      * @returns { ('none'|'visitor'|'participant'|'moderator') }
      */
     getOwnRole () {
-        return this.getOwnOccupant()?.attributes?.role;
+        return this.getOwnOccupant()?.get('role');
     }
 
     /**
      * Returns the `affiliation` which the current user has in this MUC
      * @private
-     * @method _converse.ChatRoom#getOwnAffiliation
+     * @method MUC#getOwnAffiliation
      * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
      */
     getOwnAffiliation () {
-        return this.getOwnOccupant()?.attributes?.affiliation || 'none';
+        return this.getOwnOccupant()?.get('affiliation') || 'none';
     }
 
     /**
-     * Get the {@link _converse.ChatRoomOccupant} instance which
+     * Get the {@link ChatRoomOccupant} instance which
      * represents the current user.
-     * @method _converse.ChatRoom#getOwnOccupant
-     * @returns { _converse.ChatRoomOccupant }
+     * @method MUC#getOwnOccupant
+     * @returns {ChatRoomOccupant}
      */
     getOwnOccupant () {
         return this.occupants.getOwnOccupant();
@@ -1477,13 +1511,12 @@ class MUC extends ChatBox {
 
     /**
      * Send an IQ stanza to modify an occupant's role
-     * @private
-     * @method _converse.ChatRoom#setRole
-     * @param { _converse.ChatRoomOccupant } occupant
-     * @param { String } role
-     * @param { String } reason
-     * @param { function } onSuccess - callback for a succesful response
-     * @param { function } onError - callback for an error response
+     * @method MUC#setRole
+     * @param {ChatRoomOccupant} occupant
+     * @param {string} role
+     * @param {string} reason
+     * @param {function} onSuccess - callback for a succesful response
+     * @param {function} onError - callback for an error response
      */
     setRole (occupant, role, reason, onSuccess, onError) {
         const item = $build('item', {
@@ -1506,10 +1539,9 @@ class MUC extends ChatBox {
     }
 
     /**
-     * @private
-     * @method _converse.ChatRoom#getOccupant
-     * @param { String } nickname_or_jid - The nickname or JID of the occupant to be returned
-     * @returns { _converse.ChatRoomOccupant }
+     * @method MUC#getOccupant
+     * @param {string} nickname_or_jid - The nickname or JID of the occupant to be returned
+     * @returns {ChatRoomOccupant}
      */
     getOccupant (nickname_or_jid) {
         return u.isValidJID(nickname_or_jid)
@@ -1519,38 +1551,36 @@ class MUC extends ChatBox {
 
     /**
      * Return an array of occupant models that have the required role
-     * @private
-     * @method _converse.ChatRoom#getOccupantsWithRole
-     * @param { String } role
-     * @returns { _converse.ChatRoomOccupant[] }
+     * @method MUC#getOccupantsWithRole
+     * @param {string} role
+     * @returns {{jid: string, nick: string, role: string}[]}
      */
     getOccupantsWithRole (role) {
         return this.getOccupantsSortedBy('nick')
             .filter(o => o.get('role') === role)
             .map(item => {
                 return {
-                    'jid': item.get('jid'),
-                    'nick': item.get('nick'),
-                    'role': item.get('role')
+                    jid: /** @type {string} */item.get('jid'),
+                    nick: /** @type {string} */item.get('nick'),
+                    role: /** @type {string} */item.get('role')
                 };
             });
     }
 
     /**
      * Return an array of occupant models that have the required affiliation
-     * @private
-     * @method _converse.ChatRoom#getOccupantsWithAffiliation
-     * @param { String } affiliation
-     * @returns { _converse.ChatRoomOccupant[] }
+     * @method MUC#getOccupantsWithAffiliation
+     * @param {string} affiliation
+     * @returns {{jid: string, nick: string, affiliation: string}[]}
      */
     getOccupantsWithAffiliation (affiliation) {
         return this.getOccupantsSortedBy('nick')
             .filter(o => o.get('affiliation') === affiliation)
             .map(item => {
                 return {
-                    'jid': item.get('jid'),
-                    'nick': item.get('nick'),
-                    'affiliation': item.get('affiliation')
+                    jid: /** @type {string} */item.get('jid'),
+                    nick: /** @type {string} */item.get('nick'),
+                    affiliation: /** @type {string} */item.get('affiliation')
                 };
             });
     }
@@ -1558,9 +1588,9 @@ class MUC extends ChatBox {
     /**
      * Return an array of occupant models, sorted according to the passed-in attribute.
      * @private
-     * @method _converse.ChatRoom#getOccupantsSortedBy
-     * @param { String } attr - The attribute to sort the returned array by
-     * @returns { _converse.ChatRoomOccupant[] }
+     * @method MUC#getOccupantsSortedBy
+     * @param {string} attr - The attribute to sort the returned array by
+     * @returns {ChatRoomOccupant[]}
      */
     getOccupantsSortedBy (attr) {
         return Array.from(this.occupants.models).sort((a, b) =>
@@ -1574,19 +1604,38 @@ class MUC extends ChatBox {
      * the passed in members, and if it exists, send the delta
      * to the XMPP server to update the member list.
      * @private
-     * @method _converse.ChatRoom#updateMemberLists
-     * @param { object } members - Map of member jids and affiliations.
-     * @returns { Promise }
+     * @method MUC#updateMemberLists
+     * @param {object} members - Map of member jids and affiliations.
+     * @returns {Promise}
      *  A promise which is resolved once the list has been
      *  updated or once it's been established there's no need
      *  to update the list.
      */
     async updateMemberLists (members) {
         const muc_jid = this.get('jid');
+        /** @type {Array<NonOutcastAffiliation>} */
         const all_affiliations = ['member', 'admin', 'owner'];
-        const aff_lists = await Promise.all(all_affiliations.map(a => getAffiliationList(a, muc_jid)));
-        const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
-        await setAffiliations(muc_jid, computeAffiliationsDelta(true, false, members, old_members));
+        const aff_lists = await Promise.all(all_affiliations.map((a) => getAffiliationList(a, muc_jid)));
+
+        const old_members = aff_lists.reduce(
+            /**
+             * @param {MemberListItem[]} acc
+             * @param {MemberListItem[]|Error} val
+             * @returns {MemberListItem[]}
+             */
+            (acc, val) => {
+                if (val instanceof Error) {
+                    log.error(val);
+                    return acc;
+                }
+                return [...val, ...acc];
+            }, []
+        );
+
+        await setAffiliations(
+            muc_jid,
+            computeAffiliationsDelta(true, false, members, /** @type {MemberListItem[]} */(old_members))
+        );
         await this.occupants.fetchMembers();
     }
 
@@ -1594,12 +1643,12 @@ class MUC extends ChatBox {
      * Given a nick name, save it to the model state, otherwise, look
      * for a server-side reserved nickname or default configured
      * nickname and if found, persist that to the model state.
-     * @private
-     * @method _converse.ChatRoom#getAndPersistNickname
-     * @returns { Promise<string> } A promise which resolves with the nickname
+     * @method MUC#getAndPersistNickname
+     * @param {string} nick
+     * @returns {Promise<string>} A promise which resolves with the nickname
      */
     async getAndPersistNickname (nick) {
-        nick = nick || this.get('nick') || (await this.getReservedNick()) || _converse.getDefaultMUCNickname();
+        nick = nick || this.get('nick') || (await this.getReservedNick()) || _converse.exports.getDefaultMUCNickname();
         if (nick) safeSave(this, { nick }, { 'silent': true });
         return nick;
     }
@@ -1609,7 +1658,7 @@ class MUC extends ChatBox {
      * this user has a reserved nickname for this groupchat.
      * If so, we'll use that, otherwise we render the nickname form.
      * @private
-     * @method _converse.ChatRoom#getReservedNick
+     * @method MUC#getReservedNick
      * @returns { Promise<string> } A promise which resolves with the reserved nick or null
      */
     async getReservedNick () {
@@ -1622,7 +1671,7 @@ class MUC extends ChatBox {
             'node': 'x-roomuser-item'
         });
         const result = await api.sendIQ(stanza, null, false);
-        if (u.isErrorObject(result)) {
+        if (isErrorObject(result)) {
             throw result;
         }
         // Result might be undefined due to a timeout
@@ -1637,7 +1686,7 @@ class MUC extends ChatBox {
      * users from using it in this MUC.
      * See https://xmpp.org/extensions/xep-0045.html#register
      * @private
-     * @method _converse.ChatRoom#registerNickname
+     * @method MUC#registerNickname
      */
     async registerNickname () {
         const { __ } = _converse;
@@ -1690,8 +1739,8 @@ class MUC extends ChatBox {
 
     /**
      * Check whether we should unregister the user from this MUC, and if so,
-     * call { @link _converse.ChatRoom#sendUnregistrationIQ }
-     * @method _converse.ChatRoom#unregisterNickname
+     * call { @link MUC#sendUnregistrationIQ }
+     * @method MUC#unregisterNickname
      */
     async unregisterNickname () {
         if (api.settings.get('auto_register_muc_nickname') === 'unregister') {
@@ -1710,7 +1759,7 @@ class MUC extends ChatBox {
      * If the user had a 'member' affiliation, it'll be removed and their
      * nickname will no longer be reserved and can instead be used (and
      * registered) by other users.
-     * @method _converse.ChatRoom#sendUnregistrationIQ
+     * @method MUC#sendUnregistrationIQ
      */
     sendUnregistrationIQ () {
         const iq = $iq({ 'to': this.get('jid'), 'type': 'set' })
@@ -1722,7 +1771,7 @@ class MUC extends ChatBox {
     /**
      * Given a presence stanza, update the occupant model based on its contents.
      * @private
-     * @method _converse.ChatRoom#updateOccupantsOnPresence
+     * @method MUC#updateOccupantsOnPresence
      * @param { Element } pres - The presence stanza
      */
     updateOccupantsOnPresence (pres) {
@@ -1788,8 +1837,7 @@ class MUC extends ChatBox {
     /**
      * Given two JIDs, which can be either user JIDs or MUC occupant JIDs,
      * determine whether they belong to the same user.
-     * @private
-     * @method _converse.ChatRoom#isSameUser
+     * @method MUC#isSameUser
      * @param { String } jid1
      * @param { String } jid2
      * @returns { Boolean }
@@ -1841,7 +1889,7 @@ class MUC extends ChatBox {
     /**
      * Handle a possible subject change and return `true` if so.
      * @private
-     * @method _converse.ChatRoom#handleSubjectChange
+     * @method MUC#handleSubjectChange
      * @param { object } attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
      */
@@ -1876,9 +1924,9 @@ class MUC extends ChatBox {
     }
 
     /**
-     * Set the subject for this {@link _converse.ChatRoom}
+     * Set the subject for this {@link MUC}
      * @private
-     * @method _converse.ChatRoom#setSubject
+     * @method MUC#setSubject
      * @param { String } value
      */
     setSubject (value = '') {
@@ -1898,7 +1946,7 @@ class MUC extends ChatBox {
      * Is this a chat state notification that can be ignored,
      * because it's old or because it's from us.
      * @private
-     * @method _converse.ChatRoom#ignorableCSN
+     * @method MUC#ignorableCSN
      * @param { Object } attrs - The message attributes
      */
     ignorableCSN (attrs) {
@@ -1908,15 +1956,15 @@ class MUC extends ChatBox {
     /**
      * Determines whether the message is from ourselves by checking
      * the `from` attribute. Doesn't check the `type` attribute.
-     * @method _converse.ChatRoom#isOwnMessage
-     * @param {Object|Element|_converse.Message} msg
+     * @method MUC#isOwnMessage
+     * @param {Object|Element|MUCMessage} msg
      * @returns {boolean}
      */
     isOwnMessage (msg) {
         let from;
         if (msg instanceof Element) {
             from = msg.getAttribute('from');
-        } else if (msg instanceof _converse.Message) {
+        } else if (msg instanceof _converse.exports.MUCMessage) {
             from = msg.get('from');
         } else {
             from = msg.from;
@@ -1926,7 +1974,7 @@ class MUC extends ChatBox {
 
     getUpdatedMessageAttributes (message, attrs) {
         const new_attrs = {
-            ..._converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs),
+            ..._converse.exports.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs),
             ...pick(attrs, ['from_muc', 'occupant_id']),
         }
 
@@ -1945,7 +1993,7 @@ class MUC extends ChatBox {
      * whether we're still joined.
      * @async
      * @private
-     * @method _converse.ChatRoom#isJoined
+     * @method MUC#isJoined
      * @returns {Promise<boolean>}
      */
     async isJoined () {
@@ -1961,7 +2009,7 @@ class MUC extends ChatBox {
 
     /**
      * Sends a status update presence (i.e. based on the `<show>` element)
-     * @method _converse.ChatRoom#sendStatusPresence
+     * @method MUC#sendStatusPresence
      * @param { String } type
      * @param { String } [status] - An optional status message
      * @param { Element[]|Strophe.Builder[]|Element|Strophe.Builder } [child_nodes]
@@ -1969,7 +2017,7 @@ class MUC extends ChatBox {
      */
     async sendStatusPresence (type, status, child_nodes) {
         if (this.session.get('connection_status') === ROOMSTATUS.ENTERED) {
-            const presence = await _converse.xmppstatus.constructPresence(type, this.getRoomJIDAndNick(), status);
+            const presence = await _converse.state.xmppstatus.constructPresence(type, this.getRoomJIDAndNick(), status);
             child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
             api.send(presence);
         }
@@ -1977,7 +2025,7 @@ class MUC extends ChatBox {
 
     /**
      * Check whether we're still joined and re-join if not
-     * @method _converse.ChatRoom#rejoinIfNecessary
+     * @method MUC#rejoinIfNecessary
      */
     async rejoinIfNecessary () {
         if (this.isRAICandidate()) {
@@ -1992,8 +2040,8 @@ class MUC extends ChatBox {
     }
 
     /**
-     * @private
-     * @method _converse.ChatRoom#shouldShowErrorMessage
+     * @method MUC#shouldShowErrorMessage
+     * @param {object} attrs
      * @returns {Promise<boolean>}
      */
     async shouldShowErrorMessage (attrs) {
@@ -2007,7 +2055,7 @@ class MUC extends ChatBox {
         } else if (attrs.error_condition === 'not-acceptable' && (await this.rejoinIfNecessary())) {
             return false;
         }
-        return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, attrs);
+        return _converse.exports.ChatBox.prototype.shouldShowErrorMessage.call(this, attrs);
     }
 
     /**
@@ -2016,10 +2064,10 @@ class MUC extends ChatBox {
      * it probably hasn't been applied to anything yet, given that
      * the relevant message is only coming in now.
      * @private
-     * @method _converse.ChatRoom#findDanglingModeration
+     * @method MUC#findDanglingModeration
      * @param { object } attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
-     * @returns { _converse.ChatRoomMessage }
+     * @returns {MUCMessage}
      */
     findDanglingModeration (attrs) {
         if (!this.messages.length) {
@@ -2047,7 +2095,7 @@ class MUC extends ChatBox {
     /**
      * Handles message moderation based on the passed in attributes.
      * @private
-     * @method _converse.ChatRoom#handleModeration
+     * @method MUC#handleModeration
      * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
      * @returns {Promise<boolean>} Returns `true` or `false` depending on
@@ -2106,7 +2154,7 @@ class MUC extends ChatBox {
                     return `${result}${__('%1$s is typing', actors[0])}\n`;
                 } else if (state === 'paused') {
                     return `${result}${__('%1$s has stopped typing', actors[0])}\n`;
-                } else if (state === _converse.GONE) {
+                } else if (state === GONE) {
                     return `${result}${__('%1$s has gone away', actors[0])}\n`;
                 } else if (state === 'entered') {
                     return `${result}${__('%1$s has entered the groupchat', actors[0])}\n`;
@@ -2136,7 +2184,7 @@ class MUC extends ChatBox {
                     return `${result}${__('%1$s are typing', actors_str)}\n`;
                 } else if (state === 'paused') {
                     return `${result}${__('%1$s have stopped typing', actors_str)}\n`;
-                } else if (state === _converse.GONE) {
+                } else if (state === GONE) {
                     return `${result}${__('%1$s have gone away', actors_str)}\n`;
                 } else if (state === 'entered') {
                     return `${result}${__('%1$s have entered the groupchat', actors_str)}\n`;
@@ -2230,7 +2278,7 @@ class MUC extends ChatBox {
     /**
      * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
      * messages for them.
-     * @param { Element } stanza
+     * @param {MessageAttributes} attrs
      */
     handleMEPNotification (attrs) {
         if (attrs.from !== this.get('jid') || !attrs.activities) {
@@ -2248,30 +2296,30 @@ class MUC extends ChatBox {
     /**
      * Returns an already cached message (if it exists) based on the
      * passed in attributes map.
-     * @method _converse.ChatRoom#getDuplicateMessage
-     * @param { object } attrs - Attributes representing a received
+     * @method MUC#getDuplicateMessage
+     * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
-     * @returns {Promise<_converse.Message>}
+     * @returns {MUCMessage}
      */
     getDuplicateMessage (attrs) {
         if (attrs.activities?.length) {
             return this.messages.findWhere({'type': 'mep', 'msgid': attrs.msgid});
         } else {
-            return _converse.ChatBox.prototype.getDuplicateMessage.call(this, attrs);
+            return _converse.exports.ChatBox.prototype.getDuplicateMessage.call(this, attrs);
         }
     }
 
 
     /**
      * Handler for all MUC messages sent to this groupchat. This method
-     * shouldn't be called directly, instead {@link _converse.ChatRoom#queueMessage}
+     * shouldn't be called directly, instead {@link MUC#queueMessage}
      * should be called.
-     * @method _converse.ChatRoom#onMessage
-     * @param { MessageAttributes } attrs - A promise which resolves to the message attributes.
+     * @method MUC#onMessage
+     * @param {MessageAttributes} attrs - A promise which resolves to the message attributes.
      */
     async onMessage (attrs) {
         attrs = await attrs;
-        if (u.isErrorObject(attrs)) {
+        if (isErrorObject(attrs)) {
             attrs.stanza && log.error(attrs.stanza);
             return log.error(attrs.message);
         } else if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
@@ -2309,6 +2357,9 @@ class MUC extends ChatBox {
         }
     }
 
+    /**
+     * @param {Element} pres
+     */
     handleModifyError (pres) {
         const text = pres.querySelector('error text')?.textContent;
         if (text) {
@@ -2335,7 +2386,7 @@ class MUC extends ChatBox {
         if (!x) {
             return;
         }
-        const disconnection_codes = Object.keys(_converse.muc.disconnect_messages);
+        const disconnection_codes = Object.keys(_converse.labels.muc.disconnect_messages);
         const codes = sizzle('status', x)
             .map(s => s.getAttribute('code'))
             .filter(c => disconnection_codes.includes(c));
@@ -2350,7 +2401,7 @@ class MUC extends ChatBox {
         const item = x.querySelector('item');
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
         const actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
-        const message = _converse.muc.disconnect_messages[codes[0]];
+        const message = _converse.labels.muc.disconnect_messages[codes[0]];
         const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);
     }
@@ -2384,19 +2435,19 @@ class MUC extends ChatBox {
         }
 
         const current_affiliation = occupant.get('affiliation');
-        if (previous_affiliation === 'admin' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXADMIN)) {
+        if (previous_affiliation === 'admin' && isInfoVisible(converse.AFFILIATION_CHANGES.EXADMIN)) {
             this.createMessage({
                 'type': 'info',
                 'message': __('%1$s is no longer an admin of this groupchat', occupant.get('nick'))
             });
-        } else if (previous_affiliation === 'owner' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXOWNER)) {
+        } else if (previous_affiliation === 'owner' && isInfoVisible(converse.AFFILIATION_CHANGES.EXOWNER)) {
             this.createMessage({
                 'type': 'info',
                 'message': __('%1$s is no longer an owner of this groupchat', occupant.get('nick'))
             });
         } else if (
             previous_affiliation === 'outcast' &&
-            _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXOUTCAST)
+            isInfoVisible(converse.AFFILIATION_CHANGES.EXOUTCAST)
         ) {
             this.createMessage({
                 'type': 'info',
@@ -2407,7 +2458,7 @@ class MUC extends ChatBox {
         if (
             current_affiliation === 'none' &&
             previous_affiliation === 'member' &&
-            _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXMEMBER)
+            isInfoVisible(converse.AFFILIATION_CHANGES.EXMEMBER)
         ) {
             this.createMessage({
                 'type': 'info',
@@ -2415,14 +2466,14 @@ class MUC extends ChatBox {
             });
         }
 
-        if (current_affiliation === 'member' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.MEMBER)) {
+        if (current_affiliation === 'member' && isInfoVisible(converse.AFFILIATION_CHANGES.MEMBER)) {
             this.createMessage({
                 'type': 'info',
                 'message': __('%1$s is now a member of this groupchat', occupant.get('nick'))
             });
         } else if (
-            (current_affiliation === 'admin' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.ADMIN)) ||
-            (current_affiliation == 'owner' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.OWNER))
+            (current_affiliation === 'admin' && isInfoVisible(converse.AFFILIATION_CHANGES.ADMIN)) ||
+            (current_affiliation == 'owner' && isInfoVisible(converse.AFFILIATION_CHANGES.OWNER))
         ) {
             // For example: AppleJack is now an (admin|owner) of this groupchat
             this.createMessage({
@@ -2438,17 +2489,17 @@ class MUC extends ChatBox {
             return;
         }
         const previous_role = occupant._previousAttributes.role;
-        if (previous_role === 'moderator' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.DEOP)) {
+        if (previous_role === 'moderator' && isInfoVisible(converse.MUC_ROLE_CHANGES.DEOP)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.DEOP);
-        } else if (previous_role === 'visitor' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.VOICE)) {
+        } else if (previous_role === 'visitor' && isInfoVisible(converse.MUC_ROLE_CHANGES.VOICE)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.VOICE);
         }
-        if (occupant.get('role') === 'visitor' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.MUTE)) {
+        if (occupant.get('role') === 'visitor' && isInfoVisible(converse.MUC_ROLE_CHANGES.MUTE)) {
             this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.MUTE);
         } else if (occupant.get('role') === 'moderator') {
             if (
                 !['owner', 'admin'].includes(occupant.get('affiliation')) &&
-                _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.OP)
+                isInfoVisible(converse.MUC_ROLE_CHANGES.OP)
             ) {
                 // Oly show this message if the user isn't already
                 // an admin or owner, otherwise this isn't new information.
@@ -2460,7 +2511,7 @@ class MUC extends ChatBox {
     /**
      * Create an info message based on a received MUC status code
      * @private
-     * @method _converse.ChatRoom#createInfoMessage
+     * @method MUC#createInfoMessage
      * @param { string } code - The MUC status code
      * @param { Element } stanza - The original stanza that contains the code
      * @param { Boolean } is_self - Whether this stanza refers to our own presence
@@ -2468,20 +2519,22 @@ class MUC extends ChatBox {
     createInfoMessage (code, stanza, is_self) {
         const __ = _converse.__;
         const data = { 'type': 'info', 'is_ephemeral': true };
-        if (!_converse.isInfoVisible(code)) {
+        const { info_messages, new_nickname_messages } = _converse.labels.muc;
+
+        if (!isInfoVisible(code)) {
             return;
         }
         if (code === '110' || (code === '100' && !is_self)) {
             return;
-        } else if (code in _converse.muc.info_messages) {
-            data.message = _converse.muc.info_messages[code];
+        } else if (code in info_messages) {
+            data.message = info_messages[code];
         } else if (!is_self && ACTION_INFO_CODES.includes(code)) {
             const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
             const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
             data.actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
             data.reason = item ? item.querySelector('reason')?.textContent : undefined;
             data.message = this.getActionInfoMessage(code, nick, data.actor);
-        } else if (is_self && code in _converse.muc.new_nickname_messages) {
+        } else if (is_self && code in new_nickname_messages) {
             // XXX: Side-effect of setting the nick. Should ideally be refactored out of this method
             let nick;
             if (code === '210') {
@@ -2490,7 +2543,7 @@ class MUC extends ChatBox {
                 nick = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop().getAttribute('nick');
             }
             this.save('nick', nick);
-            data.message = __(_converse.muc.new_nickname_messages[code], nick);
+            data.message = __(new_nickname_messages[code], nick);
         }
 
         if (data.message) {
@@ -2504,7 +2557,7 @@ class MUC extends ChatBox {
     /**
      * Create info messages based on a received presence or message stanza
      * @private
-     * @method _converse.ChatRoom#createInfoMessages
+     * @method MUC#createInfoMessages
      * @param { Element } stanza
      */
     createInfoMessages (stanza) {
@@ -2520,11 +2573,11 @@ class MUC extends ChatBox {
     /**
      * Set parameters regarding disconnection from this room. This helps to
      * communicate to the user why they were disconnected.
-     * @param { String } message - The disconnection message, as received from (or
+     * @param {string} message - The disconnection message, as received from (or
      *  implied by) the server.
-     * @param { String } reason - The reason provided for the disconnection
-     * @param { String } actor - The person (if any) responsible for this disconnection
-     * @param { number } status - The status code (see `ROOMSTATUS`)
+     * @param {string} [reason] - The reason provided for the disconnection
+     * @param {string} [actor] - The person (if any) responsible for this disconnection
+     * @param {number} [status] - The status code (see `ROOMSTATUS`)
      */
     setDisconnectionState (message, reason, actor, status=ROOMSTATUS.DISCONNECTED) {
         this.session.save({
@@ -2535,11 +2588,14 @@ class MUC extends ChatBox {
         });
     }
 
+    /**
+     * @param {Element} presence
+     */
     onNicknameClash (presence) {
         const __ = _converse.__;
         if (api.settings.get('muc_nickname_from_jid')) {
             const nick = presence.getAttribute('from').split('/')[1];
-            if (nick === _converse.getDefaultMUCNickname()) {
+            if (nick === _converse.exports.getDefaultMUCNickname()) {
                 this.join(nick + '-2');
             } else {
                 const del = nick.lastIndexOf('-');
@@ -2558,7 +2614,7 @@ class MUC extends ChatBox {
 
     /**
      * Parses a <presence> stanza with type "error" and sets the proper
-     * `connection_status` value for this {@link _converse.ChatRoom} as
+     * `connection_status` value for this {@link MUC} as
      * well as any additional output that can be shown to the user.
      * @private
      * @param { Element } stanza - The presence stanza
@@ -2581,7 +2637,7 @@ class MUC extends ChatBox {
                 this.setDisconnectionState(message, reason);
             } else if (error.querySelector('forbidden')) {
                 this.setDisconnectionState(
-                    _converse.muc.disconnect_messages[301],
+                    _converse.labels.muc.disconnect_messages[301],
                     reason,
                     null,
                     ROOMSTATUS.BANNED
@@ -2625,7 +2681,7 @@ class MUC extends ChatBox {
     /**
      * Listens for incoming presence stanzas from the service that hosts this MUC
      * @private
-     * @method _converse.ChatRoom#onPresenceFromMUCHost
+     * @method MUC#onPresenceFromMUCHost
      * @param { Element } stanza - The presence stanza
      */
     onPresenceFromMUCHost (stanza) {
@@ -2644,7 +2700,7 @@ class MUC extends ChatBox {
     /**
      * Handles incoming presence stanzas coming from the MUC
      * @private
-     * @method _converse.ChatRoom#onPresence
+     * @method MUC#onPresence
      * @param { Element } stanza
      */
     onPresence (stanza) {
@@ -2677,8 +2733,8 @@ class MUC extends ChatBox {
      * auto-configured only if applicable and if the current
      * user is the groupchat's owner.
      * @private
-     * @method _converse.ChatRoom#onOwnPresence
-     * @param { Element } pres - The stanza
+     * @method MUC#onOwnPresence
+     * @param {Element} stanza - The stanza
      */
     async onOwnPresence (stanza) {
         await this.occupants.fetched;
@@ -2718,9 +2774,8 @@ class MUC extends ChatBox {
     /**
      * Returns a boolean to indicate whether the current user
      * was mentioned in a message.
-     * @private
-     * @method _converse.ChatRoom#isUserMentioned
-     * @param { String } - The text message
+     * @method MUC#isUserMentioned
+     * @param {MUCMessage} message - The text message
      */
     isUserMentioned (message) {
         const nick = this.get('nick');

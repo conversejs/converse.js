@@ -1,11 +1,18 @@
+/**
+ * @module:headless-plugins-chat-utils
+ * @typedef {import('./model.js').default} ChatBox
+ * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ * @typedef {import('strophe.js').Builder} Builder
+ */
 import sizzle from "sizzle";
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from '../../log.js';
 import { isArchived, isHeadline, isServerMessage, } from '../../shared/parsers';
 import { parseMessage } from './parsers.js';
 import { shouldClearCache } from '../../utils/session.js';
+import { CONTROLBOX_TYPE, PRIVATE_CHAT_TYPE } from "../../shared/constants.js";
 
 const { Strophe, u } = converse.env;
 
@@ -23,18 +30,23 @@ export function routeToChat (event) {
 
 export async function onClearSession () {
     if (shouldClearCache()) {
+        const { chatboxes } = _converse.state;
         await Promise.all(
-            _converse.chatboxes.map(c => c.messages && c.messages.clearStore({ 'silent': true }))
+            chatboxes.map(/** @param {ChatBox} c */(c) => c.messages?.clearStore({ 'silent': true }))
         );
-        const filter = o => o.get('type') !== _converse.CONTROLBOX_TYPE;
-        _converse.chatboxes.clearStore({ 'silent': true }, filter);
+        chatboxes.clearStore(
+            { 'silent': true },
+            /** @param {Model} o */(o) => o.get('type') !== CONTROLBOX_TYPE);
     }
 }
 
+
+/**
+ * Given a stanza, determine whether it's a new
+ * message, i.e. not a MAM archived one.
+ * @param {Element|Model|object} message
+ */
 export function isNewMessage (message) {
-    /* Given a stanza, determine whether it's a new
-     * message, i.e. not a MAM archived one.
-     */
     if (message instanceof Element) {
         return !(
             sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
@@ -47,13 +59,17 @@ export function isNewMessage (message) {
 }
 
 
+/**
+ * @param {Element} stanza
+ */
 async function handleErrorMessage (stanza) {
     const from_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
-    if (u.isSameBareJID(from_jid, _converse.bare_jid)) {
+    const bare_jid = _converse.session.get('bare_jid');
+    if (u.isSameBareJID(from_jid, bare_jid)) {
         return;
     }
     const chatbox = await api.chatboxes.get(from_jid);
-    if (chatbox?.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+    if (chatbox?.get('type') === PRIVATE_CHAT_TYPE) {
         chatbox?.handleErrorMessageStanza(stanza);
     }
 }
@@ -61,8 +77,8 @@ async function handleErrorMessage (stanza) {
 export function autoJoinChats () {
     // Automatically join private chats, based on the
     // "auto_join_private_chats" configuration setting.
-    api.settings.get('auto_join_private_chats').forEach(jid => {
-        if (_converse.chatboxes.where({ 'jid': jid }).length) {
+    api.settings.get('auto_join_private_chats').forEach(/** @param {string} jid */(jid) => {
+        if (_converse.state.chatboxes.where({ 'jid': jid }).length) {
             return;
         }
         if (typeof jid === 'string') {
@@ -84,7 +100,8 @@ export function autoJoinChats () {
 
 export function registerMessageHandlers () {
     api.connection.get().addHandler(
-        stanza => {
+        /** @param {Element} stanza */
+        (stanza) => {
             if (
                 ['groupchat', 'error'].includes(stanza.getAttribute('type')) ||
                 isHeadline(stanza) ||
@@ -93,14 +110,18 @@ export function registerMessageHandlers () {
             ) {
                 return true;
             }
-            return _converse.handleMessageStanza(stanza) || true;
+            return _converse.exports.handleMessageStanza(stanza) || true;
         },
         null,
         'message',
     );
 
     api.connection.get().addHandler(
-        stanza => handleErrorMessage(stanza) || true,
+        /** @param {Element} stanza */
+        (stanza) => {
+            handleErrorMessage(stanza);
+            return true;
+        },
         null,
         'message',
         'error'
@@ -110,10 +131,10 @@ export function registerMessageHandlers () {
 
 /**
  * Handler method for all incoming single-user chat "message" stanzas.
- * @param { MessageAttributes } attrs - The message attributes
+ * @param {Element|Builder} stanza
  */
 export async function handleMessageStanza (stanza) {
-    stanza = stanza.tree?.() ?? stanza;
+    stanza = (stanza instanceof Element) ? stanza : stanza.tree();
 
     if (isServerMessage(stanza)) {
         // Prosody sends headline messages with type `chat`, so we need to filter them out here.
@@ -135,19 +156,18 @@ export async function handleMessageStanza (stanza) {
     const chatbox = await api.chats.get(attrs.contact_jid, { 'nickname': attrs.nick }, has_body);
     await chatbox?.queueMessage(attrs);
     /**
-     * @typedef { Object } MessageData
+     * @typedef {Object} MessageData
      * An object containing the original message stanza, as well as the
      * parsed attributes.
-     * @property { Element } stanza
-     * @property { MessageAttributes } stanza
-     * @property { ChatBox } chatbox
+     * @property {Element} stanza
+     * @property {MessageAttributes} stanza
+     * @property {ChatBox} chatbox
      */
     const data = { stanza, attrs, chatbox };
     /**
      * Triggered when a message stanza is been received and processed.
      * @event _converse#message
-     * @type { object }
-     * @property { module:converse-chat~MessageData } data
+     * @type {MessageData} data
      */
     api.trigger('message', data);
 }
@@ -155,10 +175,10 @@ export async function handleMessageStanza (stanza) {
 /**
  * Ask the XMPP server to enable Message Carbons
  * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)
- * @param { Boolean } reconnecting
  */
 export async function enableCarbons () {
-    const domain = Strophe.getDomainFromJid(_converse.bare_jid);
+    const bare_jid = _converse.session.get('bare_jid');
+    const domain = Strophe.getDomainFromJid(bare_jid);
     const supported = await api.disco.supports(Strophe.NS.CARBONS, domain);
 
     if (!supported) {

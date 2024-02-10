@@ -1,3 +1,6 @@
+/**
+ * @typedef {module:converse-rsm.RSMQueryParameters} RSMQueryParameters
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import dayjs from 'dayjs';
@@ -26,11 +29,11 @@ export default {
      */
     archive: {
          /**
-          * @typedef { module:converse-rsm~RSMQueryParameters } MAMFilterParameters
-          * Filter parameters which can be used to filter a MAM XEP-0313 archive
-          * @property { String } [end] - A date string in ISO-8601 format, before which messages should be returned. Implies backward paging.
-          * @property { String } [start] - A date string in ISO-8601 format, after which messages should be returned. Implies forward paging.
-          * @property { String } [with] - A JID against which to match messages, according to either their `to` or `from` attributes.
+          * @typedef {RSMQueryParameters} MAMFilterParameters
+          * Filter parmeters which can be used to filter a MAM XEP-0313 archive
+          * @property String} [end] - A date string in ISO-8601 format, before which messages should be returned. Implies backward paging.
+          * @property {String} [start] - A date string in ISO-8601 format, after which messages should be returned. Implies forward paging.
+          * @property {String} [with] - A JID against which to match messages, according to either their `to` or `from` attributes.
           *     An item in a MUC archive matches if the publisher of the item matches the JID.
           *     If `with` is omitted, all messages that match the rest of the query will be returned, regardless of to/from
           *     addresses of each message.
@@ -38,8 +41,8 @@ export default {
 
          /**
           * The options that can be passed in to the {@link _converse.api.archive.query } method
-          * @typedef { module:converse-mam~MAMFilterParameters } ArchiveQueryOptions
-          * @property { Boolean } [groupchat=false] - Whether the MAM archive is for a groupchat.
+          * @typedef {MAMFilterParameters} ArchiveQueryOptions
+          * @property {boolean} [groupchat=false] - Whether the MAM archive is for a groupchat.
           */
 
          /**
@@ -49,10 +52,9 @@ export default {
           * RSM to enable easy querying between results pages.
           *
           * @method _converse.api.archive.query
-          * @param { module:converse-mam~ArchiveQueryOptions } options - An object containing query parameters
+          * @param {ArchiveQueryOptions} options - An object containing query parameters
           * @throws {Error} An error is thrown if the XMPP server responds with an error.
-          * @returns { Promise<module:converse-mam~MAMQueryResult> } A promise which resolves
-          *     to a {@link module:converse-mam~MAMQueryResult } object.
+          * @returns {Promise<MAMQueryResult>} A promise which resolves to a {@link MAMQueryResult} object.
           *
           * @example
           * // Requesting all archived messages
@@ -211,7 +213,8 @@ export default {
                 attrs.to = options['with'];
             }
 
-            const jid = attrs.to || _converse.bare_jid;
+            const bare_jid = _converse.session.get('bare_jid');
+            const jid = attrs.to || bare_jid;
             const supported = await api.disco.supports(NS.MAM, jid);
             if (!supported) {
                 log.warn(`Did not fetch MAM archive for ${jid} because it doesn't support ${NS.MAM}`);
@@ -249,18 +252,18 @@ export default {
             const connection = api.connection.get();
 
             const messages = [];
-            const message_handler = connection.addHandler(stanza => {
+            const message_handler = connection.addHandler(/** @param {Element} stanza */(stanza) => {
                 const result = sizzle(`message > result[xmlns="${NS.MAM}"]`, stanza).pop();
                 if (result === undefined || result.getAttribute('queryid') !== queryid) {
                     return true;
                 }
-                const from = stanza.getAttribute('from') || _converse.bare_jid;
+                const from = stanza.getAttribute('from') || bare_jid;
                 if (options.groupchat) {
                     if (from !== options['with']) {
                         log.warn(`Ignoring alleged groupchat MAM message from ${stanza.getAttribute('from')}`);
                         return true;
                     }
-                } else if (from !== _converse.bare_jid) {
+                } else if (from !== bare_jid) {
                     log.warn(`Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
                     return true;
                 }
@@ -296,14 +299,14 @@ export default {
                 rsm = new RSM({...options, 'xml': set});
             }
             /**
-             * @typedef { Object } MAMQueryResult
-             * @property { Array } messages
-             * @property { RSM } [rsm] - An instance of {@link RSM}.
+             * @typedef {Object} MAMQueryResult
+             * @property {Array} messages
+             * @property {RSM} [rsm] - An instance of {@link RSM}.
              *  You can call `next()` or `previous()` on this instance,
              *  to get the RSM query parameters for the next or previous
              *  page in the result set.
-             * @property { Boolean } complete
-             * @property { Error } [error]
+             * @property {boolean} [complete]
+             * @property {Error} [error]
              */
             return { messages, rsm, complete };
         }

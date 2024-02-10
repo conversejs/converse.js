@@ -38,17 +38,18 @@ export const DEFAULT_SETTINGS = {
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
     auto_login: false, // Currently only used in connection with anonymous login
-    reuse_scram_keys: false,
     auto_reconnect: true,
     blacklisted_plugins: [],
     clear_cache_on_logout: false,
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
+    disable_effects: false, // Disabled UI transition effects. Mainly used for tests.
     discover_connection_methods: true,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     i18n: undefined,
     jid: undefined,
+    reuse_scram_keys: false,
     keepalive: true,
     loglevel: 'info',
     locales: [

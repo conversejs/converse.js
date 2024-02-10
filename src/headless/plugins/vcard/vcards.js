@@ -1,5 +1,5 @@
 import VCard from "./vcard";
-import { Collection } from "@converse/skeletor/src/collection";
+import { Collection } from "@converse/skeletor";
 import { api } from "../../index.js";
 
 class VCards extends Collection {

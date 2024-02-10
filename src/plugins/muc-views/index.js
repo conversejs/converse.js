@@ -8,6 +8,7 @@ import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
 import { api, converse } from '@converse/headless';
+import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
 import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;
@@ -86,7 +87,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
         api.listen.on('chatBoxClosed', (model) => {
-            if (model.get('type') === _converse.CHATROOMS_TYPE) {
+            if (model.get('type') === CHATROOMS_TYPE) {
                 clearHistory(model.get('jid'));
             }
         });

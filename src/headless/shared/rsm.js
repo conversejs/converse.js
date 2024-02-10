@@ -6,7 +6,6 @@
  *   Some code taken from the Strophe RSM plugin, licensed under the MIT License
  *   Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
  */
-import _converse from './_converse.js';
 import { converse } from './api/index.js';
 import pick from 'lodash-es/pick';
 
@@ -16,12 +15,12 @@ Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 
 
 /**
- * @typedef { Object } RSMQueryParameters
+ * @typedef {Object} RSMQueryParameters
  * [XEP-0059 RSM](https://xmpp.org/extensions/xep-0059.html) Attributes that can be used to filter query results
- * @property { String } [after] - The XEP-0359 stanza ID of a message after which messages should be returned. Implies forward paging.
- * @property { String } [before] - The XEP-0359 stanza ID of a message before which messages should be returned. Implies backward paging.
- * @property { number } [index=0] - The index of the results page to return.
- * @property { number } [max] - The maximum number of items to return.
+ * @property {String} [after] - The XEP-0359 stanza ID of a message after which messages should be returned. Implies forward paging.
+ * @property {String} [before] - The XEP-0359 stanza ID of a message before which messages should be returned. Implies backward paging.
+ * @property {number} [index=0] - The index of the results page to return.
+ * @property {number} [max] - The maximum number of items to return.
  */
 
 const RSM_QUERY_PARAMETERS = ['after', 'before', 'index', 'max'];
@@ -103,6 +102,3 @@ export class RSM {
         return new RSM(options);
     }
 }
-
-_converse.RSM_ATTRIBUTES = RSM_ATTRIBUTES;
-_converse.RSM = RSM;

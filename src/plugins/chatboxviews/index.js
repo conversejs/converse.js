@@ -24,7 +24,9 @@ converse.plugins.add('converse-chatboxviews', {
         // configuration settings.
         api.settings.extend({ 'animate': true });
 
-        _converse.chatboxviews = new ChatBoxViews();
+        const chatboxviews = new ChatBoxViews();
+        Object.assign(_converse, { chatboxviews }); // XXX DEPRECATED
+        Object.assign(_converse.state, { chatboxviews });
 
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxesInitialized', () => {

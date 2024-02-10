@@ -9,25 +9,23 @@ describe("Converse", function() {
         it("are sent out when the client becomes or stops being idle",
             mock.initConverse(['discoInitialized'], {}, (_converse) => {
 
-            spyOn(_converse, 'sendCSI').and.callThrough();
-            let sent_stanza;
-            spyOn(_converse.api.connection.get(), 'send').and.callFake(function (stanza) {
+            let i = 0;
+            const domain = _converse.session.get('domain');
+            _converse.disco_entities.get(domain).features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
+
+            let sent_stanza = null;
+            spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => {
                 sent_stanza = stanza;
             });
-            let i = 0;
-            _converse.idle_seconds = 0; // Usually initialized by registerIntervalHandler
-            _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
 
             _converse.api.settings.set('csi_waiting_time', 3);
             while (i <= _converse.api.settings.get("csi_waiting_time")) {
-                expect(_converse.sendCSI).not.toHaveBeenCalled();
-                _converse.onEverySecond();
+                expect(sent_stanza).toBe(null);
+                _converse.exports.onEverySecond();
                 i++;
             }
-            expect(_converse.sendCSI).toHaveBeenCalledWith('inactive');
             expect(Strophe.serialize(sent_stanza)).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
             _converse.onUserActivity();
-            expect(_converse.sendCSI).toHaveBeenCalledWith('active');
             expect(Strophe.serialize(sent_stanza)).toBe('<active xmlns="urn:xmpp:csi:0"/>');
         }));
     });
@@ -40,8 +38,6 @@ describe("Converse", function() {
             const { api } = _converse;
             let i = 0;
             // Usually initialized by registerIntervalHandler
-            _converse.idle_seconds = 0;
-            _converse.auto_changed_status = false;
             _converse.api.settings.set('auto_away', 3);
             _converse.api.settings.set('auto_xa', 6);
 
@@ -49,7 +45,6 @@ describe("Converse", function() {
             while (i <= _converse.api.settings.get("auto_away")) {
                 _converse.onEverySecond(); i++;
             }
-            expect(_converse.auto_changed_status).toBe(true);
 
             while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('away');
@@ -57,11 +52,9 @@ describe("Converse", function() {
                 i++;
             }
             expect(await _converse.api.user.status.get()).toBe('xa');
-            expect(_converse.auto_changed_status).toBe(true);
 
             _converse.onUserActivity();
             expect(await _converse.api.user.status.get()).toBe('online');
-            expect(_converse.auto_changed_status).toBe(false);
 
             // Check that it also works for the chat feature
             await _converse.api.user.status.set('chat')
@@ -70,18 +63,15 @@ describe("Converse", function() {
                 _converse.onEverySecond();
                 i++;
             }
-            expect(_converse.auto_changed_status).toBe(true);
             while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('away');
                 _converse.onEverySecond();
                 i++;
             }
             expect(await _converse.api.user.status.get()).toBe('xa');
-            expect(_converse.auto_changed_status).toBe(true);
 
             _converse.onUserActivity();
             expect(await _converse.api.user.status.get()).toBe('online');
-            expect(_converse.auto_changed_status).toBe(false);
 
             // Check that it doesn't work for 'dnd'
             await _converse.api.user.status.set('dnd');
@@ -91,18 +81,15 @@ describe("Converse", function() {
                 i++;
             }
             expect(await _converse.api.user.status.get()).toBe('dnd');
-            expect(_converse.auto_changed_status).toBe(false);
             while (i <= api.settings.get('auto_xa')) {
                 expect(await _converse.api.user.status.get()).toBe('dnd');
                 _converse.onEverySecond();
                 i++;
             }
             expect(await _converse.api.user.status.get()).toBe('dnd');
-            expect(_converse.auto_changed_status).toBe(false);
 
             _converse.onUserActivity();
             expect(await _converse.api.user.status.get()).toBe('dnd');
-            expect(_converse.auto_changed_status).toBe(false);
         }));
     });
 

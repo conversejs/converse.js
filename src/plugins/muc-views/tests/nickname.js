@@ -122,8 +122,8 @@ describe("A MUC", function () {
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => view.querySelectorAll('li .occupant-nick').length, 500);
         let occupants = view.querySelector('.occupant-list');
-        expect(occupants.childElementCount).toBe(1);
-        expect(occupants.firstElementChild.querySelector('.occupant-nick').textContent.trim()).toBe("oldnick");
+        expect(occupants.querySelectorAll('.occupant-nick').length).toBe(1);
+        expect(occupants.querySelector('.occupant-nick').textContent.trim()).toBe("oldnick");
 
         const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
         expect(csntext.trim()).toEqual("oldnick has entered the groupchat");
@@ -153,7 +153,7 @@ describe("A MUC", function () {
         expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
         occupants = view.querySelector('.occupant-list');
-        expect(occupants.childElementCount).toBe(1);
+        expect(occupants.querySelectorAll('.occupant-nick').length).toBe(1);
 
         presence = $pres().attrs({
                 from:'lounge@montague.lit/newnick',

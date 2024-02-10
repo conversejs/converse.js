@@ -1,9 +1,10 @@
 import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '../shared/_converse.js';
 import { settings_api } from '../shared/settings/api.js';
+import { getUnloadEvent } from './session.js';
 
 export function getDefaultStore () {
-    if (_converse.config.get('trusted')) {
+    if (_converse.state.config.get('trusted')) {
         const is_non_persistent = settings_api.get('persistent_store') === 'sessionStorage';
         return is_non_persistent ? 'session': 'persistent';
     } else {
@@ -29,8 +30,9 @@ export function initStorage (model, id, type) {
     model.browserStorage = createStore(id, store);
     if (storeUsesIndexedDB(store)) {
         const flush = () => model.browserStorage.flush();
-        window.addEventListener(_converse.unloadevent, flush);
-        model.on('destroy', () => window.removeEventListener(_converse.unloadevent, flush));
+        const unloadevent = getUnloadEvent();
+        window.addEventListener(unloadevent, flush);
+        model.on('destroy', () => window.removeEventListener(unloadevent, flush));
         model.listenTo(_converse, 'beforeLogout', flush);
     }
 }

@@ -18,6 +18,7 @@ export default class Avatar extends CustomElement {
 
     constructor () {
         super();
+        this.data = null;
         this.width = 36;
         this.height = 36;
     }

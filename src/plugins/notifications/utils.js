@@ -1,3 +1,8 @@
+/**
+ * @typedef {module:headless-plugins-muc-muc.MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {module:headless-plugins-muc-muc.MUCMessageData} MUCMessageData
+ * @typedef {module:headless-plugins-chat-utils.MessageData} MessageData
+ */
 import Favico from 'favico.js-slevomat';
 import { __ } from 'i18n';
 import { _converse, api, converse, log } from '@converse/headless';
@@ -24,9 +29,13 @@ export function areDesktopNotificationsEnabled () {
     );
 }
 
+/**
+ * @typedef {Navigator & {clearAppBadge: Function, setAppBadge: Function} } navigator
+ */
+
 export function clearFavicon () {
     favicon = null;
-    navigator.clearAppBadge?.()
+    /** @type navigator */(navigator).clearAppBadge?.()
         .catch(e => log.error("Could not clear unread count in app badge " + e));
 }
 
@@ -36,7 +45,7 @@ export function updateUnreadFavicon () {
         const chats = _converse.chatboxes.models;
         const num_unread = chats.reduce((acc, chat) => acc + (chat.get('num_unread') || 0), 0);
         favicon.badge(num_unread);
-        navigator.setAppBadge?.(num_unread)
+        /** @type navigator */(navigator).setAppBadge?.(num_unread)
             .catch(e => log.error("Could set unread count in app badge - " + e));
     }
 }
@@ -50,7 +59,6 @@ function isReferenced (references, muc_jid, nick) {
 
 /**
  * Is this a group message for which we should notify the user?
- * @private
  * @param { MUCMessageAttributes } attrs
  */
 export async function shouldNotifyOfGroupMessage (attrs) {
@@ -116,7 +124,7 @@ async function shouldNotifyOfInfoMessage (attrs) {
  * @private
  * @async
  * @method shouldNotifyOfMessage
- * @param { MessageData|MUCMessageData } data
+ * @param {MessageData|MUCMessageData} data
  */
 function shouldNotifyOfMessage (data) {
     const { attrs } = data;
@@ -287,7 +295,7 @@ export async function handleMessageNotification (data) {
      * Triggered when a notification (sound or HTML5 notification) for a new
      * message has will be made.
      * @event _converse#messageNotification
-     * @type { MessageData|MUCMessageData}
+     * @type {MessageData|MUCMessageData}
      * @example _converse.api.listen.on('messageNotification', data => { ... });
      */
     api.trigger('messageNotification', data);
@@ -296,7 +304,7 @@ export async function handleMessageNotification (data) {
 }
 
 export function handleFeedback (data) {
-    if (areDesktopNotificationsEnabled(true)) {
+    if (areDesktopNotificationsEnabled()) {
         showFeedbackNotification(data);
     }
 }
@@ -321,7 +329,7 @@ function showContactRequestNotification (contact) {
 }
 
 export function handleContactRequestNotification (contact) {
-    if (areDesktopNotificationsEnabled(true)) {
+    if (areDesktopNotificationsEnabled()) {
         showContactRequestNotification(contact);
     }
 }

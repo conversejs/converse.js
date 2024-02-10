@@ -2,6 +2,8 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
+ * @typedef {import('lit').TemplateResult} TemplateResult
+ * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
@@ -16,20 +18,14 @@ import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
 import u from '../headless/utils/index.js';
-import { converse, log } from '@converse/headless';
-import { getURI, isAudioURL, isImageURL, isVideoURL } from '@converse/headless/utils/url.js';
+import { api, converse, log } from '@converse/headless';
+import { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';
+import { queryChildren } from '@converse/headless/utils/html.js';
 
 const { sizzle, Strophe } = converse.env;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
-
-function getAutoCompleteProperty (name, options) {
-    return {
-        'muc#roomconfig_lang': 'language',
-        'muc#roomconfig_roomsecret': options?.new_password ? 'new-password' : 'current-password'
-    }[name];
-}
 
 const XFORM_TYPE_MAP = {
     'text-private': 'password',
@@ -55,6 +51,9 @@ const XFORM_VALIDATE_TYPE_MAP = {
 
 const EMPTY_TEXT_REGEX = /\s*\n\s*/
 
+/**
+ * @param {Element|Strophe.Builder} el
+ */
 function stripEmptyTextNodes (el) {
     el = el.tree?.() ?? el;
 
@@ -67,9 +66,16 @@ function stripEmptyTextNodes (el) {
         return NodeFilter.FILTER_ACCEPT;
     });
     while (n = walker.nextNode()) text_nodes.push(n);
-    text_nodes.forEach((n) => EMPTY_TEXT_REGEX.test(n.data) && n.parentElement.removeChild(n))
+    text_nodes.forEach((n) => EMPTY_TEXT_REGEX.test(/** @type {Text} */(n).data) && n.parentElement.removeChild(n))
 
     return el;
+}
+
+function getAutoCompleteProperty (name, options) {
+    return {
+        'muc#roomconfig_lang': 'language',
+        'muc#roomconfig_roomsecret': options?.new_password ? 'new-password' : 'current-password'
+    }[name];
 }
 
 const serializer = new XMLSerializer();
@@ -117,8 +123,8 @@ function isEqualNode (actual, expected) {
 
 /**
  * Given an HTMLElement representing a form field, return it's name and value.
- * @param { HTMLElement } field
- * @returns { { string, string } | null }
+ * @param {HTMLInputElement|HTMLSelectElement} field
+ * @returns {{[key:string]:string|number|string[]}|null}
  */
 export function getNameAndValue(field) {
     const name = field.getAttribute('name');
@@ -127,17 +133,16 @@ export function getNameAndValue(field) {
     }
     let value;
     if (field.getAttribute('type') === 'checkbox') {
-        value = field.checked && 1 || 0;
+        value = /** @type {HTMLInputElement} */(field).checked && 1 || 0;
     } else if (field.tagName == "TEXTAREA") {
         value = field.value.split('\n').filter(s => s.trim());
     } else if (field.tagName == "SELECT") {
-        value = u.getSelectValues(field);
+        value = u.getSelectValues(/** @type {HTMLSelectElement} */(field));
     } else {
         value = field.value;
     }
     return { name, value };
 }
-
 
 function getInputType(field) {
     const type = XFORM_TYPE_MAP[field.getAttribute('type')]
@@ -173,8 +178,8 @@ export function getFileName (url) {
  * Returns the markup for a URL that points to a downloadable asset
  * (such as a video, image or audio file).
  * @method u#getOOBURLMarkup
- * @param { String } url
- * @returns { TemplateResult }
+ * @param {string} url
+ * @returns {TemplateResult|string}
  */
 export function getOOBURLMarkup (url) {
     const uri = getURI(url);
@@ -196,48 +201,25 @@ export function getOOBURLMarkup (url) {
  * Return the height of the passed in DOM element,
  * based on the heights of its children.
  * @method u#calculateElementHeight
- * @param { HTMLElement } el
+ * @param {HTMLElement} el
  * @returns {number}
  */
-u.calculateElementHeight = function (el) {
-    return Array.from(el.children).reduce((result, child) => result + child.offsetHeight, 0);
-};
+function calculateElementHeight (el) {
+    return Array.from(el.children).reduce((result, child) => {
+        if (child instanceof HTMLElement) {
+            return result + child.offsetHeight;
+        }
+        return result;
+    }, 0);
+}
 
-u.getNextElement = function (el, selector = '*') {
+function getNextElement (el, selector = '*') {
     let next_el = el.nextElementSibling;
     while (next_el !== null && !sizzle.matchesSelector(next_el, selector)) {
         next_el = next_el.nextElementSibling;
     }
     return next_el;
-};
-
-u.getPreviousElement = function (el, selector = '*') {
-    let prev_el = el.previousElementSibling;
-    while (prev_el !== null && !sizzle.matchesSelector(prev_el, selector)) {
-        prev_el = prev_el.previousElementSibling;
-    }
-    return prev_el;
-};
-
-u.getFirstChildElement = function (el, selector = '*') {
-    let first_el = el.firstElementChild;
-    while (first_el !== null && !sizzle.matchesSelector(first_el, selector)) {
-        first_el = first_el.nextElementSibling;
-    }
-    return first_el;
-};
-
-u.getLastChildElement = function (el, selector = '*') {
-    let last_el = el.lastElementChild;
-    while (last_el !== null && !sizzle.matchesSelector(last_el, selector)) {
-        last_el = last_el.previousElementSibling;
-    }
-    return last_el;
-};
-
-u.toggleClass = function (className, el) {
-    u.hasClass(className, el) ? removeClass(className, el) : addClass(className, el);
-};
+}
 
 /**
  * Has an element a class?
@@ -281,21 +263,30 @@ export function removeElement (el) {
     return el;
 }
 
-u.getElementFromTemplateResult = function (tr) {
+/**
+ * @param {TemplateResult} tr
+ */
+function getElementFromTemplateResult (tr) {
     const div = document.createElement('div');
     render(tr, div);
     return div.firstElementChild;
-};
+}
 
-u.showElement = el => {
+/**
+ * @param {Element} el
+ */
+function showElement (el) {
     removeClass('collapsed', el);
     removeClass('hidden', el);
-};
+}
 
-u.hideElement = function (el) {
+/**
+ * @param {Element} el
+ */
+function hideElement (el) {
     el instanceof Element && el.classList.add('hidden');
     return el;
-};
+}
 
 export function ancestor (el, selector) {
     let parent = el;
@@ -307,12 +298,11 @@ export function ancestor (el, selector) {
 
 /**
  * Return the element's siblings until one matches the selector.
- * @private
  * @method u#nextUntil
  * @param { HTMLElement } el
  * @param { String } selector
  */
-u.nextUntil = function (el, selector) {
+function nextUntil (el, selector) {
     const matches = [];
     let sibling_el = el.nextElementSibling;
     while (sibling_el !== null && !sibling_el.matches(selector)) {
@@ -320,63 +310,47 @@ u.nextUntil = function (el, selector) {
         sibling_el = sibling_el.nextElementSibling;
     }
     return matches;
-};
+}
 
 /**
  * Helper method that replace HTML-escaped symbols with equivalent characters
  * (e.g. transform occurrences of '&amp;' to '&')
- * @private
  * @method u#unescapeHTML
  * @param { String } string - a String containing the HTML-escaped symbols.
  */
-u.unescapeHTML = function (string) {
+function unescapeHTML (string) {
     var div = document.createElement('div');
     div.innerHTML = string;
     return div.innerText;
-};
+}
 
-u.escapeHTML = function (string) {
+/**
+ * @method u#escapeHTML
+ * @param {string} string
+ */
+function escapeHTML (string) {
     return string
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
-};
+}
 
 function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
     return !!safeProtocolsList.includes(protocol);
 }
 
-// Will return false if URL is malformed or contains disallowed characters
-function isUrlValid (urlString) {
-    try {
-        const url = new URL(urlString);
-        return !!url;
-    } catch (error) {
-        return false;
-    }
-}
-
+/**
+ * @param {string} url
+ */
 export function getHyperlinkTemplate (url) {
     const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
     const uri = getURI(url);
-    if (uri !== null && isUrlValid(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
+    if (uri !== null && isValidURL(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
         return tplHyperlink(uri, url);
     }
     return url;
 }
-
-u.slideInAllElements = function (elements, duration = 300) {
-    return Promise.all(Array.from(elements).map(e => u.slideIn(e, duration)));
-};
-
-u.slideToggleElement = function (el, duration) {
-    if (u.hasClass('collapsed', el) || u.hasClass('hidden', el)) {
-        return u.slideOut(el, duration);
-    } else {
-        return u.slideIn(el, duration);
-    }
-};
 
 /**
  * Shows/expands an element by sliding it out of itself
@@ -393,19 +367,19 @@ export function slideOut (el, duration = 200) {
             return;
         }
         const marker = el.getAttribute('data-slider-marker');
-        if (marker) {
+        if (marker && !Number.isNaN(Number(marker))) {
             el.removeAttribute('data-slider-marker');
-            cancelAnimationFrame(marker);
+            cancelAnimationFrame(Number(marker));
         }
-        const end_height = u.calculateElementHeight(el);
-        if (window.converse_disable_effects) {
+        const end_height = calculateElementHeight(el);
+        if (api.settings.get('disable_effects')) {
             // Effects are disabled (for tests)
             el.style.height = end_height + 'px';
             slideOutWrapup(el);
             resolve();
             return;
         }
-        if (!u.hasClass('collapsed', el) && !u.hasClass('hidden', el)) {
+        if (!hasClass('collapsed', el) && !hasClass('hidden', el)) {
             resolve();
             return;
         }
@@ -423,7 +397,7 @@ export function slideOut (el, duration = 200) {
                 // browser bug where browsers don't know the correct
                 // offsetHeight beforehand.
                 el.removeAttribute('data-slider-marker');
-                el.style.height = u.calculateElementHeight(el) + 'px';
+                el.style.height = calculateElementHeight(el) + 'px';
                 el.style.overflow = '';
                 el.style.height = '';
                 resolve();
@@ -439,9 +413,8 @@ export function slideOut (el, duration = 200) {
 
 /**
  * Hides/contracts an element by sliding it into itself
- * @method slideIn
- * @param { HTMLElement } el - The HTML string
- * @param { Number } duration - The duration amount in milliseconds
+ * @param {HTMLElement} el - The HTML string
+ * @param {Number} duration - The duration amount in milliseconds
  */
 export function slideIn (el, duration = 200) {
     return new Promise((resolve, reject) => {
@@ -449,18 +422,18 @@ export function slideIn (el, duration = 200) {
             const err = 'An element needs to be passed in to slideIn';
             log.warn(err);
             return reject(new Error(err));
-        } else if (u.hasClass('collapsed', el)) {
+        } else if (hasClass('collapsed', el)) {
             return resolve(el);
-        } else if (window.converse_disable_effects) {
+        } else if (api.settings.get('disable_effects')) {
             // Effects are disabled (for tests)
             el.classList.add('collapsed');
             el.style.height = '';
             return resolve(el);
         }
         const marker = el.getAttribute('data-slider-marker');
-        if (marker) {
+        if (marker && !Number.isNaN(Number(marker))) {
             el.removeAttribute('data-slider-marker');
-            cancelAnimationFrame(marker);
+            cancelAnimationFrame(Number(marker));
         }
         const original_height = el.offsetHeight,
             steps = duration / 17; // We assume 17ms per animation which is ~60FPS
@@ -484,58 +457,40 @@ export function slideIn (el, duration = 200) {
     });
 }
 
-function afterAnimationEnds (el, callback) {
-    el.classList.remove('visible');
-    callback?.();
+/**
+ * @param {HTMLElement} el
+ */
+function isInDOM (el) {
+    return document.querySelector('body').contains(el);
 }
 
-u.isInDOM = function (el) {
-    return document.querySelector('body').contains(el);
-};
-
-u.isVisible = function (el) {
+/**
+ * @param {HTMLElement} el
+ */
+function isVisible (el) {
     if (el === null) {
         return false;
     }
-    if (u.hasClass('hidden', el)) {
+    if (hasClass('hidden', el)) {
         return false;
     }
     // XXX: Taken from jQuery's "visible" implementation
     return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
-};
-
-u.fadeIn = function (el, callback) {
-    if (!el) {
-        log.warn('An element needs to be passed in to fadeIn');
-    }
-    if (window.converse_disable_effects) {
-        el.classList.remove('hidden');
-        return afterAnimationEnds(el, callback);
-    }
-    if (u.hasClass('hidden', el)) {
-        el.classList.add('visible');
-        el.classList.remove('hidden');
-        el.addEventListener('webkitAnimationEnd', () => afterAnimationEnds(el, callback));
-        el.addEventListener('animationend', () => afterAnimationEnds(el, callback));
-        el.addEventListener('oanimationend', () => afterAnimationEnds(el, callback));
-    } else {
-        afterAnimationEnds(el, callback);
-    }
-};
+}
 
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
  * @method u#xForm2TemplateResult
- * @param { Element } field - the field to convert
- * @param { Element } stanza - the containing stanza
- * @param { Object } options
- * @returns { TemplateResult }
+ * @param {HTMLElement} field - the field to convert
+ * @param {Element} stanza - the containing stanza
+ * @param {Object} options
+ * @returns {TemplateResult}
  */
-u.xForm2TemplateResult = function (field, stanza, options={}) {
+export function xForm2TemplateResult (field, stanza, options={}) {
     if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
-        const values = u.queryChildren(field, 'value').map(el => el?.textContent);
-        const options = u.queryChildren(field, 'option').map(option => {
+        const values = queryChildren(field, 'value').map(el => el?.textContent);
+        const options = queryChildren(field, 'option').map((/** @type {HTMLElement} */option) => {
             const value = option.querySelector('value')?.textContent;
             return {
                 'value': value,
@@ -617,18 +572,29 @@ u.xForm2TemplateResult = function (field, stanza, options={}) {
             'value': field.querySelector('value')?.textContent
         });
     }
-};
+}
 
 Object.assign(u, {
-    hasClass,
     addClass,
     ancestor,
+    calculateElementHeight,
+    escapeHTML,
+    getElementFromTemplateResult,
+    getNextElement,
     getOOBURLMarkup,
+    hasClass,
+    hideElement,
     isEqualNode,
+    isInDOM,
+    isVisible,
+    nextUntil,
     removeClass,
     removeElement,
+    showElement,
     slideIn,
     slideOut,
+    unescapeHTML,
+    xForm2TemplateResult,
 });
 
 export default u;

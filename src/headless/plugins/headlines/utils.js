@@ -15,7 +15,7 @@ export async function onHeadlineMessage (stanza) {
 
         await api.waitUntil('rosterInitialized')
         if (from_jid.includes('@') &&
-                !_converse.roster.get(from_jid) &&
+                !_converse.state.roster.get(from_jid) &&
                 !api.settings.get("allow_non_roster_messaging")) {
             return;
         }

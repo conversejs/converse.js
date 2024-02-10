@@ -351,7 +351,7 @@ All configuration settings have default values which can be overridden when
 gets called.
 
 Plugins often need their own additional configuration settings and you can add
-these settings with the `_converse.api.settings.update </docs/html/api/-_converse.api.settings.html#.update>`_
+these settings with the `_converse.api.settings.extend </docs/html/api/-_converse.api.settings.html#.extend>`_
 method.
 
 Exposing promises
@@ -455,12 +455,13 @@ Hooks
 -----
 
 Converse has the concept of ``hooks``, which are special events that allow you
-to modify it's behaviour at runtime.
+to modify behaviour at runtime.
 
 A hook is similar to an event, but it differs in two meaningful ways:
 
 1. Converse will wait for all handlers of a hook to finish before continuing inside the function from where the hook was triggered.
-2. Each hook contains a payload, which the handlers can modify or extend, before returning it (either to the function that triggered the hook or to subsequent handlers).
+2. Each hook contains a payload, which the handlers can modify or extend, before returning it
+   (either to the function that triggered the hook or to subsequent handlers).
 
 These two properties of hooks makes it possible for 3rd party plugins to
 intercept and update data, allowing them to modify Converse without the need of

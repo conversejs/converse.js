@@ -1,4 +1,4 @@
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { _converse, api, converse } from "@converse/headless";
 
 const { Strophe } = converse.env;
@@ -10,6 +10,7 @@ class RoomsListModel extends Model {
             'muc_domain': api.settings.get('muc_domain'),
             'nick': _converse.getDefaultMUCNickname(),
             'toggle_state':  _converse.OPENED,
+            'collapsed_domains': [],
         };
     }
 

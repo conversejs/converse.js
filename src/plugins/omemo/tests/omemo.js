@@ -228,11 +228,13 @@ describe("The OMEMO module", function() {
     it("will create a new device based on a received carbon message",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+
         await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await u.waitUntil(() => mock.initializedOMEMO(_converse));
         await mock.openChatBoxFor(_converse, contact_jid);
+
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         const my_devicelist = _converse.devicelists.get({'jid': _converse.bare_jid});
         expect(my_devicelist.devices.length).toBe(2);
@@ -249,6 +251,8 @@ describe("The OMEMO module", function() {
                             .c('device', {'id': '555'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
+
+        const { omemo_store } = _converse;
 
         const contact_devicelist = _converse.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => contact_devicelist.devices.length === 1);
@@ -275,7 +279,7 @@ describe("The OMEMO module", function() {
                         <origin-id xmlns="urn:xmpp:sid:0" id="87141781-61d6-4eb3-9a31-429935a61b76"/>
                         <encrypted xmlns="eu.siacs.conversations.axolotl">
                             <header sid="988349631">
-                                <key rid="${_converse.omemo_store.get('device_id')}"
+                                <key rid="${omemo_store.get('device_id')}"
                                      prekey="true">${u.arrayBufferToBase64(obj.key_and_tag)}</key>
                                 <iv>${obj.iv}</iv>
                             </header>
@@ -290,6 +294,14 @@ describe("The OMEMO module", function() {
         `);
         _converse.api.connection.get().IQ_stanzas = [];
         _converse.api.connection.get()._dataRecv(mock.createRequest(carbon));
+
+        // Remove one pre-key to exercise code that generates new ones.
+        const prekeys = omemo_store.getPreKeys();
+        omemo_store.removePreKey(Object.keys(prekeys)[9]);
+
+        let prekey_ids = Object.keys(omemo_store.getPreKeys());
+        expect(prekey_ids.length).toBe(99);
+        expect(prekey_ids.includes('9')).toBe(false);
 
         // The message received is a prekey message, so missing prekeys are
         // generated and a new bundle published.
@@ -331,6 +343,10 @@ describe("The OMEMO module", function() {
                     `<items node="eu.siacs.conversations.axolotl.bundles:988349631"/>`+
                 `</pubsub>`+
             `</iq>`);
+
+        prekey_ids = Object.keys(omemo_store.getPreKeys());
+        expect(prekey_ids.length).toBe(100);
+        expect(prekey_ids.includes('9')).toBe(true);
     }));
 
     it("can receive a PreKeySignalMessage",

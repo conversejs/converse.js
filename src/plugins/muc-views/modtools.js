@@ -1,3 +1,7 @@
+/**
+ * @typedef {module:muc-affiliations-utils.NonOutcastAffiliation} NonOutcastAffiliation
+ */
+
 import tplModeratorTools from './templates/moderator-tools.js';
 import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -30,8 +34,9 @@ export default class ModeratorTools extends CustomElement {
 
     constructor () {
         super();
+        this.jid = null;
         this.tab = 'affiliations';
-        this.affiliation = '';
+        this.affiliation = null;
         this.affiliations_filter = '';
         this.role = '';
         this.roles_filter = '';
@@ -69,7 +74,6 @@ export default class ModeratorTools extends CustomElement {
                 'affiliations_filter': this.affiliations_filter,
                 'alert_message': this.alert_message,
                 'alert_type': this.alert_type,
-                'assignRole': ev => this.assignRole(ev),
                 'assignable_affiliations': getAssignableAffiliations(occupant),
                 'assignable_roles': getAssignableRoles(occupant),
                 'filterAffiliationResults': ev => this.filterAffiliationResults(ev),
@@ -171,7 +175,7 @@ export default class ModeratorTools extends CustomElement {
         ev.stopPropagation();
         ev.preventDefault();
         const data = new FormData(ev.target);
-        const role = data.get('role');
+        const role = /** @type {string} */(data.get('role'));
         this.role = null;
         this.role = role;
     }
@@ -180,7 +184,7 @@ export default class ModeratorTools extends CustomElement {
         ev.stopPropagation();
         ev.preventDefault();
         const data = new FormData(ev.target);
-        const affiliation = data.get('affiliation');
+        const affiliation = /** @type {NonOutcastAffiliation} */(data.get('affiliation'));
         this.affiliation = null;
         this.affiliation = affiliation;
     }

@@ -76,6 +76,11 @@ export default class AutoCompleteComponent extends CustomElement {
         this.max_items = 10;
         this.min_chars = 1;
         this.triggers = '';
+        this.getAutoCompleteList = null;
+        this.list = null;
+        this.name = '';
+        this.placeholder = '';
+        this.required = false;
     }
 
     render () {
@@ -106,7 +111,7 @@ export default class AutoCompleteComponent extends CustomElement {
     }
 
     firstUpdated () {
-        this.auto_complete = new AutoComplete(this.firstElementChild, {
+        this.auto_complete = new AutoComplete(/** @type HTMLElement */(this.firstElementChild), {
             'ac_triggers': this.triggers.split(' '),
             'auto_evaluate': this.auto_evaluate,
             'auto_first': this.auto_first,

@@ -3,6 +3,7 @@ import { _converse } from '@converse/headless';
 import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
+import { HEADLINES_TYPE } from '@converse/headless/shared/constants.js';
 
 
 export default (o) => {
@@ -19,9 +20,9 @@ export default (o) => {
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">
                 ${ (!_converse.api.settings.get("singleton")) ?  html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>` : '' }
-                ${ (o.type !== _converse.HEADLINES_TYPE) ? html`<a class="show-msg-author-modal" @click=${o.showUserDetailsModal}>${ avatar }</a>` : '' }
+                ${ (o.type !== HEADLINES_TYPE) ? html`<a class="show-msg-author-modal" @click=${o.showUserDetailsModal}>${ avatar }</a>` : '' }
                 <div class="chatbox-title__text" title="${o.jid}">
-                    ${ (o.type !== _converse.HEADLINES_TYPE) ? html`<a class="user show-msg-author-modal" @click=${o.showUserDetailsModal}>${ display_name }</a>` : display_name }
+                    ${ (o.type !== HEADLINES_TYPE) ? html`<a class="user show-msg-author-modal" @click=${o.showUserDetailsModal}>${ display_name }</a>` : display_name }
                 </div>
             </div>
             <div class="chatbox-title__buttons row no-gutters">

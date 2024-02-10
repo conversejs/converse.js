@@ -1,0 +1,54 @@
+converse-contacts-filter {
+    display: block;
+    margin-bottom: 1em;
+
+    .contacts-filter-form {
+        width: 100%;
+
+        .button-group {
+            padding: 0.2em;
+        }
+
+        converse-icon {
+            padding: 0.25em;
+        }
+
+        .contacts-filter {
+            width: 100%;
+            margin: 0.2em;
+            font-size: calc(var(--font-size) - 2px);
+
+            &.form-control {
+                width: 100%;
+            }
+        }
+
+        select.state-type {
+            font-size: calc(var(--font-size) - 2px);
+            width: 100% !important;
+        }
+    }
+}
+
+.converse-overlayed  {
+    .contacts-filter-form {
+        .button-group {
+            padding: 0.1em;
+        }
+
+        converse-icon {
+            padding: 0.15em;
+        }
+
+        .contacts-filter {
+            width: 100%;
+            margin: 0.1em;
+            font-size: calc(var(--font-size) - 4px);
+        }
+
+        select.state-type {
+            font-size: calc(var(--font-size) - 4px);
+            width: 100% !important;
+        }
+    }
+}

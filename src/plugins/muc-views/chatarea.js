@@ -17,6 +17,12 @@ export default class MUCChatArea extends CustomElement {
         }
     }
 
+    constructor () {
+        super();
+        this.jid = null;
+        this.type = null;
+    }
+
     async initialize () {
         this.model = await api.rooms.get(this.jid);
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
@@ -141,7 +147,7 @@ export default class MUCChatArea extends CustomElement {
     }
 
     resizeSidebarView (delta, current_mouse_position) {
-        const sidebar_el = this.querySelector('converse-muc-sidebar');
+        const sidebar_el = /** @type {HTMLElement} */(this.querySelector('converse-muc-sidebar'));
         const element_position = sidebar_el.getBoundingClientRect();
         if (this.is_minimum) {
             this.is_minimum = element_position.left < current_mouse_position;

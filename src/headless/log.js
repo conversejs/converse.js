@@ -43,8 +43,8 @@ export default {
      * When using the 'error' or 'warn' loglevels, a full stacktrace will be
      * logged as well.
      * @method log#log
-     * @param { string | Error } message - The message to be logged
-     * @param { string } level - The loglevel which allows for filtering of log messages
+     * @param {string|Element|Error} message - The message to be logged
+     * @param {string} level - The loglevel which allows for filtering of log messages
      */
     log (message, level, style='') {
         if (LEVELS[level] < LEVELS[this.loglevel]) {
@@ -59,7 +59,7 @@ export default {
         if (message instanceof Error) {
             message = message.stack;
         } else if (isElement(message)) {
-            message = message.outerHTML;
+            message = /** @type {Element} */(message).outerHTML;
         }
         const prefix = style ? '%c' : '';
         if (level === 'error') {

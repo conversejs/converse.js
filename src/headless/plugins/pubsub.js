@@ -2,6 +2,7 @@
  * @module converse-pubsub
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
+ * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
 import "./disco/index.js";
 import _converse from '../shared/_converse.js';
@@ -44,8 +45,9 @@ converse.plugins.add('converse-pubsub', {
                  *      the publish options precondication cannot be met.
                  */
                 async 'publish' (jid, node, item, options, strict_options=true) {
+                    const bare_jid = _converse.session.get('bare_jid');
                     const stanza = $iq({
-                        'from': _converse.bare_jid,
+                        'from': bare_jid,
                         'type': 'set',
                         'to': jid
                     }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
@@ -53,7 +55,7 @@ converse.plugins.add('converse-pubsub', {
                             .cnode(item.tree()).up().up();
 
                     if (options) {
-                        jid = jid || _converse.bare_jid;
+                        jid = jid || bare_jid;
                         if (await api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', jid)) {
                             stanza.c('publish-options')
                                 .c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})
@@ -86,6 +88,5 @@ converse.plugins.add('converse-pubsub', {
                 }
             }
         });
-        /************************ END API ************************/
     }
 });

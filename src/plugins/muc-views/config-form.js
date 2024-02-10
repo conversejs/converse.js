@@ -9,6 +9,11 @@ const u = converse.env.utils;
 
 class MUCConfigForm extends CustomElement {
 
+    constructor () {
+        super();
+        this.jid = null;
+    }
+
     static get properties () {
         return {
             'jid': { type: String }

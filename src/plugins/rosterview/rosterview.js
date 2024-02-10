@@ -1,6 +1,6 @@
 import tplRoster from "./templates/roster.js";
 import { CustomElement } from 'shared/components/element.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { _converse, api } from "@converse/headless";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { slideIn, slideOut } from 'utils/html.js';
@@ -63,7 +63,7 @@ export default class RosterView extends CustomElement {
 
     toggleRoster (ev) {
         ev?.preventDefault?.();
-        const list_el = this.querySelector('.list-container.roster-contacts');
+        const list_el = /** @type {HTMLElement} */(this.querySelector('.list-container.roster-contacts'));
         if (this.model.get('toggle_state') === _converse.CLOSED) {
             slideOut(list_el).then(() => this.model.save({'toggle_state': _converse.OPENED}));
         } else {

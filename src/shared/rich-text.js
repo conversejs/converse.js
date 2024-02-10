@@ -5,7 +5,7 @@ import tplVideo from 'templates/video.js';
 import { api } from '@converse/headless';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
 import { getEmojiMarkup } from './chat/utils.js';
-import { getHyperlinkTemplate } from 'utils/html.js';
+import { getHyperlinkTemplate } from '../utils/html.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
 import {
@@ -54,33 +54,34 @@ const tplMention = o => html`<span class="mention" data-uri="${o.uri}">${o.menti
 export class RichText extends String {
     /**
      * Create a new {@link RichText} instance.
-     * @param { String } text - The text to be annotated
-     * @param { number } offset - The offset of this particular piece of text
+     * @param {string} text - The text to be annotated
+     * @param {number} offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
      *  RichText instances can be nested when templates call directives
      *  which create new RichText instances (as happens with XEP-393 styling directives).
-     * @param { Object } options
-     * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
-     * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
-     * @param { Boolean } [options.embed_audio] - Whether audio URLs should be rendered as <audio> elements.
+     * @param {Object} [options]
+     * @param {string} [options.nick] - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
+     * @param {boolean} [options.render_styling] - Whether XEP-0393 message styling should be applied to the message
+     * @param {boolean} [options.embed_audio] - Whether audio URLs should be rendered as <audio> elements.
      *  If set to `true`, then audio files will always be rendered with an
      *  audio player. If set to `false`, they won't, and if not defined, then the `embed_audio` setting
      *  is used to determine whether they should be rendered as playable audio or as hyperlinks.
-     * @param { Boolean } [options.embed_videos] - Whether video URLs should be rendered as <video> elements.
+     * @param {boolean} [options.embed_videos] - Whether video URLs should be rendered as <video> elements.
      *  If set to `true`, then videos will always be rendered with a video
      *  player. If set to `false`, they won't, and if not defined, then the `embed_videos` setting
      *  is used to determine whether they should be rendered as videos or as hyperlinks.
-     * @param { Array } [options.mentions] - An array of mention references
-     * @param { Array } [options.media_urls] - An array of {@link MediaURLMetadata} objects,
+     * @param {Array} [options.mentions] - An array of mention references
+     * @param {Array} [options.media_urls] - An array of {@link MediaURLMetadata} objects,
      *  used to render media such as images, videos and audio. It might not be
      *  possible to have the media metadata available, so if this value is
      *  `undefined` then the passed-in `text` will be parsed for URLs. If you
      *  don't want this parsing to happen, pass in an empty array for this
      *  option.
-     * @param { Boolean } [options.show_images] - Whether image URLs should be rendered as <img> elements.
-     * @param { Boolean } options.show_me_message - Whether /me messages should be rendered differently
-     * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked
-     * @param { Function } options.onImgLoad - Callback for when an inline rendered image has been loaded
+     * @param {boolean} [options.show_images] - Whether image URLs should be rendered as <img> elements.
+     * @param {boolean} [options.show_me_message] - Whether /me messages should be rendered differently
+     * @param {Function} [options.onImgClick] - Callback for when an inline rendered image has been clicked
+     * @param {Function} [options.onImgLoad] - Callback for when an inline rendered image has been loaded
+     * @param {boolean} [options.hide_media_urls] - Callback for when an inline rendered image has been loaded
      */
     constructor (text, offset = 0, options = {}) {
         super(text);
@@ -172,14 +173,18 @@ export class RichText extends String {
 
     /**
      * Look for emojis (shortnames or unicode) and add templates for rendering them.
-     * @param { String } text
-     * @param { number } offset - The index of the passed in text relative to
+     * @param {String} text
+     * @param {number} offset - The index of the passed in text relative to
      *  the start of the message body text.
      */
     addEmojis (text, offset) {
         const references = [...getShortnameReferences(text.toString()), ...getCodePointReferences(text.toString())];
         references.forEach(e => {
-            this.addTemplateResult(e.begin + offset, e.end + offset, getEmojiMarkup(e, { 'add_title_wrapper': true }));
+            this.addTemplateResult(
+                e.begin + offset,
+                e.end + offset,
+                getEmojiMarkup(e, { add_title_wrapper: true })
+            );
         });
     }
 
@@ -335,6 +340,7 @@ export class RichText extends String {
      * @param { Object } template - The lit TemplateResult instance
      */
     addTemplateResult (begin, end, template) {
+        console.log(`addTemplateResult called with ${begin}, ${end}, ${template}`);
         this.references.push({ begin, end, template });
     }
 

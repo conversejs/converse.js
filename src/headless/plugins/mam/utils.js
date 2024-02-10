@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('../muc/muc.js').default} MUC
+ * @typedef {import('../chat/model.js').default} ChatBox
+ */
 import MAMPlaceholderMessage from './placeholder.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
@@ -6,10 +10,14 @@ import sizzle from 'sizzle';
 import { Strophe, $iq } from 'strophe.js';
 import { parseMUCMessage } from '../../plugins/muc/parsers';
 import { parseMessage } from '../../plugins/chat/parsers';
+import { CHATROOMS_TYPE } from '../../shared/constants.js';
 
 const { NS } = Strophe;
 const u = converse.env.utils;
 
+/**
+ * @param {Element} iq
+ */
 export function onMAMError (iq) {
     if (iq?.querySelectorAll('feature-not-implemented').length) {
         log.warn(`Message Archive Management (XEP-0313) not supported by ${iq.getAttribute('from')}`);
@@ -45,7 +53,7 @@ export function onMAMPreferences (iq, feature) {
         // but Prosody doesn't do this, so we don't rely on it.
         api.sendIQ(stanza)
             .then(() => feature.save({ 'preferences': { 'default': api.settings.get('message_archiving') } }))
-            .catch(_converse.onMAMError);
+            .catch(_converse.exports.onMAMError);
     } else {
         feature.save({ 'preferences': { 'default': api.settings.get('message_archiving') } });
     }
@@ -58,8 +66,8 @@ export function getMAMPrefsFromFeature (feature) {
     }
     if (prefs['default'] !== api.settings.get('message_archiving')) {
         api.sendIQ($iq({ 'type': 'get' }).c('prefs', { 'xmlns': NS.MAM }))
-            .then(iq => _converse.onMAMPreferences(iq, feature))
-            .catch(_converse.onMAMError);
+            .then(iq => _converse.exports.onMAMPreferences(iq, feature))
+            .catch(_converse.exports.onMAMError);
     }
 }
 
@@ -77,7 +85,7 @@ export function preMUCJoinMAMFetch (muc) {
 
 export async function handleMAMResult (model, result, query, options, should_page) {
     await api.emojis.initialize();
-    const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
+    const is_muc = model.get('type') === CHATROOMS_TYPE;
     const doParseMessage = s => is_muc ? parseMUCMessage(s, model) : parseMessage(s);
     const messages = await Promise.all(result.messages.map(doParseMessage));
     result.messages = messages;
@@ -99,28 +107,28 @@ export async function handleMAMResult (model, result, query, options, should_pag
 }
 
 /**
- * @typedef { Object } MAMOptions
+ * @typedef {Object} MAMOptions
  * A map of MAM related options that may be passed to fetchArchivedMessages
- * @param { number } [options.max] - The maximum number of items to return.
+ * @param {number} [options.max] - The maximum number of items to return.
  *  Defaults to "archived_messages_page_size"
- * @param { string } [options.after] - The XEP-0359 stanza ID of a message
+ * @param {string} [options.after] - The XEP-0359 stanza ID of a message
  *  after which messages should be returned. Implies forward paging.
- * @param { string } [options.before] - The XEP-0359 stanza ID of a message
+ * @param {string} [options.before] - The XEP-0359 stanza ID of a message
  *  before which messages should be returned. Implies backward paging.
- * @param { string } [options.end] - A date string in ISO-8601 format,
+ * @param {string} [options.end] - A date string in ISO-8601 format,
  *  before which messages should be returned. Implies backward paging.
- * @param { string } [options.start] - A date string in ISO-8601 format,
+ * @param {string} [options.start] - A date string in ISO-8601 format,
  *  after which messages should be returned. Implies forward paging.
- * @param { string } [options.with] - The JID of the entity with
+ * @param {string} [options.with] - The JID of the entity with
  *  which messages were exchanged.
- * @param { boolean } [options.groupchat] - True if archive in groupchat.
+ * @param {boolean} [options.groupchat] - True if archive in groupchat.
  */
 
 /**
  * Fetch XEP-0313 archived messages based on the passed in criteria.
- * @param { ChatBox | ChatRoom } model
- * @param { MAMOptions } [options]
- * @param { ('forwards'|'backwards'|null)} [should_page=null] - Determines whether
+ * @param {ChatBox} model
+ * @param {MAMOptions} [options]
+ * @param {('forwards'|'backwards'|null)} [should_page=null] - Determines whether
  *  this function should recursively page through the entire result set if a limited
  *  number of results were returned.
  */
@@ -128,8 +136,9 @@ export async function fetchArchivedMessages (model, options = {}, should_page = 
     if (model.disable_mam) {
         return;
     }
-    const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
-    const mam_jid = is_muc ? model.get('jid') : _converse.bare_jid;
+    const is_muc = model.get('type') === CHATROOMS_TYPE;
+    const bare_jid = _converse.session.get('bare_jid');
+    const mam_jid = is_muc ? model.get('jid') : bare_jid;
     if (!(await api.disco.supports(NS.MAM, mam_jid))) {
         return;
     }
@@ -162,9 +171,9 @@ export async function fetchArchivedMessages (model, options = {}, should_page = 
 
 /**
  * Create a placeholder message which is used to indicate gaps in the history.
- * @param { _converse.ChatBox | _converse.ChatRoom } model
- * @param { MAMOptions } options
- * @param { object } result - The RSM result object
+ * @param {ChatBox} model
+ * @param {MAMOptions} options
+ * @param {object} result - The RSM result object
  */
 async function createPlaceholder (model, options, result) {
     if (options.before == '' && (model.messages.length === 0 || !options.start)) {
@@ -185,9 +194,11 @@ async function createPlaceholder (model, options, result) {
     const { rsm } = result;
     const key = `stanza_id ${model.get('jid')}`;
     const adjacent_message = msgs.find(m => m[key] === rsm.result.first);
+    const adjacent_message_date = new Date(adjacent_message['time']);
+
     const msg_data = {
         'template_hook': 'getMessageTemplate',
-        'time': new Date(new Date(adjacent_message['time']) - 1).toISOString(),
+        'time': new Date(adjacent_message_date.getTime() - 1).toISOString(),
         'before': rsm.result.first,
         'start': options.start
     }
@@ -197,7 +208,7 @@ async function createPlaceholder (model, options, result) {
 /**
  * Fetches messages that might have been archived *after*
  * the last archived message in our local cache.
- * @param { _converse.ChatBox | _converse.ChatRoom }
+ * @param {ChatBox} model
  */
 export function fetchNewestMessages (model) {
     if (model.disable_mam) {

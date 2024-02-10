@@ -1,7 +1,7 @@
 import '../../plugins/status/api.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 import { rejectPresenceSubscription } from './utils.js';
 
@@ -24,7 +24,7 @@ class RosterContact extends Model {
     }
 
     async initialize (attributes) {
-        super.initialize(attributes);
+        super.initialize();
         this.initialized = getOpenPromise();
         this.setPresence();
         const { jid } = attributes;
@@ -39,7 +39,7 @@ class RosterContact extends Model {
          * When a contact's presence status has changed.
          * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
          * @event _converse#contactPresenceChanged
-         * @type { _converse.RosterContact }
+         * @type {RosterContact}
          * @example _converse.api.listen.on('contactPresenceChanged', contact => { ... });
          */
         this.listenTo(this.presence, 'change:show', () => api.trigger('contactPresenceChanged', this));
@@ -47,7 +47,7 @@ class RosterContact extends Model {
         /**
          * Synchronous event which provides a hook for further initializing a RosterContact
          * @event _converse#rosterContactInitialized
-         * @param { _converse.RosterContact } contact
+         * @param {RosterContact} contact
          */
         await api.trigger('rosterContactInitialized', this, {'Synchronous': true});
         this.initialized.resolve();
@@ -55,12 +55,12 @@ class RosterContact extends Model {
 
     setPresence () {
         const jid = this.get('jid');
-        this.presence = _converse.presences.findWhere(jid) || _converse.presences.create({ jid });
+        const { presences } = _converse.state;
+        this.presence = presences.findWhere(jid) || presences.create({ jid });
     }
 
     openChat () {
-        const attrs = this.attributes;
-        api.chats.open(attrs.jid, attrs, true);
+        api.chats.open(this.get('jid'), this.attributes, true);
     }
 
     /**

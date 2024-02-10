@@ -15,7 +15,7 @@ export function arrayBufferToString (ab) {
 }
 
 export function stringToArrayBuffer (string) {
-    const bytes = new TextEncoder("utf-8").encode(string);
+    const bytes = new TextEncoder().encode(string);
     return bytes.buffer;
 }
 

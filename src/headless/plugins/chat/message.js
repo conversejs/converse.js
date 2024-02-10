@@ -1,9 +1,13 @@
+/**
+ * @typedef {import('@converse/skeletor').Model} Model
+ */
 import ModelWithContact from './model-with-contact.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { SUCCESS, FAILURE } from '../../shared/constants.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -16,7 +20,7 @@ const { Strophe, sizzle, u } = converse.env;
  */
 class Message extends ModelWithContact {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
             'msgid': u.getUniqueId(),
             'time': new Date().toISOString(),
@@ -24,12 +28,19 @@ class Message extends ModelWithContact {
         };
     }
 
+    /**
+     * @param {Model[]} [models]
+     * @param {object} [options]
+     */
+    constructor (models, options) {
+        super(models, options);
+        this.file = null;
+    }
+
     async initialize () {
         super.initialize();
+        if (!this.checkValidity()) return;
 
-        if (!this.checkValidity()) {
-            return;
-        }
         this.initialized = getOpenPromise();
         if (this.get('file')) {
             this.on('change:put', () => this.uploadFile());
@@ -41,9 +52,9 @@ class Message extends ModelWithContact {
         await this.setContact();
         this.setTimerForEphemeralMessage();
         /**
-         * Triggered once a {@link _converse.Message} has been created and initialized.
+         * Triggered once a {@link Message} has been created and initialized.
          * @event _converse#messageInitialized
-         * @type { _converse.Message}
+         * @type {Message}
          * @example _converse.api.listen.on('messageInitialized', model => { ... });
          */
         await api.trigger('messageInitialized', this, { 'Synchronous': true });
@@ -53,13 +64,12 @@ class Message extends ModelWithContact {
     setContact () {
         if (['chat', 'normal'].includes(this.get('type'))) {
             ModelWithContact.prototype.initialize.apply(this, arguments);
-            this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
+            return this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
         }
     }
 
     /**
      * Sets an auto-destruct timer for this message, if it's is_ephemeral.
-     * @private
      * @method _converse.Message#setTimerForEphemeralMessage
      */
     setTimerForEphemeralMessage () {
@@ -179,12 +189,11 @@ class Message extends ModelWithContact {
      * @method _converse.Message#sendSlotRequestStanza
      */
     sendSlotRequestStanza () {
-        if (!this.file) {
-            return Promise.reject(new Error('file is undefined'));
-        }
+        if (!this.file) return Promise.reject(new Error('file is undefined'));
+
         const iq = converse.env
             .$iq({
-                'from': _converse.jid,
+                'from': _converse.session.get('jid'),
                 'to': this.get('slot_request_url'),
                 'type': 'get'
             })
@@ -241,12 +250,12 @@ class Message extends ModelWithContact {
     uploadFile () {
         const xhr = new XMLHttpRequest();
 
-        xhr.onreadystatechange = async () => {
+        xhr.onreadystatechange = async (event) => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 log.info('Status: ' + xhr.status);
                 if (xhr.status === 200 || xhr.status === 201) {
                     let attrs = {
-                        'upload': _converse.SUCCESS,
+                        'upload': SUCCESS,
                         'oob_url': this.get('get'),
                         'message': this.get('get'),
                         'body': this.get('get'),
@@ -259,7 +268,8 @@ class Message extends ModelWithContact {
                     attrs = await api.hook('afterFileUploaded', this, attrs);
                     this.save(attrs);
                 } else {
-                    xhr.onerror();
+                    log.error(event);
+                    xhr.onerror(new ProgressEvent(`Response status: ${xhr.status}`));
                 }
             }
         };
@@ -287,7 +297,7 @@ class Message extends ModelWithContact {
             }
             this.save({
                 'type': 'error',
-                'upload': _converse.FAILURE,
+                'upload': FAILURE,
                 'message': message,
                 'is_ephemeral': true
             });

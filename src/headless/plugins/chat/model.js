@@ -1,10 +1,18 @@
+/**
+ * @typedef {import('./message.js').default} Message
+ * @typedef {import('../muc/muc.js').default} MUC
+ * @typedef {import('../muc/message.js').default} MUCMessage
+ * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ */
 import ModelWithContact from './model-with-contact.js';
+import _converse from '../../shared/_converse.js';
+import api, { converse } from '../../shared/api/index.js';
 import isMatch from "lodash-es/isMatch";
 import log from '../../log.js';
 import pick from "lodash-es/pick";
-import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
-import { Model } from '@converse/skeletor/src/model.js';
+import { Model } from '@converse/skeletor';
+import { ACTIVE, PRIVATE_CHAT_TYPE, COMPOSING, INACTIVE, PAUSED, SUCCESS, GONE } from '@converse/headless/shared/constants.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { debouncedPruneHistory, handleCorrection } from '../../shared/chat/utils.js';
 import { filesize } from "filesize";
@@ -12,18 +20,17 @@ import { getMediaURLsMetadata } from '../../shared/parsers.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '../../utils/storage.js';
 import { isEmptyMessage } from '../../utils/index.js';
+import { isNewMessage } from './utils.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMessage } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
-import { isNewMessage } from './utils.js';
 
-const { Strophe, $msg } = converse.env;
+const { Strophe, $msg, u } = converse.env;
 
-const u = converse.env.utils;
 
 /**
  * Represents an open/ongoing chat conversation.
- * @namespace _converse.ChatBox
+ * @namespace ChatBox
  * @memberOf _converse
  */
 class ChatBox extends ModelWithContact {
@@ -31,16 +38,18 @@ class ChatBox extends ModelWithContact {
     defaults () {
         return {
             'bookmarked': false,
-            'chat_state': undefined,
             'hidden': isUniView() && !api.settings.get('singleton'),
             'message_type': 'chat',
-            'nickname': undefined,
             'num_unread': 0,
             'time_opened': this.get('time_opened') || (new Date()).getTime(),
             'time_sent': (new Date(0)).toISOString(),
-            'type': _converse.PRIVATE_CHAT_TYPE,
-            'url': ''
+            'type': PRIVATE_CHAT_TYPE,
         }
+    }
+
+    constructor (attrs, options) {
+        super(attrs, options);
+        this.disable_mam = false;
     }
 
     async initialize () {
@@ -62,8 +71,9 @@ class ChatBox extends ModelWithContact {
         this.initUI();
         this.initMessages();
 
-        if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-            this.presence = _converse.presences.get(jid) || _converse.presences.create({ jid });
+        if (this.get('type') === PRIVATE_CHAT_TYPE) {
+            const { presences } = _converse.state;
+            this.presence = presences.get(jid) || presences.create({ jid });
             await this.setRosterContact(jid);
             this.presence.on('change:show', item => this.onPresenceChanged(item));
         }
@@ -72,9 +82,9 @@ class ChatBox extends ModelWithContact {
 
         await this.fetchMessages();
         /**
-         * Triggered once a {@link _converse.ChatBox} has been created and initialized.
+         * Triggered once a {@link ChatBox} has been created and initialized.
          * @event _converse#chatBoxInitialized
-         * @type { _converse.ChatBox}
+         * @type { ChatBox}
          * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
          */
         await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
@@ -82,11 +92,11 @@ class ChatBox extends ModelWithContact {
     }
 
     getMessagesCollection () {
-        return new _converse.Messages();
+        return new _converse.exports.Messages();
     }
 
     getMessagesCacheKey () {
-        return `converse.messages-${this.get('jid')}-${_converse.bare_jid}`;
+        return `converse.messages-${this.get('jid')}-${_converse.session.get('bare_jid')}`;
     }
 
     initMessages () {
@@ -95,8 +105,8 @@ class ChatBox extends ModelWithContact {
         this.messages.chatbox = this;
         initStorage(this.messages, this.getMessagesCacheKey());
 
-        this.listenTo(this.messages, 'change:upload', this.onMessageUploadChanged, this);
-        this.listenTo(this.messages, 'add', this.onMessageAdded, this);
+        this.listenTo(this.messages, 'change:upload', m => this.onMessageUploadChanged(m));
+        this.listenTo(this.messages, 'add', m => this.onMessageAdded(m));
     }
 
     initUI () {
@@ -109,11 +119,11 @@ class ChatBox extends ModelWithContact {
 
     getNotificationsText () {
         const { __ } = _converse;
-        if (this.notifications?.get('chat_state') === _converse.COMPOSING) {
+        if (this.notifications?.get('chat_state') === COMPOSING) {
             return __('%1$s is typing', this.getDisplayName());
-        } else if (this.notifications?.get('chat_state') === _converse.PAUSED) {
+        } else if (this.notifications?.get('chat_state') === PAUSED) {
             return __('%1$s has stopped typing', this.getDisplayName());
-        } else if (this.notifications?.get('chat_state') === _converse.GONE) {
+        } else if (this.notifications?.get('chat_state') === GONE) {
             return __('%1$s has gone away', this.getDisplayName());
         } else {
             return '';
@@ -123,10 +133,10 @@ class ChatBox extends ModelWithContact {
     afterMessagesFetched () {
         this.pruneHistoryWhenScrolledDown();
         /**
-         * Triggered whenever a { @link _converse.ChatBox } or ${ @link _converse.ChatRoom }
+         * Triggered whenever a { @link ChatBox } or ${ @link MUC }
          * has fetched its messages from the local cache.
          * @event _converse#afterMessagesFetched
-         * @type { _converse.ChatBox| _converse.ChatRoom }
+         * @type { ChatBox| MUC }
          * @example _converse.api.listen.on('afterMessagesFetched', (chat) => { ... });
          */
         api.trigger('afterMessagesFetched', this);
@@ -141,7 +151,7 @@ class ChatBox extends ModelWithContact {
         const resolve = this.messages.fetched.resolve;
         this.messages.fetch({
             'add': true,
-            'success': msgs => { this.afterMessagesFetched(msgs); resolve() },
+            'success': () => { this.afterMessagesFetched(); resolve() },
             'error': () => { this.afterMessagesFetched(); resolve() }
         });
         return this.messages.fetched;
@@ -149,7 +159,7 @@ class ChatBox extends ModelWithContact {
 
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
-        const attrs = await parseMessage(stanza, _converse);
+        const attrs = await parseMessage(stanza);
         if (!await this.shouldShowErrorMessage(attrs)) {
             return;
         }
@@ -188,9 +198,8 @@ class ChatBox extends ModelWithContact {
     /**
      * Queue an incoming `chat` message stanza for processing.
      * @async
-     * @private
-     * @method _converse.ChatBox#queueMessage
-     * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
+     * @method ChatBox#queueMessage
+     * @param {MessageAttributes} attrs - A promise which resolves to the message attributes
      */
     queueMessage (attrs) {
         this.msg_chain = (this.msg_chain || this.messages.fetched)
@@ -201,12 +210,11 @@ class ChatBox extends ModelWithContact {
 
     /**
      * @async
-     * @private
-     * @method _converse.ChatBox#onMessage
-     * @param { MessageAttributes } attrs_promse - A promise which resolves to the message attributes.
+     * @method ChatBox#onMessage
+     * @param {Promise<MessageAttributes>} attrs_promise - A promise which resolves to the message attributes.
      */
-    async onMessage (attrs) {
-        attrs = await attrs;
+    async onMessage (attrs_promise) {
+        const attrs = await attrs_promise;
         if (u.isErrorObject(attrs)) {
             attrs.stanza && log.error(attrs.stanza);
             return log.error(attrs.message);
@@ -233,7 +241,7 @@ class ChatBox extends ModelWithContact {
     }
 
     async onMessageUploadChanged (message) {
-        if (message.get('upload') === _converse.SUCCESS) {
+        if (message.get('upload') === SUCCESS) {
             const attrs = {
                 'body': message.get('body'),
                 'spoiler_hint': message.get('spoiler_hint'),
@@ -271,7 +279,7 @@ class ChatBox extends ModelWithContact {
         if (api.connection.connected()) {
             // Immediately sending the chat state, because the
             // model is going to be destroyed afterwards.
-            this.setChatState(_converse.INACTIVE);
+            this.setChatState(INACTIVE);
             this.sendChatState();
         }
         try {
@@ -288,7 +296,7 @@ class ChatBox extends ModelWithContact {
         /**
          * Triggered once a chatbox has been closed.
          * @event _converse#chatBoxClosed
-         * @type {_converse.ChatBox | _converse.ChatRoom}
+         * @type {ChatBox | MUC}
          * @example _converse.api.listen.on('chatBoxClosed', chat => { ... });
          */
         api.trigger('chatBoxClosed', this);
@@ -296,9 +304,9 @@ class ChatBox extends ModelWithContact {
 
     announceReconnection () {
         /**
-         * Triggered whenever a `_converse.ChatBox` instance has reconnected after an outage
+         * Triggered whenever a `ChatBox` instance has reconnected after an outage
          * @event _converse#onChatReconnected
-         * @type {_converse.ChatBox | _converse.ChatRoom}
+         * @type {ChatBox | MUC}
          * @example _converse.api.listen.on('onChatReconnected', chat => { ... });
          */
         api.trigger('chatReconnected', this);
@@ -472,7 +480,7 @@ class ChatBox extends ModelWithContact {
      * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
      * See XEP-0085 Chat State Notifications.
      * @private
-     * @method _converse.ChatBox#setChatState
+     * @method ChatBox#setChatState
      * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
      */
     setChatState (state, options) {
@@ -480,17 +488,17 @@ class ChatBox extends ModelWithContact {
             window.clearTimeout(this.chat_state_timeout);
             delete this.chat_state_timeout;
         }
-        if (state === _converse.COMPOSING) {
+        if (state === COMPOSING) {
             this.chat_state_timeout = window.setTimeout(
                 this.setChatState.bind(this),
                 _converse.TIMEOUTS.PAUSED,
-                _converse.PAUSED
+                PAUSED
             );
-        } else if (state === _converse.PAUSED) {
+        } else if (state === PAUSED) {
             this.chat_state_timeout = window.setTimeout(
                 this.setChatState.bind(this),
                 _converse.TIMEOUTS.INACTIVE,
-                _converse.INACTIVE
+                INACTIVE
             );
         }
         this.set('chat_state', state, options);
@@ -500,7 +508,7 @@ class ChatBox extends ModelWithContact {
     /**
      * Given an error `<message>` stanza's attributes, find the saved message model which is
      * referenced by that error.
-     * @param { Object } attrs
+     * @param {object} attrs
      */
     getMessageReferencedByError (attrs) {
         const id = attrs.msgid;
@@ -508,9 +516,9 @@ class ChatBox extends ModelWithContact {
     }
 
     /**
-     * @private
-     * @method _converse.ChatBox#shouldShowErrorMessage
-     * @returns {boolean}
+     * @method ChatBox#shouldShowErrorMessage
+     * @param {object} attrs
+     * @returns {Promise<boolean>}
      */
     shouldShowErrorMessage (attrs) {
         const msg = this.getMessageReferencedByError(attrs);
@@ -521,10 +529,15 @@ class ChatBox extends ModelWithContact {
             // See https://github.com/conversejs/converse.js/issues/1317
             return;
         }
-        // Gets overridden in ChatRoom
-        return true;
+        // Gets overridden in MUC
+        // Return promise because subclasses need to return promises
+        return Promise.resolve(true);
     }
 
+    /**
+     * @param {string} jid1
+     * @param {string} jid2
+     */
     isSameUser (jid1, jid2) {
         return u.isSameBareJID(jid1, jid2);
     }
@@ -535,10 +548,10 @@ class ChatBox extends ModelWithContact {
      * probably hasn't been applied to anything yet, given that the
      * relevant message is only coming in now.
      * @private
-     * @method _converse.ChatBox#findDanglingRetraction
+     * @method ChatBox#findDanglingRetraction
      * @param { object } attrs - Attributes representing a received
      *  message, as returned by {@link parseMessage}
-     * @returns { _converse.Message }
+     * @returns { Message }
      */
     findDanglingRetraction (attrs) {
         if (!attrs.origin_id || !this.messages.length) {
@@ -561,11 +574,10 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Handles message retraction based on the passed in attributes.
-     * @private
-     * @method _converse.ChatBox#handleRetraction
-     * @param { object } attrs - Attributes representing a received
+     * @method ChatBox#handleRetraction
+     * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMessage}
-     * @returns { Boolean } Returns `true` or `false` depending on
+     * @returns {Promise<Boolean>} Returns `true` or `false` depending on
      *  whether a message was retracted or not.
      */
     async handleRetraction (attrs) {
@@ -599,11 +611,10 @@ class ChatBox extends ModelWithContact {
     /**
      * Returns an already cached message (if it exists) based on the
      * passed in attributes map.
-     * @private
-     * @method _converse.ChatBox#getDuplicateMessage
+     * @method ChatBox#getDuplicateMessage
      * @param {object} attrs - Attributes representing a received
      *  message, as returned by {@link parseMessage}
-     * @returns {Promise<_converse.Message>}
+     * @returns {Message}
      */
     getDuplicateMessage (attrs) {
         const queries = [
@@ -647,9 +658,8 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Retract one of your messages in this chat
-     * @private
-     * @method _converse.ChatBoxView#retractOwnMessage
-     * @param { _converse.Message } message - The message which we're retracting.
+     * @method ChatBoxView#retractOwnMessage
+     * @param { Message } message - The message which we're retracting.
      */
     retractOwnMessage (message) {
         this.sendRetractionMessage(message)
@@ -665,8 +675,8 @@ class ChatBox extends ModelWithContact {
     /**
      * Sends a message stanza to retract a message in this chat
      * @private
-     * @method _converse.ChatBox#sendRetractionMessage
-     * @param { _converse.Message } message - The message which we're retracting.
+     * @method ChatBox#sendRetractionMessage
+     * @param { Message } message - The message which we're retracting.
      */
     sendRetractionMessage (message) {
         const origin_id = message.get('origin_id');
@@ -701,7 +711,7 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Given the passed in message object, send a XEP-0333 chat marker.
-     * @param { _converse.Message } msg
+     * @param { Message } msg
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
@@ -718,7 +728,7 @@ class ChatBox extends ModelWithContact {
 
     handleChatMarker (attrs) {
         const to_bare_jid = Strophe.getBareJidFromJid(attrs.to);
-        if (to_bare_jid !== _converse.bare_jid) {
+        if (to_bare_jid !== _converse.session.get('bare_jid')) {
             return false;
         }
         if (attrs.is_markable) {
@@ -763,9 +773,9 @@ class ChatBox extends ModelWithContact {
     }
 
     /**
-     * Given a {@link _converse.Message} return the XML stanza that represents it.
+     * Given a {@link Message} return the XML stanza that represents it.
      * @private
-     * @method _converse.ChatBox#createMessageStanza
+     * @method ChatBox#createMessageStanza
      * @param { Message } message - The message object
      */
     async createMessageStanza (message) {
@@ -775,7 +785,7 @@ class ChatBox extends ModelWithContact {
                 'type': this.get('message_type'),
                 'id': message.get('edited') && u.getUniqueId() || message.get('msgid'),
             }).c('body').t(message.get('body')).up()
-              .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).root();
+              .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).root();
 
         if (message.get('type') === 'chat') {
             stanza.c('request', {'xmlns': Strophe.NS.RECEIPTS}).root();
@@ -821,10 +831,10 @@ class ChatBox extends ModelWithContact {
         /**
          * *Hook* which allows plugins to update an outgoing message stanza
          * @event _converse#createMessageStanza
-         * @param { _converse.ChatBox | _converse.ChatRoom } - The chat from
+         * @param { ChatBox | MUC } chat - The chat from
          *      which this message stanza is being sent.
          * @param { Object } data - Message data
-         * @param { _converse.Message | _converse.ChatRoomMessage } data.message
+         * @param { Message | MUCMessage } data.message
          *      The message object from which the stanza is created and which gets persisted to storage.
          * @param { Strophe.Builder } data.stanza
          *      The stanza that will be sent out, as a Strophe.Builder object.
@@ -842,8 +852,8 @@ class ChatBox extends ModelWithContact {
         const text = attrs?.body;
         const body = text ? u.shortnamesToUnicode(text) : undefined;
         attrs = Object.assign({}, attrs, {
-            'from': _converse.bare_jid,
-            'fullname': _converse.xmppstatus.get('fullname'),
+            'from': _converse.session.get('bare_jid'),
+            'fullname': _converse.state.xmppstatus.get('fullname'),
             'id': origin_id,
             'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
             'jid': this.get('jid'),
@@ -860,12 +870,12 @@ class ChatBox extends ModelWithContact {
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.
-         * These attributes get set on the { @link _converse.Message } or
-         * { @link _converse.ChatRoomMessage } and persisted to storage.
+         * These attributes get set on the {@link Message} or
+         * {@link MUCMessage} and persisted to storage.
          * @event _converse#getOutgoingMessageAttributes
-         * @param { _converse.ChatBox | _converse.ChatRoom } chat
+         * @param {ChatBox|MUC} chat
          *      The chat from which this message will be sent.
-         * @param { MessageAttributes } attrs
+         * @param {MessageAttributes} attrs
          *      The message attributes, from which the stanza will be created.
          */
         attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
@@ -877,10 +887,10 @@ class ChatBox extends ModelWithContact {
      * If api.settings.get('allow_message_corrections') is "last", then only the last
      * message sent from me will be editable. If set to "all" all messages
      * will be editable. Otherwise no messages will be editable.
-     * @method _converse.ChatBox#setEditable
-     * @memberOf _converse.ChatBox
-     * @param { Object } attrs An object containing message attributes.
-     * @param { String } send_time - time when the message was sent
+     * @method ChatBox#setEditable
+     * @memberOf ChatBox
+     * @param {Object} attrs An object containing message attributes.
+     * @param {String} send_time - time when the message was sent
      */
     setEditable (attrs, send_time) {
         if (attrs.is_headline || isEmptyMessage(attrs) || attrs.sender !== 'me') {
@@ -899,10 +909,8 @@ class ChatBox extends ModelWithContact {
      * Queue the creation of a message, to make sure that we don't run
      * into a race condition whereby we're creating a new message
      * before the collection has been fetched.
-     * @async
-     * @private
-     * @method _converse.ChatBox#createMessage
-     * @param { Object } attrs
+     * @method ChatBox#createMessage
+     * @param {Object} attrs
      */
     async createMessage (attrs, options) {
         attrs.time = attrs.time || (new Date()).toISOString();
@@ -912,11 +920,10 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Responsible for sending off a text message inside an ongoing chat conversation.
-     * @private
-     * @method _converse.ChatBox#sendMessage
-     * @memberOf _converse.ChatBox
-     * @param { Object } [attrs] - A map of attributes to be saved on the message
-     * @returns { _converse.Message }
+     * @method ChatBox#sendMessage
+     * @memberOf ChatBox
+     * @param {Object} [attrs] - A map of attributes to be saved on the message
+     * @returns {Promise<Message>}
      * @example
      * const chat = api.chats.get('buddy1@example.org');
      * chat.sendMessage({'body': 'hello world'});
@@ -961,8 +968,8 @@ class ChatBox extends ModelWithContact {
         * @event _converse#sendMessage
         * @type { Object }
         * @param { Object } data
-        * @property { (_converse.ChatBox | _converse.ChatRoom) } data.chatbox
-        * @property { (_converse.Message | _converse.ChatRoomMessage) } data.message
+        * @property { (ChatBox | MUC) } data.chatbox
+        * @property { (Message | MUCMessage) } data.message
         */
         api.trigger('sendMessage', {'chatbox': this, message});
         return message;
@@ -970,9 +977,8 @@ class ChatBox extends ModelWithContact {
 
     /**
      * Sends a message with the current XEP-0085 chat state of the user
-     * as taken from the `chat_state` attribute of the {@link _converse.ChatBox}.
-     * @private
-     * @method _converse.ChatBox#sendChatState
+     * as taken from the `chat_state` attribute of the {@link ChatBox}.
+     * @method ChatBox#sendChatState
      */
     sendChatState () {
         if (api.settings.get('send_chat_state_notifications') && this.get('chat_state')) {
@@ -993,9 +999,12 @@ class ChatBox extends ModelWithContact {
     }
 
 
+    /**
+     * @param {File[]} files
+     */
     async sendFiles (files) {
-        const { __ } = _converse;
-        const result = await api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
+        const { __, session } = _converse;
+        const result = await api.disco.features.get(Strophe.NS.HTTPUPLOAD, session.get('domain'));
         const item = result.pop();
         if (!item) {
             this.createMessage({
@@ -1022,14 +1031,12 @@ class ChatBox extends ModelWithContact {
              * *Hook* which allows plugins to transform files before they'll be
              * uploaded. The main use-case is to encrypt the files.
              * @event _converse#beforeFileUpload
-             * @param { _converse.ChatBox | _converse.ChatRoom } chat
-             *      The chat from which this file will be uploaded.
-             * @param { File } file
-             *      The file that will be uploaded
+             * @param {ChatBox|MUC} chat - The chat from which this file will be uploaded.
+             * @param {File} file - The file that will be uploaded
              */
             file = await api.hook('beforeFileUpload', this, file);
 
-            if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
+            if (!window.isNaN(max_file_size) && file.size > max_file_size) {
                 return this.createMessage({
                     'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
                         file.name, filesize(max_file_size)),
@@ -1052,12 +1059,15 @@ class ChatBox extends ModelWithContact {
         });
     }
 
+    /**
+     * @param {boolean} force
+     */
     maybeShow (force) {
         if (isUniView()) {
-            const filter = c => !c.get('hidden') &&
+            const filter = (c) => !c.get('hidden') &&
                 c.get('jid') !== this.get('jid') &&
                 c.get('id') !== 'controlbox';
-            const other_chats = _converse.chatboxes.filter(filter);
+            const other_chats = _converse.state.chatboxes.filter(filter);
             if (force || other_chats.length === 0) {
                 // We only have one chat visible at any one time.
                 // So before opening a chat, we make sure all other chats are hidden.
@@ -1078,16 +1088,14 @@ class ChatBox extends ModelWithContact {
      * @returns {boolean}
      */
     isHidden () {
-        // Note: This methods gets overridden by converse-minimize
-        return this.get('hidden') || this.isScrolledUp() || _converse.windowState === 'hidden';
+        return this.get('hidden') || this.isScrolledUp() || document.hidden;
     }
 
     /**
-     * Given a newly received {@link _converse.Message} instance,
+     * Given a newly received {@link Message} instance,
      * update the unread counter if necessary.
-     * @private
-     * @method _converse.ChatBox#handleUnreadMessage
-     * @param {_converse.Message} message
+     * @method ChatBox#handleUnreadMessage
+     * @param {Message} message
      */
     handleUnreadMessage (message) {
         if (!message?.get('body')) {
@@ -1108,6 +1116,9 @@ class ChatBox extends ModelWithContact {
         }
     }
 
+    /**
+     * @param {Message} message
+     */
     incrementUnreadMsgsCounter (message) {
         const settings = {
             'num_unread': this.get('num_unread') + 1

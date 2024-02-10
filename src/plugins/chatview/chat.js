@@ -8,7 +8,7 @@ import { _converse, api } from '@converse/headless';
 /**
  * The view of an open/ongoing chat conversation.
  * @class
- * @namespace _converse.ChatBoxView
+ * @namespace _converse.ChatView
  * @memberOf _converse
  */
 export default class ChatView extends BaseChatView {
@@ -17,9 +17,10 @@ export default class ChatView extends BaseChatView {
     async initialize () {
         _converse.chatboxviews.add(this.jid, this);
         this.model = _converse.chatboxes.get(this.jid);
-        this.listenTo(_converse, 'windowStateChanged', this.onWindowStateChanged);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
+
+        document.addEventListener('visibilitychange',  () => this.onWindowStateChanged());
 
         await this.model.messages.fetched;
         !this.model.get('hidden') && this.afterShown()

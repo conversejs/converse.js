@@ -79,7 +79,7 @@
     "babel-loader": "^9.1.0",
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^5.6.2",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^6.7.1",
     "eslint": "^8.21.0",
     "fast-text-encoding": "^1.0.3",

@@ -1829,7 +1829,7 @@ class MUC extends ChatBox {
         // 173: room now semi-anonymous
         // 174: room now fully anonymous
         const codes = ['104', '170', '171', '172', '173', '174'];
-        if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('status'))).length) {
+        if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('code'))).length) {
             this.refreshDiscoInfo();
         }
     }

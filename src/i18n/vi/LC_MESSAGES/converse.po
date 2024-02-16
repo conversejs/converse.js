@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 5.0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2022-12-15 06:49+0000\n"
-"Last-Translator: Trần H. Trung <work@trung.fun>\n"
+"PO-Revision-Date: 2024-02-17 21:01+0000\n"
+"Last-Translator: Dzung Do <saosangmo@yahoo.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/conversejs/"
 "translations/vi/>\n"
 "Language: vi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 5.4\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -147,9 +147,8 @@ msgid "Travel"
 msgstr "Du lịch"
 
 #: dist/converse-no-dependencies.js:38704
-#, fuzzy
 msgid "Objects"
-msgstr "Vật thể"
+msgstr "Thực thể"
 
 #: dist/converse-no-dependencies.js:38705
 msgid "Animals and nature"
@@ -504,7 +503,7 @@ msgstr "Sảnh hội thoại này bây giờ là bán ẩn danh"
 
 #: dist/converse-no-dependencies.js:47721
 msgid "This groupchat is now fully-anonymous"
-msgstr ""
+msgstr "Nhóm chò chuyện hỗ trợ năng danh toàn bộ"
 
 #: dist/converse-no-dependencies.js:47722
 msgid "A new groupchat has been created"
@@ -527,11 +526,11 @@ msgstr "Bạn đã bị chặn khỏi nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:47731
 msgid "You have exited this groupchat due to a technical problem"
-msgstr ""
+msgstr "Bạn đã bị thoát khỏi nhóm trò chuyện vì lý do kỹ thuật"
 
 #: dist/converse-no-dependencies.js:47732
 msgid "You have been kicked from this groupchat"
-msgstr "Bạn đã bị đá khỏi nhóm trò chuyện này"
+msgstr "Bạn đã bị mời ra khỏi nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:47733
 msgid ""

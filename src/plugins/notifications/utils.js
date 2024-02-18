@@ -4,7 +4,7 @@
  * @typedef {module:headless-plugins-chat-utils.MessageData} MessageData
  */
 import Favico from 'favico.js-slevomat';
-import { __ } from 'i18n';
+import { __, i18n } from 'i18n';
 import { _converse, api, converse, log } from '@converse/headless';
 import { isEmptyMessage } from '@converse/headless/utils/index.js';
 import { isTestEnv } from '@converse/headless/utils/session.js';
@@ -18,7 +18,7 @@ let favicon;
 
 
 export function isMessageToHiddenChat (attrs) {
-    return isTestEnv() || (_converse.chatboxes.get(attrs.from)?.isHidden() ?? false);
+    return isTestEnv() || (_converse.state.chatboxes.get(attrs.from)?.isHidden() ?? false);
 }
 
 export function areDesktopNotificationsEnabled () {
@@ -42,7 +42,7 @@ export function clearFavicon () {
 export function updateUnreadFavicon () {
     if (api.settings.get('show_tab_notifications')) {
         favicon = favicon ?? new converse.env.Favico({ type: 'circle', animation: 'pop' });
-        const chats = _converse.chatboxes.models;
+        const chats = _converse.state.chatboxes.models;
         const num_unread = chats.reduce((acc, chat) => acc + (chat.get('num_unread') || 0), 0);
         favicon.badge(num_unread);
         /** @type navigator */(navigator).setAppBadge?.(num_unread)
@@ -52,7 +52,8 @@ export function updateUnreadFavicon () {
 
 
 function isReferenced (references, muc_jid, nick) {
-    const check = r => [_converse.bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
+    const bare_jid = _converse.session.get('bare_jid');
+    const check = r => [bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
     return references.reduce((acc, r) => acc || check(r), false);
 }
 
@@ -69,7 +70,7 @@ export async function shouldNotifyOfGroupMessage (attrs) {
     const jid = attrs.from;
     const muc_jid = attrs.from_muc;
     const notify_all = api.settings.get('notify_all_room_messages');
-    const room = _converse.chatboxes.get(muc_jid);
+    const room = _converse.state.chatboxes.get(muc_jid);
     const resource = Strophe.getResourceFromJid(jid);
     const sender = (resource && Strophe.unescapeNode(resource)) || '';
     let is_mentioned = false;
@@ -139,7 +140,9 @@ function shouldNotifyOfMessage (data) {
         // We want to show notifications for headline messages.
         return isMessageToHiddenChat(attrs);
     }
-    const is_me = Strophe.getBareJidFromJid(attrs.from) === _converse.bare_jid;
+
+    const bare_jid = _converse.session.get('bare_jid');
+    const is_me = Strophe.getBareJidFromJid(attrs.from) === bare_jid;
     return (
         !isEmptyMessage(attrs) &&
         !is_me &&
@@ -151,7 +154,7 @@ export function showFeedbackNotification (data) {
     if (data.klass === 'error' || data.klass === 'warn') {
         const n = new Notification(data.subject, {
             body: data.message,
-            lang: _converse.locale,
+            lang: i18n.getLocale(),
             icon: api.settings.get('notification_icon')
         });
         setTimeout(n.close.bind(n), 5000);
@@ -183,7 +186,7 @@ function showChatStateNotification (contact) {
     }
     const n = new Notification(contact.getDisplayName(), {
         body: message,
-        lang: _converse.locale,
+        lang: i18n.getLocale(),
         icon: api.settings.get('notification_icon')
     });
     setTimeout(() => n.close(), 5000);
@@ -221,11 +224,11 @@ function showMessageNotification (data) {
     } else if (attrs.type === 'groupchat') {
         title = __('%1$s says', Strophe.getResourceFromJid(full_from_jid));
     } else {
-        if (_converse.roster === undefined) {
+        if (_converse.state.roster === undefined) {
             log.error('Could not send notification, because roster is undefined');
             return;
         }
-        roster_item = _converse.roster.get(from_jid);
+        roster_item = _converse.state.roster.get(from_jid);
         if (roster_item !== undefined) {
             title = __('%1$s says', roster_item.getDisplayName());
         } else {
@@ -249,7 +252,7 @@ function showMessageNotification (data) {
 
     const n = new Notification(title, {
         'body': body,
-        'lang': _converse.locale,
+        'lang': i18n.getLocale(),
         'icon': api.settings.get('notification_icon'),
         'requireInteraction': !api.settings.get('notification_delay')
     });
@@ -259,7 +262,7 @@ function showMessageNotification (data) {
     n.onclick = function (event) {
         event.preventDefault();
         window.focus();
-        const chat = _converse.chatboxes.get(from_jid);
+        const chat = _converse.state.chatboxes.get(from_jid);
         chat.maybeShow(true);
     }
 }
@@ -322,7 +325,7 @@ export function handleChatStateNotification (contact) {
 function showContactRequestNotification (contact) {
     const n = new Notification(contact.getDisplayName(), {
         body: __('wants to be your contact'),
-        lang: _converse.locale,
+        lang: i18n.getLocale(),
         icon: api.settings.get('notification_icon')
     });
     setTimeout(() => n.close(), 5000);

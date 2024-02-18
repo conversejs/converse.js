@@ -1,6 +1,8 @@
+import AutoComplete from 'shared/autocomplete/autocomplete.js';
 import MessageForm from 'plugins/chatview/message-form.js';
 import tplMUCMessageForm from './templates/message-form.js';
-import { _converse, api, converse } from "@converse/headless";
+import { FILTER_CONTAINS, FILTER_STARTSWITH } from 'shared/autocomplete/utils.js';
+import { api, converse } from "@converse/headless";
 import { getAutoCompleteListItem } from './utils.js';
 
 
@@ -32,7 +34,7 @@ export default class MUCMessageForm extends MessageForm {
     }
 
     initMentionAutoComplete () {
-        this.mention_auto_complete = new _converse.AutoComplete(this, {
+        this.mention_auto_complete = new AutoComplete(this, {
             'auto_first': true,
             'auto_evaluate': false,
             'min_chars': api.settings.get('muc_mention_autocomplete_min_chars'),
@@ -40,8 +42,8 @@ export default class MUCMessageForm extends MessageForm {
             'list': () => this.getAutoCompleteList(),
             'filter':
                 api.settings.get('muc_mention_autocomplete_filter') == 'contains'
-                    ? _converse.FILTER_CONTAINS
-                    : _converse.FILTER_STARTSWITH,
+                    ? FILTER_CONTAINS
+                    : FILTER_STARTSWITH,
             'ac_triggers': ['Tab', '@'],
             'include_triggers': [],
             'item': getAutoCompleteListItem
@@ -64,7 +66,7 @@ export default class MUCMessageForm extends MessageForm {
     }
 
     /**
-     * @param {Event} ev
+     * @param {KeyboardEvent} ev
      */
     onKeyUp (ev) {
         if (this.shouldAutoComplete()) this.mention_auto_complete.evaluate(ev);

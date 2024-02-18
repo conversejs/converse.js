@@ -41,7 +41,8 @@ export async function parseMessageForCommands (chat, text) {
             clearMessages(chat);
             return true;
         } else if (match[1] === 'close') {
-            _converse.chatboxviews.get(chat.get('jid'))?.close();
+            const { chatboxviews } = _converse.state;
+            chatboxviews.get(chat.get('jid'))?.close();
             return true;
         } else if (match[1] === 'help') {
             chat.set({ 'show_help_messages': false }, { 'silent': true });

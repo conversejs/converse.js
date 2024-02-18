@@ -71,7 +71,7 @@ export function tplRoomItem (el, room) {
 
 export default (el) => {
     const group_by_domain = api.settings.get('muc_grouped_by_domain');
-    const { chatboxes } = _converse;
+    const { chatboxes } = _converse.state;
     const rooms = chatboxes.filter(m => m.get('type') === CHATROOMS_TYPE);
     rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
 

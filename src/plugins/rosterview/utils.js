@@ -15,21 +15,22 @@ export function removeContact (contact) {
 }
 
 export function highlightRosterItem (chatbox) {
-    _converse.roster?.get(chatbox.get('jid'))?.trigger('highlight');
+    _converse.state.roster?.get(chatbox.get('jid'))?.trigger('highlight');
 }
 
 export function toggleGroup (ev, name) {
     ev?.preventDefault?.();
-    const collapsed = _converse.roster.state.get('collapsed_groups');
+    const { roster } = _converse.state;
+    const collapsed = roster.state.get('collapsed_groups');
     if (collapsed.includes(name)) {
-        _converse.roster.state.save('collapsed_groups', collapsed.filter(n => n !== name));
+        roster.state.save('collapsed_groups', collapsed.filter(n => n !== name));
     } else {
-        _converse.roster.state.save('collapsed_groups', [...collapsed, name]);
+        roster.state.save('collapsed_groups', [...collapsed, name]);
     }
 }
 
 export function isContactFiltered (contact, groupname) {
-    const filter = _converse.roster_filter;
+    const filter = _converse.state.roster_filter;
     const type = filter.get('type');
     const q = (type === 'state') ?
         filter.get('state').toLowerCase() :
@@ -38,7 +39,7 @@ export function isContactFiltered (contact, groupname) {
     if (!q) return false;
 
     if (type === 'state') {
-        const sticky_groups = [_converse.HEADER_REQUESTING_CONTACTS, _converse.HEADER_UNREAD];
+        const sticky_groups = [_converse.labels.HEADER_REQUESTING_CONTACTS, _converse.labels.HEADER_UNREAD];
         if (sticky_groups.includes(groupname)) {
             // When filtering by chat state, we still want to
             // show sticky groups, even though they don't
@@ -71,7 +72,7 @@ export function shouldShowContact (contact, groupname) {
 }
 
 export function shouldShowGroup (group) {
-    const filter = _converse.roster_filter;
+    const filter = _converse.state.roster_filter;
     const type = filter.get('type');
     if (type === 'groups') {
         const q = filter.get('text')?.toLowerCase();
@@ -87,18 +88,18 @@ export function shouldShowGroup (group) {
 
 export function populateContactsMap (contacts_map, contact) {
     if (contact.get('requesting')) {
-        const name = _converse.HEADER_REQUESTING_CONTACTS;
+        const name = _converse.labels.HEADER_REQUESTING_CONTACTS;
         contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
     } else {
         let contact_groups;
         if (api.settings.get('roster_groups')) {
             contact_groups = contact.get('groups');
-            contact_groups = (contact_groups.length === 0) ? [_converse.HEADER_UNGROUPED] : contact_groups;
+            contact_groups = (contact_groups.length === 0) ? [_converse.labels.HEADER_UNGROUPED] : contact_groups;
         } else {
             if (contact.get('ask') === 'subscribe') {
-                contact_groups = [_converse.HEADER_PENDING_CONTACTS];
+                contact_groups = [_converse.labels.HEADER_PENDING_CONTACTS];
             } else {
-                contact_groups = [_converse.HEADER_CURRENT_CONTACTS];
+                contact_groups = [_converse.labels.HEADER_CURRENT_CONTACTS];
             }
         }
         for (const name of contact_groups) {
@@ -106,7 +107,7 @@ export function populateContactsMap (contacts_map, contact) {
         }
     }
     if (contact.get('num_unread')) {
-        const name = _converse.HEADER_UNREAD;
+        const name = _converse.labels.HEADER_UNREAD;
         contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
     }
     return contacts_map;

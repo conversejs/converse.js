@@ -35,8 +35,8 @@ describe("The OMEMO module", function() {
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        const devicelist = _converse.devicelists.get({'jid': contact_jid});
+        await u.waitUntil(() => _converse.state.omemo_store);
+        const devicelist = _converse.state.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => devicelist.devices.length === 1);
 
         const view = _converse.chatboxviews.get(contact_jid);
@@ -123,7 +123,7 @@ describe("The OMEMO module", function() {
             }).c('body').t('This is a fallback message').up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload);
@@ -142,7 +142,7 @@ describe("The OMEMO module", function() {
                 'id': _converse.api.connection.get().getUniqueId()
             }).c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                 .c('header', {'sid':  '555'})
-                    .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                    .c('key', {'rid':  _converse.state.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                     .c('iv').t(obj.iv)
                     .up().up()
                 .c('payload').t(obj.payload);
@@ -174,7 +174,7 @@ describe("The OMEMO module", function() {
                             .c('device', {'id': '555'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        await u.waitUntil(() => _converse.omemo_store);
+        await u.waitUntil(() => _converse.state.omemo_store);
 
         const view = _converse.chatboxviews.get(contact_jid);
         view.model.set('omemo_active', true);
@@ -191,7 +191,7 @@ describe("The OMEMO module", function() {
             }).c('body').t('This is a fallback message').up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')})
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')})
                             .t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                         .c('iv').t(obj.iv)
                         .up().up()
@@ -209,7 +209,7 @@ describe("The OMEMO module", function() {
             }).c('body').t('This is a fallback message').up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')})
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')})
                             .t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                         .c('iv').t(obj.iv)
                         .up().up()
@@ -236,7 +236,7 @@ describe("The OMEMO module", function() {
         await mock.openChatBoxFor(_converse, contact_jid);
 
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        const my_devicelist = _converse.devicelists.get({'jid': _converse.bare_jid});
+        const my_devicelist = _converse.state.devicelists.get({'jid': _converse.bare_jid});
         expect(my_devicelist.devices.length).toBe(2);
 
         const stanza = $iq({
@@ -250,11 +250,9 @@ describe("The OMEMO module", function() {
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
+        const omemo_store = await u.waitUntil(() => _converse.state.omemo_store);
 
-        const { omemo_store } = _converse;
-
-        const contact_devicelist = _converse.devicelists.get({'jid': contact_jid});
+        const contact_devicelist = _converse.state.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => contact_devicelist.devices.length === 1);
 
         const view = _converse.chatboxviews.get(contact_jid);
@@ -371,20 +369,20 @@ describe("The OMEMO module", function() {
                     .c('header', {'sid':  '555'})
                         .c('key', {
                             'prekey': 'true',
-                            'rid':  _converse.omemo_store.get('device_id')
+                            'rid':  _converse.state.omemo_store.get('device_id')
                         }).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload);
 
-        const generateMissingPreKeys = _converse.omemo_store.generateMissingPreKeys;
-        spyOn(_converse.omemo_store, 'generateMissingPreKeys').and.callFake(() => {
+        const generateMissingPreKeys = _converse.state.omemo_store.generateMissingPreKeys;
+        spyOn(_converse.state.omemo_store, 'generateMissingPreKeys').and.callFake(() => {
             // Since it's difficult to override
             // decryptPreKeyWhisperMessage, where a prekey will be
             // removed from the store, we do it here, before the
             // missing prekeys are generated.
-            _converse.omemo_store.removePreKey(1);
-            return generateMissingPreKeys.apply(_converse.omemo_store, arguments);
+            _converse.state.omemo_store.removePreKey(1);
+            return generateMissingPreKeys.apply(_converse.state.omemo_store, arguments);
         });
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
@@ -405,7 +403,7 @@ describe("The OMEMO module", function() {
         // stanzas.
         _converse.api.connection.get().IQ_stanzas = [];
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
+        await u.waitUntil(() => _converse.state.omemo_store);
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse), 1000);
         expect(Strophe.serialize(iq_stanza)).toBe(
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">`+
@@ -438,9 +436,11 @@ describe("The OMEMO module", function() {
                     `</publish-options>`+
                 `</pubsub>`+
             `</iq>`)
-        const own_device = _converse.devicelists.get(_converse.bare_jid).devices.get(_converse.omemo_store.get('device_id'));
+        const own_device = _converse.state.devicelists.get(_converse.bare_jid).devices.get(_converse.state.omemo_store.get('device_id'));
         expect(own_device.get('bundle').prekeys.length).toBe(5);
-        expect(_converse.omemo_store.generateMissingPreKeys).toHaveBeenCalled();
+        expect(_converse.state.omemo_store.generateMissingPreKeys).toHaveBeenCalled();
+
+        _converse.NUM_PREKEYS = 100;
     }));
 
     it("updates device lists based on PEP messages",
@@ -475,10 +475,10 @@ describe("The OMEMO module", function() {
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '555'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
+        await u.waitUntil(() => _converse.state.omemo_store);
         expect(_converse.chatboxes.length).toBe(1);
-        expect(_converse.devicelists.length).toBe(1);
-        const devicelist = _converse.devicelists.get(_converse.bare_jid);
+        expect(_converse.state.devicelists.length).toBe(1);
+        const devicelist = _converse.state.devicelists.get(_converse.bare_jid);
         expect(devicelist.devices.length).toBe(2);
         expect(devicelist.devices.at(0).get('id')).toBe('555');
         expect(devicelist.devices.at(1).get('id')).toBe('123456789');
@@ -535,9 +535,9 @@ describe("The OMEMO module", function() {
                             .c('device', {'id': '4223'})
         ));
 
-        await u.waitUntil(() => _converse.devicelists.length === 2);
+        await u.waitUntil(() => _converse.state.devicelists.length === 2);
 
-        const list = _converse.devicelists.get(contact_jid);
+        const list = _converse.state.devicelists.get(contact_jid);
         await list.initialized;
         await u.waitUntil(() => list.devices.length === 2);
 
@@ -558,7 +558,7 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '4224'})
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        expect(_converse.devicelists.length).toBe(2);
+        expect(_converse.state.devicelists.length).toBe(2);
         await u.waitUntil(() => list.devices.length === 3);
         expect(devices.models.map(d => d.attributes.id).sort().join()).toBe('1234,4223,4224');
         expect(devices.get('1234').get('active')).toBe(false);
@@ -580,8 +580,8 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '777'})
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        expect(_converse.devicelists.length).toBe(2);
-        devices = _converse.devicelists.get(_converse.bare_jid).devices;
+        expect(_converse.state.devicelists.length).toBe(2);
+        devices = _converse.state.devicelists.get(_converse.bare_jid).devices;
         await u.waitUntil(() => devices.length === 3);
         expect(devices.models.map(d => d.attributes.id).sort().join()).toBe('123456789,555,777');
         expect(devices.get('123456789').get('active')).toBe(true);
@@ -629,8 +629,8 @@ describe("The OMEMO module", function() {
                     `</publish-options>`+
                 `</pubsub>`+
             `</iq>`);
-        expect(_converse.devicelists.length).toBe(2);
-        devices = _converse.devicelists.get(_converse.bare_jid).devices;
+        expect(_converse.state.devicelists.length).toBe(2);
+        devices = _converse.state.devicelists.get(_converse.bare_jid).devices;
         // The device id for this device (123456789) was also generated and added to the list,
         // which is why we have 2 devices now.
         expect(devices.length).toBe(4);
@@ -674,9 +674,9 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '555'})
         ));
 
-        await await u.waitUntil(() => _converse.omemo_store);
-        expect(_converse.devicelists.length).toBe(1);
-        const own_device_list = _converse.devicelists.get(_converse.bare_jid);
+        await await u.waitUntil(() => _converse.state.omemo_store);
+        expect(_converse.state.devicelists.length).toBe(1);
+        const own_device_list = _converse.state.devicelists.get(_converse.bare_jid);
         expect(own_device_list.devices.length).toBe(2);
         expect(own_device_list.devices.at(0).get('id')).toBe('555');
         expect(own_device_list.devices.at(1).get('id')).toBe('123456789');
@@ -731,8 +731,8 @@ describe("The OMEMO module", function() {
                             .c('device', {'id': '1234'})
         ));
 
-        await u.waitUntil(() => _converse.devicelists.length === 2);
-        const list = _converse.devicelists.get(contact_jid);
+        await u.waitUntil(() => _converse.state.devicelists.length === 2);
+        const list = _converse.state.devicelists.get(contact_jid);
         await list.initialized;
         await u.waitUntil(() => list.devices.length);
         let device = list.devices.at(0);
@@ -763,7 +763,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '2003'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        expect(_converse.devicelists.length).toBe(2);
+        expect(_converse.state.devicelists.length).toBe(2);
         expect(list.devices.length).toBe(1);
         device = list.devices.at(0);
 
@@ -794,7 +794,7 @@ describe("The OMEMO module", function() {
                             .c('preKeyPublic', {'preKeyId': '3003'})
         ));
 
-        expect(_converse.devicelists.length).toBe(2);
+        expect(_converse.state.devicelists.length).toBe(2);
         expect(own_device_list.devices.length).toBe(2);
         expect(own_device_list.devices.at(0).get('id')).toBe('555');
         expect(own_device_list.devices.at(1).get('id')).toBe('123456789');
@@ -834,7 +834,7 @@ describe("The OMEMO module", function() {
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '482886413b977930064a5888b92134fe'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_converse.devicelists.length).toBe(1);
+        expect(_converse.state.devicelists.length).toBe(1);
         await mock.openChatBoxFor(_converse, contact_jid);
         iq_stanza = await mock.ownDeviceHasBeenPublished(_converse);
         stanza = $iq({
@@ -881,6 +881,8 @@ describe("The OMEMO module", function() {
             'type': 'result'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await _converse.api.waitUntil('OMEMOInitialized');
+
+        _converse.NUM_PREKEYS = 100;
     }));
 
 
@@ -915,9 +917,9 @@ describe("The OMEMO module", function() {
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '482886413b977930064a5888b92134fe'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        expect(_converse.devicelists.length).toBe(1);
-        let devicelist = _converse.devicelists.get(_converse.bare_jid);
+        await u.waitUntil(() => _converse.state.omemo_store);
+        expect(_converse.state.devicelists.length).toBe(1);
+        let devicelist = _converse.state.devicelists.get(_converse.bare_jid);
         expect(devicelist.devices.length).toBe(2);
         expect(devicelist.devices.at(0).get('id')).toBe('482886413b977930064a5888b92134fe');
         expect(devicelist.devices.at(1).get('id')).toBe('123456789');
@@ -997,10 +999,10 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': 'ae890ac52d0df67ed7cfdf51b644e901'})
         ));
 
-        devicelist = _converse.devicelists.get(contact_jid);
+        devicelist = _converse.state.devicelists.get(contact_jid);
         await u.waitUntil(() => devicelist.devices.length);
-        expect(_converse.devicelists.length).toBe(2);
-        devicelist = _converse.devicelists.get(contact_jid);
+        expect(_converse.state.devicelists.length).toBe(2);
+        devicelist = _converse.state.devicelists.get(contact_jid);
         expect(devicelist.devices.length).toBe(4);
         expect(devicelist.devices.at(0).get('id')).toBe('368866411b877c30064a5f62b917cffe');
         expect(devicelist.devices.at(1).get('id')).toBe('3300659945416e274474e469a1f0154c');
@@ -1121,7 +1123,7 @@ describe("The OMEMO module", function() {
         );
         expect(modal.querySelectorAll('input[type="radio"]').length).toBe(2);
 
-        const devicelist = _converse.devicelists.get(contact_jid);
+        const devicelist = _converse.state.devicelists.get(contact_jid);
         expect(devicelist.devices.get('555').get('trusted')).toBe(0);
 
         let trusted_radio = modal.querySelector('input[type="radio"][name="555"][value="1"]');

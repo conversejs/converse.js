@@ -6,21 +6,24 @@ import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isChatRoom } from '@converse/headless/plugins/muc/utils.js';
+import { CLOSED, OPENED } from 'headless/shared/constants.js';
 
 const { Strophe, u } = converse.env;
 
 export class RoomsList extends CustomElement {
 
     initialize () {
-        const id = `converse.roomspanel${_converse.bare_jid}`;
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `converse.roomspanel${bare_jid}`;
         this.model = new RoomsListModel({ id });
         initStorage(this.model, id);
         this.model.fetch();
 
-        this.listenTo(_converse.chatboxes, 'add', this.renderIfChatRoom);
-        this.listenTo(_converse.chatboxes, 'remove', this.renderIfChatRoom);
-        this.listenTo(_converse.chatboxes, 'destroy', this.renderIfChatRoom);
-        this.listenTo(_converse.chatboxes, 'change', this.renderIfRelevantChange);
+        const { chatboxes } = _converse.state;
+        this.listenTo(chatboxes, 'add', this.renderIfChatRoom);
+        this.listenTo(chatboxes, 'remove', this.renderIfChatRoom);
+        this.listenTo(chatboxes, 'destroy', this.renderIfChatRoom);
+        this.listenTo(chatboxes, 'change', this.renderIfRelevantChange);
         this.listenTo(this.model, 'change', () => this.requestUpdate());
 
         this.requestUpdate();
@@ -44,7 +47,7 @@ export class RoomsList extends CustomElement {
 
     showRoomDetailsModal (ev) { // eslint-disable-line class-methods-use-this
         const jid = ev.currentTarget.getAttribute('data-room-jid');
-        const room = _converse.chatboxes.get(jid);
+        const room = _converse.state.chatboxes.get(jid);
         ev.preventDefault();
         api.modal.show('converse-muc-details-modal', {'model': room}, ev);
     }
@@ -73,10 +76,10 @@ export class RoomsList extends CustomElement {
     toggleRoomsList (ev) {
         ev?.preventDefault?.();
         const list_el = this.querySelector('.open-rooms-list');
-        if (this.model.get('toggle_state') === _converse.CLOSED) {
-            u.slideOut(list_el).then(() => this.model.save({'toggle_state': _converse.OPENED}));
+        if (this.model.get('toggle_state') === CLOSED) {
+            u.slideOut(list_el).then(() => this.model.save({'toggle_state': OPENED}));
         } else {
-            u.slideIn(list_el).then(() => this.model.save({'toggle_state': _converse.CLOSED}));
+            u.slideIn(list_el).then(() => this.model.save({'toggle_state': CLOSED}));
         }
     }
 

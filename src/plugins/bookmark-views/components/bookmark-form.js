@@ -17,9 +17,10 @@ class MUCBookmarkForm extends CustomElement {
     }
 
     willUpdate (changed_properties) {
+        const { chatboxes, bookmarks } = _converse.state;
         if (changed_properties.has('jid')) {
-            this.model = _converse.chatboxes.get(this.jid);
-            this.bookmark  = _converse.bookmarks.get(this.jid);
+            this.model = chatboxes.get(this.jid);
+            this.bookmark  = bookmarks.get(this.jid);
         }
     }
 
@@ -29,7 +30,8 @@ class MUCBookmarkForm extends CustomElement {
 
     onBookmarkFormSubmitted (ev) {
         ev.preventDefault();
-        _converse.bookmarks.createBookmark({
+        const { bookmarks } = _converse.state;
+        bookmarks.createBookmark({
             'jid': this.jid,
             'autojoin': ev.target.querySelector('input[name="autojoin"]')?.checked || false,
             'name': ev.target.querySelector('input[name=name]')?.value,

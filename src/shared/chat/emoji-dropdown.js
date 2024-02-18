@@ -1,4 +1,5 @@
 import DropdownBase from "shared/components/dropdown.js";
+import EmojiPicker from "@converse/headless/plugins/emoji/picker";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 import { html } from "lit";
@@ -30,8 +31,9 @@ export default class EmojiDropdown extends DropdownBase {
         if (!this.init_promise) {
             this.init_promise = (async () => {
                 await api.emojis.initialize()
-                const id = `converse.emoji-${_converse.bare_jid}-${this.chatview.model.get('jid')}`;
-                this.model = new _converse.EmojiPicker({'id': id});
+                const bare_jid = _converse.session.get('bare_jid');
+                const id = `converse.emoji-${bare_jid}-${this.chatview.model.get('jid')}`;
+                this.model = new EmojiPicker({ id });
                 initStorage(this.model, id);
                 await new Promise(resolve => this.model.fetch({'success': resolve, 'error': resolve}));
                 // We never want still be in the autocompleting state upon page load

@@ -26,9 +26,10 @@ class Device extends Model {
     }
 
     async fetchBundleFromServer () {
+        const bare_jid = _converse.session.get('bare_jid');
         const stanza = $iq({
             'type': 'get',
-            'from': _converse.bare_jid,
+            'from': bare_jid,
             'to': this.get('jid')
         }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
           .c('items', { 'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}` });

@@ -287,9 +287,10 @@ class OMEMOStore extends Model {
             'signature': u.arrayBufferToBase64(signed_prekey.signature)
         };
 
-        const devicelist = await api.omemo.devicelists.get(_converse.bare_jid);
+        const bare_jid = _converse.session.get('bare_jid');
+        const devicelist = await api.omemo.devicelists.get(bare_jid);
         const device = await devicelist.devices.create(
-            { 'id': bundle.device_id, 'jid': _converse.bare_jid },
+            { 'id': bundle.device_id, 'jid': bare_jid },
             { 'promise': true }
         );
         device.save('bundle', bundle);

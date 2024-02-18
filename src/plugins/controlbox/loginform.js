@@ -37,7 +37,8 @@ class LoginForm extends CustomElement {
         ev?.preventDefault();
 
         if (api.settings.get('authentication') === ANONYMOUS) {
-            return this.connect(_converse.jid);
+            const jid = _converse.session.get('jid');
+            return this.connect(jid);
         }
 
         if (!validateJID(ev.target)) {

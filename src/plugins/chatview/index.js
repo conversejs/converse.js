@@ -57,7 +57,12 @@ converse.plugins.add('converse-chatview', {
             }
         });
 
-        _converse.ChatBoxView = ChatView;
+        const exports = {
+            ChatBoxView: ChatView,
+            ChatView,
+        }
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
         api.listen.on('chatBoxClosed', (model) => clearHistory(model.get('jid')));

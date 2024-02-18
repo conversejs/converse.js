@@ -1,7 +1,7 @@
 import BaseModal from 'plugins/modal/modal.js';
 import tplChatStatusModal from '../templates/chat-status-modal.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 
 const u = converse.env.utils;
 
@@ -46,7 +46,5 @@ export default class ChatStatusModal extends BaseModal {
         this.modal.hide();
     }
 }
-
-_converse.ChatStatusModal = ChatStatusModal;
 
 api.elements.define('converse-chat-status-modal', ChatStatusModal);

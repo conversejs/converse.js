@@ -74,7 +74,7 @@ export default class RosterContact extends CustomElement {
     async acceptRequest (ev) {
         ev?.preventDefault?.();
 
-        await _converse.roster.sendContactAddIQ(
+        await _converse.state.roster.sendContactAddIQ(
             this.model.get('jid'),
             this.model.getFullname(),
             []

@@ -1,7 +1,20 @@
-import { _converse, api, converse } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 
 const { u } = converse.env;
 
+/**
+ * @typedef {Object} ResizingData
+ * @property {HTMLElement} chatbox
+ * @property {string} direction
+ */
+const resizing = {};
+
+/**
+ * @returns {string}
+ */
+export function getResizingDirection () {
+    return resizing.direction;
+}
 
 export function onStartVerticalResize (ev, trigger = true) {
     if (!api.settings.get('allow_dragresize')) {
@@ -13,10 +26,8 @@ export function onStartVerticalResize (ev, trigger = true) {
     const style = window.getComputedStyle(flyout);
     const chatbox_el = flyout.parentElement;
     chatbox_el.height = parseInt(style.height.replace(/px$/, ''), 10);
-    _converse.resizing = {
-        'chatbox': chatbox_el,
-        'direction': 'top'
-    };
+    resizing.chatbox = chatbox_el;
+    resizing.direction = 'top';
     chatbox_el.prev_pageY = ev.pageY;
     if (trigger) {
         /**
@@ -37,10 +48,8 @@ export function onStartHorizontalResize (ev, trigger = true) {
     const style = window.getComputedStyle(flyout);
     const chatbox_el = flyout.parentElement;
     chatbox_el.width = parseInt(style.width.replace(/px$/, ''), 10);
-    _converse.resizing = {
-        'chatbox': chatbox_el,
-        'direction': 'left'
-    };
+    resizing.chatbox = chatbox_el;
+    resizing.direction = 'left';
     chatbox_el.prev_pageX = ev.pageX;
     if (trigger) {
         /**
@@ -55,7 +64,7 @@ export function onStartHorizontalResize (ev, trigger = true) {
 export function onStartDiagonalResize (ev) {
     onStartHorizontalResize(ev, false);
     onStartVerticalResize(ev, false);
-    _converse.resizing.direction = 'topleft';
+    resizing.direction = 'topleft';
     /**
      * Triggered once the user starts to diagonally resize a {@link _converse.ChatBoxView}
      * @event _converse#startDiagonalResize
@@ -86,32 +95,33 @@ export function applyDragResistance (value, default_value) {
 }
 
 export function onMouseMove (ev) {
-    if (!_converse.resizing || !api.settings.get('allow_dragresize')) {
+    if (!resizing.chatbox || !api.settings.get('allow_dragresize')) {
         return true;
     }
     ev.preventDefault();
-    _converse.resizing.chatbox.resizeChatBox(ev);
+    resizing.chatbox.resizeChatBox(ev);
 }
 
 export function onMouseUp (ev) {
-    if (!_converse.resizing || !api.settings.get('allow_dragresize')) {
+    if (!resizing.chatbox || !api.settings.get('allow_dragresize')) {
         return true;
     }
     ev.preventDefault();
     const height = applyDragResistance(
-        _converse.resizing.chatbox.height,
-        _converse.resizing.chatbox.model.get('default_height')
+        resizing.chatbox.height,
+        resizing.chatbox.model.get('default_height')
     );
     const width = applyDragResistance(
-        _converse.resizing.chatbox.width,
-        _converse.resizing.chatbox.model.get('default_width')
+        resizing.chatbox.width,
+        resizing.chatbox.model.get('default_width')
     );
     if (api.connection.connected()) {
-        _converse.resizing.chatbox.model.save({ 'height': height });
-        _converse.resizing.chatbox.model.save({ 'width': width });
+        resizing.chatbox.model.save({ 'height': height });
+        resizing.chatbox.model.save({ 'width': width });
     } else {
-        _converse.resizing.chatbox.model.set({ 'height': height });
-        _converse.resizing.chatbox.model.set({ 'width': width });
+        resizing.chatbox.model.set({ 'height': height });
+        resizing.chatbox.model.set({ 'width': width });
     }
-    _converse.resizing = null;
+    delete resizing.chatbox;
+    delete resizing.direction;
 }

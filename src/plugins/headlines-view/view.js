@@ -6,9 +6,10 @@ import { _converse, api } from '@converse/headless';
 class HeadlinesFeedView extends BaseChatView {
 
     async initialize() {
-        _converse.chatboxviews.add(this.jid, this);
+        const { chatboxviews, chatboxes } = _converse.state;
+        chatboxviews.add(this.jid, this);
 
-        this.model = _converse.chatboxes.get(this.jid);
+        this.model = chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model.messages, 'add', () => this.requestUpdate());
@@ -56,3 +57,5 @@ class HeadlinesFeedView extends BaseChatView {
 }
 
 api.elements.define('converse-headlines', HeadlinesFeedView);
+
+export default HeadlinesFeedView;

@@ -30,15 +30,14 @@ converse.plugins.add('converse-rosterview', {
         });
         api.promises.add('rosterViewInitialized');
 
-        _converse.RosterFilter = RosterFilter;
-        _converse.RosterContactView = RosterContactView;
+        const exports = { RosterFilter, RosterContactView };
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         /* -------- Event Handlers ----------- */
         api.listen.on('chatBoxesInitialized', () => {
-            _converse.chatboxes.on('destroy', chatbox => highlightRosterItem(chatbox));
-            _converse.chatboxes.on('change:hidden', chatbox => highlightRosterItem(chatbox));
+            _converse.state.chatboxes.on('destroy', c => highlightRosterItem(c));
+            _converse.state.chatboxes.on('change:hidden', c => highlightRosterItem(c));
         });
-
-        api.listen.on('afterTearDown', () => _converse.rotergroups?.off().reset());
     }
 });

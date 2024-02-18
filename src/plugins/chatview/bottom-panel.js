@@ -54,11 +54,13 @@ export default class ChatBottomPanel extends CustomElement {
     }
 
     emitFocused (ev) {
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.emitFocused(ev);
+        const { chatboxviews } = _converse.state;
+        chatboxviews.get(this.getAttribute('jid'))?.emitFocused(ev);
     }
 
     emitBlurred (ev) {
-        _converse.chatboxviews.get(this.getAttribute('jid'))?.emitBlurred(ev);
+        const { chatboxviews } = _converse.state;
+        chatboxviews.get(this.getAttribute('jid'))?.emitBlurred(ev);
     }
 
     onDragOver (ev) { // eslint-disable-line class-methods-use-this

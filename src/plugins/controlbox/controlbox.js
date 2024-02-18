@@ -12,11 +12,12 @@ const u = converse.env.utils;
  * In `overlayed` `view_mode` it's a box like the chat boxes, in `fullscreen`
  * `view_mode` it's a left-aligned sidebar.
  */
-class ControlBox extends CustomElement {
+class ControlBoxView extends CustomElement {
 
     initialize () {
         this.setModel();
-        _converse.chatboxviews.add('controlbox', this);
+        const { chatboxviews } = _converse.state;
+        chatboxviews.add('controlbox', this);
         if (this.model.get('connected') && this.model.get('closed') === undefined) {
             this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
         }
@@ -27,7 +28,7 @@ class ControlBox extends CustomElement {
          * exists. The controlbox contains the login and register forms when the user is
          * logged out and a list of the user's contacts and group chats when logged in.
          * @event _converse#controlBoxInitialized
-         * @type { _converse.ControlBoxView }
+         * @type {ControlBoxView}
          * @example _converse.api.listen.on('controlBoxInitialized', view => { ... });
          */
         api.trigger('controlBoxInitialized', this);
@@ -48,9 +49,10 @@ class ControlBox extends CustomElement {
 
     close (ev) {
         ev?.preventDefault?.();
+        const connection = api.connection.get();
         if (
             ev?.name === 'closeAllChatBoxes' &&
-            (_converse.disconnection_cause !== LOGOUT ||
+            (connection.disconnection_cause !== LOGOUT ||
                 api.settings.get('show_controlbox_by_default'))
         ) {
             return;
@@ -67,13 +69,13 @@ class ControlBox extends CustomElement {
         /**
          * Triggered once the controlbox has been opened
          * @event _converse#controlBoxOpened
-         * @type {_converse.ControlBox}
+         * @type {ControlBoxView}
          */
         api.trigger('controlBoxOpened', this);
         return this;
     }
 }
 
-api.elements.define('converse-controlbox', ControlBox);
+api.elements.define('converse-controlbox', ControlBoxView);
 
-export default ControlBox;
+export default ControlBoxView;

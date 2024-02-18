@@ -13,7 +13,7 @@ export default class BookmarksView extends CustomElement {
 
     async initialize () {
         await api.waitUntil('bookmarksInitialized');
-        const { bookmarks, chatboxes } = _converse;
+        const { bookmarks, chatboxes } = _converse.state;
 
         this.liveFilter = debounce((ev) => this.model.set({'text': ev.target.value}), 100);
 
@@ -37,7 +37,7 @@ export default class BookmarksView extends CustomElement {
     }
 
     render () {
-        return _converse.bookmarks && this.model ? tplBookmarksList(this) : tplSpinner();
+        return _converse.state.bookmarks && this.model ? tplBookmarksList(this) : tplSpinner();
     }
 
     clearFilter (ev) {

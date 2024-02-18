@@ -120,8 +120,9 @@ export function getAutoCompleteListItem (text, input) {
         const img = document.createElement('img');
         let dataUri = 'data:' + _converse.DEFAULT_IMAGE_TYPE + ';base64,' + _converse.DEFAULT_IMAGE;
 
-        if (_converse.vcards) {
-            const vcard = _converse.vcards.findWhere({ 'nickname': text });
+        const { vcards } = _converse.state;
+        if (vcards) {
+            const vcard = vcards.findWhere({ 'nickname': text });
             if (vcard) dataUri = 'data:' + vcard.get('image_type') + ';base64,' + vcard.get('image');
         }
 

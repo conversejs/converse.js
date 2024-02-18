@@ -7,12 +7,13 @@ async function disablePushAppServer (domain, push_app_server) {
     if (!push_app_server.jid) {
         return;
     }
-    if (!(await api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid))) {
+    const bare_jid = _converse.session.get('bare_jid');
+    if (!(await api.disco.supports(Strophe.NS.PUSH, domain || bare_jid))) {
         log.warn(`Not disabling push app server "${push_app_server.jid}", no disco support from your server.`);
         return;
     }
     const stanza = $iq({'type': 'set'});
-    if (domain !== _converse.bare_jid) {
+    if (domain !== bare_jid) {
         stanza.attrs({'to': domain});
     }
     stanza.c('disable', {
@@ -48,7 +49,8 @@ async function enablePushAppServer (domain, push_app_server) {
         return;
     }
     const stanza = $iq({'type': 'set'});
-    if (domain !== _converse.bare_jid) {
+    const bare_jid = _converse.session.get('bare_jid');
+    if (domain !== bare_jid) {
         stanza.attrs({'to': domain});
     }
     stanza.c('enable', {
@@ -66,8 +68,14 @@ async function enablePushAppServer (domain, push_app_server) {
     return api.sendIQ(stanza);
 }
 
+/**
+ * @param {string} [domain]
+ */
 export async function enablePush (domain) {
-    domain = domain || _converse.bare_jid;
+    if (!domain) {
+        const bare_jid = _converse.session.get('bare_jid');
+        domain = bare_jid;
+    }
     const push_enabled = _converse.session.get('push_enabled') || [];
     if (push_enabled.includes(domain)) {
         return;

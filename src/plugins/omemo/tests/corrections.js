@@ -22,8 +22,8 @@ describe("An OMEMO encrypted message", function() {
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        const devicelist = _converse.devicelists.get({'jid': contact_jid});
+        await u.waitUntil(() => _converse.state.omemo_store);
+        const devicelist = _converse.state.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => devicelist.devices.length === 1);
 
         const view = _converse.chatboxviews.get(contact_jid);
@@ -166,7 +166,7 @@ describe("An OMEMO encrypted message", function() {
                 .c('origin-id', {'id': first_rcvd_msg_id, 'xmlns': 'urn:xmpp:sid:0'}).up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload)));
@@ -187,7 +187,7 @@ describe("An OMEMO encrypted message", function() {
                 .c('origin-id', {'id': msg_id, 'xmlns': 'urn:xmpp:sid:0'}).up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload)));
@@ -271,11 +271,11 @@ describe("An OMEMO encrypted MUC message", function() {
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        expect(_converse.devicelists.length).toBe(2);
+        await u.waitUntil(() => _converse.state.omemo_store);
+        expect(_converse.state.devicelists.length).toBe(2);
 
         await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        const devicelist = _converse.devicelists.get(contact_jid);
+        const devicelist = _converse.state.devicelists.get(contact_jid);
         expect(devicelist.devices.length).toBe(1);
         expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
         expect(view.model.get('omemo_active')).toBe(true);
@@ -419,7 +419,7 @@ describe("An OMEMO encrypted MUC message", function() {
             }).c('body').t(fallback_text).up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(first_obj.key_and_tag)).up()
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(first_obj.key_and_tag)).up()
                         .c('iv').t(first_obj.iv)
                         .up().up()
                     .c('payload').t(first_obj.payload)));
@@ -427,9 +427,9 @@ describe("An OMEMO encrypted MUC message", function() {
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(2);
         expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim()).toBe(first_received_message);
-        expect(_converse.devicelists.length).toBe(2);
-        expect(_converse.devicelists.at(0).get('jid')).toBe(_converse.bare_jid);
-        expect(_converse.devicelists.at(1).get('jid')).toBe(contact_jid);
+        expect(_converse.state.devicelists.length).toBe(2);
+        expect(_converse.state.devicelists.at(0).get('jid')).toBe(_converse.bare_jid);
+        expect(_converse.state.devicelists.at(1).get('jid')).toBe(contact_jid);
 
         const second_received_message = 'This is an edited encrypted message from the contact';
         const second_obj = await omemo.encryptMessage(second_received_message)
@@ -442,7 +442,7 @@ describe("An OMEMO encrypted MUC message", function() {
                 .c('replace',  {'id':first_received_id, 'xmlns': 'urn:xmpp:message-correct:0'})
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(second_obj.key_and_tag)).up()
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(second_obj.key_and_tag)).up()
                         .c('iv').t(second_obj.iv)
                         .up().up()
                     .c('payload').t(second_obj.payload)));

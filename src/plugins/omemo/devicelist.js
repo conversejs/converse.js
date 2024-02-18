@@ -23,8 +23,9 @@ class DeviceList extends Model {
     }
 
     initDevices () {
-        this.devices = new _converse.Devices();
-        const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
+        this.devices = new _converse.exports.Devices();
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `converse.devicelist-${bare_jid}-${this.get('jid')}`;
         initStorage(this.devices, id);
         return this.fetchDevices();
     }
@@ -43,7 +44,8 @@ class DeviceList extends Model {
                 }
                 this.destroy();
             }
-            if (this.get('jid') === _converse.bare_jid) {
+            const bare_jid = _converse.session.get('bare_jid');
+            if (this.get('jid') === bare_jid) {
                 this.publishCurrentDevice(ids);
             }
         }
@@ -65,22 +67,24 @@ class DeviceList extends Model {
     }
 
     async getOwnDeviceId () {
-        let device_id = _converse.omemo_store.get('device_id');
+        const { omemo_store } = _converse.state;
+        let device_id = omemo_store.get('device_id');
         if (!this.devices.get(device_id)) {
             // Generate a new bundle if we cannot find our device
-            await _converse.omemo_store.generateBundle();
-            device_id = _converse.omemo_store.get('device_id');
+            await omemo_store.generateBundle();
+            device_id = omemo_store.get('device_id');
         }
         return device_id;
     }
 
     async publishCurrentDevice (device_ids) {
-        if (this.get('jid') !== _converse.bare_jid) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (this.get('jid') !== bare_jid) {
             return; // We only publish for ourselves.
         }
         await restoreOMEMOSession();
 
-        if (!_converse.omemo_store) {
+        if (!_converse.state.omemo_store) {
             // Happens during tests. The connection gets torn down
             // before publishCurrentDevice has time to finish.
             log.warn('publishCurrentDevice: omemo_store is not defined, likely a timing issue');
@@ -92,9 +96,10 @@ class DeviceList extends Model {
     }
 
     async fetchDevicesFromServer () {
+        const bare_jid = _converse.session.get('bare_jid');
         const stanza = $iq({
             'type': 'get',
-            'from': _converse.bare_jid,
+            'from': bare_jid,
             'to': this.get('jid')
         }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB })
           .c('items', { 'node': Strophe.NS.OMEMO_DEVICELIST });
@@ -119,7 +124,8 @@ class DeviceList extends Model {
     }
 
     async removeOwnDevices (device_ids) {
-        if (this.get('jid') !== _converse.bare_jid) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (this.get('jid') !== bare_jid) {
             throw new Error("Cannot remove devices from someone else's device list");
         }
         await Promise.all(device_ids.map(id => this.devices.get(id)).map(d =>

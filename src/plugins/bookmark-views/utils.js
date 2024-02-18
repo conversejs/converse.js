@@ -28,7 +28,7 @@ export async function removeBookmarkViaEvent (ev) {
     const jid = ev.currentTarget.getAttribute('data-room-jid');
     const result = await api.confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name));
     if (result) {
-        _converse.bookmarks.where({ jid }).forEach(b => b.destroy());
+        _converse.state.bookmarks.where({ jid }).forEach(b => b.destroy());
     }
 }
 

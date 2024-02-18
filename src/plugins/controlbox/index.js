@@ -47,9 +47,9 @@ converse.plugins.add('converse-controlbox', {
         api.promises.add('controlBoxInitialized', false);
         Object.assign(api, controlbox_api);
 
-        _converse.ControlBoxView = ControlBoxView;
-        _converse.ControlBox = ControlBox;
-        _converse.ControlBoxToggle = ControlBoxToggle;
+        const exports = { ControlBox, ControlBoxView, ControlBoxToggle };
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         api.chatboxes.registry.add(CONTROLBOX_TYPE, ControlBox);
 

@@ -9,7 +9,9 @@ class ControlBoxToggle extends CustomElement {
     async connectedCallback () {
         super.connectedCallback();
         await api.waitUntil('initialized')
-        this.model = _converse.chatboxes.get('controlbox');
+
+        const { chatboxes } = _converse.state;
+        this.model = chatboxes.get('controlbox');
         this.listenTo(this.model, 'change:closed', () => this.requestUpdate());
         this.requestUpdate();
     }

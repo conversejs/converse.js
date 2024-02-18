@@ -6,8 +6,8 @@
 import './utils.js';
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
-import { Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
+import EmojiPicker from './picker.js';
 
 
 converse.emojis = {
@@ -57,21 +57,6 @@ converse.plugins.add('converse-emoji', {
                 "custom": ___("Stickers")
             }
         });
-
-        /**
-         * Model for storing data related to the Emoji picker widget
-         * @namespace _converse.EmojiPicker
-         * @memberOf _converse
-         */
-        class EmojiPicker extends Model {
-            defaults () { // eslint-disable-line class-methods-use-this
-                return {
-                    'current_category': 'smileys',
-                    'current_skintone': '',
-                    'scroll_position': 0
-                }
-            }
-        }
 
         const exports = { EmojiPicker };
         Object.assign(_converse, exports); // XXX: DEPRECATED

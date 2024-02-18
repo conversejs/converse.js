@@ -12,7 +12,7 @@ import { HEADLINES_TYPE } from '@converse/headless/shared/constants.js';
 export class HeadlinesFeedsList extends CustomElement {
 
     initialize () {
-        this.model = _converse.chatboxes;
+        this.model = _converse.state.chatboxes;
         this.listenTo(this.model, 'add', (m) => this.renderIfHeadline(m));
         this.listenTo(this.model, 'remove', (m) => this.renderIfHeadline(m));
         this.listenTo(this.model, 'destroy', (m) => this.renderIfHeadline(m));
@@ -27,7 +27,7 @@ export class HeadlinesFeedsList extends CustomElement {
         return model?.get('type') === HEADLINES_TYPE && this.requestUpdate();
     }
 
-    async openHeadline (ev) { // eslint-disable-line class-methods-use-this
+    async openHeadline (ev) {
         ev.preventDefault();
         const jid = ev.target.getAttribute('data-headline-jid');
         const feed = await api.headlines.get(jid);

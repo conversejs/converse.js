@@ -31,7 +31,7 @@ export default class AddContactModal extends BaseModal {
         if (!jid || jid.split('@').filter((s) => !!s).length < 2) {
             this.model.set('error', __('Please enter a valid XMPP address'));
             return false;
-        } else if (_converse.roster.get(Strophe.getBareJidFromJid(jid))) {
+        } else if (_converse.state.roster.get(Strophe.getBareJidFromJid(jid))) {
             this.model.set('error', __('This contact has already been added'));
             return false;
         }
@@ -43,7 +43,7 @@ export default class AddContactModal extends BaseModal {
         if (group && !Array.isArray(group)) {
             group = [group];
         }
-        _converse.roster.addAndSubscribe(jid, name, group);
+        _converse.state.roster.addAndSubscribe(jid, name, group);
         this.model.clear();
         this.modal.hide();
     }

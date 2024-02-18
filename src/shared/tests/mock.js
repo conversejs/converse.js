@@ -723,7 +723,7 @@ async function deviceListFetched (_converse, jid) {
     const stanza = await u.waitUntil(
         () => Array.from(_converse.api.connection.get().IQ_stanzas).filter(iq => iq.querySelector(selector)).pop()
     );
-    await u.waitUntil(() => _converse.devicelists.get(jid));
+    await u.waitUntil(() => _converse.state.devicelists.get(jid));
     return stanza;
 }
 

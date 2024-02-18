@@ -1,5 +1,6 @@
 import tplGroup from "./group.js";
 import tplRosterFilter from "./roster_filter.js";
+import { CLOSED } from "@converse/headless/shared/constants.js";
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless";
 import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
@@ -13,10 +14,10 @@ export default (el) => {
     const i18n_toggle_contacts = __('Click to toggle contacts');
     const i18n_title_add_contact = __('Add a contact');
     const i18n_title_sync_contacts = __('Re-sync your contacts');
-    const roster = _converse.roster || [];
+    const roster = _converse.state.roster || [];
     const contacts_map = roster.reduce((acc, contact) => populateContactsMap(acc, contact), {});
     const groupnames = Object.keys(contacts_map).filter(shouldShowGroup);
-    const is_closed = el.model.get('toggle_state') === _converse.CLOSED;
+    const is_closed = el.model.get('toggle_state') === CLOSED;
     groupnames.sort(groupsComparator);
 
     return html`
@@ -50,9 +51,9 @@ export default (el) => {
             <converse-list-filter
                     @update=${() => el.requestUpdate()}
                     .promise=${api.waitUntil('rosterInitialized')}
-                    .items=${_converse.roster}
+                    .items=${_converse.state.roster}
                     .template=${tplRosterFilter}
-                    .model=${_converse.roster_filter}></converse-list-filter>
+                    .model=${_converse.state.roster_filter}></converse-list-filter>
 
             ${ repeat(groupnames, (n) => n, (name) => {
                 const contacts = contacts_map[name].filter(c => shouldShowContact(c, name));

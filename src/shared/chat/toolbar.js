@@ -48,9 +48,9 @@ export class ChatToolbar extends CustomElement {
 
     firstUpdated () {
         /**
-         * Triggered once the _converse.ChatBoxView's toolbar has been rendered
+         * Triggered once the toolbar has been rendered
          * @event _converse#renderToolbar
-         * @type { _converse.ChatBoxView }
+         * @type { ChatToolbar }
          * @example _converse.api.listen.on('renderToolbar', this => { ... });
          */
         api.trigger('renderToolbar', this);
@@ -60,7 +60,7 @@ export class ChatToolbar extends CustomElement {
         const buttons = [];
 
         if (this.show_emoji_button) {
-            const chatview = _converse.chatboxviews.get(this.model.get('jid'));
+            const chatview = _converse.state.chatboxviews.get(this.model.get('jid'));
             buttons.push(html`<converse-emoji-dropdown .chatview=${chatview}></converse-emoji-dropdown>`);
         }
 
@@ -86,7 +86,8 @@ export class ChatToolbar extends CustomElement {
             buttons.push(this.getSpoilerButton());
         }
 
-        const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
+        const domain = _converse.session.get('domain');
+        const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
         buttons.push(html`${until(http_upload_promise.then(is_supported => this.getHTTPUploadButton(is_supported)),'')}`);
 
         if (this.is_groupchat && api.settings.get('visible_toolbar_buttons')?.toggle_occupants) {

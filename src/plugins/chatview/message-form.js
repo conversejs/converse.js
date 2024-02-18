@@ -2,6 +2,7 @@
  * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
  */
 import tplMessageForm from './templates/message-form.js';
+import { ACTIVE, COMPOSING } from 'headless/shared/constants.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
@@ -14,7 +15,8 @@ const { u } = converse.env;
 export default class MessageForm extends CustomElement {
 
     async initialize () {
-        this.model = _converse.chatboxes.get(this.getAttribute('jid'));
+        const { chatboxes } = _converse.state;
+        this.model = chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
         this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model, 'change:composing_spoiler', () => this.requestUpdate());
@@ -180,15 +182,16 @@ export default class MessageForm extends CustomElement {
         ) {
             return;
         }
-        if (this.model.get('chat_state') !== _converse.COMPOSING) {
+        if (this.model.get('chat_state') !== COMPOSING) {
             // Set chat state to composing if keyCode is not a forward-slash
             // (which would imply an internal command and not a message).
-            this.model.setChatState(_converse.COMPOSING);
+            this.model.setChatState(COMPOSING);
         }
     }
 
     async onFormSubmitted (ev) {
         ev?.preventDefault?.();
+        const { chatboxviews } = _converse.state;
 
         const textarea = /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'));
         const message_text = textarea.value.trim();
@@ -226,7 +229,7 @@ export default class MessageForm extends CustomElement {
         if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround. The .chat-content area
             // doesn't resize when the textarea is resized to its original size.
-            const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
+            const chatview = chatboxviews.get(this.getAttribute('jid'));
             const msgs_container = chatview.querySelector('.chat-content__messages');
             msgs_container.parentElement.style.display = 'none';
         }
@@ -235,13 +238,13 @@ export default class MessageForm extends CustomElement {
 
         if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround.
-            const chatview = _converse.chatboxviews.get(this.getAttribute('jid'));
+            const chatview = chatboxviews.get(this.getAttribute('jid'));
             const msgs_container = chatview.querySelector('.chat-content__messages');
             msgs_container.parentElement.style.display = '';
         }
         // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.
-        this.model.setChatState(_converse.ACTIVE, { 'silent': true });
+        this.model.setChatState(ACTIVE, { 'silent': true });
         textarea.focus();
     }
 }

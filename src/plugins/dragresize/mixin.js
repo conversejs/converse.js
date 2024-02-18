@@ -1,6 +1,6 @@
 import debounce from 'lodash-es/debounce';
-import { _converse, api } from '@converse/headless';
-import { applyDragResistance } from './utils.js';
+import { api } from '@converse/headless';
+import { applyDragResistance, getResizingDirection } from './utils.js';
 
 const DragResizableMixin = {
     initDragResize () {
@@ -37,7 +37,8 @@ const DragResizableMixin = {
 
     resizeChatBox (ev) {
         let diff;
-        if (_converse.resizing.direction.indexOf('top') === 0) {
+        const direction = getResizingDirection();
+        if (direction.indexOf('top') === 0) {
             diff = ev.pageY - this.prev_pageY;
             if (diff) {
                 this.height =
@@ -48,7 +49,7 @@ const DragResizableMixin = {
                 this.setChatBoxHeight(this.height);
             }
         }
-        if (_converse.resizing.direction.includes('left')) {
+        if (direction.includes('left')) {
             diff = this.prev_pageX - ev.pageX;
             if (diff) {
                 this.width =

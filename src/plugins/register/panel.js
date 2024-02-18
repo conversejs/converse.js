@@ -131,7 +131,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Handler for {@link _converse.RegisterPanel#getRegistrationFields}
      * @method _converse.RegisterPanel#onRegistrationFields
-     * @param { Element } stanza - The query stanza.
+     * @param {Element} stanza - The query stanza.
      */
     onRegistrationFields (stanza) {
         if (stanza.getAttribute("type") === "error") {
@@ -184,7 +184,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Callback method that gets called when the user has chosen an XMPP provider
      * @method _converse.RegisterPanel#onProviderChosen
-     * @param { HTMLElement } form - The form that was submitted
+     * @param {HTMLElement} form - The form that was submitted
      */
     onProviderChosen (form) {
         const domain = /** @type {HTMLInputElement} */(form.querySelector('input[name=domain]'))?.value;
@@ -194,7 +194,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Fetch a registration form from the requested domain
      * @method _converse.RegisterPanel#fetchRegistrationForm
-     * @param { String } domain_name - XMPP server domain
+     * @param {string} domain_name - XMPP server domain
      */
     fetchRegistrationForm (domain_name) {
         this.status = FETCHING_FORM;
@@ -213,7 +213,7 @@ class RegisterPanel extends CustomElement {
      * Callback function called by Strophe whenever the connection status changes.
      * Passed to Strophe specifically during a registration attempt.
      * @method _converse.RegisterPanel#onConnectStatusChanged
-     * @param { number } status_code - The Strophe.Status status code
+     * @param {number} status_code - The Strophe.Status status code
      */
     onConnectStatusChanged(status_code) {
         log.debug('converse-register: onConnectStatusChanged');
@@ -238,11 +238,12 @@ class RegisterPanel extends CustomElement {
             setActiveForm('login');
 
             if (this.fields.password && this.fields.username) {
+                const connection = api.connection.get();
                 // automatically log the user in
-                api.connection.get().connect(
+                connection.connect(
                     this.fields.username.toLowerCase()+'@'+this.domain.toLowerCase(),
                     this.fields.password,
-                    _converse.onConnectStatusChanged
+                    connection.onConnectStatusChanged
                 );
                 this.setFeedbackMessage(__('Now logging you in'));
             } else {
@@ -292,7 +293,7 @@ class RegisterPanel extends CustomElement {
      * Renders the registration form based on the XForm fields
      * received from the XMPP server.
      * @method _converse.RegisterPanel#renderRegistrationForm
-     * @param { Element } stanza - The IQ stanza received from the XMPP server.
+     * @param {Element} stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm (stanza) {
         this.form_fields = this.getFormFields(stanza);
@@ -303,7 +304,7 @@ class RegisterPanel extends CustomElement {
      * Report back to the user any error messages received from the
      * XMPP server after attempted registration.
      * @method _converse.RegisterPanel#reportErrors
-     * @param { Element } stanza - The IQ stanza received from the XMPP server
+     * @param {Element} stanza - The IQ stanza received from the XMPP server
      */
     reportErrors (stanza) {
         const errors = Array.from(stanza.querySelectorAll('error'));
@@ -340,7 +341,7 @@ class RegisterPanel extends CustomElement {
      * Handler, when the user submits the registration form.
      * Provides form error feedback or starts the registration process.
      * @method _converse.RegisterPanel#submitRegistrationForm
-     * @param { HTMLElement } form - The HTML form that was submitted
+     * @param {HTMLElement} form - The HTML form that was submitted
      */
     submitRegistrationForm (form) {
         const inputs = sizzle(':input:not([type=button]):not([type=submit])', form);
@@ -365,7 +366,7 @@ class RegisterPanel extends CustomElement {
     /**
      * Stores the values that will be sent to the XMPP server during attempted registration.
      * @method _converse.RegisterPanel#setFields
-     * @param { Element } stanza - the IQ stanza that will be sent to the XMPP server.
+     * @param {Element} stanza - the IQ stanza that will be sent to the XMPP server.
      */
     setFields (stanza) {
         const query = stanza.querySelector('query');
@@ -413,7 +414,7 @@ class RegisterPanel extends CustomElement {
      * is received from the XMPP server, after attempting to
      * register a new user.
      * @method _converse.RegisterPanel#reportErrors
-     * @param { Element } stanza - The IQ stanza.
+     * @param {Element} stanza - The IQ stanza.
      */
     _onRegisterIQ (stanza) {
         const connection = api.connection.get();

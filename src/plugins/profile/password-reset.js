@@ -38,7 +38,8 @@ class PasswordReset extends CustomElement {
 
         if (this.checkPasswordsMatch(ev)) return;
 
-        const iq = $iq({ 'type': 'get', 'to': _converse.domain }).c('query', { 'xmlns': Strophe.NS.REGISTER });
+        const domain = _converse.session.get('domain');
+        const iq = $iq({ 'type': 'get', 'to': domain }).c('query', { 'xmlns': Strophe.NS.REGISTER });
         const iq_response = await api.sendIQ(iq);
 
         if (iq_response === null) {
@@ -59,7 +60,7 @@ class PasswordReset extends CustomElement {
         const data = new FormData(ev.target);
         const password = data.get('password');
 
-        const reset_iq = $iq({ 'type': 'set', 'to': _converse.domain })
+        const reset_iq = $iq({ 'type': 'set', 'to': domain })
             .c('query', { 'xmlns': Strophe.NS.REGISTER })
                 .c('username', {}, username)
                 .c('password', {}, password);

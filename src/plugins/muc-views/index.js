@@ -59,7 +59,12 @@ converse.plugins.add('converse-muc-views', {
             }
         });
 
-        _converse.ChatRoomView = MUCView;
+        const exports = {
+            ChatRoomView: MUCView,
+            MUCView
+        };
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         if (!api.settings.get('muc_domain')) {
             // Use service discovery to get the default MUC domain

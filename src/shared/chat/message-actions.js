@@ -20,7 +20,7 @@ import './styles/message-actions.scss';
  * @property { String } name
  */
 
-const { Strophe, u } = converse.env;
+const { u } = converse.env;
 
 class MessageActions extends CustomElement {
     static get properties () {
@@ -144,12 +144,12 @@ class MessageActions extends CustomElement {
         if (result === null) {
             const err_msg = __(`A timeout occurred while trying to retract the message`);
             api.alert('error', __('Error'), err_msg);
-            log(err_msg, Strophe.LogLevel.WARN);
+            log.warn(err_msg);
         } else if (u.isErrorStanza(result)) {
             const err_msg = __(`Sorry, you're not allowed to retract this message.`);
             api.alert('error', __('Error'), err_msg);
-            log(err_msg, Strophe.LogLevel.WARN);
-            log(result, Strophe.LogLevel.WARN);
+            log.warn(err_msg);
+            log.error(result);
         }
     }
 

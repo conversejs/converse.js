@@ -1,11 +1,12 @@
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
+import { api } from '@converse/headless';
 import {
     getGroupsAutoCompleteList,
     getJIDsAutoCompleteList,
     getNamesAutoCompleteList
 } from '@converse/headless/plugins/roster/utils.js';
 import { html } from "lit";
+import { FILTER_STARTSWITH } from 'shared/autocomplete/utils';
 
 
 export default (el) => {
@@ -27,7 +28,7 @@ export default (el) => {
                             .list=${getJIDsAutoCompleteList()}
                             .data=${(text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`}
                             position="below"
-                            filter=${_converse.FILTER_STARTSWITH}
+                            filter=${FILTER_STARTSWITH}
                             ?required=${(!api.settings.get('xhr_user_search_url'))}
                             value="${el.model.get('jid') || ''}"
                             placeholder="${i18n_contact_placeholder}"
@@ -46,7 +47,7 @@ export default (el) => {
                     ${api.settings.get('autocomplete_add_contact') && typeof api.settings.get('xhr_user_search_url') === 'string' ?
                         html`<converse-autocomplete
                             .getAutoCompleteList=${getNamesAutoCompleteList}
-                            filter=${_converse.FILTER_STARTSWITH}
+                            filter=${FILTER_STARTSWITH}
                             value="${el.model.get('nickname') || ''}"
                             placeholder="${i18n_contact_placeholder}"
                             name="name"></converse-autocomplete>` :

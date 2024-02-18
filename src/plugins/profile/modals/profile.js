@@ -1,9 +1,14 @@
+
+/**
+ * @typedef {import("@converse/headless/plugins/status/status").default} XMPPStatus
+ */
 import BaseModal from "plugins/modal/modal.js";
 import tplProfileModal from "../templates/profile_modal.js";
 import Compress from 'client-compress';
 import { __ } from 'i18n';
 import { _converse, api, log } from "@converse/headless";
 import '../password-reset.js';
+
 
 const compress = new Compress({
     targetSize: 0.1,
@@ -25,7 +30,7 @@ export default class ProfileModal extends BaseModal {
         /**
          * Triggered when the _converse.ProfileModal has been created and initialized.
          * @event _converse#profileModalInitialized
-         * @type { _converse.XMPPStatus }
+         * @type {XMPPStatus}
          * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
          */
         api.trigger('profileModalInitialized', this.model);
@@ -40,8 +45,9 @@ export default class ProfileModal extends BaseModal {
     }
 
     async setVCard (data) {
+        const bare_jid = _converse.session.get('bare_jid');
         try {
-            await api.vcard.set(_converse.bare_jid, data);
+            await api.vcard.set(bare_jid, data);
         } catch (err) {
             log.fatal(err);
             this.alert([

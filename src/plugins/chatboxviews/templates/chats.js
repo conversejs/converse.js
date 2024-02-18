@@ -11,7 +11,7 @@ function shouldShowChat (c) {
 
 
 export default () => {
-    const { chatboxes } = _converse;
+    const { chatboxes } = _converse.state;
     const view_mode = api.settings.get('view_mode');
     const connection = api.connection.get();
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;

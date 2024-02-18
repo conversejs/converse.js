@@ -140,4 +140,5 @@ Object.assign(i18n, {
     },
 });
 
+export { i18n };
 export const __ = i18n.__;

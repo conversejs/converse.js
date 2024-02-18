@@ -22,7 +22,9 @@ export default (el) => {
     const i18n_add_to_contacts = __('Add to Contacts');
 
     const can_see_real_jids = muc.features.get('nonanonymous') || muc.getOwnRole() === 'moderator';
-    const not_me =  jid != _converse.bare_jid;
+
+    const bare_jid = _converse.session.get('bare_jid');
+    const not_me =  jid != bare_jid;
 
     const add_to_contacts = api.contacts.get(jid)
         .then(contact => !contact && not_me && can_see_real_jids)

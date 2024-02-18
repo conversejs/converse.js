@@ -2,8 +2,8 @@ import 'shared/autocomplete/index.js';
 import tplMUCSidebar from "./templates/muc-sidebar.js";
 import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, converse } from "@converse/headless";
-import { RosterFilter } from 'headless/plugins/roster/filter.js';
-import { initStorage } from "headless/utils/storage";
+import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
+import { initStorage } from "@converse/headless/utils/storage";
 import debounce from 'lodash-es/debounce.js';
 
 import 'shared/styles/status.scss';
@@ -31,7 +31,8 @@ export default class MUCSidebar extends CustomElement {
         initStorage(this.filter, filter_id);
         this.filter.fetch();
 
-        this.model = _converse.chatboxes.get(this.jid);
+        const { chatboxes } = _converse.state;
+        this.model = chatboxes.get(this.jid);
 
         // To avoid rendering continuously the participant list in case of massive joins/leaves:
         const debouncedRequestUpdate = debounce(() => this.requestUpdate(), 200, {
@@ -66,7 +67,8 @@ export default class MUCSidebar extends CustomElement {
 
     onOccupantClicked (ev) {
         ev?.preventDefault?.();
-        const view = _converse.chatboxviews.get(this.getAttribute('jid'));
+        const { chatboxviews } = _converse.state;
+        const view = chatboxviews.get(this.getAttribute('jid'));
         view?.getMessageForm().insertIntoTextArea(`@${ev.target.textContent}`);
     }
 }

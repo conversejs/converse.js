@@ -38,8 +38,8 @@ describe("The OMEMO module", function() {
                         .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                             .c('device', {'id': '555'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        const devicelist = _converse.devicelists.get({'jid': contact_jid});
+        await u.waitUntil(() => _converse.state.omemo_store);
+        const devicelist = _converse.state.devicelists.get({'jid': contact_jid});
         await u.waitUntil(() => devicelist.devices.length === 1);
 
         const view = _converse.chatboxviews.get(contact_jid);

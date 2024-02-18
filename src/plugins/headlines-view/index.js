@@ -26,9 +26,11 @@ converse.plugins.add('converse-headlines-view', {
     dependencies: ['converse-headlines', 'converse-chatview'],
 
     initialize () {
-        _converse.HeadlinesFeedsList = HeadlinesFeedsList;
-
-        // Deprecated
-        _converse.HeadlinesPanel = HeadlinesFeedsList;
+        const exports =  {
+            HeadlinesFeedsList: HeadlinesFeedsList,
+            HeadlinesPanel: HeadlinesFeedsList, // DEPRECATED
+        }
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
     }
 });

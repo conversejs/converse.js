@@ -4,20 +4,20 @@ import { _converse, api, converse } from "@converse/headless";
 const { Strophe, u } = converse.env;
 
 export function addControlBox () {
-    const m = _converse.chatboxes.add(new _converse.ControlBox({'id': 'controlbox'}));
-     _converse.chatboxviews.get('controlbox')?.setModel();
+    const m = _converse.state.chatboxes.add(new _converse.exports.ControlBox({'id': 'controlbox'}));
+     _converse.state.chatboxviews.get('controlbox')?.setModel();
     return m;
 }
 
 export function showControlBox (ev) {
     ev?.preventDefault?.();
-    const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();
+    const controlbox = _converse.state.chatboxes.get('controlbox') || addControlBox();
     u.safeSave(controlbox, {'closed': false});
 }
 
 export function navigateToControlBox (jid) {
     showControlBox();
-    const model = _converse.chatboxes.get(jid);
+    const model = _converse.state.chatboxes.get(jid);
     u.safeSave(model, {'hidden': true});
 }
 
@@ -26,13 +26,13 @@ export function disconnect () {
      * we reconnect, "onConnected" will be called,
      * to fetch the roster again and to send out a presence stanza.
      */
-    const view = _converse.chatboxviews.get('controlbox');
+    const view = _converse.state.chatboxviews.get('controlbox');
     view.model.set({ 'connected': false });
     return view;
 }
 
 export function clearSession () {
-    const chatboxviews = _converse?.chatboxviews;
+    const chatboxviews = _converse.state.chatboxviews;
     const view = chatboxviews && chatboxviews.get('controlbox');
     if (view) {
         u.safeSave(view.model, { 'connected': false });
@@ -44,7 +44,7 @@ export function clearSession () {
 }
 
 export function onChatBoxesFetched () {
-    const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();
+    const controlbox = _converse.state.chatboxes.get('controlbox') || addControlBox();
     controlbox.save({ 'connected': true });
 }
 
@@ -81,7 +81,7 @@ export function updateSettingsWithFormData (form, settings={}) {
 
     api.settings.set(settings);
 
-    _converse.config.save({ 'trusted': (form_data.get('trusted') && true) || false });
+    _converse.state.config.save({ 'trusted': (form_data.get('trusted') && true) || false });
 }
 
 

@@ -131,7 +131,7 @@ describe("A Chatbox", function () {
 
 
     it("can be trimmed to conserve space", mock.initConverse([], {}, async function (_converse) {
-        spyOn(_converse.minimize, 'trimChats');
+        spyOn(_converse.exports.minimize, 'trimChats');
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
 
@@ -151,7 +151,7 @@ describe("A Chatbox", function () {
             el.click();
         }
         await u.waitUntil(() => _converse.chatboxes.length == 16);
-        expect(_converse.minimize.trimChats.calls.count()).toBe(16);
+        expect(_converse.exports.minimize.trimChats.calls.count()).toBe(16);
 
         for (i=0; i<online_contacts.length; i++) {
             const el = online_contacts[i];
@@ -162,7 +162,7 @@ describe("A Chatbox", function () {
         await u.waitUntil(() => _converse.chatboxviews.keys().length === 1);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         minimized_chats.querySelector("a.restore-chat").click();
-        expect(_converse.minimize.trimChats.calls.count()).toBe(16);
+        expect(_converse.exports.minimize.trimChats.calls.count()).toBe(16);
     }));
 });
 
@@ -181,7 +181,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         _converse.handleMessageStanza(msgFactory());
         await u.waitUntil(() => chatbox.messages.length);
         await u.waitUntil(() => chatbox.get('num_unread') === 1);
-        _converse.minimize.minimize(chatbox);
+        _converse.exports.minimize.minimize(chatbox);
 
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         const unread_count = minimized_chats.querySelector('#toggle-minimized-chats .unread-message-count');
@@ -196,7 +196,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const view = await mock.openChatBoxFor(_converse, sender_jid)
         const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
-        _converse.minimize.minimize(view.model);
+        _converse.exports.minimize.minimize(view.model);
         _converse.handleMessageStanza(msgFactory());
         await u.waitUntil(() => view.model.messages.length);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));

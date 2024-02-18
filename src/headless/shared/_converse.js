@@ -93,6 +93,8 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.DEFAULT_IMAGE_TYPE = DEFAULT_IMAGE_TYPE;
         this.DEFAULT_IMAGE = DEFAULT_IMAGE;
 
+        this.NUM_PREKEYS = 100; // DEPRECATED. Set here so that tests can override
+
         // Set as module attr so that we can override in tests.
         // TODO: replace with config settings
         this.TIMEOUTS =  {

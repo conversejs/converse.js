@@ -4,6 +4,7 @@ import { Model } from '@converse/skeletor';
 import { _converse, api } from "@converse/headless";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { slideIn, slideOut } from 'utils/html.js';
+import { CLOSED, OPENED } from "@converse/headless/shared/constants.js";
 
 
 /**
@@ -14,14 +15,15 @@ import { slideIn, slideOut } from 'utils/html.js';
 export default class RosterView extends CustomElement {
 
     async initialize () {
-        const id = `converse.contacts-panel${_converse.bare_jid}`;
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `converse.contacts-panel${bare_jid}`;
         this.model = new Model({ id });
         initStorage(this.model, id);
         this.model.fetch();
 
         await api.waitUntil('rosterInitialized')
 
-        const { chatboxes, presences, roster } = _converse;
+        const { chatboxes, presences, roster } = _converse.state;
         this.listenTo(_converse, 'rosterContactsFetched', () => this.requestUpdate());
         this.listenTo(presences, 'change:show', () => this.requestUpdate());
         this.listenTo(chatboxes, 'change:hidden', () => this.requestUpdate());
@@ -43,13 +45,13 @@ export default class RosterView extends CustomElement {
         return tplRoster(this);
     }
 
-    showAddContactModal (ev) { // eslint-disable-line class-methods-use-this
+    showAddContactModal (ev) {
         api.modal.show('converse-add-contact-modal', {'model': new Model()}, ev);
     }
 
-    async syncContacts (ev) { // eslint-disable-line class-methods-use-this
+    async syncContacts (ev) {
         ev.preventDefault();
-        const { roster } = _converse;
+        const { roster } = _converse.state;
         this.syncing_contacts = true;
         this.requestUpdate();
 
@@ -64,10 +66,10 @@ export default class RosterView extends CustomElement {
     toggleRoster (ev) {
         ev?.preventDefault?.();
         const list_el = /** @type {HTMLElement} */(this.querySelector('.list-container.roster-contacts'));
-        if (this.model.get('toggle_state') === _converse.CLOSED) {
-            slideOut(list_el).then(() => this.model.save({'toggle_state': _converse.OPENED}));
+        if (this.model.get('toggle_state') === CLOSED) {
+            slideOut(list_el).then(() => this.model.save({'toggle_state': OPENED}));
         } else {
-            slideIn(list_el).then(() => this.model.save({'toggle_state': _converse.CLOSED}));
+            slideIn(list_el).then(() => this.model.save({'toggle_state': CLOSED}));
         }
     }
 }

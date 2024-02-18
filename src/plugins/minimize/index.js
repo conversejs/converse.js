@@ -2,6 +2,9 @@
  * @module converse-minimize
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
+ *
+ * @typedef {import('@converse/headless/plugins/muc/muc').default} MUC
+ * @typedef {import('@converse/headless/plugins/chat/model').default} ChatBox
  */
 import './view.js';
 import './components/minimized-chat.js';
@@ -90,17 +93,23 @@ converse.plugins.add('converse-minimize', {
 
         api.promises.add('minimizedChatsInitialized');
 
-        _converse.MinimizedChatsToggle = MinimizedChatsToggle;
-        _converse.minimize = { trimChats, minimize, maximize };
+        const exports = { MinimizedChatsToggle };
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
+        Object.assign(_converse, { minimize: { trimChats, minimize, maximize }}); // DEPRECATED
+        Object.assign(_converse.exports, { minimize: { trimChats, minimize, maximize }});
 
+        /**
+         * @param { ChatBox|MUC } model
+         */
         function onChatInitialized (model) {
             initializeChat(model);
             model.on( 'change:minimized', () => onMinimizedChanged(model));
         }
 
-        api.listen.on('chatBoxViewInitialized', view => _converse.minimize.trimChats(view));
-        api.listen.on('chatRoomViewInitialized', view => _converse.minimize.trimChats(view));
-        api.listen.on('controlBoxOpened', view => _converse.minimize.trimChats(view));
+        api.listen.on('chatBoxViewInitialized', view => _converse.exports.minimize.trimChats(view));
+        api.listen.on('chatRoomViewInitialized', view => _converse.exports.minimize.trimChats(view));
+        api.listen.on('controlBoxOpened', view => _converse.exports.minimize.trimChats(view));
         api.listen.on('chatBoxInitialized', onChatInitialized);
         api.listen.on('chatRoomInitialized', onChatInitialized);
 
@@ -112,7 +121,7 @@ converse.plugins.add('converse-minimize', {
             }
         });
 
-        const debouncedTrimChats = debounce(() => _converse.minimize.trimChats(), 250);
+        const debouncedTrimChats = debounce(() => _converse.exports.minimize.trimChats(), 250);
         api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
         api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
     }

@@ -3,6 +3,7 @@ class ChatBoxViews {
 
     constructor () {
         this.views = {};
+        this.el = null;
     }
 
     add (key, val) {

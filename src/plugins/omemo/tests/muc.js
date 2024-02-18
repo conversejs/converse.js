@@ -65,11 +65,11 @@ describe("The OMEMO module", function() {
                     .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                         .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        expect(_converse.devicelists.length).toBe(2);
+        await u.waitUntil(() => _converse.state.omemo_store);
+        expect(_converse.state.devicelists.length).toBe(2);
 
         await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        const devicelist = _converse.devicelists.get(contact_jid);
+        const devicelist = _converse.state.devicelists.get(contact_jid);
         expect(devicelist.devices.length).toBe(1);
         expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
         expect(view.model.get('omemo_active')).toBe(true);
@@ -163,7 +163,7 @@ describe("The OMEMO module", function() {
             }).c('body').t('This is a fallback message').up()
                 .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                     .c('header', {'sid':  '555'})
-                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('key', {'rid':  _converse.state.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                         .c('iv').t(obj.iv)
                         .up().up()
                     .c('payload').t(obj.payload);
@@ -173,9 +173,9 @@ describe("The OMEMO module", function() {
         expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim())
             .toBe('This is an encrypted message from the contact');
 
-        expect(_converse.devicelists.length).toBe(2);
-        expect(_converse.devicelists.at(0).get('jid')).toBe(_converse.bare_jid);
-        expect(_converse.devicelists.at(1).get('jid')).toBe(contact_jid);
+        expect(_converse.state.devicelists.length).toBe(2);
+        expect(_converse.state.devicelists.at(0).get('jid')).toBe(_converse.bare_jid);
+        expect(_converse.state.devicelists.at(1).get('jid')).toBe(contact_jid);
     }));
 
     it("gracefully handles auth errors when trying to send encrypted groupchat messages",
@@ -244,10 +244,10 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        expect(_converse.devicelists.length).toBe(2);
+        await u.waitUntil(() => _converse.state.omemo_store);
+        expect(_converse.state.devicelists.length).toBe(2);
 
-        const devicelist = _converse.devicelists.get(contact_jid);
+        const devicelist = _converse.state.devicelists.get(contact_jid);
         await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
         expect(devicelist.devices.length).toBe(1);
         expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
@@ -383,11 +383,11 @@ describe("The OMEMO module", function() {
                         .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
                         .c('device', {'id': 'ae890ac52d0df67ed7cfdf51b644e901'});
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.omemo_store);
-        expect(_converse.devicelists.length).toBe(2);
+        await u.waitUntil(() => _converse.state.omemo_store);
+        expect(_converse.state.devicelists.length).toBe(2);
 
         await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
-        const devicelist = _converse.devicelists.get(contact_jid);
+        const devicelist = _converse.state.devicelists.get(contact_jid);
         expect(devicelist.devices.length).toBe(2);
         expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
         expect(devicelist.devices.at(1).get('id')).toBe('ae890ac52d0df67ed7cfdf51b644e901');

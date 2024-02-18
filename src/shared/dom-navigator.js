@@ -57,12 +57,12 @@ function absoluteOffsetLeft(el) {
 
 /**
  * @typedef {Object} DOMNavigatorDirection
- * @property {string} DOMNavigatorOptions.down
- * @property {string} DOMNavigatorOptions.end
- * @property {string} DOMNavigatorOptions.home
- * @property {string} DOMNavigatorOptions.left
- * @property {string} DOMNavigatorOptions.right
- * @property {string} DOMNavigatorOptions.up
+ * @property {string} down
+ * @property {string} end
+ * @property {string} home
+ * @property {string} left
+ * @property {string} right
+ * @property {string} up
  */
 
 /**

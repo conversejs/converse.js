@@ -31,7 +31,8 @@ export default class MUCBottomPanel extends BottomPanel {
     }
 
     renderIfOwnOccupant (o) {
-        (o.get('jid') === _converse.bare_jid) && this.requestUpdate();
+        const bare_jid = _converse.session.get('bare_jid');
+        (o.get('jid') === bare_jid) && this.requestUpdate();
     }
 
     sendButtonClicked (ev) {

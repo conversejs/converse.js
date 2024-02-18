@@ -107,7 +107,7 @@ describe("A Chat Message", function () {
                 'from': sender_jid,
                 'type': 'chat'})
             .c('body').t("Older message").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'})
+            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T11:08:25Z'})
             .tree();
         _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
@@ -155,7 +155,7 @@ describe("A Chat Message", function () {
                 'from': sender_jid,
                 'type': 'chat'})
             .c('body').t("newer message from the next day").up()
-            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T22:28:23Z'})
+            .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T20:28:23Z'})
             .tree();
         _converse.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 6);

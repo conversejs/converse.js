@@ -8,7 +8,6 @@
 import './fingerprints.js';
 import './profile.js';
 import 'shared/modals/user-details.js';
-import ConverseMixins from './mixins/converse.js';
 import Device from './device.js';
 import DeviceList from './devicelist.js';
 import DeviceLists from './devicelists.js';
@@ -20,6 +19,7 @@ import { shouldClearCache } from '@converse/headless/utils/session.js';
 import {
     createOMEMOMessageStanza,
     encryptFile,
+    generateFingerprints,
     getOMEMOToolbarButton,
     getOutgoingMessageAttributes,
     handleEncryptedFiles,
@@ -59,16 +59,18 @@ converse.plugins.add('converse-omemo', {
         api.settings.extend({ 'omemo_default': false });
         api.promises.add(['OMEMOInitialized']);
 
-        _converse.NUM_PREKEYS = 100; // Set here so that tests can override
-
-        Object.assign(_converse, ConverseMixins);
         Object.assign(_converse.api, omemo_api);
 
-        _converse.OMEMOStore = OMEMOStore;
-        _converse.Device = Device;
-        _converse.Devices = Devices;
-        _converse.DeviceList = DeviceList;
-        _converse.DeviceLists = DeviceLists;
+        const exports = {
+            OMEMOStore,
+            Device,
+            Devices,
+            DeviceList,
+            DeviceLists,
+        };
+
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         /******************** Event Handlers ********************/
         api.waitUntil('chatBoxesInitialized').then(onChatBoxesInitialized);
@@ -103,18 +105,19 @@ converse.plugins.add('converse-omemo', {
 
         api.listen.on('userDetailsModalInitialized', contact => {
             const jid = contact.get('jid');
-            _converse.generateFingerprints(jid).catch(e => log.error(e));
+            generateFingerprints(jid).catch(e => log.error(e));
         });
 
         api.listen.on('profileModalInitialized', () => {
-            _converse.generateFingerprints(_converse.bare_jid).catch(e => log.error(e));
+            const bare_jid = _converse.session.get('bare_jid');
+            generateFingerprints(bare_jid).catch(e => log.error(e));
         });
 
         api.listen.on('clearSession', () => {
-            delete _converse.omemo_store
-            if (shouldClearCache() && _converse.devicelists) {
-                _converse.devicelists.clearStore();
-                delete _converse.devicelists;
+            delete _converse.state.omemo_store
+            if (shouldClearCache() && _converse.state.devicelists) {
+                _converse.state.devicelists.clearStore();
+                delete _converse.state.devicelists;
             }
         });
     }

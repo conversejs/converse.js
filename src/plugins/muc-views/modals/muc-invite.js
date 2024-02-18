@@ -27,7 +27,7 @@ export default class MUCInviteModal extends BaseModal {
     }
 
     getAutoCompleteList () {
-        return _converse.roster.map((i) => ({ 'label': i.getDisplayName(), 'value': i.get('jid') }));
+        return _converse.state.roster.map((i) => ({ 'label': i.getDisplayName(), 'value': i.get('jid') }));
     }
 
     submitInviteForm (ev) {

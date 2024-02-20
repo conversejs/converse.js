@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "10.1.5",
+  "version": "10.1.7",
   "description": "Browser based XMPP chat client",
   "main": "src/index.js",
   "browser": "dist/converse.js",
@@ -41,7 +41,7 @@
     "serve": "http-server -c-1",
     "devserver": "webpack serve --config webpack/webpack.serve.js",
     "watch": "webpack --watch --config webpack/webpack.build.js --mode=development",
-    "types": "tsc --declaration --emitDeclarationOnly --allowJs",
+    "types": "tsc -p ./src/headless/tsconfig.json && tsc",
     "check:types": "tsc --noEmit"
   },
   "repository": {

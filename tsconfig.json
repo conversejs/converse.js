@@ -3,8 +3,9 @@
       "src/**/*"
   ],
   "exclude": [
+      "src/types/*",
       "src/**/tests/*",
-      "src/headless/dist/",
+      "src/headless/",
       "src/website.js"
   ],
   "compilerOptions": {
@@ -23,8 +24,13 @@
     "allowJs": true,
     "checkJs": true,
 
+    // Generate d.ts files
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+
     "rootDir": "./src",
-    "outDir": "./dist/types/",
+    "outDir": "./src/types/",
     "baseUrl": "./src/",
 
     "esModuleInterop": true,

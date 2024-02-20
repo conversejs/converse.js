@@ -838,7 +838,7 @@ async function getBundlesAndBuildSessions (chatbox) {
             throw new UserFacingError(no_devices_err);
         }
         const bare_jid = _converse.session.get('bare_jid');
-        const own_list = await api.omemo.devicelists.get(bare_jid)
+        const own_list = await api.omemo.devicelists.get(bare_jid);
         const own_devices = own_list.devices;
         devices = [...own_devices.models, ...their_devices.models];
     }

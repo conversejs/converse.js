@@ -15,8 +15,11 @@ Enabling debug output
 Converse has a :ref:`loglevel` configuration setting which lets you to turn on
 debug logging in the browser's developer console.
 
-When debugging, you always want to make sure that this setting is set to
-``true`` when calling ``converse.initialize``.
+When debugging, you'll want to make sure that this setting is set to
+``debug`` when calling ``converse.initialize``.
+
+When the ``loglevel`` is set to ``debug``, Converse will log all XML traffic
+between it and the XMPP server.
 
 You can also enable debug output via the URL, which is useful when you don't
 have access to the server where Converse is hosted.
@@ -25,8 +28,10 @@ To do so, add ``#converse?loglevel=debug`` to the URL in the browser's address b
 Make sure to first remove any already existing URL fragment (the URL fragment
 is the part that starts with a ``#``).
 
-With debug logging on, you can open the browser's developer console and study the
-data that is logged to it.
+With debug logging on, you can open the browser's developer console (e.g. by pressing F12)
+and study the debug data that is logged to it. Make sure that verbose logging
+is enabled in the browser's developer console, otherwise not all logs from
+Converse might be visible.
 
 In Chrome you can right click in the developer console and save its contents to
 a file for later study.

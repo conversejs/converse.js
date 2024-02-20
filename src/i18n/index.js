@@ -5,32 +5,31 @@
  * @description This is the internationalization module
  */
 import Jed from 'jed';
-import { _converse, api, converse, log, i18n } from '@converse/headless';
+import { api, converse, log, i18n } from '@converse/headless';
 import { isTestEnv } from '@converse/headless/utils/session';
 
 const { dayjs } = converse.env;
 
 let jed_instance;
+let locale = 'en';
 
 /**
- * @private
- * @param { string } locale
- * @param { string[] } supported_locales
+ * @param {string} preferred_locale
+ * @param {string[]} supported_locales
  */
-function isConverseLocale (locale, supported_locales) {
-    return typeof locale === 'string' && supported_locales.includes(locale);
+function isConverseLocale (preferred_locale, supported_locales) {
+    return supported_locales.includes(preferred_locale);
 }
 
 /**
  * Determines which locale is supported by the user's system as well
  * as by the relevant library (e.g. converse.js or dayjs).
- * @private
- * @param { string } preferred_locale
- * @param { Function } isSupportedByLibrary - Returns a boolean indicating whether
+ * @param {string} preferred_locale
+ * @param {Function} isSupportedByLibrary - Returns a boolean indicating whether
  *   the locale is supported.
- * @returns { string }
+ * @returns {string}
  */
-function getLocale (preferred_locale, isSupportedByLibrary) {
+function determineLocale (preferred_locale, isSupportedByLibrary) {
     if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
         return preferred_locale;
     }
@@ -46,9 +45,8 @@ function getLocale (preferred_locale, isSupportedByLibrary) {
 
 /**
  * Check whether the locale or sub locale (e.g. en-US, en) is supported.
- * @private
- * @param { String } locale - The locale to check for
- * @param { Function } available - Returns a boolean indicating whether the locale is supported
+ * @param {string} locale - The locale to check for
+ * @param {Function} available - Returns a boolean indicating whether the locale is supported
  */
 function isLocaleAvailable (locale, available) {
     if (available(locale)) {
@@ -63,8 +61,7 @@ function isLocaleAvailable (locale, available) {
 
 /**
  * Given a locale, return the closest locale returned by dayJS
- * @private
- * @param { string } locale
+ * @param {string} locale
  */
 function getDayJSLocale (locale) {
     const dayjs_locale = locale.toLowerCase().replace('_', '-');
@@ -73,11 +70,9 @@ function getDayJSLocale (locale) {
 
 /**
  * Fetch the translations for the given local at the given URL.
- * @private
- * @returns { Jed }
+ * @returns {Jed}
  */
 async function fetchTranslations () {
-    const { api, locale } = _converse;
     const dayjs_locale = getDayJSLocale(locale);
 
     if (!isConverseLocale(locale, api.settings.get('locales')) || locale === 'en') {
@@ -87,7 +82,7 @@ async function fetchTranslations () {
         /*webpackChunkName: "locales/[request]" */ `../i18n/${locale}/LC_MESSAGES/converse.po`
     );
     await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${dayjs_locale}.js`);
-    dayjs.locale(getLocale(dayjs_locale, (l) => dayjs.locale(l)));
+    dayjs.locale(determineLocale(dayjs_locale, (l) => dayjs.locale(l)));
     return new Jed(data);
 }
 
@@ -97,16 +92,12 @@ async function fetchTranslations () {
  */
 Object.assign(i18n, {
 
-    /**
-     * @param { string } preferred_locale
-     * @param { string[] } available_locales
-     */
-    getLocale (preferred_locale, available_locales) {
-        return getLocale(preferred_locale, (preferred) => isConverseLocale(preferred, available_locales));
+    getLocale () {
+        return locale;
     },
 
     /**
-     * @param { string } str - The string to be translated
+     * @param {string} str - The string to be translated
      */
     translate (str) {
         if (!jed_instance) {
@@ -122,15 +113,17 @@ Object.assign(i18n, {
 
     async initialize () {
         if (isTestEnv()) {
-            _converse.locale = 'en';
+            locale = 'en';
         } else {
             try {
                 const preferred_locale = api.settings.get('i18n');
-                _converse.locale = i18n.getLocale(preferred_locale, api.settings.get('locales'));
+                const available_locales = api.settings.get('locales');
+                const isSupportedByLibrary = /** @param {string} pref */(pref) => isConverseLocale(pref, available_locales);
+                locale = determineLocale(preferred_locale, isSupportedByLibrary);
                 jed_instance = await fetchTranslations();
             } catch (e) {
                 log.fatal(e.message);
-                _converse.locale = 'en';
+                locale = 'en';
             }
         }
     },

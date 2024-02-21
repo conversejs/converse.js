@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-17 10:34+0200\n"
-"PO-Revision-Date: 2024-01-23 01:01+0000\n"
+"PO-Revision-Date: 2024-02-22 05:02+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: dist/converse-no-dependencies.js:23324
 #: dist/converse-no-dependencies.js:23381
@@ -1271,7 +1271,7 @@ msgid ""
 "OMEMO encryption is NOT available."
 msgstr ""
 "性能改善のため、このブラウザーにデータをキャッシュします。共用コンピューター"
-"の場合や、ログアウト時にデータを消去したい場合は、この欄のチェックをはずして"
+"の場合や、ログアウト時にデータを削除したい場合は、この欄のチェックをはずして"
 "ください。確実にログアウトしないと、キャッシュデータが残る可能性があります。"
 "信頼のない機器での利用の場合には OMEMO が使えないことに注意してください。"
 
@@ -2163,11 +2163,11 @@ msgstr "OMEMO 暗号化メッセージを送るデバイスが見つかりませ
 
 #: dist/converse-no-dependencies.js:123276
 msgid "Trusted"
-msgstr "信用できる"
+msgstr "信頼できる"
 
 #: dist/converse-no-dependencies.js:123277
 msgid "Untrusted"
-msgstr "信用できない"
+msgstr "信頼できない"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:123285
@@ -2216,7 +2216,7 @@ msgstr "新しい鍵と指紋を生成"
 
 #: dist/converse-no-dependencies.js:124435
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "デバイスを切断する際にエラーが発生しました。"
+msgstr "デバイスを削除する際にエラーが発生しました。"
 
 #: dist/converse-no-dependencies.js:124462
 msgid ""
@@ -2279,9 +2279,8 @@ msgstr "そのプロバイダーに接続できませんでした。"
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
-msgstr ""
-"このプロバイダーはバンド内アカウント登録に対応していません。別のプロバイダー"
-"で試してください。"
+msgstr "このプロバイダーは系統内 (in-band) "
+"アカウント登録に対応していません。別のプロバイダーで試してください。"
 
 #: dist/converse-no-dependencies.js:130068
 msgid "Now logging you in"

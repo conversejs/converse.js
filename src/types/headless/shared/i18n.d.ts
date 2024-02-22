@@ -1,4 +1,5 @@
-declare namespace _default {
+export default i18nStub;
+declare namespace i18nStub {
     function initialize(): void;
     /**
      * Overridable string wrapper method which can be used to provide i18n
@@ -15,5 +16,4 @@ declare namespace _default {
      */
     function __(...args: any[]): any;
 }
-export default _default;
 //# sourceMappingURL=i18n.d.ts.map

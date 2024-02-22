@@ -7,6 +7,11 @@ const { Strophe, $pres } = converse.env;
 
 export default class XMPPStatus extends Model {
 
+  constructor(attributes, options) {
+        super(attributes, options);
+        this.vcard = null;
+    }
+
     defaults () {
         return { "status":  api.settings.get("default_state") }
     }
@@ -35,9 +40,9 @@ export default class XMPPStatus extends Model {
     }
 
     /** Constructs a presence stanza
-     * @param { string } [type]
-     * @param { string } [to] - The JID to which this presence should be sent
-     * @param { string } [status_message]
+     * @param {string} [type]
+     * @param {string} [to] - The JID to which this presence should be sent
+     * @param {string} [status_message]
      */
     async constructPresence (type, to=null, status_message) {
         type = typeof type === 'string' ? type : (this.get('status') || api.settings.get("default_state"));

@@ -2,6 +2,7 @@
  * @typedef {module:headless-plugins-muc-muc.MUCMessageAttributes} MUCMessageAttributes
  * @typedef {module:headless-plugins-muc-muc.MUCMessageData} MUCMessageData
  * @typedef {module:headless-plugins-chat-utils.MessageData} MessageData
+ * @typedef {import('@converse/headless/plugins/roster/contact').default} RosterContact
  */
 import Favico from 'favico.js-slevomat';
 import { __, i18n } from 'i18n';
@@ -122,7 +123,6 @@ async function shouldNotifyOfInfoMessage (attrs) {
 }
 
 /**
- * @private
  * @async
  * @method shouldNotifyOfMessage
  * @param {MessageData|MUCMessageData} data
@@ -164,6 +164,7 @@ export function showFeedbackNotification (data) {
 /**
  * Creates an HTML5 Notification to inform of a change in a
  * contact's chat state.
+ * @param {RosterContact} contact
  */
 function showChatStateNotification (contact) {
     if (api.settings.get('chatstate_notification_blacklist')?.includes(contact.jid)) {
@@ -315,6 +316,7 @@ export function handleFeedback (data) {
 /**
  * Event handler for on('contactPresenceChanged').
  * Will show an HTML5 notification to indicate that the chat status has changed.
+ * @param {RosterContact} contact
  */
 export function handleChatStateNotification (contact) {
     if (areDesktopNotificationsEnabled() && api.settings.get('show_chat_state_notifications')) {
@@ -322,6 +324,9 @@ export function handleChatStateNotification (contact) {
     }
 }
 
+/**
+ * @param {RosterContact} contact
+ */
 function showContactRequestNotification (contact) {
     const n = new Notification(contact.getDisplayName(), {
         body: __('wants to be your contact'),
@@ -331,6 +336,9 @@ function showContactRequestNotification (contact) {
     setTimeout(() => n.close(), 5000);
 }
 
+/**
+ * @param {RosterContact} contact
+ */
 export function handleContactRequestNotification (contact) {
     if (areDesktopNotificationsEnabled()) {
         showContactRequestNotification(contact);

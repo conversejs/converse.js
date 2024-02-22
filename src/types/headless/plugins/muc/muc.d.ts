@@ -5,6 +5,7 @@ export type NonOutcastAffiliation = import('./affiliations/utils.js').NonOutcast
 export type MemberListItem = any;
 export type MessageAttributes = any;
 export type MUCMessageAttributes = any;
+export type UserMessage = any;
 export namespace Strophe {
     type Builder = any;
 }

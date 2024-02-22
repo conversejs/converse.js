@@ -21,6 +21,8 @@ const styling_map = {
 
 const dont_escape = ['_', '>', '`', '~'];
 
+// prettier-ignore
+/* eslint-disable max-len */
 const styling_templates = {
     // m is the chatbox model
     // i is the offset of this directive relative to the start of the original message

@@ -1,3 +1,8 @@
+/**
+ * @typedef {import('./index').DiscoState} DiscoState
+ * @typedef {import('./entities').default} DiscoEntities
+ * @typedef {import('@converse/skeletor').Collection} Collection
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
@@ -31,7 +36,7 @@ export default {
             async getFeature (name, xmlns) {
                 await api.waitUntil('streamFeaturesAdded');
 
-                const { stream_features } = _converse.state;
+                const stream_features = /** @type {Collection} */(_converse.state.stream_features);
                 if (!name || !xmlns) {
                     throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
                 }
@@ -67,7 +72,7 @@ export default {
                  * @example _converse.api.disco.own.identities.clear();
                  */
                 add (category, type, name, lang) {
-                    const { disco } = _converse.state;
+                    const disco = /** @type {DiscoState} */(_converse.state.disco);
                     for (var i=0; i<disco._identities.length; i++) {
                         if (disco._identities[i].category == category &&
                                 disco._identities[i].type == type &&
@@ -84,7 +89,7 @@ export default {
                  * @example _converse.api.disco.own.identities.clear();
                  */
                 clear () {
-                    _converse.state.disco._identities = []
+                    /** @type {DiscoState} */(_converse.state.disco)._identities = []
                 },
                 /**
                  * Returns all of the identities registered for this client
@@ -93,7 +98,7 @@ export default {
                  * @example const identities = api.disco.own.identities.get();
                  */
                 get () {
-                    return _converse.state.disco._identities;
+                    return /** @type {DiscoState} */(_converse.state.disco)._identities;
                 }
             },
 
@@ -109,8 +114,8 @@ export default {
                  * @example _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
                  */
                 add (name) {
-                    const { disco } = _converse.state;
-                    for (var i=0; i<disco._features.length; i++) {
+                    const disco = /** @type {DiscoState} */(_converse.state.disco);
+                    for (let i=0; i<disco._features.length; i++) {
                         if (disco._features[i] == name) { return false; }
                     }
                     disco._features.push(name);
@@ -121,7 +126,8 @@ export default {
                  * @example _converse.api.disco.own.features.clear();
                  */
                 clear () {
-                    _converse.state.disco._features = []
+                    const disco = /** @type {DiscoState} */(_converse.state.disco);
+                    disco._features = []
                 },
                 /**
                  * Returns all of the features registered for this client (i.e. instance of Converse).
@@ -129,7 +135,7 @@ export default {
                  * @example const features = api.disco.own.features.get();
                  */
                 get () {
-                    return _converse.state.disco._features;
+                    return /** @type {DiscoState} */(_converse.state.disco)._features;
                 }
             }
         },
@@ -194,7 +200,7 @@ export default {
              */
             async get (jid, create=false) {
                 await api.waitUntil('discoInitialized');
-                const { disco_entities } = _converse.state;
+                const disco_entities = /** @type {DiscoEntities} */(_converse.state.disco_entities);
                 if (!jid) {
                     return disco_entities;
                 }
@@ -218,7 +224,8 @@ export default {
              * @example api.disco.entities.items(jid);
              */
             items (jid) {
-                return _converse.state.disco_entities.filter(e => e.get('parent_jids')?.includes(jid));
+                const disco_entities = /** @type {DiscoEntities} */(_converse.state.disco_entities);
+                return disco_entities.filter(e => e.get('parent_jids')?.includes(jid));
             },
 
             /**
@@ -240,7 +247,8 @@ export default {
              * @example _converse.api.disco.entities.create({ jid }, {'ignore_cache': true});
              */
             create (data, options) {
-                return _converse.state.disco_entities.create(data, options);
+                const disco_entities = /** @type {DiscoEntities} */(_converse.state.disco_entities);
+                return disco_entities.create(data, options);
             }
         },
 
@@ -273,7 +281,8 @@ export default {
 
                 if (_converse.state.disco_entities === undefined && !api.connection.connected()) {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
-                    log.warn(`Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`);
+                    log.warn(`Tried to get feature ${feature} for ${jid} but `+
+                        `_converse.disco_entities has been torn down`);
                     return [];
                 }
 
@@ -455,7 +464,8 @@ export default {
             const e = await api.disco.entities.get(jid, true);
             if (e === undefined && !api.connection.connected()) {
                 // Happens during tests when disco lookups happen asynchronously after teardown.
-                const msg = `Tried to look up category ${category} for ${jid} but _converse.disco_entities has been torn down`;
+                const msg = `Tried to look up category ${category} for ${jid} `+
+                    `but _converse.disco_entities has been torn down`;
                 log.warn(msg);
                 return;
             }

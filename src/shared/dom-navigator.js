@@ -151,20 +151,21 @@ class DOMNavigator {
      * @property {number[]} [DOMNavigatorOptions.right] - The keycode for navigating right
      * @property {number[]} [DOMNavigatorOptions.up] - The keycode for navigating up
      * @property {String} [DOMNavigatorOptions.selector]
-     * @property {String} [DOMNavigatorOptions.selected] - The class that should be added to the currently selected DOM element.
+     * @property {String} [DOMNavigatorOptions.selected] - The class that should be added
+     *  to the currently selected DOM element
      * @property {String} [DOMNavigatorOptions.jump_to_picked] - A selector, which if
-     * matched by the next element being navigated to, based on the direction
-     * given by `jump_to_picked_direction`, will cause navigation
-     * to jump to the element that matches the `jump_to_picked_selector`.
-     * For example, this is useful when navigating to tabs. You want to
-     * immediately navigate to the currently active tab instead of just
-     * navigating to the first tab.
+     *  matched by the next element being navigated to, based on the direction
+     *  given by `jump_to_picked_direction`, will cause navigation
+     *  to jump to the element that matches the `jump_to_picked_selector`.
+     *  For example, this is useful when navigating to tabs. You want to
+     *  immediately navigate to the currently active tab instead of just
+     *  navigating to the first tab.
      * @property {String} [DOMNavigatorOptions.jump_to_picked_selector=picked] - The selector
-     * indicating the currently picked element to jump to.
+     *  indicating the currently picked element to jump to.
      * @property {String} [DOMNavigatorOptions.jump_to_picked_direction] - The direction for
-     * which jumping to the picked element should be enabled.
+     *  which jumping to the picked element should be enabled.
      * @property {Function} [DOMNavigatorOptions.onSelected] - The callback function which
-     * should be called when en element gets selected.
+     *  should be called when en element gets selected.
      * @property {HTMLElement} [DOMNavigatorOptions.scroll_container]
      */
 
@@ -331,11 +332,14 @@ class DOMNavigator {
                     container.scrollTop = el.offsetTop - container.offsetTop;
                     break;
                 case DOMNavigator.DIRECTION.right:
-                    container.scrollLeft = el.offsetLeft - container.offsetLeft - (container.offsetWidth - el.offsetWidth);
-                    container.scrollTop = el.offsetTop - container.offsetTop - (container.offsetHeight - el.offsetHeight);
+                    container.scrollLeft =
+                        el.offsetLeft - container.offsetLeft - (container.offsetWidth - el.offsetWidth);
+                    container.scrollTop =
+                        el.offsetTop - container.offsetTop - (container.offsetHeight - el.offsetHeight);
                     break;
                 case DOMNavigator.DIRECTION.down:
-                    container.scrollTop = el.offsetTop - container.offsetTop - (container.offsetHeight - el.offsetHeight);
+                    container.scrollTop =
+                        el.offsetTop - container.offsetTop - (container.offsetHeight - el.offsetHeight);
                     break;
             }
         } else if (!inViewport(el)) {
@@ -347,10 +351,16 @@ class DOMNavigator {
                     document.body.scrollTop = absoluteOffsetTop(el) - document.body.offsetTop;
                     break;
                 case DOMNavigator.DIRECTION.right:
-                    document.body.scrollLeft = absoluteOffsetLeft(el) - document.body.offsetLeft - (document.documentElement.clientWidth - el.offsetWidth);
+                    document.body.scrollLeft =
+                        absoluteOffsetLeft(el) -
+                        document.body.offsetLeft -
+                        (document.documentElement.clientWidth - el.offsetWidth);
                     break;
                 case DOMNavigator.DIRECTION.down:
-                    document.body.scrollTop = absoluteOffsetTop(el) - document.body.offsetTop - (document.documentElement.clientHeight - el.offsetHeight);
+                    document.body.scrollTop =
+                        absoluteOffsetTop(el) -
+                        document.body.offsetTop -
+                        (document.documentElement.clientHeight - el.offsetHeight);
                     break;
             }
         }

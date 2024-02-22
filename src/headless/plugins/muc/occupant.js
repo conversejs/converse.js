@@ -8,7 +8,12 @@ import { Model } from '@converse/skeletor';
  */
 class ChatRoomOccupant extends Model {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    constructor (attributes, options) {
+        super(attributes, options);
+        this.vcard = null;
+    }
+
+    defaults () {
         return {
             hats: [],
             show: 'offline',

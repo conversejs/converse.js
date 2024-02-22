@@ -1,14 +1,19 @@
-import tplGroup from "./group.js";
-import tplRosterFilter from "./roster_filter.js";
-import { CLOSED } from "@converse/headless/shared/constants.js";
+/**
+ * @typedef {import('../rosterview').default} RosterView
+ */
+import tplGroup from './group.js';
+import tplRosterFilter from './roster_filter.js';
+import { CLOSED } from '@converse/headless/shared/constants.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless";
+import { _converse, api } from '@converse/headless';
 import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
-import { html } from "lit";
+import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { shouldShowContact, shouldShowGroup, populateContactsMap } from '../utils.js';
 
-
+/**
+ * @param {RosterView} el
+ */
 export default (el) => {
     const i18n_heading_contacts = __('Contacts');
     const i18n_toggle_contacts = __('Click to toggle contacts');
@@ -25,41 +30,54 @@ export default (el) => {
             <span class="w-100 controlbox-heading controlbox-heading--contacts">
                 <a class="list-toggle open-contacts-toggle" title="${i18n_toggle_contacts}" @click=${el.toggleRoster}>
                     <converse-icon
-                        class="fa ${ is_closed ? 'fa-caret-right' : 'fa-caret-down' }"
+                        class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
                         size="1em"
-                        color="var(--chat-color)"></converse-icon>
+                        color="var(--chat-color)"
+                    ></converse-icon>
                     ${i18n_heading_contacts}
                 </a>
             </span>
-            <a class="controlbox-heading__btn sync-contacts"
-               @click=${ev => el.syncContacts(ev)}
-               title="${i18n_title_sync_contacts}">
-
-                <converse-icon class="fa fa-sync right ${el.syncing_contacts ? 'fa-spin' : ''}" size="1em"></converse-icon>
+            <a
+                class="controlbox-heading__btn sync-contacts"
+                @click=${(ev) => el.syncContacts(ev)}
+                title="${i18n_title_sync_contacts}"
+            >
+                <converse-icon
+                    class="fa fa-sync right ${el.syncing_contacts ? 'fa-spin' : ''}"
+                    size="1em"
+                ></converse-icon>
             </a>
-            ${ api.settings.get('allow_contact_requests') ? html`
-                <a class="controlbox-heading__btn add-contact"
-                    @click=${ev => el.showAddContactModal(ev)}
-                    title="${i18n_title_add_contact}"
-                    data-toggle="modal"
-                    data-target="#add-contact-modal">
-                    <converse-icon class="fa fa-user-plus right" size="1.25em"></converse-icon>
-                </a>` : '' }
+            ${api.settings.get('allow_contact_requests')
+                ? html` <a
+                      class="controlbox-heading__btn add-contact"
+                      @click=${(ev) => el.showAddContactModal(ev)}
+                      title="${i18n_title_add_contact}"
+                      data-toggle="modal"
+                      data-target="#add-contact-modal"
+                  >
+                      <converse-icon class="fa fa-user-plus right" size="1.25em"></converse-icon>
+                  </a>`
+                : ''}
         </div>
 
-        <div class="list-container roster-contacts ${ is_closed ? 'hidden' : '' }">
+        <div class="list-container roster-contacts ${is_closed ? 'hidden' : ''}">
             <converse-list-filter
-                    @update=${() => el.requestUpdate()}
-                    .promise=${api.waitUntil('rosterInitialized')}
-                    .items=${_converse.state.roster}
-                    .template=${tplRosterFilter}
-                    .model=${_converse.state.roster_filter}></converse-list-filter>
+                @update=${() => el.requestUpdate()}
+                .promise=${api.waitUntil('rosterInitialized')}
+                .items=${_converse.state.roster}
+                .template=${tplRosterFilter}
+                .model=${_converse.state.roster_filter}
+            ></converse-list-filter>
 
-            ${ repeat(groupnames, (n) => n, (name) => {
-                const contacts = contacts_map[name].filter(c => shouldShowContact(c, name));
-                contacts.sort(contactsComparator);
-                return contacts.length ? tplGroup({ contacts, name }) : '';
-            }) }
+            ${repeat(
+                groupnames,
+                (n) => n,
+                (name) => {
+                    const contacts = contacts_map[name].filter((c) => shouldShowContact(c, name));
+                    contacts.sort(contactsComparator);
+                    return contacts.length ? tplGroup({ contacts, name }) : '';
+                }
+            )}
         </div>
     `;
-}
+};

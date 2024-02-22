@@ -65,20 +65,21 @@ declare class DOMNavigator {
      * @property {number[]} [DOMNavigatorOptions.right] - The keycode for navigating right
      * @property {number[]} [DOMNavigatorOptions.up] - The keycode for navigating up
      * @property {String} [DOMNavigatorOptions.selector]
-     * @property {String} [DOMNavigatorOptions.selected] - The class that should be added to the currently selected DOM element.
+     * @property {String} [DOMNavigatorOptions.selected] - The class that should be added
+     *  to the currently selected DOM element
      * @property {String} [DOMNavigatorOptions.jump_to_picked] - A selector, which if
-     * matched by the next element being navigated to, based on the direction
-     * given by `jump_to_picked_direction`, will cause navigation
-     * to jump to the element that matches the `jump_to_picked_selector`.
-     * For example, this is useful when navigating to tabs. You want to
-     * immediately navigate to the currently active tab instead of just
-     * navigating to the first tab.
+     *  matched by the next element being navigated to, based on the direction
+     *  given by `jump_to_picked_direction`, will cause navigation
+     *  to jump to the element that matches the `jump_to_picked_selector`.
+     *  For example, this is useful when navigating to tabs. You want to
+     *  immediately navigate to the currently active tab instead of just
+     *  navigating to the first tab.
      * @property {String} [DOMNavigatorOptions.jump_to_picked_selector=picked] - The selector
-     * indicating the currently picked element to jump to.
+     *  indicating the currently picked element to jump to.
      * @property {String} [DOMNavigatorOptions.jump_to_picked_direction] - The direction for
-     * which jumping to the picked element should be enabled.
+     *  which jumping to the picked element should be enabled.
      * @property {Function} [DOMNavigatorOptions.onSelected] - The callback function which
-     * should be called when en element gets selected.
+     *  should be called when en element gets selected.
      * @property {HTMLElement} [DOMNavigatorOptions.scroll_container]
      */
     /**
@@ -108,7 +109,8 @@ declare class DOMNavigator {
         up?: number[];
         selector?: string;
         /**
-         * - The class that should be added to the currently selected DOM element.
+         * - The class that should be added
+         * to the currently selected DOM element
          */
         selected?: string;
         /**
@@ -164,7 +166,8 @@ declare class DOMNavigator {
         up?: number[];
         selector?: string;
         /**
-         * - The class that should be added to the currently selected DOM element.
+         * - The class that should be added
+         * to the currently selected DOM element
          */
         selected?: string;
         /**

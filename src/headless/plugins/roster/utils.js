@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('./contacts').default} RosterContacts
+ */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
@@ -35,7 +38,7 @@ function initRoster () {
     initStorage(roster.data, id);
     roster.data.fetch();
     /**
-     * Triggered once the `_converse.RosterContacts`
+     * Triggered once the `RosterContacts`
      * been created, but not yet populated with data.
      * This event is useful when you want to create views for these collections.
      * @event _converse#chatBoxMaximized
@@ -58,8 +61,9 @@ async function populateRoster (ignore_cache=false) {
     if (ignore_cache) {
         connection.send_initial_presence = true;
     }
+    const roster = /** @type {RosterContacts} */(_converse.state.roster);
     try {
-        await _converse.state.roster.fetchRosterContacts();
+        await roster.fetchRosterContacts();
         api.trigger('rosterContactsFetched');
     } catch (reason) {
         log.error(reason);
@@ -70,7 +74,8 @@ async function populateRoster (ignore_cache=false) {
 
 
 function updateUnreadCounter (chatbox) {
-    const contact = _converse.state.roster?.get(chatbox.get('jid'));
+    const roster = /** @type {RosterContacts} */(_converse.state.roster);
+    const contact = roster?.get(chatbox.get('jid'));
     contact?.save({'num_unread': chatbox.get('num_unread')});
 }
 
@@ -80,7 +85,8 @@ function registerPresenceHandler () {
     unregisterPresenceHandler();
     const connection = api.connection.get();
     presence_ref = connection.addHandler(presence => {
-            _converse.state.roster.presenceHandler(presence);
+            const roster = /** @type {RosterContacts} */(_converse.state.roster);
+            roster.presenceHandler(presence);
             return true;
         }, null, 'presence', null);
 }
@@ -104,7 +110,7 @@ async function clearPresences () {
 export async function onClearSession () {
     await clearPresences();
     if (shouldClearCache()) {
-        const { roster } = _converse.state;
+        const roster = /** @type {RosterContacts} */(_converse.state.roster);
         if (roster) {
             roster.data?.destroy();
             await roster.clearStore();
@@ -132,7 +138,8 @@ export function onPresencesInitialized (reconnecting) {
     } else {
         initRoster();
     }
-    _converse.state.roster.onConnected();
+    const roster = /** @type {RosterContacts} */(_converse.state.roster);
+    roster.onConnected();
     registerPresenceHandler();
     populateRoster(!api.connection.get().restored);
 }
@@ -193,7 +200,8 @@ export function onChatBoxesInitialized () {
  * Roster specific handler for the rosterContactsFetched promise
  */
 export function onRosterContactsFetched () {
-    _converse.state.roster.on('add', contact => {
+    const roster = /** @type {RosterContacts} */(_converse.state.roster);
+    roster.on('add', contact => {
         // When a new contact is added, check if we already have a
         // chatbox open for it, and if so attach it to the chatbox.
         const chatbox = _converse.state.chatboxes.findWhere({ 'jid': contact.get('jid') });
@@ -259,13 +267,14 @@ export function groupsComparator (a, b) {
 }
 
 export function getGroupsAutoCompleteList () {
-    const { roster } = _converse.state;
+    const roster = /** @type {RosterContacts} */(_converse.state.roster);
     const groups = roster.reduce((groups, contact) => groups.concat(contact.get('groups')), []);
     return [...new Set(groups.filter(i => i))];
 }
 
 export function getJIDsAutoCompleteList () {
-    return [...new Set(_converse.state.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))];
+    const roster = /** @type {RosterContacts} */(_converse.state.roster);
+    return [...new Set(roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))];
 }
 
 

@@ -18,6 +18,12 @@ import {
 
 const { Strophe } = converse.env;
 
+/**
+ * @typedef {Object} DiscoState
+ * @property {Array} _identities
+ * @property {Array} _features
+ */
+
 converse.plugins.add('converse-disco', {
     initialize () {
         Object.assign(api, disco_api);

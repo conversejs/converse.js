@@ -13,7 +13,7 @@ declare class DeviceList extends Model {
     _devices_promise: Promise<any>;
     getOwnDeviceId(): Promise<any>;
     publishCurrentDevice(device_ids: any): Promise<any>;
-    fetchDevicesFromServer(): Promise<any>;
+    fetchDevicesFromServer(): Promise<any[]>;
     /**
      * Send an IQ stanza to the current user's "devices" PEP node to
      * ensure that all devices are published for potential chat partners to see.

@@ -1,5 +1,9 @@
 export default _converse;
 export type Storage = any;
+export type Collection = import('@converse/skeletor').Collection;
+export type DiscoState = import('../plugins/disco/index').DiscoState;
+export type XMPPStatus = import('../plugins/status/status').default;
+export type VCards = import('../plugins/vcard/vcard').default;
 declare const _converse: ConversePrivateGlobal;
 declare const ConversePrivateGlobal_base: (new (...args: any[]) => {
     on(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any;
@@ -41,20 +45,28 @@ declare class ConversePrivateGlobal extends ConversePrivateGlobal_base {
     api: any;
     /**
      * Namespace for storing translated strings.
+     *
+     * @typedef {Record<string, string>} UserMessage
+     * @typedef {Record<string, string|UserMessage>} UserMessages
      */
-    labels: {};
+    labels: Record<string, string | Record<string, string>>;
     /**
      * Namespace for storing code that might be useful to 3rd party
      * plugins. We want to make it possible for 3rd party plugins to have
      * access to code (e.g. classes) from converse.js without having to add
      * converse.js as a dependency.
      */
-    exports: {};
+    exports: Record<string, any>;
     /**
      * Namespace for storing the state, as represented by instances of
      * Models and Collections.
+     *
+     * @typedef {Object & Record<string, Collection|Model|VCards|XMPPStatus|DiscoState>} ConverseState
+     * @property {VCards} [vcards]
+     * @property {XMPPStatus} xmppstatus
+     * @property {DiscoState} disco
      */
-    state: {};
+    state: any;
     initSession(): void;
     session: Model;
     /**

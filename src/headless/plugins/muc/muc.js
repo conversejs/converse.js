@@ -6,6 +6,7 @@
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
  * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
  * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {module:shared.converse.UserMessage} UserMessage
  * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
 import _converse from '../../shared/_converse.js';
@@ -2390,7 +2391,8 @@ class MUC extends ChatBox {
         if (!x) {
             return;
         }
-        const disconnection_codes = Object.keys(_converse.labels.muc.disconnect_messages);
+        const muc = /** @type {UserMessage} */(_converse.labels.muc);
+        const disconnection_codes = Object.keys(muc.disconnect_messages);
         const codes = sizzle('status', x)
             .map(s => s.getAttribute('code'))
             .filter(c => disconnection_codes.includes(c));
@@ -2405,7 +2407,7 @@ class MUC extends ChatBox {
         const item = x.querySelector('item');
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
         const actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
-        const message = _converse.labels.muc.disconnect_messages[codes[0]];
+        const message = muc.disconnect_messages[codes[0]];
         const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);
     }
@@ -2523,7 +2525,7 @@ class MUC extends ChatBox {
     createInfoMessage (code, stanza, is_self) {
         const __ = _converse.__;
         const data = { 'type': 'info', 'is_ephemeral': true };
-        const { info_messages, new_nickname_messages } = _converse.labels.muc;
+        const { info_messages, new_nickname_messages } = /** @type {UserMessage} */(_converse.labels.muc);
 
         if (!isInfoVisible(code)) {
             return;
@@ -2625,6 +2627,7 @@ class MUC extends ChatBox {
      */
     onErrorPresence (stanza) {
         const __ = _converse.__;
+        const muc = /** @type {UserMessage} */(_converse.labels.muc);
         const error = stanza.querySelector('error');
         const error_type = error.getAttribute('type');
         const reason = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop()?.textContent;
@@ -2641,7 +2644,7 @@ class MUC extends ChatBox {
                 this.setDisconnectionState(message, reason);
             } else if (error.querySelector('forbidden')) {
                 this.setDisconnectionState(
-                    _converse.labels.muc.disconnect_messages[301],
+                    muc.disconnect_messages[301],
                     reason,
                     null,
                     ROOMSTATUS.BANNED

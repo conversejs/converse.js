@@ -18,9 +18,9 @@ export type _converse = {
         INACTIVE: number;
     };
     api: any;
-    labels: {};
-    exports: {};
-    state: {};
+    labels: Record<string, string | Record<string, string>>;
+    exports: Record<string, any>;
+    state: any;
     initSession(): void;
     session: import("@converse/skeletor").Model;
     __(...args: string[]): any;

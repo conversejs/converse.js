@@ -196,14 +196,14 @@ export function getMediaURLsMetadata (text, offset=0) {
     }
 
     /**
-     * @typedef { Object } MediaURLMetadata
+     * @typedef {Object} MediaURLMetadata
      * An object representing the metadata of a URL found in a chat message
      * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
-     * @property { Boolean } is_audio
-     * @property { Boolean } is_image
-     * @property { Boolean } is_video
-     * @property { String } end
-     * @property { String } start
+     * @property {Boolean} is_audio
+     * @property {Boolean} is_image
+     * @property {Boolean} is_video
+     * @property {String} end
+     * @property {String} start
      */
     const media_urls = objs
         .map(o => ({
@@ -273,13 +273,13 @@ export function getReferences (stanza) {
         const begin = ref.getAttribute('begin');
         const end = ref.getAttribute('end');
         /**
-         * @typedef { Object } Reference
+         * @typedef {Object} Reference
          * An object representing XEP-0372 reference data
-         * @property { string } begin
-         * @property { string } end
-         * @property { string } type
-         * @property { String } value
-         * @property { String } uri
+         * @property {string} begin
+         * @property {string} end
+         * @property {string} type
+         * @property {String} value
+         * @property {String} uri
          */
         return {
             begin, end,

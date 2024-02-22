@@ -24,7 +24,7 @@ describe("The MUC occupants filter", function () {
         await u.waitUntil(() => view.model.occupants.length === 3);
 
         let filter_el = view.querySelector('converse-list-filter');
-        expect(u.isVisible(filter_el.firstElementChild)).toBe(false);
+        expect(filter_el).toBe(null);
 
         for (let i=0; i<mock.chatroom_names.length; i++) {
             const name = mock.chatroom_names[i];

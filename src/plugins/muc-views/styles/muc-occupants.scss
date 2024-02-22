@@ -15,20 +15,27 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                overflow-x: hidden;
-                overflow-y: hidden;
+                overflow: visible;
                 vertical-align: top;
                 background-color: var(--occupants-background-color);
                 border-left: var(--occupants-border-left);
                 padding: 0.5em;
                 max-width: 75%;
-                min-width: 20%;
+                min-width: 25%;
                 flex: 0 0 25%;
 
                 .occupants-header--title {
                     display: flex;
                     flex-direction: row;
                     margin-bottom: 0.5em;
+
+                    .occupants-heading {
+                        width: 100%;
+                        font-family: var(--heading-font);
+                        color: var(--groupchats-header-color-dark);
+                        padding-left: 0;
+                        margin-right: 0.5em;
+                    }
 
                     .hide-occupants {
                         align-self: flex-end;
@@ -41,13 +48,6 @@
                     margin-right: 0.25em;
                 }
 
-                .occupants-heading {
-                    width: 100%;
-                    font-family: var(--heading-font);
-                    color: var(--groupchats-header-color-dark);
-                    padding-left: 0;
-                    margin-right: 1em;
-                }
                 .suggestion-box{
                     ul {
                         padding: 0;

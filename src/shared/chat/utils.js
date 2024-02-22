@@ -46,6 +46,9 @@ export async function getHeadingStandaloneButton (promise_or_data) {
     `;
 }
 
+/**
+ * @param {Promise} promise
+ */
 export function getStandaloneButtons (promise) {
     return promise.then(
         btns => btns
@@ -55,15 +58,16 @@ export function getStandaloneButtons (promise) {
             .map(b => until(b, '')));
 }
 
+/**
+ * @param {Promise} promise
+ */
 export function getDropdownButtons (promise) {
-    return promise.then(
-        btns => {
-            const dropdown_btns = btns
-                .filter(b => !b.standalone)
-                .map(b => getHeadingDropdownItem(b));
-            return dropdown_btns.length ? html`<converse-dropdown class="chatbox-btn dropleft" .items=${dropdown_btns}></converse-dropdown>` : '';
-        }
-    );
+    return promise.then((btns) => {
+        const dropdown_btns = btns.filter((b) => !b.standalone).map((b) => getHeadingDropdownItem(b));
+        return dropdown_btns.length
+            ? html`<converse-dropdown class="chatbox-btn dropleft" .items=${dropdown_btns}></converse-dropdown>`
+            : '';
+    });
 }
 
 

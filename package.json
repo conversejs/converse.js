@@ -100,7 +100,6 @@
     "po2json": "^1.0.0-beta-3",
     "postcss": "^8.4.16",
     "postcss-loader": "^7.0.1",
-    "prettierx": "^0.19.0",
     "sass": "^1.51.0",
     "sass-loader": "^13.1.0",
     "style-loader": "^3.1.0",
@@ -125,6 +124,7 @@
     "localforage-webextensionstorage-driver": "^3.0.0",
     "lodash-es": "^4.17.21",
     "pluggable.js": "^3.0.1",
+    "prettier": "^3.2.5",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
     "urijs": "^1.19.10"

@@ -1,6 +1,9 @@
 /**
  * @typedef {import('../muc/occupant.js').default} ChatRoomOccupant
  * @typedef {import('../chat/model-with-contact.js').default} ModelWithContact
+ * @typedef {import('../../plugins/status/status').default} XMPPStatus
+ * @typedef {import('../../plugins/vcard/vcards').default} VCards
+ * @typedef {import('../../plugins/muc/message').default} MUCMessage
  */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
@@ -111,6 +114,9 @@ function getVCardForOccupant (occupant) {
     }
 }
 
+/**
+ * @param {ChatRoomOccupant} occupant
+ */
 export async function setVCardOnOccupant (occupant) {
     await api.waitUntil('VCardsInitialized');
     occupant.vcard = getVCardForOccupant(occupant);
@@ -121,6 +127,9 @@ export async function setVCardOnOccupant (occupant) {
 }
 
 
+/**
+ * @param {MUCMessage} message
+ */
 function getVCardForMUCMessage (message) {
     const { vcards, xmppstatus } = _converse.state;
     const muc = message?.collection?.chatbox;
@@ -139,6 +148,9 @@ function getVCardForMUCMessage (message) {
     }
 }
 
+/**
+ * @param {MUCMessage} message
+ */
 export async function setVCardOnMUCMessage (message) {
     if (['error', 'info'].includes(message.get('type'))) {
         return;
@@ -192,6 +204,9 @@ export function clearVCardsSession () {
     }
 }
 
+/**
+ * @param {string} jid
+ */
 export async function getVCard (jid) {
     const bare_jid = _converse.session.get('bare_jid');
     const to = Strophe.getBareJidFromJid(jid) === bare_jid ? null : jid;

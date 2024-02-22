@@ -6,6 +6,8 @@ export default ChatRoomOccupant;
  * @memberOf _converse
  */
 declare class ChatRoomOccupant extends Model {
+    constructor(attributes: any, options: any);
+    vcard: any;
     defaults(): {
         hats: any[];
         show: string;

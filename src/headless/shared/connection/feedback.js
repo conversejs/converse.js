@@ -5,7 +5,7 @@ import { Strophe } from 'strophe.js';
 
 class Feedback extends Model {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
             'connection_status': Strophe.Status.DISCONNECTED,
             'message': '',

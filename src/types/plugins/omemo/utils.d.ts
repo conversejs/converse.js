@@ -39,7 +39,7 @@ export function parseBundle(bundle_el: any): {
     };
     prekeys: any;
 };
-export function generateFingerprints(jid: any): Promise<any>;
+export function generateFingerprints(jid: any): Promise<any[]>;
 export function generateFingerprint(device: any): Promise<void>;
 export function getDevicesForContact(jid: any): Promise<any>;
 export function getDeviceForContact(jid: any, device_id: any): Promise<any>;

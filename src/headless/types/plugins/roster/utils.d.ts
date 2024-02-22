@@ -39,4 +39,5 @@ export function getNamesAutoCompleteList(query: string): Promise<{
     label: any;
     value: any;
 }[]>;
+export type RosterContacts = import('./contacts').default;
 //# sourceMappingURL=utils.d.ts.map

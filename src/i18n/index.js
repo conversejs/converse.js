@@ -5,7 +5,7 @@
  * @description This is the internationalization module
  */
 import Jed from 'jed';
-import { api, converse, log, i18n } from '@converse/headless';
+import { api, converse, log } from '@converse/headless';
 import { isTestEnv } from '@converse/headless/utils/session';
 
 const { dayjs } = converse.env;
@@ -90,35 +90,36 @@ async function fetchTranslations () {
 /**
  * @namespace i18n
  */
-Object.assign(i18n, {
-
-    getLocale () {
+const i18n = {
+    getLocale() {
         return locale;
     },
 
     /**
      * @param {string} str - The string to be translated
+     * @param {Array<any>} args
      */
-    translate (str) {
+    translate(str, args) {
         if (!jed_instance) {
             return Jed.sprintf.apply(Jed, arguments);
         }
         const t = jed_instance.translate(str);
         if (arguments.length > 1) {
-            return t.fetch.apply(t, [].slice.call(arguments, 1));
+            return t.fetch.apply(t, args);
         } else {
             return t.fetch();
         }
     },
 
-    async initialize () {
+    async initialize() {
         if (isTestEnv()) {
             locale = 'en';
         } else {
             try {
                 const preferred_locale = api.settings.get('i18n');
                 const available_locales = api.settings.get('locales');
-                const isSupportedByLibrary = /** @param {string} pref */(pref) => isConverseLocale(pref, available_locales);
+                const isSupportedByLibrary = /** @param {string} pref */ (pref) =>
+                    isConverseLocale(pref, available_locales);
                 locale = determineLocale(preferred_locale, isSupportedByLibrary);
                 jed_instance = await fetchTranslations();
             } catch (e) {
@@ -128,10 +129,10 @@ Object.assign(i18n, {
         }
     },
 
-    __ (...args) {
-        return i18n.translate(...args);
+    __(str, ...args) {
+        return i18n.translate(str, args);
     },
-});
+};
 
 export { i18n };
 export const __ = i18n.__;

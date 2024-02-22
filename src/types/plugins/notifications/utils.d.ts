@@ -20,8 +20,12 @@ export function handleFeedback(data: any): void;
 /**
  * Event handler for on('contactPresenceChanged').
  * Will show an HTML5 notification to indicate that the chat status has changed.
+ * @param {RosterContact} contact
  */
 export function handleChatStateNotification(contact: any): void;
+/**
+ * @param {RosterContact} contact
+ */
 export function handleContactRequestNotification(contact: any): void;
 export function requestPermission(): void;
 export type navigator = Navigator & {
@@ -31,4 +35,5 @@ export type navigator = Navigator & {
 export type MUCMessageAttributes = any;
 export type MUCMessageData = any;
 export type MessageData = any;
+export type RosterContact = any;
 //# sourceMappingURL=utils.d.ts.map

@@ -3,6 +3,7 @@
   "version": "10.1.7",
   "description": "Browser based XMPP chat client",
   "main": "src/index.js",
+  "types": "src/types/index.d.ts",
   "browser": "dist/converse.js",
   "module": "src/index.js",
   "workspaces": [

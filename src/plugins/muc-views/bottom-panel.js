@@ -1,7 +1,7 @@
 import 'shared/autocomplete/index.js';
 import BottomPanel from 'plugins/chatview/bottom-panel.js';
 import tplMUCBottomPanel from './templates/muc-bottom-panel.js';
-import { _converse, api, converse } from "@converse/headless";
+import { _converse, api } from "@converse/headless";
 
 import './styles/muc-bottom-panel.scss';
 
@@ -21,9 +21,10 @@ export default class MUCBottomPanel extends BottomPanel {
     render () {
         if (!this.model) return '';
         const entered = this.model.isEntered();
-        const can_edit = this.model.canPostMessages();
+        const can_post = this.model.canPostMessages();
         return tplMUCBottomPanel({
-            can_edit, entered,
+            can_post,
+            entered,
             'model': this.model,
             'is_groupchat': true,
             'viewUnreadMessages': ev => this.viewUnreadMessages(ev)

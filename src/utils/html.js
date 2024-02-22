@@ -82,12 +82,12 @@ const serializer = new XMLSerializer();
 
 /**
  * Given two XML or HTML elements, determine if they're equal
- * @param { Element } actual
- * @param { Element } expected
- * @returns { Boolean }
+ * @param {Element} actual
+ * @param {Element} expected
+ * @returns {Boolean}
  */
 function isEqualNode (actual, expected) {
-    if (!u.isElement(actual)) throw new Error("Element being compared must be an Element!");
+    if (!u.isElement(actual)) throw new Error('Element being compared must be an Element!');
 
     actual = stripEmptyTextNodes(actual);
     expected = stripEmptyTextNodes(expected);
@@ -115,7 +115,8 @@ function isEqualNode (actual, expected) {
         const { xmlHtmlNode } = Strophe;
         const actual_string = serializer.serializeToString(actual);
         const expected_string = serializer.serializeToString(expected);
-        isEqual = actual_string === expected_string || xmlHtmlNode(actual_string).isEqualNode(xmlHtmlNode(expected_string));
+        isEqual =
+            actual_string === expected_string || xmlHtmlNode(actual_string).isEqualNode(xmlHtmlNode(expected_string));
     }
 
     return isEqual;

@@ -53,19 +53,19 @@ export default (el, o) => {
     if (el.model.occupants < 6) {
         // We don't show the filter
         btns.push(
-            html` <i class="hide-occupants" @click=${(ev) => el.closeSidebar(ev)}>
+            html` <i class="hide-occupants" @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>
                 <converse-icon class="fa fa-times" size="1em"></converse-icon>
             </i>`
         );
     } else {
         btns.push(html`
-            <a href="#" class="dropdown-item" @click=${(ev) => el.closeSidebar(ev)}>
+            <a href="#" class="dropdown-item" @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>
                 <converse-icon size="1em" class="fa fa-times"></converse-icon>
                 ${i18n_close}
             </a>
         `);
         btns.push(html`
-            <a href="#" class="dropdown-item" @click=${(ev) => el.toggleFilter(ev)}>
+            <a href="#" class="dropdown-item" @click=${(/** @type {MouseEvent} */ev) => el.toggleFilter(ev)}>
                 <converse-icon size="1em" class="fa fa-filter"></converse-icon>
                 ${is_filter_visible ? i18n_hide_filter : i18n_show_filter}
             </a>

@@ -88,7 +88,7 @@ export function shouldShowGroup (group) {
 
 export function populateContactsMap (contacts_map, contact) {
     if (contact.get('requesting')) {
-        const name = _converse.labels.HEADER_REQUESTING_CONTACTS;
+        const name = /** @type {string} */(_converse.labels.HEADER_REQUESTING_CONTACTS);
         contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
     } else {
         let contact_groups;
@@ -107,7 +107,7 @@ export function populateContactsMap (contacts_map, contact) {
         }
     }
     if (contact.get('num_unread')) {
-        const name = _converse.labels.HEADER_UNREAD;
+        const name = /** @type {string} */(_converse.labels.HEADER_UNREAD);
         contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
     }
     return contacts_map;

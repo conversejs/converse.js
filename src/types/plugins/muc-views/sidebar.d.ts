@@ -9,8 +9,12 @@ export default class MUCSidebar extends CustomElement {
     filter: any;
     model: any;
     render(): import("lit-html").TemplateResult<1>;
-    closeSidebar(ev: any): void;
-    onOccupantClicked(ev: any): void;
+    /** @param {MouseEvent} ev */
+    toggleFilter(ev: MouseEvent): void;
+    /** @param {MouseEvent} ev */
+    closeSidebar(ev: MouseEvent): void;
+    /** @param {MouseEvent} ev */
+    onOccupantClicked(ev: MouseEvent): void;
 }
 import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=sidebar.d.ts.map

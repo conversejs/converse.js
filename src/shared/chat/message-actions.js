@@ -270,6 +270,11 @@ class MessageActions extends CustomElement {
         }
     }
 
+    async onMessageCopyButtonClicked (ev) {
+        ev?.preventDefault?.();
+        await navigator.clipboard.writeText(this.model.getMessageText());
+    }
+
     async getActionButtons () {
         const buttons = [];
         if (this.model.get('editable')) {
@@ -302,6 +307,14 @@ class MessageActions extends CustomElement {
         }
 
         this.addMediaRenderingToggle(buttons);
+
+        buttons.push({
+            'i18n_text': __('Copy'),
+            'handler': ev => this.onMessageCopyButtonClicked(ev),
+            'button_class': 'chat-msg__action-copy',
+            'icon_class': 'fas fa-copy',
+            'name': 'copy',
+        });
 
         /**
          * *Hook* which allows plugins to add more message action buttons

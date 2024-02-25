@@ -967,6 +967,10 @@ class MUC extends ChatBox {
         return self && self.isModerator() && api.disco.supports(Strophe.NS.MODERATE, this.get('jid'));
     }
 
+    canPostMessages () {
+        return this.isEntered() && !(this.features.get('moderated') && this.getOwnRole() === 'visitor');
+    }
+
     /**
      * Return an array of unique nicknames based on all occupants and messages in this MUC.
      * @private

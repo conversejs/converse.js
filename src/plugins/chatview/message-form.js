@@ -57,7 +57,7 @@ export default class MessageForm extends CustomElement {
      * @param { number } [position] - The end index of the string to be
      *  replaced with the new value.
      */
-    insertIntoTextArea (value, replace = false, correcting = false, position) {
+    insertIntoTextArea (value, replace = false, correcting = false, position, separator = ' ') {
         const textarea = /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'));
         if (correcting) {
             u.addClass('correcting', textarea);
@@ -67,17 +67,17 @@ export default class MessageForm extends CustomElement {
         if (replace) {
             if (position && typeof replace == 'string') {
                 textarea.value = textarea.value.replace(new RegExp(replace, 'g'), (match, offset) =>
-                    offset == position - replace.length ? value + ' ' : match
+                    offset == position - replace.length ? value + separator : match
                 );
             } else {
                 textarea.value = value;
             }
         } else {
             let existing = textarea.value;
-            if (existing && existing[existing.length - 1] !== ' ') {
-                existing = existing + ' ';
+            if (existing && existing[existing.length - 1] !== separator) {
+                existing = existing + separator;
             }
-            textarea.value = existing + value + ' ';
+            textarea.value = existing + value + separator;
         }
         const ev = document.createEvent('HTMLEvents');
         ev.initEvent('change', false, true);

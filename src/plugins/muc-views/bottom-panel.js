@@ -20,8 +20,8 @@ export default class MUCBottomPanel extends BottomPanel {
 
     render () {
         if (!this.model) return '';
-        const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
-        const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
+        const entered = this.model.isEntered();
+        const can_edit = this.model.canPostMessages();
         return tplMUCBottomPanel({
             can_edit, entered,
             'model': this.model,

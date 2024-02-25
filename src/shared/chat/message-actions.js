@@ -1,6 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse, log } from '@converse/headless';
+import { api, converse, log, _converse } from '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
@@ -43,6 +43,16 @@ class MessageActions extends CustomElement {
         this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
+        // This may change the ability to send messages, and therefore the presence of the quote button.
+        // See plugins/muc-views/bottom-panel.js
+        this.listenTo(this.model.collection.chatbox.features, 'change:moderated', () => this.requestUpdate());
+        this.listenTo(this.model.collection.chatbox.occupants, 'add', this.updateIfOwnOccupant)
+        this.listenTo(this.model.collection.chatbox.occupants, 'change:role', this.updateIfOwnOccupant);
+        this.listenTo(this.model.collection.chatbox.session, 'change:connection_status', () => this.requestUpdate());
+    }
+
+    updateIfOwnOccupant (o) {
+        (o.get('jid') === _converse.bare_jid) && this.requestUpdate();
     }
 
     render () {
@@ -275,6 +285,15 @@ class MessageActions extends CustomElement {
         await navigator.clipboard.writeText(this.model.getMessageText());
     }
 
+    onMessageQuoteButtonClicked (ev) {
+        ev?.preventDefault?.();
+        const view = _converse.chatboxviews.get(this.model.collection.chatbox.get('jid'));
+        view?.getMessageForm().insertIntoTextArea(
+            this.model.getMessageText().replaceAll(/^/gm, '> '),
+            false, false, null, '\n'
+        );
+    }
+
     async getActionButtons () {
         const buttons = [];
         if (this.model.get('editable')) {
@@ -315,6 +334,16 @@ class MessageActions extends CustomElement {
             'icon_class': 'fas fa-copy',
             'name': 'copy',
         });
+
+        if (this.model.collection.chatbox.canPostMessages()) {
+            buttons.push({
+                'i18n_text': __('Quote'),
+                'handler': ev => this.onMessageQuoteButtonClicked(ev),
+                'button_class': 'chat-msg__action-quote',
+                'icon_class': 'fas fa-quote-right',
+                'name': 'quote',
+            });
+        }
 
         /**
          * *Hook* which allows plugins to add more message action buttons

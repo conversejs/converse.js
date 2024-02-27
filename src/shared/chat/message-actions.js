@@ -68,15 +68,14 @@ class MessageActions extends CustomElement {
         // This line allows us to pass tests.
         if (!this.model.collection) return '';
 
-        // We want to let the message actions menu drop upwards if we're at the
-        // bottom of the message history, and down otherwise. This is to avoid
-        // the menu disappearing behind the bottom panel (toolbar, textarea etc).
-        // That's difficult to know from state, so we're making an approximation here.
-        const should_drop_up = this.model.collection.length > 2 && this.model === this.model.collection.last();
-
         const buttons = await this.getActionButtons();
         const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
         if (items.length) {
+            // We want to let the message actions menu drop upwards if we're at the
+            // bottom of the message history, and down otherwise. This is to avoid
+            // the menu disappearing behind the bottom panel (toolbar, textarea etc).
+            // That's difficult to know from state, so we're making an approximation here.
+            const should_drop_up = this.model.collection.length > 3 && this.model === this.model.collection.last();
             return html`<converse-dropdown
                 class="chat-msg__actions ${should_drop_up ? 'dropup dropup--left' : 'dropleft'}"
                 .items=${items}
@@ -107,7 +106,9 @@ class MessageActions extends CustomElement {
         // Then this code can also be put on the model
         const unsent_text = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.value;
         if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {
-            const result = await api.confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'));
+            const result = await api.confirm(
+                __('You have an unsent message which will be lost if you continue. Are you sure?')
+            );
             if (!result) return;
         }
         if (currently_correcting !== this.model) {

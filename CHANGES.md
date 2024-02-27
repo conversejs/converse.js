@@ -7,6 +7,7 @@
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - #3300: Adding the maxWait option for `debouncedPruneHistory`
 - #3302: debounce MUC sidebar rendering
+- #3305: New config option [muc_search_service](https://conversejs.org/docs/html/configuration.html#muc-search-service)
 - #3307: Fix inconsistency between browsers on textarea outlines
 - #3337: Correctly display multiline nested quotes
 - Add an occupants filter to the MUC sidebar

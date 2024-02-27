@@ -10,11 +10,12 @@ const rooms_cache = {};
  * @param {string} query
  */
 async function searchRooms (query) {
+    const muc_search_service = api.settings.get('muc_search_service');
     const bare_jid = _converse.session.get('bare_jid');
     const iq = $iq({
         'type': 'get',
         'from': bare_jid,
-        'to': 'api@search.jabber.network'
+        'to': muc_search_service,
     }).c('search', { 'xmlns': Strophe.NS.MUCSEARCH })
         .c('set', { 'xmlns': Strophe.NS.RSM })
             .c('max').t(10).up().up()

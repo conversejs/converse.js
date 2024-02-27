@@ -1331,6 +1331,17 @@ automatically be "john". If now john@differentdomain.com tries to join the
 room, his nickname will be "john-2", and if john@somethingelse.com joins, then
 his nickname will be "john-3", and so forth.
 
+
+muc_search_service
+------------------
+
+* Default: ``'api@search.jabber.network'``
+
+The JID of the service that should be used to search for MUCs for auto-complete
+purposes. If this value is set to an empty string, no service will be used and
+the auto-complete feature for adding MUCs will be disabled.
+
+
 muc_send_probes
 ---------------
 

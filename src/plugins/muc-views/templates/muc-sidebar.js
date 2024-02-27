@@ -65,7 +65,7 @@ export default (el, o) => {
             </a>
         `);
         btns.push(html`
-            <a href="#" class="dropdown-item" @click=${(/** @type {MouseEvent} */ev) => el.toggleFilter(ev)}>
+            <a href="#" class="dropdown-item toggle-filter" @click=${(/** @type {MouseEvent} */ev) => el.toggleFilter(ev)}>
                 <converse-icon size="1em" class="fa fa-filter"></converse-icon>
                 ${is_filter_visible ? i18n_hide_filter : i18n_show_filter}
             </a>

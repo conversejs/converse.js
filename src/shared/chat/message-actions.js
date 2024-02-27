@@ -11,13 +11,13 @@ import { until } from 'lit/directives/until.js';
 import './styles/message-actions.scss';
 
 /**
- * @typedef { Object } MessageActionAttributes
+ * @typedef {Object} MessageActionAttributes
  * An object which represents a message action (as shown in the message dropdown);
- * @property { String } i18n_text
- * @property { Function } handler
- * @property { String } button_class
- * @property { String } icon_class
- * @property { String } name
+ * @property {String} i18n_text
+ * @property {Function} handler
+ * @property {String} button_class
+ * @property {String} icon_class
+ * @property {String} name
  */
 
 const { u } = converse.env;
@@ -52,7 +52,10 @@ class MessageActions extends CustomElement {
     }
 
     updateIfOwnOccupant (o) {
-        (o.get('jid') === _converse.bare_jid) && this.requestUpdate();
+        const bare_jid = _converse.session.get('bare_jid');
+        if (o.get('jid') === bare_jid) {
+            this.requestUpdate();
+        }
     }
 
     render () {
@@ -96,6 +99,7 @@ class MessageActions extends CustomElement {
         `;
     }
 
+    /** @param {MouseEvent} ev */
     async onMessageEditButtonClicked (ev) {
         ev.preventDefault();
         const currently_correcting = this.model.collection.findWhere('correcting');
@@ -193,6 +197,7 @@ class MessageActions extends CustomElement {
         }
     }
 
+    /** @param {MouseEvent} [ev] */
     onMessageRetractButtonClicked (ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
@@ -203,6 +208,7 @@ class MessageActions extends CustomElement {
         }
     }
 
+    /** @param {MouseEvent} [ev] */
     onMediaToggleClicked (ev) {
         ev?.preventDefault?.();
 
@@ -285,14 +291,17 @@ class MessageActions extends CustomElement {
         }
     }
 
+    /** @param {MouseEvent} [ev] */
     async onMessageCopyButtonClicked (ev) {
         ev?.preventDefault?.();
         await navigator.clipboard.writeText(this.model.getMessageText());
     }
 
+    /** @param {MouseEvent} [ev] */
     onMessageQuoteButtonClicked (ev) {
         ev?.preventDefault?.();
-        const view = _converse.chatboxviews.get(this.model.collection.chatbox.get('jid'));
+        const { chatboxviews } = _converse.state;
+        const view = chatboxviews.get(this.model.collection.chatbox.get('jid'));
         view?.getMessageForm().insertIntoTextArea(
             this.model.getMessageText().replaceAll(/^/gm, '> '),
             false, false, null, '\n'

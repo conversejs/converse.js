@@ -14,7 +14,7 @@ export default (el) => {
     const title_status_filter = __('Filter by status');
     const label_any = __('Any');
     const label_unread_messages = __('Unread');
-    const label_online = __('Online');
+    const label_available = __('Available');
     const label_chatty = __('Chatty');
     const label_busy = __('Busy');
     const label_away = __('Away');
@@ -48,7 +48,7 @@ export default (el) => {
                         @change=${ev => el.changeChatStateFilter(ev)}>
                     <option value="">${label_any}</option>
                     <option ?selected=${chat_state === 'unread_messages'} value="unread_messages">${label_unread_messages}</option>
-                    <option ?selected=${chat_state === 'online'} value="online">${label_online}</option>
+                    <option ?selected=${chat_state === 'online'} value="online">${label_available}</option>
                     <option ?selected=${chat_state === 'chat'} value="chat">${label_chatty}</option>
                     <option ?selected=${chat_state === 'dnd'} value="dnd">${label_busy}</option>
                     <option ?selected=${chat_state === 'away'} value="away">${label_away}</option>

@@ -13,7 +13,12 @@ describe("The 'Add Contact' widget", function () {
         await mock.openControlBox(_converse);
 
         const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.querySelector('.add-contact').click()
+
+        const dropdown = await u.waitUntil(
+            () => cbview.querySelector('.dropdown--contacts')
+        );
+        dropdown.querySelector('.add-contact').click()
+
         const modal = _converse.api.modal.get('converse-add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal), 1000);
         expect(modal.querySelector('form.add-xmpp-contact')).not.toBe(null);

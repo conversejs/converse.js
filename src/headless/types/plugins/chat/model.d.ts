@@ -241,6 +241,7 @@ declare class ChatBox extends ModelWithContact {
     incrementUnreadMsgsCounter(message: Message): void;
     clearUnreadMsgCounter(): void;
     isScrolledUp(): any;
+    canPostMessages(): boolean;
 }
 import ModelWithContact from "./model-with-contact.js";
 import { Model } from "@converse/skeletor";

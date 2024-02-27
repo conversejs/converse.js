@@ -35,6 +35,7 @@ export default (el) => {
     const label_room_address = muc_domain ? __('Groupchat name') : __('Groupchat address');
     const muc_roomid_policy_error_msg = el.muc_roomid_policy_error_msg;
     const muc_roomid_policy_hint = api.settings.get('muc_roomid_policy_hint');
+    const muc_search_service = api.settings.get('muc_search_service');
     return html`
         <form class="converse-form add-chatroom" @submit=${(ev) => el.openChatRoom(ev)}>
             <div class="form-group">
@@ -42,16 +43,18 @@ export default (el) => {
                 ${muc_roomid_policy_error_msg
                     ? html`<label class="roomid-policy-error">${muc_roomid_policy_error_msg}</label>`
                     : ''}
-                <converse-autocomplete
-                    .getAutoCompleteList=${getAutoCompleteList}
-                    ?autofocus=${true}
-                    min_chars="3"
-                    position="below"
-                    placeholder="${placeholder}"
-                    class="add-muc-autocomplete"
-                    name="chatroom"
-                >
-                </converse-autocomplete>
+                ${muc_search_service
+                    ? html` <converse-autocomplete
+                          .getAutoCompleteList=${getAutoCompleteList}
+                          ?autofocus=${true}
+                          min_chars="3"
+                          position="below"
+                          placeholder="${placeholder}"
+                          class="add-muc-autocomplete"
+                          name="chatroom"
+                      >
+                      </converse-autocomplete>`
+                    : ''}
             </div>
             ${muc_roomid_policy_hint
                 ? html`<div class="form-group">

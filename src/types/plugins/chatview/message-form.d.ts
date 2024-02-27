@@ -13,7 +13,7 @@ export default class MessageForm extends CustomElement {
      * @param { number } [position] - The end index of the string to be
      *  replaced with the new value.
      */
-    insertIntoTextArea(value: string, replace?: (boolean | string), correcting?: boolean, position?: number): void;
+    insertIntoTextArea(value: string, replace?: (boolean | string), correcting?: boolean, position?: number, separator?: string): void;
     onMessageCorrecting(message: any): void;
     onEscapePressed(ev: any): void;
     onPaste(ev: any): void;

@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('@converse/skeletor').Model} Model
+ * @typedef {import('@converse/headless/plugins/roster/contact').default} RosterContact
+ */
 import { __ } from 'i18n';
 import { _converse, api, log } from "@converse/headless";
 
@@ -29,6 +33,11 @@ export function toggleGroup (ev, name) {
     }
 }
 
+/**
+ * @param {RosterContact} contact
+ * @param {string} groupname
+ * @returns {boolean}
+ */
 export function isContactFiltered (contact, groupname) {
     const filter = _converse.state.roster_filter;
     const type = filter.get('type');
@@ -48,7 +57,7 @@ export function isContactFiltered (contact, groupname) {
         } else if (q === 'unread_messages') {
             return contact.get('num_unread') === 0;
         } else if (q === 'online') {
-            return ["offline", "unavailable"].includes(contact.presence.get('show'));
+            return ["offline", "unavailable", "dnd", "away", "xa"].includes(contact.presence.get('show'));
         } else {
             return !contact.presence.get('show').includes(q);
         }
@@ -57,7 +66,15 @@ export function isContactFiltered (contact, groupname) {
     }
 }
 
-export function shouldShowContact (contact, groupname) {
+/**
+ * @param {RosterContact} contact
+ * @param {string} groupname
+ * @param {Model} model
+ * @returns {boolean}
+ */
+export function shouldShowContact (contact, groupname, model) {
+    if (!model.get('filter_visible')) return true;
+
     const chat_status = contact.presence.get('show');
     if (api.settings.get('hide_offline_users') && chat_status === 'offline') {
         // If pending or requesting, show
@@ -71,7 +88,9 @@ export function shouldShowContact (contact, groupname) {
     return !isContactFiltered(contact, groupname);
 }
 
-export function shouldShowGroup (group) {
+export function shouldShowGroup (group, model) {
+    if (!model.get('filter_visible')) return true;
+
     const filter = _converse.state.roster_filter;
     const type = filter.get('type');
     if (type === 'groups') {

@@ -17,7 +17,7 @@ export default {
      *  event handlers' promises have been resolved.
      *
      * @method _converse.api.trigger
-     * @param { string } name - The event name
+     * @param {string} name - The event name
      */
     async trigger (name) {
         if (!_converse._events) {
@@ -45,8 +45,9 @@ export default {
      * A hook is a special kind of event which allows you to intercept a data
      * structure in order to modify it, before passing it back.
      * @async
-     * @param { string } name - The hook name
-     * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox})).
+     * @param {string} name - The hook name
+     * @param {...any} context - The context to which the hook applies
+     *  (could be for example, a {@link _converse.ChatBox}).
      * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
      * @returns {Promise<any>} - A promise that resolves with the modified data structure.
      */
@@ -75,9 +76,9 @@ export default {
         /**
          * Lets you listen to an event exactly once.
          * @method _converse.api.listen.once
-         * @param { string } name The event's name
-         * @param { function } callback The callback method to be called when the event is emitted.
-         * @param { object } [context] The value of the `this` parameter for the callback.
+         * @param {string} name The event's name
+         * @param {function} callback The callback method to be called when the event is emitted.
+         * @param {object} [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.once('message', function (messageXML) { ... });
          */
         once: _converse.once.bind(_converse),
@@ -86,9 +87,9 @@ export default {
          * Lets you subscribe to an event.
          * Every time the event fires, the callback method specified by `callback` will be called.
          * @method _converse.api.listen.on
-         * @param { string } name The event's name
-         * @param { function } callback The callback method to be called when the event is emitted.
-         * @param { object } [context] The value of the `this` parameter for the callback.
+         * @param {string} name The event's name
+         * @param {function} callback The callback method to be called when the event is emitted.
+         * @param {object} [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.on('message', function (messageXML) { ... });
          */
         on: _converse.on.bind(_converse),
@@ -96,24 +97,34 @@ export default {
         /**
          * To stop listening to an event, you can use the `not` method.
          * @method _converse.api.listen.not
-         * @param { string } name The event's name
-         * @param { function } callback The callback method that is to no longer be called when the event fires
+         * @param {string} name The event's name
+         * @param {function} callback The callback method that is to no longer be called when the event fires
          * @example _converse.api.listen.not('message', function (messageXML);
          */
         not: _converse.off.bind(_converse),
+
+        /**
+         * An options object which lets you set filter criteria for matching
+         * against stanzas.
+         * @typedef {object} MatchingOptions
+         * @property {string} [ns] - The namespace to match against
+         * @property {string} [type] - The stanza type to match against
+         * @property {string} [id] - The stanza id to match against
+         * @property {string} [from] - The stanza sender to match against
+         */
 
         /**
          * Subscribe to an incoming stanza
          * Every a matched stanza is received, the callback method specified by
          * `callback` will be called.
          * @method _converse.api.listen.stanza
-         * @param { string } name The stanza's name
-         * @param { object } options Matching options (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
-         * @param { function } handler The callback method to be called when the stanza appears
+         * @param {string} name The stanza's name
+         * @param {MatchingOptions|Function} options Matching options or callback
+         * @param {function} handler The callback method to be called when the stanza appears
          */
         stanza (name, options, handler) {
             if (isFunction(options)) {
-                handler = options;
+                handler = /** @type {Function} */(options);
                 options = {};
             } else {
                 options = options || {};

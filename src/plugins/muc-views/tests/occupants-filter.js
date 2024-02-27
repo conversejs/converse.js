@@ -53,7 +53,14 @@ describe("The MUC occupants filter", function () {
             expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(name);
         });
 
-        filter_el = view.querySelector('converse-list-filter');
+        const dropdown = await u.waitUntil(() => view.querySelector('.occupants-header converse-dropdown'));
+
+        expect(view.querySelector('converse-list-filter')).toBe(null);
+
+        dropdown.click();
+        dropdown.querySelector('.toggle-filter').click();
+
+        filter_el = await u.waitUntil(() => view.querySelector('converse-list-filter'));
         expect(u.isVisible(filter_el.firstElementChild)).toBe(true);
 
         const filter = filter_el.querySelector('.items-filter');
@@ -62,7 +69,9 @@ describe("The MUC occupants filter", function () {
         await u.waitUntil(() => [...view.querySelectorAll('li')].filter(u.isVisible).length === 1);
 
         filter_el.querySelector('.fa-times').click();
-        await u.waitUntil(() => [...view.querySelectorAll('li')].filter(u.isVisible).length === 3+mock.chatroom_names.length);
+        await u.waitUntil(
+            () => [...view.querySelectorAll('li')].filter(u.isVisible).length === 3+mock.chatroom_names.length
+        );
 
         filter_el.querySelector('.fa-circle').click();
         const state_select = view.querySelector('.state-type');

@@ -45,12 +45,14 @@ export default class RosterView extends CustomElement {
         return tplRoster(this);
     }
 
+    /** @param {MouseEvent} ev */
     showAddContactModal (ev) {
         api.modal.show('converse-add-contact-modal', {'model': new Model()}, ev);
     }
 
+    /** @param {MouseEvent} [ev] */
     async syncContacts (ev) {
-        ev.preventDefault();
+        ev?.preventDefault();
         const { roster } = _converse.state;
         this.syncing_contacts = true;
         this.requestUpdate();
@@ -63,6 +65,7 @@ export default class RosterView extends CustomElement {
         this.requestUpdate();
     }
 
+    /** @param {MouseEvent} [ev] */
     toggleRoster (ev) {
         ev?.preventDefault?.();
         const list_el = /** @type {HTMLElement} */(this.querySelector('.list-container.roster-contacts'));
@@ -71,6 +74,12 @@ export default class RosterView extends CustomElement {
         } else {
             slideIn(list_el).then(() => this.model.save({'toggle_state': CLOSED}));
         }
+    }
+
+    /** @param {MouseEvent} [ev] */
+    toggleFilter (ev) {
+        ev?.preventDefault?.();
+        this.model.save({ filter_visible: !this.model.get('filter_visible') });
     }
 }
 

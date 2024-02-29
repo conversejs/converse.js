@@ -750,12 +750,12 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
 
             view.model.sendMessage({'body': 'Visit this site to get free bitcoin'});
-            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length >= 1);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
             // Check that you can only edit a message before it's been
             // reflected. You can't retract because it hasn't
             await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-edit'));
-            expect(view.querySelectorAll('.chat-msg__action').length).toBeGreaterThanOrEqual(1);
+            expect(view.querySelector('.chat-msg__action .chat-msg__action-retract')).toBeNull();
 
             const stanza_id = 'retraction-id-1';
             const msg_obj = view.model.messages.at(0);

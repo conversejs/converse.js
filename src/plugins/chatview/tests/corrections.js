@@ -267,7 +267,7 @@ describe("A Chat Message", function () {
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
         );
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.querySelectorAll('.chat-msg .chat-msg__action').length).toBeGreaterThanOrEqual(1);
+        expect(view.querySelector('.chat-msg .chat-msg__action .chat-msg__action-edit')).toBeNull()
 
         // Test confirmation dialog
         spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));

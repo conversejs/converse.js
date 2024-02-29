@@ -60,6 +60,11 @@ class MessageActions extends CustomElement {
     }
 
     async renderActions () {
+        // This can be called before the model has been added to the collection
+        // when requesting an update on change:connection_status.
+        // This line allows us to pass tests.
+        if (!this.model.collection) return '';
+
         // We want to let the message actions menu drop upwards if we're at the
         // bottom of the message history, and down otherwise. This is to avoid
         // the menu disappearing behind the bottom panel (toolbar, textarea etc).

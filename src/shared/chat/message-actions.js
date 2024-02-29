@@ -46,7 +46,7 @@ class MessageActions extends CustomElement {
         // This may change the ability to send messages, and therefore the presence of the quote button.
         // See plugins/muc-views/bottom-panel.js
         this.listenTo(this.model.collection.chatbox.features, 'change:moderated', () => this.requestUpdate());
-        this.listenTo(this.model.collection.chatbox.occupants, 'add', this.updateIfOwnOccupant)
+        this.listenTo(this.model.collection.chatbox.occupants, 'add', this.updateIfOwnOccupant);
         this.listenTo(this.model.collection.chatbox.occupants, 'change:role', this.updateIfOwnOccupant);
         this.listenTo(this.model.collection.chatbox.session, 'change:connection_status', () => this.requestUpdate());
     }

@@ -13,7 +13,7 @@ export default class MUCBottomPanel extends BottomPanel {
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
         this.listenTo(this.model, 'change:num_unread_general', () => this.requestUpdate())
         this.listenTo(this.model.features, 'change:moderated', () => this.requestUpdate());
-        this.listenTo(this.model.occupants, 'add', this.renderIfOwnOccupant)
+        this.listenTo(this.model.occupants, 'add', this.renderIfOwnOccupant);
         this.listenTo(this.model.occupants, 'change:role', this.renderIfOwnOccupant);
         this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
     }

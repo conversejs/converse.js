@@ -4,7 +4,7 @@ const { $msg, u } = converse.env;
 
 describe("A Chat Message", function () {
 
-    fit("Can be copied using a message action",
+    it("Can be copied using a message action",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;
@@ -52,7 +52,7 @@ describe("A Chat Message", function () {
         expect(spyClipboard).toHaveBeenCalledWith(secondMessageText);
     }));
 
-    fit("Can be quoted using a message action",
+    it("Can be quoted using a message action",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;

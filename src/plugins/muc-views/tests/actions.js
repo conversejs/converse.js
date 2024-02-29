@@ -4,7 +4,7 @@ const { $msg, u } = converse.env;
 
 describe("A Groupchat Message", function () {
 
-    fit("Can be copied using a message action",
+    it("Can be copied using a message action",
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -56,7 +56,7 @@ describe("A Groupchat Message", function () {
         expect(spyClipboard).toHaveBeenCalledWith(secondMessageText);
     }));
 
-    fit("Can be quoted using a message action",
+    it("Can be quoted using a message action",
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -103,7 +103,7 @@ describe("A Groupchat Message", function () {
 
     }));
 
-    fit("Cannot be quoted without permission to speak",
+    it("Cannot be quoted without permission to speak",
             mock.initConverse([], {}, async function (_converse) {
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', ['muc_moderated']);

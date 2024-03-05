@@ -417,6 +417,17 @@ describe("An incoming chat Message", function () {
             '\n\u200B\n\u200B\u200BThis is the end of this quote.</blockquote>'
         );
 
+        msg_text = '> Quotes shouldn’t prevent multiple lines from being collapsed together.\n> \n> \n> \n> Like so.';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 16);
+        msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<blockquote>Quotes shouldn’t prevent multiple lines from being collapsed together.'+
+            '\n\u200B\u200B\u200B\u200B\u200B\u200B\u200B\u200B'+ // block of removed '> ' and newlines
+            '\n\u200B\u200BLike so.</blockquote>'
+        );
+
         expect(true).toBe(true);
     }));
 

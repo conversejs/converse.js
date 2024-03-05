@@ -67,9 +67,6 @@ export default class UserDetailsModal extends BaseModal {
         if (!api.settings.get('allow_contact_removal')) { return; }
         const result = await api.confirm(__("Are you sure you want to remove this contact?"));
         if (result) {
-            // XXX: The `dismissHandler` in bootstrap.native tries to
-            // reference the remove button after it's been cleared from
-            // the DOM, so we delay removing the contact to give it time.
             setTimeout(() => removeContact(this.model.contact), 1);
             this.modal.hide();
         }

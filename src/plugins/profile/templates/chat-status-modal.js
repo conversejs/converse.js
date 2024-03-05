@@ -14,7 +14,7 @@ export default (el) => {
 
     return html`
     <form class="converse-form set-xmpp-status" id="set-xmpp-status" @submit=${ev => el.onFormSubmitted(ev)}>
-        <div class="form-group">
+        <div>
             <div class="custom-control custom-radio">
                 <input ?checked=${status === 'online'}
                     type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input"/>
@@ -40,7 +40,7 @@ export default (el) => {
                     <converse-icon size="1em" class="far fa-circle chat-status chat-status--xa"></converse-icon>${label_xa}</label>
             </div>
         </div>
-        <div class="form-group">
+        <div>
             <div class="btn-group w-100">
                 <input name="status_message" type="text" class="form-control" autofocus
                     value="${status_message || ''}" placeholder="${placeholder_status_message}"/>

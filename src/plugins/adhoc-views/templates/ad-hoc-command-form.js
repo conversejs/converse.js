@@ -65,7 +65,7 @@ export default (el, command) => {
 
                 ${command.type === 'form' && command.title ? html`<h6>${command.title}</h6>` : ''}
 
-                <fieldset class="form-group">
+                <fieldset>
                     <input type="hidden" name="command_node" value="${command.node}" />
                     <input type="hidden" name="command_jid" value="${command.jid}" />
                     ${command.instructions ? html`<p class="form-instructions">${command.instructions}</p>` : ''}

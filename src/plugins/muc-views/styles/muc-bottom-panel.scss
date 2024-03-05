@@ -1,8 +1,9 @@
 .conversejs {
-    converse-muc.chatroom {
-        converse-muc-bottom-panel.bottom-panel {
+    converse-muc {
+
+        .muc-bottom-panel,
+        converse-muc-bottom-panel {
             display: contents;
-            height: 3em;
             padding: 0.5em;
             text-align: center;
             font-size: var(--font-size-small);
@@ -25,7 +26,13 @@
                     }
                 }
             }
+        }
 
+        .muc-bottom-panel {
+            height: 3em;
+        }
+
+        converse-muc-bottom-panel {
             .sendXMPPMessage {
                 .suggestion-box__results--above {
                     bottom: 4.5em;

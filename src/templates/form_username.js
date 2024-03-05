@@ -1,10 +1,10 @@
 import { html } from 'lit';
 
 export default (o) => html`
-    <div class="form-group">
+    <div class="pb-2">
         ${
             o.type !== 'hidden'
-                ? html`<label for="${o.id}"
+                ? html`<label for="${o.id}" class="form-label"
                       >${o.label} ${o.desc ? html`<small class="form-text text-muted">${o.desc}</small>` : ''}
                   </label>`
                 : ''

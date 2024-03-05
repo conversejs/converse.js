@@ -22,7 +22,7 @@ export default (el) => {
             <div class="modal-body">
                 <span class="modal-alert"></span>
                 <div class="form-group add-xmpp-contact__jid">
-                    <label class="clearfix" for="jid">${i18n_xmpp_address}:</label>
+                    <label class="form-label clearfix" for="jid">${i18n_xmpp_address}:</label>
                     ${api.settings.get('autocomplete_add_contact') ?
                         html`<converse-autocomplete
                             .list=${getJIDsAutoCompleteList()}
@@ -43,7 +43,7 @@ export default (el) => {
                 </div>
 
                 <div class="form-group add-xmpp-contact__name">
-                    <label class="clearfix" for="name">${i18n_nickname}:</label>
+                    <label class="form-label clearfix" for="name">${i18n_nickname}:</label>
                     ${api.settings.get('autocomplete_add_contact') && typeof api.settings.get('xhr_user_search_url') === 'string' ?
                         html`<converse-autocomplete
                             .getAutoCompleteList=${getNamesAutoCompleteList}
@@ -59,12 +59,12 @@ export default (el) => {
                     }
                 </div>
                 <div class="form-group add-xmpp-contact__group">
-                    <label class="clearfix" for="name">${i18n_group}:</label>
+                    <label class="form-label clearfix" for="name">${i18n_group}:</label>
                     <converse-autocomplete
                         .list=${getGroupsAutoCompleteList()}
                         name="group"></converse-autocomplete>
                 </div>
-                ${error ? html`<div class="form-group"><div style="display: block" class="invalid-feedback">${error}</div></div>` : ''}
+                ${error ? html`<div><div style="display: block" class="invalid-feedback">${error}</div></div>` : ''}
                 <button type="submit" class="btn btn-primary">${i18n_add}</button>
             </div>
         </form>`;

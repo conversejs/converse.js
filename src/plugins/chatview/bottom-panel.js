@@ -82,7 +82,7 @@ export default class ChatBottomPanel extends CustomElement {
                 'query': value
             });
             const emoji_dropdown = /** @type {EmojiDropdown} */(this.querySelector('converse-emoji-dropdown'));
-            emoji_dropdown?.showMenu();
+            emoji_dropdown?.dropdown.show();
         }
     }
 }

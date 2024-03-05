@@ -1,38 +1,37 @@
-converse-profile-modal {
-    .profile-form {
-        label {
-            font-weight: bold;
-        }
-    }
+.conversejs {
+    converse-profile-modal {
 
-    .fingerprint-removal {
-        label {
-            display: flex;
-            padding: 0.75rem 1.25rem;
-        }
-    }
-
-    .list-group-item {
-        display: flex;
-        justify-content: left;
-        font-size: 95%;
-
-        input[type="checkbox"] {
-            margin-right: 1em;
-        }
-    }
-
-    .fingerprints {
-        width: 100%;
-        margin-bottom: 1em;
-    }
-
-    .fingerprint-trust {
-        display: flex;
-        justify-content: space-between;
-        font-size: 95%;
         .fingerprint {
-            margin-left: 1em;
+            color: var(--text-color);
+        }
+
+        .fingerprint-removal-item {
+            label {
+                font-weight: normal;
+                color: var(--text-color);
+            }
+        }
+
+        .list-group-item {
+            font-size: 95%;
+            border-color: var(--primary-color);
+            input[type="checkbox"] {
+                margin-right: 1em;
+            }
+        }
+
+        .fingerprints {
+            width: 100%;
+            margin-bottom: 1em;
+        }
+
+        .fingerprint-trust {
+            display: flex;
+            justify-content: space-between;
+            font-size: 95%;
+            .fingerprint {
+                margin-left: 1em;
+            }
         }
     }
 }

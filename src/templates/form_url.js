@@ -1,8 +1,8 @@
 import { html } from "lit";
 
 export default (o) => html`
-    <div class="form-group">
-        <label for="${o.id}">${o.label}
+    <div class="pb-2">
+        <label for="${o.id}" class="form-label">${o.label}
             ${ o.desc ? html`<small id="o.id" class="form-text text-muted">${o.desc}</small>` : '' }
         </label>
         <div>

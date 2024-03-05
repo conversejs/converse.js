@@ -24,8 +24,8 @@ export default (el) => {
         ${el.note ? html`<p class="form-help">${el.note}</p>` : ''}
 
         <form class="converse-form" @submit=${el.fetchCommands}>
-            <fieldset class="form-group">
-                <label>
+            <fieldset>
+                <label class="form-label">
                     ${i18n_choose_service}
                     <p class="form-help">${i18n_choose_service_instructions}</p>
                     <converse-autocomplete
@@ -37,13 +37,13 @@ export default (el) => {
                     </converse-autocomplete>
                 </label>
             </fieldset>
-            <fieldset class="form-group">
+            <fieldset>
                 ${el.fetching
                     ? tplSpinner()
                     : html`<input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}" />`}
             </fieldset>
             ${el.view === 'list-commands'
-                ? html` <fieldset class="form-group">
+                ? html` <fieldset>
                       <ul class="list-group">
                           <li class="list-group-item active">
                               ${el.commands.length ? i18n_commands_found : i18n_no_commands_found}:

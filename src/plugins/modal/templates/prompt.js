@@ -3,8 +3,8 @@ import { __ } from 'i18n';
 
 
 const tplField = (f) => html`
-    <div class="form-group">
-        <label>
+    <div>
+        <label class="form-label">
             ${f.label || ''}
             <input type="text"
                 name="${f.name}"
@@ -18,11 +18,11 @@ const tplField = (f) => html`
 export default (el) => {
     return html`
         <form class="converse-form converse-form--modal confirm" action="#" @submit=${ev => el.onConfimation(ev)}>
-            <div class="form-group">
+            <div>
                 ${ el.model.get('messages')?.map(message => html`<p>${message}</p>`) }
             </div>
             ${ el.model.get('fields')?.map(f => tplField(f)) }
-            <div class="form-group">
+            <div>
                 <button type="submit" class="btn btn-primary">${__('OK')}</button>
                 <input type="button" class="btn btn-secondary" data-dismiss="modal" value="${__('Cancel')}"/>
             </div>

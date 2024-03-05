@@ -142,13 +142,13 @@ export default (el, o) => {
             <div class="tab-pane tab-pane--columns ${ o.tab === 'affiliations' ? 'active' : ''}" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
                 <form class="converse-form query-affiliation" @submit=${o.queryAffiliation}>
                     <p class="helptext pb-3">${i18n_helptext_affiliation}</p>
-                    <div class="form-group">
-                        <label for="affiliation">
+                    <div>
+                        <label class="form-label" for="affiliation">
                             <strong>${i18n_affiliation}:</strong>
                         </label>
                         <div class="row">
                             <div class="col">
-                                <select class="custom-select select-affiliation" name="affiliation">
+                                <select class="form-select select-affiliation" name="affiliation">
                                     ${o.queryable_affiliations.map(item => affiliation_option(Object.assign({item}, o)))}
                                 </select>
                             </div>
@@ -184,11 +184,11 @@ export default (el, o) => {
             <div class="tab-pane tab-pane--columns ${ o.tab === 'roles' ? 'active' : ''}" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
                 <form class="converse-form query-role" @submit=${o.queryRole}>
                     <p class="helptext pb-3">${i18n_helptext_role}</p>
-                    <div class="form-group">
-                        <label for="role"><strong>${i18n_role}:</strong></label>
+                    <div>
+                        <label class="form-label" for="role"><strong>${i18n_role}:</strong></label>
                         <div class="row">
                             <div class="col">
-                                <select class="custom-select select-role" name="role">
+                                <select class="form-select select-role" name="role">
                                     ${o.queryable_roles.map(item => role_option(Object.assign({item}, o)))}
                                 </select>
                             </div>

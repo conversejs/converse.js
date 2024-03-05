@@ -1,6 +1,6 @@
+import { api } from "@converse/headless";
 import tplTrimmedChat from "../templates/trimmed_chat.js";
 import { CustomElement } from 'shared/components/element.js';
-import { api } from "@converse/headless";
 import { maximize } from  '../utils.js';
 
 

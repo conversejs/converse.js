@@ -14,7 +14,7 @@ export default (o) => {
     }
 
     return html`
-    <div class="chat-head-${o.type} chat-head row no-gutters">
+    <div class="chat-head-${o.type} chat-head row g-0">
         <a class="restore-chat w-100 align-self-center" title="${i18n_tooltip}" @click=${o.restore}>
             ${o.num_unread ? html`<span class="message-count badge badge-light">${o.num_unread}</span>` : '' }
             ${o.title}

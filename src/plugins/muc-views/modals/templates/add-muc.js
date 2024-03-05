@@ -9,8 +9,8 @@ const nickname_input = (el) => {
     const i18n_nickname = __('Nickname');
     const i18n_required_field = __('This field is required');
     return html`
-        <div class="form-group">
-            <label for="nickname">${i18n_nickname}:</label>
+        <div>
+            <label for="nickname" class="form-label">${i18n_nickname}:</label>
             <input
                 type="text"
                 title="${i18n_required_field}"
@@ -38,10 +38,10 @@ export default (el) => {
     const muc_search_service = api.settings.get('muc_search_service');
     return html`
         <form class="converse-form add-chatroom" @submit=${(ev) => el.openChatRoom(ev)}>
-            <div class="form-group">
-                <label for="chatroom">${label_room_address}:</label>
+            <div>
+                <label for="chatroom" class="form-label">${label_room_address}:</label>
                 ${muc_roomid_policy_error_msg
-                    ? html`<label class="roomid-policy-error">${muc_roomid_policy_error_msg}</label>`
+                    ? html`<label class="form-label roomid-policy-error">${muc_roomid_policy_error_msg}</label>`
                     : ''}
                 ${muc_search_service
                     ? html` <converse-autocomplete
@@ -57,7 +57,7 @@ export default (el) => {
                     : ''}
             </div>
             ${muc_roomid_policy_hint
-                ? html`<div class="form-group">
+                ? html`<div>
                       ${unsafeHTML(DOMPurify.sanitize(muc_roomid_policy_hint, { 'ALLOWED_TAGS': ['b', 'br', 'em'] }))}
                   </div>`
                 : ''}

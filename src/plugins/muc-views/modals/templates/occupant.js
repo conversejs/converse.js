@@ -4,7 +4,9 @@ import { html } from "lit";
 import { until } from 'lit/directives/until.js';
 import { _converse, api } from "@converse/headless";
 
-
+/**
+ * @param {import('../occupant').default} el
+ */
 export default (el) => {
     const model = el.model ?? el.message;
     const jid = model?.get('jid');
@@ -43,13 +45,13 @@ export default (el) => {
             <div class="col">
                 <ul class="occupant-details">
                     <li>
-                        ${ nick ? html`<div class="row"><strong>${__('Nickname')}:</strong></div><div class="row">${nick}</div>` : '' }
+                        ${ nick ? html`<div class="row"><strong class="g-0">${__('Nickname')}:</strong></div><div class="row">${nick}</div>` : '' }
                     </li>
                     <li>
-                        ${ jid ? html`<div class="row"><strong>${__('XMPP Address')}:</strong></div><div class="row">${jid}</div>` : '' }
+                        ${ jid ? html`<div class="row"><strong class="g-0">${__('XMPP Address')}:</strong></div><div class="row">${jid}</div>` : '' }
                     </li>
                     <li>
-                        <div class="row"><strong>${__('Affiliation')}:</strong></div>
+                        <div class="row"><strong class="g-0">${__('Affiliation')}:</strong></div>
                         <div class="row">${affiliation}&nbsp;
                             ${ may_moderate ? html`
                                 <a href="#"
@@ -63,7 +65,7 @@ export default (el) => {
                         </div>
                     </li>
                     <li>
-                        <div class="row"><strong>${__('Role')}:</strong></div>
+                        <div class="row"><strong class="g-0">${__('Role')}:</strong></div>
                         <div class="row">${role}&nbsp;
                             ${ may_moderate && role ? html`
                                 <a href="#"
@@ -77,10 +79,10 @@ export default (el) => {
                         </div>
                     </li>
                     <li>
-                        ${ hats ? html`<div class="row"><strong>${__('Hats')}:</strong></div><div class="row">${hats}</div>` : '' }
+                        ${ hats ? html`<div class="row"><strong class="g-0">${__('Hats')}:</strong></div><div class="row">${hats}</div>` : '' }
                     </li>
                     <li>
-                        ${ occupant_id ? html`<div class="row"><strong>${__('Occupant Id')}:</strong></div><div class="row">${occupant_id}</div>` : '' }
+                        ${ occupant_id ? html`<div class="row"><strong class="g-0">${__('Occupant Id')}:</strong></div><div class="row">${occupant_id}</div>` : '' }
                     </li>
                     ${ until(add_to_contacts, '') }
                 </ul>

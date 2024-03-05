@@ -10,23 +10,23 @@ export default (el) => {
 
     return html`
         <form class="role-form" @submit=${el.assignRole}>
-            <div class="form-group">
+            <div>
                 <input type="hidden" name="jid" value="${el.jid}"/>
                 <input type="hidden" name="nick" value="${el.nick}"/>
                 <div class="row">
                     <div class="col">
-                        <label><strong>${i18n_new_role}:</strong></label>
-                        <select class="custom-select select-role" name="role">
+                        <label class="form-label"><strong>${i18n_new_role}:</strong></label>
+                        <select class="form-select select-role" name="role">
                         ${ assignable_roles.map(role => html`<option value="${role}" ?selected=${role === el.role}>${role}</option>`) }
                         </select>
                     </div>
                     <div class="col">
-                        <label><strong>${i18n_reason}:</strong></label>
+                        <label class="form-label"><strong>${i18n_reason}:</strong></label>
                         <input class="form-control" type="text" name="reason"/>
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            <div>
                 <div class="col">
                     <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
                 </div>

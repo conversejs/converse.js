@@ -1,9 +1,5 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-
 .conversejs {
-    @import "bootstrap/scss/dropdown";
+    converse-emoji-dropdown,
     converse-dropdown {
 
         &.dropup {
@@ -20,6 +16,13 @@
             margin: 0;
         }
 
+        .dropdown-toggle--no-caret {
+            &:before,
+            &:after {
+                display: none !important;
+            }
+        }
+
         .dropdown-menu {
             background: var(--background);
             margin-top: -0.2em !important;
@@ -27,13 +30,13 @@
         }
 
         .dropdown-item {
-            line-height: 1em;
-            color: var(--text-color);
+            color: var(--text-color) !important;
+            font-size: var(--font-size);
             padding: 0.5rem 1rem;
             converse-icon {
                 margin-top: -0.1em;
                 width: 1.25em;
-                margin-right: 0;
+                margin-right: 0.25rem;
             }
             &:active, &.selected {
                 color: white !important;
@@ -43,7 +46,7 @@
                 }
             }
             &:hover {
-                color: var(--text-color);
+                color: var(--text-color) !important;
                 background-color: var(--list-item-hover-color);
             }
         }

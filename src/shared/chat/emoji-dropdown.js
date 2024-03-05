@@ -20,9 +20,12 @@ export default class EmojiDropdown extends DropdownBase {
 
     constructor () {
         super();
+        this.id = u.getUniqueId();
+
         // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
         this.render_emojis = false;
         this.chatview = null;
+        this.addEventListener('shown.bs.dropdown', () => this.onShown());
     }
 
     initModel () {
@@ -44,32 +47,35 @@ export default class EmojiDropdown extends DropdownBase {
     render() {
         const is_groupchat = this.chatview.model.get('type') === CHATROOMS_TYPE;
         const color = is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
+
         return html`
-            <div class="dropup">
-                <button class="toggle-emojis"
-                        title="${__('Insert emojis')}"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false">
-                    <converse-icon
-                        color="var(${color})"
-                        class="fa fa-smile "
-                        path-prefix="${api.settings.get('assets_path')}"
-                        size="1em"></converse-icon>
-                </button>
-                <div class="dropdown-menu">
-                    ${until(this.initModel().then(() => html`
-                        <converse-emoji-picker
-                                .chatview=${this.chatview}
-                                .model=${this.model}
-                                @emojiSelected=${() => this.hideMenu()}
-                                ?render_emojis=${this.render_emojis}
-                                current_category="${this.model.get('current_category') || ''}"
-                                current_skintone="${this.model.get('current_skintone') || ''}"
-                                query="${this.model.get('query') || ''}"
-                        ></converse-emoji-picker>`), '')}
-                </div>
-            </div>`;
+            <button class="dropdown-toggle dropdown-toggle--no-caret toggle-emojis"
+                    type="button"
+                    id="${this.id}"
+                    title="${__('Insert emojis')}"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                <converse-icon
+                    color="var(${color})"
+                    class="fa fa-smile "
+                    path-prefix="${api.settings.get('assets_path')}"
+                    size="1em"></converse-icon>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="${this.id}">
+                <li>
+                ${until(this.initModel().then(() => html`
+                    <converse-emoji-picker
+                            .chatview=${this.chatview}
+                            .model=${this.model}
+                            @emojiSelected=${() => this.dropdown.hide()}
+                            ?render_emojis=${this.render_emojis}
+                            current_category="${this.model.get('current_category') || ''}"
+                            current_skintone="${this.model.get('current_skintone') || ''}"
+                            query="${this.model.get('query') || ''}"
+                    ></converse-emoji-picker>`), '')}
+                </li>
+            </ul>`;
     }
 
     connectedCallback () {
@@ -77,19 +83,7 @@ export default class EmojiDropdown extends DropdownBase {
         this.render_emojis = false;
     }
 
-    toggleMenu (ev) {
-        ev.stopPropagation();
-        ev.preventDefault();
-        if (u.hasClass('show', this.menu)) {
-            if (u.ancestor(ev.target, '.toggle-emojis')) {
-                this.hideMenu();
-            }
-        } else {
-            this.showMenu();
-        }
-    }
-
-    async showMenu () {
+    async onShown () {
         await this.initModel();
         if (!this.render_emojis) {
             // Trigger an update so that emojis are rendered
@@ -97,7 +91,6 @@ export default class EmojiDropdown extends DropdownBase {
             this.requestUpdate();
             await this.updateComplete;
         }
-        super.showMenu();
         setTimeout(() => /** @type {HTMLInputElement} */(this.querySelector('.emoji-search'))?.focus());
     }
 }

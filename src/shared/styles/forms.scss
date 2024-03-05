@@ -1,19 +1,10 @@
 .conversejs {
-    @import "bootstrap/scss/forms";
-    @import "bootstrap/scss/input-group";
-    @import "bootstrap/scss/custom-forms";
-
     .btn--small {
         font-size: 80%;
         font-weight: normal;
     }
 
     form {
-
-        label {
-            font-weight: bold;
-        }
-
         .form-instructions {
             color: var(--text-color);
             margin-bottom: 1em;
@@ -27,10 +18,6 @@
 
         .error-feedback {
             margin-bottom: 0.5em;
-        }
-
-        .form-check-label {
-            margin-top: $form-check-input-margin-y;
         }
 
         .form-control[readonly] {
@@ -103,24 +90,24 @@
 
         }
 
-
         &.converse-form {
             padding: 1.2rem;
+
             legend {
                 color: var(--text-color);
                 font-size: 125%;
                 margin-bottom: 1.5em;
             }
+
+            fieldset {
+                margin-bottom: 1.5em;
+            }
+
             select,
             input[type=password],
             input[type=number],
             input[type=text] {
                 min-width: 50%;
-            }
-            input[type=button],
-            input[type=submit] {
-                margin-right: 0.25em;
-                border: none;
             }
             input.error {
                 border: 1px solid var(--error-color);

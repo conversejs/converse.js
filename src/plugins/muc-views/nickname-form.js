@@ -43,9 +43,9 @@ class MUCNicknameForm extends CustomElement {
     }
 
     closeModal () {
-        const evt = document.createEvent('Event');
-        evt.initEvent('hide.bs.modal', true, true);
-        this.dispatchEvent(evt);
+        /** @type {import('plugins/modal/modal').default} */ (
+            document.querySelector('converse-muc-nickname-modal')
+        ).close();
     }
 }
 

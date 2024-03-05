@@ -40,10 +40,10 @@ export default class ChatStatusModal extends BaseModal {
         ev.preventDefault();
         const data = new FormData(ev.target);
         this.model.save({
-            'status_message': data.get('status_message'),
-            'status': data.get('chat_status'),
+            status_message: data.get('status_message'),
+            status: data.get('chat_status'),
         });
-        this.modal.hide();
+        this.close();
     }
 }
 

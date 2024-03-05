@@ -1,4 +1,5 @@
 export default class Confirm extends BaseModal {
+    constructor(options: any);
     confirmation: any;
     renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;

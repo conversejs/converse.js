@@ -167,7 +167,7 @@ describe("A Chatbox", function () {
 });
 
 
-describe("A Minimized ChatBoxView's Unread Message Count", function () {
+describe("A minimized chat's Unread Message Count", function () {
 
     it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
@@ -182,9 +182,8 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         await u.waitUntil(() => chatbox.messages.length);
         await u.waitUntil(() => chatbox.get('num_unread') === 1);
         _converse.exports.minimize.minimize(chatbox);
-
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
-        const unread_count = minimized_chats.querySelector('#toggle-minimized-chats .unread-message-count');
+        const unread_count = minimized_chats.querySelector('#minimized-chats .badge');
         expect(u.isVisible(unread_count)).toBeTruthy();
         expect(unread_count.innerHTML.replace(/<!-.*?->/g, '')).toBe('1');
     }));
@@ -200,7 +199,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         _converse.handleMessageStanza(msgFactory());
         await u.waitUntil(() => view.model.messages.length);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
-        const unread_count = minimized_chats.querySelector('#toggle-minimized-chats .unread-message-count');
+        const unread_count = minimized_chats.querySelector('#minimized-chats .badge');
         expect(u.isVisible(unread_count)).toBeTruthy();
         expect(unread_count.innerHTML.replace(/<!-.*?->/g, '')).toBe('1');
     }));
@@ -260,7 +259,7 @@ describe("The Minimized Chats Widget", function () {
         minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         expect(u.isVisible(minimized_chats.querySelector('.minimized-chats-flyout'))).toBeTruthy();
         expect(minimized_chats.minchats.get('collapsed')).toBeFalsy();
-        minimized_chats.querySelector('#toggle-minimized-chats').click();
+        minimized_chats.querySelector('#minimized-chats button').click();
         await u.waitUntil(() => u.isVisible(minimized_chats.querySelector('.minimized-chats-flyout')));
         expect(minimized_chats.minchats.get('collapsed')).toBeTruthy();
     }));
@@ -299,7 +298,6 @@ describe("The Minimized Chats Widget", function () {
             _converse.handleMessageStanza(msg);
         }
         await u.waitUntil(() => chatview.model.messages.length === 3, 500);
-
 
         expect(u.isVisible(minimized_chats.querySelector('.unread-message-count'))).toBeTruthy();
         expect(minimized_chats.querySelector('.unread-message-count').textContent).toBe((3).toString());

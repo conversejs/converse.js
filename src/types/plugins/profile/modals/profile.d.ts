@@ -1,5 +1,5 @@
 export default class ProfileModal extends BaseModal {
-    tab: string;
+    constructor(options: any);
     renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
     /**

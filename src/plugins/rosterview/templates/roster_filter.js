@@ -28,7 +28,7 @@ export default (el) => {
     return html`
         <form class="controlbox-padded items-filter-form input-button-group ${ !el.shouldBeVisible() ? 'hidden' : 'fade-in' }"
               @submit=${ev => el.submitFilter(ev)}>
-            <div class="form-inline flex-nowrap">
+            <div class="flex-nowrap">
                 <div class="filter-by d-flex flex-nowrap">
                     <converse-icon size="1em" @click=${ev => el.changeTypeFilter(ev)} class="fa fa-user clickable ${ (filter_type === 'items') ? 'selected' : '' }" data-type="items" title="${title_contact_filter}"></converse-icon>
                     <converse-icon size="1em" @click=${ev => el.changeTypeFilter(ev)} class="fa fa-users clickable ${ (filter_type === 'groups') ? 'selected' : '' }" data-type="groups" title="${title_group_filter}"></converse-icon>

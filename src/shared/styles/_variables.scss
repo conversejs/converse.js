@@ -2,11 +2,11 @@ $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
 
 .conversejs, .conversejs-bg, #conversejs-bg, body.converse-fullscreen {
-
     --avatar-border-radius: 10%;
     --message-avatar-width: 36px;
     --message-avatar-height: 36px;
 
+    --controlbox-width: 250px;
     --chatroom-width: 500px;
 
     --send-button-height: 27px;
@@ -37,7 +37,7 @@ $mobile_portrait_length: 480px !default;
 
     --embedded-emoji-picker-height: 300px;
 
-    --chat-gutter: 0.5em;
+    --chat-gutter: 1em;
 
     --occupants-padding: 1em;
 

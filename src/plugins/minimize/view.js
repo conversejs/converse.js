@@ -1,7 +1,7 @@
 import { _converse, api, u } from '@converse/headless';
 import { CustomElement } from 'shared/components/element';
 import MinimizedChatsToggle from './toggle.js';
-import tplChatsPanel from './templates/chats-panel.js';
+import tplToggle from './templates/toggle.js';
 
 
 export default class MinimizedChats extends CustomElement {
@@ -24,13 +24,7 @@ export default class MinimizedChats extends CustomElement {
     }
 
     render () {
-        const chats = this.model.where({'minimized': true});
-        const num_unread = chats.reduce((acc, chat) => (acc + chat.get('num_unread')), 0);
-        const num_minimized = chats.reduce((acc, chat) => (acc + (chat.get('minimized') ? 1 : 0)), 0);
-        const collapsed = this.minchats.get('collapsed');
-        const data = { chats, num_unread, num_minimized, collapsed };
-        data.toggle = ev => this.toggle(ev);
-        return tplChatsPanel(data);
+        return tplToggle(this);
     }
 
     async initToggle () {
@@ -41,6 +35,9 @@ export default class MinimizedChats extends CustomElement {
         await new Promise(resolve => this.minchats.fetch({'success': resolve, 'error': resolve}));
     }
 
+    /**
+     * @param {Event} [ev]
+     */
     toggle (ev) {
         ev?.preventDefault();
         this.minchats.save({'collapsed': !this.minchats.get('collapsed')});

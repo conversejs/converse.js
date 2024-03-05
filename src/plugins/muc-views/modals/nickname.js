@@ -1,7 +1,7 @@
-import BaseModal from "plugins/modal/modal.js";
-import { __ } from 'i18n';
-import { api } from "@converse/headless";
 import { html } from 'lit';
+import { api } from "@converse/headless";
+import { __ } from 'i18n';
+import BaseModal from "plugins/modal/modal.js";
 
 export default class MUCNicknameModal extends BaseModal {
 

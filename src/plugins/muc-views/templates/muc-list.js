@@ -10,8 +10,8 @@ const form = (o) => {
     return html`
         <form class="converse-form list-chatrooms"
             @submit=${o.submitForm}>
-            <div class="form-group">
-                <label for="chatroom">${i18n_server_address}:</label>
+            <div>
+                <label class="form-label" for="chatroom">${i18n_server_address}:</label>
                 <input type="text"
                     autofocus
                     @change=${o.setDomainFromEvent}

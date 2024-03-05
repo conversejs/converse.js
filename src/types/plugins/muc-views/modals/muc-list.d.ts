@@ -1,4 +1,5 @@
 export default class MUCListModal extends BaseModal {
+    constructor(options: any);
     items: any[];
     loading_items: boolean;
     renderModal(): import("lit").TemplateResult<1>;

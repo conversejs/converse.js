@@ -1,4 +1,5 @@
 export default class BookmarkFormModal extends BaseModal {
+    constructor(options: any);
     jid: any;
     renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;

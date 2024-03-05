@@ -15,7 +15,8 @@ export default class EmojiDropdown extends DropdownBase {
     initModel(): Promise<void>;
     init_promise: Promise<void>;
     model: EmojiPicker;
-    showMenu(): Promise<void>;
+    connectedCallback(): void;
+    onShown(): Promise<void>;
 }
 import DropdownBase from "shared/components/dropdown.js";
 import { EmojiPicker } from "@converse/headless";

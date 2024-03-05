@@ -11,10 +11,11 @@ export default class Dropdown extends DropdownBase {
     items: any[];
     render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
-    hideOnEscape: (ev: any) => void;
+    onHidden(): void;
     initArrowNavigation(): void;
     navigator: DOMNavigator;
     enableArrowNavigation(ev: any): void;
+    handleKeyUp(ev: any): void;
 }
 export type DOMNavigatorOptions = any;
 import DropdownBase from "shared/components/dropdownbase.js";

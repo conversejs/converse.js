@@ -106,7 +106,7 @@ function getDirectiveLength (d, text, i) {
     const begin = i;
     i += d.length;
     if (isQuoteDirective(d)) {
-        i += text.slice(i).split(/\n[^>]/).shift().length;
+        i += text.slice(i).split(/\n\u200B*[^>\u200B]/).shift().length;
         return i-begin;
     } else if (styling_map[d].type === 'span') {
         const line = text.slice(i).split('\n').shift();
@@ -150,8 +150,7 @@ export function getDirectiveTemplate (d, text, offset, options) {
     if (isQuoteDirective(d)) {
         const newtext = text
             // Don't show the directive itself
-            .replace(/\n>\s/g, '\n\u200B\u200B')
-            .replace(/\n>/g, '\n\u200B')
+            .replace(/\n\u200B*>\s?/g, m => `\n${'\u200B'.repeat(m.length - 1)}`)
             .replace(/\n$/, ''); // Trim line-break at the end
         return template(newtext, offset, options);
     } else {

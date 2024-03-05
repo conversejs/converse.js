@@ -397,6 +397,16 @@ describe("An incoming chat Message", function () {
             `<blockquote>What do you think of it <span class="mention" data-uri="romeo@montague.lit">romeo</span>?</blockquote>\n `+
             `Did you see this <span class="mention" data-uri="romeo@montague.lit">romeo</span>?`);
 
+        msg_text = '> > This is a nested quote...\n> > spanning multiple lines!\n> It is.\nYes.';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 14);
+        msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<blockquote><blockquote>This is a nested quote...\n\u200B\u200B\u200B\u200Bspanning multiple lines!</blockquote>'
+            + '\n\u200B\u200BIt is.</blockquote>\nYes.'
+        );
+
         expect(true).toBe(true);
     }));
 

@@ -7,6 +7,7 @@
 - #3300: Adding the maxWait option for `debouncedPruneHistory`
 - #3302: debounce MUC sidebar rendering
 - #3307: Fix inconsistency between browsers on textarea outlines
+- #3337: Correctly display multiline nested quotes
 - Add an occupants filter to the MUC sidebar
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted

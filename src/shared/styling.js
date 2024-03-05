@@ -150,7 +150,8 @@ export function getDirectiveTemplate (d, text, offset, options) {
     if (isQuoteDirective(d)) {
         const newtext = text
             // Don't show the directive itself
-            .replace(/\n\u200B*>\s?/g, m => `\n${'\u200B'.repeat(m.length - 1)}`)
+            // This big [] corresponds to \s without newlines, to avoid issues when the > is the last character of the line
+            .replace(/\n\u200B*>[ \f\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?/g, m => `\n${'\u200B'.repeat(m.length - 1)}`)
             .replace(/\n$/, ''); // Trim line-break at the end
         return template(newtext, offset, options);
     } else {

@@ -190,7 +190,7 @@ export default (el) => {
                         color="var(--muc-color)"></converse-icon>` : '' }
                 </a>
             </span>
-            <converse-dropdown class="dropleft" .items=${btns}></converse-dropdown>
+            <converse-dropdown class="btn-group dropstart" .items=${btns}></converse-dropdown>
         </div>
 
         <div class="list-container list-container--openrooms ${ rooms.length ? '' : 'hidden' }">

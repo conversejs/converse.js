@@ -8,7 +8,7 @@ export default class MUCSidebar extends CustomElement {
     initialize(): void;
     filter: RosterFilter;
     model: any;
-    render(): import("lit-html").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1>;
     /** @param {MouseEvent} ev */
     toggleFilter(ev: MouseEvent): void;
     /** @param {MouseEvent} ev */

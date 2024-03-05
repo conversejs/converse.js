@@ -7,7 +7,7 @@ export default (o) => html`
     <div class="flyout box-flyout">
         <converse-dragresize></converse-dragresize>
         ${ o.model ? html`
-            <converse-chat-heading jid="${o.jid}" class="chat-head chat-head-chatbox row no-gutters"></converse-chat-heading>
+            <converse-chat-heading jid="${o.jid}" class="chat-head chat-head-chatbox row g-0"></converse-chat-heading>
             <div class="chat-body">
                 <div class="chat-content ${ o.show_send_button ? 'chat-content-sendbutton' : '' }" aria-live="polite">
                     <converse-chat-content

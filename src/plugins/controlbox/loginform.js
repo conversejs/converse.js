@@ -1,4 +1,4 @@
-import bootstrap from 'bootstrap.native';
+import { Popover } from 'bootstrap.native';
 import { _converse, api, converse, constants } from '@converse/headless';
 import tplLoginPanel from './templates/loginform.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -77,7 +77,7 @@ class LoginForm extends CustomElement {
 
     initPopovers () {
         Array.from(this.querySelectorAll('[data-title]')).forEach(el => {
-            new bootstrap.Popover(el, {
+            new Popover(/** @type {HTMLElement} */(el), {
                 'trigger': (api.settings.get('view_mode') === 'mobile' && 'click') || 'hover',
                 'dismissible': (api.settings.get('view_mode') === 'mobile' && true) || false,
                 'container': this.parentElement.parentElement.parentElement,

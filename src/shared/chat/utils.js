@@ -62,7 +62,9 @@ export function getDropdownButtons (promise) {
     return promise.then((btns) => {
         const dropdown_btns = btns.filter((b) => !b.standalone).map((b) => getHeadingDropdownItem(b));
         return dropdown_btns.length
-            ? html`<converse-dropdown class="chatbox-btn dropleft" .items=${dropdown_btns}></converse-dropdown>`
+            ? html`<converse-dropdown
+                class="chatbox-btn btn-group dropstart"
+                .items=${dropdown_btns}></converse-dropdown>`
             : '';
     });
 }

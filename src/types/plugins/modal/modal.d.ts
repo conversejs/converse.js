@@ -4,18 +4,30 @@ declare class BaseModal extends ElementView {
     constructor(options: any);
     model: any;
     initialized: any;
-    modal: any;
-    toHTML(): import("lit-html").TemplateResult<1>;
+    modal: Modal;
+    /**
+     * @returns {TemplateResult|string}
+     */
+    renderModal(): TemplateResult | string;
+    /**
+     * @returns {TemplateResult|string}
+     */
+    renderModalFooter(): TemplateResult | string;
+    toHTML(): import("lit").TemplateResult<1>;
     /**
      * @returns {string|TemplateResult}
      */
     getModalTitle(): string | TemplateResult;
     switchTab(ev: any): void;
     tab: any;
-    onHide(): void;
     insertIntoDOM(): void;
-    alert(message: any, type?: string): void;
+    /**
+     * @param {string} message
+     * @param {'primary'|'secondary'|'danger'} type
+     */
+    alert(message: string, type?: 'primary' | 'secondary' | 'danger'): void;
     show(): Promise<void>;
 }
 import { ElementView } from "@converse/skeletor";
+import { Modal } from "bootstrap.native";
 //# sourceMappingURL=modal.d.ts.map

@@ -2,7 +2,6 @@
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/mixins";
 @import "shared/styles/_variables.scss";
-@import "bootstrap/scss/media";
 @import "./chatbox.scss";
 
 
@@ -77,13 +76,9 @@
     .conversejs.converse-overlayed {
         > .row {
             flex-direction: column;
-            &.no-gutters {
-                margin: -1em;
-            }
         }
     }
 }
-
 
 .conversejs {
     converse-chats.converse-embedded,
@@ -95,12 +90,9 @@
         }
 
         .chatbox {
-            margin: 0;
-            margin-left: 15px;
             .box-flyout {
                 box-shadow: none;
                 overflow: hidden;
-                margin-left: 0;
             }
         }
     }
@@ -161,7 +153,6 @@
     converse-chats.converse-fullscreen  {
         .chatbox-btn {
             font-size: var(--fullpage-chatbox-button-size);
-            margin: 0 0.3em;
         }
         .chat-head {
             font-size: var(--font-size-huge);

@@ -1,4 +1,4 @@
-declare function _default(el: AdHocCommands, command: AdHocCommandUIProps): import("lit-html").TemplateResult<1>;
+declare function _default(el: AdHocCommands, command: AdHocCommandUIProps): import("lit").TemplateResult<1>;
 export default _default;
 export type AdHocCommand = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommand;
 export type AdHocCommands = import('../adhoc-commands').default;

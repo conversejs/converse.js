@@ -5,6 +5,7 @@
 @import "shared/styles/_mixins.scss";
 
 .conversejs {
+
     .set-xmpp-status,
     .xmpp-status {
         .chat-status--online {
@@ -523,6 +524,17 @@
                 }
                 @include media-breakpoint-down(sm) {
                     margin-left: 0;
+                }
+                .box-flyout {
+                    @include media-breakpoint-up(md) {
+                        max-width: 33.333333%;
+                    }
+                    @include media-breakpoint-up(lg) {
+                        max-width: 25%;
+                    }
+                    @include media-breakpoint-up(xl) {
+                        max-width: 17.666667%;
+                    }
                 }
             }
             .controlbox-panes {

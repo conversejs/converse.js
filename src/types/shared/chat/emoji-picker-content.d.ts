@@ -20,7 +20,7 @@ export default class EmojiPickerContent extends CustomElement {
     current_skintone: any;
     query: any;
     search_results: any;
-    render(): import("lit-html").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
     initIntersectionObserver(): void;
     observer: IntersectionObserver;

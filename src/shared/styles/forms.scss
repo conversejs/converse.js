@@ -1,7 +1,5 @@
 .conversejs {
     @import "bootstrap/scss/forms";
-    @import "bootstrap/scss/input-group";
-    @import "bootstrap/scss/custom-forms";
 
     .btn--small {
         font-size: 80%;
@@ -27,10 +25,6 @@
 
         .error-feedback {
             margin-bottom: 0.5em;
-        }
-
-        .form-check-label {
-            margin-top: $form-check-input-margin-y;
         }
 
         .form-control[readonly] {

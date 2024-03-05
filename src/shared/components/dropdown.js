@@ -3,10 +3,11 @@
  */
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import { api, constants } from "@converse/headless";
+import { api, constants, u } from "@converse/headless";
 import 'shared/components/icons.js';
 import DOMNavigator from "shared/dom-navigator.js";
 import DropdownBase from 'shared/components/dropdownbase.js';
+import { Dropdown as BootstrapDropdown } from 'bootstrap.native';
 
 import './styles/dropdown.scss';
 
@@ -26,22 +27,29 @@ export default class Dropdown extends DropdownBase {
         super();
         this.icon_classes = 'fa fa-bars';
         this.items = [];
+        this.id = u.getUniqueId();
     }
 
     render () {
         return html`
-            <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn--transparent btn--standalone dropdown-toggle dropdown-toggle--no-caret"
+                    id="${this.id}"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
                 <converse-icon size="1em" class="${ this.icon_classes }">
             </button>
-            <div class="dropdown-menu">
-                ${ this.items.map(b => until(b, '')) }
-            </div>
+            <ul class="dropdown-menu" aria-labelledby="${this.id}">
+                ${ this.items.map(b => html`<li>${until(b, '')}</li>`) }
+            </ul>
         `;
     }
 
     firstUpdated () {
         super.firstUpdated();
         this.initArrowNavigation();
+        this.dropdown = new BootstrapDropdown(/** @type {HTMLElement} */(this.menu));
     }
 
     connectedCallback () {
@@ -53,6 +61,10 @@ export default class Dropdown extends DropdownBase {
     disconnectedCallback() {
         document.removeEventListener('keydown', this.hideOnEscape);
         super.disconnectedCallback();
+    }
+
+    toggleMenu () {
+        this.dropdown.toggle();
     }
 
     hideMenu () {

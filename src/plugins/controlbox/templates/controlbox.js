@@ -21,7 +21,7 @@ function whenNotConnected(el) {
     }
     return html`<converse-login-form
         id="converse-login-panel"
-        class="controlbox-pane fade-in row no-gutters"
+        class="controlbox-pane fade-in row g-0"
     ></converse-login-form>`;
 }
 

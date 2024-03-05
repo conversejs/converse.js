@@ -1,6 +1,6 @@
 export default class AddMUCModal extends BaseModal {
     muc_roomid_policy_error_msg: any;
-    renderModal(): import("lit-html").TemplateResult<1>;
+    renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
     parseRoomDataFromEvent(form: any): {
         jid: string;

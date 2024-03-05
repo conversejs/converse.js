@@ -1,5 +1,5 @@
 export default class AddContactModal extends BaseModal {
-    renderModal(): import("lit-html").TemplateResult<1>;
+    renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
     validateSubmission(jid: any): boolean;
     afterSubmission(_form: any, jid: any, name: any, group: any): void;

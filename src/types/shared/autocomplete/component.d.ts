@@ -100,7 +100,7 @@ export default class AutoCompleteComponent extends CustomElement {
     name: string;
     placeholder: string;
     required: boolean;
-    render(): import("lit-html").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
     auto_complete: AutoComplete;
     auto_completing: boolean;

@@ -58,7 +58,7 @@ export default (o, chat) => {
 
     return html`
         <li class="occupant" id="${o.id}" title="${occupant_title(o)}">
-            <div class="row no-gutters">
+            <div class="row g-0">
                 <div class="col-auto">
                     <a class="show-msg-author-modal" @click=${(ev) => showOccupantModal(ev, o)}>
                         <converse-avatar

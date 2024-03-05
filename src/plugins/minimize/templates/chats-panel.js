@@ -3,11 +3,11 @@ import { __ } from 'i18n';
 
 export default (o) =>
     html`<div id="minimized-chats" class="${o.chats.length ? '' : 'hidden'}">
-        <a id="toggle-minimized-chats" class="row no-gutters" @click=${o.toggle}>
+        <a id="toggle-minimized-chats" class="row g-0" @click=${o.toggle}>
             ${o.num_minimized} ${__('Minimized')}
             <span class="unread-message-count ${!o.num_unread ? 'unread-message-count-hidden' : ''}" href="#">${o.num_unread}</span>
         </a>
-        <div class="flyout minimized-chats-flyout row no-gutters ${o.collapsed ? 'hidden' : ''}">
+        <div class="flyout minimized-chats-flyout row g-0 ${o.collapsed ? 'hidden' : ''}">
             ${o.chats.map(chat =>
                 html`<converse-minimized-chat
                         .model=${chat}

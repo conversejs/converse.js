@@ -50,7 +50,7 @@ export function ancestor(el: HTMLElement, selector: string): HTMLElement;
 /**
  * @param {string} url
  */
-export function getHyperlinkTemplate(url: string): string | import("lit-html").TemplateResult<1>;
+export function getHyperlinkTemplate(url: string): string | import("lit").TemplateResult<1>;
 /**
  * Shows/expands an element by sliding it out of itself
  * @method slideOut

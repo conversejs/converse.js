@@ -1,5 +1,5 @@
-import { CustomElement } from './element.js';
 import { converse } from '@converse/headless';
+import { CustomElement } from './element.js';
 
 const u = converse.env.utils;
 

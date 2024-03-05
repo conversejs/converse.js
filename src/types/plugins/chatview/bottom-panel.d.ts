@@ -2,7 +2,7 @@ export default class ChatBottomPanel extends CustomElement {
     connectedCallback(): Promise<void>;
     initialize(): Promise<void>;
     model: any;
-    render(): import("lit-html").TemplateResult<1> | "";
+    render(): import("lit").TemplateResult<1> | "";
     sendButtonClicked(ev: any): void;
     viewUnreadMessages(ev: any): void;
     emitFocused(ev: any): void;

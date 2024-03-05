@@ -1133,7 +1133,7 @@ describe("The Contacts Roster", function () {
                 _converse.roster.get(jid).presence.set('show', 'unavailable');
             }
 
-            await u.waitUntil(() => u.isVisible(rosterview.querySelector('li:first-child')), 900);
+            await u.waitUntil(() => u.isVisible(rosterview.querySelector('li.list-item:first-child')));
             const roster = rosterview;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));

@@ -30,15 +30,6 @@
       }
     }
 
-    .fit-content {
-        width: fit-content !important;
-        max-width: fit-content !important;
-    }
-
-    .nopadding {
-        padding: 0 !important;
-    }
-
     .no-scrolling {
       overflow-x: none;
       overflow-y: none;
@@ -124,10 +115,6 @@
         }
     }
 
-    .popover {
-        position: fixed;
-    }
-
     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
         color: var(--subdued-color);
     }
@@ -169,17 +156,6 @@
     }
 
     ul li { height: auto; }
-    div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
-    pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
-    fieldset, form, legend, table, caption, tbody,
-    tfoot, thead, tr, th, td, article, aside, details,
-    embed, figure, figcaption, footer, header, hgroup, menu,
-    nav, output, ruby, section, summary, time, mark, audio, video {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        vertical-align: baseline;
-    }
 
     textarea,
     input[type=submit], input[type=button],
@@ -199,10 +175,6 @@
 
     ol, ul {
         list-style: none;
-    }
-
-    li {
-        height: 10px;
     }
 
     ul, ol, dl {
@@ -270,10 +242,6 @@
         svg {
             fill: var(--link-color);
         }
-    }
-
-    .circle {
-        border-radius: 50%;
     }
 
     .no-text-select {

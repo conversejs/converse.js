@@ -70,41 +70,41 @@ export default (el) => {
         <ul class="nav nav-pills justify-content-center">${navigation_tabs}</ul>
         <div class="tab-content">
             <div class="tab-pane ${ el.tab === 'profile' ? 'active' : ''}" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
-                <form class="converse-form converse-form--modal profile-form" action="#" @submit=${ev => el.onFormSubmitted(ev)}>
-                    <div class="row">
+                <form class="converse-form converse-form--modal" action="#" @submit=${ev => el.onFormSubmitted(ev)}>
+                    <div class="row py-2">
                         <div class="col-auto">
                             <converse-image-picker .model=${el.model} width="128" height="128"></converse-image-picker>
                         </div>
                         <div class="col">
-                            <div class="form-group">
+                            <div class="px-3">
                                 <label class="col-form-label">${i18n_jid}:</label>
                                 <div>${o.jid}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div>
                         <label for="vcard-fullname" class="col-form-label">${i18n_fullname}:</label>
                         <input id="vcard-fullname" type="text" class="form-control" name="fn" value="${o.fullname || ''}"/>
                     </div>
-                    <div class="form-group">
+                    <div>
                         <label for="vcard-nickname" class="col-form-label">${i18n_nickname}:</label>
                         <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="${o.nickname || ''}"/>
                     </div>
-                    <div class="form-group">
+                    <div>
                         <label for="vcard-url" class="col-form-label">${i18n_url}:</label>
                         <input id="vcard-url" type="url" class="form-control" name="url" value="${o.url || ''}"/>
                     </div>
-                    <div class="form-group">
+                    <div>
                         <label for="vcard-email" class="col-form-label">${i18n_email}:</label>
                         <input id="vcard-email" type="email" class="form-control" name="email" value="${o.email || ''}"/>
                     </div>
-                    <div class="form-group">
+                    <div>
                         <label for="vcard-role" class="col-form-label">${i18n_role}:</label>
                         <input id="vcard-role" type="text" class="form-control" name="role" value="${o.role || ''}" aria-describedby="vcard-role-help"/>
                         <small id="vcard-role-help" class="form-text text-muted">${i18n_role_help}</small>
                     </div>
                     <hr/>
-                    <div class="form-group">
+                    <div>
                         <button type="submit" class="save-form btn btn-primary">${i18n_save}</button>
                     </div>
                 </form>

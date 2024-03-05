@@ -1,4 +1,5 @@
 export default class MUCInviteModal extends BaseModal {
+    constructor(options: any);
     chatroomview: any;
     renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;

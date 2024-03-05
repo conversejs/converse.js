@@ -45,7 +45,7 @@ export default (el) => {
                             </converse-icon>` : '' }
                 </div>
             </div>
-            <div class="chatbox-title__buttons row no-gutters">
+            <div class="chatbox-title__buttons row g-0">
                 ${ until(getStandaloneButtons(heading_buttons_promise), '') }
                 ${ until(getDropdownButtons(heading_buttons_promise), '') }
             </div>

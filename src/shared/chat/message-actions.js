@@ -78,7 +78,7 @@ class MessageActions extends CustomElement {
             // That's difficult to know from state, so we're making an approximation here.
             const should_drop_up = this.model.collection.length > 3 && this.model === this.model.collection.last();
             return html`<converse-dropdown
-                class="chat-msg__actions ${should_drop_up ? 'dropup dropup--left' : 'dropleft'}"
+                class="chat-msg__actions btn-group ${should_drop_up ? 'dropup dropup--left' : 'dropstart'}"
                 .items=${items}
             ></converse-dropdown>`;
         } else {
@@ -88,7 +88,7 @@ class MessageActions extends CustomElement {
 
     static getActionsDropdownItem (o) {
         return html`
-            <button class="chat-msg__action ${o.button_class}" @click=${o.handler}>
+            <button class="dropdown-item chat-msg__action ${o.button_class}" @click=${o.handler}>
                 <converse-icon
                     class="${o.icon_class}"
                     color="var(--text-color-lighten-15-percent)"

@@ -1,4 +1,5 @@
 export default class OccupantModal extends BaseModal {
+    constructor(options: any);
     message: any;
     getVcard(): any;
     renderModal(): import("lit").TemplateResult<1>;

@@ -10,6 +10,8 @@ import { __ } from 'i18n';
 import '../password-reset.js';
 import { compressImage, isImageWithAlphaChannel } from 'utils/file.js';
 
+import './styles/profile.scss';
+
 
 export default class ProfileModal extends BaseModal {
 

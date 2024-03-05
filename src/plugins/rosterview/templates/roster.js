@@ -90,7 +90,9 @@ export default (el) => {
                         ></converse-icon>` : '' }
                 </a>
             </span>
-            <converse-dropdown class="chatbox-btn dropleft dropdown--contacts" .items=${btns}></converse-dropdown>
+            <converse-dropdown
+                class="chatbox-btn btn-group dropstart dropdown--contacts"
+                .items=${btns}></converse-dropdown>
         </div>
 
         <div class="list-container roster-contacts ${is_closed ? 'hidden' : ''}">

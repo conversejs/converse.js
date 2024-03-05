@@ -6,34 +6,8 @@
             }
 
             #minimized-chats {
-
-                width: var(--minimized-chats-width);
-                margin-bottom: 0;
-                border-top-left-radius: var(--chatbox-border-radius);
-                border-top-right-radius: var(--chatbox-border-radius);
-                color: var(--inverse-link-color);
-                margin-right: var(--chat-gutter);
-                padding: 0;
-
-                .badge {
-                    bottom: 8px;
-                    border: 1px solid var(--overlayed-badge-color);
-                }
-
-                #toggle-minimized-chats {
-                    border-top-left-radius: var(--chatbox-border-radius);
-                    border-top-right-radius: var(--chatbox-border-radius);
-                    background-color: var(--subdued-color);
-                    padding: 1em 0 0 0;
-                    text-align: center;
-                    color: white;
-                    white-space: nowrap;
-                    overflow-y: hidden;
-                    text-overflow: ellipsis;
-                    display: block;
-                    height: 45px;
-                    width: 9em;
-                }
+                min-width: var(--minimized-chats-width);
+                color: var(--chat-head-text-color);
 
                 a.restore-chat {
                     cursor: pointer;
@@ -85,25 +59,6 @@
                     &.minimized {
                         height: auto;
                     }
-                }
-
-                .unread-message-count {
-                    font-weight: bold;
-                    background-color: white;
-                    border: 1px solid;
-                    text-shadow: 1px 1px 0 var(--text-shadow-color);
-                    color: var(--warning-color);
-                    border-radius: 5px;
-                    padding: 2px 4px;
-                    font-size: 16px;
-                    text-align: center;
-                    position: absolute;
-                    right: 116px;
-                    bottom: 10px;
-                }
-                .unread-message-count-hidden,
-                .chat-head-message-count-hidden {
-                    display: none;
                 }
             }
         }

@@ -10,8 +10,8 @@ export default el => {
     return html`<form class="converse-form passwordreset-form" method="POST" @submit=${ev => el.onSubmit(ev)}>
         ${el.alert_message ? html`<div class="alert alert-danger" role="alert">${el.alert_message}</div>` : ''}
 
-        <div class="form-group">
-            <label for="converse_password_reset_new">${i18n_new_password}</label>
+        <div class="py-2">
+            <label for="converse_password_reset_new" class="form-label">${i18n_new_password}</label>
             <input
                 class="form-control ${el.passwords_mismatched ? 'error' : ''}"
                 type="password"
@@ -24,8 +24,9 @@ export default el => {
                 ?disabled="${el.alert_message}"
             />
         </div>
-        <div class="form-group">
-            <label for="converse_password_reset_check">${i18n_confirm_password}</label>
+
+        <div class="py-2">
+            <label for="converse_password_reset_check" class="form-label">${i18n_confirm_password}</label>
             <input
                 class="form-control ${el.passwords_mismatched ? 'error' : ''}"
                 type="password"
@@ -41,7 +42,7 @@ export default el => {
             ${el.passwords_mismatched ? html`<span class="error">${i18n_passwords_must_match}</span>` : ''}
         </div>
 
-        <input class="save-form btn btn-primary"
+        <input class="py-3 save-form btn btn-primary"
                type="submit"
                value=${i18n_submit}
                ?disabled="${el.alert_message}" />

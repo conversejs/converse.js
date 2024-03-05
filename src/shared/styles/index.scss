@@ -5,29 +5,56 @@
  * Copyright (c) 2013-2021, JC Brand <jc@opkode.com>
  * Licensed under the Mozilla Public License
  */
+
+// Set custom bootstrap prefix (default is bs-) to avoid clashes
+$prefix: 'converse-';
+
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
-
-@import "./fonts.scss";
-@import "mixins";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+@import "bootstrap/scss/root";
 
 .conversejs {
-    @import "bootstrap/scss/root";
     @import "bootstrap/scss/reboot";
     @import "bootstrap/scss/type";
     @import "bootstrap/scss/images";
+    @import "bootstrap/scss/containers";
     @import "bootstrap/scss/grid";
     @import "bootstrap/scss/tables";
+    @import "bootstrap/scss/forms";
+    @import "bootstrap/scss/buttons";
     @import "bootstrap/scss/transitions";
+    @import "bootstrap/scss/dropdown";
+    @import "bootstrap/scss/button-group";
     @import "bootstrap/scss/nav";
+    @import "bootstrap/scss/navbar";
+    @import "bootstrap/scss/card";
+    // @import "bootstrap/scss/accordion";
+    // @import "bootstrap/scss/breadcrumb";
+    // @import "bootstrap/scss/pagination";
+    @import "bootstrap/scss/badge";
     @import "bootstrap/scss/alert";
-    @import "bootstrap/scss/media";
+    @import "bootstrap/scss/progress";
+    @import "bootstrap/scss/list-group";
     @import "bootstrap/scss/close";
+    // @import "bootstrap/scss/toasts";
+    @import "bootstrap/scss/modal";
+    @import "bootstrap/scss/tooltip";
     @import "bootstrap/scss/popover";
-    @import "bootstrap/scss/utilities";
+    // @import "bootstrap/scss/carousel";
+    @import "bootstrap/scss/spinners";
+    // @import "bootstrap/scss/offcanvas";
+    @import "bootstrap/scss/placeholders";
+    @import "bootstrap/scss/helpers";
+    @import "bootstrap/scss/utilities/api";
 }
 
 @import "variables";
+@import "mixins";
+
 @import "themes/classic";
 @import "themes/concord";
 @import "themes/dracula";
@@ -41,3 +68,4 @@
 @import "lists";
 @import "messages";
 @import "background";
+@import "fonts";

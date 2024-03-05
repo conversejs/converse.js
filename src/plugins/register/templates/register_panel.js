@@ -59,8 +59,8 @@ const tplChooseProvider = (el) => {
     return html`
         <form id="converse-register" class="converse-form" @submit=${ev => el.onFormSubmission(ev)}>
             <legend class="col-form-label">${i18n_create_account}</legend>
-            <div class="form-group">
-                <label>${i18n_choose_provider}</label>
+            <div>
+                <label class="form-label">${i18n_choose_provider}</label>
 
                 ${default_domain ? default_domain : tplDomainInput()}
             </div>

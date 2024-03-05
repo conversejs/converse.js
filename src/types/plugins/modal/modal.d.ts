@@ -1,20 +1,38 @@
 export default BaseModal;
 export type TemplateResult = import('lit-html').TemplateResult;
 declare class BaseModal extends ElementView {
+    /**
+     * @param {Object} options
+     */
     constructor(options: any);
     model: any;
     initialized: any;
     modal: any;
+    /**
+     * @returns {TemplateResult|string}
+     */
+    renderModal(): TemplateResult | string;
+    /**
+     * @returns {TemplateResult|string}
+     */
+    renderModalFooter(): TemplateResult | string;
     toHTML(): import("lit").TemplateResult<1>;
     /**
      * @returns {string|TemplateResult}
      */
     getModalTitle(): string | TemplateResult;
-    switchTab(ev: any): void;
-    tab: any;
-    onHide(): void;
+    /**
+     * @param {Event} [ev]
+     */
+    switchTab(ev?: Event): void;
+    tab: string;
+    close(): void;
     insertIntoDOM(): void;
-    alert(message: any, type?: string): void;
+    /**
+     * @param {string} message
+     * @param {'primary'|'secondary'|'danger'} type
+     */
+    alert(message: string, type?: 'primary' | 'secondary' | 'danger'): void;
     show(): Promise<void>;
 }
 import { ElementView } from "@converse/skeletor";

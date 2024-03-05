@@ -11,21 +11,21 @@ export default (el) => {
     return html`
         <form class="affiliation-form" @submit=${ev => el.assignAffiliation(ev)}>
             ${el.alert_message ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>` : '' }
-            <div class="form-group">
+            <div>
                 <div class="row">
                     <div class="col">
-                        <label><strong>${i18n_new_affiliation}:</strong></label>
-                        <select class="custom-select select-affiliation" name="affiliation">
+                        <label class="form-label"><strong>${i18n_new_affiliation}:</strong></label>
+                        <select class="form-select select-affiliation" name="affiliation">
                             ${ assignable_affiliations.map(aff => html`<option value="${aff}" ?selected=${aff === el.affiliation}>${aff}</option>`) }
                         </select>
                     </div>
                     <div class="col">
-                        <label><strong>${i18n_reason}:</strong></label>
+                        <label class="form-label"><strong>${i18n_reason}:</strong></label>
                         <input class="form-control" type="text" name="reason"/>
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            <div>
                 <div class="col">
                     <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
                 </div>

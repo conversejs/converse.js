@@ -23,11 +23,13 @@
 - Fix: unhandled exception on new message arriving when user has not permitted playing audio in the browser
 - Fix: incorrect unread messages counter badge on the application icon after switching to new XMPP user
 - Fix: unhandled exception in disconnect function when controlbox is not shown by UI
+- Fix: "Click to mention..." title was misplaced in MUC occupant list.
 - Add an occupants filter to the MUC sidebar
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 - New loadEmojis hook, to customize emojis at runtime.
-- Fix: "Click to mention..." title was misplaced in MUC occupant list.
+- New `loadEmojis` hook, to customize emojis at runtime.
+- Upgrade to Bootstrap 5
 
 ### Breaking changes:
 

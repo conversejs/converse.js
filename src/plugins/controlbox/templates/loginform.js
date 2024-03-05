@@ -16,24 +16,21 @@ const trust_checkbox = (checked) => {
     );
     const i18n_trusted = __('This is a trusted device');
     return html`
-        <div class="form-group form-check login-trusted">
+        <div class="form-group form-check login-trusted mt-2">
             <input
                 id="converse-login-trusted"
                 type="checkbox"
-                class="form-check-input"
+                class="form-check-input p-1 me-1"
                 name="trusted"
                 ?checked=${checked}
             />
             <label for="converse-login-trusted" class="form-check-label login-trusted__desc">${i18n_trusted}</label>
-
-            <converse-icon
-                class="fa fa-info-circle"
+            <button type="button" class="btn p-0"
                 data-toggle="popover"
-                data-title="Trusted device?"
-                data-content="${i18n_hint_trusted}"
-                size="1.2em"
                 title="${i18n_hint_trusted}"
-            ></converse-icon>
+                data-content="${i18n_hint_trusted}">
+                <converse-icon class="fa fa-info-circle" size="1.2em"></converse-icon>
+            </button>
         </div>
     `;
 };
@@ -44,7 +41,7 @@ const connection_url_input = () => {
     const i18n_placeholder = __('e.g. wss://example.org/xmpp-websocket');
     return html`
         <div class="form-group fade-in">
-            <label for="converse-conn-url">${i18n_connection_url}</label>
+            <label for="converse-conn-url" class="form-label">${i18n_connection_url}</label>
             <p class="form-help instructions">${i18n_form_help}</p>
             <input
                 id="converse-conn-url"
@@ -60,8 +57,8 @@ const connection_url_input = () => {
 const password_input = () => {
     const i18n_password = __('Password');
     return html`
-        <div class="form-group">
-            <label for="converse-login-password">${i18n_password}</label>
+        <div>
+            <label for="converse-login-password" class="form-label">${i18n_password}</label>
             <input
                 id="converse-login-password"
                 class="form-control"
@@ -106,8 +103,8 @@ const auth_fields = (el) => {
     const show_trust_checkbox = api.settings.get('allow_user_trust_override');
 
     return html`
-        <div class="form-group">
-            <label for="converse-login-jid">${i18n_xmpp_address}:</label>
+        <fieldset class="form-group">
+            <label for="converse-login-jid" class="form-label">${i18n_xmpp_address}:</label>
             <input
                 id="converse-login-jid"
                 ?autofocus=${api.settings.get('auto_focus') ? true : false}
@@ -119,7 +116,7 @@ const auth_fields = (el) => {
                 name="jid"
                 placeholder="${placeholder_username}"
             />
-        </div>
+        </fieldset>
         ${authentication !== EXTERNAL ? password_input() : ''}
         ${api.settings.get('show_connection_url_input') ? connection_url_input() : ''}
         ${show_trust_checkbox ? trust_checkbox(show_trust_checkbox === 'off' ? false : true) : ''}

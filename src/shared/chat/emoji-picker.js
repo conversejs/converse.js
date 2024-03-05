@@ -4,13 +4,13 @@
  */
 import debounce from 'lodash-es/debounce';
 import { api, converse, u, constants } from "@converse/headless";
-import "./emoji-picker-content.js";
-import './emoji-dropdown.js';
 import DOMNavigator from "shared/dom-navigator";
 import { CustomElement } from 'shared/components/element.js';
 import { FILTER_CONTAINS } from "shared/autocomplete/utils.js";
 import { getTonedEmojis } from './utils.js';
 import { tplEmojiPicker } from "./templates/emoji-picker.js";
+import "./emoji-picker-content.js";
+import './emoji-dropdown.js';
 
 import './styles/emoji.scss';
 

@@ -15,8 +15,8 @@ export default (el) => {
         <div class="chatroom-form-container muc-nickname-form">
                 <form class="converse-form chatroom-form converse-centered-form"
                         @submit=${ev => el.submitNickname(ev)}>
-                <fieldset class="form-group">
-                    <label>${i18n_heading}</label>
+                <fieldset>
+                    <label class="form-label">${i18n_heading}</label>
                     <p class="validation-message">${validation_message}</p>
                     <input type="text"
                         required="required"
@@ -25,7 +25,7 @@ export default (el) => {
                         class="form-control ${validation_message ? 'error': ''}"
                         placeholder="${i18n_nickname}"/>
                 </fieldset>
-                <fieldset class="form-group">
+                <fieldset>
                     <input type="submit"
                         class="btn btn-primary"
                         name="join"

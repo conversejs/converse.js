@@ -1,4 +1,5 @@
 export default class ModeratorToolsModal extends BaseModal {
+    constructor(options: any);
     affiliation: any;
     jid: any;
     renderModal(): import("lit").TemplateResult<1>;

@@ -5,6 +5,7 @@
 @import "shared/styles/_mixins.scss";
 
 .conversejs {
+
     .set-xmpp-status,
     .xmpp-status {
         .chat-status--online {
@@ -327,16 +328,8 @@
                 order: -2;
                 text-align: center;
                 background-color: var(--controlbox-head-color);
-                border-top-left-radius: var(--button-border-radius);
-                border-top-right-radius: var(--button-border-radius);
-                color: #0a0a0a;
                 float: right;
-                height: 100%;
                 margin: 0 var(--chat-gutter);
-                padding: 1em;
-                span {
-                    color: var(--inverse-link-color);
-                }
             }
 
             #controlbox {
@@ -523,6 +516,17 @@
                 }
                 @include media-breakpoint-down(sm) {
                     margin-left: 0;
+                }
+                .box-flyout {
+                    @include media-breakpoint-up(md) {
+                        max-width: 33.333333%;
+                    }
+                    @include media-breakpoint-up(lg) {
+                        max-width: 25%;
+                    }
+                    @include media-breakpoint-up(xl) {
+                        max-width: 17.666667%;
+                    }
                 }
             }
             .controlbox-panes {

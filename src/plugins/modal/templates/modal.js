@@ -1,13 +1,16 @@
 import tplAlertComponent from "./modal-alert.js";
 import { html } from "lit";
-import { modal_close_button, modal_header_close_button } from "plugins/modal/templates/buttons.js";
+import { modal_header_close_button } from "./buttons.js";
 
 
+/**
+ * @param {import ('../modal').default} el
+ */
 export default (el) => {
     const alert = el.model?.get('alert');
     const level = el.model?.get('level') ?? '';
     return html`
-        <div class="modal-dialog" role="document" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document" role="dialog">
             <div class="modal-content">
                 <div class="modal-header ${level}">
                     <h5 class="modal-title">${el.getModalTitle()}</h5>
@@ -17,9 +20,9 @@ export default (el) => {
                     <span class="modal-alert">
                         ${ alert ? tplAlertComponent({'type': `alert-${alert.type}`, 'message': alert.message}) :  ''}
                     </span>
-                    ${ el.renderModal?.() ?? '' }
+                    ${ el.renderModal() }
                 </div>
-                ${ el.renderModalFooter?.() ?? html`<div class="modal-footer">${ modal_close_button }</div>` }
+                ${ el.renderModalFooter() }
             </div>
         </div>
     `;

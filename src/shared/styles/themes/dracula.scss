@@ -1,9 +1,13 @@
 .conversejs.theme-dracula {
     // Theme-defined variables:
     // https://draculatheme.com
-    --current-line: #44475a;
+
+    // Hex color values
+    --background: #282a36;
     --comment: #6272a4;
+    --current-line: #44475a;
     --cyan: #8be9fd;
+    --foreground: #f8f8f2;
     --green: #50fa7b;
     --orange: #ffb86c;
     --pink: #ff79c6;
@@ -11,9 +15,24 @@
     --red: #ff5555;
     --yellow: #f1fa8c;
 
-    // Base variables
-    --background: #282a36;
-    --foreground: #f8f8f2;
+    // RGB color values, needed for bootstrap
+    --background-rgb: 40, 42, 54;
+    --comment-rgb: 98, 114, 164;
+    --current-line-rgb: 68, 71, 90;
+    --cyan-rgb: 139, 233, 253;
+    --foreground-rgb: 248, 248, 242;
+    --green-rgb: 80, 250, 123;
+    --orange-rgb: 255, 184, 108;
+    --pink-rgb: 255, 121, 198;
+    --purple-rgb: 189, 147, 249;
+    --red-rgb: 255, 85, 85;
+    --yellow-rgb: 241, 250, 140;
+
+    // Bootstrap variables
+    --converse-primary-rgb: var(--purple-rgb);
+    --converse-secondary-rgb: var(--cyan-rgb);
+
+    // Base theme variables
     --subdued-color: var(--foreground);
     --muc-color: var(--orange);
     --chat-color: var(--green);
@@ -24,8 +43,6 @@
     --gray-color: var(--current-line);
     --header-color: var(--pink);
     --heading-color: var(--purple);
-
-    // ---
 
     --headlines-color: var(--pink);
     --headlines-head-text-color: var(--headlines-color);

@@ -76,12 +76,12 @@
     "@babel/core": "^7.18.5",
     "@babel/preset-env": "^7.18.2",
     "@converse/headless": "file:src/headless",
+    "@types/bootstrap": "^5.2.10",
     "@types/webappsec-credential-management": "^0.6.8",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.12.0",
     "autoprefixer": "^10.4.5",
     "babel-loader": "^9.1.0",
-    "bootstrap.native-loader": "2.0.0",
     "circular-dependency-plugin": "^5.2.2",
     "clean-css-cli": "^5.6.2",
     "copy-webpack-plugin": "^12.0.2",
@@ -117,8 +117,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "bootstrap": "^4.6.0",
-    "bootstrap.native": "^2.0.27",
+    "bootstrap": "^5.3.3",
     "client-compress": "^2.2.2",
     "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",

@@ -1,4 +1,5 @@
 export default class UserSettingsModal extends BaseModal {
+    constructor(options: any);
     renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
 }

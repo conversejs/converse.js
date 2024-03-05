@@ -3,7 +3,6 @@
 @import "bootstrap/scss/mixins";
 
 .conversejs {
-    @import "bootstrap/scss/media";
 
     .chatbox {
         img.emoji {
@@ -25,6 +24,7 @@
             display: inline-block;
             .dropdown-menu {
                 padding: 0;
+                margin-top: -23em !important;
             }
         }
 
@@ -34,6 +34,7 @@
             padding-bottom: 0;
             background-color: var(--chat-head-color);
             overflow-y: hidden;
+
             converse-emoji-picker-content {
                 width: 100%;
                 .emoji-picker__lists {
@@ -125,6 +126,7 @@
                     }
                 }
             }
+
             .emoji-picker__header {
                 width: 100%;
                 display: flex;
@@ -133,7 +135,7 @@
                 background-color: var(--chat-head-color);
                 .emoji-search {
                     width: auto;
-                    margin: 0.25em;
+                    margin: 1em 0.25em 0.5em;
                     height: 2em;
                     font-size: var(--font-size-small);
                 }

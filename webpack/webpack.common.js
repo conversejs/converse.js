@@ -4,13 +4,6 @@ const webpack = require('webpack');
 const TerserPlugin = require("terser-webpack-plugin");
 const path = require('path');
 
-let bootstrap_ignore_modules = ['carousel', 'scrollspy', 'tooltip', 'toast'];
-
-const BOOTSTRAP_IGNORE_MODULES = (process.env.BOOTSTRAP_IGNORE_MODULES || '').replace(/ /g, '').trim();
-if (BOOTSTRAP_IGNORE_MODULES.length > 0) {
-    bootstrap_ignore_modules = bootstrap_ignore_modules.concat(BOOTSTRAP_IGNORE_MODULES.split(','));
-}
-
 const plugins = [
     new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
         'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
@@ -101,15 +94,6 @@ module.exports = {
             ],
             use: {
                 loader: 'babel-loader'
-            }
-        }, {
-            test: /bootstrap\.native/,
-            use: {
-                loader: 'bootstrap.native-loader',
-                options: {
-                    bs_version: 4,
-                    ignore: bootstrap_ignore_modules
-                }
             }
         }],
     },

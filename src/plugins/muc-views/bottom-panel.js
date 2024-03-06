@@ -13,15 +13,15 @@ export default class MUCBottomPanel extends BottomPanel {
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());
         this.listenTo(this.model, 'change:num_unread_general', () => this.requestUpdate())
         this.listenTo(this.model.features, 'change:moderated', () => this.requestUpdate());
-        this.listenTo(this.model.occupants, 'add', this.renderIfOwnOccupant)
+        this.listenTo(this.model.occupants, 'add', this.renderIfOwnOccupant);
         this.listenTo(this.model.occupants, 'change:role', this.renderIfOwnOccupant);
         this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
     }
 
     render () {
         if (!this.model) return '';
-        const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
-        const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
+        const entered = this.model.isEntered();
+        const can_edit = this.model.canPostMessages();
         return tplMUCBottomPanel({
             can_edit, entered,
             'model': this.model,

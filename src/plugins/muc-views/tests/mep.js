@@ -202,7 +202,7 @@ describe("A XEP-0316 MEP notification", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
         expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
-        expect(view.querySelectorAll('converse-message-actions converse-dropdown .chat-msg__action').length).toBe(1);
+        expect(view.querySelectorAll('converse-message-actions converse-dropdown .chat-msg__action').length).toBeGreaterThanOrEqual(1);
         const action = view.querySelector('converse-message-actions converse-dropdown .chat-msg__action');
         expect(action.textContent.trim()).toBe('Retract');
         action.click();

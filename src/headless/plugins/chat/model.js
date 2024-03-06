@@ -1139,6 +1139,10 @@ class ChatBox extends ModelWithContact {
     isScrolledUp () {
         return this.ui.get('scrolled');
     }
+
+    canPostMessages () {
+        return true;
+    }
 }
 
 export default ChatBox;

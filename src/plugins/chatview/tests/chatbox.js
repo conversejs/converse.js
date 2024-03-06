@@ -39,7 +39,7 @@ describe("Chatboxes", function () {
                 }).c('body').t('hello world').tree();
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
-            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
+            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body .chat-msg__text';
             await u.waitUntil(() => view.querySelector(msg_txt_sel).textContent.trim() === 'hello world');
         }));
 

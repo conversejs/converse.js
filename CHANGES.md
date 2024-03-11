@@ -15,6 +15,7 @@
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users
+- Fix: prevent busy-loop when session resumption fails
 
 ### Breaking changes:
 

@@ -10,6 +10,7 @@ import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
+import { isElement } from 'utils/html.js';
 
 const { Strophe, $iq, u } = converse.env;
 
@@ -44,6 +45,11 @@ async function onVCardData (iq) {
 }
 
 
+/**
+ * @param {"get"|"set"|"result"} type
+ * @param {string} jid
+ * @param {Element} [vcard_el]
+ */
 export function createStanza (type, jid, vcard_el) {
     const iq = $iq(jid ? {'type': type, 'to': jid} : {'type': type});
     if (!vcard_el) {
@@ -213,11 +219,12 @@ export async function getVCard (jid) {
     let iq;
     try {
         iq = await api.sendIQ(createStanza("get", to))
-    } catch (iq) {
+    } catch (error) {
         return {
             jid,
-            'stanza': iq,
-            'vcard_error': (new Date()).toISOString()
+            error,
+            vcard: isElement(error) ? error : null,
+            vcard_error: (new Date()).toISOString()
         }
     }
     return onVCardData(iq);

@@ -1,4 +1,9 @@
-export function createStanza(type: any, jid: any, vcard_el: any): any;
+/**
+ * @param {"get"|"set"|"result"} type
+ * @param {string} jid
+ * @param {Element} [vcard_el]
+ */
+export function createStanza(type: "get" | "set" | "result", jid: string, vcard_el?: Element): any;
 /**
  * @param {ChatRoomOccupant} occupant
  */
@@ -24,7 +29,8 @@ export function getVCard(jid: string): Promise<{
     image_hash: any;
 } | {
     jid: string;
-    stanza: any;
+    error: any;
+    vcard: any;
     vcard_error: string;
 }>;
 export type ChatRoomOccupant = import('../muc/occupant.js').default;

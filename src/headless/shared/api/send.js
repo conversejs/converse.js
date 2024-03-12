@@ -58,9 +58,7 @@ export default {
         const { api } = _converse;
 
         if (!api.connection.connected()) {
-            log.warn("Not sending IQ stanza because we're not connected!");
-            log.warn(Strophe.serialize(stanza));
-            return;
+            throw new Error("Not sending IQ stanza because we're not connected!");
         }
 
         const connection = api.connection.get();

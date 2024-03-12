@@ -1,11 +1,17 @@
 export function removeContact(contact: any): void;
 export function highlightRosterItem(chatbox: any): void;
 export function toggleGroup(ev: any, name: any): void;
-export function isContactFiltered(contact: any, groupname: any): boolean;
+/**
+ * @param {RosterContact} contact
+ * @param {string} groupname
+ * @returns {boolean}
+ */
+export function isContactFiltered(contact: any, groupname: string): boolean;
 /**
  * @param {RosterContact} contact
  * @param {string} groupname
  * @param {Model} model
+ * @returns {boolean}
  */
 export function shouldShowContact(contact: any, groupname: string, model: Model): boolean;
 export function shouldShowGroup(group: any, model: any): boolean;

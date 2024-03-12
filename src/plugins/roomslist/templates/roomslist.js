@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('../view').RoomsList} RoomsList
+ * @typedef {import('@converse/headless/plugins/muc/muc').default} MUC
+ */
 import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
@@ -9,10 +13,12 @@ import { tplRoomDomainGroupList } from 'plugins/roomslist/templates/groups.js';
 import { CHATROOMS_TYPE, CLOSED } from '@converse/headless/shared/constants.js';
 
 
+/** @param {MUC} room */
 function isCurrentlyOpen (room) {
     return isUniView() && !room.get('hidden');
 }
 
+/** @param {MUC} room */
 function tplBookmark (room) {
     const bm = room.get('bookmarked') ?? false;
     const i18n_bookmark = __('Bookmark');
@@ -20,7 +26,7 @@ function tplBookmark (room) {
         <a class="list-item-action add-bookmark"
             data-room-jid="${room.get('jid')}"
             data-bookmark-name="${room.getDisplayName()}"
-            @click=${ev => addBookmarkViaEvent(ev)}
+            @click=${(ev) => addBookmarkViaEvent(ev)}
             title="${ i18n_bookmark }">
 
             <converse-icon class="fa ${bm ? 'fa-bookmark' : 'fa-bookmark-empty'}"
@@ -30,11 +36,20 @@ function tplBookmark (room) {
 }
 
 
-const tplUnreadIndicator = (room) => html`<span class="list-item-badge badge badge--muc msgs-indicator">${ room.get('num_unread') }</span>`;
+/** @param {MUC} room */
+function tplUnreadIndicator (room) {
+    return html`<span class="list-item-badge badge badge--muc msgs-indicator">${ room.get('num_unread') }</span>`;
+}
 
-const tplActivityIndicator = () => html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
+function tplActivityIndicator () {
+    return html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
+}
 
 
+/**
+ * @param {RoomsList} el
+ * @param {MUC} room
+ */
 export function tplRoomItem (el, room) {
     const i18n_leave_room = __('Leave this groupchat');
     const has_unread_msgs = room.get('num_unread_general') || room.get('has_activity');
@@ -69,6 +84,9 @@ export function tplRoomItem (el, room) {
         </div>`;
 }
 
+/**
+ * @param {RoomsList} el
+ */
 export default (el) => {
     const group_by_domain = api.settings.get('muc_grouped_by_domain');
     const { chatboxes } = _converse.state;
@@ -77,14 +95,41 @@ export default (el) => {
 
     const i18n_desc_rooms = __('Click to toggle the list of open groupchats');
     const i18n_heading_chatrooms = __('Groupchats');
-    const i18n_title_list_rooms = __('Query for groupchats');
-    const i18n_title_new_room = __('Add a new groupchat');
-    const i18n_show_bookmarks = __('Show bookmarked groupchats');
+    const i18n_title_list_rooms = __('Query server');
+    const i18n_title_new_room = __('Add groupchat');
+    const i18n_show_bookmarks = __('Bookmarks');
     const is_closed = el.model.get('toggle_state') === CLOSED;
+
+    const btns = [
+        html`<a class="dropdown-item show-bookmark-list-modal"
+                @click=${(ev) => api.modal.show('converse-bookmark-list-modal', { 'model': el.model }, ev)}
+                data-toggle="modal">
+                    <converse-icon class="fa fa-bookmark" size="1em"></converse-icon>
+                    ${i18n_show_bookmarks}
+        </a>`,
+        html`<a class="dropdown-item show-list-muc-modal"
+                @click=${(ev) => api.modal.show('converse-muc-list-modal', { 'model': el.model }, ev)}
+                data-toggle="modal"
+                data-target="#muc-list-modal">
+                    <converse-icon class="fa fa-list-ul" size="1em"></converse-icon>
+                    ${i18n_title_list_rooms}
+        </a>`,
+        html`<a class="dropdown-item show-add-muc-modal"
+                @click=${(ev) => api.modal.show('converse-add-muc-modal', { 'model': el.model }, ev)}
+                data-toggle="modal"
+                data-target="#add-chatrooms-modal">
+                    <converse-icon class="fa fa-plus" size="1em"></converse-icon>
+                    ${i18n_title_new_room}
+        </a>`,
+    ];
+
     return html`
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--groupchats">
-                <a class="list-toggle open-rooms-toggle" title="${i18n_desc_rooms}" @click=${ev => el.toggleRoomsList(ev)}>
+                <a class="list-toggle open-rooms-toggle"
+                   title="${i18n_desc_rooms}"
+                   @click=${ev => el.toggleRoomsList(ev)}>
+
                     <converse-icon
                         class="fa ${ is_closed ? 'fa-caret-right' : 'fa-caret-down' }"
                         size="1em"
@@ -92,24 +137,7 @@ export default (el) => {
                     ${i18n_heading_chatrooms}
                 </a>
             </span>
-
-            <a class="controlbox-heading__btn show-bookmark-list-modal"
-                @click=${(ev) => api.modal.show('converse-bookmark-list-modal', { 'model': el.model }, ev)}
-                title="${i18n_show_bookmarks}"
-                data-toggle="modal">
-                    <converse-icon class="fa fa-bookmark right" size="1em"></converse-icon>
-            </a>
-
-            <a class="controlbox-heading__btn show-list-muc-modal"
-                @click=${(ev) => api.modal.show('converse-muc-list-modal', { 'model': el.model }, ev)}
-                title="${i18n_title_list_rooms}" data-toggle="modal" data-target="#muc-list-modal">
-                    <converse-icon class="fa fa-list-ul right" size="1em"></converse-icon>
-            </a>
-            <a class="controlbox-heading__btn show-add-muc-modal"
-                @click=${(ev) => api.modal.show('converse-add-muc-modal', { 'model': el.model }, ev)}
-                title="${i18n_title_new_room}" data-toggle="modal" data-target="#add-chatrooms-modal">
-                    <converse-icon class="fa fa-plus right" size="1em"></converse-icon>
-            </a>
+            <converse-dropdown class="dropleft" .items=${btns}></converse-dropdown>
         </div>
 
         <div class="list-container list-container--openrooms ${ rooms.length ? '' : 'hidden' }">

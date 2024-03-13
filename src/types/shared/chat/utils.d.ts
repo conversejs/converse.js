@@ -63,5 +63,6 @@ export type EmojiMarkupOptions = {
     unicode_only?: boolean;
     add_title_wrapper?: boolean;
 };
-export type Message = import('../../headless/plugins/chat/message.js').default;
+export type Message = import('@converse/headless/plugins/chat/message').default;
+export type MUCView = import('../../plugins/muc-views/muc.js').default;
 //# sourceMappingURL=utils.d.ts.map

@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "10.1.7",
+  "version": "11.0.0",
   "description": "Browser based XMPP chat client",
   "main": "src/index.js",
   "types": "src/types/index.d.ts",
@@ -20,6 +20,8 @@
     "sass/**/*.scss",
     "src/**/*.html",
     "src/**/*.js",
+    "src/**/*.ts",
+    "src/**/*.ts.map",
     "src/**/*.json",
     "src/**/*.md",
     "src/**/*.po",

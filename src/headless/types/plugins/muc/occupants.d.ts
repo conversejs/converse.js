@@ -1,15 +1,14 @@
-export default ChatRoomOccupants;
+export default MUCOccupants;
 export type MemberListItem = any;
 /**
- * A list of {@link _converse.ChatRoomOccupant} instances, representing participants in a MUC.
+ * A list of {@link MUCOccupant} instances, representing participants in a MUC.
  * @class
- * @namespace _converse.ChatRoomOccupants
  * @memberOf _converse
  */
-declare class ChatRoomOccupants extends Collection {
+declare class MUCOccupants extends Collection {
     constructor(attrs: any, options: any);
     chatroom: any;
-    get model(): typeof ChatRoomOccupant;
+    get model(): typeof MUCOccupant;
     create(attrs: any, options: any): false | Model | import("@converse/skeletor/src/types/collection.js").Attributes | (Promise<any> & {
         isResolved: boolean;
         isPending: boolean;
@@ -35,7 +34,7 @@ declare class ChatRoomOccupants extends Collection {
      *
      * Lookup by occupant_id is done first, then jid, and then nick.
      *
-     * @method _converse.ChatRoomOccupants#findOccupant
+     * @method _converse.MUCOccupants#findOccupant
      * @param { OccupantData } data
      */
     findOccupant(data: {
@@ -47,14 +46,14 @@ declare class ChatRoomOccupants extends Collection {
         occupant_id?: string;
     }): any;
     /**
-     * Get the {@link ChatRoomOccupant} instance which
+     * Get the {@link MUCOccupant} instance which
      * represents the current user.
-     * @method _converse.ChatRoomOccupants#getOwnOccupant
-     * @returns {ChatRoomOccupant}
+     * @method _converse.MUCOccupants#getOwnOccupant
+     * @returns {MUCOccupant}
      */
-    getOwnOccupant(): ChatRoomOccupant;
+    getOwnOccupant(): MUCOccupant;
 }
 import { Collection } from "@converse/skeletor";
-import ChatRoomOccupant from "./occupant.js";
+import MUCOccupant from "./occupant.js";
 import { Model } from "@converse/skeletor";
 //# sourceMappingURL=occupants.d.ts.map

@@ -3,10 +3,10 @@ import { Model } from '@converse/skeletor';
 /**
  * Represents a participant in a MUC
  * @class
- * @namespace _converse.ChatRoomOccupant
+ * @namespace _converse.MUCOccupant
  * @memberOf _converse
  */
-class ChatRoomOccupant extends Model {
+class MUCOccupant extends Model {
 
     constructor (attributes, options) {
         super(attributes, options);
@@ -55,4 +55,4 @@ class ChatRoomOccupant extends Model {
     }
 }
 
-export default ChatRoomOccupant;
+export default MUCOccupant;

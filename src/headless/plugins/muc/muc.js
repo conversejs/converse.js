@@ -1,7 +1,7 @@
 /**
  * @module:headless-plugins-muc-muc
  * @typedef {import('./message.js').default} MUCMessage
- * @typedef {import('./occupant.js').default} ChatRoomOccupant
+ * @typedef {import('./occupant.js').default} MUCOccupant
  * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
  * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
@@ -396,7 +396,7 @@ class MUC extends ChatBox {
     }
 
     getMessagesCollection () {
-        return new _converse.exports.ChatRoomMessages();
+        return new _converse.exports.MUCMessages();
     }
 
     restoreSession () {
@@ -429,7 +429,7 @@ class MUC extends ChatBox {
     }
 
     initOccupants () {
-        this.occupants = new _converse.exports.ChatRoomOccupants();
+        this.occupants = new _converse.exports.MUCOccupants();
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.occupants-${bare_jid}${this.get('jid')}`;
         this.occupants.browserStorage = createStore(id, 'session');
@@ -1473,10 +1473,10 @@ class MUC extends ChatBox {
     }
 
     /**
-     * Get the {@link ChatRoomOccupant} instance which
+     * Get the {@link MUCOccupant} instance which
      * represents the current user.
      * @method MUC#getOwnOccupant
-     * @returns {ChatRoomOccupant}
+     * @returns {MUCOccupant}
      */
     getOwnOccupant () {
         return this.occupants.getOwnOccupant();
@@ -1517,7 +1517,7 @@ class MUC extends ChatBox {
     /**
      * Send an IQ stanza to modify an occupant's role
      * @method MUC#setRole
-     * @param {ChatRoomOccupant} occupant
+     * @param {MUCOccupant} occupant
      * @param {string} role
      * @param {string} reason
      * @param {function} onSuccess - callback for a succesful response
@@ -1546,7 +1546,7 @@ class MUC extends ChatBox {
     /**
      * @method MUC#getOccupant
      * @param {string} nickname_or_jid - The nickname or JID of the occupant to be returned
-     * @returns {ChatRoomOccupant}
+     * @returns {MUCOccupant}
      */
     getOccupant (nickname_or_jid) {
         return u.isValidJID(nickname_or_jid)
@@ -1595,7 +1595,7 @@ class MUC extends ChatBox {
      * @private
      * @method MUC#getOccupantsSortedBy
      * @param {string} attr - The attribute to sort the returned array by
-     * @returns {ChatRoomOccupant[]}
+     * @returns {MUCOccupant[]}
      */
     getOccupantsSortedBy (attr) {
         return Array.from(this.occupants.models).sort((a, b) =>

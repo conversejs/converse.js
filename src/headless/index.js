@@ -13,9 +13,8 @@ dayjs.extend(advancedFormat);
 
 /* START: Removable components
  * --------------------
- * Any of the following components may be removed if they're not needed.
+ * The following components may be removed if they're not needed.
  */
-
 import "./plugins/bookmarks/index.js";  // XEP-0199 XMPP Ping
 import "./plugins/bosh/index.js";       // XEP-0206 BOSH
 import "./plugins/caps/index.js";       // XEP-0115 Entity Capabilities

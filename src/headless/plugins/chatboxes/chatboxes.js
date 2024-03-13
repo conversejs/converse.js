@@ -1,4 +1,6 @@
 /**
+ * @typedef {import('../../plugins/chat/model.js').default} ChatBox
+ * @typedef {import('../../plugins/muc/muc').default} MUC
  * @typedef {import('@converse/skeletor').Model} Model
  */
 import _converse from '../../shared/_converse.js';
@@ -24,9 +26,9 @@ class ChatBoxes extends Collection {
         /**
          * Triggered once all chat boxes have been recreated from the browser cache
          * @event _converse#chatBoxesFetched
-         * @type { object }
-         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
-         * @property { Element } stanza
+         * @type {object}
+         * @property {ChatBox|MUC} chatbox
+         * @property {Element} stanza
          * @example _converse.api.listen.on('chatBoxesFetched', obj => { ... });
          * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
          */

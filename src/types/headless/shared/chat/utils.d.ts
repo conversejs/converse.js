@@ -23,9 +23,9 @@ export function getMediaURLs(arr: Array<MediaURLMetadata>, text: string, offset?
  */
 export function handleCorrection(model: ChatBox | MUC, attrs: object): Promise<Message | void>;
 export const debouncedPruneHistory: any;
-export type MUC = import('../../plugins/muc/muc.js').default;
-export type ChatBox = import('../../plugins/chat/model.js').default;
 export type Message = import('../../plugins/chat/message.js').default;
-export type MediaURLMetadata = any;
+export type ChatBox = import('../../plugins/chat/model.js').default;
+export type MUC = import('../../plugins/muc/muc.js').default;
 export type MediaURLData = any;
+export type MediaURLMetadata = any;
 //# sourceMappingURL=utils.d.ts.map

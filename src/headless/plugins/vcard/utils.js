@@ -1,16 +1,16 @@
 /**
- * @typedef {import('../muc/occupant.js').default} ChatRoomOccupant
- * @typedef {import('../chat/model-with-contact.js').default} ModelWithContact
+ * @typedef {import('../../plugins/muc/message').default} MUCMessage
  * @typedef {import('../../plugins/status/status').default} XMPPStatus
  * @typedef {import('../../plugins/vcard/vcards').default} VCards
- * @typedef {import('../../plugins/muc/message').default} MUCMessage
+ * @typedef {import('../chat/model-with-contact.js').default} ModelWithContact
+ * @typedef {import('../muc/occupant.js').default} MUCOccupant
  */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
-import { isElement } from 'utils/html.js';
+import { isElement } from '../../utils/html.js';
 
 const { Strophe, $iq, u } = converse.env;
 
@@ -62,7 +62,7 @@ export function createStanza (type, jid, vcard_el) {
 
 
 /**
- * @param {ChatRoomOccupant} occupant
+ * @param {MUCOccupant} occupant
  */
 export function onOccupantAvatarChanged (occupant) {
     const hash = occupant.get('image_hash');
@@ -102,6 +102,9 @@ export async function setVCardOnModel (model) {
 }
 
 
+/**
+ * @param {MUCOccupant} occupant
+ */
 function getVCardForOccupant (occupant) {
     const { vcards, xmppstatus } = _converse.state;
     const muc = occupant?.collection?.chatroom;
@@ -121,7 +124,7 @@ function getVCardForOccupant (occupant) {
 }
 
 /**
- * @param {ChatRoomOccupant} occupant
+ * @param {MUCOccupant} occupant
  */
 export async function setVCardOnOccupant (occupant) {
     await api.waitUntil('VCardsInitialized');

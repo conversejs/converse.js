@@ -1,10 +1,10 @@
 /**
  * @module:headless-shared-chat-utils
- * @typedef {import('../../plugins/muc/muc.js').default} MUC
- * @typedef {import('../../plugins/chat/model.js').default} ChatBox
  * @typedef {import('../../plugins/chat/message.js').default} Message
- * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
+ * @typedef {import('../../plugins/chat/model.js').default} ChatBox
+ * @typedef {import('../../plugins/muc/muc.js').default} MUC
  * @typedef {module:headless-shared-chat-utils.MediaURLData} MediaURLData
+ * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
  */
 import debounce from 'lodash-es/debounce.js';
 import api, { converse } from '../../shared/api/index.js';

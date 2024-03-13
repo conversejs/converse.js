@@ -1,6 +1,6 @@
 export default MUC;
 export type MUCMessage = import('./message.js').default;
-export type ChatRoomOccupant = import('./occupant.js').default;
+export type MUCOccupant = import('./occupant.js').default;
 export type NonOutcastAffiliation = import('./affiliations/utils.js').NonOutcastAffiliation;
 export type MemberListItem = any;
 export type MessageAttributes = any;
@@ -323,12 +323,12 @@ declare class MUC extends ChatBox {
      */
     private getOwnAffiliation;
     /**
-     * Get the {@link ChatRoomOccupant} instance which
+     * Get the {@link MUCOccupant} instance which
      * represents the current user.
      * @method MUC#getOwnOccupant
-     * @returns {ChatRoomOccupant}
+     * @returns {MUCOccupant}
      */
-    getOwnOccupant(): ChatRoomOccupant;
+    getOwnOccupant(): MUCOccupant;
     /**
      * Send a presence stanza to update the user's nickname in this MUC.
      * @param { String } nick
@@ -337,19 +337,19 @@ declare class MUC extends ChatBox {
     /**
      * Send an IQ stanza to modify an occupant's role
      * @method MUC#setRole
-     * @param {ChatRoomOccupant} occupant
+     * @param {MUCOccupant} occupant
      * @param {string} role
      * @param {string} reason
      * @param {function} onSuccess - callback for a succesful response
      * @param {function} onError - callback for an error response
      */
-    setRole(occupant: ChatRoomOccupant, role: string, reason: string, onSuccess: Function, onError: Function): any;
+    setRole(occupant: MUCOccupant, role: string, reason: string, onSuccess: Function, onError: Function): any;
     /**
      * @method MUC#getOccupant
      * @param {string} nickname_or_jid - The nickname or JID of the occupant to be returned
-     * @returns {ChatRoomOccupant}
+     * @returns {MUCOccupant}
      */
-    getOccupant(nickname_or_jid: string): ChatRoomOccupant;
+    getOccupant(nickname_or_jid: string): MUCOccupant;
     /**
      * Return an array of occupant models that have the required role
      * @method MUC#getOccupantsWithRole
@@ -377,7 +377,7 @@ declare class MUC extends ChatBox {
      * @private
      * @method MUC#getOccupantsSortedBy
      * @param {string} attr - The attribute to sort the returned array by
-     * @returns {ChatRoomOccupant[]}
+     * @returns {MUCOccupant[]}
      */
     private getOccupantsSortedBy;
     /**

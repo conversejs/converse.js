@@ -1,5 +1,6 @@
 /**
- * @typedef {import('../../headless/plugins/chat/message.js').default} Message
+ * @typedef {import('@converse/headless/plugins/chat/message').default} Message
+ * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
  */
 import debounce from 'lodash-es/debounce';
 import tplNewDay from "./templates/new-day.js";
@@ -109,7 +110,7 @@ function _markScrolled (ev) {
         /**
          * Triggered once the chat's message area has been scrolled to the top
          * @event _converse#chatBoxScrolledUp
-         * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
+         * @property { _converse.ChatBoxView | MUCView } view
          * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
          */
         api.trigger('chatBoxScrolledUp', el);

@@ -67,7 +67,7 @@ describe("A Groupchat", function () {
 
             const muc_jid = 'lounge@montague.lit';
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
+            spyOn(_converse.exports.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
             // Join MUC without an affiliation
             const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], [], true, {}, 'none', 'participant');
             await u.waitUntil(() => model.occupants.fetchMembers.calls.count());
@@ -161,7 +161,7 @@ describe("Someone being invited to a groupchat", function () {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
-        spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
+        spyOn(_converse.exports.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
         const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const muc_jid = 'coven@chat.shakespeare.lit';
         const nick = 'romeo';

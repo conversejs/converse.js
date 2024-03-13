@@ -1,11 +1,11 @@
-export default ChatRoomOccupant;
+export default MUCOccupant;
 /**
  * Represents a participant in a MUC
  * @class
- * @namespace _converse.ChatRoomOccupant
+ * @namespace _converse.MUCOccupant
  * @memberOf _converse
  */
-declare class ChatRoomOccupant extends Model {
+declare class MUCOccupant extends Model {
     constructor(attributes: any, options: any);
     vcard: any;
     defaults(): {

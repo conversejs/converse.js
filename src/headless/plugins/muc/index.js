@@ -9,8 +9,8 @@ import '../emoji/index.js';
 import MUCMessage from './message.js';
 import MUCMessages from './messages.js';
 import MUC from './muc.js';
-import ChatRoomOccupant from './occupant.js';
-import ChatRoomOccupants from './occupants.js';
+import MUCOccupant from './occupant.js';
+import MUCOccupants from './occupants.js';
 import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
 import _converse from '../../shared/_converse.js';
@@ -188,19 +188,22 @@ converse.plugins.add('converse-muc', {
         const legacy_exports = {
             ChatRoom: MUC,
             ChatRoomMessage: MUCMessage,
+            ChatRoomMessages: MUCMessages,
+            ChatRoomOccupant: MUCOccupant,
+            ChatRoomOccupants: MUCOccupants,
         };
         Object.assign(_converse, legacy_exports);
 
         const exports = {
             MUC,
             MUCMessage,
-            ChatRoomOccupants,
-            ChatRoomOccupant,
+            MUCMessages,
+            MUCOccupant,
+            MUCOccupants,
             getAssignableAffiliations,
             getDefaultMUCNickname,
             isInfoVisible,
             onDirectMUCInvitation,
-            ChatRoomMessages: MUCMessages,
         };
         Object.assign(_converse.exports, exports);
         Object.assign(_converse, exports); // XXX DEPRECATED

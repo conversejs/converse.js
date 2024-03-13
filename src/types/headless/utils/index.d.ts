@@ -49,6 +49,8 @@ declare const _default: {
     isValidJID: typeof isValidJID;
     isValidMUCJID: typeof isValidMUCJID;
     isVideoURL: typeof isVideoURL;
+    isUniView: typeof isUniView;
+    isTestEnv: typeof isTestEnv;
     merge: typeof merge;
     onMultipleEvents: typeof onMultipleEvents;
     placeCaretAtEnd: typeof placeCaretAtEnd;
@@ -94,6 +96,8 @@ import { isURLWithImageExtension } from "./url.js";
 import { isValidJID } from "./jid.js";
 import { isValidMUCJID } from "./jid.js";
 import { isVideoURL } from "./url.js";
+import { isUniView } from "./session.js";
+import { isTestEnv } from "./session.js";
 import { merge } from "./object.js";
 /**
  * Call the callback once all the events have been triggered

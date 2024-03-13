@@ -58,7 +58,7 @@ export namespace omemo {
 export type WindowWithLibsignal = any;
 export type MessageAttributes = any;
 export type MUCMessageAttributes = any;
-export type ChatBox = import('@converse/headless/plugins/chat/model.js').default;
+export type ChatBox = import('@converse/headless').ChatBox;
 import { IQError } from "shared/errors.js";
 import { UserFacingError } from "shared/errors.js";
 declare function decryptMessage(obj: any): Promise<string>;

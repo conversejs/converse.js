@@ -2,7 +2,7 @@
  * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
  * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
  * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
- * @typedef {import('@converse/headless/plugins/chat/model.js').default} ChatBox
+ * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';

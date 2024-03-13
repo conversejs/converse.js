@@ -1,3 +1,3 @@
-export type MUC = import('@converse/headless/plugins/muc/muc').default;
-export type ChatBox = import('@converse/headless/plugins/chat/model').default;
+export type MUC = import('@converse/headless').MUC;
+export type ChatBox = import('@converse/headless').ChatBox;
 //# sourceMappingURL=index.d.ts.map

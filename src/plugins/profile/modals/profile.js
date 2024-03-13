@@ -1,6 +1,6 @@
 
 /**
- * @typedef {import("@converse/headless/plugins/status/status").default} XMPPStatus
+ * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
  */
 import BaseModal from "plugins/modal/modal.js";
 import tplProfileModal from "../templates/profile_modal.js";

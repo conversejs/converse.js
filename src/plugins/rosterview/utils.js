@@ -1,6 +1,6 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
- * @typedef {import('@converse/headless/plugins/roster/contact').default} RosterContact
+ * @typedef {import('@converse/headless').RosterContact} RosterContact
  */
 import { __ } from 'i18n';
 import { _converse, api, log } from "@converse/headless";

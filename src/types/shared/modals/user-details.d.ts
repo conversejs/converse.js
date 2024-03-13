@@ -6,6 +6,6 @@ export default class UserDetailsModal extends BaseModal {
     refreshContact(ev: any): Promise<void>;
     removeContact(ev: any): Promise<void>;
 }
-export type ChatBox = import('headless/plugins/chat/model.js').default;
+export type ChatBox = import('@converse/headless').ChatBox;
 import BaseModal from "plugins/modal/modal.js";
 //# sourceMappingURL=user-details.d.ts.map

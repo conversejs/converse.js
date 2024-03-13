@@ -2,15 +2,14 @@
  * @typedef {module:headless-plugins-muc-muc.MUCMessageAttributes} MUCMessageAttributes
  * @typedef {module:headless-plugins-muc-muc.MUCMessageData} MUCMessageData
  * @typedef {module:headless-plugins-chat-utils.MessageData} MessageData
- * @typedef {import('@converse/headless/plugins/roster/contact').default} RosterContact
+ * @typedef {import('@converse/headless').RosterContact} RosterContact
  */
 import Favico from 'favico.js-slevomat';
 import { __, i18n } from 'i18n';
 import { _converse, api, converse, log } from '@converse/headless';
-import { isEmptyMessage } from '@converse/headless/utils/index.js';
-import { isTestEnv } from '@converse/headless/utils/session.js';
 
-const { Strophe } = converse.env;
+const { Strophe, u } = converse.env;
+const { isEmptyMessage, isTestEnv } = u;
 const supports_html5_notification = 'Notification' in window;
 
 converse.env.Favico = Favico;
@@ -167,7 +166,7 @@ export function showFeedbackNotification (data) {
  * @param {RosterContact} contact
  */
 function showChatStateNotification (contact) {
-    if (api.settings.get('chatstate_notification_blacklist')?.includes(contact.jid)) {
+    if (api.settings.get('chatstate_notification_blacklist')?.includes(contact.get('jid'))) {
         // Don't notify if the user is being ignored.
         return;
     }

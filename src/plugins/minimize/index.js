@@ -3,8 +3,8 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  *
- * @typedef {import('@converse/headless/plugins/muc/muc').default} MUC
- * @typedef {import('@converse/headless/plugins/chat/model').default} ChatBox
+ * @typedef {import('@converse/headless').MUC} MUC
+ * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
 import './view.js';
 import './components/minimized-chat.js';

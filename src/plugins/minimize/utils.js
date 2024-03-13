@@ -1,6 +1,6 @@
 /**
- * @typedef {import('@converse/headless/plugins/muc/muc').default} MUC
- * @typedef {import('@converse/headless/plugins/chat/model').default} ChatBox
+ * @typedef {import('@converse/headless').MUC} MUC
+ * @typedef {import('@converse/headless').ChatBox} ChatBox
  * @typedef {import('plugins/chatview/chat').default} ChatView
  * @typedef {import('plugins/muc-views/muc').default} MUCView
  * @typedef {import('plugins/controlbox/controlbox').default} ControlBoxView

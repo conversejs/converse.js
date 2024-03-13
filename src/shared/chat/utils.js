@@ -1,19 +1,15 @@
 /**
- * @typedef {import('@converse/headless/plugins/chat/message').default} Message
+ * @typedef {import('@converse/headless').Message} Message
  * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
  */
 import debounce from 'lodash-es/debounce';
-import tplNewDay from "./templates/new-day.js";
+import tplNewDay from './templates/new-day.js';
 import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import {
-    convertASCII2Emoji,
-    getShortnameReferences,
-    getCodePointReferences
-} from '@converse/headless/plugins/emoji/utils.js';
 
 const { dayjs, u } = converse.env;
+const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u;
 
 export async function getHeadingDropdownItem (promise_or_data) {
     const data = await promise_or_data;

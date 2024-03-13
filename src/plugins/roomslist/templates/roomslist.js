@@ -1,6 +1,6 @@
 /**
  * @typedef {import('../view').RoomsList} RoomsList
- * @typedef {import('@converse/headless/plugins/muc/muc').default} MUC
+ * @typedef {import('@converse/headless').MUC} MUC
  */
 import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';

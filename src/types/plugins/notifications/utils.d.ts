@@ -1,5 +1,5 @@
 export function isMessageToHiddenChat(attrs: any): any;
-export function areDesktopNotificationsEnabled(): boolean;
+export function areDesktopNotificationsEnabled(): any;
 /**
  * @typedef {Navigator & {clearAppBadge: Function, setAppBadge: Function} } navigator
  */
@@ -22,11 +22,11 @@ export function handleFeedback(data: any): void;
  * Will show an HTML5 notification to indicate that the chat status has changed.
  * @param {RosterContact} contact
  */
-export function handleChatStateNotification(contact: any): void;
+export function handleChatStateNotification(contact: RosterContact): void;
 /**
  * @param {RosterContact} contact
  */
-export function handleContactRequestNotification(contact: any): void;
+export function handleContactRequestNotification(contact: RosterContact): void;
 export function requestPermission(): void;
 export type navigator = Navigator & {
     clearAppBadge: Function;
@@ -35,5 +35,5 @@ export type navigator = Navigator & {
 export type MUCMessageAttributes = any;
 export type MUCMessageData = any;
 export type MessageData = any;
-export type RosterContact = any;
+export type RosterContact = import('@converse/headless').RosterContact;
 //# sourceMappingURL=utils.d.ts.map

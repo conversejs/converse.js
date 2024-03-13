@@ -19,8 +19,8 @@ export function minimize(ev: any, model: any): void;
  * @param { ChatBox|MUC } model
  */
 export function onMinimizedChanged(model: ChatBox | MUC): void;
-export type MUC = import('@converse/headless/plugins/muc/muc').default;
-export type ChatBox = import('@converse/headless/plugins/chat/model').default;
+export type MUC = import('@converse/headless').MUC;
+export type ChatBox = import('@converse/headless').ChatBox;
 export type ChatView = import('plugins/chatview/chat').default;
 export type MUCView = import('plugins/muc-views/muc').default;
 export type ControlBoxView = import('plugins/controlbox/controlbox').default;

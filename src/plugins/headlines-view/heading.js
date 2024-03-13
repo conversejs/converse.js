@@ -18,7 +18,7 @@ export default class HeadlinesHeading extends CustomElement {
     }
 
     async initialize () {
-        this.model = _converse.chatboxes.get(this.jid);
+        this.model = _converse.state.chatboxes.get(this.jid);
         await this.model.initialized;
         this.requestUpdate();
     }

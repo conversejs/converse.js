@@ -3,7 +3,7 @@ import { sprintf } from 'sprintf-js';
 /**
  * @namespace i18n
  */
-export default {
+const i18nStub = {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     initialize () {},
 
@@ -24,3 +24,5 @@ export default {
         return sprintf(...args);
     }
 };
+
+export default i18nStub;

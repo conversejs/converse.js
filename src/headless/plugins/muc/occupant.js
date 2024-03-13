@@ -3,12 +3,17 @@ import { Model } from '@converse/skeletor';
 /**
  * Represents a participant in a MUC
  * @class
- * @namespace _converse.ChatRoomOccupant
+ * @namespace _converse.MUCOccupant
  * @memberOf _converse
  */
-class ChatRoomOccupant extends Model {
+class MUCOccupant extends Model {
 
-    defaults () { // eslint-disable-line class-methods-use-this
+    constructor (attributes, options) {
+        super(attributes, options);
+        this.vcard = null;
+    }
+
+    defaults () {
         return {
             hats: [],
             show: 'offline',
@@ -50,4 +55,4 @@ class ChatRoomOccupant extends Model {
     }
 }
 
-export default ChatRoomOccupant;
+export default MUCOccupant;

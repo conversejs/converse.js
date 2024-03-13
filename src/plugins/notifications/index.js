@@ -35,9 +35,10 @@ converse.plugins.add('converse-notification', {
         /************************ Event Handlers ************************/
         api.listen.on('clearSession', clearFavicon); // Needed for tests
 
-        api.waitUntil('chatBoxesInitialized').then(() =>
-            _converse.chatboxes.on('change:num_unread', updateUnreadFavicon)
-        );
+        api.waitUntil('chatBoxesInitialized').then(() => {
+            const { chatboxes } = _converse.state;
+            chatboxes.on('change:num_unread', updateUnreadFavicon)
+        });
 
         api.listen.on('pluginsInitialized', function () {
             // We only register event handlers after all plugins are

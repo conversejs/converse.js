@@ -1,11 +1,12 @@
 /**
  * @module:headless-plugins-muc-muc
  * @typedef {import('./message.js').default} MUCMessage
- * @typedef {import('./occupant.js').default} ChatRoomOccupant
+ * @typedef {import('./occupant.js').default} MUCOccupant
  * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
  * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
  * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {module:shared.converse.UserMessage} UserMessage
  * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
 import _converse from '../../shared/_converse.js';
@@ -395,7 +396,7 @@ class MUC extends ChatBox {
     }
 
     getMessagesCollection () {
-        return new _converse.exports.ChatRoomMessages();
+        return new _converse.exports.MUCMessages();
     }
 
     restoreSession () {
@@ -428,7 +429,7 @@ class MUC extends ChatBox {
     }
 
     initOccupants () {
-        this.occupants = new _converse.exports.ChatRoomOccupants();
+        this.occupants = new _converse.exports.MUCOccupants();
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.occupants-${bare_jid}${this.get('jid')}`;
         this.occupants.browserStorage = createStore(id, 'session');
@@ -967,6 +968,10 @@ class MUC extends ChatBox {
         return self && self.isModerator() && api.disco.supports(Strophe.NS.MODERATE, this.get('jid'));
     }
 
+    canPostMessages () {
+        return this.isEntered() && !(this.features.get('moderated') && this.getOwnRole() === 'visitor');
+    }
+
     /**
      * Return an array of unique nicknames based on all occupants and messages in this MUC.
      * @private
@@ -1468,10 +1473,10 @@ class MUC extends ChatBox {
     }
 
     /**
-     * Get the {@link ChatRoomOccupant} instance which
+     * Get the {@link MUCOccupant} instance which
      * represents the current user.
      * @method MUC#getOwnOccupant
-     * @returns {ChatRoomOccupant}
+     * @returns {MUCOccupant}
      */
     getOwnOccupant () {
         return this.occupants.getOwnOccupant();
@@ -1512,7 +1517,7 @@ class MUC extends ChatBox {
     /**
      * Send an IQ stanza to modify an occupant's role
      * @method MUC#setRole
-     * @param {ChatRoomOccupant} occupant
+     * @param {MUCOccupant} occupant
      * @param {string} role
      * @param {string} reason
      * @param {function} onSuccess - callback for a succesful response
@@ -1541,7 +1546,7 @@ class MUC extends ChatBox {
     /**
      * @method MUC#getOccupant
      * @param {string} nickname_or_jid - The nickname or JID of the occupant to be returned
-     * @returns {ChatRoomOccupant}
+     * @returns {MUCOccupant}
      */
     getOccupant (nickname_or_jid) {
         return u.isValidJID(nickname_or_jid)
@@ -1590,7 +1595,7 @@ class MUC extends ChatBox {
      * @private
      * @method MUC#getOccupantsSortedBy
      * @param {string} attr - The attribute to sort the returned array by
-     * @returns {ChatRoomOccupant[]}
+     * @returns {MUCOccupant[]}
      */
     getOccupantsSortedBy (attr) {
         return Array.from(this.occupants.models).sort((a, b) =>
@@ -1829,7 +1834,7 @@ class MUC extends ChatBox {
         // 173: room now semi-anonymous
         // 174: room now fully anonymous
         const codes = ['104', '170', '171', '172', '173', '174'];
-        if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('status'))).length) {
+        if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('code'))).length) {
             this.refreshDiscoInfo();
         }
     }
@@ -2386,7 +2391,8 @@ class MUC extends ChatBox {
         if (!x) {
             return;
         }
-        const disconnection_codes = Object.keys(_converse.labels.muc.disconnect_messages);
+        const muc = /** @type {UserMessage} */(_converse.labels.muc);
+        const disconnection_codes = Object.keys(muc.disconnect_messages);
         const codes = sizzle('status', x)
             .map(s => s.getAttribute('code'))
             .filter(c => disconnection_codes.includes(c));
@@ -2401,7 +2407,7 @@ class MUC extends ChatBox {
         const item = x.querySelector('item');
         const reason = item ? item.querySelector('reason')?.textContent : undefined;
         const actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
-        const message = _converse.labels.muc.disconnect_messages[codes[0]];
+        const message = muc.disconnect_messages[codes[0]];
         const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor, status);
     }
@@ -2519,7 +2525,7 @@ class MUC extends ChatBox {
     createInfoMessage (code, stanza, is_self) {
         const __ = _converse.__;
         const data = { 'type': 'info', 'is_ephemeral': true };
-        const { info_messages, new_nickname_messages } = _converse.labels.muc;
+        const { info_messages, new_nickname_messages } = /** @type {UserMessage} */(_converse.labels.muc);
 
         if (!isInfoVisible(code)) {
             return;
@@ -2621,6 +2627,7 @@ class MUC extends ChatBox {
      */
     onErrorPresence (stanza) {
         const __ = _converse.__;
+        const muc = /** @type {UserMessage} */(_converse.labels.muc);
         const error = stanza.querySelector('error');
         const error_type = error.getAttribute('type');
         const reason = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop()?.textContent;
@@ -2637,7 +2644,7 @@ class MUC extends ChatBox {
                 this.setDisconnectionState(message, reason);
             } else if (error.querySelector('forbidden')) {
                 this.setDisconnectionState(
-                    _converse.labels.muc.disconnect_messages[301],
+                    muc.disconnect_messages[301],
                     reason,
                     null,
                     ROOMSTATUS.BANNED

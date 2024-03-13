@@ -35,7 +35,8 @@ export default class ChatHeading extends CustomElement {
     }
 
     initialize () {
-        this.model = _converse.chatboxes.get(this.jid);
+        const { chatboxes } = _converse.state;
+        this.model = chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:status', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
@@ -95,7 +96,8 @@ export default class ChatHeading extends CustomElement {
                 'standalone': api.settings.get('view_mode') === 'overlayed'
             });
         }
-        const el = _converse.chatboxviews.get(this.getAttribute('jid'));
+        const { chatboxviews } = _converse.state;
+        const el = chatboxviews.get(this.getAttribute('jid'));
         if (el) {
             /**
              * *Hook* which allows plugins to add more buttons to a chat's heading.

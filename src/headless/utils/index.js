@@ -47,6 +47,8 @@ import {
     isAllowedProtocolForMedia,
 } from './url.js';
 
+import { isTestEnv, isUniView } from './session.js';
+
 
 /**
  * The utils object
@@ -220,6 +222,8 @@ export default Object.assign({
     isValidJID,
     isValidMUCJID,
     isVideoURL,
+    isUniView,
+    isTestEnv,
     merge,
     onMultipleEvents,
     placeCaretAtEnd,

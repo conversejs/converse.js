@@ -220,6 +220,9 @@ function getEmojisByAtrribute (attr) {
 }
 
 Object.assign(u, {
+    getCodePointReferences,
+    getShortnameReferences,
+    convertASCII2Emoji,
     getEmojisByAtrribute,
     isOnlyEmojis,
     shortnamesToUnicode,

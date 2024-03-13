@@ -168,7 +168,7 @@ export async function parseMUCMessage (stanza, chatbox) {
     const marker = getChatMarker(stanza);
 
     /**
-     * @typedef { Object } MUCMessageAttributes
+     * @typedef {Object} MUCMessageAttributes
      * The object which {@link parseMUCMessage} returns
      * @property { ('me'|'them') } sender - Whether the message was sent by the current user or someone else
      * @property { Array<Object> } activities - A list of objects representing XEP-0316 MEP notification data

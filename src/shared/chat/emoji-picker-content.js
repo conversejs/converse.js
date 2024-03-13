@@ -2,10 +2,11 @@
  * @typedef {module:emoji-picker.EmojiPicker} EmojiPicker
  */
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, converse, api } from '@converse/headless';
+import { converse, api } from '@converse/headless';
 import { html } from 'lit';
 import { tplAllEmojis, tplSearchResults } from './templates/emoji-picker.js';
 import { getTonedEmojis } from './utils.js';
+import { FILTER_CONTAINS } from 'shared/autocomplete/utils.js';
 
 const { sizzle } = converse.env;
 
@@ -100,7 +101,7 @@ export default class EmojiPickerContent extends CustomElement {
                 return true;
             }
         }
-        if (this.query && !_converse.FILTER_CONTAINS(shortname, this.query)) {
+        if (this.query && !FILTER_CONTAINS(shortname, this.query)) {
             return true;
         }
         return false;

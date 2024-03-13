@@ -1,12 +1,16 @@
 /**
- * @typedef {import('../muc/occupant.js').default} ChatRoomOccupant
+ * @typedef {import('../../plugins/muc/message').default} MUCMessage
+ * @typedef {import('../../plugins/status/status').default} XMPPStatus
+ * @typedef {import('../../plugins/vcard/vcards').default} VCards
  * @typedef {import('../chat/model-with-contact.js').default} ModelWithContact
+ * @typedef {import('../muc/occupant.js').default} MUCOccupant
  */
 import _converse from '../../shared/_converse.js';
 import api, { converse } from '../../shared/api/index.js';
 import log from "../../log.js";
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
+import { isElement } from '../../utils/html.js';
 
 const { Strophe, $iq, u } = converse.env;
 
@@ -41,6 +45,11 @@ async function onVCardData (iq) {
 }
 
 
+/**
+ * @param {"get"|"set"|"result"} type
+ * @param {string} jid
+ * @param {Element} [vcard_el]
+ */
 export function createStanza (type, jid, vcard_el) {
     const iq = $iq(jid ? {'type': type, 'to': jid} : {'type': type});
     if (!vcard_el) {
@@ -53,7 +62,7 @@ export function createStanza (type, jid, vcard_el) {
 
 
 /**
- * @param {ChatRoomOccupant} occupant
+ * @param {MUCOccupant} occupant
  */
 export function onOccupantAvatarChanged (occupant) {
     const hash = occupant.get('image_hash');
@@ -93,6 +102,9 @@ export async function setVCardOnModel (model) {
 }
 
 
+/**
+ * @param {MUCOccupant} occupant
+ */
 function getVCardForOccupant (occupant) {
     const { vcards, xmppstatus } = _converse.state;
     const muc = occupant?.collection?.chatroom;
@@ -111,6 +123,9 @@ function getVCardForOccupant (occupant) {
     }
 }
 
+/**
+ * @param {MUCOccupant} occupant
+ */
 export async function setVCardOnOccupant (occupant) {
     await api.waitUntil('VCardsInitialized');
     occupant.vcard = getVCardForOccupant(occupant);
@@ -121,6 +136,9 @@ export async function setVCardOnOccupant (occupant) {
 }
 
 
+/**
+ * @param {MUCMessage} message
+ */
 function getVCardForMUCMessage (message) {
     const { vcards, xmppstatus } = _converse.state;
     const muc = message?.collection?.chatbox;
@@ -139,6 +157,9 @@ function getVCardForMUCMessage (message) {
     }
 }
 
+/**
+ * @param {MUCMessage} message
+ */
 export async function setVCardOnMUCMessage (message) {
     if (['error', 'info'].includes(message.get('type'))) {
         return;
@@ -192,17 +213,21 @@ export function clearVCardsSession () {
     }
 }
 
+/**
+ * @param {string} jid
+ */
 export async function getVCard (jid) {
     const bare_jid = _converse.session.get('bare_jid');
     const to = Strophe.getBareJidFromJid(jid) === bare_jid ? null : jid;
     let iq;
     try {
         iq = await api.sendIQ(createStanza("get", to))
-    } catch (iq) {
+    } catch (error) {
         return {
             jid,
-            'stanza': iq,
-            'vcard_error': (new Date()).toISOString()
+            error,
+            vcard: isElement(error) ? error : null,
+            vcard_error: (new Date()).toISOString()
         }
     }
     return onVCardData(iq);

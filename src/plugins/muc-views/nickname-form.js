@@ -20,7 +20,8 @@ class MUCNicknameForm extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.model = _converse.chatboxes.get(this.jid);
+        const { chatboxes } = _converse.state;
+        this.model = chatboxes.get(this.jid);
     }
 
     render () {

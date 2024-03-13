@@ -1,6 +1,6 @@
 /* global mock, converse */
 
-const { $msg, u } = converse.env;
+const { u } = converse.env;
 
 
 describe("The list of MUC domains", function () {
@@ -92,13 +92,13 @@ describe("A MUC domain group", function () {
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
         const controlbox = _converse.chatboxviews.get('controlbox');
-        let list = controlbox.querySelector('.list-container--openrooms');
+        const list = controlbox.querySelector('.list-container--openrooms');
         await mock.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
 
         const lview = controlbox.querySelector('converse-rooms-list');
         await u.waitUntil(() => lview.querySelectorAll(".muc-domain-group").length);
         expect(u.hasClass('hidden', list)).toBeFalsy();
-        let group_els = lview.querySelectorAll(".muc-domain-group");
+        const group_els = lview.querySelectorAll(".muc-domain-group");
         expect(group_els.length).toBe(1);
         expect(group_els[0].children[0].innerText.trim()).toBe('conference.shakespeare.lit');
 

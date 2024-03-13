@@ -52,6 +52,7 @@ converse.plugins.add('converse-muc-views', {
             'muc_mention_autocomplete_show_avatar': true,
             'muc_roomid_policy': null,
             'muc_roomid_policy_hint': null,
+            'muc_search_service': 'api@search.jabber.network',
             'roomconfig_whitelist': [],
             'show_retraction_warning': true,
             'visible_toolbar_buttons': {
@@ -59,7 +60,12 @@ converse.plugins.add('converse-muc-views', {
             }
         });
 
-        _converse.ChatRoomView = MUCView;
+        const exports = {
+            ChatRoomView: MUCView,
+            MUCView
+        };
+        Object.assign(_converse, exports); // DEPRECATED
+        Object.assign(_converse.exports, exports);
 
         if (!api.settings.get('muc_domain')) {
             // Use service discovery to get the default MUC domain

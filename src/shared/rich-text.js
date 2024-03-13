@@ -29,10 +29,15 @@ const isString = s => typeof s === 'string';
 
 // We don't render more than two line-breaks, replace extra line-breaks with
 // the zero-width whitespace character
-const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${'\u200B'.repeat(m.length - 2)}\n`);
+// This takes into account other characters that may have been removed by
+// being replaced with a zero-width space, such as '> ' in the case of
+// multi-line quotes.
+const collapseLineBreaks = text => text.replace(/\n(\u200B*\n)+/g, m => `\n${'\u200B'.repeat(m.length - 2)}\n`);
 
-const tplMentionWithNick = o => html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
-const tplMention = o => html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
+const tplMentionWithNick = (o) =>
+    html`<span class="mention mention--self badge badge-info" data-uri="${o.uri}">${o.mention}</span>`;
+
+const tplMention = (o) => html`<span class="mention" data-uri="${o.uri}">${o.mention}</span>`;
 
 /**
  * @class RichText
@@ -206,7 +211,11 @@ export class RichText extends String {
             const end = Number(ref.end) - full_offset;
             const mention = text.slice(begin, end);
             if (mention === this.nick) {
-                this.addTemplateResult(begin + local_offset, end + local_offset, tplMentionWithNick({...ref, mention }));
+                this.addTemplateResult(
+                    begin + local_offset,
+                    end + local_offset,
+                    tplMentionWithNick({...ref, mention })
+                );
             } else {
                 this.addTemplateResult(begin + local_offset, end + local_offset, tplMention({...ref, mention }));
             }

@@ -6,11 +6,16 @@ Strophe.addNamespace('MUCSEARCH', 'https://xmlns.zombofant.net/muclumbus/search/
 
 const rooms_cache = {};
 
+/**
+ * @param {string} query
+ */
 async function searchRooms (query) {
+    const muc_search_service = api.settings.get('muc_search_service');
+    const bare_jid = _converse.session.get('bare_jid');
     const iq = $iq({
         'type': 'get',
-        'from': _converse.bare_jid,
-        'to': 'api@search.jabber.network'
+        'from': bare_jid,
+        'to': muc_search_service,
     }).c('search', { 'xmlns': Strophe.NS.MUCSEARCH })
         .c('set', { 'xmlns': Strophe.NS.RSM })
             .c('max').t(10).up().up()
@@ -49,6 +54,9 @@ async function searchRooms (query) {
     });
 }
 
+/**
+ * @param {string} query
+ */
 export function getAutoCompleteList (query) {
     if (!rooms_cache[query]) {
         rooms_cache[query] = searchRooms(query);

@@ -1,6 +1,10 @@
 /**
  * @module:shared.converse
- * @typedef {import('@converse/skeletor/src/storage.js').Storage} Storage
+ * @typedef {import('@converse/skeletor/src/storage').Storage} Storage
+ * @typedef {import('@converse/skeletor').Collection} Collection
+ * @typedef {import('../plugins/disco/index').DiscoState} DiscoState
+ * @typedef {import('../plugins/status/status').default} XMPPStatus
+ * @typedef {import('../plugins/vcard/vcard').default} VCards
  */
 import log from '../log.js';
 import i18n from './i18n.js';
@@ -93,6 +97,8 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.DEFAULT_IMAGE_TYPE = DEFAULT_IMAGE_TYPE;
         this.DEFAULT_IMAGE = DEFAULT_IMAGE;
 
+        this.NUM_PREKEYS = 100; // DEPRECATED. Set here so that tests can override
+
         // Set as module attr so that we can override in tests.
         // TODO: replace with config settings
         this.TIMEOUTS =  {
@@ -106,12 +112,11 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
 
         /**
          * Namespace for storing translated strings.
+         *
+         * @typedef {Record<string, string>} UserMessage
+         * @typedef {Record<string, string|UserMessage>} UserMessages
          */
-        this.labels =
-            /**
-             * @typedef {Record<string, string>} UserMessage
-             * @typedef {Record<string, string|UserMessage>} UserMessage
-             * @type {UserMessages} */{};
+        this.labels = /** @type {UserMessages} */({});
 
         /**
          * Namespace for storing code that might be useful to 3rd party
@@ -119,13 +124,18 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
          * access to code (e.g. classes) from converse.js without having to add
          * converse.js as a dependency.
          */
-        this.exports = /** @type {Record<string, Object>} */{};
+        this.exports = /** @type {Record<string, Object>} */({});
 
         /**
          * Namespace for storing the state, as represented by instances of
          * Models and Collections.
+         *
+         * @typedef {Object & Record<string, Collection|Model|VCards|XMPPStatus|DiscoState>} ConverseState
+         * @property {VCards} [vcards]
+         * @property {XMPPStatus} xmppstatus
+         * @property {DiscoState} disco
          */
-        this.state = /** @type {Record<string, Model|Collection>} */{};
+        this.state = /** @type {ConverseState} */({});
 
         this.initSession();
     }

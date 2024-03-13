@@ -19,8 +19,8 @@ converse.plugins.add('converse-dragresize', {
      */
     dependencies: ['converse-chatview', 'converse-headlines-view', 'converse-muc-views'],
 
-    enabled (_converse) {
-        return _converse.api.settings.get('view_mode') == 'overlayed';
+    enabled () {
+        return api.settings.get('view_mode') == 'overlayed';
     },
 
     // Overrides mentioned here will be picked up by converse.js's
@@ -50,10 +50,10 @@ converse.plugins.add('converse-dragresize', {
             'allow_dragresize': true
         });
 
-        Object.assign(_converse.ChatBoxView.prototype, DragResizableMixin);
-        Object.assign(_converse.ChatRoomView.prototype, DragResizableMixin);
-        if (_converse.ControlBoxView) {
-            Object.assign(_converse.ControlBoxView.prototype, DragResizableMixin);
+        Object.assign(_converse.exports.ChatView.prototype, DragResizableMixin);
+        Object.assign(_converse.exports.MUCView.prototype, DragResizableMixin);
+        if (_converse.exports.ControlBoxView) {
+            Object.assign(_converse.exports.ControlBoxView.prototype, DragResizableMixin);
         }
 
         /************************ BEGIN Event Handlers ************************/

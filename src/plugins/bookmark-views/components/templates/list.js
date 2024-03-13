@@ -7,8 +7,8 @@ const filterBookmark = (b, text) => b.get('name')?.includes(text) || b.get('jid'
 
 export default (el) => {
     const i18n_placeholder = __('Filter');
-    const filter_text = el.model.get('filter_text');
-    const { bookmarks } = _converse;
+    const filter_text = el.model.get('text');
+    const { bookmarks } = _converse.state;
     const shown_bookmarks = filter_text ? bookmarks.filter(b => filterBookmark(b, filter_text)) : bookmarks;
 
     return html`

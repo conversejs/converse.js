@@ -4,6 +4,7 @@ import BaseChatView from 'shared/chat/baseview.js';
 import tplChat from './templates/chat.js';
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless';
+import { ACTIVE } from 'headless/shared/constants.js';
 
 /**
  * The view of an open/ongoing chat conversation.
@@ -15,8 +16,9 @@ export default class ChatView extends BaseChatView {
     length = 200
 
     async initialize () {
-        _converse.chatboxviews.add(this.jid, this);
-        this.model = _converse.chatboxes.get(this.jid);
+        const { chatboxviews, chatboxes } = _converse.state;
+        chatboxviews.add(this.jid, this);
+        this.model = chatboxes.get(this.jid);
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
 
@@ -25,9 +27,9 @@ export default class ChatView extends BaseChatView {
         await this.model.messages.fetched;
         !this.model.get('hidden') && this.afterShown()
         /**
-         * Triggered once the {@link _converse.ChatBoxView} has been initialized
+         * Triggered once the {@link ChatView} has been initialized
          * @event _converse#chatBoxViewInitialized
-         * @type { _converse.ChatBoxView }
+         * @type {ChatView}
          * @example _converse.api.listen.on('chatBoxViewInitialized', view => { ... });
          */
         api.trigger('chatBoxViewInitialized', this);
@@ -51,7 +53,7 @@ export default class ChatView extends BaseChatView {
     }
 
     afterShown () {
-        this.model.setChatState(_converse.ACTIVE);
+        this.model.setChatState(ACTIVE);
         this.model.clearUnreadMsgCounter();
         this.maybeFocus();
     }

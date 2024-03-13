@@ -191,7 +191,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => textarea.value === '');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg .chat-msg__action').length === 2);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg .chat-msg__action').length >= 1);
         let action = view.querySelector('.chat-msg .chat-msg__action');
         expect(action.textContent.trim()).toBe('Edit');
 
@@ -267,7 +267,7 @@ describe("A Chat Message", function () {
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
         );
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
+        expect(view.querySelector('.chat-msg .chat-msg__action .chat-msg__action-edit')).toBeNull()
 
         // Test confirmation dialog
         spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));

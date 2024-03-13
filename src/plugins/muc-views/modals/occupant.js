@@ -34,7 +34,7 @@ export default class OccupantModal extends BaseModal {
             return model.vcard;
         }
         const jid = model?.get('jid') || model?.get('from');
-        return jid ? _converse.vcards.get(jid) : null;
+        return jid ? _converse.state.vcards.get(jid) : null;
     }
 
     renderModal () {

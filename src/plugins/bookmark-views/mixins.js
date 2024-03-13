@@ -21,7 +21,7 @@ export const bookmarkableChatRoomView = {
 
     renderBookmarkForm () {
         if (!this.bookmark_form) {
-            this.bookmark_form = new _converse.MUCBookmarkForm({
+            this.bookmark_form = new _converse.state.MUCBookmarkForm({
                 'model': this.model,
                 'chatroomview': this
             });

@@ -1,6 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse, log } from '@converse/headless';
+import { api, converse, log, _converse } from '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
@@ -11,16 +11,16 @@ import { until } from 'lit/directives/until.js';
 import './styles/message-actions.scss';
 
 /**
- * @typedef { Object } MessageActionAttributes
+ * @typedef {Object} MessageActionAttributes
  * An object which represents a message action (as shown in the message dropdown);
- * @property { String } i18n_text
- * @property { Function } handler
- * @property { String } button_class
- * @property { String } icon_class
- * @property { String } name
+ * @property {String} i18n_text
+ * @property {Function} handler
+ * @property {String} button_class
+ * @property {String} icon_class
+ * @property {String} name
  */
 
-const { Strophe, u } = converse.env;
+const { u } = converse.env;
 
 class MessageActions extends CustomElement {
     static get properties () {
@@ -43,6 +43,19 @@ class MessageActions extends CustomElement {
         this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
+        // This may change the ability to send messages, and therefore the presence of the quote button.
+        // See plugins/muc-views/bottom-panel.js
+        this.listenTo(this.model.collection.chatbox.features, 'change:moderated', () => this.requestUpdate());
+        this.listenTo(this.model.collection.chatbox.occupants, 'add', this.updateIfOwnOccupant);
+        this.listenTo(this.model.collection.chatbox.occupants, 'change:role', this.updateIfOwnOccupant);
+        this.listenTo(this.model.collection.chatbox.session, 'change:connection_status', () => this.requestUpdate());
+    }
+
+    updateIfOwnOccupant (o) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (o.get('jid') === bare_jid) {
+            this.requestUpdate();
+        }
     }
 
     render () {
@@ -50,15 +63,19 @@ class MessageActions extends CustomElement {
     }
 
     async renderActions () {
-        // We want to let the message actions menu drop upwards if we're at the
-        // bottom of the message history, and down otherwise. This is to avoid
-        // the menu disappearing behind the bottom panel (toolbar, textarea etc).
-        // That's difficult to know from state, so we're making an approximation here.
-        const should_drop_up = this.model.collection.length > 2 && this.model === this.model.collection.last();
+        // This can be called before the model has been added to the collection
+        // when requesting an update on change:connection_status.
+        // This line allows us to pass tests.
+        if (!this.model.collection) return '';
 
         const buttons = await this.getActionButtons();
         const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
         if (items.length) {
+            // We want to let the message actions menu drop upwards if we're at the
+            // bottom of the message history, and down otherwise. This is to avoid
+            // the menu disappearing behind the bottom panel (toolbar, textarea etc).
+            // That's difficult to know from state, so we're making an approximation here.
+            const should_drop_up = this.model.collection.length > 3 && this.model === this.model.collection.last();
             return html`<converse-dropdown
                 class="chat-msg__actions ${should_drop_up ? 'dropup dropup--left' : 'dropleft'}"
                 .items=${items}
@@ -81,6 +98,7 @@ class MessageActions extends CustomElement {
         `;
     }
 
+    /** @param {MouseEvent} ev */
     async onMessageEditButtonClicked (ev) {
         ev.preventDefault();
         const currently_correcting = this.model.collection.findWhere('correcting');
@@ -88,7 +106,9 @@ class MessageActions extends CustomElement {
         // Then this code can also be put on the model
         const unsent_text = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.value;
         if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {
-            const result = await api.confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'));
+            const result = await api.confirm(
+                __('You have an unsent message which will be lost if you continue. Are you sure?')
+            );
             if (!result) return;
         }
         if (currently_correcting !== this.model) {
@@ -129,12 +149,12 @@ class MessageActions extends CustomElement {
         if (result === null) {
             const err_msg = __(`A timeout occurred while trying to retract the message`);
             api.alert('error', __('Error'), err_msg);
-            log(err_msg, Strophe.LogLevel.WARN);
+            log.warn(err_msg);
         } else if (u.isErrorStanza(result)) {
             const err_msg = __(`Sorry, you're not allowed to retract this message.`);
             api.alert('error', __('Error'), err_msg);
-            log(err_msg, Strophe.LogLevel.WARN);
-            log(result, Strophe.LogLevel.WARN);
+            log.warn(err_msg);
+            log.error(result);
         }
     }
 
@@ -178,6 +198,7 @@ class MessageActions extends CustomElement {
         }
     }
 
+    /** @param {MouseEvent} [ev] */
     onMessageRetractButtonClicked (ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
@@ -188,6 +209,7 @@ class MessageActions extends CustomElement {
         }
     }
 
+    /** @param {MouseEvent} [ev] */
     onMediaToggleClicked (ev) {
         ev?.preventDefault?.();
 
@@ -270,6 +292,23 @@ class MessageActions extends CustomElement {
         }
     }
 
+    /** @param {MouseEvent} [ev] */
+    async onMessageCopyButtonClicked (ev) {
+        ev?.preventDefault?.();
+        await navigator.clipboard.writeText(this.model.getMessageText());
+    }
+
+    /** @param {MouseEvent} [ev] */
+    onMessageQuoteButtonClicked (ev) {
+        ev?.preventDefault?.();
+        const { chatboxviews } = _converse.state;
+        const view = chatboxviews.get(this.model.collection.chatbox.get('jid'));
+        view?.getMessageForm().insertIntoTextArea(
+            this.model.getMessageText().replaceAll(/^/gm, '> '),
+            false, false, null, '\n'
+        );
+    }
+
     async getActionButtons () {
         const buttons = [];
         if (this.model.get('editable')) {
@@ -302,6 +341,24 @@ class MessageActions extends CustomElement {
         }
 
         this.addMediaRenderingToggle(buttons);
+
+        buttons.push({
+            'i18n_text': __('Copy'),
+            'handler': ev => this.onMessageCopyButtonClicked(ev),
+            'button_class': 'chat-msg__action-copy',
+            'icon_class': 'fas fa-copy',
+            'name': 'copy',
+        });
+
+        if (this.model.collection.chatbox.canPostMessages()) {
+            buttons.push({
+                'i18n_text': __('Quote'),
+                'handler': ev => this.onMessageQuoteButtonClicked(ev),
+                'button_class': 'chat-msg__action-quote',
+                'icon_class': 'fas fa-quote-right',
+                'name': 'quote',
+            });
+        }
 
         /**
          * *Hook* which allows plugins to add more message action buttons

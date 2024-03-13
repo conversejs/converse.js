@@ -6,11 +6,11 @@ import { api } from "@converse/headless";
 
 export default class BookmarkListModal extends BaseModal {
 
-    renderModal () { // eslint-disable-line class-methods-use-this
+    renderModal () {
         return html`<converse-bookmarks></converse-bookmarks>`;
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
+    getModalTitle () {
         return __('Bookmarks');
     }
 }

@@ -397,6 +397,37 @@ describe("An incoming chat Message", function () {
             `<blockquote>What do you think of it <span class="mention" data-uri="romeo@montague.lit">romeo</span>?</blockquote>\n `+
             `Did you see this <span class="mention" data-uri="romeo@montague.lit">romeo</span>?`);
 
+        msg_text = '> > This is a nested quote...\n> > spanning multiple lines!\n> It is.\nYes.';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 14);
+        msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<blockquote><blockquote>This is a nested quote...\n\u200B\u200B\u200B\u200Bspanning multiple lines!</blockquote>'
+            + '\n\u200B\u200BIt is.</blockquote>\nYes.'
+        );
+
+        msg_text = '> This next line will be purposefully empty, and include no trailing space.\n>\n> This is the end of this quote.';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 15);
+        msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<blockquote>This next line will be purposefully empty, and include no trailing space.'+
+            '\n\u200B\n\u200B\u200BThis is the end of this quote.</blockquote>'
+        );
+
+        msg_text = '> Quotes shouldn’t prevent multiple lines from being collapsed together.\n> \n> \n> \n> Like so.';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 16);
+        msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+            '<blockquote>Quotes shouldn’t prevent multiple lines from being collapsed together.'+
+            '\n\u200B\u200B\u200B\u200B\u200B\u200B\u200B\u200B'+ // block of removed '> ' and newlines
+            '\n\u200B\u200BLike so.</blockquote>'
+        );
+
         expect(true).toBe(true);
     }));
 

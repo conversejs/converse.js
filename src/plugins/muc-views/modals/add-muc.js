@@ -38,7 +38,7 @@ export default class AddMUCModal extends BaseModal {
         const jid = /** @type {string} */ (data.get('chatroom'))?.trim();
         let nick;
         if (api.settings.get('locked_muc_nickname')) {
-            nick = _converse.getDefaultMUCNickname();
+            nick = _converse.exports.getDefaultMUCNickname();
             if (!nick) {
                 throw new Error('Using locked_muc_nickname but no nickname found!');
             }

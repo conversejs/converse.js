@@ -23,13 +23,13 @@ export default class BaseChatView extends CustomElement {
 
     disconnectedCallback () {
         super.disconnectedCallback();
-        _converse.chatboxviews.remove(this.jid, this);
+        _converse.state.chatboxviews.remove(this.jid, this);
     }
 
     updated () {
         if (this.model && this.jid !== this.model.get('jid')) {
             this.stopListening();
-            _converse.chatboxviews.remove(this.model.get('jid'), this);
+            _converse.state.chatboxviews.remove(this.model.get('jid'), this);
             delete this.model;
             this.requestUpdate();
             this.initialize();

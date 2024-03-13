@@ -23,8 +23,8 @@ describe("The MUC occupants filter", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => view.model.occupants.length === 3);
 
-        let filter_el = view.querySelector('converse-contacts-filter');
-        expect(u.isVisible(filter_el.firstElementChild)).toBe(false);
+        let filter_el = view.querySelector('converse-list-filter');
+        expect(filter_el).toBe(null);
 
         for (let i=0; i<mock.chatroom_names.length; i++) {
             const name = mock.chatroom_names[i];
@@ -53,16 +53,25 @@ describe("The MUC occupants filter", function () {
             expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(name);
         });
 
-        filter_el = view.querySelector('converse-contacts-filter');
+        const dropdown = await u.waitUntil(() => view.querySelector('.occupants-header converse-dropdown'));
+
+        expect(view.querySelector('converse-list-filter')).toBe(null);
+
+        dropdown.click();
+        dropdown.querySelector('.toggle-filter').click();
+
+        filter_el = await u.waitUntil(() => view.querySelector('converse-list-filter'));
         expect(u.isVisible(filter_el.firstElementChild)).toBe(true);
 
-        const filter = view.querySelector('.contacts-filter');
+        const filter = filter_el.querySelector('.items-filter');
         filter.value = "j";
         u.triggerEvent(filter, "keydown", "KeyboardEvent");
         await u.waitUntil(() => [...view.querySelectorAll('li')].filter(u.isVisible).length === 1);
 
         filter_el.querySelector('.fa-times').click();
-        await u.waitUntil(() => [...view.querySelectorAll('li')].filter(u.isVisible).length === 3+mock.chatroom_names.length);
+        await u.waitUntil(
+            () => [...view.querySelectorAll('li')].filter(u.isVisible).length === 3+mock.chatroom_names.length
+        );
 
         filter_el.querySelector('.fa-circle').click();
         const state_select = view.querySelector('.state-type');

@@ -13,8 +13,9 @@ import tplMessageText from './templates/message-text.js';
 import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
+import { SUCCESS } from 'headless/shared/constants.js';
 import { __ } from 'i18n';
-import { _converse, api, converse, log } from  '@converse/headless';
+import { api, converse, log } from  '@converse/headless';
 import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getHats } from './utils.js';
 
@@ -80,7 +81,7 @@ export default class Message extends CustomElement {
             return '';
         } else if (this.show_spinner) {
             return tplSpinner();
-        } else if (this.model.get('file') && this.model.get('upload') !== _converse.SUCCESS) {
+        } else if (this.model.get('file') && this.model.get('upload') !== SUCCESS) {
             return this.renderFileProgress();
         } else if (['mep'].includes(this.model.get('type'))) {
             return this.renderMEPMessage();

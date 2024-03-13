@@ -25,7 +25,7 @@ converse.plugins.add('converse-push', {
         api.listen.on('statusInitialized', () => enablePush());
 
         if (api.settings.get('enable_muc_push')) {
-            api.listen.on('chatBoxesInitialized', () => _converse.chatboxes.on('add', onChatBoxAdded));
+            api.listen.on('chatBoxesInitialized', () => _converse.state.chatboxes.on('add', onChatBoxAdded));
         }
     },
 });

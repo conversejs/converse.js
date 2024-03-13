@@ -84,7 +84,7 @@ describe("The groupchat moderator tool", function () {
         const submit = form.querySelector('.btn-primary');
         submit.click();
 
-        spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
+        spyOn(_converse.MUCOccupants.prototype, 'fetchMembers').and.callThrough();
         const sent_IQ = _converse.api.connection.get().IQ_stanzas.pop();
         expect(Strophe.serialize(sent_IQ)).toBe(
             `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+

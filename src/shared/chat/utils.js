@@ -1,18 +1,15 @@
 /**
- * @typedef {import('../../headless/plugins/chat/message.js').default} Message
+ * @typedef {import('@converse/headless').Message} Message
+ * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
  */
 import debounce from 'lodash-es/debounce';
-import tplNewDay from "./templates/new-day.js";
+import tplNewDay from './templates/new-day.js';
 import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import {
-    convertASCII2Emoji,
-    getShortnameReferences,
-    getCodePointReferences
-} from '@converse/headless/plugins/emoji/utils.js';
 
 const { dayjs, u } = converse.env;
+const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u;
 
 export async function getHeadingDropdownItem (promise_or_data) {
     const data = await promise_or_data;
@@ -46,6 +43,9 @@ export async function getHeadingStandaloneButton (promise_or_data) {
     `;
 }
 
+/**
+ * @param {Promise} promise
+ */
 export function getStandaloneButtons (promise) {
     return promise.then(
         btns => btns
@@ -55,15 +55,16 @@ export function getStandaloneButtons (promise) {
             .map(b => until(b, '')));
 }
 
+/**
+ * @param {Promise} promise
+ */
 export function getDropdownButtons (promise) {
-    return promise.then(
-        btns => {
-            const dropdown_btns = btns
-                .filter(b => !b.standalone)
-                .map(b => getHeadingDropdownItem(b));
-            return dropdown_btns.length ? html`<converse-dropdown class="chatbox-btn dropleft" .items=${dropdown_btns}></converse-dropdown>` : '';
-        }
-    );
+    return promise.then((btns) => {
+        const dropdown_btns = btns.filter((b) => !b.standalone).map((b) => getHeadingDropdownItem(b));
+        return dropdown_btns.length
+            ? html`<converse-dropdown class="chatbox-btn dropleft" .items=${dropdown_btns}></converse-dropdown>`
+            : '';
+    });
 }
 
 
@@ -105,7 +106,7 @@ function _markScrolled (ev) {
         /**
          * Triggered once the chat's message area has been scrolled to the top
          * @event _converse#chatBoxScrolledUp
-         * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
+         * @property { _converse.ChatBoxView | MUCView } view
          * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
          */
         api.trigger('chatBoxScrolledUp', el);

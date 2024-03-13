@@ -479,7 +479,6 @@ class ChatBox extends ModelWithContact {
      * Timeouts are set when the  state being set is COMPOSING or PAUSED.
      * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
      * See XEP-0085 Chat State Notifications.
-     * @private
      * @method ChatBox#setChatState
      * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
      */
@@ -1138,6 +1137,10 @@ class ChatBox extends ModelWithContact {
 
     isScrolledUp () {
         return this.ui.get('scrolled');
+    }
+
+    canPostMessages () {
+        return true;
     }
 }
 

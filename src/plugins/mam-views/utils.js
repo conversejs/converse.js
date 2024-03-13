@@ -21,7 +21,8 @@ export async function fetchMessagesOnScrollUp (view) {
         const is_groupchat = view.model.get('type') === CHATROOMS_TYPE;
         const oldest_message = view.model.getOldestMessage();
         if (oldest_message) {
-            const by_jid = is_groupchat ? view.model.get('jid') : _converse.bare_jid;
+            const bare_jid = _converse.session.get('bare_jid');
+            const by_jid = is_groupchat ? view.model.get('jid') : bare_jid;
             const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
             view.model.ui.set('chat-content-spinner-top', true);
             try {

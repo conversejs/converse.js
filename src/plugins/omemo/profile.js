@@ -10,7 +10,8 @@ const { Strophe, sizzle, u } = converse.env;
 export class Profile extends CustomElement {
 
     async initialize () {
-        this.devicelist = await api.omemo.devicelists.get(_converse.bare_jid, true);
+        const bare_jid = _converse.session.get('bare_jid');
+        this.devicelist = await api.omemo.devicelists.get(bare_jid, true);
         await this.setAttributes();
         this.listenTo(this.devicelist.devices, 'change:bundle', () => this.requestUpdate());
         this.listenTo(this.devicelist.devices, 'reset', () => this.requestUpdate());

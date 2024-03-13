@@ -9,7 +9,7 @@ import { render } from 'lit';
 class ConverseChats extends CustomElement {
 
     initialize () {
-        this.model = _converse.chatboxes;
+        this.model = _converse.state.chatboxes;
         this.listenTo(this.model, 'add', () => this.requestUpdate());
         this.listenTo(this.model, 'change:closed', () => this.requestUpdate());
         this.listenTo(this.model, 'change:hidden', () => this.requestUpdate());

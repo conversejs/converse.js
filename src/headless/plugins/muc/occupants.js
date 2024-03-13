@@ -1,7 +1,7 @@
 /**
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
  */
-import ChatRoomOccupant from './occupant.js';
+import MUCOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';
 import log from '../../log';
 import api, { converse } from '../../shared/api/index.js';
@@ -15,12 +15,11 @@ const { u } = converse.env;
 
 
 /**
- * A list of {@link _converse.ChatRoomOccupant} instances, representing participants in a MUC.
+ * A list of {@link MUCOccupant} instances, representing participants in a MUC.
  * @class
- * @namespace _converse.ChatRoomOccupants
  * @memberOf _converse
  */
-class ChatRoomOccupants extends Collection {
+class MUCOccupants extends Collection {
 
     constructor (attrs, options) {
         super(
@@ -31,7 +30,7 @@ class ChatRoomOccupants extends Collection {
     }
 
     get model() {
-        return ChatRoomOccupant;
+        return MUCOccupant;
     }
 
     initialize() {
@@ -130,7 +129,7 @@ class ChatRoomOccupants extends Collection {
      *
      * Lookup by occupant_id is done first, then jid, and then nick.
      *
-     * @method _converse.ChatRoomOccupants#findOccupant
+     * @method _converse.MUCOccupants#findOccupant
      * @param { OccupantData } data
      */
     findOccupant (data) {
@@ -144,10 +143,10 @@ class ChatRoomOccupants extends Collection {
     }
 
     /**
-     * Get the {@link ChatRoomOccupant} instance which
+     * Get the {@link MUCOccupant} instance which
      * represents the current user.
-     * @method _converse.ChatRoomOccupants#getOwnOccupant
-     * @returns {ChatRoomOccupant}
+     * @method _converse.MUCOccupants#getOwnOccupant
+     * @returns {MUCOccupant}
      */
     getOwnOccupant () {
         const bare_jid = _converse.session.get('bare_jid');
@@ -159,4 +158,4 @@ class ChatRoomOccupants extends Collection {
 }
 
 
-export default ChatRoomOccupants;
+export default MUCOccupants;

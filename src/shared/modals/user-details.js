@@ -1,5 +1,5 @@
 /**
- * @typedef {import('headless/plugins/chat/model.js').default} ChatBox
+ * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
 import BaseModal from "plugins/modal/modal.js";
 import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";

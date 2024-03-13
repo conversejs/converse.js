@@ -14,7 +14,8 @@ import './styles/muc-head.scss';
 export default class MUCHeading extends CustomElement {
 
     async initialize () {
-        this.model = _converse.chatboxes.get(this.getAttribute('jid'));
+        const { chatboxes } = _converse.state;
+        this.model = chatboxes.get(this.getAttribute('jid'));
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
@@ -35,13 +36,15 @@ export default class MUCHeading extends CustomElement {
     }
 
     onOccupantAdded (occupant) {
-        if (occupant.get('jid') === _converse.bare_jid) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (occupant.get('jid') === bare_jid) {
             this.requestUpdate();
         }
     }
 
     onOccupantAffiliationChanged (occupant) {
-        if (occupant.get('jid') === _converse.bare_jid) {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (occupant.get('jid') === bare_jid) {
             this.requestUpdate();
         }
     }
@@ -177,7 +180,8 @@ export default class MUCHeading extends CustomElement {
             });
         }
 
-        const el = _converse.chatboxviews.get(this.getAttribute('jid'));
+        const { chatboxviews } = _converse.state;
+        const el = chatboxviews.get(this.getAttribute('jid'));
         if (el) {
             // This hook is described in src/plugins/chatview/heading.js
             return _converse.api.hook('getHeadingButtons', el, buttons);

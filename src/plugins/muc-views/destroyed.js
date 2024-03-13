@@ -18,7 +18,7 @@ class MUCDestroyed extends CustomElement {
 
     connectedCallback () {
         super.connectedCallback();
-        this.model = _converse.chatboxes.get(this.jid);
+        this.model = _converse.state.chatboxes.get(this.jid);
     }
 
     render () {

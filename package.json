@@ -1,8 +1,9 @@
 {
   "name": "converse.js",
-  "version": "10.1.5",
+  "version": "11.0.0",
   "description": "Browser based XMPP chat client",
   "main": "src/index.js",
+  "types": "src/types/index.d.ts",
   "browser": "dist/converse.js",
   "module": "src/index.js",
   "workspaces": [
@@ -19,6 +20,8 @@
     "sass/**/*.scss",
     "src/**/*.html",
     "src/**/*.js",
+    "src/**/*.ts",
+    "src/**/*.ts.map",
     "src/**/*.json",
     "src/**/*.md",
     "src/**/*.po",
@@ -41,7 +44,7 @@
     "serve": "http-server -c-1",
     "devserver": "webpack serve --config webpack/webpack.serve.js",
     "watch": "webpack --watch --config webpack/webpack.build.js --mode=development",
-    "types": "tsc --declaration --emitDeclarationOnly --allowJs",
+    "types": "tsc -p ./src/headless/tsconfig.json && tsc",
     "check:types": "tsc --noEmit"
   },
   "repository": {
@@ -79,7 +82,7 @@
     "babel-loader": "^9.1.0",
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^5.6.2",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^6.7.1",
     "eslint": "^8.21.0",
     "fast-text-encoding": "^1.0.3",
@@ -100,7 +103,6 @@
     "po2json": "^1.0.0-beta-3",
     "postcss": "^8.4.16",
     "postcss-loader": "^7.0.1",
-    "prettierx": "^0.19.0",
     "sass": "^1.51.0",
     "sass-loader": "^13.1.0",
     "style-loader": "^3.1.0",
@@ -117,7 +119,7 @@
     "bootstrap.native": "^2.0.27",
     "client-compress": "^2.2.2",
     "dayjs": "^1.11.8",
-    "dompurify": "^2.3.1",
+    "dompurify": "^3.0.8",
     "favico.js-slevomat": "^0.3.11",
     "gifuct-js": "^2.1.2",
     "jed": "1.1.1",
@@ -125,6 +127,7 @@
     "localforage-webextensionstorage-driver": "^3.0.0",
     "lodash-es": "^4.17.21",
     "pluggable.js": "^3.0.1",
+    "prettier": "^3.2.5",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
     "urijs": "^1.19.10"

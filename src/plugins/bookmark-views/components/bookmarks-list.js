@@ -13,9 +13,9 @@ export default class BookmarksView extends CustomElement {
 
     async initialize () {
         await api.waitUntil('bookmarksInitialized');
-        const { bookmarks, chatboxes } = _converse;
+        const { bookmarks, chatboxes } = _converse.state;
 
-        this.liveFilter = debounce((ev) => this.model.set({'filter_text': ev.target.value}), 100);
+        this.liveFilter = debounce((ev) => this.model.set({'text': ev.target.value}), 100);
 
         this.listenTo(bookmarks, 'add', () => this.requestUpdate());
         this.listenTo(bookmarks, 'remove', () => this.requestUpdate());
@@ -23,7 +23,8 @@ export default class BookmarksView extends CustomElement {
         this.listenTo(chatboxes, 'add', () => this.requestUpdate());
         this.listenTo(chatboxes, 'remove', () => this.requestUpdate());
 
-        const id = `converse.bookmarks-list-model-${_converse.bare_jid}`;
+        const bare_jid = _converse.session.get('bare_jid');
+        const id = `converse.bookmarks-list-model-${bare_jid}`;
         this.model = new Model({ id });
         initStorage(this.model, id);
 
@@ -36,12 +37,12 @@ export default class BookmarksView extends CustomElement {
     }
 
     render () {
-        return _converse.bookmarks && this.model ? tplBookmarksList(this) : tplSpinner();
+        return _converse.state.bookmarks && this.model ? tplBookmarksList(this) : tplSpinner();
     }
 
     clearFilter (ev) {
         ev?.stopPropagation?.();
-        this.model.set('filter_text', '');
+        this.model.set('text', '');
     }
 }
 

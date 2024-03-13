@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { html } from "lit";
 import { api } from '@converse/headless';
 

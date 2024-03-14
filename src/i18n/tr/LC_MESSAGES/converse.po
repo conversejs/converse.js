@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-13 21:44+0200\n"
-"PO-Revision-Date: 2023-11-08 09:33+0000\n"
+"PO-Revision-Date: 2024-03-14 20:01+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: dist/converse-no-dependencies.js:21929
 #: dist/converse-no-dependencies.js:21983
@@ -1092,11 +1092,11 @@ msgstr "Geri çek"
 
 #: dist/converse-no-dependencies.js:84482
 msgid "Copy"
-msgstr ""
+msgstr "Kopyala"
 
 #: dist/converse-no-dependencies.js:84492
 msgid "Quote"
-msgstr ""
+msgstr "Alıntı yap"
 
 #: dist/converse-no-dependencies.js:90456
 msgid "Older versions"
@@ -1482,9 +1482,8 @@ msgid "Visitor"
 msgstr "Ziyaretçi"
 
 #: dist/converse-no-dependencies.js:107583
-#, fuzzy
 msgid "Filter by name"
-msgstr "Grup adına göre süz"
+msgstr "Ada göre süz"
 
 #: dist/converse-no-dependencies.js:107584
 #: dist/converse-no-dependencies.js:129492
@@ -1543,20 +1542,18 @@ msgid "Participants"
 msgstr "Katılımcılar"
 
 #: dist/converse-no-dependencies.js:107665
-#, fuzzy
 msgid "Hide sidebar"
-msgstr "Ortamı gizle"
+msgstr "Kenar çubuğunu gizle"
 
 #: dist/converse-no-dependencies.js:107666
 #: dist/converse-no-dependencies.js:129561
-#, fuzzy
 msgid "Show filter"
-msgstr "Daha az göster"
+msgstr "Süzgeci göster"
 
 #: dist/converse-no-dependencies.js:107667
 #: dist/converse-no-dependencies.js:129562
 msgid "Hide filter"
-msgstr ""
+msgstr "Süzgeci gizle"
 
 #: dist/converse-no-dependencies.js:108528
 msgid "Change user's affiliation to admin"
@@ -2488,9 +2485,8 @@ msgid "No groupchats found"
 msgstr "Toplu konuşma bulunamadı"
 
 #: dist/converse-no-dependencies.js:127604
-#, fuzzy
 msgid "Click to hide these rooms"
-msgstr "Bu kişileri gizlemek için tıklayın"
+msgstr "Bu odaları gizlemek için tıklayın"
 
 #: dist/converse-no-dependencies.js:127693
 msgid "Leave this groupchat"
@@ -2506,12 +2502,11 @@ msgstr "Grup Sohbetleri"
 
 #: dist/converse-no-dependencies.js:127718
 msgid "Query server"
-msgstr ""
+msgstr "Sorgu sunucusu"
 
 #: dist/converse-no-dependencies.js:127719
-#, fuzzy
 msgid "Add groupchat"
-msgstr "Yeni grup sohbeti ekle"
+msgstr "Grup sohbeti ekle"
 
 #: dist/converse-no-dependencies.js:128323
 #, javascript-format
@@ -2559,7 +2554,7 @@ msgstr "Okunmamış"
 
 #: dist/converse-no-dependencies.js:129495
 msgid "Available"
-msgstr ""
+msgstr "Uygun"
 
 #. *
 #. * @typedef {import('../rosterview').default} RosterView
@@ -2581,9 +2576,8 @@ msgid "Add a contact"
 msgstr "Bir kişi ekle"
 
 #: dist/converse-no-dependencies.js:129576
-#, fuzzy
 msgid "Re-sync contacts"
-msgstr "Kişilerinizi yeniden senkronize edin"
+msgstr "Kişileri yeniden eşzamanla"
 
 #: dist/converse-no-dependencies.js:130215
 msgid "This contact is busy"

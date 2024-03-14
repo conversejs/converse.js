@@ -6,7 +6,7 @@ export default class MUCSidebar extends CustomElement {
     };
     jid: any;
     initialize(): void;
-    filter: any;
+    filter: RosterFilter;
     model: any;
     render(): import("lit-html").TemplateResult<1>;
     /** @param {MouseEvent} ev */
@@ -17,4 +17,5 @@ export default class MUCSidebar extends CustomElement {
     onOccupantClicked(ev: MouseEvent): void;
 }
 import { CustomElement } from "shared/components/element.js";
+import { RosterFilter } from "@converse/headless/plugins/roster/filter.js";
 //# sourceMappingURL=sidebar.d.ts.map

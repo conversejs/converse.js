@@ -1,8 +1,16 @@
 export default ModelWithContact;
 declare class ModelWithContact extends Model {
     rosterContactAdded: any;
-    contact: any;
-    vcard: any;
+    /**
+     * @public
+     * @type {RosterContact}
+     */
+    public contact: import("../roster/contact").default;
+    /**
+     * @public
+     * @type {VCard}
+     */
+    public vcard: import("../vcard/vcard").default;
     /**
      * @param {string} jid
      */

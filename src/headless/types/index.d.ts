@@ -10,4 +10,5 @@ export { api, converse, _converse, i18n, log, u };
 export { ChatBox, Message, Messages } from "./plugins/chat/index.js";
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from "./plugins/muc/index.js";
 export { RosterContact, RosterContacts, Presence, Presences } from "./plugins/roster/index.js";
+export { VCard, VCards } from "./plugins/vcard/index.js";
 //# sourceMappingURL=index.d.ts.map

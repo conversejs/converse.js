@@ -9,7 +9,12 @@ declare class VCard extends Model {
         image: string;
         image_type: string;
     };
-    set(key: any, val: any, options: any, ...args: any[]): any;
+    /**
+     * @param {string|Object} key
+     * @param {string|Object} [val]
+     * @param {Record.<string, any>} [options]
+     */
+    set(key: string | any, val?: string | any, options?: Record<string, any>, ...args: any[]): any;
     getDisplayName(): any;
 }
 import { Model } from "@converse/skeletor";

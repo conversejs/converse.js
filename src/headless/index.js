@@ -36,7 +36,7 @@ export { RosterContact, RosterContacts, Presence, Presences } from './plugins/ro
 
 import './plugins/smacks/index.js'; // XEP-0198 Stream Management
 export { XMPPStatus } from './plugins/status/index.js';
-import './plugins/vcard/index.js'; // XEP-0054 VCard-temp
+export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
 /* END: Removable components */
 
 import log from './log.js';

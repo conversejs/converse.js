@@ -18,6 +18,11 @@ class VCard extends Model {
         }
     }
 
+  /**
+   * @param {string|Object} key
+   * @param {string|Object} [val]
+   * @param {Record.<string, any>} [options]
+   */
     set (key, val, options) {
         // Override Model.prototype.set to make sure that the
         // default `image` and `image_type` values are maintained.

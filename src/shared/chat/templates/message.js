@@ -4,10 +4,11 @@ import { __ } from 'i18n';
 import { html } from "lit";
 import { shouldRenderMediaFromURL } from 'utils/url';
 
-
 export default (el, o) => {
     const i18n_new_messages = __('New messages');
     const is_followup = el.model.isFollowup();
+    const author_style = o.color ? 'color: ' + o.color + ' !important;' : '';
+
     return html`
         ${ o.is_first_unread ? html`<div class="message separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
         <div class="message chat-msg ${ el.getExtraMessageClasses() }"
@@ -31,7 +32,7 @@ export default (el, o) => {
             <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
                 ${ (!o.is_me_message && !is_followup) ? html`
                     <span class="chat-msg__heading">
-                        <span class="chat-msg__author"><a class="show-msg-author-modal" @click=${el.showUserModal}>${o.username}</a></span>
+                        <span class="chat-msg__author"><a class="show-msg-author-modal" @click=${el.showUserModal} style="${author_style}">${o.username}</a></span>
                         ${ o.hats.map(h => html`<span class="badge badge-secondary">${h.title}</span>`) }
                         <time timestamp="${el.model.get('edited') || el.model.get('time')}" class="chat-msg__time">${o.pretty_time}</time>
                         ${ o.is_encrypted ? html`<converse-icon class="fa fa-lock" size="1.1em"></converse-icon>` : '' }
@@ -41,7 +42,7 @@ export default (el, o) => {
                     <div class="chat-msg__message">
                         ${ (o.is_me_message) ? html`
                             <time timestamp="${o.edited || o.time}" class="chat-msg__time">${o.pretty_time}</time>&nbsp;
-                            <span class="chat-msg__author">${ o.is_me_message ? '**' : ''}${o.username}</span>&nbsp;` : '' }
+                            <span class="chat-msg__author" style="${author_style}">${ o.is_me_message ? '**' : ''}${o.username}</span>&nbsp;` : '' }
                         ${ o.is_retracted ? el.renderRetraction() : el.renderMessageText() }
                     </div>
                     <converse-message-actions

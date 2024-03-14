@@ -38,7 +38,9 @@ export default class Message extends CustomElement {
         is_me_message: any;
         is_retracted: any;
         username: any;
+        color: any;
         should_show_avatar: boolean;
+        colorize_username: any;
     };
     getRetractionText(): any;
     showUserModal(ev: any): void;

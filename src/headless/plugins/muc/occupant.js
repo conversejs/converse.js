@@ -78,6 +78,9 @@ class MUCOccupant extends Model {
         }
     }
 
+    getColor () {
+        return this.get('color') || '';
+    }
 
     isMember () {
         return ['admin', 'owner', 'member'].includes(this.get('affiliation'));

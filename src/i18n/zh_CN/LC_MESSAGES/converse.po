@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-13 21:44+0200\n"
-"PO-Revision-Date: 2024-01-15 08:03+0000\n"
-"Last-Translator: Sketch6580 <sky@openmbox.net>\n"
+"PO-Revision-Date: 2024-03-14 20:01+0000\n"
+"Last-Translator: 大王叫我来巡山 <hamburger2048@users.noreply.hosted.weblate."
+"org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: dist/converse-no-dependencies.js:21929
 #: dist/converse-no-dependencies.js:21983
@@ -1053,11 +1054,11 @@ msgstr "撤回"
 
 #: dist/converse-no-dependencies.js:84482
 msgid "Copy"
-msgstr ""
+msgstr "复制"
 
 #: dist/converse-no-dependencies.js:84492
 msgid "Quote"
-msgstr ""
+msgstr "引用"
 
 #: dist/converse-no-dependencies.js:90456
 msgid "Older versions"
@@ -1440,9 +1441,8 @@ msgid "Visitor"
 msgstr "游客"
 
 #: dist/converse-no-dependencies.js:107583
-#, fuzzy
 msgid "Filter by name"
-msgstr "以分组名称筛选"
+msgstr "以名称筛选"
 
 #: dist/converse-no-dependencies.js:107584
 #: dist/converse-no-dependencies.js:129492
@@ -1501,20 +1501,18 @@ msgid "Participants"
 msgstr "参与者"
 
 #: dist/converse-no-dependencies.js:107665
-#, fuzzy
 msgid "Hide sidebar"
-msgstr "隐藏媒体内容"
+msgstr "隐藏侧栏"
 
 #: dist/converse-no-dependencies.js:107666
 #: dist/converse-no-dependencies.js:129561
-#, fuzzy
 msgid "Show filter"
-msgstr "显示更少"
+msgstr "显示筛选器"
 
 #: dist/converse-no-dependencies.js:107667
 #: dist/converse-no-dependencies.js:129562
 msgid "Hide filter"
-msgstr ""
+msgstr "隐藏筛选器"
 
 #: dist/converse-no-dependencies.js:108528
 msgid "Change user's affiliation to admin"
@@ -2421,9 +2419,8 @@ msgid "No groupchats found"
 msgstr "未找到群聊"
 
 #: dist/converse-no-dependencies.js:127604
-#, fuzzy
 msgid "Click to hide these rooms"
-msgstr "单击以隐藏这些联系人"
+msgstr "单击隐藏这些聊天室"
 
 #: dist/converse-no-dependencies.js:127693
 msgid "Leave this groupchat"
@@ -2439,12 +2436,11 @@ msgstr "群聊"
 
 #: dist/converse-no-dependencies.js:127718
 msgid "Query server"
-msgstr ""
+msgstr "查询服务器"
 
 #: dist/converse-no-dependencies.js:127719
-#, fuzzy
 msgid "Add groupchat"
-msgstr "添加新群聊"
+msgstr "添加群聊"
 
 #: dist/converse-no-dependencies.js:128323
 #, javascript-format
@@ -2492,7 +2488,7 @@ msgstr "未读"
 
 #: dist/converse-no-dependencies.js:129495
 msgid "Available"
-msgstr ""
+msgstr "可用"
 
 #. *
 #. * @typedef {import('../rosterview').default} RosterView
@@ -2514,9 +2510,8 @@ msgid "Add a contact"
 msgstr "添加联系人"
 
 #: dist/converse-no-dependencies.js:129576
-#, fuzzy
 msgid "Re-sync contacts"
-msgstr "重新同步您的联系人"
+msgstr "重新同步联系人"
 
 #: dist/converse-no-dependencies.js:130215
 msgid "This contact is busy"

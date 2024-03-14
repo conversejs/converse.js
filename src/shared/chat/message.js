@@ -197,7 +197,9 @@ export default class Message extends CustomElement {
             'is_me_message': this.model.isMeCommand(),
             'is_retracted': this.isRetracted(),
             'username': this.model.getDisplayName(),
+            'color': this.model.occupant?.getColor(),
             'should_show_avatar': this.shouldShowAvatar(),
+            'colorize_username': api.settings.get('colorize_username'),
         }
     }
 

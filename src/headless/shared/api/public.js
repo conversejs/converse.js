@@ -9,7 +9,7 @@ import u, { setUnloadEvent } from '../../utils/core.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
+import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
 import { filesize } from 'filesize';
 import { html } from 'lit';

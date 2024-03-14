@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.7 (Unreleased)
+
+- Update to Strophe 2.0.0. Fixes login issue with newer versions of Ejabberd
+
 ## 10.1.6 (2023-08-31)
 
 - #3246: Badge color not responsive to dark theme

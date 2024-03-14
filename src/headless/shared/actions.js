@@ -1,5 +1,5 @@
 import log from '../log';
-import { Strophe, $msg } from 'strophe.js/src/strophe';
+import { Strophe, $msg } from 'strophe.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 const u = converse.env.utils;

@@ -1,4 +1,4 @@
-import { Strophe } from 'strophe.js/src/strophe';
+import { Strophe } from 'strophe.js';
 
 export const BOSH_WAIT = 59;
 export const VERSION_NAME = "v10.1.6";

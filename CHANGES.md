@@ -1,6 +1,6 @@
 # Changelog
 
-## 10.1.7 (Unreleased)
+## 10.1.7 (2024-03-15)
 
 - Update to Strophe 2.0.0. Fixes login issue with newer versions of Ejabberd
 

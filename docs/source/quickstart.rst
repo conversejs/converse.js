@@ -56,16 +56,16 @@ might break when a new backwards-incompatible version of Converse is released.
 
 To load a specific version of Converse you can put the version in the URL:
 
-* https://cdn.conversejs.org/10.1.6/dist/converse.min.js
-* https://cdn.conversejs.org/10.1.6/dist/converse.min.css
+* https://cdn.conversejs.org/10.1.7/dist/converse.min.js
+* https://cdn.conversejs.org/10.1.7/dist/converse.min.css
 
 You can include these two URLs inside the *<head>* element of your website
 via the *script* and *link* tags:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/10.1.6/dist/converse.min.css">
-    <script src="https://cdn.conversejs.org/10.1.6/dist/converse.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/10.1.7/dist/converse.min.css">
+    <script src="https://cdn.conversejs.org/10.1.7/dist/converse.min.js" charset="utf-8"></script>
 
 
 Option 2: Download the builds from Github

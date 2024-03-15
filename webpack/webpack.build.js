@@ -43,6 +43,11 @@ module.exports = merge(common, {
     mode: "production",
     module: {
         rules: [{
+            test: /\.(js|ts)$/,
+            use: [{
+                loader: 'minify-html-literals-loader'
+            }]
+        }, {
             test: /\.scss$/,
             use: [
                 MiniCssExtractPlugin.loader,

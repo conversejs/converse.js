@@ -171,8 +171,23 @@ describe("An incoming chat Message", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 9);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
-        await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
-            'Go to ~https://conversejs.org~now <span class="styling-directive">_</span><i>please</i><span class="styling-directive">_</span>');
+
+        // Chrome < 119 thinks this is not a valid URL while Chrome 119 does.
+        let valid_url = false;
+        try {
+            valid_url = !!(new URL('https://conversejs.org~now'));
+        } catch (e) {
+            valid_url = false;
+        }
+
+        if (valid_url) {
+            await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+                'Go to ~<a target="_blank" rel="noopener" href="https://conversejs.org~now/">https://conversejs.org~now</a> '+
+                '<span class="styling-directive">_</span><i>please</i><span class="styling-directive">_</span>', 1000);
+        } else {
+            await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
+                'Go to ~https://conversejs.org~now <span class="styling-directive">_</span><i>please</i><span class="styling-directive">_</span>');
+        }
 
         msg_text = `Go to _https://converse_js.org_ _please_`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)

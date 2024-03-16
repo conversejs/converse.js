@@ -1,5 +1,5 @@
 export default _converse;
-export type Storage = any;
+export type Storage = import('@converse/skeletor').Storage;
 export type Collection = import('@converse/skeletor').Collection;
 export type DiscoState = import('../plugins/disco/index').DiscoState;
 export type XMPPStatus = import('../plugins/status/status').default;

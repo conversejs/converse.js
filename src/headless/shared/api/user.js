@@ -7,7 +7,7 @@ import connection_api from '../connection/api.js';
 import { replacePromise } from '../../utils/session.js';
 import { attemptNonPreboundSession, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { user_settings_api } from '../settings/api.js';
+import { user_settings_api } from '../settings/user/api.js';
 import { LOGOUT } from '../constants.js';
 
 const api = {
@@ -106,7 +106,7 @@ const api = {
             const promise = getOpenPromise();
             const complete = () => {
                 // Recreate all the promises
-                Object.keys(_converse.promises).forEach(replacePromise);
+                Object.keys(_converse.promises).forEach((p) => replacePromise(_converse, p));
 
                 // Remove the session JID, otherwise the user would just be logged
                 // in again upon reload. See #2759

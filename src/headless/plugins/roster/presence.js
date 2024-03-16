@@ -1,6 +1,6 @@
 import Resources from "./resources.js";
 import { Model } from '@converse/skeletor';
-import { converse } from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { initStorage } from '../../utils/storage.js';
 
 const { Strophe, dayjs, sizzle } = converse.env;

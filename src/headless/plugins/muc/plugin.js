@@ -14,7 +14,8 @@ import MUCOccupants from './occupants.js';
 import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import {
     autoJoinRooms,

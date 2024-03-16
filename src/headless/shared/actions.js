@@ -1,6 +1,7 @@
 import log from '../log';
 import { Strophe, $msg } from 'strophe.js';
-import api, { converse } from './api/index.js';
+import api from './api/index.js';
+import converse from './api/public.js';
 
 const u = converse.env.utils;
 

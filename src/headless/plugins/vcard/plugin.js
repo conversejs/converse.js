@@ -5,7 +5,8 @@
 import "../status/index.js";
 import VCard from './vcard.js';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import vcard_api from './api.js';
 import VCards from "./vcards";
 import {

@@ -1,6 +1,6 @@
 /**
  * @module:shared.converse
- * @typedef {import('@converse/skeletor/src/storage').Storage} Storage
+ * @typedef {import('@converse/skeletor').Storage} Storage
  * @typedef {import('@converse/skeletor').Collection} Collection
  * @typedef {import('../plugins/disco/index').DiscoState} DiscoState
  * @typedef {import('../plugins/status/status').default} XMPPStatus

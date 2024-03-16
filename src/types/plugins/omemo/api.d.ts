@@ -4,6 +4,9 @@ declare namespace _default {
          * Returns the device ID of the current device.
          */
         function getDeviceID(): Promise<any>;
+        namespace session {
+            function restore(): Promise<void>;
+        }
         namespace devicelists {
             /**
              * Returns the {@link _converse.DeviceList} for a particular JID.

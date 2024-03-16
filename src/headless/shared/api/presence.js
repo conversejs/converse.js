@@ -1,9 +1,16 @@
 /**
- * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ * @typedef {import('strophe.js').Builder} Builder
  * @typedef {import('../../plugins/status/status').default} XMPPStatus
+ * @typedef {import('../../plugins/muc/muc.js').default} MUC
  */
 import _converse from '../_converse.js';
-import api from '../../shared/api/index.js';
+import promise_api from './promise.js';
+import send_api from './send.js';
+import rooms_api from '../../plugins/muc/api.js';
+
+const { waitUntil } = promise_api;
+const { send } = send_api;
+const { rooms } = rooms_api;
 
 export default {
     /**
@@ -17,22 +24,25 @@ export default {
          * @param {String} [type]
          * @param {String} [to]
          * @param {String} [status] - An optional status message
-         * @param {Array<Element>|Array<Strophe.Builder>|Element|Strophe.Builder} [child_nodes]
+         * @param {Array<Element>|Array<Builder>|Element|Builder} [nodes]
          *  Nodes(s) to be added as child nodes of the `presence` XML element.
          */
-        async send (type, to, status, child_nodes) {
-            await api.waitUntil('statusInitialized');
-            if (child_nodes && !Array.isArray(child_nodes)) {
-                child_nodes = [child_nodes];
+        async send (type, to, status, nodes) {
+            await waitUntil('statusInitialized');
+
+            let children = [];
+            if (nodes) {
+                children = Array.isArray(nodes) ? nodes : [nodes];
             }
+
             const model = /** @type {XMPPStatus} */(_converse.state.xmppstatus);
             const presence = await model.constructPresence(type, to, status);
-            child_nodes?.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
-            api.send(presence);
+            children.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
+            send(presence);
 
             if (['away', 'chat', 'dnd', 'online', 'xa', undefined].includes(type)) {
-                const mucs = await api.rooms.get();
-                mucs.forEach(muc => muc.sendStatusPresence(type, status, child_nodes));
+                const mucs = /** @type {MUC[]} */(await rooms.get());
+                mucs.forEach(muc => muc.sendStatusPresence(type, status, children));
             }
         }
     }

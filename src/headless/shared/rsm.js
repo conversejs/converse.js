@@ -6,7 +6,7 @@
  *   Some code taken from the Strophe RSM plugin, licensed under the MIT License
  *   Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
  */
-import { converse } from './api/index.js';
+import converse from './api/public.js';
 import pick from 'lodash-es/pick';
 
 const { Strophe, $build } = converse.env;

@@ -14,7 +14,7 @@ async function transform (t) {
 }
 
 class StylingDirective extends Directive {
-    render (txt, offset, options) { // eslint-disable-line class-methods-use-this
+    render (txt, offset, options) {
         const t = new RichText(
             txt,
             offset,

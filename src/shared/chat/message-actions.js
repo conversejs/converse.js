@@ -1,7 +1,6 @@
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { api, converse, log, _converse } from '@converse/headless';
-import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
 import { html } from 'lit';
@@ -37,7 +36,7 @@ class MessageActions extends CustomElement {
     }
 
     initialize () {
-        const settings = getAppSettings();
+        const settings = api.settings.get();
         this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());

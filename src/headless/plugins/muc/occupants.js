@@ -4,7 +4,8 @@
 import MUCOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';
 import log from '../../log';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { Collection, Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import { getAffiliationList } from './affiliations/utils.js';

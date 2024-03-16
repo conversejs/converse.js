@@ -3,9 +3,10 @@
  * @typedef {import('../chat/model.js').default} ChatBox
  */
 import _converse from '../../shared/_converse.js';
-import api from '../../shared/api/index.js';
+import promise_api from '../../shared/api/promise.js';
 import { createChatBox } from './utils.js';
 
+const { waitUntil } = promise_api;
 const _chatBoxTypes = {};
 
 
@@ -23,7 +24,7 @@ export default {
      * @param {new (attrs: object, options: object) => ChatBox} model - The type of chatbox that should be created
      */
     async create (jids=[], attrs={}, model) {
-        await api.waitUntil('chatBoxesFetched');
+        await waitUntil('chatBoxesFetched');
         if (typeof jids === 'string') {
             return createChatBox(jids, attrs, model);
         } else {
@@ -33,10 +34,10 @@ export default {
 
     /**
      * @method api.chatboxes.get
-     * @param {string|string[]} jids - A JID or array of JIDs
+     * @param {string|string[]} [jids] - A JID or array of JIDs
      */
     async get (jids) {
-        await api.waitUntil('chatBoxesFetched');
+        await waitUntil('chatBoxesFetched');
         const { chatboxes } = _converse.state;
         if (jids === undefined) {
             return chatboxes.models;

@@ -6,7 +6,8 @@
 import 'strophe.js/src/bosh';
 import { Strophe } from "strophe.js";
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import bosh_api from './api.js';
 import { attemptPrebind, clearSession, saveJIDToSession} from './utils.js';
 

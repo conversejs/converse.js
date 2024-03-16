@@ -32,7 +32,7 @@ declare namespace api {
          */
         logout(): Promise<any>;
         presence: {
-            send(type?: string, to?: string, status?: string, child_nodes?: any): Promise<void>;
+            send(type?: string, to?: string, status?: string, nodes?: Element | Element[] | import("strophe.js/src/types/builder.js").default | import("strophe.js/src/types/builder.js").default[]): Promise<void>;
         };
         settings: {
             getModel(): Promise<import("@converse/skeletor").Model>;

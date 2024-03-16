@@ -3,17 +3,15 @@
  */
 import Storage from '@converse/skeletor/src/storage.js';
 import _converse from '../shared/_converse';
-import api from '../shared/api/index.js';
 import debounce from 'lodash-es/debounce';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import log from '../log.js';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from '../shared/constants.js';
-import { Connection } from '../shared/connection/index.js';
 import { Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
-import { getConnectionServiceURL } from '../shared/connection/utils';
+import { generateResource, getConnectionServiceURL } from '../shared/connection/utils';
 import { isValidJID } from './jid.js';
 import { getUnloadEvent, isTestEnv } from './session.js';
 
@@ -153,9 +151,11 @@ function initPersistentStorage (_converse, store_name) {
  * @param {string} jid
  */
 function saveJIDtoSession (_converse, jid) {
+    const { api } = _converse;
+
     jid = _converse.session.get('jid') || jid;
     if (_converse.api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
-        jid = jid.toLowerCase() + Connection.generateResource();
+        jid = jid.toLowerCase() + generateResource();
     }
 
     const bare_jid = Strophe.getBareJidFromJid(jid);

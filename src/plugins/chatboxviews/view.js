@@ -2,7 +2,6 @@ import tplBackgroundLogo from '../../templates/background_logo.js';
 import tplChats from './templates/chats.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api, _converse } from '@converse/headless';
-import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { render } from 'lit';
 
 
@@ -23,7 +22,7 @@ class ConverseChats extends CustomElement {
         this.listenTo(_converse, 'reconnected', () => this.requestUpdate());
         this.listenTo(_converse, 'disconnected', () => this.requestUpdate());
 
-        const settings = getAppSettings();
+        const settings = api.settings.get();
         this.listenTo(settings, 'change:view_mode', () => this.requestUpdate())
         this.listenTo(settings, 'change:singleton', () => this.requestUpdate())
 

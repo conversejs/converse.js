@@ -2,7 +2,6 @@ import debounce from 'lodash-es/debounce';
 import log from "../../log.js";
 import sizzle from 'sizzle';
 import _converse from '../_converse.js';
-import api from '../api/index.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants';
 import { Strophe } from 'strophe.js';
@@ -31,11 +30,8 @@ export class Connection extends Strophe.Connection {
         this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 
-    static generateResource () {
-        return `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
-    }
-
     async bind () {
+        const { api } = _converse;
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
          * JID resource for this session.
@@ -47,6 +43,7 @@ export class Connection extends Strophe.Connection {
 
 
     async onDomainDiscovered (response) {
+        const { api } = _converse;
         const text = await response.text();
         const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
         if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
@@ -108,6 +105,8 @@ export class Connection extends Strophe.Connection {
      * @param {Function} callback
      */
     async connect (jid, password, callback) {
+        const { api } = _converse;
+
         if (api.settings.get("discover_connection_methods")) {
             const domain = Strophe.getDomainFromJid(jid);
             await this.discoverConnectionMethods(domain);
@@ -137,6 +136,8 @@ export class Connection extends Strophe.Connection {
      * for the old transport are removed.
      */
     async switchTransport () {
+        const { api } = _converse;
+
         const bare_jid = _converse.session.get('bare_jid');
         if (api.connection.isType('websocket') && api.settings.get('bosh_service_url')) {
             await setUserJID(bare_jid);
@@ -159,9 +160,11 @@ export class Connection extends Strophe.Connection {
     }
 
     async reconnect () {
+        const { api } = _converse;
+
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
         this.reconnecting = true;
-        await tearDown();
+        await tearDown(_converse);
 
         const conn_status = _converse.state.connfeedback.get('connection_status');
         if (conn_status === Strophe.Status.CONNFAIL) {
@@ -181,7 +184,7 @@ export class Connection extends Strophe.Connection {
         api.trigger('will-reconnect');
 
         if (api.settings.get("authentication") === ANONYMOUS) {
-            await clearSession();
+            await clearSession(_converse);
         }
         const jid = _converse.session.get('jid');
         return api.user.login(jid);
@@ -194,6 +197,8 @@ export class Connection extends Strophe.Connection {
      * @param {Boolean} [reconnecting] - Whether Converse.js reconnected from an earlier dropped session.
      */
     async onConnected (reconnecting) {
+        const { api } = _converse;
+
         delete this.reconnecting;
         this.flush(); // Solves problem of returned PubSub BOSH response not received by browser
         await setUserJID(this.jid);
@@ -261,12 +266,13 @@ export class Connection extends Strophe.Connection {
     }
 
     async finishDisconnection () {
+        const { api } = _converse;
         // Properly tear down the session so that it's possible to manually connect again.
         log.debug('DISCONNECTED');
         delete this.reconnecting;
         this.reset();
-        tearDown();
-        await clearSession();
+        tearDown(_converse);
+        await clearSession(_converse);
         api.connection.destroy();
 
         /**
@@ -285,6 +291,7 @@ export class Connection extends Strophe.Connection {
      * @method onDisconnected
      */
     onDisconnected () {
+        const { api } = _converse;
         if (api.settings.get("auto_reconnect")) {
             const reason = this.disconnection_reason;
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
@@ -406,6 +413,7 @@ export class Connection extends Strophe.Connection {
     }
 
     hasResumed () {
+        const { api } = _converse;
         if (api.settings.get("connection_options")?.worker || this.isType('bosh')) {
             return _converse.state.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
         } else {
@@ -482,6 +490,7 @@ export class MockConnection extends Connection {
     }
 
     async bind () {
+        const { api } = _converse;
         await api.trigger('beforeResourceBinding', {'synchronous': true});
         this.authenticated = true;
         this._changeConnectStatus(Strophe.Status.CONNECTED);

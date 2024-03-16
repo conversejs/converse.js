@@ -6,15 +6,14 @@ declare namespace _default {
          * @param {String} [type]
          * @param {String} [to]
          * @param {String} [status] - An optional status message
-         * @param {Array<Element>|Array<Strophe.Builder>|Element|Strophe.Builder} [child_nodes]
+         * @param {Array<Element>|Array<Builder>|Element|Builder} [nodes]
          *  Nodes(s) to be added as child nodes of the `presence` XML element.
          */
-        function send(type?: string, to?: string, status?: string, child_nodes?: any): Promise<void>;
+        function send(type?: string, to?: string, status?: string, nodes?: Element | import("strophe.js/src/types/builder.js").default | Element[] | import("strophe.js/src/types/builder.js").default[]): Promise<void>;
     }
 }
 export default _default;
-export namespace Strophe {
-    type Builder = any;
-}
+export type Builder = import('strophe.js').Builder;
 export type XMPPStatus = import('../../plugins/status/status').default;
+export type MUC = import('../../plugins/muc/muc.js').default;
 //# sourceMappingURL=presence.d.ts.map

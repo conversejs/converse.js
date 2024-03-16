@@ -3,7 +3,8 @@
  */
 import log from "../../log.js";
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from "../../shared/api/public.js";
 import { createStanza, getVCard } from './utils.js';
 
 const { dayjs, u } = converse.env;

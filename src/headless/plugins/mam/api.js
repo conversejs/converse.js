@@ -2,7 +2,8 @@
  * @typedef {module:converse-rsm.RSMQueryParameters} RSMQueryParameters
  */
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
 import sizzle from "sizzle";

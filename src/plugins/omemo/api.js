@@ -1,5 +1,7 @@
 import { _converse, api } from '@converse/headless';
+import { initStorage } from '@converse/headless/utils/storage.js';
 import { generateFingerprint } from './utils.js';
+import OMEMOStore from './store.js';
 
 export default {
     /**
@@ -16,6 +18,19 @@ export default {
         async getDeviceID () {
             await api.waitUntil('OMEMOInitialized');
             return _converse.state.omemo_store.get('device_id');
+        },
+
+        'session': {
+            async restore () {
+                const { state } = _converse;
+                if (state.omemo_store === undefined) {
+                    const bare_jid = _converse.session.get('bare_jid');
+                    const id = `converse.omemosession-${bare_jid}`;
+                    state.omemo_store = new OMEMOStore({ id });
+                    initStorage(state.omemo_store, id);
+                }
+                await state.omemo_store.fetchSession();
+            }
         },
 
         /**

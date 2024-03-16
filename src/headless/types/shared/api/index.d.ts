@@ -1,5 +1,4 @@
 export default api;
-export { converse } from "./public.js";
 export type _converse = {
     initialize(): void;
     VERSION_NAME: string;

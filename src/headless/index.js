@@ -1,13 +1,13 @@
-import './shared/constants.js';
+import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+
+import './shared/constants.js';
+
 import api from './shared/api/index.js';
 import u from './utils/index.js';
 import _converse from './shared/_converse';
-_converse.api = api;
-
-import dayjs from 'dayjs';
 import i18n from './shared/i18n';
-import { converse } from './shared/api/public.js';
+import converse from './shared/api/public.js';
 
 dayjs.extend(advancedFormat);
 

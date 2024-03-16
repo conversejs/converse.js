@@ -7,7 +7,8 @@
 import sizzle from "sizzle";
 import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from "../../shared/api/public.js";
 import log from '../../log.js';
 import { isArchived, isHeadline, isServerMessage, } from '../../shared/parsers';
 import { parseMessage } from './parsers.js';
@@ -29,7 +30,7 @@ export function routeToChat (event) {
 }
 
 export async function onClearSession () {
-    if (shouldClearCache()) {
+    if (shouldClearCache(_converse)) {
         const { chatboxes } = _converse.state;
         await Promise.all(
             chatboxes.map(/** @param {ChatBox} c */(c) => c.messages?.clearStore({ 'silent': true }))

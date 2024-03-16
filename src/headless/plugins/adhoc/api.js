@@ -1,6 +1,7 @@
 import log from '../../log.js';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { getCommandFields, parseForCommands } from './utils.js';
 
 const { Strophe, $iq, u, stx } = converse.env;

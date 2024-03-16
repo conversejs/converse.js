@@ -3,7 +3,9 @@
  */
 import URI from 'urijs';
 import log from '../log.js';
-import api from '../shared/api/index.js';
+import { settings_api } from '../shared/settings/api.js';
+
+const settings = settings_api;
 
 /**
  * Will return false if URL is malformed or contains disallowed characters
@@ -79,7 +81,7 @@ export function shouldRenderMediaFromURL (url_text, type) {
     if (!isAllowedProtocolForMedia(url_text)) {
         return false;
     }
-    const may_render = api.settings.get('render_media');
+    const may_render = settings.get('render_media');
     const is_domain_allowed = isDomainAllowed(url_text, `allowed_${type}_domains`);
 
     if (Array.isArray(may_render)) {
@@ -90,14 +92,14 @@ export function shouldRenderMediaFromURL (url_text, type) {
 }
 
 export function filterQueryParamsFromURL (url) {
-    const paramsArray = api.settings.get('filter_url_query_params');
+    const paramsArray = settings.get('filter_url_query_params');
     if (!paramsArray) return url;
     const parsed_uri = getURI(url);
     return parsed_uri.removeQuery(paramsArray).toString();
 }
 
 export function isDomainAllowed (url, setting) {
-    const allowed_domains = api.settings.get(setting);
+    const allowed_domains = settings.get(setting);
     if (!Array.isArray(allowed_domains)) {
         return true;
     }
@@ -138,7 +140,7 @@ export function isVideoURL (url) {
 }
 
 export function isImageURL (url) {
-    const regex = api.settings.get('image_urls_regex');
+    const regex = settings.get('image_urls_regex');
     return regex?.test(url) || isURLWithImageExtension(url);
 }
 

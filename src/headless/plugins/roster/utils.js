@@ -2,7 +2,8 @@
  * @typedef {import('./contacts').default} RosterContacts
  */
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import log from "../../log.js";
 import { Strophe } from 'strophe.js';
 import { Model } from '@converse/skeletor';
@@ -109,7 +110,7 @@ async function clearPresences () {
  */
 export async function onClearSession () {
     await clearPresences();
-    if (shouldClearCache()) {
+    if (shouldClearCache(_converse)) {
         const roster = /** @type {RosterContacts} */(_converse.state.roster);
         if (roster) {
             roster.data?.destroy();

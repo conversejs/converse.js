@@ -1,13 +1,15 @@
 /**
  * @typedef {module:shared-api-public.ConversePrivateGlobal} ConversePrivateGlobal
  */
-import ConnectionFeedback from './../connection/feedback.js';
-import URI from 'urijs';
-import _converse from '../_converse.js';
 import dayjs from 'dayjs';
+import sizzle from 'sizzle';
+import URI from 'urijs';
+
+import api from './index.js';
+import _converse from '../_converse.js';
 import i18n from '../i18n';
 import log from '../../log.js';
-import sizzle from 'sizzle';
+import ConnectionFeedback from './../connection/feedback.js';
 import u, { setLogLevelFromRoute } from '../../utils/index.js';
 import { ANONYMOUS, CHAT_STATES, KEYCODES, VERSION_NAME } from '../constants.js';
 import { isTestEnv } from '../../utils/session.js';
@@ -18,6 +20,8 @@ import { filesize } from 'filesize';
 import { html } from 'lit';
 import { initAppSettings } from '../settings/utils.js';
 import { sprintf } from 'sprintf-js';
+
+_converse.api = api;
 
 import {
     cleanup,
@@ -42,7 +46,7 @@ import {
  * @global
  * @namespace converse
  */
-export const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).converse || {}, {
+const converse = Object.assign(/** @type {ConversePrivateGlobal} */(window).converse || {}, {
 
     CHAT_STATES,
 
@@ -200,3 +204,5 @@ export const converse = Object.assign(/** @type {ConversePrivateGlobal} */(windo
         u,
     }
 });
+
+export default converse;

@@ -1,6 +1,7 @@
 import '../../plugins/status/api.js';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 import { rejectPresenceSubscription } from './utils.js';

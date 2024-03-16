@@ -1,6 +1,7 @@
 import XMPPStatus from './status.js';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import status_api from './api.js';
 import { shouldClearCache } from '../../utils/session.js';
 import {
@@ -45,7 +46,7 @@ converse.plugins.add('converse-status', {
         api.listen.on('beforeTearDown', tearDown);
 
         api.listen.on('clearSession', () => {
-            if (shouldClearCache() && _converse.state.xmppstatus) {
+            if (shouldClearCache(_converse) && _converse.state.xmppstatus) {
                 _converse.state.xmppstatus.destroy();
                 delete _converse.state.xmppstatus;
                 Object.assign(_converse, { xmppstatus: undefined }); // XXX DEPRECATED

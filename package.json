@@ -81,6 +81,7 @@
     "autoprefixer": "^10.4.5",
     "babel-loader": "^9.1.0",
     "bootstrap.native-loader": "2.0.0",
+    "circular-dependency-plugin": "^5.2.2",
     "clean-css-cli": "^5.6.2",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^6.7.1",
@@ -96,7 +97,7 @@
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^5.0.0",
     "karma-jasmine-html-reporter": "^2.0.0",
-    "karma-webpack": "^5.0.0",
+    "karma-webpack": "^5.0.1",
     "mini-css-extract-plugin": "^2.6.0",
     "minimist": "^1.2.6",
     "po-loader": "0.7.0",
@@ -109,10 +110,10 @@
     "typescript": "^4.9.5",
     "typescript-eslint-parser": "^22.0.0",
     "uglify-js": "^3.17.4",
-    "webpack": "^5.86.0",
+    "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.8.1",
-    "webpack-merge": "^5.8.0"
+    "webpack-dev-server": "^5.0.3",
+    "webpack-merge": "^5.10.0"
   },
   "dependencies": {
     "bootstrap": "^4.6.0",
@@ -120,6 +121,7 @@
     "client-compress": "^2.2.2",
     "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
+    "dpdm": "^3.14.0",
     "favico.js-slevomat": "^0.3.11",
     "gifuct-js": "^2.1.2",
     "jed": "1.1.1",

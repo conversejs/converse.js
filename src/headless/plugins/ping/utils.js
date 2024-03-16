@@ -1,4 +1,5 @@
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { isTestEnv } from '../../utils/session.js';
 
 const { Strophe, $iq } = converse.env;

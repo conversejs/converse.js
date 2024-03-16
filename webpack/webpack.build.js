@@ -1,5 +1,6 @@
 /* global __dirname, module, process */
 const ASSET_PATH = process.env.ASSET_PATH || '/dist/'; // eslint-disable-line no-process-env
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require("./webpack.common.js");
@@ -28,6 +29,12 @@ const plugins = [
     new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
         'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
     }),
+    new CircularDependencyPlugin({
+      exclude: /node_modules/,
+      failOnError: true,
+      allowAsyncCycles: false,
+      cwd: process.cwd(),
+    })
 ];
 
 module.exports = merge(common, {

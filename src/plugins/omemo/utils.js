@@ -29,7 +29,6 @@ import {
 } from '@converse/headless/utils/arraybuffer.js';
 import MUC from 'headless/plugins/muc/muc.js';
 import {IQError, UserFacingError} from 'shared/errors.js';
-import OMEMOStore from './store.js';
 import DeviceLists from './devicelists.js';
 
 const { Strophe, URI, sizzle, u } = converse.env;
@@ -669,14 +668,6 @@ export function registerPEPPushHandler () {
 }
 
 export async function restoreOMEMOSession () {
-    const { state } = _converse;
-    if (state.omemo_store === undefined) {
-        const bare_jid = _converse.session.get('bare_jid');
-        const id = `converse.omemosession-${bare_jid}`;
-        state.omemo_store = new OMEMOStore({ id });
-        initStorage(state.omemo_store, id);
-    }
-    await state.omemo_store.fetchSession();
 }
 
 async function fetchDeviceLists () {
@@ -707,7 +698,7 @@ export async function initOMEMO (reconnecting) {
     }
     try {
         await fetchDeviceLists();
-        await restoreOMEMOSession();
+        await api.omemo.session.restore();
         await _converse.state.omemo_store.publishBundle();
     } catch (e) {
         log.error('Could not initialize OMEMO support');

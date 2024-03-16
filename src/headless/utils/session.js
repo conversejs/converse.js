@@ -1,8 +1,12 @@
-import _converse from '../shared/_converse.js';
+/**
+ * @typedef {module:shared-api-public.ConversePrivateGlobal} ConversePrivateGlobal
+ */
 import log from '../log.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '../shared/settings/api.js';
 import { getInitSettings } from '../shared/settings/utils.js';
+
+const settings = settings_api;
 
 /**
  * We distinguish between UniView and MultiView instances.
@@ -11,7 +15,7 @@ import { getInitSettings } from '../shared/settings/utils.js';
  * MultiView means that multiple chats may be visible simultaneously.
  */
 export function isUniView () {
-    return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
+    return ['mobile', 'fullscreen', 'embedded'].includes(settings.get("view_mode"));
 }
 
 export function isTestEnv () {
@@ -31,7 +35,11 @@ export function getUnloadEvent () {
     return 'unload';
 }
 
-export function replacePromise (name) {
+/**
+ * @param {ConversePrivateGlobal} _converse
+ * @param {string} name
+ */
+export function replacePromise (_converse, name) {
     const existing_promise = _converse.promises[name];
     if (!existing_promise) {
         throw new Error(`Tried to replace non-existing promise: ${name}`);
@@ -45,24 +53,32 @@ export function replacePromise (name) {
     }
 }
 
-export function shouldClearCache () {
+/**
+ * @param {ConversePrivateGlobal} _converse
+ * @returns {boolean}
+ */
+export function shouldClearCache (_converse) {
     const { api } = _converse;
     return !_converse.state.config.get('trusted') ||
         api.settings.get('clear_cache_on_logout') ||
         isTestEnv();
 }
 
-
-export async function tearDown () {
+/**
+ * @param {ConversePrivateGlobal} _converse
+ */
+export async function tearDown (_converse) {
     const { api } = _converse;
     await api.trigger('beforeTearDown', {'synchronous': true});
     api.trigger('afterTearDown');
     return _converse;
 }
 
-
-export function clearSession () {
-    shouldClearCache() && _converse.api.user.settings.clear();
+/**
+ * @param {ConversePrivateGlobal} _converse
+ */
+export function clearSession (_converse) {
+    shouldClearCache(_converse) && _converse.api.user.settings.clear();
     _converse.initSession();
     /**
      * Synchronouse event triggered once the user session has been cleared,

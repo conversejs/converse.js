@@ -19,7 +19,4 @@ export function unregisterListener(name: string, func: Function): void;
  * @param {string} [val] The value, if the previous parameter is a key
  */
 export function updateAppSettings(key: any | string, val?: string): any;
-export function getUserSettings(): Promise<any>;
-export function updateUserSettings(data: any, options: any): Promise<any>;
-export function clearUserSettings(): Promise<any>;
 //# sourceMappingURL=utils.d.ts.map

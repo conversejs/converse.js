@@ -4,7 +4,8 @@
  * @typedef {import('@converse/skeletor').Collection} Collection
  */
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import log from "../../log.js";
 import { getOpenPromise } from '@converse/openpromise';
 

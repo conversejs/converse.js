@@ -1,6 +1,6 @@
 export default i18nStub;
 declare namespace i18nStub {
-    function initialize(): void;
+    function initialize(): Promise<void>;
     /**
      * Overridable string wrapper method which can be used to provide i18n
      * support.

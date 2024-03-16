@@ -16,7 +16,6 @@ import { CustomElement } from 'shared/components/element.js';
 import { SUCCESS } from 'headless/shared/constants.js';
 import { __ } from 'i18n';
 import { api, converse, log } from  '@converse/headless';
-import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getHats } from './utils.js';
 
 const { Strophe, dayjs } = converse.env;
@@ -45,7 +44,7 @@ export default class Message extends CustomElement {
             return;
         }
 
-        const settings = getAppSettings();
+        const settings = api.settings.get();
         this.listenTo(settings, 'change:render_media', () => {
             // Reset individual show/hide state of media
             this.model.save('hide_url_previews', undefined)

@@ -2,7 +2,8 @@
  * @typedef {import('@converse/skeletor').Model} Model
  */
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import log from '../../log.js';
 import { ROLES, MUC_ROLE_WEIGHTS } from './constants.js';
 import { safeSave } from '../../utils/index.js';

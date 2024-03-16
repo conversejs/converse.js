@@ -2,7 +2,7 @@
  * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
 import _converse from '../../shared/_converse.js';
-import { converse } from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { arrayBufferToBase64, stringToArrayBuffer  } from '../../utils/arraybuffer.js';
 
 const { Strophe, $build } = converse.env;

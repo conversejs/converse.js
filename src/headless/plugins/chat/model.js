@@ -5,14 +5,15 @@
  * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
  * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
-import ModelWithContact from './model-with-contact.js';
-import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
-import isMatch from "lodash-es/isMatch";
-import log from '../../log.js';
 import pick from "lodash-es/pick";
 import { Model } from '@converse/skeletor';
-import { ACTIVE, PRIVATE_CHAT_TYPE, COMPOSING, INACTIVE, PAUSED, SUCCESS, GONE } from '@converse/headless/shared/constants.js';
+import { ACTIVE, PRIVATE_CHAT_TYPE, COMPOSING, INACTIVE, PAUSED, SUCCESS, GONE } from '../../shared/constants.js';
+import ModelWithContact from './model-with-contact.js';
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
+import isMatch from "lodash-es/isMatch";
+import log from '../../log.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { debouncedPruneHistory, handleCorrection } from '../../shared/chat/utils.js';
 import { filesize } from "filesize";

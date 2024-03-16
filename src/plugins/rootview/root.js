@@ -1,7 +1,6 @@
 import tplRoot from "./templates/root.js";
 import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
-import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 import { getTheme } from './utils.js';
 
 import './styles/root.scss';
@@ -23,7 +22,7 @@ export default class ConverseRoot extends CustomElement {
     initialize () {
         this.setAttribute('id', 'conversejs');
         this.setClasses();
-        const settings = getAppSettings();
+        const settings = api.settings.get();
         this.listenTo(settings, 'change:view_mode', () => this.setClasses())
         this.listenTo(settings, 'change:singleton', () => this.setClasses())
         window.matchMedia('(prefers-color-scheme: dark)').addListener(() => this.setClasses());

@@ -5,7 +5,6 @@ declare const Connection_base: typeof import("strophe.js/src/types/connection.js
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends Connection_base {
-    static generateResource(): string;
     constructor(service: any, options: any);
     send_initial_presence: boolean;
     debouncedReconnect: any;

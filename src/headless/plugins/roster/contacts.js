@@ -1,6 +1,7 @@
 import RosterContact from './contact.js';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import log from "../../log.js";
 import { Collection, Model } from "@converse/skeletor";
 import { initStorage } from '../../utils/storage.js';

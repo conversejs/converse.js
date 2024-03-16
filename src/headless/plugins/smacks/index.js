@@ -3,7 +3,8 @@
  * @license Mozilla Public License (MPLv2)
  * @description Converse.js plugin which adds support for XEP-0198: Stream Management
  */
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { enableStreamManagement, initSessionData, sendEnableStanza, onStanzaSent } from './utils.js';
 
 const { Strophe } = converse.env;

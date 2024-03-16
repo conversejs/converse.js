@@ -5,7 +5,7 @@ import { sprintf } from 'sprintf-js';
  */
 const i18nStub = {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    initialize () {},
+    async initialize () {},
 
     /**
      * Overridable string wrapper method which can be used to provide i18n

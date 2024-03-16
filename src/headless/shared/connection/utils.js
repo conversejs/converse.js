@@ -2,6 +2,10 @@ import log from '../../log.js';
 import { Strophe } from 'strophe.js';
 import { settings_api } from '../settings/api.js';
 
+export function generateResource () {
+    return `/converse.js-${Math.floor(Math.random() * 139749528).toString()}`;
+}
+
 export function setUpXMLLogging (connection) {
     const lmap = {};
     lmap[Strophe.LogLevel.DEBUG] = 'debug';

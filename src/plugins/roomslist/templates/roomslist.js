@@ -4,14 +4,14 @@
  */
 import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';
+import { CHATROOMS_TYPE, CLOSED } from '@converse/headless/shared/constants.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless";
+import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
 import { html } from "lit";
 import { isUniView } from '@converse/headless/utils/session.js';
-import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
-import { tplRoomDomainGroupList } from 'plugins/roomslist/templates/groups.js';
-import { CHATROOMS_TYPE, CLOSED } from '@converse/headless/shared/constants.js';
 
+import '../styles/roomsgroups.scss';
 
 /** @param {MUC} room */
 function isCurrentlyOpen (room) {
@@ -35,7 +35,6 @@ function tplBookmark (room) {
         </a>`;
 }
 
-
 /** @param {MUC} room */
 function tplUnreadIndicator (room) {
     return html`<span class="list-item-badge badge badge--muc msgs-indicator">${ room.get('num_unread') }</span>`;
@@ -45,12 +44,11 @@ function tplActivityIndicator () {
     return html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
 }
 
-
 /**
  * @param {RoomsList} el
  * @param {MUC} room
  */
-export function tplRoomItem (el, room) {
+function tplRoomItem (el, room) {
     const i18n_leave_room = __('Leave this groupchat');
     const has_unread_msgs = room.get('num_unread_general') || room.get('has_activity');
     return html`
@@ -82,6 +80,42 @@ export function tplRoomItem (el, room) {
                 <converse-icon class="fa fa-sign-out-alt" size="1.2em" color="${ isCurrentlyOpen(room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
             </a>
         </div>`;
+}
+
+function tplRoomDomainGroup (el, domain, rooms) {
+    const i18n_title = __('Click to hide these rooms');
+    const collapsed = el.model.get('collapsed_domains');
+    const is_collapsed = collapsed.includes(domain);
+    return html`
+    <div class="muc-domain-group" data-domain="${domain}">
+        <a href="#" class="list-toggle muc-domain-group-toggle controlbox-padded" title="${i18n_title}" @click=${ev => el.toggleDomainList(ev, domain)}>
+            <converse-icon
+                class="fa ${ is_collapsed ? 'fa-caret-right' : 'fa-caret-down' }"
+                size="1em"
+                color="var(--groupchats-header-color)"></converse-icon>
+            ${domain}
+        </a>
+        <ul class="items-list muc-domain-group-rooms ${ is_collapsed ? 'collapsed' : '' }" data-domain="${domain}">
+            ${ rooms.map(room => tplRoomItem(el, room)) }
+        </ul>
+    </div>`;
+}
+
+function tplRoomDomainGroupList (el, rooms) {
+    // The rooms should stay sorted as they are iterated and added in order
+    const grouped_rooms = new Map();
+    for (const room of rooms) {
+        const roomdomain = room.get('jid').split('@').at(-1).toLowerCase();
+        if (grouped_rooms.has(roomdomain)) {
+            grouped_rooms.get(roomdomain).push(room);
+        } else {
+            grouped_rooms.set(roomdomain, [room]);
+        }
+    }
+    const sorted_domains = Array.from(grouped_rooms.keys());
+    sorted_domains.sort();
+
+    return sorted_domains.map(domain => tplRoomDomainGroup(el, domain, grouped_rooms.get(domain)))
 }
 
 /**

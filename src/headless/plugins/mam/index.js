@@ -6,7 +6,8 @@
 import '../disco/index.js';
 import MAMPlaceholderMessage from './placeholder.js';
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import mam_api from './api.js';
 import { PRIVATE_CHAT_TYPE } from '../..//shared/constants.js';
 import { Strophe } from 'strophe.js';

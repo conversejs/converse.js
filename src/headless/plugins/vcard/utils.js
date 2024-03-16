@@ -6,7 +6,8 @@
  * @typedef {import('../muc/occupant.js').default} MUCOccupant
  */
 import _converse from '../../shared/_converse.js';
-import api, { converse } from '../../shared/api/index.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import log from "../../log.js";
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
@@ -203,7 +204,7 @@ export async function initVCardCollection () {
 
 
 export function clearVCardsSession () {
-    if (shouldClearCache()) {
+    if (shouldClearCache(_converse)) {
         api.promises.add('VCardsInitialized');
         if (_converse.state.vcards) {
             _converse.state.vcards.clearStore();

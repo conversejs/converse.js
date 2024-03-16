@@ -1,5 +1,5 @@
 import sizzle from 'sizzle';
-import { converse } from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
 import { getAttributes } from '../../shared/parsers';
 
 const { Strophe, u } = converse.env;

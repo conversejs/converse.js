@@ -115,7 +115,7 @@ converse.plugins.add('converse-omemo', {
 
         api.listen.on('clearSession', () => {
             delete _converse.state.omemo_store
-            if (shouldClearCache() && _converse.state.devicelists) {
+            if (shouldClearCache(_converse) && _converse.state.devicelists) {
                 _converse.state.devicelists.clearStore();
                 delete _converse.state.devicelists;
             }

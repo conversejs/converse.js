@@ -2,7 +2,6 @@ import { Model } from '@converse/skeletor';
 import { _converse, api, converse, log } from '@converse/headless';
 import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '@converse/headless/utils/storage.js';
-import { restoreOMEMOSession } from './utils.js';
 
 const { Strophe, $build, $iq, sizzle } = converse.env;
 
@@ -82,7 +81,7 @@ class DeviceList extends Model {
         if (this.get('jid') !== bare_jid) {
             return; // We only publish for ourselves.
         }
-        await restoreOMEMOSession();
+        await api.omemo.session.restore();
 
         if (!_converse.state.omemo_store) {
             // Happens during tests. The connection gets torn down

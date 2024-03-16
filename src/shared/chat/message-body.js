@@ -2,7 +2,6 @@ import 'shared/registry.js';
 import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from "@converse/headless";
-import { getAppSettings } from '@converse/headless/shared/settings/utils.js';
 
 import './styles/message-body.scss';
 
@@ -28,7 +27,7 @@ export default class MessageBody extends CustomElement {
     }
 
     initialize () {
-        const settings = getAppSettings();
+        const settings = api.settings.get();
         this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
         this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());

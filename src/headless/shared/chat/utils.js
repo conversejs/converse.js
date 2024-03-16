@@ -7,7 +7,8 @@
  * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
  */
 import debounce from 'lodash-es/debounce.js';
-import api, { converse } from '../../shared/api/index.js';
+import converse from '../api/public.js';
+import api from '../api/index.js';
 
 const { u } = converse.env;
 

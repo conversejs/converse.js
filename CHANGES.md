@@ -10,12 +10,13 @@
 - #3305: New config option [muc_search_service](https://conversejs.org/docs/html/configuration.html#muc-search-service)
 - #3307: Fix inconsistency between browsers on textarea outlines
 - #3337: Correctly display multiline nested quotes
-- Add an occupants filter to the MUC sidebar
-- Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users
 - Fix: prevent busy-loop when session resumption fails
+- Add an occupants filter to the MUC sidebar
+- Change contacts filter to rename the anachronistic `Online` state to `Available`.
+- Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 
 ### Breaking changes:
 

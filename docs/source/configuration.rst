@@ -1835,7 +1835,7 @@ Based on the OGP metadata Converse will render a URL preview (also known as an
 reuse_scram_keys
 ----------------
 
-* Default: ``false``
+* Default: ``true``
 
 Most XMPP servers enable the Salted Challenge Response Authentication Mechanism
 or SCRAM for short. This allows the user and the server to mutually

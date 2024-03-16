@@ -1,5 +1,5 @@
 export const BOSH_WAIT: 59;
-export const VERSION_NAME: "v10.1.5";
+export const VERSION_NAME: "v11.0.0";
 export namespace STATUS_WEIGHTS {
     const offline: number;
     const unavailable: number;

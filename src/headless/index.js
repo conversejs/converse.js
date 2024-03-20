@@ -11,10 +11,9 @@ import converse from './shared/api/public.js';
 
 dayjs.extend(advancedFormat);
 
-/* START: Removable components
- * --------------------
- * The following components may be removed if they're not needed.
- */
+// START: Removable components
+// ---------------------------
+// The following components may be removed if they're not needed.
 import './plugins/bookmarks/index.js'; // XEP-0199 XMPP Ping
 import './plugins/bosh/index.js'; // XEP-0206 BOSH
 import './plugins/caps/index.js'; // XEP-0115 Entity Capabilities
@@ -37,10 +36,11 @@ export { RosterContact, RosterContacts, Presence, Presences } from './plugins/ro
 import './plugins/smacks/index.js'; // XEP-0198 Stream Management
 export { XMPPStatus } from './plugins/status/index.js';
 export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
-/* END: Removable components */
+// ---------------------------
+// END: Removable components
+
 
 import log from './log.js';
-
 export { api, converse, _converse, i18n, log, u };
 
 export default converse;

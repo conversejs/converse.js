@@ -187,16 +187,17 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 it("is uploaded and sent out", mock.initConverse(['chatBoxesFetched'], {} ,async (_converse) => {
                     const { api } = _converse;
+                    const domain = _converse.session.get('domain');
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
-                        _converse, _converse.domain,
+                        _converse, domain,
                         [{'category': 'server', 'type':'IM'}],
                         ['http://jabber.org/protocol/disco#items'], [], 'info');
 
                     const send_backup = XMLHttpRequest.prototype.send;
                     const IQ_stanzas = api.connection.get().IQ_stanzas;
 
-                    await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
+                    await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], ['upload.montague.tld'], 'items');
                     await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
                     await mock.waitForRoster(_converse, 'current');
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';

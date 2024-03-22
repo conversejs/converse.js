@@ -2256,7 +2256,7 @@ class MUC extends ChatBox {
         const actors_per_traffic_state = converse.MUC_TRAFFIC_STATES_LIST.reduce(reducer, {});
         const actors_per_role_change = converse.MUC_ROLE_CHANGES_LIST.reduce(reducer, {});
         this.notifications.set(Object.assign(actors_per_chat_state, actors_per_traffic_state, actors_per_role_change));
-        window.setTimeout(() => this.removeNotification(actor, state), 10000);
+        setTimeout(() => this.removeNotification(actor, state), 10000);
     }
 
     handleMetadataFastening (attrs) {

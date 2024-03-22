@@ -9,7 +9,7 @@ import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 import { initStorage } from '@converse/headless/utils/storage.js';
 import { isChatRoom } from '@converse/headless/plugins/muc/utils.js';
-import { CLOSED, OPENED } from 'headless/shared/constants.js';
+import { CLOSED, OPENED } from '@converse/headless/shared/constants.js';
 
 const { Strophe, u } = converse.env;
 

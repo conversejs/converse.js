@@ -4,7 +4,7 @@ import BaseChatView from 'shared/chat/baseview.js';
 import tplChat from './templates/chat.js';
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless';
-import { ACTIVE } from 'headless/shared/constants.js';
+import { ACTIVE } from '@converse/headless/shared/constants.js';
 
 /**
  * The view of an open/ongoing chat conversation.

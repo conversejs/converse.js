@@ -4,7 +4,7 @@ import { api, converse, log, _converse } from '@converse/headless';
 import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
 import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
 import { html } from 'lit';
-import { isMediaURLDomainAllowed, isDomainWhitelisted } from '@converse/headless/utils/url.js';
+import { isMediaURLDomainAllowed, isDomainWhitelisted } from 'utils/url.js';
 import { until } from 'lit/directives/until.js';
 
 import './styles/message-actions.scss';

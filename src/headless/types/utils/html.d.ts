@@ -10,11 +10,6 @@ export function isElement(el: any): boolean;
  */
 export function isTagEqual(stanza: Element | typeof Strophe.Builder, name: string): boolean;
 /**
- * @param {HTMLElement} el
- * @param {boolean} include_margin
- */
-export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
-/**
  * Converts an HTML string into a DOM element.
  * Expects that the HTML string has only one top-level element,
  * i.e. not multiple ones.

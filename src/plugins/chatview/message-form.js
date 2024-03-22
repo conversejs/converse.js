@@ -2,7 +2,7 @@
  * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
  */
 import tplMessageForm from './templates/message-form.js';
-import { ACTIVE, COMPOSING } from 'headless/shared/constants.js';
+import { ACTIVE, COMPOSING } from '@converse/headless/shared/constants.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";

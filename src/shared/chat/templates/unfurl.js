@@ -1,7 +1,11 @@
 import 'shared/components/image.js';
-import { getURI, isGIFURL, isDomainAllowed } from '@converse/headless/utils/url.js';
+import { getURI, isGIFURL } from '@converse/headless/utils/url.js';
+import { isDomainAllowed } from 'utils/url.js';
 import { html } from 'lit';
 
+/**
+ * @param {string} url
+ */
 function isValidURL (url) {
     // We don't consider relative URLs as valid
     return !!getURI(url).host();

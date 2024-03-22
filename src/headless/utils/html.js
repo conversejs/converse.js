@@ -27,21 +27,6 @@ export function isTagEqual (stanza, name) {
 }
 
 /**
- * @param {HTMLElement} el
- * @param {boolean} include_margin
- */
-export function getOuterWidth (el, include_margin=false) {
-    let width = el.offsetWidth;
-    if (!include_margin) {
-        return width;
-    }
-    const style = window.getComputedStyle(el);
-    width += parseInt(style.marginLeft ? style.marginLeft : '0', 10) +
-             parseInt(style.marginRight ? style.marginRight : '0', 10);
-    return width;
-}
-
-/**
  * Converts an HTML string into a DOM element.
  * Expects that the HTML string has only one top-level element,
  * i.e. not multiple ones.

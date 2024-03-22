@@ -24,9 +24,9 @@ export function arrayBufferToBase64 (ab) {
 }
 
 export function base64ToArrayBuffer (b64) {
-    const binary_string =  window.atob(b64),
-          len = binary_string.length,
-          bytes = new Uint8Array(len);
+    const binary_string = atob(b64);
+    const len = binary_string.length;
+    const bytes = new Uint8Array(len);
 
     for (let i = 0; i < len; i++) {
         bytes[i] = binary_string.charCodeAt(i)

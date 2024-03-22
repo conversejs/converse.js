@@ -226,8 +226,8 @@ export async function getVCard (jid) {
     } catch (error) {
         return {
             jid,
-            error,
-            vcard: isElement(error) ? error : null,
+            stanza: isElement(error) ? error : null,
+            error: isElement(error) ? null : error,
             vcard_error: (new Date()).toISOString()
         }
     }

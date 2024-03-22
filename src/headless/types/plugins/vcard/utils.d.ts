@@ -29,8 +29,8 @@ export function getVCard(jid: string): Promise<{
     image_hash: any;
 } | {
     jid: string;
+    stanza: any;
     error: any;
-    vcard: any;
     vcard_error: string;
 }>;
 export type MUCMessage = import('../../plugins/muc/message').default;

@@ -14,7 +14,7 @@ declare class Message extends ModelWithContact {
      */
     constructor(models?: Model[], options?: object);
     defaults(): {
-        msgid: any;
+        msgid: string;
         time: string;
         is_ephemeral: boolean;
     };
@@ -27,7 +27,7 @@ declare class Message extends ModelWithContact {
      * @method _converse.Message#setTimerForEphemeralMessage
      */
     setTimerForEphemeralMessage(): void;
-    ephemeral_timer: number;
+    ephemeral_timer: NodeJS.Timeout;
     checkValidity(): boolean;
     /**
      * Determines whether this messsage may be retracted by the current user.

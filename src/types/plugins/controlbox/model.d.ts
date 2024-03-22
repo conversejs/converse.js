@@ -14,7 +14,7 @@ declare class ControlBox extends Model {
         closed: boolean;
         num_unread: number;
         time_opened: any;
-        type: string;
+        type: any;
         url: string;
     };
     validate(attrs: any): any;

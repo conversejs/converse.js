@@ -1,16 +1,16 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
  */
+import sizzle from 'sizzle';
 import ModelWithContact from './model-with-contact.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import converse from '../../shared/api/public.js';
 import dayjs from 'dayjs';
 import log from '../../log.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { SUCCESS, FAILURE } from '../../shared/constants.js';
-
-const { Strophe, sizzle, u } = converse.env;
+import { Strophe, $iq } from 'strophe.js';
+import { getUniqueId } from '../../utils/index.js';
 
 /**
  * Represents a (non-MUC) message.
@@ -23,7 +23,7 @@ class Message extends ModelWithContact {
 
     defaults () {
         return {
-            'msgid': u.getUniqueId(),
+            'msgid': getUniqueId(),
             'time': new Date().toISOString(),
             'is_ephemeral': false
         };
@@ -80,7 +80,7 @@ class Message extends ModelWithContact {
         const is_ephemeral = this.isEphemeral();
         if (is_ephemeral) {
             const timeout = typeof is_ephemeral === "number" ? is_ephemeral : 10000;
-            this.ephemeral_timer = window.setTimeout(() => this.safeDestroy(), timeout);
+            this.ephemeral_timer = setTimeout(() => this.safeDestroy(), timeout);
         }
     }
 
@@ -192,8 +192,7 @@ class Message extends ModelWithContact {
     sendSlotRequestStanza () {
         if (!this.file) return Promise.reject(new Error('file is undefined'));
 
-        const iq = converse.env
-            .$iq({
+        const iq = $iq({
                 'from': _converse.session.get('jid'),
                 'to': this.get('slot_request_url'),
                 'type': 'get'

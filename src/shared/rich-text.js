@@ -21,8 +21,8 @@ import {
     isGIFURL,
     isImageURL,
     isVideoURL,
-    shouldRenderMediaFromURL,
 } from '@converse/headless/utils/url.js';
+import { shouldRenderMediaFromURL } from 'utils/url.js';
 
 
 /**

@@ -45,7 +45,7 @@ export class Connection extends Strophe.Connection {
     async onDomainDiscovered (response) {
         const { api } = _converse;
         const text = await response.text();
-        const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
+        const xrd = (new DOMParser()).parseFromString(text, "text/xml").firstElementChild;
         if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
             return log.warn("Could not discover XEP-0156 connection methods");
         }

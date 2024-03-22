@@ -70,10 +70,15 @@ export function slideIn(el: HTMLElement, duration?: number): Promise<any>;
  * @returns {TemplateResult}
  */
 export function xForm2TemplateResult(field: HTMLElement, stanza: Element, options?: any): TemplateResult;
+/**
+ * @param {HTMLElement} el
+ * @param {boolean} include_margin
+ */
+export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
 export default u;
 export type TemplateResult = import('lit').TemplateResult;
 export namespace Strophe {
     type Builder = any;
 }
-import u from "../headless/utils/index.js";
+import { u } from "@converse/headless";
 //# sourceMappingURL=html.d.ts.map

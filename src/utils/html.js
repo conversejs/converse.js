@@ -17,8 +17,7 @@ import tplFormUrl from '../templates/form_url.js';
 import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
-import u from '../headless/utils/index.js';
-import { api, converse, log } from '@converse/headless';
+import { api, converse, log, u } from '@converse/headless';
 import { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } from '@converse/headless/utils/url.js';
 import { render } from 'lit';
 import { queryChildren } from '@converse/headless/utils/html.js';
@@ -575,6 +574,21 @@ export function xForm2TemplateResult (field, stanza, options={}) {
     }
 }
 
+/**
+ * @param {HTMLElement} el
+ * @param {boolean} include_margin
+ */
+export function getOuterWidth (el, include_margin=false) {
+    let width = el.offsetWidth;
+    if (!include_margin) {
+        return width;
+    }
+    const style = window.getComputedStyle(el);
+    width += parseInt(style.marginLeft ? style.marginLeft : '0', 10) +
+             parseInt(style.marginRight ? style.marginRight : '0', 10);
+    return width;
+}
+
 Object.assign(u, {
     addClass,
     ancestor,
@@ -583,6 +597,7 @@ Object.assign(u, {
     getElementFromTemplateResult,
     getNextElement,
     getOOBURLMarkup,
+    getOuterWidth,
     hasClass,
     hideElement,
     isEqualNode,

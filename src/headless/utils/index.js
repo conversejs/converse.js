@@ -7,7 +7,7 @@ import log, { LEVELS } from '../log.js';
 import { Model } from '@converse/skeletor';
 import { toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { shouldClearCache } from './session.js';
+import { shouldClearCache, isTestEnv, isUniView } from './session.js';
 import { merge, isError, isFunction } from './object.js';
 import { createStore, getDefaultStore } from './storage.js';
 import { waitUntil } from './promise.js';
@@ -22,7 +22,6 @@ import {
     webForm2xForm
 } from './form.js';
 import {
-    getOuterWidth,
     isElement,
     isTagEqual,
     queryChildren,
@@ -36,18 +35,14 @@ import {
     base64ToArrayBuffer,
 } from './arraybuffer.js';
 import {
-    isAudioURL,
-    isGIFURL,
-    isVideoURL,
-    isImageURL,
-    isURLWithImageExtension,
     checkFileTypes,
     getURI,
-    shouldRenderMediaFromURL,
-    isAllowedProtocolForMedia,
+    isAudioURL,
+    isGIFURL,
+    isImageURL,
+    isURLWithImageExtension,
+    isVideoURL,
 } from './url.js';
-
-import { isTestEnv, isUniView } from './session.js';
 
 
 /**
@@ -200,12 +195,10 @@ export default Object.assign({
     getDefaultStore,
     getLongestSubstring,
     getOpenPromise,
-    getOuterWidth,
     getRandomInt,
     getSelectValues,
     getURI,
     getUniqueId,
-    isAllowedProtocolForMedia,
     isAudioURL,
     isElement,
     isEmptyMessage,
@@ -233,7 +226,6 @@ export default Object.assign({
     safeSave,
     shouldClearCache,
     shouldCreateMessage,
-    shouldRenderMediaFromURL,
     stringToArrayBuffer,
     stringToElement,
     toStanza,

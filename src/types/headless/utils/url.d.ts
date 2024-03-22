@@ -5,13 +5,6 @@
  */
 export function isValidURL(text: string): boolean;
 /**
- * Given a url, check whether the protocol being used is allowed for rendering
- * the media in the chat (as opposed to just rendering a URL hyperlink).
- * @param {string} url
- * @returns {boolean}
- */
-export function isAllowedProtocolForMedia(url: string): boolean;
-/**
  * @param {string|URI} url
  */
 export function getURI(url: string | URI): any;
@@ -26,7 +19,6 @@ export function getURI(url: string | URI): any;
  */
 export function checkFileTypes(types: string[], url: string): boolean;
 export function isDomainWhitelisted(whitelist: any, url: any): any;
-export function shouldRenderMediaFromURL(url_text: any, type: any): any;
 export function filterQueryParamsFromURL(url: any): any;
 export function isDomainAllowed(url: any, setting: any): any;
 /**

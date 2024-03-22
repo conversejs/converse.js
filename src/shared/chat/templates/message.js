@@ -2,7 +2,7 @@ import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
 import { __ } from 'i18n';
 import { html } from "lit";
-import { shouldRenderMediaFromURL } from '@converse/headless/utils/url.js';
+import { shouldRenderMediaFromURL } from 'utils/url';
 
 
 export default (el, o) => {

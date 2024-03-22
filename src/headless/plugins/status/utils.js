@@ -147,7 +147,7 @@ export function registerIntervalHandler () {
     window.addEventListener('keypress', onUserActivity);
     window.addEventListener('mousemove', onUserActivity);
     window.addEventListener(getUnloadEvent(), onUserActivity, {'once': true, 'passive': true});
-    everySecondTrigger = window.setInterval(onEverySecond, 1000);
+    everySecondTrigger = setInterval(onEverySecond, 1000);
 }
 
 export function tearDown () {
@@ -158,7 +158,7 @@ export function tearDown () {
     window.removeEventListener('mousemove', onUserActivity);
     window.removeEventListener(getUnloadEvent(), onUserActivity);
     if (everySecondTrigger) {
-        window.clearInterval(everySecondTrigger);
+        clearInterval(everySecondTrigger);
         everySecondTrigger = null;
     }
 }

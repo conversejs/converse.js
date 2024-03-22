@@ -36,11 +36,10 @@ class RosterContacts extends Collection {
      * Register a handler for roster IQ "set" stanzas, which update
      * roster contacts.
      */
-    // eslint-disable-next-line class-methods-use-this
     registerRosterHandler () {
         // Register a handler for roster IQ "set" stanzas, which update
         // roster contacts.
-        api.connection.get().addHandler(iq => {
+        api.connection.get().addHandler((iq) => {
             _converse.state.roster.onRosterPush(iq);
             return true;
         }, Strophe.NS.ROSTER, 'iq', "set");
@@ -50,14 +49,12 @@ class RosterContacts extends Collection {
      * Register a handler for RosterX message stanzas, which are
      * used to suggest roster contacts to a user.
      */
-    // eslint-disable-next-line class-methods-use-this
     registerRosterXHandler () {
         let t = 0;
         const connection = api.connection.get();
-        connection.addHandler(
-            function (msg) {
-                const { roster } = _converse.state;
-                window.setTimeout(function () {
+        connection.addHandler((msg) => {
+                setTimeout(() => {
+                    const { roster } = _converse.state;
                     api.connection.get().flush();
                     roster.subscribeToSuggestedItems(msg);
                 }, t);

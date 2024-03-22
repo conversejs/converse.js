@@ -6,12 +6,11 @@
  * @typedef {import('plugins/controlbox/controlbox').default} ControlBoxView
  * @typedef {import('plugins/headlines-view/view').default} HeadlinesFeedView
  */
-import { _converse, api, converse } from '@converse/headless';
+import { _converse, api, converse, u } from '@converse/headless';
 import { __ } from 'i18n';
-import { isTestEnv } from '@converse/headless/utils/session.js';
-import {ACTIVE, INACTIVE} from 'headless/shared/constants';
+import { ACTIVE, INACTIVE } from '@converse/headless/shared/constants';
 
-const { dayjs, u } = converse.env;
+const { dayjs } = converse.env;
 
 /**
  * @param { ChatBox|MUC } chat
@@ -73,7 +72,7 @@ function getBoxesWidth (newchat) {
  * @param { ChatView|MUCView|ControlBoxView|HeadlinesFeedView } [newchat]
  */
 export function trimChats (newchat) {
-    if (isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
+    if (u.isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
         return;
     }
     const shown_chats = getShownChats();

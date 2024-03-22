@@ -3,7 +3,7 @@ declare class RoomsListModel extends Model {
     defaults(): {
         muc_domain: any;
         nick: any;
-        toggle_state: string;
+        toggle_state: any;
         collapsed_domains: any[];
     };
     /**

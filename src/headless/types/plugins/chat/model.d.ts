@@ -81,7 +81,7 @@ declare class ChatBox extends ModelWithContact {
      * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
      */
     setChatState(state: string, options: any): ChatBox;
-    chat_state_timeout: number;
+    chat_state_timeout: NodeJS.Timeout;
     /**
      * Given an error `<message>` stanza's attributes, find the saved message model which is
      * referenced by that error.

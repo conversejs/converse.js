@@ -27,7 +27,7 @@ import {
     hexToArrayBuffer,
     stringToArrayBuffer
 } from '@converse/headless/utils/arraybuffer.js';
-import MUC from 'headless/plugins/muc/muc.js';
+import MUC from '@converse/headless/plugins/muc/muc.js';
 import {IQError, UserFacingError} from 'shared/errors.js';
 import DeviceLists from './devicelists.js';
 

@@ -2,7 +2,7 @@ import events_api from '../api/events.js';
 import { Connection, MockConnection } from './index.js';
 import { PREBIND } from '../constants.js';
 import { Strophe } from 'strophe.js';
-import { getConnectionServiceURL, setUpXMLLogging } from './utils.js';
+import { getConnectionServiceURL, setStropheLogLevel } from './utils.js';
 import { isSameDomain } from '../../utils/jid.js';
 import { isTestEnv } from '../../utils/session.js';
 import { settings_api } from '../settings/api.js';
@@ -40,7 +40,7 @@ export default {
             })
         );
 
-        setUpXMLLogging(connection);
+        setStropheLogLevel();
         /**
          * Triggered once the `Connection` constructor has been initialized, which
          * will be responsible for managing the connection to the XMPP server.

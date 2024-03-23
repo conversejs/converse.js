@@ -18,7 +18,9 @@ const checkHeaderToggling = async function (group) {
     expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeTruthy();
     expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeFalsy();
     toggle.click();
-    await u.waitUntil(() => group.querySelectorAll('li').length === _.filter(group.querySelectorAll('li'), u.isVisible).length);
+    await u.waitUntil(() => group.querySelectorAll('li').length ===
+        Array.from(group.querySelectorAll('li')).filter(u.isVisible).length);
+
     expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
     expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
 };
@@ -63,7 +65,7 @@ describe("The Contacts Roster", function () {
     it("is populated once we have registered a presence handler", mock.initConverse([], {}, async function (_converse) {
         const IQs = _converse.api.connection.get().IQ_stanzas;
         const stanza = await u.waitUntil(
-            () => _.filter(IQs, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+            () => IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
 
         expect(Strophe.serialize(stanza)).toBe(
             `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
@@ -84,7 +86,7 @@ describe("The Contacts Roster", function () {
     it("supports roster versioning", mock.initConverse([], {}, async function (_converse) {
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         let stanza = await u.waitUntil(
-            () => _.filter(IQ_stanzas, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
+            () => IQ_stanzas.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
         );
         expect(_converse.roster.data.get('version')).toBeUndefined();
         expect(Strophe.serialize(stanza)).toBe(
@@ -404,7 +406,7 @@ describe("The Contacts Roster", function () {
             const filter = await u.waitUntil(() => rosterview.querySelector('.items-filter'));
             filter.value = "xxx";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
-            expect(_.includes(filter.classList, "x")).toBeFalsy();
+            expect(filter.classList.contains("x")).toBeFalsy();
             expect(u.hasClass('hidden', rosterview.querySelector('.items-filter-form .clear-input'))).toBeTruthy();
 
             const isHidden = (el) => u.hasClass('hidden', el);
@@ -544,7 +546,9 @@ describe("The Contacts Roster", function () {
             Object.keys(mock.groups).forEach(name  => {
                 const contacts = sizzle('.roster-group[data-group="'+name+'"] ul', rosterview);
                 const names = contacts.map(o => o.textContent.trim());
-                expect(names).toEqual(_.clone(names).sort());
+                const sorted_names = [...names];
+                sorted_names.sort();
+                expect(names).toEqual(sorted_names);
             });
         }));
 
@@ -609,7 +613,9 @@ describe("The Contacts Roster", function () {
             groups.forEach(name => {
                 const contacts = sizzle('.roster-group[data-group="'+name+'"] ul li', rosterview);
                 const names = contacts.map(o => o.textContent.trim());
-                expect(names).toEqual(_.clone(names).sort());
+                const sorted_names = [...names];
+                sorted_names.sort();
+                expect(names).toEqual(sorted_names);
                 expect(names.length).toEqual(mock.cur_names.length);
             });
         }));

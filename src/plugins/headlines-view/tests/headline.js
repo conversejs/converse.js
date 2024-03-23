@@ -164,6 +164,6 @@ describe("A headlines box", function () {
             .c('nick').t('gpocy').up()
             .c('body').t('Здравствуйте друзья');
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        expect(_.without('controlbox', _converse.chatboxviews.keys()).length).toBe(0);
+        expect(_converse.chatboxviews.keys().filter(k => k !== 'controlbox').length).toBe(0);
     }));
 });

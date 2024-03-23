@@ -153,8 +153,7 @@ function initPersistentStorage (_converse, store_name) {
 function saveJIDtoSession (_converse, jid) {
     const { api } = _converse;
 
-    jid = _converse.session.get('jid') || jid;
-    if (_converse.api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
+    if (api.settings.get("authentication") !== ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + generateResource();
     }
 

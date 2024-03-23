@@ -1,5 +1,6 @@
 /*global mock, converse, _ */
 
+
 const $iq = converse.env.$iq;
 const $pres = converse.env.$pres;
 const sizzle = converse.env.sizzle;
@@ -322,9 +323,11 @@ describe("The groupchat moderator tool", function () {
         const button = modal.querySelector('.btn-primary[name="users_with_affiliation"]');
         button.click();
 
-        const iq_query = await u.waitUntil(() => _.filter(
-            IQ_stanzas,
-            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="outcast"]`, s).length
+        const iq_query = await u.waitUntil(() => IQ_stanzas.filter(
+            s => sizzle(
+                `iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="outcast"]`,
+                s
+            ).length
         ).pop());
 
         const error = u.toStanza(

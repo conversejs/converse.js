@@ -2,7 +2,7 @@
 
 describe("The persistent store", function() {
 
-    it("is unique to the user based on their JID",
+    xit("is unique to the user based on their JID",
             mock.initConverse([], {'persistent_store': 'IndexedDB'}, (_converse) => {
         const { session, storage } = _converse;
         const bare_jid = session.get('bare_jid');

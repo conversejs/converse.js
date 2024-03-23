@@ -87,7 +87,7 @@ const api = {
 
             password = password || api.settings.get("password");
             const credentials = (jid && password) ? { jid, password } : null;
-            attemptNonPreboundSession(credentials, automatic);
+            await attemptNonPreboundSession(credentials, automatic);
         },
 
         /**

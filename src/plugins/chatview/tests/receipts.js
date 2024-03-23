@@ -25,7 +25,10 @@ describe("A delivery receipt", function () {
             }).c('body').t('Message!').up()
             .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
         await _converse.handleMessageStanza(msg);
-        const sent_messages = sent_stanzas.map(s => _.isElement(s) ? s : s.nodeTree).filter(s => s.nodeName === 'message');
+        const sent_messages = sent_stanzas
+            .map(s => u.isElement(s) ? s : s.nodeTree)
+            .filter(s => s.nodeName === 'message');
+
         // A chat state message is also included
         expect(sent_messages.length).toBe(2);
         const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[1]).pop();

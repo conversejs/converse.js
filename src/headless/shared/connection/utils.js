@@ -6,7 +6,10 @@ export function generateResource () {
     return `/converse.js-${Math.floor(Math.random() * 139749528).toString()}`;
 }
 
-export function setUpXMLLogging (connection) {
+export function setStropheLogLevel () {
+    const level = settings_api.get('loglevel');
+    Strophe.setLogLevel(Strophe.LogLevel[level.toUpperCase()]);
+
     const lmap = {};
     lmap[Strophe.LogLevel.DEBUG] = 'debug';
     lmap[Strophe.LogLevel.INFO] = 'info';
@@ -14,11 +17,8 @@ export function setUpXMLLogging (connection) {
     lmap[Strophe.LogLevel.ERROR] = 'error';
     lmap[Strophe.LogLevel.FATAL] = 'fatal';
 
-    Strophe.log = (level, msg) => log.log(msg, lmap[level]);
+    Strophe.log = (l, msg) => log.log(msg, lmap[l]);
     Strophe.error = (msg) => log.error(msg);
-
-    connection.xmlInput = (body) => log.debug(body.outerHTML, 'color: darkgoldenrod');
-    connection.xmlOutput = (body) => log.debug(body.outerHTML, 'color: darkcyan');
 }
 
 export function getConnectionServiceURL () {

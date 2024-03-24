@@ -116,7 +116,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "bootstrap": "^4.6.0",
+    "bootstrap": "^5.3.3",
     "bootstrap.native": "^2.0.27",
     "client-compress": "^2.2.2",
     "dayjs": "^1.11.8",

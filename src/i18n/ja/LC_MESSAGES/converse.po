@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-13 21:44+0200\n"
-"PO-Revision-Date: 2024-02-22 05:02+0000\n"
+"PO-Revision-Date: 2024-03-26 13:01+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -1080,11 +1080,11 @@ msgstr "撤回"
 
 #: dist/converse-no-dependencies.js:84482
 msgid "Copy"
-msgstr ""
+msgstr "コピー"
 
 #: dist/converse-no-dependencies.js:84492
 msgid "Quote"
-msgstr ""
+msgstr "引用"
 
 #: dist/converse-no-dependencies.js:90456
 msgid "Older versions"
@@ -1468,9 +1468,8 @@ msgid "Visitor"
 msgstr "傍聴者"
 
 #: dist/converse-no-dependencies.js:107583
-#, fuzzy
 msgid "Filter by name"
-msgstr "グループ名で絞り込み"
+msgstr "名前で絞り込み"
 
 #: dist/converse-no-dependencies.js:107584
 #: dist/converse-no-dependencies.js:129492
@@ -1529,20 +1528,18 @@ msgid "Participants"
 msgstr "参加者"
 
 #: dist/converse-no-dependencies.js:107665
-#, fuzzy
 msgid "Hide sidebar"
-msgstr "メディアを非表示"
+msgstr "サイドバーを隠す"
 
 #: dist/converse-no-dependencies.js:107666
 #: dist/converse-no-dependencies.js:129561
-#, fuzzy
 msgid "Show filter"
-msgstr "少ない表示"
+msgstr "フィルターを表示"
 
 #: dist/converse-no-dependencies.js:107667
 #: dist/converse-no-dependencies.js:129562
 msgid "Hide filter"
-msgstr ""
+msgstr "フィルターを隠す"
 
 #: dist/converse-no-dependencies.js:108528
 msgid "Change user's affiliation to admin"
@@ -2470,9 +2467,8 @@ msgid "No groupchats found"
 msgstr "グループチャットが見つかりません"
 
 #: dist/converse-no-dependencies.js:127604
-#, fuzzy
 msgid "Click to hide these rooms"
-msgstr "クリックしてこれらの連絡先を隠す"
+msgstr "クリックしてこれらの部屋を隠す"
 
 #: dist/converse-no-dependencies.js:127693
 msgid "Leave this groupchat"
@@ -2491,9 +2487,8 @@ msgid "Query server"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:127719
-#, fuzzy
 msgid "Add groupchat"
-msgstr "新しいグループチャットを追加"
+msgstr "グループチャットを追加"
 
 #: dist/converse-no-dependencies.js:128323
 #, javascript-format
@@ -2563,7 +2558,6 @@ msgid "Add a contact"
 msgstr "連絡先を追加"
 
 #: dist/converse-no-dependencies.js:129576
-#, fuzzy
 msgid "Re-sync contacts"
 msgstr "連絡先を再同期"
 

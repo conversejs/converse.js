@@ -1,5 +1,8 @@
 export default MUCOccupants;
 export type MemberListItem = any;
+export type Attributes = import('@converse/skeletor/src/types/collection').Attributes;
+export type CollectionOptions = import('@converse/skeletor/src/types/collection').CollectionOptions;
+export type Options = import('@converse/skeletor/src/types/collection').Options;
 /**
  * A list of {@link MUCOccupant} instances, representing participants in a MUC.
  * @class
@@ -7,16 +10,13 @@ export type MemberListItem = any;
  */
 declare class MUCOccupants extends Collection {
     static getAutoFetchedAffiliationLists(): any[];
-    constructor(attrs: any, options: any);
+    /**
+     * @param {MUCOccupant[]} attrs
+     * @param {CollectionOptions} options
+     */
+    constructor(attrs: MUCOccupant[], options: CollectionOptions);
     chatroom: any;
     get model(): typeof MUCOccupant;
-    create(attrs: any, options: any): false | Model | import("@converse/skeletor/src/types/collection.js").Attributes | (Promise<any> & {
-        isResolved: boolean;
-        isPending: boolean;
-        isRejected: boolean;
-        resolve: Function;
-        reject: Function;
-    });
     fetchMembers(): Promise<void>;
     /**
      * @typedef { Object} OccupantData
@@ -56,5 +56,4 @@ declare class MUCOccupants extends Collection {
 }
 import { Collection } from "@converse/skeletor";
 import MUCOccupant from "./occupant.js";
-import { Model } from "@converse/skeletor";
 //# sourceMappingURL=occupants.d.ts.map

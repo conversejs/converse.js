@@ -1,16 +1,29 @@
+/**
+ * @typedef {import('shared/chat/message').default} Message
+ */
 import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
 import { __ } from 'i18n';
 import { html } from "lit";
-import { shouldRenderMediaFromURL } from 'utils/url';
+import { shouldRenderMediaFromURL } from 'utils/url.js';
+import { getAuthorStyle } from 'utils/color.js';
 
+
+/**
+ * @param {Message} el
+ * @param {Object} o
+ */
 export default (el, o) => {
     const i18n_new_messages = __('New messages');
     const is_followup = el.model.isFollowup();
-    const author_style = o.color ? 'color: ' + o.color + ' !important;' : '';
+    const occupant = el.model.occupant;
+    const author_style = getAuthorStyle(occupant);
 
     return html`
-        ${ o.is_first_unread ? html`<div class="message separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
+        ${ o.is_first_unread ? html`<div class="message separator">
+            <hr class="separator">
+            <span class="separator-text">${ i18n_new_messages }</span>
+        </div>` : '' }
         <div class="message chat-msg ${ el.getExtraMessageClasses() }"
                 data-isodate="${o.time}"
                 data-msgid="${o.msgid}"
@@ -32,7 +45,11 @@ export default (el, o) => {
             <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
                 ${ (!o.is_me_message && !is_followup) ? html`
                     <span class="chat-msg__heading">
-                        <span class="chat-msg__author"><a class="show-msg-author-modal" @click=${el.showUserModal} style="${author_style}">${o.username}</a></span>
+                        <span class="chat-msg__author">
+                            <a class="show-msg-author-modal"
+                               @click=${el.showUserModal}
+                               style="${author_style}">${o.username}</a>
+                        </span>
                         ${ o.hats.map(h => html`<span class="badge badge-secondary">${h.title}</span>`) }
                         <time timestamp="${el.model.get('edited') || el.model.get('time')}" class="chat-msg__time">${o.pretty_time}</time>
                         ${ o.is_encrypted ? html`<converse-icon class="fa fa-lock" size="1.1em"></converse-icon>` : '' }

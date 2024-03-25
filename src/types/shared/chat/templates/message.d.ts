@@ -1,3 +1,4 @@
-declare function _default(el: any, o: any): import("lit-html").TemplateResult<1>;
+declare function _default(el: Message, o: any): import("lit-html").TemplateResult<1>;
 export default _default;
+export type Message = import('shared/chat/message').default;
 //# sourceMappingURL=message.d.ts.map

@@ -3,6 +3,7 @@
 ## 11.0.0 (Unreleased)
 
 - #1195: Add actions to quote and copy messages
+- #1349: New config option [colorize_username](https://conversejs.org/docs/html/configuration.html#colorize_username)
 - #2716: Fix issue with chat display when opening via URL
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - #3300: Adding the maxWait option for `debouncedPruneHistory`

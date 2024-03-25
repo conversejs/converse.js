@@ -198,6 +198,7 @@ export default class Message extends CustomElement {
             'is_retracted': this.isRetracted(),
             'username': this.model.getDisplayName(),
             'should_show_avatar': this.shouldShowAvatar(),
+            'colorize_username': api.settings.get('colorize_username'),
         }
     }
 

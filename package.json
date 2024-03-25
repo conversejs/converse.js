@@ -123,6 +123,7 @@
     "dompurify": "^3.0.8",
     "favico.js-slevomat": "^0.3.11",
     "gifuct-js": "^2.1.2",
+    "hsluv": "^1.0.1",
     "jed": "1.1.1",
     "lit": "^2.4.0",
     "localforage-webextensionstorage-driver": "^3.0.0",

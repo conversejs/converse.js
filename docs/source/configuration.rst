@@ -2176,6 +2176,12 @@ theme
 
 Let's you set a color theme for Converse.
 
+colorize_username
+-------------------
+
+* Default: ``false``
+
+Wether nicknames should be colorized, in compliance with `XEP-0392: Consistent Color Generation <https://xmpp.org/extensions/xep-0392.html>`_.
 
 time_format
 -----------

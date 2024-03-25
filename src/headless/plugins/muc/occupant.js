@@ -1,4 +1,5 @@
 import { Model } from '@converse/skeletor';
+import { colorize } from '../../utils/color.js';
 
 /**
  * Represents a participant in a MUC
@@ -11,6 +12,11 @@ class MUCOccupant extends Model {
     constructor (attributes, options) {
         super(attributes, options);
         this.vcard = null;
+    }
+
+    initialize () {
+        this.on('change:nick', () => this.setColor());
+        this.on('change:jid', () => this.setColor());
     }
 
     defaults () {
@@ -40,6 +46,18 @@ class MUCOccupant extends Model {
 
     getDisplayName () {
         return this.get('nick') || this.get('jid');
+    }
+
+    async setColor () {
+        const color = await colorize(this.getDisplayName());
+        this.save({ color });
+    }
+
+    async getColor () {
+        if (!this.get('color')) {
+            await this.setColor();
+        }
+        return this.get('color');
     }
 
     isMember () {

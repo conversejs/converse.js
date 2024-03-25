@@ -15,6 +15,7 @@ declare class MUCOccupant extends Model {
     };
     save(key: any, val: any, options: any): any;
     getDisplayName(): any;
+    getColor(): any;
     isMember(): boolean;
     isModerator(): boolean;
     isSelf(): any;

@@ -1,5 +1,8 @@
 /**
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
+ * @typedef {import('@converse/skeletor/src/types/collection').Attributes} Attributes
+ * @typedef {import('@converse/skeletor/src/types/collection').CollectionOptions} CollectionOptions
+ * @typedef {import('@converse/skeletor/src/types/collection').Options} Options
  */
 import MUCOccupant from './occupant.js';
 import _converse from '../../shared/_converse.js';
@@ -11,7 +14,6 @@ import { Strophe } from 'strophe.js';
 import { getAffiliationList } from './affiliations/utils.js';
 import { occupantsComparator } from './utils.js';
 import { getUniqueId } from '../../utils/index.js';
-import { colorize } from '../../utils/color';
 
 const { u } = converse.env;
 
@@ -23,6 +25,10 @@ const { u } = converse.env;
  */
 class MUCOccupants extends Collection {
 
+    /**
+     * @param {MUCOccupant[]} attrs
+     * @param {CollectionOptions} options
+     */
     constructor (attrs, options) {
         super(
             attrs,
@@ -37,24 +43,18 @@ class MUCOccupants extends Collection {
 
     initialize() {
         this.on('change:nick', () => this.sort());
-        if (api.settings.get('colorize_username')) {
-            const updateColor = async (occupant) => {
-                const color = await colorize(occupant.get('nick'));
-                occupant.save('color', color);
-            };
-            this.on('add', updateColor);
-            this.on('change:nick', updateColor);
-        }
-
         this.on('change:role', () => this.sort());
     }
-
 
     static getAutoFetchedAffiliationLists () {
         const affs = api.settings.get('muc_fetch_members');
         return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
     }
 
+    /**
+     * @param {Model|Attributes} attrs
+     * @param {Options} [options]
+     */
     create (attrs, options) {
         if (attrs.id || attrs instanceof Model) {
             return super.create(attrs, options);

@@ -8,6 +8,7 @@ import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import log, { LEVELS } from '../log.js';
 import { waitUntil } from './promise.js';
+import * as color from './color.js';
 import * as stanza from './stanza.js';
 import * as session from './session.js';
 import * as object from './object.js';
@@ -165,6 +166,7 @@ export function getUniqueId (suffix) {
 
 export default Object.assign({
     ...arraybuffer,
+    ...color,
     ...form,
     ...html,
     ...jid,

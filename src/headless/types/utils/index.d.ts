@@ -83,6 +83,7 @@ declare const _default: {
     isMentionBoundary(s: string): boolean;
     replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
     placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
+    colorize(s: string): Promise<string>;
     /**
      * @copyright The Converse.js contributors
      * @license Mozilla Public License (MPLv2)

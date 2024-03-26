@@ -1,6 +1,6 @@
 /**
  * @typedef {import('plugins/muc-views/sidebar').default} MUCSidebar
- * @typedef {import('headless/plugins/muc/occupant').default} Occupant
+ * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
  */
 import 'shared/components/list-filter.js';
 import tplOccupant from "./occupant.js";
@@ -11,7 +11,7 @@ import { repeat } from 'lit/directives/repeat.js';
 
 /**
  * @param {MUCSidebar} el
- * @param {Occupant} occ
+ * @param {MUCOccupant} occ
  */
 function isOccupantFiltered (el, occ) {
     if (!el.model.get('filter_visible')) return false;
@@ -31,7 +31,7 @@ function isOccupantFiltered (el, occ) {
 
 /**
  * @param {MUCSidebar} el
- * @param {Occupant} occ
+ * @param {MUCOccupant} occ
  * @param {Object} o
  */
 function shouldShowOccupant (el, occ, o) {

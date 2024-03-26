@@ -1,19 +1,16 @@
 /**
  * @typedef {module:muc-affiliations-utils.NonOutcastAffiliation} NonOutcastAffiliation
  */
-
-import tplModeratorTools from './templates/moderator-tools.js';
-import { AFFILIATIONS, ROLES } from '@converse/headless/plugins/muc/constants.js';
-import { CustomElement } from 'shared/components/element.js';
-import { __ } from 'i18n';
-import { api, converse } from '@converse/headless';
-import { getAffiliationList, getAssignableAffiliations } from '@converse/headless/plugins/muc/affiliations/utils.js';
-import { getAssignableRoles, getAutoFetchedAffiliationLists } from '@converse/headless/plugins/muc/utils.js';
 import { getOpenPromise } from '@converse/openpromise';
+import { api, converse, MUCOccupants, constants } from '@converse/headless';
+import { __ } from 'i18n';
+import { CustomElement } from 'shared/components/element.js';
+import tplModeratorTools from './templates/moderator-tools.js';
 
 import './styles/moderator-tools.scss';
 
-const { u } = converse.env;
+const { u } = converse.env
+const { AFFILIATIONS, ROLES } = constants;
 
 export default class ModeratorTools extends CustomElement {
     static get properties () {
@@ -74,8 +71,8 @@ export default class ModeratorTools extends CustomElement {
                 'affiliations_filter': this.affiliations_filter,
                 'alert_message': this.alert_message,
                 'alert_type': this.alert_type,
-                'assignable_affiliations': getAssignableAffiliations(occupant),
-                'assignable_roles': getAssignableRoles(occupant),
+                'assignable_affiliations': occupant.getAssignableAffiliations(),
+                'assignable_roles': occupant.getAssignableRoles(),
                 'filterAffiliationResults': ev => this.filterAffiliationResults(ev),
                 'filterRoleResults': ev => this.filterRoleResults(ev),
                 'loading_users_with_affiliation': this.loading_users_with_affiliation,
@@ -113,7 +110,7 @@ export default class ModeratorTools extends CustomElement {
         this.users_with_affiliation = null;
 
         if (this.shouldFetchAffiliationsList()) {
-            const result = await getAffiliationList(this.affiliation, this.jid);
+            const result = await api.rooms.affiliations.get(this.affiliation, this.jid);
             if (result instanceof Error) {
                 this.alert(result.message, 'danger');
                 this.users_with_affiliation = [];
@@ -140,7 +137,7 @@ export default class ModeratorTools extends CustomElement {
         if (affiliation === 'none') {
             return false;
         }
-        const auto_fetched_affs = getAutoFetchedAffiliationLists();
+        const auto_fetched_affs = MUCOccupants.getAutoFetchedAffiliationLists();
         if (auto_fetched_affs.includes(affiliation)) {
             return false;
         } else {
@@ -148,7 +145,6 @@ export default class ModeratorTools extends CustomElement {
         }
     }
 
-    // eslint-disable-next-line class-methods-use-this
     toggleForm (ev) {
         ev.stopPropagation();
         ev.preventDefault();

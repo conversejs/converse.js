@@ -2,13 +2,13 @@
  * @typedef {import('../muc/muc.js').default} MUC
  * @typedef {import('../chat/model.js').default} ChatBox
  */
+import sizzle from 'sizzle';
+import { Strophe, $iq } from 'strophe.js';
 import MAMPlaceholderMessage from './placeholder.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '../../log.js';
-import sizzle from 'sizzle';
-import { Strophe, $iq } from 'strophe.js';
 import { parseMUCMessage } from '../../plugins/muc/parsers';
 import { parseMessage } from '../../plugins/chat/parsers';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';

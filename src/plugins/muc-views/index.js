@@ -3,15 +3,15 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
+import { api, converse, constants } from '@converse/headless';
 import '../chatboxviews/index.js';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
-import { api, converse } from '@converse/headless';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
 import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;
+const { CHATROOMS_TYPE } = constants;
 
 import './styles/index.scss';
 

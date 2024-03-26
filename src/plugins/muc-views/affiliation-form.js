@@ -1,8 +1,7 @@
 import tplAffiliationForm from './templates/affiliation-form.js';
 import { CustomElement } from 'shared/components/element';
 import { __ } from 'i18n';
-import { api, converse, log } from '@converse/headless';
-import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
+import { api, converse, log, u } from '@converse/headless';
 
 const { Strophe, sizzle } = converse.env;
 
@@ -45,7 +44,7 @@ class AffiliationForm extends CustomElement {
         };
         const muc_jid = this.muc.get('jid');
         try {
-            await setAffiliation(affiliation, muc_jid, [attrs]);
+            await u.muc.setAffiliation(affiliation, muc_jid, [attrs]);
         } catch (e) {
             if (e === null) {
                 this.alert(__('Timeout error while trying to set the affiliation'), 'danger');

@@ -1,10 +1,10 @@
-import { __ } from 'i18n';
-import { _converse } from '@converse/headless';
-import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
-import { HEADLINES_TYPE } from '@converse/headless/shared/constants.js';
+import { _converse, constants } from '@converse/headless';
+import { __ } from 'i18n';
+import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 
+const { HEADLINES_TYPE } = constants;
 
 export default (o) => {
     const i18n_profile = __("The User's Profile Image");

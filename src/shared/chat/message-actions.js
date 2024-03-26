@@ -1,13 +1,17 @@
+/**
+ * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLData
+ */
+import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
+import { api, log, _converse, u, constants } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse, log, _converse } from '@converse/headless';
-import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
-import { html } from 'lit';
 import { isMediaURLDomainAllowed, isDomainWhitelisted } from 'utils/url.js';
-import { until } from 'lit/directives/until.js';
 
 import './styles/message-actions.scss';
+
+const { getMediaURLs } = u;
+const { CHATROOMS_TYPE } = constants;
 
 /**
  * @typedef {Object} MessageActionAttributes
@@ -18,8 +22,6 @@ import './styles/message-actions.scss';
  * @property {String} icon_class
  * @property {String} name
  */
-
-const { u } = converse.env;
 
 class MessageActions extends CustomElement {
     static get properties () {
@@ -256,9 +258,8 @@ class MessageActions extends CustomElement {
             .map(o => ({ 'url': o['og:image'], 'is_image': true }))
             .filter(o => isMediaURLDomainAllowed(o));
 
-        const media_urls = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'))
-            .filter(o => isMediaURLDomainAllowed(o));
-
+        const url_strings = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body'));
+        const media_urls = /** @type {MediaURLData[]} */(url_strings.filter(o => isMediaURLDomainAllowed(o)));
         return [...new Set([...media_urls.map(o => o.url), ...unfurls_to_show.map(o => o.url)])];
     }
 

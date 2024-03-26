@@ -1,23 +1,20 @@
 /**
- * @typedef {import("strophe.js/src/request.js").default} Request
+ * @typedef {import('strophe.js').Request} Request
  */
+import { _converse, api, converse, log, constants, u } from "@converse/headless";
 import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
 import tplRegisterPanel from "./templates/register_panel.js";
-import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse, log } from "@converse/headless";
 import { setActiveForm } from './utils.js';
-import { webForm2xForm } from "@converse/headless/utils/form";
 
 import './styles/register.scss';
 
 // Strophe methods for building stanzas
 const { Strophe, sizzle, $iq } = converse.env;
-const u = converse.env.utils;
-
+const { CONNECTION_STATUS } = constants;
 
 const CHOOSE_PROVIDER = 0;
 const FETCHING_FORM = 1;
@@ -351,7 +348,7 @@ class RegisterPanel extends CustomElement {
         if (this.form_type === 'xform') {
             iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
 
-            const xml_nodes = inputs.map(i => webForm2xForm(i)).filter(n => n);
+            const xml_nodes = inputs.map(i => u.webForm2xForm(i)).filter(n => n);
             xml_nodes.forEach(n => iq.cnode(n).up());
         } else {
             inputs.forEach(input => iq.c(input.getAttribute('name'), {}, input.value));

@@ -3,8 +3,10 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
  * @typedef {import('lit').TemplateResult} TemplateResult
- * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
+import { render } from 'lit';
+import { Builder, Stanza } from 'strophe.js';
+import { api, converse, log, u } from '@converse/headless';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
@@ -17,12 +19,9 @@ import tplFormUrl from '../templates/form_url.js';
 import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
-import { api, converse, log, u } from '@converse/headless';
-import { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } from '@converse/headless/utils/url.js';
-import { render } from 'lit';
-import { queryChildren } from '@converse/headless/utils/html.js';
 
 const { sizzle, Strophe } = converse.env;
+const { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL, queryChildren } = u;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 
@@ -51,10 +50,12 @@ const XFORM_VALIDATE_TYPE_MAP = {
 const EMPTY_TEXT_REGEX = /\s*\n\s*/
 
 /**
- * @param {Element|Strophe.Builder} el
+ * @param {Element|Builder|Stanza} el
  */
 function stripEmptyTextNodes (el) {
-    el = el.tree?.() ?? el;
+    if (el instanceof Builder || el instanceof Stanza) {
+        el = el.tree();
+    }
 
     let n;
     const text_nodes = [];
@@ -70,6 +71,10 @@ function stripEmptyTextNodes (el) {
     return el;
 }
 
+/**
+ * @param {string} name
+ * @param {{ new_password: string }} options
+ */
 function getAutoCompleteProperty (name, options) {
     return {
         'muc#roomconfig_lang': 'language',

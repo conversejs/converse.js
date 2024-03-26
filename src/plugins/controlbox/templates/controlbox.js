@@ -2,11 +2,11 @@
  * @typedef {import('../controlbox').default} ControlBoxView
  */
 import tplSpinner from "templates/spinner.js";
-import { _converse, api, converse } from "@converse/headless";
+import { _converse, api, converse, constants } from "@converse/headless";
 import { html } from 'lit';
-import { ANONYMOUS } from "@converse/headless/shared/constants";
 
 const { Strophe } = converse.env;
+const { ANONYMOUS } = constants;
 
 
 function whenNotConnected (o) {

@@ -4,6 +4,7 @@ import Messages from './messages.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import chatboxes_api from '../chatboxes/api.js';
 import chat_api from './api.js';
 import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
 import {
@@ -43,7 +44,7 @@ converse.plugins.add('converse-chat', {
 
         Object.assign(api, chat_api);
 
-        api.chatboxes.registry.add(PRIVATE_CHAT_TYPE, ChatBox);
+        chatboxes_api.registry.add(PRIVATE_CHAT_TYPE, ChatBox);
 
         routeToChat();
         addEventListener('hashchange', routeToChat);

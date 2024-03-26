@@ -1,15 +1,16 @@
 /**
  * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
  */
+import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
+import { api, constants } from "@converse/headless";
 import 'shared/components/icons.js';
 import DOMNavigator from "shared/dom-navigator.js";
 import DropdownBase from 'shared/components/dropdownbase.js';
-import { KEYCODES } from '@converse/headless/shared/constants.js';
-import { api } from "@converse/headless";
-import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
 
 import './styles/dropdown.scss';
+
+const { KEYCODES } = constants;
 
 
 export default class Dropdown extends DropdownBase {

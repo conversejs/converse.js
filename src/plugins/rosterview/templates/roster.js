@@ -1,15 +1,21 @@
 /**
  * @typedef {import('../rosterview').default} RosterView
  */
-import tplGroup from './group.js';
-import tplRosterFilter from './roster_filter.js';
-import { CLOSED } from '@converse/headless/shared/constants.js';
-import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
-import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
-import { shouldShowContact, shouldShowGroup, populateContactsMap } from '../utils.js';
+import { _converse, api, constants } from '@converse/headless';
+import tplGroup from './group.js';
+import tplRosterFilter from './roster_filter.js';
+import { __ } from 'i18n';
+import {
+    shouldShowContact,
+    shouldShowGroup,
+    populateContactsMap,
+    groupsComparator,
+    contactsComparator,
+} from '../utils.js';
+
+const { CLOSED } = constants;
 
 /**
  * @param {RosterView} el

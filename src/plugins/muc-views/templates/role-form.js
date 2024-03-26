@@ -1,13 +1,12 @@
 import { __ } from 'i18n';
 import { html } from "lit";
-import { getAssignableRoles } from '@converse/headless/plugins/muc/utils.js';
 
 export default (el) => {
     const i18n_change_role = __('Change role');
     const i18n_new_role = __('New Role');
     const i18n_reason = __('Reason');
     const occupant = el.muc.getOwnOccupant();
-    const assignable_roles = getAssignableRoles(occupant);
+    const assignable_roles = occupant.getAssignableRoles();
 
     return html`
         <form class="role-form" @submit=${el.assignRole}>

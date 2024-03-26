@@ -1,9 +1,10 @@
 export default Bookmarks;
 declare class Bookmarks extends Collection {
+    static checkBookmarksSupport(): Promise<any>;
     constructor();
-    model: typeof Bookmark;
     initialize(): Promise<void>;
     fetched_flag: string;
+    model: typeof Bookmark;
     /**
      * @param {Bookmark} bookmark
      */

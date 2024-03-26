@@ -3,11 +3,10 @@
  * @license Mozilla Public License (MPLv2)
  * @copyright 2022, the Converse.js contributors
  */
-import { api, converse } from "@converse/headless";
-import { isUniView } from '@converse/headless/utils/session.js';
-
+import { api, converse, u } from "@converse/headless";
 import './styles/fullscreen.scss';
 
+const { isUniView } = u;
 
 converse.plugins.add('converse-fullscreen', {
 

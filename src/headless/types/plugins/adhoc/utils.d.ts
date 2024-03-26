@@ -1,5 +1,12 @@
-export function parseForCommands(stanza: any): any;
-export function getCommandFields(iq: any, jid: any): {
+/**
+ * @param {Element} stanza
+ */
+export function parseForCommands(stanza: Element): any;
+/**
+ * @param {Element} iq
+ * @param {string} [jid]
+ */
+export function getCommandFields(iq: Element, jid?: string): {
     sessionid: any;
     instructions: any;
     fields: any;

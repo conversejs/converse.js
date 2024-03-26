@@ -1,8 +1,8 @@
 import { Model } from '@converse/skeletor';
-import { _converse, api, converse } from "@converse/headless";
-import { OPENED } from '@converse/headless/shared/constants';
+import { _converse, api, converse, constants } from "@converse/headless";
 
 const { Strophe } = converse.env;
+const { OPENED } = constants;
 
 class RoomsListModel extends Model {
 
@@ -17,7 +17,11 @@ class RoomsListModel extends Model {
 
     initialize () {
         super.initialize();
-        api.settings.listen.on('change:muc_domain', (muc_domain) => this.setDomain(muc_domain));
+        api.settings.listen.on(
+            'change:muc_domain',
+            /** @param {string} muc_domain */
+            (muc_domain) => this.setDomain(muc_domain)
+        );
     }
 
     /**

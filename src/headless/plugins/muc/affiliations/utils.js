@@ -5,12 +5,12 @@
  * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
  * @typedef {module:plugin-muc-affiliations-api.User} User
  * @typedef {import('@converse/skeletor').Model} Model
+ * @typedef {import('../constants').AFFILIATIONS} AFFILIATIONS
  */
 import _converse from '../../../shared/_converse.js';
 import api from '../../../shared/api/index.js';
 import converse from '../../../shared/api/public.js';
 import log from '../../../log.js';
-import { AFFILIATIONS } from '../constants.js';
 import { parseMemberListIQ } from '../parsers.js';
 
 const { Strophe, $iq, u } = converse.env;
@@ -50,25 +50,6 @@ export async function getAffiliationList (affiliation, muc_jid) {
 }
 
 /**
- * Given an occupant model, see which affiliations may be assigned by that user
- * @param {Model} occupant
- * @returns {typeof AFFILIATIONS} An array of assignable affiliations
- */
-export function getAssignableAffiliations (occupant) {
-    let disabled = api.settings.get('modtools_disable_assign');
-    if (!Array.isArray(disabled)) {
-        disabled = disabled ? AFFILIATIONS : [];
-    }
-    if (occupant?.get('affiliation') === 'owner') {
-        return AFFILIATIONS.filter(a => !disabled.includes(a));
-    } else if (occupant?.get('affiliation') === 'admin') {
-        return AFFILIATIONS.filter(a => !['owner', 'admin', ...disabled].includes(a));
-    } else {
-        return [];
-    }
-}
-
-/**
  * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
  * @param {String|Array<String>} muc_jid - The JID(s) of the MUCs in which the
@@ -90,7 +71,7 @@ export function setAffiliations (muc_jid, users) {
  * a separate stanza for each JID.
  * Related ticket: https://issues.prosody.im/345
  *
- * @param {typeof AFFILIATIONS[number]} affiliation - The affiliation to be set
+ * @param {AFFILIATIONS[number]} affiliation - The affiliation to be set
  * @param {String|Array<String>} muc_jids - The JID(s) of the MUCs in which the
  *  affiliations need to be set.
  * @param {object} members - A map of jids, affiliations and
@@ -110,7 +91,7 @@ export function setAffiliation (affiliation, muc_jids, members) {
 
 /**
  * Send an IQ stanza specifying an affiliation change.
- * @param {typeof AFFILIATIONS[number]} affiliation: affiliation (could also be stored on the member object).
+ * @param {AFFILIATIONS[number]} affiliation: affiliation (could also be stored on the member object).
  * @param {string} muc_jid: The JID of the MUC in which the affiliation should be set.
  * @param {object} member: Map containing the member's jid and optionally a reason and affiliation.
  */

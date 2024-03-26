@@ -1,7 +1,6 @@
+import { api, u } from "@converse/headless";
 import { CustomElement } from 'shared/components/element.js';
 import tplPlaceholder from './templates/placeholder.js';
-import { api } from "@converse/headless";
-import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils.js';
 
 import './styles/placeholder.scss';
 
@@ -30,7 +29,7 @@ class Placeholder extends CustomElement {
             'before': this.model.get('before'),
             'start': this.model.get('start')
         }
-        await fetchArchivedMessages(this.model.collection.chatbox, options);
+        await u.mam.fetchArchivedMessages(this.model.collection.chatbox, options);
         this.model.destroy();
     }
 }

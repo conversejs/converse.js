@@ -35,7 +35,7 @@ export class RichText extends String {
      *  player. If set to `false`, they won't, and if not defined, then the `embed_videos` setting
      *  is used to determine whether they should be rendered as videos or as hyperlinks.
      * @param {Array} [options.mentions] - An array of mention references
-     * @param {Array} [options.media_urls] - An array of {@link MediaURLMetadata} objects,
+     * @param {MediaURLMetadata[]} [options.media_urls] - An array of {@link MediaURLMetadata} objects,
      *  used to render media such as images, videos and audio. It might not be
      *  possible to have the media metadata available, so if this value is
      *  `undefined` then the passed-in `text` will be parsed for URLs. If you
@@ -53,7 +53,7 @@ export class RichText extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: any[];
+        media_urls?: MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -74,7 +74,7 @@ export class RichText extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: any[];
+        media_urls?: MediaURLMetadata[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -89,8 +89,8 @@ export class RichText extends String {
     shouldRenderMedia(url_text: any, type: any): any;
     /**
      * Look for `http` URIs and return templates that render them as URL links
-     * @param { String } text
-     * @param { number } local_offset - The index of the passed in text relative to
+     * @param {string} text
+     * @param {number} local_offset - The index of the passed in text relative to
      *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
@@ -156,4 +156,6 @@ export class RichText extends String {
      */
     marshall(): any[];
 }
+export type MediaURLMetadata = any;
+export type MediaURLData = any;
 //# sourceMappingURL=rich-text.d.ts.map

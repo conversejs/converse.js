@@ -1,4 +1,6 @@
 import { Model } from '@converse/skeletor';
+import api from '../../shared/api/index.js';
+import { AFFILIATIONS, ROLES } from './constants.js';
 
 /**
  * Represents a participant in a MUC
@@ -41,6 +43,41 @@ class MUCOccupant extends Model {
     getDisplayName () {
         return this.get('nick') || this.get('jid');
     }
+
+    /**
+     * Return roles which may be assigned to this occupant
+     * @returns {typeof ROLES} - An array of assignable roles
+     */
+    getAssignableRoles () {
+        let disabled = api.settings.get('modtools_disable_assign');
+        if (!Array.isArray(disabled)) {
+            disabled = disabled ? ROLES : [];
+        }
+        if (this.get('role') === 'moderator') {
+            return ROLES.filter(r => !disabled.includes(r));
+        } else {
+            return [];
+        }
+    }
+
+    /**
+    * Return affiliations which may be assigned by this occupant
+    * @returns {typeof AFFILIATIONS} An array of assignable affiliations
+    */
+    getAssignableAffiliations () {
+        let disabled = api.settings.get('modtools_disable_assign');
+        if (!Array.isArray(disabled)) {
+            disabled = disabled ? AFFILIATIONS : [];
+        }
+        if (this.get('affiliation') === 'owner') {
+            return AFFILIATIONS.filter(a => !disabled.includes(a));
+        } else if (this.get('affiliation') === 'admin') {
+            return AFFILIATIONS.filter(a => !['owner', 'admin', ...disabled].includes(a));
+        } else {
+            return [];
+        }
+    }
+
 
     isMember () {
         return ['admin', 'owner', 'member'].includes(this.get('affiliation'));

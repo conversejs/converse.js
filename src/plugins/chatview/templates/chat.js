@@ -1,6 +1,7 @@
 import { html } from "lit";
-import { _converse } from '@converse/headless';
-import { CHATROOMS_TYPE } from "@converse/headless/shared/constants";
+import { constants } from '@converse/headless';
+
+const { CHATROOMS_TYPE } = constants;
 
 export default (o) => html`
     <div class="flyout box-flyout">

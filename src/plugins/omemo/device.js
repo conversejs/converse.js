@@ -1,8 +1,7 @@
 import { IQError } from 'shared/errors.js';
 import { Model } from '@converse/skeletor';
 import { UNDECIDED } from './consts.js';
-import { _converse, api, converse, log } from '@converse/headless';
-import { getRandomInt } from '@converse/headless/utils/index.js';
+import { _converse, api, converse, log, u } from '@converse/headless';
 import { parseBundle } from './utils.js';
 
 const { Strophe, sizzle, $iq } = converse.env;
@@ -22,7 +21,7 @@ class Device extends Model {
     getRandomPreKey () {
         // XXX: assumes that the bundle has already been fetched
         const bundle = this.get('bundle');
-        return bundle.prekeys[getRandomInt(bundle.prekeys.length)];
+        return bundle.prekeys[u.getRandomInt(bundle.prekeys.length)];
     }
 
     async fetchBundleFromServer () {

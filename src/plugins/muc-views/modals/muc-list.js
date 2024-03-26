@@ -3,24 +3,23 @@ import tplMUCDescription from "../templates/muc-description.js";
 import tplMUCList from "../templates/muc-list.js";
 import tplSpinner from "templates/spinner.js";
 import { __ } from 'i18n';
-import { api, converse, log } from "@converse/headless";
-import { getAttributes } from '@converse/headless/shared/parsers';
+import { api, converse, log, u } from "@converse/headless";
 
 const { Strophe, $iq, sizzle } = converse.env;
-const u = converse.env.utils;
+const { getAttributes } = u;
 
 
-/* Insert groupchat info (based on returned #disco IQ stanza)
- * @function insertRoomInfo
- * @param { HTMLElement } el - The HTML DOM element that contains the info.
- * @param { Element } stanza - The IQ stanza containing the groupchat info.
+/**
+ * Insert groupchat info (based on returned #disco IQ stanza)
+ * @param {HTMLElement} el - The HTML DOM element that contains the info.
+ * @param {Element} stanza - The IQ stanza containing the groupchat info.
  */
 function insertRoomInfo (el, stanza) {
     // All MUC features found here: https://xmpp.org/registrar/disco-features.html
     el.querySelector('span.spinner').remove();
     el.querySelector('a.room-info').classList.add('selected');
     el.insertAdjacentHTML(
-        'beforeEnd',
+        'beforeend',
         u.getElementFromTemplateResult(tplMUCDescription({
             'jid': stanza.getAttribute('from'),
             'desc': sizzle('field[var="muc#roominfo_description"] value', stanza).shift()?.textContent,
@@ -42,8 +41,7 @@ function insertRoomInfo (el, stanza) {
 
 /**
  * Show/hide extra information about a groupchat in a listing.
- * @function toggleRoomInfo
- * @param { Event } ev
+ * @param {Event} ev
  */
 function toggleRoomInfo (ev) {
     const parent_el = u.ancestor(ev.target, '.room-item');
@@ -120,7 +118,7 @@ export default class MUCListModal extends BaseModal {
      * Handle the IQ stanza returned from the server, containing
      * all its public groupchats.
      * @method _converse.ChatRoomView#onRoomsFound
-     * @param { HTMLElement } [iq]
+     * @param {HTMLElement} [iq]
      */
     onRoomsFound (iq) {
         this.loading_items = false;

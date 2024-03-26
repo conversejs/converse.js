@@ -1,7 +1,7 @@
 import isEqual from "lodash-es/isEqual.js";
 import pick from 'lodash-es/pick';
-import { DEFAULT_SETTINGS } from './constants.js';
 import { EventEmitter } from '@converse/skeletor';
+import { DEFAULT_SETTINGS } from './constants.js';
 import { merge } from '../../utils/object.js';
 
 

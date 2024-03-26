@@ -1,8 +1,7 @@
 import tplRoleForm from './templates/role-form.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse, log } from '@converse/headless';
-import { isErrorObject } from '@converse/headless/utils/index.js';
+import { api, converse, log, u } from '@converse/headless';
 
 const { Strophe, sizzle } = converse.env;
 
@@ -57,12 +56,12 @@ class RoleForm extends CustomElement {
                 this.dispatchEvent(event);
 
             },
-            e => {
+            (e) => {
                 if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
                     this.alert(__("You're not allowed to make that change"), 'danger');
                 } else {
                     this.alert(__('Sorry, something went wrong while trying to set the role'), 'danger');
-                    if (isErrorObject(e)) log.error(e);
+                    if (u.isErrorObject(e)) log.error(e);
                 }
             }
         );

@@ -9,7 +9,6 @@ import { createChatBox } from './utils.js';
 const { waitUntil } = promise_api;
 const _chatBoxTypes = {};
 
-
 /**
  * The "chatboxes" namespace.
  *
@@ -18,10 +17,14 @@ const _chatBoxTypes = {};
  */
 export default {
     /**
+     * @typedef {new (attrs: object, options: object) => ChatBox} ModelClass
+     */
+
+    /**
      * @method api.chatboxes.create
      * @param {string|string[]} jids - A JID or array of JIDs
      * @param {Object} attrs An object containing configuration attributes
-     * @param {new (attrs: object, options: object) => ChatBox} model - The type of chatbox that should be created
+     * @param {ModelClass} model - The type of chatbox that should be created
      */
     async create (jids=[], attrs={}, model) {
         await waitUntil('chatBoxesFetched');
@@ -57,6 +60,7 @@ export default {
      * @memberOf api.chatboxes
      */
     registry: {
+
         /**
          * @method api.chatboxes.registry.add
          * Add another type of chatbox that can be added to this collection.
@@ -64,7 +68,7 @@ export default {
          * chatbox class to instantiate (e.g. ChatBox, MUC, Feed etc.) based on the
          * passed in attributes.
          * @param {string} type - The type name
-         * @param {Model} model - The model which will be instantiated for the given type name.
+         * @param {ModelClass} model - The model which will be instantiated for the given type name.
          */
         add(type, model) {
             _chatBoxTypes[type] = model;
@@ -73,7 +77,7 @@ export default {
         /**
          * @method api.chatboxes.registry.get
          * @param {string} type - The type name
-         * @return {Model} model - The model which will be instantiated for the given type name.
+         * @return {ModelClass} model - The model which will be instantiated for the given type name.
          */
         get(type) {
             return _chatBoxTypes[type];

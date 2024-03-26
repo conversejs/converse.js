@@ -41,7 +41,17 @@ declare namespace _default {
              */
             reason?: string;
         }[]): Promise<any>;
+        /**
+         * Returns an array of {@link MemberListItem} objects, representing occupants
+         * that have the given affiliation.
+         * @typedef {("admin"|"owner"|"member")} NonOutcastAffiliation
+         * @param {NonOutcastAffiliation} affiliation
+         * @param {string} jid - The JID of the MUC for which the affiliation list should be fetched
+         * @returns {Promise<MemberListItem[]|Error>}
+         */
+        function get(affiliation: "owner" | "admin" | "member", jid: string): Promise<Error | any[]>;
     }
 }
 export default _default;
+export type MemberListItem = any;
 //# sourceMappingURL=api.d.ts.map

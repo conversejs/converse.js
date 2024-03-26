@@ -6,12 +6,11 @@
  * @typedef {import('@converse/headless').MUC} MUC
  * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
+import debounce from 'lodash-es/debounce';
+import { _converse, api, converse, constants } from '@converse/headless';
 import './view.js';
 import './components/minimized-chat.js';
-import debounce from 'lodash-es/debounce';
 import MinimizedChatsToggle from './toggle.js';
-import { _converse, api, converse } from '@converse/headless';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
 import {
     addMinimizeButtonToChat,
     addMinimizeButtonToMUC,
@@ -23,6 +22,8 @@ import {
 } from './utils.js';
 
 import './styles/minimize.scss';
+
+const { CHATROOMS_TYPE } = constants;
 
 
 converse.plugins.add('converse-minimize', {

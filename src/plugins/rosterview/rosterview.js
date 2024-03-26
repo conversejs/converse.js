@@ -1,10 +1,11 @@
-import tplRoster from "./templates/roster.js";
-import { CustomElement } from 'shared/components/element.js';
 import { Model } from '@converse/skeletor';
-import { _converse, api } from "@converse/headless";
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { _converse, api, u, constants } from "@converse/headless";
+import { CustomElement } from 'shared/components/element.js';
 import { slideIn, slideOut } from 'utils/html.js';
-import { CLOSED, OPENED } from "@converse/headless/shared/constants.js";
+import tplRoster from "./templates/roster.js";
+
+const { initStorage } = u;
+const { CLOSED, OPENED } = constants;
 
 
 /**

@@ -9,7 +9,7 @@ import converse from '../../shared/api/public.js';
 import { Collection, Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
 import { getAffiliationList } from './affiliations/utils.js';
-import { getAutoFetchedAffiliationLists, occupantsComparator } from './utils.js';
+import { occupantsComparator } from './utils.js';
 import { getUniqueId } from '../../utils/index.js';
 
 const { u } = converse.env;
@@ -39,6 +39,12 @@ class MUCOccupants extends Collection {
         this.on('change:role', () => this.sort());
     }
 
+
+    static getAutoFetchedAffiliationLists () {
+        const affs = api.settings.get('muc_fetch_members');
+        return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
+    }
+
     create (attrs, options) {
         if (attrs.id || attrs instanceof Model) {
             return super.create(attrs, options);
@@ -52,7 +58,7 @@ class MUCOccupants extends Collection {
             // https://xmpp.org/extensions/xep-0045.html#affil-priv
             return;
         }
-        const affiliations = getAutoFetchedAffiliationLists();
+        const affiliations = MUCOccupants.getAutoFetchedAffiliationLists();
         if (affiliations.length === 0) {
             return;
         }

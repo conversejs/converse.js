@@ -5,7 +5,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '../../log.js';
-import { ROLES, MUC_ROLE_WEIGHTS } from './constants.js';
+import { MUC_ROLE_WEIGHTS } from './constants.js';
 import { safeSave } from '../../utils/index.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { getUnloadEvent } from '../../utils/session.js';
@@ -20,11 +20,6 @@ export function shouldCreateGroupchatMessage (attrs) {
     return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
 }
 
-export function getAutoFetchedAffiliationLists () {
-    const affs = api.settings.get('muc_fetch_members');
-    return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
-}
-
 export function occupantsComparator (occupant1, occupant2) {
     const role1 = occupant1.get('role') || 'none';
     const role2 = occupant2.get('role') || 'none';
@@ -37,26 +32,9 @@ export function occupantsComparator (occupant1, occupant2) {
     }
 }
 
-/**
- * Given an occupant model, see which roles may be assigned to that user.
- * @param {Model} occupant
- * @returns {typeof ROLES} - An array of assignable roles
- */
-export function getAssignableRoles (occupant) {
-    let disabled = api.settings.get('modtools_disable_assign');
-    if (!Array.isArray(disabled)) {
-        disabled = disabled ? ROLES : [];
-    }
-    if (occupant.get('role') === 'moderator') {
-        return ROLES.filter(r => !disabled.includes(r));
-    } else {
-        return [];
-    }
-}
-
 export function registerDirectInvitationHandler () {
     api.connection.get().addHandler(
-        message => {
+        (message) => {
             _converse.exports.onDirectMUCInvitation(message);
             return true;
         },
@@ -250,7 +228,8 @@ export function onStatusInitialized () {
 
 export function onBeforeResourceBinding () {
     api.connection.get().addHandler(
-        stanza => {
+        /** @param {Element} stanza */
+        (stanza) => {
             const muc_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
             if (!_converse.state.chatboxes.get(muc_jid)) {
                 api.waitUntil('chatBoxesFetched').then(async () => {
@@ -268,6 +247,3 @@ export function onBeforeResourceBinding () {
         'groupchat'
     );
 }
-
-
-Object.assign(_converse, { getAssignableRoles });

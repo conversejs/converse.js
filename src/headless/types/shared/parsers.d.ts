@@ -30,22 +30,6 @@ export function getCorrectionAttributes(stanza: any, original_stanza: any): {
     edited?: undefined;
 };
 export function getOpenGraphMetadata(stanza: any): any;
-/**
- * @param {string} text
- * @param {number} offset
- */
-export function getMediaURLsMetadata(text: string, offset?: number): {
-    media_urls?: undefined;
-} | {
-    media_urls: {
-        end: any;
-        is_audio: boolean;
-        is_image: any;
-        is_video: boolean;
-        is_encrypted: any;
-        start: any;
-    }[];
-};
 export function getSpoilerAttributes(stanza: any): {
     is_spoiler: boolean;
     spoiler_hint: any;
@@ -125,13 +109,6 @@ export function isServerMessage(stanza: Element): boolean;
  * @returns {boolean}
  */
 export function isArchived(original_stanza: Element): boolean;
-/**
- * Returns an object containing all attribute names and values for a particular element.
- * @method getAttributes
- * @param {Element} stanza
- * @returns {object}
- */
-export function getAttributes(stanza: Element): object;
 export class StanzaParseError extends Error {
     /**
      * @param {string} message
@@ -140,6 +117,5 @@ export class StanzaParseError extends Error {
     constructor(message: string, stanza: Element);
     stanza: Element;
 }
-export type MediaURLMetadata = any;
 export type Reference = any;
 //# sourceMappingURL=parsers.d.ts.map

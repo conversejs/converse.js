@@ -1,9 +1,11 @@
+import { html } from "lit";
+import { constants } from '@converse/headless';
 import '../bottom-panel.js';
 import '../sidebar.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
-import { html } from "lit";
+
+const { CHATROOMS_TYPE } = constants;
 
 export default (o) => html`
     <div class="chat-area">

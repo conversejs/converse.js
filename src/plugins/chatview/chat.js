@@ -1,10 +1,11 @@
+import { _converse, api, constants } from '@converse/headless';
 import 'plugins/chatview/heading.js';
 import 'plugins/chatview/bottom-panel.js';
 import BaseChatView from 'shared/chat/baseview.js';
 import tplChat from './templates/chat.js';
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
-import { ACTIVE } from '@converse/headless/shared/constants.js';
+
+const { ACTIVE } = constants;
 
 /**
  * The view of an open/ongoing chat conversation.

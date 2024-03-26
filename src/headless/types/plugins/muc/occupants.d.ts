@@ -6,6 +6,7 @@ export type MemberListItem = any;
  * @memberOf _converse
  */
 declare class MUCOccupants extends Collection {
+    static getAutoFetchedAffiliationLists(): any[];
     constructor(attrs: any, options: any);
     chatroom: any;
     get model(): typeof MUCOccupant;

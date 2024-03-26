@@ -1,7 +1,6 @@
 import { Model } from '@converse/skeletor';
-import { _converse, api, converse, log } from '@converse/headless';
+import { _converse, api, converse, log, u } from '@converse/headless';
 import { getOpenPromise } from '@converse/openpromise';
-import { initStorage } from '@converse/headless/utils/storage.js';
 
 const { Strophe, $build, $iq, sizzle } = converse.env;
 
@@ -25,7 +24,7 @@ class DeviceList extends Model {
         this.devices = new _converse.exports.Devices();
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.devicelist-${bare_jid}-${this.get('jid')}`;
-        initStorage(this.devices, id);
+        u.initStorage(this.devices, id);
         return this.fetchDevices();
     }
 

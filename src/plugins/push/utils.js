@@ -1,7 +1,7 @@
-import { _converse, api, converse, log } from "@converse/headless";
-import { CHATROOMS_TYPE } from "@converse/headless/shared/constants";
+import { _converse, api, converse, log, constants } from "@converse/headless";
 
 const { Strophe, $iq } = converse.env;
+const { CHATROOMS_TYPE } = constants;
 
 async function disablePushAppServer (domain, push_app_server) {
     if (!push_app_server.jid) {

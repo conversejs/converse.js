@@ -8,10 +8,9 @@ import promise_api from '../../shared/api/promise.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { Strophe } from 'strophe.js';
 import { getJIDFromURI } from '../../utils/jid.js';
-import { settings_api } from '../../shared/settings/api.js';
+import { settings_api as settings } from '../../shared/settings/api.js';
 
 const { waitUntil } = promise_api;
-const { settings } = settings_api;
 
 /**
  * The "rooms" namespace groups methods relevant to chatrooms

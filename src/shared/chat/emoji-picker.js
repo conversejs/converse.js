@@ -2,20 +2,19 @@
  * @module emoji-picker
  * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
  */
+import debounce from 'lodash-es/debounce';
+import { api, converse, u, constants } from "@converse/headless";
 import "./emoji-picker-content.js";
 import './emoji-dropdown.js';
 import DOMNavigator from "shared/dom-navigator";
-import debounce from 'lodash-es/debounce';
 import { CustomElement } from 'shared/components/element.js';
 import { FILTER_CONTAINS } from "shared/autocomplete/utils.js";
-import { KEYCODES } from '@converse/headless/shared/constants.js';
-import { api, converse } from "@converse/headless";
 import { getTonedEmojis } from './utils.js';
 import { tplEmojiPicker } from "./templates/emoji-picker.js";
 
 import './styles/emoji.scss';
 
-const u = converse.env.utils;
+const { KEYCODES } = constants;
 
 
 export default class EmojiPicker extends CustomElement {

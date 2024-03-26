@@ -1,6 +1,7 @@
 import URI from 'urijs';
 import log from '../log.js';
 import { settings_api } from '../shared/settings/api.js';
+import { URL_PARSE_OPTIONS } from '../shared/constants.js';
 
 const settings = settings_api;
 
@@ -78,4 +79,88 @@ export function isImageURL (url) {
 
 export function isEncryptedFileURL (url) {
     return url.startsWith('aesgcm://');
+}
+
+/**
+ * @typedef {Object} MediaURLMetadata
+ * An object representing the metadata of a URL found in a chat message
+ * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
+ * @property {boolean} [is_audio]
+ * @property {boolean} [is_image]
+ * @property {boolean} [is_video]
+ * @property {boolean} [is_encrypted]
+ * @property {number} [end]
+ * @property {number} [start]
+ */
+
+/**
+ * An object representing a URL found in a chat message
+ * @typedef {MediaURLMetadata} MediaURLData
+ * @property {string} url
+ */
+
+/**
+ * @param {string} text
+ * @param {number} offset
+ * @returns {{media_urls?: MediaURLMetadata[]}}
+ */
+export function getMediaURLsMetadata (text, offset=0) {
+    const objs = [];
+    if (!text) {
+        return {};
+    }
+    try {
+        URI.withinString(
+            text,
+            (url, start, end) => {
+                if (url.startsWith('_')) {
+                    url = url.slice(1);
+                    start += 1;
+                }
+                if (url.endsWith('_')) {
+                    url = url.slice(0, url.length-1);
+                    end -= 1;
+                }
+                objs.push({ url, 'start': start+offset, 'end': end+offset });
+                return url;
+            },
+            URL_PARSE_OPTIONS
+        );
+    } catch (error) {
+        log.debug(error);
+    }
+
+    const media_urls = objs
+        .map(o => ({
+            'end': o.end,
+            'is_audio': isAudioURL(o.url),
+            'is_image': isImageURL(o.url),
+            'is_video': isVideoURL(o.url),
+            'is_encrypted': isEncryptedFileURL(o.url),
+            'start': o.start
+
+        }));
+    return media_urls.length ? { media_urls } : {};
+}
+
+/**
+ * Given an array of {@link MediaURLMetadata} objects and text, return an
+ * array of {@link MediaURL} objects.
+ * @param {Array<MediaURLMetadata>} arr
+ * @param {string} text
+ * @returns {MediaURLData[]}
+ */
+export function getMediaURLs (arr, text, offset=0) {
+    return arr.map(o => {
+        const start = o.start - offset;
+        const end = o.end - offset;
+        if (start < 0 || start >= text.length) {
+            return null;
+        }
+        return (Object.assign({}, o, {
+            start,
+            end,
+            'url': text.substring(o.start-offset, o.end-offset),
+        }));
+    }).filter(o => o);
 }

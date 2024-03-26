@@ -1,5 +1,5 @@
 import { html } from "lit";
-import u from '@converse/headless/utils/index.js';
+import { u } from '@converse/headless';
 
 export default  (o) => {
     const id = u.getUniqueId();

@@ -1,6 +1,6 @@
-import api from "../../shared/api/index.js";
 import { Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
+import api from "../../shared/api/index.js";
 
 class ModelWithContact extends Model {
     /**

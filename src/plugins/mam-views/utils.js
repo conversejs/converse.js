@@ -1,8 +1,9 @@
-import MAMPlaceholderMessage from '@converse/headless/plugins/mam/placeholder.js';
-import { _converse, api, log } from '@converse/headless';
-import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
 import { html } from 'lit/html.js';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
+import { _converse, api, log, constants } from '@converse/headless';
+import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
+import MAMPlaceholderMessage from '@converse/headless/plugins/mam/placeholder.js';
+
+const { CHATROOMS_TYPE } = constants;
 
 
 export function getPlaceholderTemplate (message, tpl) {

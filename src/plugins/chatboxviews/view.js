@@ -1,8 +1,8 @@
+import { render } from 'lit';
+import { api, _converse } from '@converse/headless';
 import tplBackgroundLogo from '../../templates/background_logo.js';
 import tplChats from './templates/chats.js';
 import { CustomElement } from 'shared/components/element.js';
-import { api, _converse } from '@converse/headless';
-import { render } from 'lit';
 
 
 class ConverseChats extends CustomElement {
@@ -34,14 +34,14 @@ class ConverseChats extends CustomElement {
         body.classList.add(`converse-${api.settings.get('view_mode')}`);
 
         /**
-         * Triggered once the _converse.ChatBoxViews view-colleciton has been initialized
+         * Triggered once the ChatBoxViews view-colleciton has been initialized
          * @event _converse#chatBoxViewsInitialized
          * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
          */
         api.trigger('chatBoxViewsInitialized');
     }
 
-    render () { // eslint-disable-line class-methods-use-this
+    render () {
         return tplChats();
     }
 }

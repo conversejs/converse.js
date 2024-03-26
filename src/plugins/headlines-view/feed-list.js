@@ -1,7 +1,8 @@
-import tplFeedsList from './templates/feeds-list.js';
+import { _converse, api, constants } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api } from '@converse/headless';
-import { HEADLINES_TYPE } from '@converse/headless/shared/constants.js';
+import tplFeedsList from './templates/feeds-list.js';
+
+const { HEADLINES_TYPE } = constants;
 
 /**
  * Custom element which renders a list of headline feeds

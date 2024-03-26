@@ -4,34 +4,36 @@
  * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
+import { html } from 'lit';
+import { __ } from 'i18n';
+import { until } from 'lit/directives/until.js';
+import { _converse, converse, api, log, u, constants, MUC } from '@converse/headless';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplImage from 'templates/image.js';
 import tplVideo from 'templates/video.js';
 import { KEY_ALGO, UNTRUSTED, TAG_LENGTH } from './consts.js';
 import { MIMETYPES_MAP } from 'utils/file.js';
-import { __ } from 'i18n';
-import { _converse, converse, api, log } from '@converse/headless';
-import { html } from 'lit';
-import { initStorage } from '@converse/headless/utils/storage.js';
-import { isError } from '@converse/headless/utils/object.js';
-import { isAudioURL, isImageURL, isVideoURL, getURI } from '@converse/headless/utils/url.js';
-import { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } from '@converse/headless/shared/constants.js';
-import { until } from 'lit/directives/until.js';
-import {
+import { IQError, UserFacingError } from 'shared/errors.js';
+import DeviceLists from './devicelists.js';
+
+const { Strophe, URI, sizzle } = converse.env;
+const { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } = constants;
+const {
     appendArrayBuffer,
     arrayBufferToBase64,
     arrayBufferToHex,
     arrayBufferToString,
     base64ToArrayBuffer,
+    getURI,
     hexToArrayBuffer,
-    stringToArrayBuffer
-} from '@converse/headless/utils/arraybuffer.js';
-import MUC from '@converse/headless/plugins/muc/muc.js';
-import {IQError, UserFacingError} from 'shared/errors.js';
-import DeviceLists from './devicelists.js';
-
-const { Strophe, URI, sizzle, u } = converse.env;
+    initStorage,
+    isAudioURL,
+    isError,
+    isImageURL,
+    isVideoURL,
+    stringToArrayBuffer,
+} = u;
 
 export function formatFingerprint (fp) {
     fp = fp.replace(/^05/, '');

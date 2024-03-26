@@ -1,15 +1,13 @@
-import 'shared/autocomplete/index.js';
-import tplMUCSidebar from "./templates/muc-sidebar.js";
-import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from "@converse/headless";
-import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
-import { initStorage } from "@converse/headless/utils/storage";
 import debounce from 'lodash-es/debounce.js';
+import { _converse, api, u, RosterFilter } from "@converse/headless";
+import 'shared/autocomplete/index.js';
+import { CustomElement } from 'shared/components/element.js';
+import tplMUCSidebar from "./templates/muc-sidebar.js";
 
 import 'shared/styles/status.scss';
 import './styles/muc-occupants.scss';
 
-const { u } = converse.env;
+const { initStorage } = u;
 
 export default class MUCSidebar extends CustomElement {
 

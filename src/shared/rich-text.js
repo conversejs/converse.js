@@ -1,28 +1,31 @@
+/**
+ * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
+ * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLData
+ */
+import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
+import { Directive, directive } from 'lit/directive.js';
+import { api, log, u } from '@converse/headless';
 import tplAudio from 'templates/audio.js';
 import tplGif from 'templates/gif.js';
 import tplImage from 'templates/image.js';
 import tplVideo from 'templates/video.js';
-import { Directive, directive } from 'lit/directive.js';
-import { api, log } from '@converse/headless';
 import { getEmojiMarkup } from './chat/utils.js';
 import { getHyperlinkTemplate } from '../utils/html.js';
-import { getMediaURLs } from '@converse/headless/shared/chat/utils.js';
-import { getMediaURLsMetadata } from '@converse/headless/shared/parsers.js';
-import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
-import {
+import { shouldRenderMediaFromURL } from 'utils/url.js';
+
+const {
     convertASCII2Emoji,
-    getCodePointReferences,
-    getShortnameReferences
-} from '@converse/headless/plugins/emoji/utils.js';
-import {
     filterQueryParamsFromURL,
+    getCodePointReferences,
+    getMediaURLs,
+    getMediaURLsMetadata,
+    getShortnameReferences,
     isAudioURL,
     isGIFURL,
     isImageURL,
     isVideoURL,
-} from '@converse/headless/utils/url.js';
-import { shouldRenderMediaFromURL } from 'utils/url.js';
+} = u;
 
 
 /**
@@ -62,7 +65,7 @@ export class RichText extends String {
      *  player. If set to `false`, they won't, and if not defined, then the `embed_videos` setting
      *  is used to determine whether they should be rendered as videos or as hyperlinks.
      * @param {Array} [options.mentions] - An array of mention references
-     * @param {Array} [options.media_urls] - An array of {@link MediaURLMetadata} objects,
+     * @param {MediaURLMetadata[]} [options.media_urls] - An array of {@link MediaURLMetadata} objects,
      *  used to render media such as images, videos and audio. It might not be
      *  possible to have the media metadata available, so if this value is
      *  `undefined` then the passed-in `text` will be parsed for URLs. If you
@@ -109,15 +112,15 @@ export class RichText extends String {
 
     /**
      * Look for `http` URIs and return templates that render them as URL links
-     * @param { String } text
-     * @param { number } local_offset - The index of the passed in text relative to
+     * @param {string} text
+     * @param {number} local_offset - The index of the passed in text relative to
      *  the start of this RichText instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
     addHyperlinks (text, local_offset) {
         const full_offset = local_offset + this.offset;
         const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
-        const media_urls = getMediaURLs(urls_meta, text, full_offset);
+        const media_urls = /** @type {MediaURLData[]} */(getMediaURLs(urls_meta, text, full_offset));
 
         media_urls.filter(o => !o.is_encrypted).forEach(url_obj => {
             const url_text = url_obj.url;

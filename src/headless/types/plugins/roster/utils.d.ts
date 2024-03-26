@@ -28,8 +28,8 @@ export function onRosterContactsFetched(): void;
  * @param { String } message - An optional message to the user
  */
 export function rejectPresenceSubscription(jid: string, message: string): void;
-export function contactsComparator(contact1: any, contact2: any): 1 | 0 | -1;
-export function groupsComparator(a: any, b: any): 1 | 0 | -1;
+export function contactsComparator(contact1: any, contact2: any): 0 | 1 | -1;
+export function groupsComparator(a: any, b: any): 0 | 1 | -1;
 export function getGroupsAutoCompleteList(): any[];
 export function getJIDsAutoCompleteList(): any[];
 /**

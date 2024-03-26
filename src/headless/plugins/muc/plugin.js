@@ -31,7 +31,7 @@ import {
     registerDirectInvitationHandler,
     routeToRoom,
 } from './utils.js';
-import { computeAffiliationsDelta, getAssignableAffiliations } from './affiliations/utils.js';
+import { computeAffiliationsDelta } from './affiliations/utils.js';
 import {
     AFFILIATION_CHANGES,
     AFFILIATION_CHANGES_LIST,
@@ -201,7 +201,6 @@ converse.plugins.add('converse-muc', {
             MUCMessages,
             MUCOccupant,
             MUCOccupants,
-            getAssignableAffiliations,
             getDefaultMUCNickname,
             isInfoVisible,
             onDirectMUCInvitation,

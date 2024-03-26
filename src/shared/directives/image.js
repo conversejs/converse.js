@@ -1,11 +1,11 @@
-import { AsyncDirective } from 'lit/async-directive.js';
-import { converse } from '@converse/headless';
-import { directive } from 'lit/directive.js';
-import { getHyperlinkTemplate } from 'utils/html.js';
 import { html } from 'lit';
-import { isURLWithImageExtension } from '@converse/headless/utils/url.js';
+import { AsyncDirective } from 'lit/async-directive.js';
+import { directive } from 'lit/directive.js';
+import { converse, u } from '@converse/headless';
+import { getHyperlinkTemplate } from 'utils/html.js';
 
 const { URI } = converse.env;
+const { isURLWithImageExtension } = u;
 
 
 class ImageDirective extends AsyncDirective {

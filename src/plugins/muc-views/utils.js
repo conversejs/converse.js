@@ -1,13 +1,12 @@
+import { html } from "lit";
+import { _converse, api, converse, log, constants } from "@converse/headless";
 import './modals/occupant.js';
 import './modals/moderator-tools.js';
 import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
-import { _converse, api, converse, log } from "@converse/headless";
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants.js';
-import { html } from "lit";
-import { setAffiliation } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
 const { Strophe, u } = converse.env;
+const { CHATROOMS_TYPE } = constants;
 
 const COMMAND_TO_AFFILIATION = {
     'admin': 'admin',
@@ -214,7 +213,7 @@ function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
         attrs['nick'] = occupant.get('nick');
     }
 
-    setAffiliation(affiliation, muc.get('jid'), [attrs])
+    u.muc.setAffiliation(affiliation, muc.get('jid'), [attrs])
         .then(() => muc.occupants.fetchMembers())
         .catch(err => muc.onCommandError(err));
 }

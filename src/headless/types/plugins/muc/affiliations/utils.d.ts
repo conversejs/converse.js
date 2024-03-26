@@ -10,12 +10,6 @@
  */
 export function getAffiliationList(affiliation: NonOutcastAffiliation, muc_jid: string): Promise<MemberListItem[] | Error>;
 /**
- * Given an occupant model, see which affiliations may be assigned by that user
- * @param {Model} occupant
- * @returns {typeof AFFILIATIONS} An array of assignable affiliations
- */
-export function getAssignableAffiliations(occupant: Model): typeof AFFILIATIONS;
-/**
  * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
  * @param {String|Array<String>} muc_jid - The JID(s) of the MUCs in which the
@@ -33,7 +27,7 @@ export function setAffiliations(muc_jid: string | Array<string>, users: Array<Us
  * a separate stanza for each JID.
  * Related ticket: https://issues.prosody.im/345
  *
- * @param {typeof AFFILIATIONS[number]} affiliation - The affiliation to be set
+ * @param {AFFILIATIONS[number]} affiliation - The affiliation to be set
  * @param {String|Array<String>} muc_jids - The JID(s) of the MUCs in which the
  *  affiliations need to be set.
  * @param {object} members - A map of jids, affiliations and
@@ -41,7 +35,7 @@ export function setAffiliations(muc_jid: string | Array<string>, users: Array<Us
  *  same affiliation as being currently set will be considered.
  * @returns {Promise} A promise which resolves and fails depending on the XMPP server response.
  */
-export function setAffiliation(affiliation: (typeof AFFILIATIONS)[number], muc_jids: string | Array<string>, members: object): Promise<any>;
+export function setAffiliation(affiliation: any[][number], muc_jids: string | Array<string>, members: object): Promise<any>;
 /**
  * Given two lists of objects with 'jid', 'affiliation' and
  * 'reason' properties, return a new list containing
@@ -79,5 +73,5 @@ export type NonOutcastAffiliation = ("admin" | "owner" | "member");
 export type MemberListItem = any;
 export type User = any;
 export type Model = import('@converse/skeletor').Model;
-import { AFFILIATIONS } from "../constants.js";
+export type AFFILIATIONS = any[];
 //# sourceMappingURL=utils.d.ts.map

@@ -1,19 +1,18 @@
 /**
- * @module converse-register
  * @description
  * This is a Converse.js plugin which add support for in-band registration
  * as specified in XEP-0077.
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { api, converse, constants } from '@converse/headless';
 import './panel.js';
 import { __ } from 'i18n';
-import { api, converse } from '@converse/headless';
 import { routeToForm } from './utils.js';
-import { CONNECTION_STATUS } from '@converse/headless/shared/constants';
 
 // Strophe methods for building stanzas
 const { Strophe } = converse.env;
+const { CONNECTION_STATUS } = constants;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');

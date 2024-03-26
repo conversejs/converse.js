@@ -1,17 +1,16 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
  */
+import { _converse, api, converse, u, constants } from "@converse/headless";
+import { __ } from 'i18n';
 import 'plugins/muc-views/modals/muc-details.js';
+import { CustomElement } from 'shared/components/element.js';
 import RoomsListModel from './model.js';
 import tplRoomslist from "./templates/roomslist.js";
-import { CustomElement } from 'shared/components/element.js';
-import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless";
-import { initStorage } from '@converse/headless/utils/storage.js';
-import { isChatRoom } from '@converse/headless/plugins/muc/utils.js';
-import { CLOSED, OPENED } from '@converse/headless/shared/constants.js';
 
-const { Strophe, u } = converse.env;
+const { Strophe } = converse.env;
+const { initStorage } = u;
+const { CLOSED, OPENED } = constants;
 
 export class RoomsList extends CustomElement {
 
@@ -38,14 +37,14 @@ export class RoomsList extends CustomElement {
 
     /** @param {Model} model */
     renderIfChatRoom (model) {
-        isChatRoom(model) && this.requestUpdate();
+        u.muc.isChatRoom(model) && this.requestUpdate();
     }
 
     /** @param {Model} model */
     renderIfRelevantChange (model) {
         const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
         const changed = model.changed || {};
-        if (isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
+        if (u.muc.isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
             this.requestUpdate();
         }
     }

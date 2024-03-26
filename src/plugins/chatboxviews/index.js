@@ -1,12 +1,10 @@
 /**
- * @module converse-chatboxviews
- * @copyright 2022, the Converse.js contributors
+ * @copyright 2024, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import './view.js';
-import '@converse/headless/plugins/chatboxes/index.js';
-import ChatBoxViews from './container.js';
 import { _converse, api, converse } from '@converse/headless';
+import './view.js';
+import ChatBoxViews from './container.js';
 import { calculateViewportHeightUnit } from './utils.js';
 
 import './styles/chats.scss';

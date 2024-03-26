@@ -1,13 +1,6 @@
 export function isChatRoom(model: any): boolean;
 export function shouldCreateGroupchatMessage(attrs: any): any;
-export function getAutoFetchedAffiliationLists(): any[];
 export function occupantsComparator(occupant1: any, occupant2: any): 1 | 0 | -1;
-/**
- * Given an occupant model, see which roles may be assigned to that user.
- * @param {Model} occupant
- * @returns {typeof ROLES} - An array of assignable roles
- */
-export function getAssignableRoles(occupant: Model): typeof ROLES;
 export function registerDirectInvitationHandler(): void;
 export function disconnectChatRooms(): any;
 export function onWindowStateChanged(): Promise<void>;
@@ -43,5 +36,4 @@ export function onBeforeTearDown(): void;
 export function onStatusInitialized(): void;
 export function onBeforeResourceBinding(): void;
 export type Model = import('@converse/skeletor').Model;
-import { ROLES } from "./constants.js";
 //# sourceMappingURL=utils.d.ts.map

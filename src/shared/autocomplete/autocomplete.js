@@ -4,13 +4,12 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import Suggestion from './suggestion.js';
 import { EventEmitter } from '@converse/skeletor';
-import { converse } from "@converse/headless";
+import { converse, u } from "@converse/headless";
+import Suggestion from './suggestion.js';
 import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.js';
-import { siblingIndex } from '@converse/headless/utils/html.js';
 
-const u = converse.env.utils;
+const { siblingIndex } = u;
 
 
 export class AutoComplete extends EventEmitter(Object) {
@@ -283,8 +282,8 @@ export class AutoComplete extends EventEmitter(Object) {
         const contains_trigger = helpers.isMention(value, this.ac_triggers);
         if (contains_trigger && !this.include_triggers.includes(ev.key)) {
             value = u.isMentionBoundary(value[0])
-                ? value.slice('2')
-                : value.slice('1');
+                ? value.slice(2)
+                : value.slice(1);
         }
 
         const is_long_enough = value.length && value.length >= this.min_chars;

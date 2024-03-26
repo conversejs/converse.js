@@ -1,13 +1,12 @@
 import { __ } from 'i18n';
 import { html } from "lit";
-import { getAssignableAffiliations } from '@converse/headless/plugins/muc/affiliations/utils.js';
 
 export default (el) => {
     const i18n_change_affiliation = __('Change affiliation');
     const i18n_new_affiliation = __('New affiliation');
     const i18n_reason = __('Reason');
     const occupant = el.muc.getOwnOccupant();
-    const assignable_affiliations = getAssignableAffiliations(occupant);
+    const assignable_affiliations = occupant.getAssignableAffiliations();
 
     return html`
         <form class="affiliation-form" @submit=${ev => el.assignAffiliation(ev)}>

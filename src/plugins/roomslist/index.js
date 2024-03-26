@@ -5,9 +5,8 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "@converse/headless/plugins/muc/index.js";
-import './view.js';
 import { api, converse } from "@converse/headless";
+import './view.js';
 
 
 converse.plugins.add('converse-roomslist', {

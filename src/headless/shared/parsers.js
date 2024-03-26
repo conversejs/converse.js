@@ -1,24 +1,15 @@
 /**
  * @module:headless-shared-parsers
- * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
  * @typedef {module:headless-shared-parsers.Reference} Reference
  */
-import URI from 'urijs';
 import _converse from './_converse.js';
 import api from './api/index.js';
 import dayjs from 'dayjs';
 import log from '../log.js';
 import sizzle from 'sizzle';
 import { Strophe } from 'strophe.js';
-import { URL_PARSE_OPTIONS } from './constants.js';
 import { decodeHTMLEntities } from '../utils/html.js';
 import { rejectMessage } from './actions';
-import {
-    isAudioURL,
-    isEncryptedFileURL,
-    isImageURL,
-    isVideoURL
-} from '../utils/url.js';
 
 const { NS } = Strophe;
 
@@ -162,60 +153,6 @@ export function getOpenGraphMetadata (stanza) {
         }
     }
     return {};
-}
-
-
-/**
- * @param {string} text
- * @param {number} offset
- */
-export function getMediaURLsMetadata (text, offset=0) {
-    const objs = [];
-    if (!text) {
-        return {};
-    }
-    try {
-        URI.withinString(
-            text,
-            (url, start, end) => {
-                if (url.startsWith('_')) {
-                    url = url.slice(1);
-                    start += 1;
-                }
-                if (url.endsWith('_')) {
-                    url = url.slice(0, url.length-1);
-                    end -= 1;
-                }
-                objs.push({ url, 'start': start+offset, 'end': end+offset });
-                return url;
-            },
-            URL_PARSE_OPTIONS
-        );
-    } catch (error) {
-        log.debug(error);
-    }
-
-    /**
-     * @typedef {Object} MediaURLMetadata
-     * An object representing the metadata of a URL found in a chat message
-     * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
-     * @property {Boolean} is_audio
-     * @property {Boolean} is_image
-     * @property {Boolean} is_video
-     * @property {String} end
-     * @property {String} start
-     */
-    const media_urls = objs
-        .map(o => ({
-            'end': o.end,
-            'is_audio': isAudioURL(o.url),
-            'is_image': isImageURL(o.url),
-            'is_video': isVideoURL(o.url),
-            'is_encrypted': isEncryptedFileURL(o.url),
-            'start': o.start
-
-        }));
-    return media_urls.length ? { media_urls } : {};
 }
 
 
@@ -402,18 +339,4 @@ export function isServerMessage (stanza) {
  */
 export function isArchived (original_stanza) {
     return !!sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
-}
-
-
-/**
- * Returns an object containing all attribute names and values for a particular element.
- * @method getAttributes
- * @param {Element} stanza
- * @returns {object}
- */
-export function getAttributes (stanza) {
-    return stanza.getAttributeNames().reduce((acc, name) => {
-        acc[name] = Strophe.xmlunescape(stanza.getAttribute(name));
-        return acc;
-    }, {});
 }

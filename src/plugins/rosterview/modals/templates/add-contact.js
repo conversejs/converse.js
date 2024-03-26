@@ -4,7 +4,7 @@ import {
     getGroupsAutoCompleteList,
     getJIDsAutoCompleteList,
     getNamesAutoCompleteList
-} from '@converse/headless/plugins/roster/utils.js';
+} from '../../utils.js';
 import { html } from "lit";
 import { FILTER_STARTSWITH } from 'shared/autocomplete/utils';
 

@@ -27,7 +27,7 @@ import { computeAffiliationsDelta, setAffiliations, getAffiliationList }  from '
 import { getOpenPromise } from '@converse/openpromise';
 import { handleCorrection } from '../../shared/chat/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
-import { isArchived, getMediaURLsMetadata } from '../../shared/parsers.js';
+import { isArchived } from '../../shared/parsers.js';
 import { getUniqueId, isErrorObject, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
@@ -1065,7 +1065,7 @@ class MUC extends ChatBox {
             'nick': this.get('nick'),
             'sender': 'me',
             'type': 'groupchat'
-        }, getMediaURLsMetadata(text));
+        }, u.getMediaURLsMetadata(text));
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing

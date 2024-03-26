@@ -8,7 +8,7 @@ import log from "../../log.js";
 import { Strophe } from 'strophe.js';
 import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
-import { STATUS_WEIGHTS, PRIVATE_CHAT_TYPE } from "../../shared/constants";
+import { PRIVATE_CHAT_TYPE } from "../../shared/constants";
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
 
@@ -220,89 +220,4 @@ export function rejectPresenceSubscription (jid, message) {
     const pres = $pres({to: jid, type: "unsubscribed"});
     if (message && message !== "") { pres.c("status").t(message); }
     api.send(pres);
-}
-
-export function contactsComparator (contact1, contact2) {
-    const status1 = contact1.presence.get('show') || 'offline';
-    const status2 = contact2.presence.get('show') || 'offline';
-    if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
-        const name1 = (contact1.getDisplayName()).toLowerCase();
-        const name2 = (contact2.getDisplayName()).toLowerCase();
-        return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
-    } else  {
-        return STATUS_WEIGHTS[status1] < STATUS_WEIGHTS[status2] ? -1 : 1;
-    }
-}
-
-export function groupsComparator (a, b) {
-    const HEADER_WEIGHTS = {};
-    const {
-        HEADER_UNREAD,
-        HEADER_REQUESTING_CONTACTS,
-        HEADER_CURRENT_CONTACTS,
-        HEADER_UNGROUPED,
-        HEADER_PENDING_CONTACTS,
-    } = _converse.labels;
-
-    HEADER_WEIGHTS[HEADER_UNREAD] = 0;
-    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 1;
-    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 2;
-    HEADER_WEIGHTS[HEADER_UNGROUPED]           = 3;
-    HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 4;
-
-    const WEIGHTS =  HEADER_WEIGHTS;
-    const special_groups = Object.keys(HEADER_WEIGHTS);
-    const a_is_special = special_groups.includes(a);
-    const b_is_special = special_groups.includes(b);
-    if (!a_is_special && !b_is_special ) {
-        return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
-    } else if (a_is_special && b_is_special) {
-        return WEIGHTS[a] < WEIGHTS[b] ? -1 : (WEIGHTS[a] > WEIGHTS[b] ? 1 : 0);
-    } else if (!a_is_special && b_is_special) {
-        const a_header = HEADER_CURRENT_CONTACTS;
-        return WEIGHTS[a_header] < WEIGHTS[b] ? -1 : (WEIGHTS[a_header] > WEIGHTS[b] ? 1 : 0);
-    } else if (a_is_special && !b_is_special) {
-        const b_header = HEADER_CURRENT_CONTACTS;
-        return WEIGHTS[a] < WEIGHTS[b_header] ? -1 : (WEIGHTS[a] > WEIGHTS[b_header] ? 1 : 0);
-    }
-}
-
-export function getGroupsAutoCompleteList () {
-    const roster = /** @type {RosterContacts} */(_converse.state.roster);
-    const groups = roster.reduce((groups, contact) => groups.concat(contact.get('groups')), []);
-    return [...new Set(groups.filter(i => i))];
-}
-
-export function getJIDsAutoCompleteList () {
-    const roster = /** @type {RosterContacts} */(_converse.state.roster);
-    return [...new Set(roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))];
-}
-
-
-/**
- * @param {string} query
- */
-export async function getNamesAutoCompleteList (query) {
-    const options = {
-        'mode': /** @type {RequestMode} */('cors'),
-        'headers': {
-            'Accept': 'text/json'
-        }
-    };
-    const url = `${api.settings.get('xhr_user_search_url')}q=${encodeURIComponent(query)}`;
-    let response;
-    try {
-        response = await fetch(url, options);
-    } catch (e) {
-        log.error(`Failed to fetch names for query "${query}"`);
-        log.error(e);
-        return [];
-    }
-
-    const json = response.json;
-    if (!Array.isArray(json)) {
-        log.error(`Invalid JSON returned"`);
-        return [];
-    }
-    return json.map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
 }

@@ -1,9 +1,10 @@
+import { api, u } from "@converse/headless";
 import tplGif from 'templates/gif.js';
 import tplImage from 'templates/image.js';
 import { CustomElement } from './element.js';
-import { api } from "@converse/headless";
-import { filterQueryParamsFromURL, isGIFURL } from '@converse/headless/utils/url.js';
 import { shouldRenderMediaFromURL } from 'utils/url.js';
+
+const { filterQueryParamsFromURL, isGIFURL } = u;
 
 
 export default class Image extends CustomElement {

@@ -13,11 +13,6 @@ const { Strophe, $iq, sizzle } = converse.env;
 
 class Bookmarks extends Collection {
 
-    constructor () {
-        super([], { comparator: (/** @type {Bookmark} */b) => b.get('name').toLowerCase() });
-        this.model = Bookmark;
-    }
-
     async initialize () {
         this.on('add', bm => this.openBookmarkedRoom(bm)
             .then(bm => this.markRoomAsBookmarked(bm))
@@ -43,6 +38,24 @@ class Bookmarks extends Collection {
          */
         api.trigger('bookmarksInitialized', this);
     }
+
+    static async checkBookmarksSupport () {
+        const bare_jid = _converse.session.get('bare_jid');
+        if (!bare_jid) return false;
+
+        const identity = await api.disco.getIdentity('pubsub', 'pep', bare_jid);
+        if (api.settings.get('allow_public_bookmarks')) {
+            return !!identity;
+        } else {
+            return api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', bare_jid);
+        }
+    }
+
+    constructor () {
+        super([], { comparator: (/** @type {Bookmark} */b) => b.get('name').toLowerCase() });
+        this.model = Bookmark;
+    }
+
 
     /**
      * @param {Bookmark} bookmark

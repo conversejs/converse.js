@@ -17,83 +17,92 @@ export function getRandomInt(max: any): number;
  */
 export function getUniqueId(suffix?: string): string;
 declare const _default: {
-    arrayBufferToBase64: typeof arrayBufferToBase64;
-    arrayBufferToHex: typeof arrayBufferToHex;
-    arrayBufferToString: typeof arrayBufferToString;
-    base64ToArrayBuffer: typeof base64ToArrayBuffer;
-    checkFileTypes: typeof checkFileTypes;
-    createStore: typeof createStore;
-    getCurrentWord: typeof getCurrentWord;
-    getDefaultStore: typeof getDefaultStore;
     getLongestSubstring: typeof getLongestSubstring;
     getOpenPromise: any;
     getRandomInt: typeof getRandomInt;
-    getSelectValues: typeof getSelectValues;
-    getURI: typeof getURI;
     getUniqueId: typeof getUniqueId;
-    isAudioURL: typeof isAudioURL;
-    isElement: typeof isElement;
     isEmptyMessage: typeof isEmptyMessage;
-    isError: typeof isError;
     isErrorObject: typeof isErrorObject;
-    isErrorStanza: typeof isErrorStanza;
-    isFunction: typeof isFunction;
-    isGIFURL: typeof isGIFURL;
-    isImageURL: typeof isImageURL;
-    isMentionBoundary: typeof isMentionBoundary;
-    isSameBareJID: typeof isSameBareJID;
-    isTagEqual: typeof isTagEqual;
-    isURLWithImageExtension: typeof isURLWithImageExtension;
-    isValidJID: typeof isValidJID;
-    isValidMUCJID: typeof isValidMUCJID;
-    isVideoURL: typeof isVideoURL;
-    isUniView: typeof isUniView;
-    isTestEnv: typeof isTestEnv;
-    merge: typeof merge;
     onMultipleEvents: typeof onMultipleEvents;
-    placeCaretAtEnd: typeof placeCaretAtEnd;
     prefixMentions: typeof prefixMentions;
-    queryChildren: typeof queryChildren;
-    replaceCurrentWord: typeof replaceCurrentWord;
     safeSave: typeof safeSave;
-    shouldClearCache: typeof shouldClearCache;
     shouldCreateMessage: typeof shouldCreateMessage;
-    stringToArrayBuffer: typeof stringToArrayBuffer;
-    stringToElement: typeof stringToElement;
     toStanza: typeof toStanza;
     triggerEvent: typeof triggerEvent;
-    webForm2xForm: typeof webForm2xForm;
     waitUntil: typeof waitUntil;
-} & Record<string, Function>;
+    isValidURL(text: string): boolean;
+    getURI(url: any): any;
+    checkFileTypes(types: string[], url: string): boolean;
+    filterQueryParamsFromURL(url: any): any;
+    isURLWithImageExtension(url: any): boolean;
+    isGIFURL(url: any): boolean;
+    isAudioURL(url: any): boolean;
+    isVideoURL(url: any): boolean;
+    isImageURL(url: any): any;
+    isEncryptedFileURL(url: any): any;
+    getMediaURLsMetadata(text: string, offset?: number): {
+        media_urls?: url.MediaURLMetadata[];
+    };
+    getMediaURLs(arr: url.MediaURLMetadata[], text: string, offset?: number): url.MediaURLMetadata[];
+    getDefaultStore(): "session" | "persistent";
+    createStore(id: any, store: any): any;
+    initStorage(model: any, id: any, type: any): void;
+    isErrorStanza(stanza: Element): boolean;
+    isForbiddenError(stanza: Element): boolean;
+    isServiceUnavailableError(stanza: Element): boolean;
+    getAttributes(stanza: Element): any;
+    isUniView(): boolean;
+    isTestEnv(): boolean;
+    getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
+    replacePromise(_converse: any, name: string): void;
+    shouldClearCache(_converse: any): boolean;
+    tearDown(_converse: any): Promise<any>;
+    clearSession(_converse: any): any;
+    /**
+     * @copyright The Converse.js contributors
+     * @license Mozilla Public License (MPLv2)
+     * @description This is the core utilities module.
+     */
+    merge(dst: any, src: any): void;
+    isError(obj: any): boolean;
+    isFunction(val: any): boolean;
+    isValidJID(jid: any): boolean;
+    isValidMUCJID(jid: any): boolean;
+    isSameBareJID(jid1: any, jid2: any): boolean;
+    isSameDomain(jid1: any, jid2: any): boolean;
+    getJIDFromURI(jid: string): string;
+    isElement(el: unknown): boolean;
+    isTagEqual(stanza: Element | typeof import("strophe.js/src/types/builder.js").default, name: string): boolean;
+    stringToElement(s: string): Element;
+    queryChildren(el: HTMLElement, selector: string): ChildNode[];
+    siblingIndex(el: Element): number;
+    decodeHTMLEntities(str: string): string;
+    getSelectValues(select: HTMLSelectElement): string[];
+    webForm2xForm(field: HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement): Element;
+    getCurrentWord(input: HTMLInputElement, index?: number, delineator?: string | RegExp): string;
+    isMentionBoundary(s: string): boolean;
+    replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
+    placeCaretAtEnd(textarea: HTMLTextAreaElement): void;
+    /**
+     * @copyright The Converse.js contributors
+     * @license Mozilla Public License (MPLv2)
+     * @description This is the core utilities module.
+     */
+    appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
+    arrayBufferToHex(ab: any): any;
+    arrayBufferToString(ab: any): string;
+    stringToArrayBuffer(string: any): ArrayBufferLike;
+    arrayBufferToBase64(ab: any): string;
+    base64ToArrayBuffer(b64: any): ArrayBufferLike;
+    hexToArrayBuffer(hex: any): ArrayBufferLike;
+} & CommonUtils & PluginUtils;
 export default _default;
-import { arrayBufferToBase64 } from "./arraybuffer.js";
-import { arrayBufferToHex } from "./arraybuffer.js";
-import { arrayBufferToString } from "./arraybuffer.js";
-import { base64ToArrayBuffer } from "./arraybuffer.js";
-import { checkFileTypes } from "./url.js";
-import { createStore } from "./storage.js";
-import { getCurrentWord } from "./form.js";
-import { getDefaultStore } from "./storage.js";
+export type CommonUtils = Record<string, Function>;
+/**
+ * The utils object
+ */
+export type PluginUtils = Record<'muc' | 'mam', CommonUtils>;
 declare function getLongestSubstring(string: any, candidates: any): any;
-import { getSelectValues } from "./form.js";
-import { getURI } from "./url.js";
-import { isAudioURL } from "./url.js";
-import { isElement } from "./html.js";
-import { isError } from "./object.js";
-import { isErrorStanza } from "./stanza.js";
-import { isFunction } from "./object.js";
-import { isGIFURL } from "./url.js";
-import { isImageURL } from "./url.js";
-import { isMentionBoundary } from "./form.js";
-import { isSameBareJID } from "./jid.js";
-import { isTagEqual } from "./html.js";
-import { isURLWithImageExtension } from "./url.js";
-import { isValidJID } from "./jid.js";
-import { isValidMUCJID } from "./jid.js";
-import { isVideoURL } from "./url.js";
-import { isUniView } from "./session.js";
-import { isTestEnv } from "./session.js";
-import { merge } from "./object.js";
 /**
  * Call the callback once all the events have been triggered
  * @param { Array } events: An array of objects, with keys `object` and
@@ -102,13 +111,7 @@ import { merge } from "./object.js";
  *    been triggered.
  */
 declare function onMultipleEvents(events: any[], callback: Function): void;
-import { placeCaretAtEnd } from "./form.js";
-import { queryChildren } from "./html.js";
-import { replaceCurrentWord } from "./form.js";
-import { shouldClearCache } from "./session.js";
 declare function shouldCreateMessage(attrs: any): any;
-import { stringToArrayBuffer } from "./arraybuffer.js";
-import { stringToElement } from "./html.js";
 import { toStanza } from "strophe.js";
 /**
  * @param {Element} el
@@ -118,6 +121,6 @@ import { toStanza } from "strophe.js";
  * @param {boolean} [cancelable]
  */
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
-import { webForm2xForm } from "./form.js";
 import { waitUntil } from "./promise.js";
+import * as url from "./url.js";
 //# sourceMappingURL=index.d.ts.map

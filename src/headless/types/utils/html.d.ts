@@ -1,12 +1,12 @@
 /**
- * @param { any } el
- * @returns { boolean }
+ * @param {unknown} el
+ * @returns {boolean}
  */
-export function isElement(el: any): boolean;
+export function isElement(el: unknown): boolean;
 /**
- * @param { Element | typeof Strophe.Builder } stanza
- * @param { string } name
- * @returns { boolean }
+ * @param {Element | typeof Strophe.Builder} stanza
+ * @param {string} name
+ * @returns {boolean}
  */
 export function isTagEqual(stanza: Element | typeof Strophe.Builder, name: string): boolean;
 /**

@@ -1,13 +1,11 @@
-import DropdownBase from "shared/components/dropdown.js";
-import EmojiPicker from "@converse/headless/plugins/emoji/picker";
-import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless";
 import { html } from "lit";
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { _converse, api, u, EmojiPicker, constants } from "@converse/headless";
+import { __ } from 'i18n';
+import DropdownBase from "shared/components/dropdown.js";
 import { until } from 'lit/directives/until.js';
-import { CHATROOMS_TYPE } from "@converse/headless/shared/constants.js";
 
-const u = converse.env.utils;
+const { CHATROOMS_TYPE } = constants;
+const { initStorage } = u;
 
 
 export default class EmojiDropdown extends DropdownBase {

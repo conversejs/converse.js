@@ -1,3 +1,4 @@
+import { api, converse, log, constants } from  '@converse/headless';
 import './message-actions.js';
 import './message-body.js';
 import 'shared/components/dropdown.js';
@@ -13,12 +14,11 @@ import tplMessageText from './templates/message-text.js';
 import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
-import { SUCCESS } from '@converse/headless/shared/constants.js';
 import { __ } from 'i18n';
-import { api, converse, log } from  '@converse/headless';
 import { getHats } from './utils.js';
 
 const { Strophe, dayjs } = converse.env;
+const { SUCCESS } = constants;
 
 
 export default class Message extends CustomElement {

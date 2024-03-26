@@ -202,7 +202,7 @@ src/headless/dist/converse-headless.js: src webpack/webpack.common.js node_modul
 src/headless/dist/converse-headless.min.js: src webpack/webpack.common.js node_modules @converse/headless
 	npm run headless
 
-dist:: node_modules src/* | dist/website.css dist/website.min.css
+dist:: node_modules src/**/* | dist/website.css dist/website.min.css
 	npm run headless
 	# Ideally this should just be `npm run build`.
 	# The additional steps are necessary to properly generate JSON chunk files

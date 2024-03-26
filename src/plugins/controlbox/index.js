@@ -2,6 +2,7 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { _converse, api, converse, log, constants } from '@converse/headless';
 import "shared/components/brand-heading.js";
 import "../chatview/index.js";
 import './loginform.js';
@@ -10,12 +11,12 @@ import ControlBox from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';
 import controlbox_api from './api.js';
-import { _converse, api, converse, log } from '@converse/headless';
 import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
-import { CONTROLBOX_TYPE } from "@converse/headless/shared/constants.js";
 
 import './styles/_controlbox.scss';
 import './styles/controlbox-head.scss';
+
+const { CONTROLBOX_TYPE } = constants;
 
 
 converse.plugins.add('converse-controlbox', {

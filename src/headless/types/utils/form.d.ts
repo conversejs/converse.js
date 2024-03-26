@@ -15,10 +15,10 @@ export function webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HT
  * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
  * @param {number} [index] - An optional rightmost boundary index. If given, the text
  *  value of the input element will only be considered up until this index.
- * @param {string} [delineator] - An optional string delineator to
+ * @param {string|RegExp} [delineator] - An optional string delineator to
  *  differentiate between words.
  */
-export function getCurrentWord(input: HTMLInputElement, index?: number, delineator?: string): string;
+export function getCurrentWord(input: HTMLInputElement, index?: number, delineator?: string | RegExp): string;
 /**
  * @param {string} s
  */

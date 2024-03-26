@@ -2,17 +2,17 @@ import DOMPurify from 'dompurify';
 import { Strophe } from 'strophe.js';
 
 /**
- * @param { any } el
- * @returns { boolean }
+ * @param {unknown} el
+ * @returns {boolean}
  */
 export function isElement (el) {
     return el instanceof Element || el instanceof HTMLDocument;
 }
 
 /**
- * @param { Element | typeof Strophe.Builder } stanza
- * @param { string } name
- * @returns { boolean }
+ * @param {Element | typeof Strophe.Builder} stanza
+ * @param {string} name
+ * @returns {boolean}
  */
 export function isTagEqual (stanza, name) {
     if (stanza instanceof Strophe.Builder) {

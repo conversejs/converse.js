@@ -2,9 +2,10 @@
  * @typedef {import('@converse/skeletor').Model} Model
  */
 import { CustomElement } from '../components/element.js';
-import { _converse, api } from '@converse/headless';
+import { _converse, api, constants } from '@converse/headless';
 import { onScrolledDown } from './utils.js';
-import { CHATROOMS_TYPE, INACTIVE } from '@converse/headless/shared/constants.js';
+
+const { CHATROOMS_TYPE, INACTIVE } = constants;
 
 
 export default class BaseChatView extends CustomElement {

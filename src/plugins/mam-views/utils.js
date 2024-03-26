@@ -1,8 +1,7 @@
-import MAMPlaceholderMessage from '@converse/headless/plugins/mam/placeholder.js';
-import { _converse, api, log } from '@converse/headless';
-import { fetchArchivedMessages } from '@converse/headless/plugins/mam/utils';
 import { html } from 'lit/html.js';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
+import { _converse, api, log, constants, u, MAMPlaceholderMessage } from '@converse/headless';
+
+const { CHATROOMS_TYPE } = constants;
 
 
 export function getPlaceholderTemplate (message, tpl) {
@@ -27,9 +26,9 @@ export async function fetchMessagesOnScrollUp (view) {
             view.model.ui.set('chat-content-spinner-top', true);
             try {
                 if (stanza_id) {
-                    await fetchArchivedMessages(view.model, { 'before': stanza_id });
+                    await u.mam.fetchArchivedMessages(view.model, { 'before': stanza_id });
                 } else {
-                    await fetchArchivedMessages(view.model, { 'end': oldest_message.get('time') });
+                    await u.mam.fetchArchivedMessages(view.model, { 'end': oldest_message.get('time') });
                 }
             } catch (e) {
                 log.error(e);

@@ -1,7 +1,8 @@
 /**
  * @module:plugin-muc-affiliations-api
+ * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
  */
-import { setAffiliations } from './utils.js';
+import { getAffiliationList, setAffiliations } from './utils.js';
 
 export default {
     /**
@@ -43,6 +44,18 @@ export default {
             users = !Array.isArray(users) ? [users] : users;
             muc_jids = !Array.isArray(muc_jids) ? [muc_jids] : muc_jids;
             return setAffiliations(muc_jids, users);
+        },
+
+        /**
+         * Returns an array of {@link MemberListItem} objects, representing occupants
+         * that have the given affiliation.
+         * @typedef {("admin"|"owner"|"member")} NonOutcastAffiliation
+         * @param {NonOutcastAffiliation} affiliation
+         * @param {string} jid - The JID of the MUC for which the affiliation list should be fetched
+         * @returns {Promise<MemberListItem[]|Error>}
+         */
+        get (affiliation, jid) {
+            return getAffiliationList(affiliation, jid);
         }
     }
 }

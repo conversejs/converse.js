@@ -10,7 +10,7 @@ export default class MUCListModal extends BaseModal {
      * Handle the IQ stanza returned from the server, containing
      * all its public groupchats.
      * @method _converse.ChatRoomView#onRoomsFound
-     * @param { HTMLElement } [iq]
+     * @param {HTMLElement} [iq]
      */
     onRoomsFound(iq?: HTMLElement): boolean;
     /**

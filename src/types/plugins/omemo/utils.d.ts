@@ -61,16 +61,16 @@ export type MUCMessageAttributes = any;
 export type ChatBox = import('@converse/headless').ChatBox;
 import { IQError } from "shared/errors.js";
 import { UserFacingError } from "shared/errors.js";
-declare function decryptMessage(obj: any): Promise<any>;
+declare function decryptMessage(obj: any): Promise<string>;
 /**
  * @param {string} plaintext
  */
 declare function encryptMessage(plaintext: string): Promise<{
     key: ArrayBuffer;
     tag: ArrayBuffer;
-    key_and_tag: any;
-    payload: any;
-    iv: any;
+    key_and_tag: ArrayBufferLike;
+    payload: string;
+    iv: string;
 }>;
 export {};
 //# sourceMappingURL=utils.d.ts.map

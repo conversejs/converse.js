@@ -5,20 +5,19 @@
  * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
  * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
  */
+import isMatch from "lodash-es/isMatch";
 import pick from "lodash-es/pick";
+import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import { ACTIVE, PRIVATE_CHAT_TYPE, COMPOSING, INACTIVE, PAUSED, SUCCESS, GONE } from '../../shared/constants.js';
 import ModelWithContact from './model-with-contact.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import isMatch from "lodash-es/isMatch";
 import log from '../../log.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { debouncedPruneHistory, handleCorrection } from '../../shared/chat/utils.js';
 import { filesize } from "filesize";
-import { getMediaURLsMetadata } from '../../shared/parsers.js';
-import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '../../utils/storage.js';
 import { isEmptyMessage } from '../../utils/index.js';
 import { isNewMessage } from './utils.js';
@@ -31,8 +30,6 @@ const { Strophe, $msg, u } = converse.env;
 
 /**
  * Represents an open/ongoing chat conversation.
- * @namespace ChatBox
- * @memberOf _converse
  */
 class ChatBox extends ModelWithContact {
 
@@ -866,7 +863,7 @@ class ChatBox extends ModelWithContact {
             body,
             is_spoiler,
             origin_id
-        }, getMediaURLsMetadata(text));
+        }, u.getMediaURLsMetadata(text));
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.

@@ -5,8 +5,7 @@
  * @description This is the internationalization module
  */
 import Jed from 'jed';
-import { api, converse, log } from '@converse/headless';
-import { isTestEnv } from '@converse/headless/utils/session';
+import { api, converse, log, u } from '@converse/headless';
 
 const { dayjs } = converse.env;
 
@@ -112,7 +111,7 @@ const i18n = {
     },
 
     async initialize() {
-        if (isTestEnv()) {
+        if (u.isTestEnv()) {
             locale = 'en';
         } else {
             try {

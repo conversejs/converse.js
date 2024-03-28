@@ -14,8 +14,9 @@ export default class EmojiDropdown extends DropdownBase {
     chatview: any;
     initModel(): Promise<void>;
     init_promise: Promise<void>;
-    model: any;
+    model: EmojiPicker;
     showMenu(): Promise<void>;
 }
 import DropdownBase from "shared/components/dropdown.js";
+import { EmojiPicker } from "@converse/headless";
 //# sourceMappingURL=emoji-dropdown.d.ts.map

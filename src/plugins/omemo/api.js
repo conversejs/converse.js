@@ -1,5 +1,4 @@
-import { _converse, api } from '@converse/headless';
-import { initStorage } from '@converse/headless/utils/storage.js';
+import { _converse, api, u } from '@converse/headless';
 import { generateFingerprint } from './utils.js';
 import OMEMOStore from './store.js';
 
@@ -27,7 +26,7 @@ export default {
                     const bare_jid = _converse.session.get('bare_jid');
                     const id = `converse.omemosession-${bare_jid}`;
                     state.omemo_store = new OMEMOStore({ id });
-                    initStorage(state.omemo_store, id);
+                    u.initStorage(state.omemo_store, id);
                 }
                 await state.omemo_store.fetchSession();
             }

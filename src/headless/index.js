@@ -1,19 +1,14 @@
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 
-import './shared/constants.js';
-
-import api from './shared/api/index.js';
-import u from './utils/index.js';
-import _converse from './shared/_converse';
-import i18n from './shared/i18n';
-import converse from './shared/api/public.js';
-
 dayjs.extend(advancedFormat);
+
 
 // START: Removable components
 // ---------------------------
 // The following components may be removed if they're not needed.
+
+export { EmojiPicker } from './plugins/emoji/index.js';
 import './plugins/bookmarks/index.js'; // XEP-0199 XMPP Ping
 import './plugins/bosh/index.js'; // XEP-0206 BOSH
 import './plugins/caps/index.js'; // XEP-0115 Entity Capabilities
@@ -31,7 +26,7 @@ import './plugins/ping/index.js'; // XEP-0199 XMPP Ping
 import './plugins/pubsub.js'; // XEP-0060 Pubsub
 
 // RFC-6121 Contacts Roster
-export { RosterContact, RosterContacts, Presence, Presences } from './plugins/roster/index.js';
+export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from './plugins/roster/index.js';
 
 import './plugins/smacks/index.js'; // XEP-0198 Stream Management
 export { XMPPStatus } from './plugins/status/index.js';
@@ -39,8 +34,18 @@ export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
 // ---------------------------
 // END: Removable components
 
-
+import * as constants from './shared/constants.js';
+import api from './shared/api/index.js';
+import u from './utils/index.js';
+import _converse from './shared/_converse';
+import i18n from './shared/i18n';
+import converse from './shared/api/public.js';
 import log from './log.js';
-export { api, converse, _converse, i18n, log, u };
+
+import { isChatRoom } from './plugins/muc/utils.js';
+import { setAffiliation } from './plugins/muc/affiliations/utils.js';
+Object.assign(u, { isChatRoom, setAffiliation });
+
+export { api, converse, _converse, i18n, log, u, constants };
 
 export default converse;

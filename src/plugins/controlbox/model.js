@@ -1,8 +1,9 @@
-import { _converse, api, converse } from '@converse/headless';
 import { Model } from '@converse/skeletor';
-import { CONTROLBOX_TYPE } from '@converse/headless/shared/constants';
+import { _converse, api, converse, constants } from '@converse/headless';
 
 const { dayjs } = converse.env;
+const { CONTROLBOX_TYPE } = constants;
+
 
 /**
  * The ControlBox is the section of the chat that contains the open groupchats,

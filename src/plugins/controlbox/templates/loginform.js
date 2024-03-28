@@ -1,10 +1,11 @@
+import { html } from 'lit';
+import { _converse, api, constants } from '@converse/headless';
 import 'shared/components/brand-heading.js';
 import tplSpinner from 'templates/spinner.js';
-import { ANONYMOUS, EXTERNAL, LOGIN, PREBIND, CONNECTION_STATUS } from '@converse/headless/shared/constants';
 import { REPORTABLE_STATUSES, PRETTY_CONNECTION_STATUS, CONNECTION_STATUS_CSS_CLASS } from '../constants.js';
 import { __ } from 'i18n';
-import { _converse, api } from '@converse/headless';
-import { html } from 'lit';
+
+const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND, CONNECTION_STATUS } = constants;
 
 const trust_checkbox = (checked) => {
     const i18n_hint_trusted = __(

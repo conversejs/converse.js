@@ -1,6 +1,8 @@
 import { __ } from 'i18n';
 import { html } from "lit";
-import { HEADLINES_TYPE } from '@converse/headless/shared/constants';
+import { constants } from '@converse/headless';
+
+const { HEADLINES_TYPE } = constants;
 
 function tplHeadlinesFeedsListItem (el, feed) {
     const open_title = __('Click to open this server message');

@@ -77,8 +77,5 @@ export function xForm2TemplateResult(field: HTMLElement, stanza: Element, option
 export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
 export default u;
 export type TemplateResult = import('lit').TemplateResult;
-export namespace Strophe {
-    type Builder = any;
-}
 import { u } from "@converse/headless";
 //# sourceMappingURL=html.d.ts.map

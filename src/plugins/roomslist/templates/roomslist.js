@@ -2,16 +2,17 @@
  * @typedef {import('../view').RoomsList} RoomsList
  * @typedef {import('@converse/headless').MUC} MUC
  */
+import { html } from "lit";
+import { _converse, api, u, constants } from "@converse/headless";
 import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';
-import { CHATROOMS_TYPE, CLOSED } from '@converse/headless/shared/constants.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless";
 import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
-import { html } from "lit";
-import { isUniView } from '@converse/headless/utils/session.js';
 
 import '../styles/roomsgroups.scss';
+
+const { CHATROOMS_TYPE, CLOSED } = constants;
+const { isUniView } = u;
 
 /** @param {MUC} room */
 function isCurrentlyOpen (room) {

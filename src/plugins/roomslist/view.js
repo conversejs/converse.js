@@ -1,17 +1,16 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
  */
+import { _converse, api, converse, u, constants } from "@converse/headless";
+import { __ } from 'i18n';
 import 'plugins/muc-views/modals/muc-details.js';
+import { CustomElement } from 'shared/components/element.js';
 import RoomsListModel from './model.js';
 import tplRoomslist from "./templates/roomslist.js";
-import { CustomElement } from 'shared/components/element.js';
-import { __ } from 'i18n';
-import { _converse, api, converse } from "@converse/headless";
-import { initStorage } from '@converse/headless/utils/storage.js';
-import { isChatRoom } from '@converse/headless/plugins/muc/utils.js';
-import { CLOSED, OPENED } from '@converse/headless/shared/constants.js';
 
-const { Strophe, u } = converse.env;
+const { Strophe } = converse.env;
+const { initStorage, isChatRoom } = u;
+const { CLOSED, OPENED } = constants;
 
 export class RoomsList extends CustomElement {
 

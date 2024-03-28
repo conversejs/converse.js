@@ -6,11 +6,11 @@
  * @typedef {import('plugins/controlbox/controlbox').default} ControlBoxView
  * @typedef {import('plugins/headlines-view/view').default} HeadlinesFeedView
  */
-import { _converse, api, converse, u } from '@converse/headless';
+import { _converse, api, converse, u, constants } from '@converse/headless';
 import { __ } from 'i18n';
-import { ACTIVE, INACTIVE } from '@converse/headless/shared/constants';
 
 const { dayjs } = converse.env;
+const { ACTIVE, INACTIVE } = constants;
 
 /**
  * @param { ChatBox|MUC } chat

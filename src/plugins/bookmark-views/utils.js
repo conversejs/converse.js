@@ -1,8 +1,8 @@
-import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless';
+import { _converse, api, converse, constants } from '@converse/headless';
 import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
-import { CHATROOMS_TYPE } from '@converse/headless/shared/constants';
+import { __ } from 'i18n';
 
+const { CHATROOMS_TYPE } = constants;
 
 export function getHeadingButtons (view, buttons) {
     if (api.settings.get('allow_bookmarks') && view.model.get('type') === CHATROOMS_TYPE) {

@@ -8,8 +8,6 @@ export namespace Strophe {
 }
 /**
  * Represents an open/ongoing chat conversation.
- * @namespace ChatBox
- * @memberOf _converse
  */
 declare class ChatBox extends ModelWithContact {
     constructor(attrs: any, options: any);

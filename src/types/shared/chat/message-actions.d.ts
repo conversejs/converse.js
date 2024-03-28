@@ -1,3 +1,4 @@
+export type MediaURLData = any;
 /**
  * An object which represents a message action (as shown in the message dropdown);
  */

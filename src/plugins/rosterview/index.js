@@ -2,14 +2,11 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { _converse, api, converse, RosterFilter } from "@converse/headless";
 import "../modal";
-import "@converse/headless/plugins/chatboxes/index.js";
-import "@converse/headless/plugins/roster/index.js";
 import "./modals/add-contact.js";
 import './rosterview.js';
 import RosterContactView from './contactview.js';
-import { RosterFilter } from '@converse/headless/plugins/roster/filter.js';
-import { _converse, api, converse } from "@converse/headless";
 import { highlightRosterItem } from './utils.js';
 
 import 'shared/styles/status.scss';

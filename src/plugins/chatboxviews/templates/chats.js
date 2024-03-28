@@ -1,8 +1,8 @@
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
-import { _converse, api } from '@converse/headless';
-import { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } from '@converse/headless/shared/constants';
+import { _converse, api, constants } from '@converse/headless';
 
+const { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = constants;
 
 function shouldShowChat (c) {
     const is_minimized = (api.settings.get('view_mode') === 'overlayed' && c.get('minimized'));

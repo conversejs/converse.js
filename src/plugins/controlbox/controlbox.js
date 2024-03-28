@@ -1,9 +1,8 @@
 import tplControlbox from './templates/controlbox.js';
 import { CustomElement } from 'shared/components/element.js';
-import { _converse, api, converse } from '@converse/headless';
-import { LOGOUT } from '@converse/headless/shared/constants.js';
+import { _converse, api, constants, u } from '@converse/headless';
 
-const u = converse.env.utils;
+const { LOGOUT } = constants;
 
 /**
  * The ControlBox is the section of the chat that contains the open groupchats,

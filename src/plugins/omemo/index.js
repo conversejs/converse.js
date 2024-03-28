@@ -5,6 +5,7 @@
  * @module plugins-omemo-index
  * @typedef {Window & globalThis & {libsignal: any} } WindowWithLibsignal
  */
+import { _converse, api, converse, log, u } from '@converse/headless';
 import './fingerprints.js';
 import './profile.js';
 import 'shared/modals/user-details.js';
@@ -14,8 +15,6 @@ import DeviceLists from './devicelists.js';
 import Devices from './devices.js';
 import OMEMOStore from './store.js';
 import omemo_api from './api.js';
-import { _converse, api, converse, log } from '@converse/headless';
-import { shouldClearCache } from '@converse/headless/utils/session.js';
 import {
     createOMEMOMessageStanza,
     encryptFile,
@@ -34,6 +33,7 @@ import {
 } from './utils.js';
 
 const { Strophe } = converse.env;
+const { shouldClearCache } = u;
 
 converse.env.omemo = omemo;
 

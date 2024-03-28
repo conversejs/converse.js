@@ -3,46 +3,20 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
-import log, { LEVELS } from '../log.js';
-import { Model } from '@converse/skeletor';
 import { toStanza } from 'strophe.js';
 import { getOpenPromise } from '@converse/openpromise';
-import { shouldClearCache, isTestEnv, isUniView } from './session.js';
-import { merge, isError, isFunction } from './object.js';
-import { createStore, getDefaultStore } from './storage.js';
+import { Model } from '@converse/skeletor';
+import log, { LEVELS } from '../log.js';
 import { waitUntil } from './promise.js';
-import { isValidJID, isValidMUCJID, isSameBareJID } from './jid.js';
 import { isErrorStanza } from './stanza.js';
-import {
-    getCurrentWord,
-    getSelectValues,
-    isMentionBoundary,
-    placeCaretAtEnd,
-    replaceCurrentWord,
-    webForm2xForm
-} from './form.js';
-import {
-    isElement,
-    isTagEqual,
-    queryChildren,
-    stringToElement,
-} from './html.js';
-import {
-    arrayBufferToHex,
-    arrayBufferToString,
-    stringToArrayBuffer,
-    arrayBufferToBase64,
-    base64ToArrayBuffer,
-} from './arraybuffer.js';
-import {
-    checkFileTypes,
-    getURI,
-    isAudioURL,
-    isGIFURL,
-    isImageURL,
-    isURLWithImageExtension,
-    isVideoURL,
-} from './url.js';
+import * as session from './session.js';
+import * as object from './object.js';
+import * as storage from './storage.js';
+import * as jid from './jid';
+import * as form from './form.js';
+import * as html from './html.js';
+import * as arraybuffer from './arraybuffer.js';
+import * as url from './url.js';
 
 
 /**
@@ -185,51 +159,26 @@ export function getUniqueId (suffix) {
 }
 
 export default Object.assign({
-    arrayBufferToBase64,
-    arrayBufferToHex,
-    arrayBufferToString,
-    base64ToArrayBuffer,
-    checkFileTypes,
-    createStore,
-    getCurrentWord,
-    getDefaultStore,
+    ...arraybuffer,
+    ...form,
+    ...html,
+    ...jid,
+    ...url,
+    ...object,
+    ...session,
+    ...storage,
     getLongestSubstring,
     getOpenPromise,
     getRandomInt,
-    getSelectValues,
-    getURI,
     getUniqueId,
-    isAudioURL,
-    isElement,
-    isEmptyMessage,
-    isError,
-    isErrorObject,
     isErrorStanza,
-    isFunction,
-    isGIFURL,
-    isImageURL,
-    isMentionBoundary,
-    isSameBareJID,
-    isTagEqual,
-    isURLWithImageExtension,
-    isValidJID,
-    isValidMUCJID,
-    isVideoURL,
-    isUniView,
-    isTestEnv,
-    merge,
+    isEmptyMessage,
+    isErrorObject,
     onMultipleEvents,
-    placeCaretAtEnd,
     prefixMentions,
-    queryChildren,
-    replaceCurrentWord,
     safeSave,
-    shouldClearCache,
     shouldCreateMessage,
-    stringToArrayBuffer,
-    stringToElement,
     toStanza,
     triggerEvent,
-    webForm2xForm,
     waitUntil, // TODO: remove. Only the API should be used
 }, u);

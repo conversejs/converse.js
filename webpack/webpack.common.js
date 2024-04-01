@@ -31,8 +31,7 @@ module.exports = {
         ignored: /dist/,
     },
     module: {
-        rules: [
-        {
+        rules: [{
             test: /LC_MESSAGES[\\/]converse.po$/,
             type: "json",
             use: [

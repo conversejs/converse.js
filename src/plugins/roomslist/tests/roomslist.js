@@ -271,9 +271,9 @@ describe("A groupchat shown in the groupchats list", function () {
             'Password protected - This groupchat requires a password before entry'+
             'Hidden - This groupchat is not publicly searchable'+
             'Open - Anyone can join this groupchat'+
-            'Temporary - This groupchat will disappear once the last person leaves'+
+            'Temporary - This groupchat will disappear once the last person leaves '+
             'Not anonymous - All other groupchat participants can see your XMPP address'+
-            'Not moderated - Participants entering this groupchat can write right away'
+            'Not moderated - Participants entering this groupchat can write right away '
         );
         presence = $pres({
                 to: 'romeo@montague.lit/_converse.js-29092160',

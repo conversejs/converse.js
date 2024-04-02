@@ -1640,14 +1640,12 @@ describe("Groupchats", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
 
             let features_list = modal.querySelector('.features-list');
-            let features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
-
-            expect(features_shown.join(' ')).toBe(
-                'Password protected - This groupchat requires a password before entry '+
-                'Open - Anyone can join this groupchat '+
+            expect(features_list.textContent).toBe(
+                'Password protected - This groupchat requires a password before entry     '+
+                'Open - Anyone can join this groupchat  '+
                 'Temporary - This groupchat will disappear once the last person leaves '+
-                'Not anonymous - All other groupchat participants can see your XMPP address '+
-                'Not moderated - Participants entering this groupchat can write right away');
+                'Not anonymous - All other groupchat participants can see your XMPP address   '+
+                'Not moderated - Participants entering this groupchat can write right away ');
             expect(view.model.features.get('hidden')).toBe(false);
             expect(view.model.features.get('mam_enabled')).toBe(false);
             expect(view.model.features.get('membersonly')).toBe(false);
@@ -1798,14 +1796,13 @@ describe("Groupchats", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
 
             features_list = modal.querySelector('.features-list');
-            features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
-            expect(features_shown.join(' ')).toBe(
-                'Password protected - This groupchat requires a password before entry '+
-                'Hidden - This groupchat is not publicly searchable '+
-                'Members only - This groupchat is restricted to members only '+
+            expect(features_list.textContent).toBe(
+                'Password protected - This groupchat requires a password before entry  '+
+                'Hidden - This groupchat is not publicly searchable  '+
+                'Members only - This groupchat is restricted to members only   '+
                 'Temporary - This groupchat will disappear once the last person leaves '+
-                'Not anonymous - All other groupchat participants can see your XMPP address '+
-                'Not moderated - Participants entering this groupchat can write right away');
+                'Not anonymous - All other groupchat participants can see your XMPP address   '+
+                'Not moderated - Participants entering this groupchat can write right away ');
             expect(view.model.features.get('hidden')).toBe(true);
             expect(view.model.features.get('mam_enabled')).toBe(false);
             expect(view.model.features.get('membersonly')).toBe(true);

@@ -13,7 +13,6 @@ module.exports = merge(common, {
         filename: "[name].js",
         chunkFilename: '[name].js',
         globalObject: 'this',
-        publicPath: '',
         library: {
             name: 'converse',
             type: 'umd',

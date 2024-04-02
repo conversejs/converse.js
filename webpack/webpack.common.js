@@ -1,18 +1,27 @@
 /* global __dirname, module, process */
+const ASSET_PATH = process.env.ASSET_PATH || '/dist/'; // eslint-disable-line no-process-env
+const webpack = require('webpack');
 const TerserPlugin = require("terser-webpack-plugin");
 const path = require('path');
 
 let bootstrap_ignore_modules = ['carousel', 'scrollspy', 'tooltip', 'toast'];
-
 
 const BOOTSTRAP_IGNORE_MODULES = (process.env.BOOTSTRAP_IGNORE_MODULES || '').replace(/ /g, '').trim();
 if (BOOTSTRAP_IGNORE_MODULES.length > 0) {
     bootstrap_ignore_modules = bootstrap_ignore_modules.concat(BOOTSTRAP_IGNORE_MODULES.split(','));
 }
 
+const plugins = [
+    new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
+        'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
+    }),
+];
+
 module.exports = {
+    plugins,
     output: {
         path: path.resolve(__dirname, '../dist'), // Output path for generated bundles
+        publicPath: ASSET_PATH,
         chunkFilename: '[name].js'
     },
     devtool: "source-map",

@@ -10,15 +10,12 @@ import { getOpenPromise } from '@converse/openpromise';
 import './utils.js';
 import EmojiPicker from './picker.js';
 
-
 converse.emojis = {
     'initialized': false,
-    'initialized_promise': getOpenPromise()
+    'initialized_promise': getOpenPromise(),
 };
 
-
 converse.plugins.add('converse-emoji', {
-
     initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
@@ -28,16 +25,16 @@ converse.plugins.add('converse-emoji', {
         api.settings.extend({
             'emoji_image_path': 'https://twemoji.maxcdn.com/v/12.1.6/',
             'emoji_categories': {
-                "smileys": ":grinning:",
-                "people": ":thumbsup:",
-                "activity": ":soccer:",
-                "travel": ":motorcycle:",
-                "objects": ":bomb:",
-                "nature": ":rainbow:",
-                "food": ":hotdog:",
-                "symbols": ":musical_note:",
-                "flags": ":flag_ac:",
-                "custom": null
+                'smileys': ':grinning:',
+                'people': ':thumbsup:',
+                'activity': ':soccer:',
+                'travel': ':motorcycle:',
+                'objects': ':bomb:',
+                'nature': ':rainbow:',
+                'food': ':hotdog:',
+                'symbols': ':musical_note:',
+                'flags': ':flag_ac:',
+                'custom': null,
             },
             // We use the triple-underscore method which doesn't actually
             // translate but does signify to gettext that these strings should
@@ -46,17 +43,17 @@ converse.plugins.add('converse-emoji', {
             // strings via converse.initialize, which is before __ is
             // available.
             'emoji_category_labels': {
-                "smileys": ___("Smileys and emotions"),
-                "people": ___("People"),
-                "activity": ___("Activities"),
-                "travel": ___("Travel"),
-                "objects": ___("Objects"),
-                "nature": ___("Animals and nature"),
-                "food": ___("Food and drink"),
-                "symbols": ___("Symbols"),
-                "flags": ___("Flags"),
-                "custom": ___("Stickers")
-            }
+                'smileys': ___('Smileys and emotions'),
+                'people': ___('People'),
+                'activity': ___('Activities'),
+                'travel': ___('Travel'),
+                'objects': ___('Objects'),
+                'nature': ___('Animals and nature'),
+                'food': ___('Food and drink'),
+                'symbols': ___('Symbols'),
+                'flags': ___('Flags'),
+                'custom': ___('Stickers'),
+            },
         });
 
         const exports = { EmojiPicker };
@@ -79,18 +76,22 @@ converse.plugins.add('converse-emoji', {
                     if (!converse.emojis.initialized) {
                         converse.emojis.initialized = true;
                         const module = await import(/*webpackChunkName: "emojis" */ './emoji.json');
-                        const json = converse.emojis.json = module.default;
-                        converse.emojis.by_sn = Object.keys(json).reduce((result, cat) => Object.assign(result, json[cat]), {});
+                        const json = (converse.emojis.json = module.default);
+                        converse.emojis.by_sn = Object.keys(json).reduce(
+                            (result, cat) => Object.assign(result, json[cat]),
+                            {}
+                        );
                         converse.emojis.list = Object.values(converse.emojis.by_sn);
-                        converse.emojis.list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));
-                        converse.emojis.shortnames = converse.emojis.list.map(m => m.sn);
-                        const getShortNames = () => converse.emojis.shortnames.map(s => s.replace(/[+]/g, "\\$&")).join('|');
-                        converse.emojis.shortnames_regex = new RegExp(getShortNames(), "gi");
+                        converse.emojis.list.sort((a, b) => (a.sn < b.sn ? -1 : a.sn > b.sn ? 1 : 0));
+                        converse.emojis.shortnames = converse.emojis.list.map((m) => m.sn);
+                        const getShortNames = () =>
+                            converse.emojis.shortnames.map((s) => s.replace(/[+]/g, '\\$&')).join('|');
+                        converse.emojis.shortnames_regex = new RegExp(getShortNames(), 'gi');
                         converse.emojis.initialized_promise.resolve();
                     }
                     return converse.emojis.initialized_promise;
-                }
-            }
+                },
+            },
         });
-    }
+    },
 });

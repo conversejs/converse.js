@@ -30,6 +30,16 @@ export class Connection extends Strophe.Connection {
         this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 
+    /** @param {Element} body */
+    xmlInput (body) {
+        log.debug(body.outerHTML, 'color: darkgoldenrod');
+    }
+
+    /** @param {Element} body */
+    xmlOutput (body) {
+        log.debug(body.outerHTML, 'color: darkcyan');
+    }
+
     async bind () {
         const { api } = _converse;
         /**
@@ -40,7 +50,6 @@ export class Connection extends Strophe.Connection {
         await api.trigger('beforeResourceBinding', {'synchronous': true});
         super.bind();
     }
-
 
     async onDomainDiscovered (response) {
         const { api } = _converse;

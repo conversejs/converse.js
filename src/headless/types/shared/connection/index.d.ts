@@ -8,6 +8,8 @@ export class Connection extends Connection_base {
     constructor(service: any, options: any);
     send_initial_presence: boolean;
     debouncedReconnect: any;
+    /** @param {Element} body */
+    xmlInput(body: Element): void;
     bind(): Promise<void>;
     onDomainDiscovered(response: any): Promise<void>;
     /**

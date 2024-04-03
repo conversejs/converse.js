@@ -1,6 +1,15 @@
+/**
+ * @typedef {import('@converse/headless/types/plugins/adhoc/utils').AdHocCommand} AdHocCommand
+ * @typedef {import('../adhoc-commands').default} AdHocCommands
+ * @typedef {import('../adhoc-commands').AdHocCommandUIProps} AdHocCommandUIProps
+ */
 import { html } from "lit";
 import tplCommandForm from './ad-hoc-command-form.js';
 
+/**
+ * @param {AdHocCommands} el
+ * @param {AdHocCommandUIProps} command
+ */
 export default (el, command) => html`
     <li class="room-item list-group-item">
         <div class="available-chatroom d-flex flex-row">

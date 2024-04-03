@@ -1,10 +1,22 @@
+/**
+ * @typedef {import('lit').TemplateResult} TemplateResult
+ */
 import sizzle from 'sizzle';
 import converse from '../../shared/api/public.js';
 
 const { Strophe, u } = converse.env;
 
 /**
+ * @typedef {Object} AdHocCommand
+ * @property {string} action
+ * @property {string} node
+ * @property {string} sessionid
+ * @property {string} status
+ */
+
+/**
  * @param {Element} stanza
+ * @returns {AdHocCommand[]}
  */
 export function parseForCommands (stanza) {
     const items = sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"][node="${Strophe.NS.ADHOC}"] item`, stanza);
@@ -12,8 +24,17 @@ export function parseForCommands (stanza) {
 }
 
 /**
+ * @typedef {Object} AdHocCommandFields
+ * @property {string} sessionid
+ * @property {string} [instructions]
+ * @property {TemplateResult[]} [fields]
+ * @property {string[]} [actions]
+ */
+
+/**
  * @param {Element} iq
  * @param {string} [jid]
+ * @returns {AdHocCommandFields}
  */
 export function getCommandFields (iq, jid) {
     const cmd_el = sizzle(`command[xmlns="${Strophe.NS.ADHOC}"]`, iq).pop();

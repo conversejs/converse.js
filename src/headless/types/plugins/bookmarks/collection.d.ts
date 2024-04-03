@@ -1,4 +1,5 @@
 export default Bookmarks;
+export type MUC = import('../muc/muc.js').default;
 declare class Bookmarks extends Collection {
     static checkBookmarksSupport(): Promise<any>;
     constructor();

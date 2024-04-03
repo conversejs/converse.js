@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@converse/headless').MUC} MUC
+ * @typedef {import('../muc/muc.js').default} MUC
  */
 import { Collection } from "@converse/skeletor";
 import { getOpenPromise } from '@converse/openpromise';

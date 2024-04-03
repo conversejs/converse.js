@@ -1,11 +1,14 @@
+/**
+ * @typedef {import('@converse/headless').MUC} MUC
+ */
+import { Collection } from "@converse/skeletor";
+import { getOpenPromise } from '@converse/openpromise';
 import "../../plugins/muc/index.js";
 import Bookmark from './model.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from "../../log.js";
-import { Collection } from "@converse/skeletor";
-import { getOpenPromise } from '@converse/openpromise';
 import { initStorage } from '../../utils/storage.js';
 
 const { Strophe, $iq, sizzle } = converse.env;
@@ -33,7 +36,7 @@ class Bookmarks extends Collection {
          * Triggered once the _converse.Bookmarks collection
          * has been created and cached bookmarks have been fetched.
          * @event _converse#bookmarksInitialized
-         * @type { Bookmarks }
+         * @type {Bookmarks}
          * @example _converse.api.listen.on('bookmarksInitialized', (bookmarks) => { ... });
          */
         api.trigger('bookmarksInitialized', this);
@@ -98,12 +101,19 @@ class Bookmarks extends Collection {
                 .c('publish', {'node': Strophe.NS.BOOKMARKS})
                     .c('item', {'id': 'current'})
                         .c('storage', {'xmlns': Strophe.NS.BOOKMARKS});
-        this.forEach(model => {
+
+        this.forEach(/** @param {MUC} model */(model) => {
             stanza.c('conference', {
                 'name': model.get('name'),
                 'autojoin': model.get('autojoin'),
                 'jid': model.get('jid'),
-            }).c('nick').t(model.get('nick')).up().up();
+            });
+            const nick = model.get('nick');
+            if (nick) {
+                stanza.c('nick').t(nick).up().up();
+            } else {
+                stanza.up();
+            }
         });
         stanza.up().up().up();
         stanza.c('publish-options')

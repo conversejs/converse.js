@@ -187,7 +187,8 @@ describe("A chat room", function () {
             expect(room.get('nick')).toBe('Othello');
         }));
 
-        it("displays that it's bookmarked through its bookmark icon", mock.initConverse([], {}, async function (_converse) {
+        it("displays that it's bookmarked through its bookmark icon",
+                mock.initConverse([], {}, async function (_converse) {
 
             const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
@@ -293,33 +294,6 @@ describe("A chat room", function () {
             );
         }));
     });
-
-    describe("and when autojoin is set", function () {
-
-        it("will be be opened and joined automatically upon login", mock.initConverse(
-                [], {}, async function (_converse) {
-
-            await mock.waitForRoster(_converse, 'current', 0);
-            await mock.waitUntilBookmarksReturned(_converse);
-            spyOn(_converse.api.rooms, 'create').and.callThrough();
-            const jid = 'theplay@conference.shakespeare.lit';
-            const model = _converse.bookmarks.create({
-                'jid': jid,
-                'autojoin': false,
-                'name':  'The Play',
-                'nick': ''
-            });
-            expect(_converse.api.rooms.create).not.toHaveBeenCalled();
-            _converse.bookmarks.remove(model);
-            _converse.bookmarks.create({
-                'jid': jid,
-                'autojoin': true,
-                'name':  'Hamlet',
-                'nick': ''
-            });
-            expect(_converse.api.rooms.create).toHaveBeenCalled();
-        }));
-    });
 });
 
 describe("Bookmarks", function () {
@@ -407,7 +381,9 @@ describe("Bookmarks", function () {
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => _converse.bookmarks.length === 3);
-        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(['Second bookmark', 'The Play&apos;s the Thing', 'Yet another bookmark']);
+        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(
+            ['Second bookmark', 'The Play&apos;s the Thing', 'Yet another bookmark']
+        );
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
         expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
     }));
@@ -468,7 +444,7 @@ describe("Bookmarks", function () {
         expect(_converse.bookmarks.models.length).toBe(0);
 
         spyOn(_converse.bookmarks, 'onBookmarksReceived').and.callThrough();
-        var stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
+        const stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
             .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                 .c('items', {'node': 'storage:bookmarks'})
                     .c('item', {'id': 'current'})

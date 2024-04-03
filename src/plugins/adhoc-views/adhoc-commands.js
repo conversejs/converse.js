@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('@converse/headless/types/plugins/adhoc/utils').AdHocCommand} AdHocCommand
+ * @typedef {import('@converse/headless/types/plugins/adhoc/utils').AdHocCommandFields} AdHocCommandFields
+ */
 import 'shared/autocomplete/index.js';
 import tplAdhoc from './templates/ad-hoc.js';
 import { CustomElement } from 'shared/components/element.js';
@@ -6,6 +10,17 @@ import { api, converse, log } from '@converse/headless';
 import { getNameAndValue } from 'utils/html.js';
 
 const { Strophe, sizzle } = converse.env;
+
+/**
+ * @typedef {Object} UIProps
+ * @property {string} instructions
+ * @property {string} jid
+ * @property {string} [alert]
+ * @property {'danger'|'primary'} [alert_type]
+ * @property {'cancel'|'complete'|'execute'|'next'|'prev'} name
+ *
+ * @typedef {AdHocCommand & AdHocCommandFields & UIProps} AdHocCommandUIProps
+ */
 
 
 export default class AdHocCommands extends CustomElement {
@@ -25,7 +40,7 @@ export default class AdHocCommands extends CustomElement {
         this.view = 'choose-service';
         this.fetching = false;
         this.showform = '';
-        this.commands = [];
+        this.commands = /** @type {AdHocCommandUIProps[]} */([]);
     }
 
     render () {
@@ -61,13 +76,13 @@ export default class AdHocCommands extends CustomElement {
 
         if (supported) {
             try {
-                this.commands = await api.adhoc.getCommands(jid);
+                this.commands = /** @type {AdHocCommandUIProps[]} */(await api.adhoc.getCommands(jid));
                 this.view = 'list-commands';
             } catch (e) {
                 log.error(e);
                 this.alert_type = 'danger';
                 this.alert = __('Sorry, an error occurred while looking for commands on that entity.');
-                this.commands = [];
+                this.commands = /** @type {AdHocCommandUIProps[]} */([]);
                 log.error(e);
                 return;
             }
@@ -81,15 +96,27 @@ export default class AdHocCommands extends CustomElement {
         ev.preventDefault();
         const node = ev.target.getAttribute('data-command-node');
         const cmd = this.commands.filter(c => c.node === node)[0];
+        const { jid } = cmd;
+
         if (this.showform === node) {
             this.showform = '';
             this.requestUpdate();
         } else {
-            const form = await api.adhoc.fetchCommandForm(cmd);
-            cmd.sessionid = form.sessionid;
-            cmd.instructions = form.instructions;
-            cmd.fields = form.fields;
-            cmd.actions = form.actions;
+            try {
+                const form = await api.adhoc.fetchCommandForm(jid, node);
+                cmd.sessionid = form.sessionid;
+                cmd.instructions = form.instructions;
+                cmd.fields = form.fields;
+                cmd.actions = form.actions;
+            } catch (e) {
+                if (e === null) {
+                    log.error(`Error: timeout while trying to execute command for ${jid}`);
+                } else {
+                    log.error(`Error while trying to execute command for ${jid}`);
+                    log.error(e);
+                }
+                cmd.instructions = __('An error occurred while trying to fetch the command form');
+            }
             this.showform = node;
         }
     }

@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('./utils').AdHocCommand} AdHocCommand
+ * @typedef {import('./utils').AdHocCommandFields} AdHocCommandFields
+ */
 import log from '../../log.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -19,7 +23,7 @@ export default {
     adhoc: {
         /**
          * @method api.adhoc.getCommands
-         * @param { String } to_jid
+         * @param {string} to_jid
          */
         async getCommands (to_jid) {
             try {
@@ -37,34 +41,20 @@ export default {
 
         /**
          * @method api.adhoc.fetchCommandForm
+         * @param {string} jid
+         * @param {string} node
+         * @returns {Promise<AdHocCommandFields>}
          */
-        async fetchCommandForm (command) {
-            const node = command.node;
-            const jid = command.jid;
+        async fetchCommandForm (jid, node) {
             const stanza = $iq({
-                'type': 'set',
-                'to': jid
+                type: 'set',
+                to: jid
             }).c('command', {
-                'xmlns': Strophe.NS.ADHOC,
-                'node': node,
-                'action': 'execute'
+                xmlns: Strophe.NS.ADHOC,
+                action: 'execute',
+                node,
             });
-            try {
-                return getCommandFields(await api.sendIQ(stanza), jid);
-
-            } catch (e) {
-                if (e === null) {
-                    log.error(`Error: timeout while trying to execute command for ${jid}`);
-                } else {
-                    log.error(`Error while trying to execute command for ${jid}`);
-                    log.error(e);
-                }
-                const { __ } = _converse;
-                return {
-                    instructions: __('An error occurred while trying to fetch the command form'),
-                    fields: []
-                }
-            }
+            return getCommandFields(await api.sendIQ(stanza), jid);
         },
 
         /**

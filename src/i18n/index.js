@@ -5,7 +5,7 @@
  * @description This is the internationalization module
  */
 import Jed from 'jed';
-import { api, converse, log, u } from '@converse/headless';
+import { api, converse, log, u, i18n as i18nStub } from '@converse/headless';
 
 const { dayjs } = converse.env;
 
@@ -89,7 +89,7 @@ async function fetchTranslations () {
 /**
  * @namespace i18n
  */
-const i18n = {
+const i18n = Object.assign(i18nStub, {
     getLocale() {
         return locale;
     },
@@ -131,7 +131,7 @@ const i18n = {
     __(str, ...args) {
         return i18n.translate(str, args);
     },
-};
+});
 
 export { i18n };
 export const __ = i18n.__;

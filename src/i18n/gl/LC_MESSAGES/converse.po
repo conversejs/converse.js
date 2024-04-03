@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-03-14 20:01+0000\n"
+"PO-Revision-Date: 2024-04-04 11:01+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -160,12 +160,10 @@ msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "Lamentámolo, semella que o servidor non soporta a subida de ficheiros."
 
 #: dist/converse-no-dependencies.js:33516
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr ""
-"O tamaño do ficheiro, %1$s, excede o límite establecido no servidor, que é "
-"%2$s."
+msgstr "O tamaño do ficheiro, %1$s, excede o límite establecido polo servidor."
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format

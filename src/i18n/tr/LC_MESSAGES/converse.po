@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-03-14 20:01+0000\n"
+"PO-Revision-Date: 2024-04-04 11:01+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -160,12 +160,12 @@ msgstr ""
 "Üzgünüm, dosya yükleme sunucunuz tarafından desteklenmiyor gibi görünüyor."
 
 #: dist/converse-no-dependencies.js:33516
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
-"Dosyanızın boyutu, %1$s, sunucunuz tarafından izin verilen ve %2$s olan "
-"maksimum değeri aşıyor."
+"Dosyanızın boyutu, %1$s, sunucunuz tarafından izin verilen en yüksek değeri "
+"aşıyor."
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format

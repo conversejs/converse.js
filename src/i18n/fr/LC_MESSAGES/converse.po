@@ -7,9 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-01-15 15:34+0000\n"
-"Last-Translator: John Livingston <JohnLivingston@users.noreply.hosted."
-"weblate.org>\n"
+"PO-Revision-Date: 2024-04-04 11:01+0000\n"
+"Last-Translator: SilverYoCha <silveryocha@chastagnier.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -17,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -175,12 +174,12 @@ msgstr ""
 "fichiers."
 
 #: dist/converse-no-dependencies.js:33516
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
 "La taille de votre fichier, %1$s, dépasse le maximum autorisé par votre "
-"serveur, qui est %2$s."
+"serveur."
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format
@@ -619,7 +618,9 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:51360
 msgid "An error occurred while trying to fetch the command form"
-msgstr "Une erreur est survenue en récupérant le formulaire de configuration"
+msgstr ""
+"Désolé, une erreur est survenue lors de la validation du formulaire de "
+"configuration"
 
 #: dist/converse-no-dependencies.js:51402
 msgid "A timeout occurred"
@@ -1142,11 +1143,11 @@ msgstr "Retirer"
 
 #: dist/converse-no-dependencies.js:76563
 msgid "Copy"
-msgstr ""
+msgstr "Copier"
 
 #: dist/converse-no-dependencies.js:76573
 msgid "Quote"
-msgstr ""
+msgstr "Citer"
 
 #: dist/converse-no-dependencies.js:82063
 msgid "Older versions"
@@ -1540,9 +1541,8 @@ msgid "Visitor"
 msgstr "Visiteur"
 
 #: dist/converse-no-dependencies.js:99610
-#, fuzzy
 msgid "Filter by name"
-msgstr "Filtrer par nom de groupe"
+msgstr "Filtrer par le nom"
 
 #: dist/converse-no-dependencies.js:99611
 #: dist/converse-no-dependencies.js:121515
@@ -1601,21 +1601,18 @@ msgid "Participants"
 msgstr "Participants"
 
 #: dist/converse-no-dependencies.js:99692
-#, fuzzy
 msgid "Hide sidebar"
-msgstr "Cacher les média"
+msgstr "Cacher les participants"
 
 #: dist/converse-no-dependencies.js:99693
 #: dist/converse-no-dependencies.js:121583
-#, fuzzy
 msgid "Show filter"
-msgstr "Afficher moins"
+msgstr "Afficher le filtre"
 
 #: dist/converse-no-dependencies.js:99694
 #: dist/converse-no-dependencies.js:121584
-#, fuzzy
 msgid "Hide filter"
-msgstr "Filtrer"
+msgstr "Cacher le filtre"
 
 #: dist/converse-no-dependencies.js:100553
 msgid "Change user's affiliation to admin"
@@ -2103,7 +2100,7 @@ msgstr "Votre serveur ne gère pas la réinitialisation de mot de passe"
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
-"Votre serveur a répondu une erreur inconnue, vérifiez la console pour plus "
+"Votre serveur a retourné une erreur inconnue, vérifiez la console pour plus "
 "de détails"
 
 #: dist/converse-no-dependencies.js:108062
@@ -2565,9 +2562,8 @@ msgid "Leave this groupchat"
 msgstr "Quitter ce salon"
 
 #: dist/converse-no-dependencies.js:119700
-#, fuzzy
 msgid "Click to hide these rooms"
-msgstr "Cliquez pour cacher ces contacts"
+msgstr "Cliquez pour cacher ces discussions"
 
 #: dist/converse-no-dependencies.js:119748
 msgid "Click to toggle the list of open groupchats"
@@ -2578,12 +2574,10 @@ msgid "Groupchats"
 msgstr "Salons"
 
 #: dist/converse-no-dependencies.js:119750
-#, fuzzy
 msgid "Query server"
-msgstr "utilisateur@serveur"
+msgstr "Chercher un salon"
 
 #: dist/converse-no-dependencies.js:119751
-#, fuzzy
 msgid "Add groupchat"
 msgstr "Ajouter un nouveau salon"
 
@@ -2633,7 +2627,7 @@ msgstr "Non lu"
 
 #: dist/converse-no-dependencies.js:121518
 msgid "Available"
-msgstr ""
+msgstr "Disponible"
 
 #. *
 #. * @param {RosterView} el
@@ -2652,7 +2646,6 @@ msgid "Add a contact"
 msgstr "Ajouter un contact"
 
 #: dist/converse-no-dependencies.js:121598
-#, fuzzy
 msgid "Re-sync contacts"
 msgstr "Resynchroniser vos contacts"
 

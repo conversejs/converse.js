@@ -1,15 +1,18 @@
 /**
  * @typedef {import('./utils').AdHocCommand} AdHocCommand
- * @typedef {import('./utils').AdHocCommandFields} AdHocCommandFields
+ * @typedef {import('./utils').AdHocCommandResult} AdHocCommandResult
  */
 import log from '../../log.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { getCommandFields, parseForCommands } from './utils.js';
+import { parseCommandResult, parseForCommands } from './utils.js';
 
 const { Strophe, $iq, u, stx } = converse.env;
 
+/**
+ * @typedef {'execute'| 'cancel' |'prev'|'next'|'complete'} AdHocCommandAction
+ */
 
 export default {
     /**
@@ -43,7 +46,7 @@ export default {
          * @method api.adhoc.fetchCommandForm
          * @param {string} jid
          * @param {string} node
-         * @returns {Promise<AdHocCommandFields>}
+         * @returns {Promise<AdHocCommandResult>}
          */
         async fetchCommandForm (jid, node) {
             const stanza = $iq({
@@ -54,16 +57,16 @@ export default {
                 action: 'execute',
                 node,
             });
-            return getCommandFields(await api.sendIQ(stanza), jid);
+            return parseCommandResult(await api.sendIQ(stanza), jid);
         },
 
         /**
          * @method api.adhoc.runCommand
-         * @param { String } jid
-         * @param { String } sessionid
-         * @param { 'execute' | 'cancel' | 'prev' | 'next' | 'complete' } action
-         * @param { String } node
-         * @param { Array<{ [k:string]: string }> } inputs
+         * @param {String} jid
+         * @param {String} sessionid
+         * @param {AdHocCommandAction} action
+         * @param {String} node
+         * @param {Array<{ [k:string]: string }>} inputs
          */
         async runCommand (jid, sessionid, node, action, inputs) {
             const iq =
@@ -93,7 +96,7 @@ export default {
             const status = command?.getAttribute('status');
             return {
                 status,
-                ...(status === 'executing' ? getCommandFields(result) : {}),
+                ...(status === 'executing' ? parseCommandResult(result) : {}),
                 note: result.querySelector('note')?.textContent
             }
         }

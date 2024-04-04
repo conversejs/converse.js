@@ -9,18 +9,18 @@ declare namespace _default {
          * @method api.adhoc.fetchCommandForm
          * @param {string} jid
          * @param {string} node
-         * @returns {Promise<AdHocCommandFields>}
+         * @returns {Promise<AdHocCommandResult>}
          */
-        function fetchCommandForm(jid: string, node: string): Promise<import("./utils.js").AdHocCommandFields>;
+        function fetchCommandForm(jid: string, node: string): Promise<import("./utils.js").AdHocCommandResult>;
         /**
          * @method api.adhoc.runCommand
-         * @param { String } jid
-         * @param { String } sessionid
-         * @param { 'execute' | 'cancel' | 'prev' | 'next' | 'complete' } action
-         * @param { String } node
-         * @param { Array<{ [k:string]: string }> } inputs
+         * @param {String} jid
+         * @param {String} sessionid
+         * @param {AdHocCommandAction} action
+         * @param {String} node
+         * @param {Array<{ [k:string]: string }>} inputs
          */
-        function runCommand(jid: string, sessionid: string, node: string, action: "cancel" | "execute" | "prev" | "next" | "complete", inputs: {
+        function runCommand(jid: string, sessionid: string, node: string, action: AdHocCommandAction, inputs: {
             [k: string]: string;
         }[]): Promise<{
             note: any;
@@ -34,5 +34,6 @@ declare namespace _default {
 }
 export default _default;
 export type AdHocCommand = import('./utils').AdHocCommand;
-export type AdHocCommandFields = import('./utils').AdHocCommandFields;
+export type AdHocCommandResult = import('./utils').AdHocCommandResult;
+export type AdHocCommandAction = 'execute' | 'cancel' | 'prev' | 'next' | 'complete';
 //# sourceMappingURL=api.d.ts.map

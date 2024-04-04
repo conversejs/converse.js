@@ -131,6 +131,86 @@ describe("Ad-hoc commands", function () {
         inputs[6].click();
         await u.waitUntil(() => !u.isVisible(form));
     }));
+
+    it("can immediately return with a result, instead of a form", mock.initConverse([], {}, async (_converse) => {
+        const { api } = _converse;
+        const entity_jid = 'muc.montague.lit';
+        const { IQ_stanzas } = _converse.api.connection.get();
+
+        const modal = await api.modal.show('converse-user-settings-modal');
+        await u.waitUntil(() => u.isVisible(modal));
+        modal.querySelector('#commands-tab').click();
+
+        const adhoc_form = modal.querySelector('converse-adhoc-commands');
+        await u.waitUntil(() => u.isVisible(adhoc_form));
+
+        adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
+        adhoc_form.querySelector('input[type="submit"]').click();
+
+        await mock.waitUntilDiscoConfirmed(_converse, entity_jid, [], ['http://jabber.org/protocol/commands'], [], 'info');
+
+        let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
+        let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq type="result"
+                id="${iq.getAttribute("id")}"
+                to="${_converse.jid}"
+                from="${entity_jid}"
+                xmlns="jabber:client">
+            <query xmlns="http://jabber.org/protocol/disco#items"
+                    node="http://jabber.org/protocol/commands">
+                <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
+            </query>
+        </iq>`));
+
+        const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
+        expect(heading.textContent).toBe('Commands found:');
+
+        const items = adhoc_form.querySelectorAll('.list-group-item:not(.active)');
+        expect(items.length).toBe(1);
+        expect(items[0].textContent.trim()).toBe('Get uptime');
+
+        items[0].querySelector('a').click();
+
+        sel = `iq[to="${entity_jid}"][type="set"] command`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(Strophe.serialize(iq)).toBe(
+            `<iq id="${iq.getAttribute("id")}" to="${entity_jid}" type="set" xmlns="jabber:client">`+
+                `<command action="execute" node="uptime" xmlns="http://jabber.org/protocol/commands"/>`+
+            `</iq>`
+        );
+
+        const uptime_text = 'This service has been running for 143 days, '+
+                            '11 hours and 15 minutes (since Sun Nov 12 21:22:22: 2023)';
+
+        _converse.api.connection.get()._dataRecv(
+            mock.createRequest(stx`
+                <iq to="${_converse.jid}"
+                    xmlns="jabber:client"
+                    type="result"
+                    xml:lang="en"
+                    id="${iq.getAttribute('id')}"
+                    from="${entity_jid}">
+
+                    <command status="completed"
+                             node="uptime"
+                             sessionid="1653988890a"
+                             xmlns="http://jabber.org/protocol/commands">
+                        <note type="info">${uptime_text}</note>
+                    </command>
+                </iq>`)
+        );
+
+        const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
+        const alert = form.querySelector('div.alert');
+        expect(u.isVisible(alert)).toBe(true);
+        expect(alert.textContent).toBe(uptime_text);
+
+        const inputs = form.querySelectorAll('input[type="button"]');
+        expect(inputs.length).toBe(0);
+    }));
 });
 
 describe("Ad-hoc commands consisting of multiple steps", function () {

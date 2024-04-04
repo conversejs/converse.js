@@ -6,7 +6,7 @@
  * @property {'danger'|'primary'} [alert_type]
  * @property {'cancel'|'complete'|'execute'|'next'|'prev'} name
  *
- * @typedef {AdHocCommand & AdHocCommandFields & UIProps} AdHocCommandUIProps
+ * @typedef {AdHocCommand & AdHocCommandResult & UIProps} AdHocCommandUIProps
  */
 export default class AdHocCommands extends CustomElement {
     static get properties(): {
@@ -43,12 +43,17 @@ export default class AdHocCommands extends CustomElement {
     toggleCommandForm(ev: any): Promise<void>;
     executeAction(ev: any): void;
     clearCommand(cmd: any): void;
-    runCommand(form: any, action: any): Promise<void>;
+    /**
+     * @param {HTMLFormElement} form
+     * @param {AdHocCommandAction} action
+     */
+    runCommand(form: HTMLFormElement, action: AdHocCommandAction): Promise<void>;
     note: any;
     cancel(ev: any): Promise<void>;
 }
 export type AdHocCommand = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommand;
-export type AdHocCommandFields = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommandFields;
+export type AdHocCommandResult = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommandResult;
+export type AdHocCommandAction = import('@converse/headless/types/plugins/adhoc/api').AdHocCommandAction;
 export type UIProps = {
     instructions: string;
     jid: string;
@@ -56,6 +61,6 @@ export type UIProps = {
     alert_type?: 'danger' | 'primary';
     name: 'cancel' | 'complete' | 'execute' | 'next' | 'prev';
 };
-export type AdHocCommandUIProps = AdHocCommand & AdHocCommandFields & UIProps;
+export type AdHocCommandUIProps = AdHocCommand & AdHocCommandResult & UIProps;
 import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=adhoc-commands.d.ts.map

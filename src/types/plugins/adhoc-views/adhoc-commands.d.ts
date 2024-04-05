@@ -40,16 +40,28 @@ export default class AdHocCommands extends CustomElement {
     fetchCommands(ev: SubmitEvent): Promise<void>;
     alert_type: string;
     alert: any;
-    toggleCommandForm(ev: any): Promise<void>;
-    executeAction(ev: any): void;
-    clearCommand(cmd: any): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    toggleCommandForm(ev: MouseEvent): Promise<void>;
+    /**
+     * @param {MouseEvent} ev
+     */
+    executeAction(ev: MouseEvent): void;
+    /**
+     * @param {AdHocCommandUIProps} cmd
+     */
+    clearCommand(cmd: AdHocCommandUIProps): void;
     /**
      * @param {HTMLFormElement} form
      * @param {AdHocCommandAction} action
      */
     runCommand(form: HTMLFormElement, action: AdHocCommandAction): Promise<void>;
     note: any;
-    cancel(ev: any): Promise<void>;
+    /**
+     * @param {MouseEvent} ev
+     */
+    cancel(ev: MouseEvent): Promise<void>;
 }
 export type AdHocCommand = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommand;
 export type AdHocCommandResult = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommandResult;

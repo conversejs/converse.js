@@ -3,11 +3,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 
 dayjs.extend(advancedFormat);
 
-import * as shared_constants from './shared/constants.js';
-import api from './shared/api/index.js';
+import { _converse, api, constants as shared_constants, i18n, parsers } from './shared/index.js';
 import u from './utils/index.js';
-import _converse from './shared/_converse';
-import i18n from './shared/i18n';
 import converse from './shared/api/public.js';
 import log from './log.js';
 
@@ -46,6 +43,6 @@ export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
 import * as muc_constants from './plugins/muc/constants.js';
 const constants = Object.assign({}, shared_constants, muc_constants);
 
-export { api, converse, _converse, i18n, log, u, constants };
+export { api, converse, _converse, i18n, log, u, constants, parsers };
 
 export default converse;

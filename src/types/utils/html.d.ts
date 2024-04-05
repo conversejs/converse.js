@@ -42,7 +42,11 @@ export function removeClass(className: string, el: Element): Element;
  * @param { Element } el
  */
 export function removeElement(el: Element): Element;
-export function ancestor(el: any, selector: any): any;
+/**
+ * @param {HTMLElement} el
+ * @param {String} selector
+ */
+export function ancestor(el: HTMLElement, selector: string): HTMLElement;
 /**
  * @param {string} url
  */
@@ -50,8 +54,8 @@ export function getHyperlinkTemplate(url: string): string | import("lit-html").T
 /**
  * Shows/expands an element by sliding it out of itself
  * @method slideOut
- * @param { HTMLElement } el - The HTML string
- * @param { Number } duration - The duration amount in milliseconds
+ * @param {HTMLElement} el - The HTML string
+ * @param {Number} duration - The duration amount in milliseconds
  */
 export function slideOut(el: HTMLElement, duration?: number): Promise<any>;
 /**
@@ -60,6 +64,18 @@ export function slideOut(el: HTMLElement, duration?: number): Promise<any>;
  * @param {Number} duration - The duration amount in milliseconds
  */
 export function slideIn(el: HTMLElement, duration?: number): Promise<any>;
+/**
+ * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
+ * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
+ * @param {XFormField} xfield - the field to convert
+ * @param {Object} options
+ * @returns {TemplateResult}
+ */
+export function xFormField2TemplateResult(xfield: XFormField, options?: any): TemplateResult;
+/**
+ * @param {Element} field
+ */
+export function getInputType(field: Element): any;
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
@@ -77,5 +93,6 @@ export function xForm2TemplateResult(field: HTMLElement, stanza: Element, option
 export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
 export default u;
 export type TemplateResult = import('lit').TemplateResult;
+export type XFormField = import('@converse/headless/types/shared/parsers').XFormField;
 import { u } from "@converse/headless";
 //# sourceMappingURL=html.d.ts.map

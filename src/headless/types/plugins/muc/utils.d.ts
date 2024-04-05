@@ -1,6 +1,6 @@
 export function isChatRoom(model: any): boolean;
 export function shouldCreateGroupchatMessage(attrs: any): any;
-export function occupantsComparator(occupant1: any, occupant2: any): 1 | 0 | -1;
+export function occupantsComparator(occupant1: any, occupant2: any): 0 | 1 | -1;
 export function registerDirectInvitationHandler(): void;
 export function disconnectChatRooms(): any;
 export function onWindowStateChanged(): Promise<void>;

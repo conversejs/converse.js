@@ -1,9 +1,11 @@
 /**
+ * @typedef {import('lit').TemplateResult} TemplateResult
  * @typedef {import('../adhoc-commands').default} AdHocCommands
  * @typedef {import('../adhoc-commands').AdHocCommandUIProps} AdHocCommandUIProps
  */
 import { html } from 'lit';
 import { __ } from 'i18n';
+import { xFormField2TemplateResult } from 'utils/html.js';
 
 const ACTION_MAP = {
     execute: __('Execute'),
@@ -17,6 +19,24 @@ const NOTE_ALERT_MAP = {
     'warn': 'secondary',
     'error': 'danger',
 };
+
+/**
+ * @param {AdHocCommandUIProps} command
+ */
+function tplReportedTable (command) {
+    return html`
+        <table class="table">
+            <thead class="thead-light">
+                ${command.reported?.map((r) => html`<th scope="col" data-var="${r.var}">${r.label}</th>`)}
+            </thead>
+            <tbody>
+                ${command.items?.map(
+                    (fields) => html`<tr>${fields.map((f) => html`<td data-var="${f.var}">${f.value}</td>`)
+                }</tr>`)}
+            </tbody>
+        </table>
+    `;
+}
 
 /**
  * @param {AdHocCommands} el
@@ -43,9 +63,9 @@ export default (el, command) => {
                 <fieldset class="form-group">
                     <input type="hidden" name="command_node" value="${command.node}" />
                     <input type="hidden" name="command_jid" value="${command.jid}" />
-
                     ${command.instructions ? html`<p class="form-instructions">${command.instructions}</p>` : ''}
-                    ${command.fields ?? []}
+                    ${command.type === 'result' ? tplReportedTable(command) : ''}
+                    ${command.fields?.map(f => xFormField2TemplateResult(f), { domain: command.jid }) ?? ''}
                 </fieldset>
                 ${command.actions?.length
                     ? html` <fieldset>

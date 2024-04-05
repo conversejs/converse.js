@@ -135,3 +135,24 @@ export const KEYCODES = {
     META: 91,
     META_RIGHT: 93,
 };
+
+export const XFORM_TYPE_MAP = {
+    'text-private': 'password',
+    'text-single': 'text',
+    'fixed': 'label',
+    'boolean': 'checkbox',
+    'hidden': 'hidden',
+    'jid-multi': 'textarea',
+    'list-single': 'dropdown',
+    'list-multi': 'dropdown'
+};
+
+export const XFORM_VALIDATE_TYPE_MAP = {
+    'xs:anyURI': 'url',
+    'xs:byte': 'number',
+    'xs:date': 'date',
+    'xs:dateTime': 'datetime',
+    'xs:int': 'number',
+    'xs:integer': 'number',
+    'xs:time': 'time',
+};

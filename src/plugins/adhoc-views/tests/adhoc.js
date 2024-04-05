@@ -19,7 +19,14 @@ describe("Ad-hoc commands", function () {
         adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
         adhoc_form.querySelector('input[type="submit"]').click();
 
-        await mock.waitUntilDiscoConfirmed(_converse, entity_jid, [], ['http://jabber.org/protocol/commands'], [], 'info');
+        await mock.waitUntilDiscoConfirmed(
+            _converse,
+            entity_jid,
+            [],
+            ['http://jabber.org/protocol/commands'],
+            [],
+            'info'
+        );
 
         let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
         let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
@@ -147,7 +154,14 @@ describe("Ad-hoc commands", function () {
         adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
         adhoc_form.querySelector('input[type="submit"]').click();
 
-        await mock.waitUntilDiscoConfirmed(_converse, entity_jid, [], ['http://jabber.org/protocol/commands'], [], 'info');
+        await mock.waitUntilDiscoConfirmed(
+            _converse,
+            entity_jid,
+            [],
+            ['http://jabber.org/protocol/commands'],
+            [],
+            'info'
+        );
 
         let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
         let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
@@ -210,6 +224,131 @@ describe("Ad-hoc commands", function () {
 
         const inputs = form.querySelectorAll('input[type="button"]');
         expect(inputs.length).toBe(0);
+    }));
+
+    it("may return reported fields, which are not editable and are presented in a table",
+            mock.initConverse([], {}, async (_converse) => {
+        const { api } = _converse;
+        const entity_jid = 'muc.montague.lit';
+        const { IQ_stanzas } = _converse.api.connection.get();
+
+        const jid = _converse.session.get('jid');
+
+        const modal = await api.modal.show('converse-user-settings-modal');
+        await u.waitUntil(() => u.isVisible(modal));
+        modal.querySelector('#commands-tab').click();
+
+        const adhoc_form = modal.querySelector('converse-adhoc-commands');
+        await u.waitUntil(() => u.isVisible(adhoc_form));
+
+        adhoc_form.querySelector('input[name="jid"]').value = entity_jid;
+        adhoc_form.querySelector('input[type="submit"]').click();
+
+        await mock.waitUntilDiscoConfirmed(
+            _converse,
+            entity_jid,
+            [],
+            ['http://jabber.org/protocol/commands'],
+            [],
+            'info'
+        );
+
+        let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
+        let iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq type="result"
+                id="${iq.getAttribute("id")}"
+                to="${_converse.jid}"
+                from="${entity_jid}"
+                xmlns="jabber:client">
+            <query xmlns="http://jabber.org/protocol/disco#items"
+                    node="http://jabber.org/protocol/commands">
+                <item node="list" name="List services" jid="${entity_jid}"/>
+            </query>
+        </iq>`));
+
+        const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
+        expect(heading.textContent).toBe('Commands found:');
+
+        const items = adhoc_form.querySelectorAll('.list-group-item:not(.active)');
+        expect(items.length).toBe(1);
+        expect(items[0].textContent.trim()).toBe('List services');
+        items[0].querySelector('a').click();
+
+        sel = `iq[to="${entity_jid}"][type="set"] command`;
+        iq = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
+
+        expect(Strophe.serialize(iq)).toBe(
+            `<iq id="${iq.getAttribute("id")}" to="${entity_jid}" type="set" xmlns="jabber:client">`+
+                `<command action="execute" node="list" xmlns="http://jabber.org/protocol/commands"/>`+
+            `</iq>`
+        );
+
+        _converse.api.connection.get()._dataRecv(
+            mock.createRequest(stx`
+            <iq type="result" from="${entity_jid}" to="${jid}" id="${iq.getAttribute("id")}" xmlns="jabber:client">
+                <command xmlns="http://jabber.org/protocol/commands"
+                        sessionid="list:20020923T213616Z-700"
+                        node="list"
+                        status="completed">
+                    <x xmlns="jabber:x:data" type="result">
+                    <title>Available Services</title>
+                    <reported>
+                        <field var="service" label="Service"/>
+                        <field var="runlevel-1" label="Single-User mode"/>
+                        <field var="runlevel-2" label="Non-Networked Multi-User mode"/>
+                        <field var="runlevel-3" label="Full Multi-User mode"/>
+                        <field var="runlevel-5" label="X-Window mode"/>
+                    </reported>
+                    <item>
+                        <field var="service"><value>httpd</value></field>
+                        <field var="runlevel-1"><value>off</value></field>
+                        <field var="runlevel-2"><value>off</value></field>
+                        <field var="runlevel-3"><value>on</value></field>
+                        <field var="runlevel-5"><value>on</value></field>
+                    </item>
+                    <item>
+                        <field var="service"><value>postgresql</value></field>
+                        <field var="runlevel-1"><value>off</value></field>
+                        <field var="runlevel-2"><value>off</value></field>
+                        <field var="runlevel-3"><value>on</value></field>
+                        <field var="runlevel-5"><value>off</value></field>
+                    </item>
+                    <item>
+                        <field var="service"><value>jabberd</value></field>
+                        <field var="runlevel-1"><value>off</value></field>
+                        <field var="runlevel-2"><value>on</value></field>
+                        <field var="runlevel-3"><value>on</value></field>
+                        <field var="runlevel-5"><value>on</value></field>
+                    </item>
+                    </x>
+                </command>
+            </iq>`
+        ));
+
+        const table = await u.waitUntil(() => adhoc_form.querySelector('form form table'));
+        expect(table).toBeDefined();
+
+        const headings = table.querySelectorAll('thead th');
+        expect(headings.length).toBe(5);
+
+        expect(Array.from(headings).map(h => h.textContent)).toEqual([
+            'Service',
+            'Single-User mode',
+            'Non-Networked Multi-User mode',
+            'Full Multi-User mode',
+            'X-Window mode'
+        ]);
+
+        const rows = table.querySelectorAll('tr');
+        expect(rows.length).toBe(3);
+        expect(Array.from(rows[0].querySelectorAll('td')).map(h => h.textContent))
+            .toEqual(['httpd', 'off', 'off', 'on', 'on']);
+        expect(Array.from(rows[1].querySelectorAll('td')).map(h => h.textContent))
+            .toEqual(['postgresql', 'off', 'off', 'on', 'off']);
+        expect(Array.from(rows[2].querySelectorAll('td')).map(h => h.textContent))
+            .toEqual(['jabberd', 'off', 'on', 'on', 'on']);
     }));
 });
 

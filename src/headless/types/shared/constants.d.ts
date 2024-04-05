@@ -51,4 +51,23 @@ export namespace KEYCODES {
     const META: number;
     const META_RIGHT: number;
 }
+export const XFORM_TYPE_MAP: {
+    'text-private': string;
+    'text-single': string;
+    fixed: string;
+    boolean: string;
+    hidden: string;
+    'jid-multi': string;
+    'list-single': string;
+    'list-multi': string;
+};
+export const XFORM_VALIDATE_TYPE_MAP: {
+    'xs:anyURI': string;
+    'xs:byte': string;
+    'xs:date': string;
+    'xs:dateTime': string;
+    'xs:int': string;
+    'xs:integer': string;
+    'xs:time': string;
+};
 //# sourceMappingURL=constants.d.ts.map

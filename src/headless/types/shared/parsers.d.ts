@@ -15,26 +15,38 @@ export function getEncryptionAttributes(stanza: Element): {
     encryption_namespace: any;
 };
 /**
- * @private
- * @param { Element } stanza - The message stanza
- * @param { Element } original_stanza - The original stanza, that contains the
+ * @param {Element} stanza - The message stanza
+ * @param {Element} original_stanza - The original stanza, that contains the
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @returns { Object }
+ * @returns {Object}
  */
 export function getRetractionAttributes(stanza: Element, original_stanza: Element): any;
-export function getCorrectionAttributes(stanza: any, original_stanza: any): {
+/**
+ * @param {Element} stanza
+ * @param {Element} original_stanza
+ */
+export function getCorrectionAttributes(stanza: Element, original_stanza: Element): {
     replace_id: any;
     edited: string;
 } | {
     replace_id?: undefined;
     edited?: undefined;
 };
-export function getOpenGraphMetadata(stanza: any): any;
-export function getSpoilerAttributes(stanza: any): {
+/**
+ * @param {Element} stanza
+ */
+export function getOpenGraphMetadata(stanza: Element): any;
+/**
+ * @param {Element} stanza
+ */
+export function getSpoilerAttributes(stanza: Element): {
     is_spoiler: boolean;
     spoiler_hint: any;
 };
-export function getOutOfBandAttributes(stanza: any): {
+/**
+ * @param {Element} stanza
+ */
+export function getOutOfBandAttributes(stanza: Element): {
     oob_url: any;
     oob_desc: any;
 } | {
@@ -43,8 +55,7 @@ export function getOutOfBandAttributes(stanza: any): {
 };
 /**
  * Returns the human readable error message contained in a `groupchat` message stanza of type `error`.
- * @private
- * @param { Element } stanza - The message stanza
+ * @param {Element} stanza - The message stanza
  */
 export function getErrorAttributes(stanza: Element): {
     is_error: boolean;
@@ -60,7 +71,7 @@ export function getErrorAttributes(stanza: Element): {
 /**
  * Given a message stanza, find and return any XEP-0372 references
  * @param {Element} stanza - The message stanza
- * @returns { Reference }
+ * @returns {Reference}
  */
 export function getReferences(stanza: Element): any;
 /**
@@ -69,18 +80,20 @@ export function getReferences(stanza: Element): any;
 export function getReceiptId(stanza: Element): any;
 /**
  * Determines whether the passed in stanza is a XEP-0280 Carbon
- * @private
- * @param { Element } stanza - The message stanza
- * @returns { Boolean }
+ * @param {Element} stanza - The message stanza
+ * @returns {Boolean}
  */
 export function isCarbon(stanza: Element): boolean;
 /**
  * Returns the XEP-0085 chat state contained in a message stanza
- * @private
- * @param { Element } stanza - The message stanza
+ * @param {Element} stanza - The message stanza
  */
 export function getChatState(stanza: Element): any;
-export function isValidReceiptRequest(stanza: any, attrs: any): any;
+/**
+ * @param {Element} stanza
+ * @param {Object} attrs
+ */
+export function isValidReceiptRequest(stanza: Element, attrs: any): any;
 /**
  * Check whether the passed-in stanza is a forwarded message that is "bare",
  * i.e. it's not forwarded as part of a larger protocol, like MAM.
@@ -109,6 +122,15 @@ export function isServerMessage(stanza: Element): boolean;
  * @returns {boolean}
  */
 export function isArchived(original_stanza: Element): boolean;
+/**
+ * @param {Element} field
+ */
+export function getInputType(field: Element): any;
+/**
+* @param {Element} stanza
+* @returns {XForm}
+*/
+export function parseXForm(stanza: Element): XForm;
 export class StanzaParseError extends Error {
     /**
      * @param {string} message
@@ -117,5 +139,47 @@ export class StanzaParseError extends Error {
     constructor(message: string, stanza: Element);
     stanza: Element;
 }
+export type XFormReportedField = {
+    var: string;
+    label: string;
+};
+export type XFormResultItemField = {
+    var: string;
+    value: string;
+};
+export type XFormOption = {
+    value: string;
+    label: string;
+    selected: boolean;
+    required: boolean;
+};
+export type XFormCaptchaURI = {
+    type: string;
+    data: string;
+};
+export type XFormListTypes = 'list-single' | 'list-multi';
+export type XFormJIDTypes = 'jid-single' | 'jid-multi';
+export type XFormTextTypes = 'text-multi' | 'text-private' | 'text-single';
+export type XFormFieldTypes = XFormListTypes | XFormJIDTypes | XFormTextTypes | 'fixed' | 'boolean' | 'url' | 'hidden';
+export type XFormField = {
+    var: string;
+    label: string;
+    type?: XFormFieldTypes;
+    text?: string;
+    value?: string;
+    required?: boolean;
+    checked?: boolean;
+    options?: XFormOption[];
+    uri?: XFormCaptchaURI;
+};
+export type XFormResponseType = 'result' | 'form';
+export type XForm = {
+    type: XFormResponseType;
+    title?: string;
+    instructions?: string;
+    reported?: XFormReportedField[];
+    items?: XFormResultItemField[][];
+    fields?: XFormField[];
+};
 export type Reference = any;
 //# sourceMappingURL=parsers.d.ts.map

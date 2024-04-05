@@ -17,21 +17,20 @@ export function parseForCommands(stanza: Element): AdHocCommand[];
  * @property {string} text
  * @property {'info'|'warn'|'error'} type
  *
- * @typedef {Object} AdHocCommandResult
+ * @typedef {Object} AdHocCommandAttrs
  * @property {string} sessionid
- * @property {string} [instructions]
- * @property {TemplateResult[]} [fields]
  * @property {string[]} [actions]
  * @property {AdHocCommandResultNote} [note]
+ *
+ * @typedef {XForm & AdHocCommandAttrs} AdHocCommandResult
  */
 /**
  * Given a "result" IQ stanza containing the outcome of an Ad-hoc command that
  * was executed, parse it and return the values as a JSON object.
  * @param {Element} iq
- * @param {string} [jid]
  * @returns {AdHocCommandResult}
  */
-export function parseCommandResult(iq: Element, jid?: string): AdHocCommandResult;
+export function parseCommandResult(iq: Element): AdHocCommandResult;
 export type AdHocCommand = {
     action: string;
     node: string;
@@ -42,12 +41,12 @@ export type AdHocCommandResultNote = {
     text: string;
     type: 'info' | 'warn' | 'error';
 };
-export type AdHocCommandResult = {
+export type AdHocCommandAttrs = {
     sessionid: string;
-    instructions?: string;
-    fields?: TemplateResult[];
     actions?: string[];
     note?: AdHocCommandResultNote;
 };
+export type AdHocCommandResult = XForm & AdHocCommandAttrs;
 export type TemplateResult = import('lit').TemplateResult;
+export type XForm = import('../../shared/parsers').XForm;
 //# sourceMappingURL=utils.d.ts.map

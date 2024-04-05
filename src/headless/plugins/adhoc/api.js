@@ -57,7 +57,7 @@ export default {
                 action: 'execute',
                 node,
             });
-            return parseCommandResult(await api.sendIQ(stanza), jid);
+            return parseCommandResult(await api.sendIQ(stanza));
         },
 
         /**

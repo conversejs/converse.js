@@ -3,10 +3,11 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
  * @typedef {import('lit').TemplateResult} TemplateResult
+ * @typedef {import('@converse/headless/types/shared/parsers').XFormField} XFormField
  */
 import { render } from 'lit';
 import { Builder, Stanza } from 'strophe.js';
-import { api, converse, log, u } from '@converse/headless';
+import { api, converse, constants, log, u } from '@converse/headless';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
@@ -22,30 +23,9 @@ import tplVideo from 'templates/video.js';
 
 const { sizzle, Strophe } = converse.env;
 const { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL, queryChildren } = u;
+const { XFORM_TYPE_MAP, XFORM_VALIDATE_TYPE_MAP } = constants;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
-
-const XFORM_TYPE_MAP = {
-    'text-private': 'password',
-    'text-single': 'text',
-    'fixed': 'label',
-    'boolean': 'checkbox',
-    'hidden': 'hidden',
-    'jid-multi': 'textarea',
-    'list-single': 'dropdown',
-    'list-multi': 'dropdown'
-};
-
-const XFORM_VALIDATE_TYPE_MAP = {
-    'xs:anyURI': 'url',
-    'xs:byte': 'number',
-    'xs:date': 'date',
-    'xs:dateTime': 'datetime',
-    'xs:int': 'number',
-    'xs:integer': 'number',
-    'xs:time': 'time',
-}
-
 
 const EMPTY_TEXT_REGEX = /\s*\n\s*/
 
@@ -149,18 +129,9 @@ export function getNameAndValue(field) {
     return { name, value };
 }
 
-function getInputType(field) {
-    const type = XFORM_TYPE_MAP[field.getAttribute('type')]
-    if (type == 'text') {
-        const datatypes = field.getElementsByTagNameNS("http://jabber.org/protocol/xdata-validate", "validate");
-        if (datatypes.length === 1) {
-            const datatype = datatypes[0].getAttribute("datatype");
-            return XFORM_VALIDATE_TYPE_MAP[datatype] || type;
-        }
-    }
-    return type;
-}
-
+/**
+ * @param {HTMLElement} el
+ */
 function slideOutWrapup (el) {
     /* Wrapup function for slideOut. */
     el.removeAttribute('data-slider-marker');
@@ -293,6 +264,10 @@ function hideElement (el) {
     return el;
 }
 
+/**
+ * @param {HTMLElement} el
+ * @param {String} selector
+ */
 export function ancestor (el, selector) {
     let parent = el;
     while (parent !== null && !sizzle.matchesSelector(parent, selector)) {
@@ -304,8 +279,8 @@ export function ancestor (el, selector) {
 /**
  * Return the element's siblings until one matches the selector.
  * @method u#nextUntil
- * @param { HTMLElement } el
- * @param { String } selector
+ * @param {HTMLElement} el
+ * @param {String} selector
  */
 function nextUntil (el, selector) {
     const matches = [];
@@ -360,8 +335,8 @@ export function getHyperlinkTemplate (url) {
 /**
  * Shows/expands an element by sliding it out of itself
  * @method slideOut
- * @param { HTMLElement } el - The HTML string
- * @param { Number } duration - The duration amount in milliseconds
+ * @param {HTMLElement} el - The HTML string
+ * @param {Number} duration - The duration amount in milliseconds
  */
 export function slideOut (el, duration = 200) {
     return new Promise((resolve, reject) => {
@@ -486,95 +461,61 @@ function isVisible (el) {
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
- * @method u#xForm2TemplateResult
- * @param {HTMLElement} field - the field to convert
- * @param {Element} stanza - the containing stanza
+ * @param {XFormField} xfield - the field to convert
  * @param {Object} options
  * @returns {TemplateResult}
  */
-export function xForm2TemplateResult (field, stanza, options={}) {
-    if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
-        const values = queryChildren(field, 'value').map(el => el?.textContent);
-        const options = queryChildren(field, 'option').map((/** @type {HTMLElement} */option) => {
-            const value = option.querySelector('value')?.textContent;
-            return {
-                'value': value,
-                'label': option.getAttribute('label'),
-                'selected': values.includes(value),
-                'required': !!field.querySelector('required')
-            };
-        });
+export function xFormField2TemplateResult (xfield, options={}) {
+    if (xfield['type'] === 'list-single' || xfield['type'] === 'list-multi') {
         return tplFormSelect({
-            options,
-            'id': u.getUniqueId(),
-            'label': field.getAttribute('label'),
-            'multiple': field.getAttribute('type') === 'list-multi',
-            'name': field.getAttribute('var'),
-            'required': !!field.querySelector('required')
+            id: u.getUniqueId(),
+            ...xfield,
+            multiple: xfield.type === 'list-multi',
+            name: xfield.var,
         });
-    } else if (field.getAttribute('type') === 'fixed') {
-        const text = field.querySelector('value')?.textContent;
-        return tplFormHelp({ text });
-    } else if (field.getAttribute('type') === 'jid-multi') {
+    } else if (xfield['type'] === 'fixed') {
+        return tplFormHelp(xfield);
+    } else if (xfield['type'] === 'jid-multi') {
         return tplFormTextarea({
-            'name': field.getAttribute('var'),
-            'label': field.getAttribute('label') || '',
-            'value': field.querySelector('value')?.textContent,
-            'required': !!field.querySelector('required')
+            name: xfield.var,
+            ...xfield
         });
-    } else if (field.getAttribute('type') === 'boolean') {
-        const value = field.querySelector('value')?.textContent;
+    } else if (xfield['type'] === 'boolean') {
         return tplFormCheckbox({
-            'id': u.getUniqueId(),
-            'name': field.getAttribute('var'),
-            'label': field.getAttribute('label') || '',
-            'checked': ((value === '1' || value === 'true') && 'checked="1"') || ''
+            id: u.getUniqueId(),
+            name: xfield.var,
+            ...xfield
         });
-    } else if (field.getAttribute('var') === 'url') {
-        return tplFormUrl({
-            'label': field.getAttribute('label') || '',
-            'value': field.querySelector('value')?.textContent
-        });
-    } else if (field.getAttribute('var') === 'username') {
+    } else if (xfield['var'] === 'url') {
+        return tplFormUrl(xfield);
+    } else if (xfield['var'] === 'username') {
         return tplFormUsername({
-            'domain': ' @' + options.domain,
-            'name': field.getAttribute('var'),
-            'type': getInputType(field),
-            'label': field.getAttribute('label') || '',
-            'value': field.querySelector('value')?.textContent,
-            'required': !!field.querySelector('required')
+            domain: options.domain ? ' @' + options.domain : '',
+            name: xfield.var,
+            ...xfield,
         });
-    } else if (field.getAttribute('var') === 'password') {
+    } else if (xfield['var'] === 'password') {
         return tplFormInput({
-            'name': field.getAttribute('var'),
-            'type': 'password',
-            'label': field.getAttribute('label') || '',
-            'value': field.querySelector('value')?.textContent,
-            'required': !!field.querySelector('required')
+            name: xfield['var'],
+            type: 'password',
+            ...xfield,
         });
-    } else if (field.getAttribute('var') === 'ocr') {
-        // Captcha
-        const uri = field.querySelector('uri');
-        const el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
+    } else if (xfield['var'] === 'ocr') {
         return tplFormCaptcha({
-            'label': field.getAttribute('label'),
-            'name': field.getAttribute('var'),
-            'data': el?.textContent,
-            'type': uri.getAttribute('type'),
-            'required': !!field.querySelector('required')
+            name: xfield['var'],
+            data: xfield.uri.data,
+            type: xfield.uri.type,
+            ...xfield,
         });
     } else {
-        const name = field.getAttribute('var');
+        const name = xfield['var'];
         return tplFormInput({
-            'id': u.getUniqueId(),
-            'label': field.getAttribute('label') || '',
-            'name': name,
-            'fixed_username': options?.fixed_username,
-            'autocomplete': getAutoCompleteProperty(name, options),
-            'placeholder': null,
-            'required': !!field.querySelector('required'),
-            'type': getInputType(field),
-            'value': field.querySelector('value')?.textContent
+            name,
+            id: u.getUniqueId(),
+            fixed_username: options?.fixed_username,
+            autocomplete: getAutoCompleteProperty(name, options),
+            placeholder: null,
+            ...xfield,
         });
     }
 }
@@ -615,7 +556,7 @@ Object.assign(u, {
     slideIn,
     slideOut,
     unescapeHTML,
-    xForm2TemplateResult,
+    xFormField2TemplateResult,
 });
 
 export default u;

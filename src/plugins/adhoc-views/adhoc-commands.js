@@ -24,18 +24,18 @@ const { Strophe, sizzle } = converse.env;
  */
 
 export default class AdHocCommands extends CustomElement {
-    static get properties () {
+    static get properties() {
         return {
-            'alert': { type: String },
-            'alert_type': { type: String },
-            'commands': { type: Array },
-            'fetching': { type: Boolean },
-            'showform': { type: String },
-            'view': { type: String },
+            alert: { type: String },
+            alert_type: { type: String },
+            commands: { type: Array },
+            fetching: { type: Boolean },
+            showform: { type: String },
+            view: { type: String },
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.view = 'choose-service';
         this.fetching = false;
@@ -50,7 +50,7 @@ export default class AdHocCommands extends CustomElement {
     /**
      * @param {SubmitEvent} ev
      */
-    async fetchCommands (ev) {
+    async fetchCommands(ev) {
         ev.preventDefault();
 
         if (!(ev.target instanceof HTMLFormElement)) {
@@ -93,9 +93,12 @@ export default class AdHocCommands extends CustomElement {
         }
     }
 
-    async toggleCommandForm (ev) {
+    /**
+     * @param {MouseEvent} ev
+     */
+    async toggleCommandForm(ev) {
         ev.preventDefault();
-        const node = ev.target.getAttribute('data-command-node');
+        const node = /** @type {Element} */ (ev.target).getAttribute('data-command-node');
         const cmd = this.commands.filter((c) => c.node === node)[0];
         const { jid } = cmd;
 
@@ -104,11 +107,8 @@ export default class AdHocCommands extends CustomElement {
             this.requestUpdate();
         } else {
             try {
-                const { sessionid, instrucions, fields, actions, note, status } = await api.adhoc.fetchCommandForm(
-                    jid,
-                    node
-                );
-                Object.assign(cmd, { sessionid, instrucions, fields, actions, note, status });
+                const xform = await api.adhoc.fetchCommandForm(jid, node);
+                Object.assign(cmd, xform);
             } catch (e) {
                 if (e === null) {
                     log.error(`Error: timeout while trying to execute command for ${jid}`);
@@ -123,25 +123,32 @@ export default class AdHocCommands extends CustomElement {
         }
     }
 
-    executeAction (ev) {
+    /**
+     * @param {MouseEvent} ev
+     */
+    executeAction(ev) {
         ev.preventDefault();
-        const action = ev.target.getAttribute('data-action');
+        const form = /** @type {HTMLFormElement} */ (ev.target);
+        const action = form.getAttribute('data-action');
 
         if (['execute', 'next', 'prev', 'complete'].includes(action)) {
-            this.runCommand(ev.target.form, action);
+            this.runCommand(form.form, /** @type {AdHocCommandAction} */ (action));
         } else {
             log.error(`Unknown action: ${action}`);
         }
     }
 
-    clearCommand (cmd) {
+    /**
+     * @param {AdHocCommandUIProps} cmd
+     */
+    clearCommand(cmd) {
         delete cmd.alert;
         delete cmd.instructions;
         delete cmd.sessionid;
         delete cmd.alert_type;
         delete cmd.status;
         cmd.fields = [];
-        cmd.acions = [];
+        cmd.actions = [];
         this.showform = '';
     }
 
@@ -149,7 +156,7 @@ export default class AdHocCommands extends CustomElement {
      * @param {HTMLFormElement} form
      * @param {AdHocCommandAction} action
      */
-    async runCommand (form, action) {
+    async runCommand(form, action) {
         const form_data = new FormData(form);
         const jid = /** @type {string} */ (form_data.get('command_jid')).trim();
         const node = /** @type {string} */ (form_data.get('command_node')).trim();
@@ -162,9 +169,12 @@ export default class AdHocCommands extends CustomElement {
             action === 'prev'
                 ? []
                 : sizzle(':input:not([type=button]):not([type=submit])', form)
-                      .filter((i) => !['command_jid', 'command_node'].includes(i.getAttribute('name')))
+                      .filter(
+                          /** @param {HTMLInputElement} i */
+                          (i) => !['command_jid', 'command_node'].includes(i.getAttribute('name'))
+                      )
                       .map(getNameAndValue)
-                      .filter((n) => n);
+                      .filter(/** @param {unknown} [n] */ (n) => n);
 
         const response = await api.adhoc.runCommand(jid, cmd.sessionid, cmd.node, action, inputs);
 
@@ -196,12 +206,15 @@ export default class AdHocCommands extends CustomElement {
         this.requestUpdate();
     }
 
-    async cancel (ev) {
+    /**
+     * @param {MouseEvent} ev
+     */
+    async cancel(ev) {
         ev.preventDefault();
         this.showform = '';
         this.requestUpdate();
 
-        const form_data = new FormData(ev.target.form);
+        const form_data = new FormData(/** @type {HTMLFormElement} */ (ev.target).form);
         const jid = /** @type {string} */ (form_data.get('command_jid')).trim();
         const node = /** @type {string} */ (form_data.get('command_node')).trim();
 

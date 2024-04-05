@@ -1,7 +1,7 @@
 /**
  * @typedef {import('strophe.js').Request} Request
  */
-import { _converse, api, converse, log, constants, u } from "@converse/headless";
+import { _converse, api, converse, log, constants, u, parsers } from "@converse/headless";
 import tplFormInput from "templates/form_input.js";
 import tplFormUrl from "templates/form_url.js";
 import tplFormUsername from "templates/form_username.js";
@@ -276,11 +276,13 @@ class RegisterPanel extends CustomElement {
         return [...input_fields, ...urls];
     }
 
+    /**
+     * @param {Element} stanza
+     */
     getFormFields (stanza) {
         if (this.form_type === 'xform') {
-            return Array.from(stanza.querySelectorAll('field')).map(field =>
-                u.xForm2TemplateResult(field, stanza, {'domain': this.domain})
-            );
+            const { fields } = parsers.parseXForm(stanza);
+            return fields?.map((f) => u.xFormField2TemplateResult(f, {'domain': this.domain})) ?? [];
         } else {
             return this.getLegacyFormFields();
         }
@@ -391,6 +393,9 @@ class RegisterPanel extends CustomElement {
         this.form_type = 'legacy';
     }
 
+    /**
+     * @param {Element} xform
+     */
     _setFieldsFromXForm (xform) {
         this.title = xform.querySelector('title')?.textContent ?? '';
         this.instructions = xform.querySelector('instructions')?.textContent ?? '';

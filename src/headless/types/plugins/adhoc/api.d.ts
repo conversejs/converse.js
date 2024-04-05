@@ -24,9 +24,13 @@ declare namespace _default {
             [k: string]: string;
         }[]): Promise<{
             note: any;
-            sessionid?: string;
+            type?: import("../../shared/parsers.js").XFormResponseType;
+            title?: string;
             instructions?: string;
-            fields?: import("./utils.js").TemplateResult[];
+            reported?: import("../../shared/parsers.js").XFormReportedField[];
+            items?: import("../../shared/parsers.js").XFormResultItemField[][];
+            fields?: import("../../shared/parsers.js").XFormField[];
+            sessionid?: string;
             actions?: string[];
             status: any;
         }>;

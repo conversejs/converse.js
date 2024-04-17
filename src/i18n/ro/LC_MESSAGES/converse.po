@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2022-03-11 03:44+0000\n"
-"Last-Translator: Edward <edwardchirita@mailbox.org>\n"
+"PO-Revision-Date: 2024-04-18 22:10+0000\n"
+"Last-Translator: Nicoara Alex <alex.nicoara@yahoo.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ro/>\n"
 "Language: ro\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: dist/converse-no-dependencies.js:20526
 #: dist/converse-no-dependencies.js:20580
@@ -172,12 +172,12 @@ msgstr ""
 "fișiere."
 
 #: dist/converse-no-dependencies.js:33516
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
-"Dimensiunea fișierului dumneavoastră, %1$s, depășește valoarea maximă "
-"permisă de server, care este %2$s."
+"Dimensiunea fișierului dvs., %1$s, depășește valoarea maximă permisă de "
+"serverul dvs."
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format
@@ -385,9 +385,9 @@ msgid "%1$s have been muted"
 msgstr "%1$s nu mai poate vorbi"
 
 #: dist/converse-no-dependencies.js:40063
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s a fost banat"
+msgstr "%1$s a fost interzis de %2$s"
 
 #: dist/converse-no-dependencies.js:40063
 #, javascript-format
@@ -400,9 +400,9 @@ msgid "%1$s's nickname has changed"
 msgstr "Pseudonimul lui %1$s s-a schimbat"
 
 #: dist/converse-no-dependencies.js:40067
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s a fost dat afară"
+msgstr "%1$s a fost exclus de %2$s"
 
 #: dist/converse-no-dependencies.js:40067
 #, javascript-format
@@ -1020,9 +1020,9 @@ msgid "Bookmarks"
 msgstr "Semne de carte"
 
 #: dist/converse-no-dependencies.js:74302
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Semne de carte"
+msgstr "Marcaj pentru „%1$s”"
 
 #: dist/converse-no-dependencies.js:74303
 msgid "Would you like this groupchat to be automatically joined upon startup?"

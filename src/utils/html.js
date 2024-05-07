@@ -7,7 +7,7 @@
  */
 import { render } from 'lit';
 import { Builder, Stanza } from 'strophe.js';
-import { api, converse, constants, log, u } from '@converse/headless';
+import { api, converse, log, u } from '@converse/headless';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
@@ -22,8 +22,7 @@ import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
 
 const { sizzle, Strophe } = converse.env;
-const { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL, queryChildren } = u;
-const { XFORM_TYPE_MAP, XFORM_VALIDATE_TYPE_MAP } = constants;
+const { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } = u;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 

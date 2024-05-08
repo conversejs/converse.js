@@ -164,6 +164,10 @@
         bottom: 5px;
     }
 
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--header-color);
+    }
+
     ul li { height: auto; }
     div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
     pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
@@ -174,7 +178,6 @@
         margin: 0;
         padding: 0;
         border: 0;
-        font: inherit;
         vertical-align: baseline;
     }
 

@@ -33,6 +33,10 @@
             margin-top: $form-check-input-margin-y;
         }
 
+        .form-control[readonly] {
+            color: var(--disabled-color);
+        }
+
         .form-control {
             color: var(--text-color);
             background-color: var(--background);

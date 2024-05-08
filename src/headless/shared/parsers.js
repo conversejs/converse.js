@@ -391,6 +391,7 @@ export function isArchived (original_stanza) {
  * @property {boolean} [checked]
  * @property {XFormOption[]} [options]
  * @property {XFormCaptchaURI} [uri]
+ * @property {boolean} readonly
  *
  * @typedef {'result'|'form'} XFormResponseType
  *
@@ -405,13 +406,16 @@ export function isArchived (original_stanza) {
 
 /**
  * @param {Element} field
+ * @param {boolean} readonly
  * @param {Element} stanza
  * @return {XFormField}
  */
-function parseXFormField(field, stanza) {
+function parseXFormField(field, readonly, stanza) {
     const v = field.getAttribute('var');
     const label = field.getAttribute('label') || '';
     const type = field.getAttribute('type');
+    const desc = field.querySelector('desc')?.textContent;
+    const result = { readonly, desc };
 
     if (type === 'list-single' || type === 'list-multi') {
         const values = Array.from(field.querySelectorAll(':scope > value')).map((el) => el?.textContent);
@@ -423,6 +427,7 @@ function parseXFormField(field, stanza) {
                     label: option.getAttribute('label'),
                     selected: values.includes(value),
                     required: !!field.querySelector('required'),
+                    ...result,
                 };
             }
         );
@@ -432,10 +437,11 @@ function parseXFormField(field, stanza) {
             label: field.getAttribute('label'),
             var: v,
             required: !!field.querySelector('required'),
+            ...result,
         };
     } else if (type === 'fixed') {
         const text = field.querySelector('value')?.textContent;
-        return { text, label, type, var: v };
+        return { text, label, type, var: v, ...result };
     } else if (type === 'jid-multi') {
         return {
             type,
@@ -443,6 +449,7 @@ function parseXFormField(field, stanza) {
             label,
             value: field.querySelector('value')?.textContent,
             required: !!field.querySelector('required'),
+            ...result,
         };
     } else if (type === 'boolean') {
         const value = field.querySelector('value')?.textContent;
@@ -451,12 +458,14 @@ function parseXFormField(field, stanza) {
             var: v,
             label,
             checked: ((value === '1' || value === 'true') && true) || false,
+            ...result,
         };
     } else if (v === 'url') {
         return {
             var: v,
             label,
             value: field.querySelector('value')?.textContent,
+            ...result,
         };
     } else if (v === 'username') {
         return {
@@ -465,6 +474,7 @@ function parseXFormField(field, stanza) {
             value: field.querySelector('value')?.textContent,
             required: !!field.querySelector('required'),
             type: getInputType(field),
+            ...result,
         };
     } else if (v === 'password') {
         return {
@@ -472,6 +482,7 @@ function parseXFormField(field, stanza) {
             label,
             value: field.querySelector('value')?.textContent,
             required: !!field.querySelector('required'),
+            ...result,
         };
     } else if (v === 'ocr') { // Captcha
         const uri = field.querySelector('uri');
@@ -484,6 +495,7 @@ function parseXFormField(field, stanza) {
                 data: el?.textContent,
             },
             required: !!field.querySelector('required'),
+            ...result,
         };
     } else {
         return {
@@ -492,6 +504,7 @@ function parseXFormField(field, stanza) {
             required: !!field.querySelector('required'),
             value: field.querySelector('value')?.textContent,
             type: getInputType(field),
+            ...result,
         };
     }
 }
@@ -533,25 +546,31 @@ export function parseXForm(stanza) {
 
     if (type === 'result') {
         const reported = x.querySelector(':scope > reported');
-        const reported_fields = reported?.querySelectorAll(':scope > field');
-        const items = x.querySelectorAll(':scope > item');
-        return /** @type {XForm} */({
-            ...result,
-            reported: /** @type {XFormReportedField[]} */ (Array.from(reported_fields).map(getAttributes)),
-            items: Array.from(items).map((item) => {
-                return Array.from(item.querySelectorAll('field')).map((field) => {
-                    return /** @type {XFormResultItemField} */ ({
-                        ...getAttributes(field),
-                        value: field.querySelector('value')?.textContent ?? '',
+        if (reported) {
+            const reported_fields = reported ? Array.from(reported.querySelectorAll(':scope > field')) : [];
+            const items = Array.from(x.querySelectorAll(':scope > item'));
+            return /** @type {XForm} */({
+                ...result,
+                reported: /** @type {XFormReportedField[]} */ (reported_fields.map(getAttributes)),
+                items: items.map((item) => {
+                    return Array.from(item.querySelectorAll('field')).map((field) => {
+                        return /** @type {XFormResultItemField} */ ({
+                            ...getAttributes(field),
+                            value: field.querySelector('value')?.textContent ?? '',
+                        });
                     });
-                });
-            }),
-        });
+                }),
+            });
+        }
+        return {
+            ...result,
+            fields: Array.from(x.querySelectorAll('field')).map((field) => parseXFormField(field, true, stanza)),
+        };
     } else if (type === 'form') {
         return {
             ...result,
             instructions: x.querySelector('instructions')?.textContent,
-            fields: Array.from(x.querySelectorAll('field')).map((field) => parseXFormField(field, stanza)),
+            fields: Array.from(x.querySelectorAll('field')).map((field) => parseXFormField(field, false, stanza)),
         };
     } else {
         throw new Error(`Invalid type in XForm response stanza: ${type}`);

@@ -171,6 +171,7 @@ export type XFormField = {
     checked?: boolean;
     options?: XFormOption[];
     uri?: XFormCaptchaURI;
+    readonly: boolean;
 };
 export type XFormResponseType = 'result' | 'form';
 export type XForm = {

@@ -1,16 +1,29 @@
-import { html } from "lit";
+import { html } from 'lit';
 
-export default  (o) => html`
+export default (o) => html`
     <div class="form-group">
-        ${ o.label ? html`<label>${o.label}</label>` :  '' }
+        ${
+            o.type !== 'hidden'
+                ? html`<label for="${o.id}"
+                      >${o.label} ${o.desc ? html`<small class="form-text text-muted">${o.desc}</small>` : ''}
+                  </label>`
+                : ''
+        }
         <div class="input-group">
                 <input name="${o.name}"
                        class="form-control"
+                       id="${o.id}"
                        type="${o.type}"
                        value="${o.value || ''}"
-                       ?required="${o.required}" />
-            <div class="input-group-append">
-                <div class="input-group-text" title="${o.domain}">${o.domain}</div>
+                       ?readonly=${o.readonly}
+                       ?required=${o.required} />
+                ${
+                    o.domain
+                        ? html`<div class="input-group-append">
+                              <div class="input-group-text" title="${o.domain}">${o.domain}</div>
+                          </div>`
+                        : ''
+                }
             </div>
         </div>
     </div>`;

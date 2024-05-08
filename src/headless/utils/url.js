@@ -14,7 +14,7 @@ export function isValidURL (text) {
     try {
         return !!(new URL(text));
     } catch (error) {
-        log.error(error);
+        log.debug(error);
         return false;
     }
 }

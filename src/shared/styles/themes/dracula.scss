@@ -14,12 +14,16 @@
     // Base variables
     --background: #282a36;
     --foreground: #f8f8f2;
-    --subdued-color: var(--comment);
+    --subdued-color: var(--foreground);
     --muc-color: var(--orange);
     --chat-color: var(--green);
+    --disabled-color-bg: lightgray;
     --disabled-color: var(--comment);
     --error-color: var(--red);
     --focus-color: var(--comment);
+    --gray-color: var(--current-line);
+    --header-color: var(--pink);
+    --heading-color: var(--purple);
 
     // ---
 
@@ -32,7 +36,6 @@
     --headlines-head-border-bottom: 0.15em solid var(--headlines-color);
 
     --icon-hover-color: var(--cyan);
-    --gray-color: var(--comment);
 
     --highlight-color: var(--foreground);
     --highlight-color-darker: var(--comment);
@@ -126,7 +129,6 @@
 
     --message-receipt-color: var(--green);
 
-    --heading-color: var(--purple);
 
     --inverse-link-color: var(--foreground);
     --link-color: var(--cyan);
@@ -139,7 +141,7 @@
     --danger-color-dark: var(--pink);
     --danger-color: var(--pink);
     --error-color: var(--red);
-    --info-color: var(--comment);
+    --info-color: var(--yellow);
     --secondary-color-dark: var(--cyan);
     --secondary-color: var(--cyan);
     --warning-color-dark: var(--orange);

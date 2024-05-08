@@ -46,10 +46,10 @@ export default (el, command) => {
     const i18n_cancel = __('Cancel');
 
     return html`
+        <!-- Don't remove this <span>,
+                this is a workaround for a lit bug where a <form> cannot be removed
+                if it contains an <input> with name "remove" -->
         <span>
-            <!-- Don't remove this <span>,
-                 this is a workaround for a lit bug where a <form> cannot be removed
-                 if it contains an <input> with name "remove" -->
             <form class="converse-form">
                 ${command.alert
                     ? html`<div class="alert alert-${command.alert_type}" role="alert">${command.alert}</div>`
@@ -59,6 +59,11 @@ export default (el, command) => {
                           ${command.note.text}
                       </div>`
                     : ''}
+
+                ${command.type === 'result' && command.title ?
+                        html`<div class="alert alert-info">${command.title}</div>` : ''}
+
+                ${command.type === 'form' && command.title ? html`<h6>${command.title}</h6>` : ''}
 
                 <fieldset class="form-group">
                     <input type="hidden" name="command_node" value="${command.node}" />

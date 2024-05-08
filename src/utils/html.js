@@ -10,6 +10,7 @@ import { Builder, Stanza } from 'strophe.js';
 import { api, converse, log, u } from '@converse/headless';
 import tplAudio from 'templates/audio.js';
 import tplFile from 'templates/file.js';
+import tplDateInput from 'templates/form_date.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
 import tplFormCheckbox from '../templates/form_checkbox.js';
 import tplFormHelp from '../templates/form_help.js';
@@ -21,7 +22,7 @@ import tplFormUsername from '../templates/form_username.js';
 import tplHyperlink from 'templates/hyperlink.js';
 import tplVideo from 'templates/video.js';
 
-const { sizzle, Strophe } = converse.env;
+const { sizzle, Strophe, dayjs } = converse.env;
 const { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } = u;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
@@ -464,57 +465,67 @@ function isVisible (el) {
  * @param {Object} options
  * @returns {TemplateResult}
  */
-export function xFormField2TemplateResult (xfield, options={}) {
+export function xFormField2TemplateResult(xfield, options = {}) {
+    const default_vals = {
+        id: u.getUniqueId(),
+        name: xfield.var,
+    };
+
     if (xfield['type'] === 'list-single' || xfield['type'] === 'list-multi') {
         return tplFormSelect({
-            id: u.getUniqueId(),
+            ...default_vals,
             ...xfield,
             multiple: xfield.type === 'list-multi',
-            name: xfield.var,
         });
+
     } else if (xfield['type'] === 'fixed') {
         return tplFormHelp(xfield);
+
     } else if (xfield['type'] === 'jid-multi') {
-        return tplFormTextarea({
-            name: xfield.var,
-            ...xfield
-        });
+        return tplFormTextarea({ ...default_vals, ...xfield });
+
     } else if (xfield['type'] === 'boolean') {
-        return tplFormCheckbox({
-            id: u.getUniqueId(),
-            name: xfield.var,
-            ...xfield
-        });
-    } else if (xfield['var'] === 'url') {
+        return tplFormCheckbox({ ...default_vals, ...xfield });
+
+    } else if (xfield.var === 'url' || xfield.var === 'uri' || isValidURL(xfield.value)) {
         return tplFormUrl(xfield);
-    } else if (xfield['var'] === 'username') {
+
+    } else if (xfield.var === 'username') {
         return tplFormUsername({
+            ...default_vals,
             domain: options.domain ? ' @' + options.domain : '',
-            name: xfield.var,
             ...xfield,
         });
-    } else if (xfield['var'] === 'password') {
+    } else if (xfield.var === 'password') {
         return tplFormInput({
-            name: xfield['var'],
-            type: 'password',
+            ...default_vals,
             ...xfield,
+            autocomplete: getAutoCompleteProperty(xfield.var, options),
+            fixed_username: options?.fixed_username,
+            type: 'password',
         });
-    } else if (xfield['var'] === 'ocr') {
+    } else if (xfield.var === 'ocr') {
         return tplFormCaptcha({
-            name: xfield['var'],
+            ...default_vals,
+            ...xfield,
             data: xfield.uri.data,
             type: xfield.uri.type,
-            ...xfield,
         });
     } else {
-        const name = xfield['var'];
+        const date = xfield.value ? dayjs(xfield.value) : null;
+        if (date?.isValid()) {
+            return tplDateInput({
+                ...default_vals,
+                ...xfield,
+                value: date.format('YYYY-MM-DDTHH:mm:ss'),
+            });
+        }
+
         return tplFormInput({
-            name,
-            id: u.getUniqueId(),
-            fixed_username: options?.fixed_username,
-            autocomplete: getAutoCompleteProperty(name, options),
-            placeholder: null,
+            ...default_vals,
             ...xfield,
+            autocomplete: getAutoCompleteProperty(xfield.var, options),
+            placeholder: null,
         });
     }
 }

@@ -1,4 +1,8 @@
 .conversejs.theme-concord {
+    --foreground: #666;
+    --header-color: var(--foreground);
+    --heading-color: #9B4D;
+
     --controlbox-pane-background-color: #333;
     --panel-divider-color: #333;
     --controlbox-pane-bg-hover-color: #464646;
@@ -16,7 +20,6 @@
     --chatbox-border-radius: 0px;
 
     --heading-display: inline;
-    --heading-color: #9B4D;
 
     --link-hover-color: var(--light-blue);
 

@@ -34,8 +34,9 @@ export default (el) => {
         <div class="row">
             <div class="col-auto">
                 <converse-avatar
+                    .model=${el.model}
                     class="avatar modal-avatar"
-                    .data=${vcard?.attributes}
+                    name="${el.model.getDisplayName()}"
                     nonce=${vcard?.get('vcard_updated')}
                     height="120" width="120"></converse-avatar>
             </div>

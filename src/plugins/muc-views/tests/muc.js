@@ -26,7 +26,7 @@ describe("Groupchats", function () {
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
             _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            const view = _converse.chatboxviews.get(muc_jid);
             spyOn(view.model, 'join').and.callThrough();
             await mock.waitForReservedNick(_converse, muc_jid, '');
             const input = await u.waitUntil(() => view.querySelector('input[name="nick"]'), 1000);

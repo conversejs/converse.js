@@ -10,34 +10,42 @@ export default class ImagePicker extends CustomElement {
 
     constructor () {
         super();
+        this.model = null;
         this.width = null;
         this.height = null;
     }
 
     static get properties () {
         return {
-            'height': { type: Number },
-            'data': { type: Object},
-            'width': { type: Number },
+            height: { type: Number },
+            model: { type: Object},
+            width: { type: Number },
         }
     }
 
     render () {
         return html`
             <a class="change-avatar" @click=${this.openFileSelection} title="${i18n_profile_picture}">
-                <converse-avatar class="avatar" .data=${this.data} height="${this.height}" width="${this.width}"></converse-avatar>
+                <converse-avatar
+                        .model=${this.model}
+                        class="avatar"
+                        name="${this.model.getDisplayName()}"
+                        height="${this.height}"
+                        width="${this.width}"></converse-avatar>
             </a>
             <input @change=${this.updateFilePreview} class="hidden" name="image" type="file"/>
         `;
     }
 
+    /** @param {Event} ev */
     openFileSelection (ev) {
         ev.preventDefault();
         /** @type {HTMLInputElement} */(this.querySelector('input[type="file"]')).click();
     }
 
+    /** @param {InputEvent} ev */
     updateFilePreview (ev) {
-        const file = ev.target.files[0];
+        const file = /** @type {HTMLInputElement} */(ev.target).files[0];
         const reader = new FileReader();
         reader.onloadend = () => {
             this.data = {

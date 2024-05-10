@@ -321,7 +321,8 @@ describe("The Contacts Roster", function () {
             // Only one roster contact is now visible
             let visible_contacts = sizzle('li', roster).filter(u.isVisible);
             expect(visible_contacts.length).toBe(1);
-            expect(visible_contacts.pop().textContent.trim()).toBe('Juliet Capulet');
+            expect(visible_contacts.pop().querySelector('.contact-name').textContent.trim()).toBe('Juliet Capulet');
+
             // Only one foster group is still visible
             expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(1);
             const visible_group = sizzle('.roster-group', roster).filter(u.isVisible).pop();
@@ -448,7 +449,7 @@ describe("The Contacts Roster", function () {
             u.triggerEvent(filter, 'change');
 
             await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 1, 900);
-            expect(sizzle('li', roster).filter(u.isVisible).pop().textContent.trim()).toBe('Lord Montague');
+            expect(sizzle('li', roster).filter(u.isVisible).pop().querySelector('.contact-name').textContent.trim()).toBe('Lord Montague');
 
             let ul = sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).pop();
             expect(ul.parentElement.firstElementChild.textContent.trim()).toBe('Family');
@@ -456,7 +457,7 @@ describe("The Contacts Roster", function () {
             filter.value = "dnd";
             u.triggerEvent(filter, 'change');
 
-            await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Friar Laurence', 900);
+            await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().querySelector('.contact-name').textContent.trim() === 'Friar Laurence', 900);
             ul = sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).pop();
             expect(ul.parentElement.firstElementChild.textContent.trim()).toBe('friends & acquaintences');
             expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
@@ -808,7 +809,7 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => sizzle('li', rosterview.querySelector(`ul[data-group="Pending contacts"]`)).filter(u.isVisible).length);
             // Check that they are sorted alphabetically
             const el = await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`));
-            const spans = el.querySelectorAll('.pending-xmpp-contact span');
+            const spans = el.querySelectorAll('.pending-xmpp-contact .contact-name');
 
             await u.waitUntil(
                 () => Array.from(spans).reduce((result, value) => result + value.textContent?.trim(), '') ===
@@ -908,7 +909,7 @@ describe("The Contacts Roster", function () {
             }));
             await u.waitUntil(() => sizzle('li', rosterview).length);
             // Check that they are sorted alphabetically
-            const els = sizzle('.current-xmpp-contact.offline a.open-chat', rosterview)
+            const els = sizzle('.current-xmpp-contact.offline a.open-chat .contact-name', rosterview)
             const t = els.reduce((result, value) => (result + value.textContent.trim()), '');
             expect(t).toEqual(mock.cur_names.slice(0,mock.cur_names.length).sort().join(''));
         }));
@@ -1394,8 +1395,8 @@ describe("The Contacts Roster", function () {
             await Promise.all(mock.cur_names.map(async name => {
                 const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const el = await u.waitUntil(() => sizzle("li:contains('"+name+"')", rosterview).pop());
+                expect(el.querySelector('.contact-name').textContent.trim()).toBe(name);
                 const child = el.firstElementChild.firstElementChild;
-                expect(child.textContent.trim()).toBe(name);
                 expect(child.getAttribute('title')).toContain(name);
                 expect(child.getAttribute('title')).toContain(jid);
             }));

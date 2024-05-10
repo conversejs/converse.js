@@ -272,9 +272,13 @@
                 padding-right: 1em;
                 align-items: center;
                 line-height: normal;
+
                 .change-status {
                     min-width: 25px;
                     text-align: center;
+                    converse-icon {
+                        padding-right: 0.5em;
+                    }
                 }
             }
 

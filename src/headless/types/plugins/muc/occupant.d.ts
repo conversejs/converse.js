@@ -5,7 +5,7 @@ export default MUCOccupant;
  * @namespace _converse.MUCOccupant
  * @memberOf _converse
  */
-declare class MUCOccupant extends Model {
+declare class MUCOccupant extends ColorAwareModel {
     constructor(attributes: any, options: any);
     vcard: any;
     defaults(): {
@@ -21,17 +21,15 @@ declare class MUCOccupant extends Model {
      */
     getAssignableRoles(): typeof ROLES;
     /**
-    * Return affiliations which may be assigned by this occupant
-    * @returns {typeof AFFILIATIONS} An array of assignable affiliations
-    */
+     * Return affiliations which may be assigned by this occupant
+     * @returns {typeof AFFILIATIONS} An array of assignable affiliations
+     */
     getAssignableAffiliations(): typeof AFFILIATIONS;
-    setColor(): Promise<void>;
-    getColor(): Promise<any>;
     isMember(): boolean;
     isModerator(): boolean;
     isSelf(): any;
 }
-import { Model } from "@converse/skeletor";
+import { ColorAwareModel } from "../../shared/color.js";
 import { ROLES } from "./constants.js";
 import { AFFILIATIONS } from "./constants.js";
 //# sourceMappingURL=occupant.d.ts.map

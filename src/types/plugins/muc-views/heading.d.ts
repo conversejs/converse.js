@@ -1,21 +1,47 @@
 export default class MUCHeading extends CustomElement {
+    /**
+     * @typedef {import('@converse/headless/types/plugins/muc/muc').MUCOccupant} MUCOccupant
+     */
     initialize(): Promise<void>;
     model: any;
     user_settings: any;
     render(): import("lit-html").TemplateResult<1> | "";
-    onOccupantAdded(occupant: any): void;
-    onOccupantAffiliationChanged(occupant: any): void;
-    showRoomDetailsModal(ev: any): void;
-    showInviteModal(ev: any): void;
-    toggleTopic(ev: any): void;
+    /**
+     * @param {MUCOccupant} occupant
+     */
+    onOccupantAdded(occupant: import("@converse/headless/types/plugins/muc/occupant.js").default): void;
+    /**
+     * @param {MUCOccupant} occupant
+     */
+    onOccupantAffiliationChanged(occupant: import("@converse/headless/types/plugins/muc/occupant.js").default): void;
+    /**
+     * @param {Event} ev
+     */
+    showRoomDetailsModal(ev: Event): void;
+    /**
+     * @param {Event} ev
+     */
+    showInviteModal(ev: Event): void;
+    /**
+     * @param {Event} ev
+     */
+    toggleTopic(ev: Event): void;
     getAndRenderConfigurationForm(): void;
-    close(ev: any): void;
-    destroy(ev: any): void;
+    /**
+     * @param {Event} ev
+     */
+    close(ev: Event): void;
+    /**
+     * @param {Event} ev
+     */
+    destroy(ev: Event): void;
     /**
      * Returns a list of objects which represent buttons for the groupchat header.
      * @emits _converse#getHeadingButtons
+     *
+     * @param {boolean} subject_hidden
      */
-    getHeadingButtons(subject_hidden: any): any;
+    getHeadingButtons(subject_hidden: boolean): any;
 }
 import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=heading.d.ts.map

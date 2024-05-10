@@ -1,7 +1,10 @@
 export default class Avatar extends CustomElement {
     static get properties(): {
-        data: {
+        model: {
             type: ObjectConstructor;
+        };
+        name: {
+            type: StringConstructor;
         };
         width: {
             type: StringConstructor;
@@ -13,10 +16,16 @@ export default class Avatar extends CustomElement {
             type: StringConstructor;
         };
     };
-    data: any;
+    model: any;
     width: number;
     height: number;
+    name: string;
     render(): import("lit-html").TemplateResult<1> | "";
+    /**
+     * @param {string} name
+     * @returns {string}
+     */
+    getInitials(name: string): string;
 }
 import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=avatar.d.ts.map

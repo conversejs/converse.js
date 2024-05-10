@@ -73,7 +73,7 @@ export default (el) => {
                 <form class="converse-form converse-form--modal profile-form" action="#" @submit=${ev => el.onFormSubmitted(ev)}>
                     <div class="row">
                         <div class="col-auto">
-                            <converse-image-picker .data="${{image: o.image, image_type: o.image_type}}" width="128" height="128"></converse-image-picker>
+                            <converse-image-picker .model=${el.model} width="128" height="128"></converse-image-picker>
                         </div>
                         <div class="col">
                             <div class="form-group">

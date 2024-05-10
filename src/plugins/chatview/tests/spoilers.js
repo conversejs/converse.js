@@ -142,7 +142,7 @@ describe("A spoiler message", function () {
         expect(body_el.textContent).toBe(spoiler);
 
         /* Test the HTML spoiler message */
-        expect(view.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo');
+        expect(view.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
         const message_content = view.querySelector('.chat-msg__text');
         await u.waitUntil(() => message_content.textContent === spoiler);
@@ -223,7 +223,7 @@ describe("A spoiler message", function () {
         const body_el = stanza.querySelector('body');
         expect(body_el.textContent).toBe(spoiler);
 
-        expect(view.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo');
+        expect(view.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
         const message_content = view.querySelector('.chat-msg__text');
         await u.waitUntil(() => message_content.textContent === spoiler);

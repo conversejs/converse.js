@@ -1855,7 +1855,7 @@ msgstr "Hierdie groepgesprek is openbaar vindbaar"
 #: dist/converse-no-dependencies.js:102294
 #, javascript-format
 msgid "Groupchat info for %1$s"
-msgstr "Kennisgewing van %1$s"
+msgstr "Groepgesprek info oor %1$s"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:102315

@@ -136,7 +136,7 @@ describe("The bookmarks list modal", function () {
         expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(true);
         expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(false);
 
-        controlbox.querySelector('.list-container--openrooms .open-room:first-child').click();
+        controlbox.querySelector('.list-container--openrooms .open-room:nth-child(2)').click();
         await u.waitUntil(() => controlbox.querySelector('.list-item.open').getAttribute('data-room-jid') === 'first@conference.shakespeare.lit');
         expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
         expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(true);

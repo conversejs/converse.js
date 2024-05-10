@@ -30,7 +30,7 @@ describe("A Message", function () {
         message = '/me is as well';
         await mock.sendMessage(view, message);
         expect(view.querySelectorAll('.chat-msg--action').length).toBe(2);
-        await u.waitUntil(() => sizzle('.chat-msg__author:last', view).pop().textContent.trim() === '**Romeo');
+        await u.waitUntil(() => sizzle('.chat-msg__author:last', view).pop().textContent.trim() === '**Romeo Montague');
         const last_el = sizzle('.chat-msg__text:last', view).pop();
         await u.waitUntil(() => last_el.textContent === 'is as well');
         expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);

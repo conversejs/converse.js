@@ -26,6 +26,7 @@ export class RoomsList extends CustomElement {
         this.listenTo(chatboxes, 'remove', this.renderIfChatRoom);
         this.listenTo(chatboxes, 'destroy', this.renderIfChatRoom);
         this.listenTo(chatboxes, 'change', this.renderIfRelevantChange);
+        this.listenTo(chatboxes, 'vcard:change', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
 
         this.requestUpdate();
@@ -47,15 +48,6 @@ export class RoomsList extends CustomElement {
         if (u.muc.isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
             this.requestUpdate();
         }
-    }
-
-    /** @param {Event} ev */
-    showRoomDetailsModal (ev) {
-        const target = /** @type {HTMLElement} */(ev.currentTarget);
-        const jid = target.getAttribute('data-room-jid');
-        const room = _converse.state.chatboxes.get(jid);
-        ev.preventDefault();
-        api.modal.show('converse-muc-details-modal', {'model': room}, ev);
     }
 
     /** @param {Event} ev */

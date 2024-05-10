@@ -1,44 +1,67 @@
+import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import { html } from 'lit';
+import { until } from 'lit/directives/until.js';
 import tplAvatar from './templates/avatar.js';
-import { _converse, api } from '@converse/headless';
 
 import './avatar.scss';
 
-
 export default class Avatar extends CustomElement {
-
-    static get properties () {
+    static get properties() {
         return {
-            data: { type: Object },
+            model: { type: Object },
+            name: { type: String },
             width: { type: String },
             height: { type: String },
             nonce: { type: String }, // Used to trigger rerenders
-        }
+        };
     }
 
-    constructor () {
+    constructor() {
         super();
-        this.data = null;
+        this.model = null;
         this.width = 36;
         this.height = 36;
+        this.name = '';
     }
 
-    render  () {
-        const image_type = this.data?.image_type || _converse.DEFAULT_IMAGE_TYPE;
-        let image;
-        if (this.data?.data_uri) {
-            image = this.data?.data_uri;
-        } else {
-            const image_data = this.data?.image || _converse.DEFAULT_IMAGE;
-            image = "data:" + image_type + ";base64," + image_data;
+    render() {
+        const { image_type, image, data_uri } = this.model?.vcard?.attributes || {};
+        if (image_type && (image || data_uri)) {
+            return tplAvatar({
+                classes: this.getAttribute('class'),
+                height: this.height,
+                width: this.width,
+                image: data_uri || `data:${image_type};base64,${image}`,
+                image_type,
+            });
         }
-        return tplAvatar({
-            'classes': this.getAttribute('class'),
-            'height': this.height,
-            'width': this.width,
-            image,
-            image_type,
-        });
+
+        const default_bg_css = `background-color: gray;`;
+        const css = `
+            width: ${this.width}px;
+            height: ${this.height}px;
+            font: ${this.width / 2}px Arial;
+            line-height: ${this.height}px;`;
+
+        const author_style = this.model.getAvatarStyle(css);
+        return html`<div class="avatar-initials" style="${until(author_style, default_bg_css + css)}">
+            ${this.getInitials(this.name)}
+        </div>`;
+    }
+
+    /**
+     * @param {string} name
+     * @returns {string}
+     */
+    getInitials(name) {
+        const names = name?.split(' ');
+        if (names?.length > 1) {
+            return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+        } else if (names?.length === 1) {
+            return names[0].charAt(0).toUpperCase();
+        }
+        return '';
     }
 }
 

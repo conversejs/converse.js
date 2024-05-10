@@ -1,10 +1,8 @@
 export default RosterContact;
-declare class RosterContact extends Model {
+declare class RosterContact extends ColorAwareModel {
     defaults(): {
         chat_state: any;
         groups: any[];
-        image: string;
-        image_type: string;
         num_unread: number;
         status: any;
     };
@@ -67,5 +65,5 @@ declare class RosterContact extends Model {
      */
     removeFromRoster(): Promise<any>;
 }
-import { Model } from "@converse/skeletor";
+import { ColorAwareModel } from "../../shared/color.js";
 //# sourceMappingURL=contact.d.ts.map

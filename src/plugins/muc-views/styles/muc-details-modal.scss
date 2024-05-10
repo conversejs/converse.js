@@ -4,6 +4,12 @@ converse-muc-details-modal {
     }
 
     .room-info {
+        converse-avatar {
+            display: block;
+            margin-bottom: 0.5em;
+            margin-right: 1em;
+            float: left;
+        }
         strong {
             color: var(--muc-color);
         }

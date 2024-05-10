@@ -8,13 +8,14 @@ const { HEADLINES_TYPE } = constants;
 
 export default (o) => {
     const i18n_profile = __("The User's Profile Image");
+    const display_name = o.model.getDisplayName();
     const avatar = html`<span title="${i18n_profile}">
         <converse-avatar
+            .model=${o.model.contact || o.model}
             class="avatar chat-msg__avatar"
-            .data=${o.model.vcard?.attributes}
-            nonce=${o.model.vcard?.get('vcard_updated')}
+            name="${display_name}"
+            nonce=${o.model.contact?.vcard?.get('vcard_updated')}
             height="40" width="40"></converse-avatar></span>`;
-    const display_name = o.model.getDisplayName();
 
     return html`
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">

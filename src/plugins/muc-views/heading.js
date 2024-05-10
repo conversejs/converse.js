@@ -12,6 +12,9 @@ import './styles/muc-head.scss';
 
 
 export default class MUCHeading extends CustomElement {
+    /**
+     * @typedef {import('@converse/headless/types/plugins/muc/muc').MUCOccupant} MUCOccupant
+     */
 
     async initialize () {
         const { chatboxes } = _converse.state;
@@ -35,6 +38,9 @@ export default class MUCHeading extends CustomElement {
         return (this.model && this.user_settings) ? tplMUCHead(this) : '';
     }
 
+    /**
+     * @param {MUCOccupant} occupant
+     */
     onOccupantAdded (occupant) {
         const bare_jid = _converse.session.get('bare_jid');
         if (occupant.get('jid') === bare_jid) {
@@ -42,6 +48,9 @@ export default class MUCHeading extends CustomElement {
         }
     }
 
+    /**
+     * @param {MUCOccupant} occupant
+     */
     onOccupantAffiliationChanged (occupant) {
         const bare_jid = _converse.session.get('bare_jid');
         if (occupant.get('jid') === bare_jid) {
@@ -49,16 +58,25 @@ export default class MUCHeading extends CustomElement {
         }
     }
 
+    /**
+     * @param {Event} ev
+     */
     showRoomDetailsModal (ev) {
         ev.preventDefault();
         api.modal.show('converse-muc-details-modal', { 'model': this.model }, ev);
     }
 
+    /**
+     * @param {Event} ev
+     */
     showInviteModal (ev) {
         ev.preventDefault();
         api.modal.show('converse-muc-invite-modal', { 'model': new Model(), 'chatroomview': this }, ev);
     }
 
+    /**
+     * @param {Event} ev
+     */
     toggleTopic (ev) {
         ev?.preventDefault?.();
         this.model.toggleSubjectHiddenState();
@@ -68,11 +86,17 @@ export default class MUCHeading extends CustomElement {
         this.model.session.set('view', converse.MUC.VIEWS.CONFIG);
     }
 
+    /**
+     * @param {Event} ev
+     */
     close (ev) {
         ev.preventDefault();
         this.model.close();
     }
 
+    /**
+     * @param {Event} ev
+     */
     destroy (ev) {
         ev.preventDefault();
         destroyMUC(this.model);
@@ -81,6 +105,8 @@ export default class MUCHeading extends CustomElement {
     /**
      * Returns a list of objects which represent buttons for the groupchat header.
      * @emits _converse#getHeadingButtons
+     *
+     * @param {boolean} subject_hidden
      */
     getHeadingButtons (subject_hidden) {
         const buttons = [];

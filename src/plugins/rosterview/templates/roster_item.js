@@ -1,10 +1,16 @@
+/**
+ * @typedef {import('../contactview').default} RosterContact
+ */
 import { __ } from 'i18n';
 import { api } from "@converse/headless";
 import { html } from "lit";
 import { STATUSES } from '../constants.js';
 
-const tplRemoveLink = (el, item) => {
-   const display_name = item.getDisplayName();
+/**
+ * @param {RosterContact} el
+ */
+const tplRemoveLink = (el) => {
+   const display_name = el.model.getDisplayName();
    const i18n_remove = __('Click to remove %1$s as a contact', display_name);
    return html`
       <a class="list-item-action remove-xmpp-contact" @click=${el.removeContact} title="${i18n_remove}" href="#">
@@ -13,8 +19,11 @@ const tplRemoveLink = (el, item) => {
    `;
 }
 
-export default  (el, item) => {
-   const show = item.presence.get('show') || 'offline';
+/**
+ * @param {RosterContact} el
+ */
+export default  (el) => {
+   const show = el.model.presence.get('show') || 'offline';
     let classes, color;
     if (show === 'online') {
         [classes, color] = ['fa fa-circle', 'chat-status-online'];
@@ -26,15 +35,21 @@ export default  (el, item) => {
         [classes, color] = ['fa fa-circle', 'subdued-color'];
     }
    const desc_status = STATUSES[show];
-   const num_unread = item.get('num_unread') || 0;
-   const display_name = item.getDisplayName();
-   const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, el.model.get('jid'));
+   const num_unread = el.model.get('num_unread') || 0;
+   const display_name = el.model.getDisplayName();
+   const jid = el.model.get('jid');
+   const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
    return html`
-   <a class="list-item-link cbox-list-item open-chat ${ num_unread ? 'unread-msgs' : '' }" title="${i18n_chat}" href="#" @click=${el.openChat}>
+      <a class="list-item-link cbox-list-item open-chat ${ num_unread ? 'unread-msgs' : '' }"
+         title="${i18n_chat}"
+         href="#"
+         data-jid=${jid}
+         @click=${el.openChat}>
       <span>
          <converse-avatar
+            .model=${el.model}
             class="avatar"
-            .data=${el.model.vcard?.attributes}
+            name="${el.model.getDisplayName()}"
             nonce=${el.model.vcard?.get('vcard_updated')}
             height="30" width="30"></converse-avatar>
          <converse-icon
@@ -44,7 +59,7 @@ export default  (el, item) => {
             class="${classes} chat-status chat-status--avatar"></converse-icon>
       </span>
       ${ num_unread ? html`<span class="msgs-indicator">${ num_unread }</span>` : '' }
-      <span class="contact-name contact-name--${el.show} ${ num_unread ? 'unread-msgs' : ''}">${display_name}</span>
+      <span class="contact-name contact-name--${show} ${ num_unread ? 'unread-msgs' : ''}">${display_name}</span>
    </a>
-   ${ api.settings.get('allow_contact_removal') ? tplRemoveLink(el, item) : '' }`;
+   ${ api.settings.get('allow_contact_removal') ? tplRemoveLink(el) : '' }`;
 }

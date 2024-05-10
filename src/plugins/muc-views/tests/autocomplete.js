@@ -54,10 +54,21 @@ describe("The nickname autocomplete feature", function () {
         message_form.onKeyUp(at_event);
 
         await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
-        expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
+        const first_child = view.querySelector('.suggestion-box__results li:first-child converse-avatar');
+        expect(first_child.textContent).toBe('D');
+        expect(first_child.nextSibling.textContent).toBe('dick');
+
+        const second_child = view.querySelector('.suggestion-box__results li:nth-child(2) converse-avatar');
+        expect(second_child.textContent).toBe('H');
+        expect(second_child.nextSibling.textContent).toBe('harry');
+
+        const third_child = view.querySelector('.suggestion-box__results li:nth-child(3) converse-avatar');
+        expect(third_child.textContent).toBe('J');
+        expect(third_child.nextSibling.textContent).toBe('jane');
+
+        const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4) converse-avatar');
+        expect(fourth_child.textContent).toBe('T');
+        expect(fourth_child.nextSibling.textContent).toBe('tom');
     }));
 
     it("shows all autocompletion options when the user presses @ right after a new line",
@@ -108,10 +119,21 @@ describe("The nickname autocomplete feature", function () {
         message_form.onKeyUp(at_event);
 
         await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
-        expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
+        const first_child = view.querySelector('.suggestion-box__results li:first-child converse-avatar');
+        expect(first_child.textContent).toBe('D');
+        expect(first_child.nextSibling.textContent).toBe('dick');
+
+        const second_child = view.querySelector('.suggestion-box__results li:nth-child(2) converse-avatar');
+        expect(second_child.textContent).toBe('H');
+        expect(second_child.nextSibling.textContent).toBe('harry');
+
+        const third_child = view.querySelector('.suggestion-box__results li:nth-child(3) converse-avatar');
+        expect(third_child.textContent).toBe('J');
+        expect(third_child.nextSibling.textContent).toBe('jane');
+
+        const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4) converse-avatar');
+        expect(fourth_child.textContent).toBe('T');
+        expect(fourth_child.nextSibling.textContent).toBe('tom');
     }));
 
     it("shows all autocompletion options when the user presses @ right after an allowed character",
@@ -163,10 +185,21 @@ describe("The nickname autocomplete feature", function () {
         message_form.onKeyUp(at_event);
 
         await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
-        expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
-        expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
+        const first_child = view.querySelector('.suggestion-box__results li:first-child converse-avatar');
+        expect(first_child.textContent).toBe('D');
+        expect(first_child.nextSibling.textContent).toBe('dick');
+
+        const second_child = view.querySelector('.suggestion-box__results li:nth-child(2) converse-avatar');
+        expect(second_child.textContent).toBe('H');
+        expect(second_child.nextSibling.textContent).toBe('harry');
+
+        const third_child = view.querySelector('.suggestion-box__results li:nth-child(3) converse-avatar');
+        expect(third_child.textContent).toBe('J');
+        expect(third_child.nextSibling.textContent).toBe('jane');
+
+        const fourth_child = view.querySelector('.suggestion-box__results li:nth-child(4) converse-avatar');
+        expect(fourth_child.textContent).toBe('T');
+        expect(fourth_child.nextSibling.textContent).toBe('tom');
     }));
 
     it("should order by query index position and length", mock.initConverse(
@@ -204,16 +237,31 @@ describe("The nickname autocomplete feature", function () {
             textarea.value = '@ber';
             message_form.onKeyUp(at_event);
             await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 3);
-            expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('bernard');
-            expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('naber');
-            expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('helberlo');
+
+            const first_child = view.querySelector('.suggestion-box__results li:first-child converse-avatar');
+            expect(first_child.textContent).toBe('B');
+            expect(first_child.nextElementSibling.textContent).toBe('ber');
+            expect(first_child.nextElementSibling.nextSibling.textContent).toBe('nard');
+
+            const second_child = view.querySelector('.suggestion-box__results li:nth-child(2) converse-avatar');
+            expect(second_child.textContent).toBe('N');
+            expect(second_child.nextSibling.textContent).toBe('na');
+            expect(second_child.nextElementSibling.textContent).toBe('ber');
+
+            const third_child = view.querySelector('.suggestion-box__results li:nth-child(3) converse-avatar');
+            expect(third_child.textContent).toBe('H');
+            expect(third_child.nextSibling.textContent).toBe('hel');
+            expect(third_child.nextSibling.nextSibling.textContent).toBe('ber');
+            expect(third_child.nextSibling.nextSibling.nextSibling.textContent).toBe('lo');
 
             // Test that when the query index is equal, results should be sorted by length
             textarea.value = '@jo';
             message_form.onKeyUp(at_event);
             await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 2);
-            expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('john');
-            expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('jones');
+
+            // First char is the avatar initial
+            expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('Jjohn');
+            expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('Jjones');
     }));
 
     it("autocompletes when the user presses tab",
@@ -251,7 +299,9 @@ describe("The nickname autocomplete feature", function () {
         message_form.onKeyUp(tab_event);
         await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === false);
         expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(1);
-        expect(view.querySelector('.suggestion-box__results li').textContent).toBe('some1');
+
+        // First char is the avatar initial
+        expect(view.querySelector('.suggestion-box__results li').textContent).toBe('Ssome1');
 
         const backspace_event = {
             'target': textarea,
@@ -293,8 +343,9 @@ describe("The nickname autocomplete feature", function () {
         message_form.onKeyDown(up_arrow_event);
         message_form.onKeyUp(up_arrow_event);
         expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(2);
-        expect(view.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('some1');
-        expect(view.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('some2');
+        // First char is the avatar initial
+        expect(view.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('Ssome1');
+        expect(view.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('Ssome2');
 
         message_form.onKeyDown({
             'target': textarea,
@@ -362,6 +413,7 @@ describe("The nickname autocomplete feature", function () {
         message_form.onKeyUp(backspace_event);
         await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === false);
         expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(1);
-        expect(view.querySelector('.suggestion-box__results li').textContent).toBe('some1');
+        // First char is the avatar initial
+        expect(view.querySelector('.suggestion-box__results li').textContent).toBe('Ssome1');
     }));
 });

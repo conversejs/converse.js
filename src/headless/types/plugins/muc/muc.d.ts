@@ -106,10 +106,6 @@ declare class MUC extends ChatBox {
     fetchOccupants(): any;
     handleAffiliationChangedMessage(stanza: any): void;
     /**
-     * @param {Element} stanza
-     */
-    handleErrorMessageStanza(stanza: Element): Promise<void>;
-    /**
      * Handles incoming message stanzas from the service that hosts this MUC
      * @private
      * @method MUC#handleMessageFromMUCHost
@@ -661,7 +657,7 @@ declare class MUC extends ChatBox {
     isUserMentioned(message: MUCMessage): any;
     incrementUnreadMsgsCounter(message: any): void;
 }
-import ChatBox from "../chat/model";
+import ChatBox from "../chat/model.js";
 declare class MUCSession extends Model {
     defaults(): {
         connection_status: number;

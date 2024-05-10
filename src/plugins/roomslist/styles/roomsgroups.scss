@@ -1,4 +1,5 @@
 .conversejs {
+
     #chatrooms {
         .muc-domain-group-toggle {
             margin: 0.75em 0 0.25em 0;
@@ -9,6 +10,11 @@
             &:hover {
                 color: var(--chatroom-head-bg-color-dark);
             }
+        }
+
+        converse-rooms-list {
+            display: block;
+            margin-bottom: 0.5em;
         }
     }
 }

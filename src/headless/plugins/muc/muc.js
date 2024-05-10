@@ -12,13 +12,13 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import ChatBox from '../chat/model';
 import debounce from 'lodash-es/debounce';
 import log from '../../log';
 import p from '../../utils/parse-helpers';
 import pick from 'lodash-es/pick';
 import sizzle from 'sizzle';
 import { Model } from '@converse/skeletor';
+import ChatBox from '../chat/model.js';
 import { ROOMSTATUS } from './constants.js';
 import { CHATROOMS_TYPE, GONE } from '../../shared/constants.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';

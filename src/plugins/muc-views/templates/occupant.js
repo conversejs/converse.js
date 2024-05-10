@@ -1,12 +1,17 @@
+/**
+ * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
+ */
 import { PRETTY_CHAT_STATUS } from '../constants.js';
 import { __ } from 'i18n';
 import { html } from "lit";
 import { showOccupantModal } from '../utils.js';
 import { getAuthorStyle } from 'utils/color.js';
 
-const i18n_occupant_hint = (o) => __('Click to mention %1$s in your message.', o.get('nick'))
+const i18n_occupant_hint = /** @param {MUCOccupant} o */(o) => {
+    return __('Click to mention %1$s in your message.', o.get('nick'));
+}
 
-const occupant_title = (o) => {
+const occupant_title = /** @param {MUCOccupant} o */(o) => {
     const role = o.get('role');
     const hint_occupant = i18n_occupant_hint(o);
     const i18n_moderator_hint = __('This user is a moderator.');
@@ -25,6 +30,10 @@ const occupant_title = (o) => {
 }
 
 
+/**
+ * @param {MUCOccupant} o
+ * @param {Object} chat
+ */
 export default (o, chat) => {
     const affiliation = o.get('affiliation');
     const hint_show = PRETTY_CHAT_STATUS[o.get('show')];
@@ -53,8 +62,9 @@ export default (o, chat) => {
                 <div class="col-auto">
                     <a class="show-msg-author-modal" @click=${(ev) => showOccupantModal(ev, o)}>
                         <converse-avatar
+                            .model=${o}
                             class="avatar chat-msg__avatar"
-                            .data=${o.vcard?.attributes}
+                            name="${o.getDisplayName()}"
                             nonce=${o.vcard?.get('vcard_updated')}
                             height="30" width="30"></converse-avatar>
                         <converse-icon
@@ -66,7 +76,9 @@ export default (o, chat) => {
                     </a>
                 </div>
                 <div class="col occupant-nick-badge">
-                    <span class="occupant-nick" @click=${chat.onOccupantClicked} style="${getAuthorStyle(o)}">${o.getDisplayName()}</span>
+                    <span class="occupant-nick"
+                          @click=${chat.onOccupantClicked}
+                          style="${getAuthorStyle(o)}">${o.getDisplayName()}</span>
                     <span class="occupant-badges">
                         ${ (affiliation === "owner") ? html`<span class="badge badge-groupchat">${i18n_owner}</span>` : '' }
                         ${ (affiliation === "admin") ? html`<span class="badge badge-info">${i18n_admin}</span>` : '' }

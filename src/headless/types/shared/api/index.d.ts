@@ -9,8 +9,6 @@ export type _converse = {
     promises: {
         initialized: any;
     };
-    DEFAULT_IMAGE_TYPE: string;
-    DEFAULT_IMAGE: string;
     NUM_PREKEYS: number;
     TIMEOUTS: {
         PAUSED: number;

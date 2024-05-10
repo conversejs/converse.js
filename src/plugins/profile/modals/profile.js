@@ -2,9 +2,9 @@
 /**
  * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
  */
+import Compress from 'client-compress';
 import BaseModal from "plugins/modal/modal.js";
 import tplProfileModal from "../templates/profile_modal.js";
-import Compress from 'client-compress';
 import { __ } from 'i18n';
 import { _converse, api, log } from "@converse/headless";
 import '../password-reset.js';

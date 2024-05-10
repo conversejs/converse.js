@@ -2,6 +2,10 @@ converse-avatar {
     border: 0;
     background: transparent;
 
+    &.avatar-muc {
+        margin-right: 0.5em;
+    }
+
     &.modal-avatar {
         display: block;
         margin-bottom: 1em;
@@ -9,5 +13,13 @@ converse-avatar {
 
     .avatar {
         border-radius: var(--avatar-border-radius);
+    }
+
+
+    .avatar-initials {
+        color: white;
+        border-radius: var(--avatar-border-radius);
+        text-align: center;
+        display: inline-block;
     }
 }

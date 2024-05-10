@@ -1,10 +1,3 @@
-/**
- * @typedef {import('./message.js').default} Message
- * @typedef {import('../muc/muc.js').default} MUC
- * @typedef {import('../muc/message.js').default} MUCMessage
- * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
- * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
- */
 import isMatch from "lodash-es/isMatch";
 import pick from "lodash-es/pick";
 import { getOpenPromise } from '@converse/openpromise';
@@ -32,6 +25,13 @@ const { Strophe, $msg, u } = converse.env;
  * Represents an open/ongoing chat conversation.
  */
 class ChatBox extends ModelWithContact {
+    /**
+     * @typedef {import('./message.js').default} Message
+     * @typedef {import('../muc/muc.js').default} MUC
+     * @typedef {import('../muc/message.js').default} MUCMessage
+     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+     * @typedef {import('strophe.js').Builder} Builder
+     */
 
     defaults () {
         return {
@@ -72,8 +72,8 @@ class ChatBox extends ModelWithContact {
         if (this.get('type') === PRIVATE_CHAT_TYPE) {
             const { presences } = _converse.state;
             this.presence = presences.get(jid) || presences.create({ jid });
-            await this.setRosterContact(jid);
-            this.presence.on('change:show', item => this.onPresenceChanged(item));
+            await this.setModelContact(jid);
+            this.presence.on('change:show', (item) => this.onPresenceChanged(item));
         }
         this.on('change:chat_state', this.sendChatState, this);
         this.ui.on('change:scrolled', this.onScrolledChanged, this);
@@ -155,6 +155,9 @@ class ChatBox extends ModelWithContact {
         return this.messages.fetched;
     }
 
+    /**
+     * @param {Element} stanza
+     */
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
         const attrs = await parseMessage(stanza);
@@ -828,12 +831,12 @@ class ChatBox extends ModelWithContact {
         /**
          * *Hook* which allows plugins to update an outgoing message stanza
          * @event _converse#createMessageStanza
-         * @param { ChatBox | MUC } chat - The chat from
+         * @param {ChatBox|MUC} chat - The chat from
          *      which this message stanza is being sent.
-         * @param { Object } data - Message data
-         * @param { Message | MUCMessage } data.message
+         * @param {Object} data - Message data
+         * @param {Message|MUCMessage} data.message
          *      The message object from which the stanza is created and which gets persisted to storage.
-         * @param { Strophe.Builder } data.stanza
+         * @param {Builder} data.stanza
          *      The stanza that will be sent out, as a Strophe.Builder object.
          *      You can use the Strophe.Builder functions to extend the stanza.
          *      See http://strophe.im/strophejs/doc/1.4.3/files/strophe-umd-js.html#Strophe.Builder.Functions

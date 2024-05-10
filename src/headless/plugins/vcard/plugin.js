@@ -34,8 +34,8 @@ converse.plugins.add('converse-vcard', {
             getNickname () {
                 const { _converse } = this.__super__;
                 const nick = this.__super__.getNickname.apply(this);
-                if (!nick && _converse.xmppstatus.vcard) {
-                    return _converse.xmppstatus.vcard.get('nickname');
+                if (!nick && _converse.state.xmppstatus.vcard) {
+                    return _converse.state.xmppstatus.vcard.get('nickname');
                 } else {
                     return nick;
                 }

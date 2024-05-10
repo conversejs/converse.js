@@ -14,7 +14,7 @@
             }
         }
 
-        .open-rooms-toggle, .open-rooms-toggle .fa {
+        .open-rooms-toggle, .open-rooms-toggle converse-icon {
             color: var(--groupchats-header-color) !important;
             &:hover {
                 color: var(--chatroom-head-bg-color-dark) !important;
@@ -23,6 +23,10 @@
 
         .open-rooms-toggle {
             white-space: nowrap;
+            converse-icon {
+                margin-left: 0.25em;
+                padding-bottom: 0.1em;
+            }
         }
     }
 }

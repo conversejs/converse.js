@@ -1,12 +1,12 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { Model } from '@converse/skeletor';
+import { ColorAwareModel } from '../../shared/color.js';
 import { isIdle, getIdleSeconds } from './utils.js';
 
 const { Strophe, $pres } = converse.env;
 
-export default class XMPPStatus extends Model {
+export default class XMPPStatus extends ColorAwareModel {
 
   constructor(attributes, options) {
         super(attributes, options);
@@ -15,6 +15,30 @@ export default class XMPPStatus extends Model {
 
     defaults () {
         return { "status":  api.settings.get("default_state") }
+    }
+
+    /**
+     * @param {string} attr
+     */
+    get(attr) {
+        if (attr === 'jid') {
+            return _converse.session.get('bare_jid');
+        } else if (attr === 'nickname') {
+            return api.settings.get('nickname');
+        }
+        return ColorAwareModel.prototype.get.call(this, attr);
+    }
+
+  /**
+   * @param {string|Object} key
+   * @param {string|Object} [val]
+   * @param {Object} [options]
+   */
+    set(key, val, options) {
+        if (key === 'jid' || key === 'nickname') {
+            throw new Error('Readonly property')
+        }
+        return ColorAwareModel.prototype.set.call(this, key, val, options);
     }
 
     initialize () {
@@ -29,7 +53,7 @@ export default class XMPPStatus extends Model {
     }
 
     getDisplayName () {
-        return this.getFullname() || this.getNickname() || _converse.session.get('bare_jid');
+        return this.getFullname() || this.getNickname() || this.get('jid');
     }
 
     getNickname () {

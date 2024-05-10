@@ -1,5 +1,10 @@
+/**
+ * @typedef {import('@converse/headless/types/plugins/muc/muc.js').default} MUC
+ * @typedef {import("shared/avatar/avatar").default} Avatar
+ * @typedef {import("shared/autocomplete/suggestion").default} Suggestion
+ */
 import { html } from "lit";
-import { _converse, api, converse, log, constants } from "@converse/headless";
+import { api, converse, log, constants } from "@converse/headless";
 import './modals/occupant.js';
 import './modals/moderator-tools.js';
 import tplSpinner from 'templates/spinner.js';
@@ -43,12 +48,18 @@ export function confirmDirectMUCInvitation ({ contact, jid, reason }) {
     }
 }
 
+/**
+ * @param {string} jid
+ */
 export function clearHistory (jid) {
     if (location.hash === `converse/room?jid=${jid}`) {
         history.pushState(null, '', window.location.pathname);
     }
 }
 
+/**
+ * @param {MUC} model
+ */
 export async function destroyMUC (model) {
     const messages = [__('Are you sure you want to destroy this groupchat?')];
     let fields = [
@@ -80,6 +91,9 @@ export async function destroyMUC (model) {
     }
 }
 
+/**
+ * @param {MUC} model
+ */
 export function getNicknameRequiredTemplate (model) {
     const jid = model.get('jid');
     if (api.settings.get('muc_show_logs_before_join')) {
@@ -110,25 +124,35 @@ export function getChatRoomBodyTemplate (o) {
     }
 }
 
-export function getAutoCompleteListItem (text, input) {
+/**
+ * @param {MUC} muc
+ * @param {Suggestion} text
+ * @param {string} input
+ * @returns {HTMLLIElement}
+ */
+export function getAutoCompleteListItem (muc, text, input) {
     input = input.trim();
-    const element = document.createElement('li');
-    element.setAttribute('aria-selected', 'false');
+    const li = document.createElement('li');
+    li.setAttribute('aria-selected', 'false');
 
     if (api.settings.get('muc_mention_autocomplete_show_avatar')) {
-        const img = document.createElement('img');
-        let dataUri = 'data:' + _converse.DEFAULT_IMAGE_TYPE + ';base64,' + _converse.DEFAULT_IMAGE;
+        const t = text.label.toLowerCase();
+        const avatar_el = /** @type {Avatar} */(document.createElement('converse-avatar'));
 
-        const { vcards } = _converse.state;
-        if (vcards) {
-            const vcard = vcards.findWhere({ 'nickname': text });
-            if (vcard) dataUri = 'data:' + vcard.get('image_type') + ';base64,' + vcard.get('image');
-        }
-
-        img.setAttribute('src', dataUri);
-        img.setAttribute('width', '22');
-        img.setAttribute('class', 'avatar avatar-autocomplete');
-        element.appendChild(img);
+        avatar_el.model = muc.occupants.findWhere((o) => {
+            if (o.getDisplayName()?.toLowerCase()?.startsWith(t)) {
+                return o;
+            } else if (o.get('nickname')?.toLowerCase()?.startsWith(t)) {
+                return o;
+            } else if (o.get('jid')?.toLowerCase()?.startsWith(t)) {
+                return o;
+            }
+        });
+        avatar_el.setAttribute('name', avatar_el.model.getDisplayName());
+        avatar_el.setAttribute('height', '22');
+        avatar_el.setAttribute('width', '22');
+        avatar_el.setAttribute('class', 'avatar avatar-autocomplete');
+        li.appendChild(avatar_el);
     }
 
     const regex = new RegExp('(' + input + ')', 'ig');
@@ -138,13 +162,13 @@ export function getAutoCompleteListItem (text, input) {
         if (input && txt.match(regex)) {
             const match = document.createElement('mark');
             match.textContent = txt;
-            element.appendChild(match);
+            li.appendChild(match);
         } else {
-            element.appendChild(document.createTextNode(txt));
+            li.appendChild(document.createTextNode(txt));
         }
     });
 
-    return element;
+    return li;
 }
 
 export async function getAutoCompleteList () {
@@ -153,6 +177,9 @@ export async function getAutoCompleteList () {
     return jids;
 }
 
+/**
+ * @param {MUC} muc
+ */
 function setRole (muc, command, args, required_affiliations = [], required_roles = []) {
     const role = COMMAND_TO_ROLE[command];
     if (!role) {
@@ -176,6 +203,9 @@ function setRole (muc, command, args, required_affiliations = [], required_roles
 }
 
 
+/**
+ * @param {MUC} muc
+ */
 function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
     const affiliation = COMMAND_TO_AFFILIATION[command];
     if (!affiliation) {
@@ -219,6 +249,10 @@ function verifyAndSetAffiliation (muc, command, args, required_affiliations) {
 }
 
 
+/**
+ * @param {MUC} muc
+ * @param {string} [affiliation]
+ */
 export function showModeratorToolsModal (muc, affiliation) {
     if (!muc.verifyRoles(['moderator'])) {
         return;

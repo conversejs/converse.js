@@ -155,7 +155,7 @@ describe("A Chatbox", function () {
 
         for (i=0; i<online_contacts.length; i++) {
             const el = online_contacts[i];
-            const jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const jid = el.getAttribute('data-jid');
             const model = _converse.chatboxes.get(jid);
             model.set({'minimized': true});
         }

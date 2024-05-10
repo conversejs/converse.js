@@ -1,11 +1,11 @@
 export default ModelWithContact;
-declare class ModelWithContact extends Model {
+declare class ModelWithContact extends ColorAwareModel {
     rosterContactAdded: any;
     /**
      * @public
-     * @type {RosterContact}
+     * @type {RosterContact|XMPPStatus}
      */
-    public contact: import("../roster/contact").default;
+    public contact: import("../status/status.js").default | import("../roster/contact").default;
     /**
      * @public
      * @type {VCard}
@@ -14,7 +14,7 @@ declare class ModelWithContact extends Model {
     /**
      * @param {string} jid
      */
-    setRosterContact(jid: string): Promise<void>;
+    setModelContact(jid: string): Promise<void>;
 }
-import { Model } from "@converse/skeletor";
+import { ColorAwareModel } from "../../shared/color.js";
 //# sourceMappingURL=model-with-contact.d.ts.map

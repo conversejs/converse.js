@@ -6,7 +6,12 @@ export type XMPPStatus = import('../plugins/status/status').default;
 export type VCards = import('../plugins/vcard/vcard').default;
 declare const _converse: ConversePrivateGlobal;
 declare const ConversePrivateGlobal_base: (new (...args: any[]) => {
-    on(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any;
+    on(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any; /**
+     * A private, closured namespace containing the private api (via {@link _converse.api})
+     * as well as private methods and internal data-structures.
+     * @global
+     * @namespace _converse
+     */
     _events: any;
     _listeners: {};
     listenTo(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
@@ -35,8 +40,6 @@ declare class ConversePrivateGlobal extends ConversePrivateGlobal_base {
     promises: {
         initialized: any;
     };
-    DEFAULT_IMAGE_TYPE: string;
-    DEFAULT_IMAGE: string;
     NUM_PREKEYS: number;
     TIMEOUTS: {
         PAUSED: number;

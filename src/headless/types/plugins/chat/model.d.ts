@@ -1,16 +1,16 @@
 export default ChatBox;
-export type Message = import('./message.js').default;
-export type MUC = import('../muc/muc.js').default;
-export type MUCMessage = import('../muc/message.js').default;
-export type MessageAttributes = any;
-export namespace Strophe {
-    type Builder = any;
-}
 /**
  * Represents an open/ongoing chat conversation.
  */
 declare class ChatBox extends ModelWithContact {
     constructor(attrs: any, options: any);
+    /**
+     * @typedef {import('./message.js').default} Message
+     * @typedef {import('../muc/muc.js').default} MUC
+     * @typedef {import('../muc/message.js').default} MUCMessage
+     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+     * @typedef {import('strophe.js').Builder} Builder
+     */
     defaults(): {
         bookmarked: boolean;
         hidden: boolean;
@@ -35,7 +35,10 @@ declare class ChatBox extends ModelWithContact {
     getNotificationsText(): any;
     afterMessagesFetched(): void;
     fetchMessages(): any;
-    handleErrorMessageStanza(stanza: any): Promise<void>;
+    /**
+     * @param {Element} stanza
+     */
+    handleErrorMessageStanza(stanza: Element): Promise<void>;
     /**
      * Queue an incoming `chat` message stanza for processing.
      * @async
@@ -49,7 +52,7 @@ declare class ChatBox extends ModelWithContact {
      * @method ChatBox#onMessage
      * @param {Promise<MessageAttributes>} attrs_promise - A promise which resolves to the message attributes.
      */
-    onMessage(attrs_promise: Promise<MessageAttributes>): Promise<void>;
+    onMessage(attrs_promise: Promise<any>): Promise<void>;
     onMessageUploadChanged(message: any): Promise<void>;
     onMessageAdded(message: any): void;
     clearMessages(): Promise<void>;
@@ -126,7 +129,7 @@ declare class ChatBox extends ModelWithContact {
      *  message, as returned by {@link parseMessage}
      * @returns {Message}
      */
-    getDuplicateMessage(attrs: object): Message;
+    getDuplicateMessage(attrs: object): import("./message.js").default;
     getOriginIdQueryAttrs(attrs: any): {
         origin_id: any;
         from: any;
@@ -141,7 +144,7 @@ declare class ChatBox extends ModelWithContact {
      * @method ChatBoxView#retractOwnMessage
      * @param { Message } message - The message which we're retracting.
      */
-    retractOwnMessage(message: Message): void;
+    retractOwnMessage(message: import("./message.js").default): void;
     /**
      * Sends a message stanza to retract a message in this chat
      * @private
@@ -163,7 +166,7 @@ declare class ChatBox extends ModelWithContact {
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForMessage(msg: Message, type?: ('received' | 'displayed' | 'acknowledged'), force?: boolean): void;
+    sendMarkerForMessage(msg: import("./message.js").default, type?: ('received' | 'displayed' | 'acknowledged'), force?: boolean): void;
     handleChatMarker(attrs: any): boolean;
     sendReceiptStanza(to_jid: any, id: any): void;
     handleReceipt(attrs: any): boolean;
@@ -204,7 +207,7 @@ declare class ChatBox extends ModelWithContact {
      * const chat = api.chats.get('buddy1@example.org');
      * chat.sendMessage({'body': 'hello world'});
      */
-    sendMessage(attrs?: any): Promise<Message>;
+    sendMessage(attrs?: any): Promise<import("./message.js").default>;
     /**
      * Sends a message with the current XEP-0085 chat state of the user
      * as taken from the `chat_state` attribute of the {@link ChatBox}.
@@ -232,11 +235,11 @@ declare class ChatBox extends ModelWithContact {
      * @method ChatBox#handleUnreadMessage
      * @param {Message} message
      */
-    handleUnreadMessage(message: Message): void;
+    handleUnreadMessage(message: import("./message.js").default): void;
     /**
      * @param {Message} message
      */
-    incrementUnreadMsgsCounter(message: Message): void;
+    incrementUnreadMsgsCounter(message: import("./message.js").default): void;
     clearUnreadMsgCounter(): void;
     isScrolledUp(): any;
     canPostMessages(): boolean;

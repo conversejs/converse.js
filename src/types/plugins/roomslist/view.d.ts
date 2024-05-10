@@ -7,8 +7,6 @@ export class RoomsList extends CustomElement {
     /** @param {Model} model */
     renderIfRelevantChange(model: Model): void;
     /** @param {Event} ev */
-    showRoomDetailsModal(ev: Event): void;
-    /** @param {Event} ev */
     openRoom(ev: Event): Promise<void>;
     /** @param {Event} ev */
     closeRoom(ev: Event): Promise<void>;

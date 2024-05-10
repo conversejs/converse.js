@@ -4,6 +4,11 @@
         .chat-status--avatar {
             background: var(--occupants-background-color);
             border: 1px solid var(--occupants-background-color);
+            font-size: 0.6rem;
+            margin-top: 0;
+            margin-left: -0.3em;
+            margin-bottom: -2em;
+            padding: 0.1em;
         }
 
         .badge-groupchat {

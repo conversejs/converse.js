@@ -40,7 +40,7 @@ export default class RosterContact extends CustomElement {
                 })
             );
         } else {
-            return tplRosterItem(this, this.model);
+            return tplRosterItem(this);
         }
     }
 

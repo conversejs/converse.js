@@ -53,8 +53,10 @@ export default class Message extends CustomElement {
 
         this.listenTo(this.chatbox, 'change:first_unread_id', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
-        this.model.vcard && this.listenTo(this.model.vcard, 'change', () => this.requestUpdate());
+        this.listenTo(this.model, 'contact:change', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
 
+        // TODO: refactor MUC to trigger `occupant:change`
         if (this.model.get('type') === 'groupchat') {
             if (this.model.occupant) {
                 this.listenTo(this.model.occupant, 'change', () => this.requestUpdate());

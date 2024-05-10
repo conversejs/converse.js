@@ -5,8 +5,8 @@ import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
 import { __ } from 'i18n';
 import { html } from "lit";
-import { shouldRenderMediaFromURL } from 'utils/url.js';
-import { getAuthorStyle } from 'utils/color.js';
+import { shouldRenderMediaFromURL } from '../../../utils/url.js';
+import { getAuthorStyle } from '../../../utils/color.js';
 
 
 /**
@@ -16,8 +16,9 @@ import { getAuthorStyle } from 'utils/color.js';
 export default (el, o) => {
     const i18n_new_messages = __('New messages');
     const is_followup = el.model.isFollowup();
-    const occupant = el.model.occupant;
-    const author_style = getAuthorStyle(occupant);
+
+    const contact = el.model.occupant || el.model.contact;
+    const author_style = getAuthorStyle(contact);
 
     return html`
         ${ o.is_first_unread ? html`<div class="message separator">
@@ -36,9 +37,10 @@ export default (el, o) => {
             ${ (o.should_show_avatar && !is_followup) ?
                 html`<a class="show-msg-author-modal" @click=${el.showUserModal}>
                     <converse-avatar
+                        .model=${contact || el.model}
                         class="avatar align-self-center"
-                        .data=${el.model.vcard?.attributes}
-                        nonce=${el.model.vcard?.get('vcard_updated')}
+                        name="${el.model.getDisplayName()}"
+                        nonce="${el.model.vcard?.get('vcard_updated')}"
                         height="40" width="40"></converse-avatar>
                 </a>` : '' }
 

@@ -65,7 +65,7 @@ class Message extends ModelWithContact {
     setContact () {
         if (['chat', 'normal'].includes(this.get('type'))) {
             ModelWithContact.prototype.initialize.apply(this, arguments);
-            return this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
+            return this.setModelContact(Strophe.getBareJidFromJid(this.get('from')));
         }
     }
 

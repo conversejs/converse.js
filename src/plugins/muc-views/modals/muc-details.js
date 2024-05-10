@@ -20,8 +20,8 @@ export default class MUCDetailsModal extends BaseModal {
         return tplMUCDetails(this.model);
     }
 
-    getModalTitle () { // eslint-disable-line class-methods-use-this
-        return __('Groupchat info for %1$s', this.model.getDisplayName());
+    getModalTitle () {
+        return __('Groupchat info', this.model.getDisplayName());
     }
 
 }

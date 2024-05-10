@@ -56,7 +56,16 @@ function tplRoomItem (el, room) {
         <div class="list-item controlbox-padded available-chatroom d-flex flex-row ${ isCurrentlyOpen(room) ? 'open' : '' } ${ has_unread_msgs ? 'unread-msgs' : '' }"
             data-room-jid="${room.get('jid')}">
 
-            ${ room.get('num_unread') ? tplUnreadIndicator(room) : (room.get('has_activity') ? tplActivityIndicator() : '') }
+            <converse-avatar
+                .model=${room}
+                class="avatar avatar-muc"
+                name="${room.getDisplayName()}"
+                nonce=${room.vcard?.get('vcard_updated')}
+                height="30" width="30"></converse-avatar>
+
+            ${ room.get('num_unread') ?
+                    tplUnreadIndicator(room) :
+                    (room.get('has_activity') ? tplActivityIndicator() : '') }
 
             <a class="list-item-link open-room available-room w-100"
                 data-room-jid="${room.get('jid')}"
@@ -65,31 +74,35 @@ function tplRoomItem (el, room) {
 
             ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }
 
-            <a class="list-item-action room-info"
-                data-room-jid="${room.get('jid')}"
-                title="${__('Show more information on this groupchat')}"
-                @click=${ev => el.showRoomDetailsModal(ev)}>
-
-                <converse-icon class="fa fa-info-circle" size="1.2em" color="${ isCurrentlyOpen(room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
-            </a>
-
             <a class="list-item-action close-room"
                 data-room-jid="${room.get('jid')}"
                 data-room-name="${room.getDisplayName()}"
                 title="${i18n_leave_room}"
                 @click=${ev => el.closeRoom(ev)}>
-                <converse-icon class="fa fa-sign-out-alt" size="1.2em" color="${ isCurrentlyOpen(room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
+                <converse-icon
+                    class="fa fa-sign-out-alt"
+                    size="1.2em"
+                    color="${ isCurrentlyOpen(room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
             </a>
         </div>`;
 }
 
+/**
+ * @param {RoomsList} el
+ * @param {string} domain
+ * @param {MUC[]} rooms
+ */
 function tplRoomDomainGroup (el, domain, rooms) {
     const i18n_title = __('Click to hide these rooms');
     const collapsed = el.model.get('collapsed_domains');
     const is_collapsed = collapsed.includes(domain);
     return html`
     <div class="muc-domain-group" data-domain="${domain}">
-        <a href="#" class="list-toggle muc-domain-group-toggle controlbox-padded" title="${i18n_title}" @click=${ev => el.toggleDomainList(ev, domain)}>
+        <a href="#"
+           class="list-toggle muc-domain-group-toggle controlbox-padded"
+           title="${i18n_title}"
+           @click=${ev => el.toggleDomainList(ev, domain)}>
+
             <converse-icon
                 class="fa ${ is_collapsed ? 'fa-caret-right' : 'fa-caret-down' }"
                 size="1em"
@@ -102,6 +115,10 @@ function tplRoomDomainGroup (el, domain, rooms) {
     </div>`;
 }
 
+/**
+ * @param {RoomsList} el
+ * @param {MUC[]} rooms
+ */
 function tplRoomDomainGroupList (el, rooms) {
     // The rooms should stay sorted as they are iterated and added in order
     const grouped_rooms = new Map();
@@ -125,7 +142,7 @@ function tplRoomDomainGroupList (el, rooms) {
 export default (el) => {
     const group_by_domain = api.settings.get('muc_grouped_by_domain');
     const { chatboxes } = _converse.state;
-    const rooms = chatboxes.filter(m => m.get('type') === CHATROOMS_TYPE);
+    const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE);
     rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
 
     const i18n_desc_rooms = __('Click to toggle the list of open groupchats');
@@ -165,11 +182,12 @@ export default (el) => {
                    title="${i18n_desc_rooms}"
                    @click=${ev => el.toggleRoomsList(ev)}>
 
-                    <converse-icon
+                    ${i18n_heading_chatrooms}
+
+                    ${rooms.length ? html`<converse-icon
                         class="fa ${ is_closed ? 'fa-caret-right' : 'fa-caret-down' }"
                         size="1em"
-                        color="var(--muc-color)"></converse-icon>
-                    ${i18n_heading_chatrooms}
+                        color="var(--muc-color)"></converse-icon>` : '' }
                 </a>
             </span>
             <converse-dropdown class="dropleft" .items=${btns}></converse-dropdown>

@@ -32,7 +32,6 @@ const u = {
     mam: null,
 };
 
-
 /**
  * @param {Event} [event]
  */

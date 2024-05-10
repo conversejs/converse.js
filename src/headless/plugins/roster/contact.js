@@ -1,14 +1,14 @@
+import { getOpenPromise } from '@converse/openpromise';
 import '../../plugins/status/api.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { Model } from '@converse/skeletor';
-import { getOpenPromise } from '@converse/openpromise';
+import { ColorAwareModel } from '../../shared/color.js';
 import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, $pres } = converse.env;
 
-class RosterContact extends Model {
+class RosterContact extends ColorAwareModel {
     get idAttribute () {
         return 'jid';
     }
@@ -17,8 +17,6 @@ class RosterContact extends Model {
         return {
             'chat_state': undefined,
             'groups': [],
-            'image': _converse.DEFAULT_IMAGE,
-            'image_type': _converse.DEFAULT_IMAGE_TYPE,
             'num_unread': 0,
             'status': undefined,
         }

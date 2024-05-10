@@ -81,12 +81,13 @@ export default (el) => {
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--contacts">
                 <a class="list-toggle open-contacts-toggle" title="${i18n_toggle_contacts}" @click=${el.toggleRoster}>
-                    <converse-icon
+                    ${i18n_heading_contacts}
+
+                    ${ roster.length ? html`<converse-icon
                         class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
                         size="1em"
                         color="var(--chat-color)"
-                    ></converse-icon>
-                    ${i18n_heading_contacts}
+                        ></converse-icon>` : '' }
                 </a>
             </span>
             <converse-dropdown class="chatbox-btn dropleft dropdown--contacts" .items=${btns}></converse-dropdown>

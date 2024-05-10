@@ -1,9 +1,6 @@
-import { Model } from '@converse/skeletor';
 import api from '../../shared/api/index.js';
+import { ColorAwareModel } from '../../shared/color.js';
 import { AFFILIATIONS, ROLES } from './constants.js';
-import u from '../../utils/index.js';
-
-const { safeSave, colorize } = u;
 
 /**
  * Represents a participant in a MUC
@@ -11,7 +8,7 @@ const { safeSave, colorize } = u;
  * @namespace _converse.MUCOccupant
  * @memberOf _converse
  */
-class MUCOccupant extends Model {
+class MUCOccupant extends ColorAwareModel {
 
     constructor (attributes, options) {
         super(attributes, options);
@@ -69,9 +66,9 @@ class MUCOccupant extends Model {
     }
 
     /**
-    * Return affiliations which may be assigned by this occupant
-    * @returns {typeof AFFILIATIONS} An array of assignable affiliations
-    */
+     * Return affiliations which may be assigned by this occupant
+     * @returns {typeof AFFILIATIONS} An array of assignable affiliations
+     */
     getAssignableAffiliations () {
         let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
@@ -84,18 +81,6 @@ class MUCOccupant extends Model {
         } else {
             return [];
         }
-    }
-
-    async setColor () {
-        const color = await colorize(this.getDisplayName());
-        safeSave(this, { color });
-    }
-
-    async getColor () {
-        if (!this.get('color')) {
-            await this.setColor();
-        }
-        return this.get('color');
     }
 
     isMember () {

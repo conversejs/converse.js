@@ -8,13 +8,35 @@ export function confirmDirectMUCInvitation({ contact, jid, reason }: {
     jid: any;
     reason: any;
 }): any;
-export function clearHistory(jid: any): void;
-export function destroyMUC(model: any): Promise<any>;
-export function getNicknameRequiredTemplate(model: any): import("lit-html").TemplateResult<1>;
+/**
+ * @param {string} jid
+ */
+export function clearHistory(jid: string): void;
+/**
+ * @param {MUC} model
+ */
+export function destroyMUC(model: MUC): Promise<any>;
+/**
+ * @param {MUC} model
+ */
+export function getNicknameRequiredTemplate(model: MUC): import("lit-html").TemplateResult<1>;
 export function getChatRoomBodyTemplate(o: any): import("lit-html").TemplateResult<1>;
-export function getAutoCompleteListItem(text: any, input: any): HTMLLIElement;
+/**
+ * @param {MUC} muc
+ * @param {Suggestion} text
+ * @param {string} input
+ * @returns {HTMLLIElement}
+ */
+export function getAutoCompleteListItem(muc: MUC, text: Suggestion, input: string): HTMLLIElement;
 export function getAutoCompleteList(): Promise<any[]>;
-export function showModeratorToolsModal(muc: any, affiliation: any): void;
+/**
+ * @param {MUC} muc
+ * @param {string} [affiliation]
+ */
+export function showModeratorToolsModal(muc: MUC, affiliation?: string): void;
 export function showOccupantModal(ev: any, occupant: any): void;
 export function parseMessageForMUCCommands(data: any, handled: any): any;
+export type MUC = import('@converse/headless/types/plugins/muc/muc.js').default;
+export type Avatar = import("shared/avatar/avatar").default;
+export type Suggestion = import("shared/autocomplete/suggestion").default;
 //# sourceMappingURL=utils.d.ts.map

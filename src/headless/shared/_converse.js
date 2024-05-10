@@ -18,8 +18,6 @@ import {
     ANONYMOUS,
     CLOSED,
     COMPOSING,
-    DEFAULT_IMAGE,
-    DEFAULT_IMAGE_TYPE,
     EXTERNAL,
     FAILURE,
     GONE,
@@ -93,9 +91,6 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.promises = {
             'initialized': getOpenPromise(),
         };
-
-        this.DEFAULT_IMAGE_TYPE = DEFAULT_IMAGE_TYPE;
-        this.DEFAULT_IMAGE = DEFAULT_IMAGE;
 
         this.NUM_PREKEYS = 100; // DEPRECATED. Set here so that tests can override
 

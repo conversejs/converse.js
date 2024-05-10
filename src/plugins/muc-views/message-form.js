@@ -35,18 +35,18 @@ export default class MUCMessageForm extends MessageForm {
 
     initMentionAutoComplete () {
         this.mention_auto_complete = new AutoComplete(this, {
-            'auto_first': true,
-            'auto_evaluate': false,
-            'min_chars': api.settings.get('muc_mention_autocomplete_min_chars'),
-            'match_current_word': true,
-            'list': () => this.getAutoCompleteList(),
-            'filter':
+            auto_first: true,
+            auto_evaluate: false,
+            min_chars: api.settings.get('muc_mention_autocomplete_min_chars'),
+            match_current_word: true,
+            list: () => this.getAutoCompleteList(),
+            filter:
                 api.settings.get('muc_mention_autocomplete_filter') == 'contains'
                     ? FILTER_CONTAINS
                     : FILTER_STARTSWITH,
-            'ac_triggers': ['Tab', '@'],
-            'include_triggers': [],
-            'item': getAutoCompleteListItem
+            ac_triggers: ['Tab', '@'],
+            include_triggers: [],
+            item: (text, input) => getAutoCompleteListItem(this.model, text, input)
         });
         this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
     }

@@ -291,7 +291,7 @@ describe("The Protocol", function () {
             expect(u.hasClass('both', contacts[0])).toBeFalsy();
             expect(u.hasClass('current-xmpp-contact', contacts[0])).toBeTruthy();
 
-            await u.waitUntil(() => contacts[0].textContent.trim() === 'Nicky');
+            await u.waitUntil(() => contacts[0].querySelector('.contact-name')?.textContent.trim() === 'Nicky');
 
             expect(contact.presence.get('show')).toBe('offline');
 

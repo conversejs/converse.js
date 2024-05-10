@@ -5,7 +5,6 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from "../../log.js";
-import { Strophe } from 'strophe.js';
 import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { PRIVATE_CHAT_TYPE } from "../../shared/constants";
@@ -191,7 +190,7 @@ export function onChatBoxesInitialized () {
 
     chatboxes.on('add', chatbox => {
         if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
-            chatbox.setRosterContact(chatbox.get('jid'));
+            chatbox.setModelContact(chatbox.get('jid'));
         }
     });
 }
@@ -206,7 +205,7 @@ export function onRosterContactsFetched () {
         // When a new contact is added, check if we already have a
         // chatbox open for it, and if so attach it to the chatbox.
         const chatbox = _converse.state.chatboxes.findWhere({ 'jid': contact.get('jid') });
-        chatbox?.setRosterContact(contact.get('jid'));
+        chatbox?.setModelContact(contact.get('jid'));
     });
 }
 

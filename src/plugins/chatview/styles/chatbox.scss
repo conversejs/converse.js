@@ -175,7 +175,7 @@
             }
 
             .chat-content__notifications {
-                height: 1.7em;
+                display: block;
                 white-space: pre;
                 background-color: var(--chat-content-background-color);
                 color: var(--subdued-color);

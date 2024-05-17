@@ -58,6 +58,8 @@ describe("Groupchats", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
+            await mock.openControlBox(_converse);
+
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group .group-toggle').length, 300);
             let muc_jid = 'chillout@montague.lit';

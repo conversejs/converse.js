@@ -23,7 +23,7 @@ describe('The "Groupchats" Add modal', function () {
             const label_nick = modal.querySelector('label[for="nickname"]');
             expect(label_nick.textContent.trim()).toBe('Nickname:');
             const nick_input = modal.querySelector('input[name="nickname"]');
-            expect(nick_input.value).toBe('');
+            expect(nick_input.value).toBe('Romeo');
             nick_input.value = 'romeo';
 
             expect(modal.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');

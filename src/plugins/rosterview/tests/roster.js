@@ -195,6 +195,7 @@ describe("The Contacts Roster", function () {
 
         await u.waitUntil(() => _converse.roster.length === 2);
         expect(_converse.roster.pluck('jid')).toEqual(['juliet@example.net', 'mercutio@example.net']);
+        await mock.openControlBox(_converse);
 
         const rosterview = document.querySelector('converse-roster');
 
@@ -1304,6 +1305,8 @@ describe("The Contacts Roster", function () {
 
         it("are persisted even if other contacts' change their presence ", mock.initConverse(
             [], {}, async function (_converse) {
+
+            await mock.openControlBox(_converse);
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());

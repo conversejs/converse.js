@@ -427,7 +427,7 @@ describe("A MUC", function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
-            mock.closeControlBox(_converse);
+
             const modal = _converse.api.modal.get('converse-add-muc-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000)
             const name_input = modal.querySelector('input[name="chatroom"]');
@@ -441,13 +441,18 @@ describe("A MUC", function () {
         }));
 
         it("uses the JID node if muc_nickname_from_jid is set to true",
-                mock.initConverse(['chatBoxesFetched'], {'muc_nickname_from_jid': true}, async function (_converse) {
+            mock.initConverse(
+                ['chatBoxesFetched'],
+                {
+                    'muc_nickname_from_jid': true,
+                    blacklisted_plugins: ['converse-vcard']
+                }, async function (_converse) {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
-            mock.closeControlBox(_converse);
+
             const modal = _converse.api.modal.get('converse-add-muc-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000)
             const label_nick = modal.querySelector('label[for="nickname"]');
@@ -463,7 +468,7 @@ describe("A MUC", function () {
             await mock.waitForRoster(_converse, 'current', 0);
             const roomspanel = _converse.chatboxviews.get('controlbox').querySelector('converse-rooms-list');
             roomspanel.querySelector('.show-add-muc-modal').click();
-            mock.closeControlBox(_converse);
+
             const modal = _converse.api.modal.get('converse-add-muc-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000)
             const label_nick = modal.querySelector('label[for="nickname"]');

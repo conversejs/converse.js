@@ -151,11 +151,10 @@ describe("The Registration Panel", function () {
               allow_registration: true },
             async function (_converse) {
 
-        const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
-        toggle.click();
-
+        await mock.toggleControlBox();
         const cbview = _converse.api.controlbox.get();
-        cbview.querySelector('.toggle-register-login').click();
+        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+        login_form.click();
 
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-register-panel'));
         spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
@@ -216,7 +215,8 @@ describe("The Registration Panel", function () {
             toggle.click();
         }
         const cbview = _converse.api.controlbox.get();
-        cbview.querySelector('.toggle-register-login').click();
+        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+        login_form.click();
 
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-register-panel'));
         spyOn(registerview, 'onProviderChosen').and.callThrough();
@@ -279,7 +279,9 @@ describe("The Registration Panel", function () {
             toggle.click();
         }
         const cbview = _converse.api.controlbox.get();
-        cbview.querySelector('.toggle-register-login').click();
+        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+        login_form.click();
+
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-register-panel'));
         spyOn(registerview, 'onProviderChosen').and.callThrough();
         spyOn(registerview, 'getRegistrationFields').and.callThrough();
@@ -359,7 +361,9 @@ describe("The Registration Panel", function () {
             toggle.click();
         }
         const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.querySelector('.toggle-register-login').click();
+        const login_form = await u.waitUntil(() => cbview.querySelector('.toggle-register-login'));
+        login_form.click();
+
         const registerview = await u.waitUntil(() => cbview.querySelector('converse-register-panel'));
         registerview.querySelector('input[name=domain]').value = 'conversejs.org';
         registerview.querySelector('input[type=submit]').click();

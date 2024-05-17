@@ -56,7 +56,9 @@ describe("The Protocol", function () {
             spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
             spyOn(_converse.api.vcard, "get").and.callThrough();
 
-            cbview.querySelector('.add-contact').click()
+            const add_contact_button = await u.waitUntil(() => cbview.querySelector('.add-contact'));
+            add_contact_button.click()
+
             const modal = _converse.api.modal.get('converse-add-contact-modal');
             await u.waitUntil(() => u.isVisible(modal), 1000);
             modal.delegateEvents();

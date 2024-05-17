@@ -1,10 +1,9 @@
 /*global mock, converse */
-
 const { u, $msg } = converse.env;
 
 describe("A Chat Message", function () {
 
-    fit("has a default avatar with a XEP-0392 color and initials",
+    it("has a default avatar with a XEP-0392 color and initials",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         const { api } = _converse;

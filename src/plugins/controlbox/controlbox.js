@@ -12,8 +12,7 @@ const { LOGOUT } = constants;
  * `view_mode` it's a left-aligned sidebar.
  */
 class ControlBoxView extends CustomElement {
-
-    initialize () {
+    initialize() {
         this.setModel();
         const { chatboxviews } = _converse.state;
         chatboxviews.add('controlbox', this);
@@ -33,26 +32,28 @@ class ControlBoxView extends CustomElement {
         api.trigger('controlBoxInitialized', this);
     }
 
-    setModel () {
+    setModel() {
         this.model = _converse.state.chatboxes.get('controlbox');
         this.listenTo(_converse.state.connfeedback, 'change:connection_status', () => this.requestUpdate());
         this.listenTo(this.model, 'change:active-form', () => this.requestUpdate());
         this.listenTo(this.model, 'change:connected', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:closed', () => !this.model.get('closed') && this.afterShown());
+        this.listenTo(this.model, 'change:closed', () => {
+            this.requestUpdate();
+            if (!this.model.get('closed')) this.afterShown();
+        });
         this.requestUpdate();
     }
 
-    render () {
-        return this.model ? tplControlbox(this) : '';
+    render() {
+        return this.model && !this.model.get('closed') ? tplControlbox(this) : '';
     }
 
-    close (ev) {
+    close(ev) {
         ev?.preventDefault?.();
         const connection = api.connection.get();
         if (
             ev?.name === 'closeAllChatBoxes' &&
-            (connection.disconnection_cause !== LOGOUT ||
-                api.settings.get('show_controlbox_by_default'))
+            (connection.disconnection_cause !== LOGOUT || api.settings.get('show_controlbox_by_default'))
         ) {
             return;
         }
@@ -64,7 +65,7 @@ class ControlBoxView extends CustomElement {
         return this;
     }
 
-    afterShown () {
+    afterShown() {
         /**
          * Triggered once the controlbox has been opened
          * @event _converse#controlBoxOpened

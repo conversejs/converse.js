@@ -952,10 +952,12 @@ describe("Chatboxes", function () {
 
     describe("A RosterView's Unread Message Count", function () {
 
-        it("is updated when message is received and chatbox is scrolled up",
+        it("is updated when a message is received and chatbox is scrolled up",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+
             let msg, indicator_el;
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const rosterview = document.querySelector('converse-roster');
@@ -980,6 +982,7 @@ describe("Chatboxes", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             let indicator_el, msg;
@@ -1007,6 +1010,8 @@ describe("Chatboxes", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
             const rosterview = document.querySelector('converse-roster');
@@ -1054,6 +1059,8 @@ describe("Chatboxes", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);

@@ -13,6 +13,8 @@ describe("The Login Form", function () {
 
         const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
         mock.toggleControlBox();
+        await u.waitUntil(() => cbview.querySelectorAll('input[type="checkbox"]').length);
+
         const checkboxes = cbview.querySelectorAll('input[type="checkbox"]');
         expect(checkboxes.length).toBe(1);
 
@@ -44,9 +46,10 @@ describe("The Login Form", function () {
               allow_registration: false },
             async function (_converse) {
 
-        await u.waitUntil(() => _converse.chatboxviews.get('controlbox'))
-        const cbview = _converse.chatboxviews.get('controlbox');
+        const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'))
         mock.toggleControlBox();
+        await u.waitUntil(() => cbview.querySelectorAll('input[type="checkbox"]').length);
+
         const checkboxes = cbview.querySelectorAll('input[type="checkbox"]');
         expect(checkboxes.length).toBe(1);
 

@@ -5,6 +5,9 @@ import { Strophe } from 'strophe.js';
 
 
 class MUCMessage extends Message {
+    /**
+     * @typedef {import('./muc.js').MUCOccupant} MUCOccupant
+     */
 
     async initialize () { // eslint-disable-line require-await
         this.chatbox = this.collection?.chatbox;
@@ -64,6 +67,9 @@ class MUCMessage extends Message {
         this.listenTo(this.chatbox.occupants, 'add', this.onOccupantAdded);
     }
 
+    /**
+     * @param {MUCOccupant} [occupant]
+     */
     onOccupantAdded (occupant) {
         if (this.get('occupant_id')) {
             if (occupant.get('occupant_id') !== this.get('occupant_id')) {
@@ -72,48 +78,58 @@ class MUCMessage extends Message {
         } else if (occupant.get('nick') !== Strophe.getResourceFromJid(this.get('from'))) {
             return;
         }
-
-        this.occupant = occupant;
-        if (occupant.get('jid')) {
-            this.save('from_real_jid', occupant.get('jid'));
-        }
-
-        this.trigger('occupantAdded');
-        this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-        this.stopListening(this.chatbox.occupants, 'add', this.onOccupantAdded);
+        this.setOccupant(occupant)
     }
 
     getOccupant() {
-        if (this.occupant) return this.occupant;
-
-        this.setOccupant();
-        return this.occupant;
+        return this.occupant || this.setOccupant();
     }
 
-    setOccupant () {
-        if (this.get('type') !== 'groupchat' || this.isEphemeral() || this.occupant) {
+    /**
+     * @param {MUCOccupant} [occupant]
+     * @return {MUCOccupant}
+     */
+    setOccupant (occupant) {
+        if (this.get('type') !== 'groupchat' || this.isEphemeral()) {
             return;
         }
 
-        const nick = Strophe.getResourceFromJid(this.get('from'));
-        const occupant_id = this.get('occupant_id');
+        if (occupant) {
+            this.occupant = occupant;
 
-        this.occupant = this.chatbox.occupants.findOccupant({ nick, occupant_id });
+        } else {
+            if (this.occupant) return;
 
-        if (!this.occupant) {
-            this.occupant = this.chatbox.occupants.create({
-                nick,
-                occupant_id,
-                jid: this.get('from_real_jid'),
-            });
+            const nick = Strophe.getResourceFromJid(this.get('from'));
+            const occupant_id = this.get('occupant_id');
+            this.occupant = (nick || occupant_id) ? this.chatbox.occupants.findOccupant({ nick, occupant_id }) : null;
 
-            if (api.settings.get('muc_send_probes')) {
-                const jid = `${this.chatbox.get('jid')}/${nick}`;
-                api.user.presence.send('probe', jid);
+            if (!this.occupant) {
+                const jid = this.get('from_real_jid');
+                if (!nick && !occupant_id && !jid) {
+                    // Tombstones of retracted messages might have no occupant info
+                    return;
+                }
+
+                this.occupant = this.chatbox.occupants.create({ nick, occupant_id, jid });
+
+                if (api.settings.get('muc_send_probes')) {
+                    const jid = `${this.chatbox.get('jid')}/${nick}`;
+                    api.user.presence.send('probe', jid);
+                }
             }
         }
 
+        if (this.get('from_real_jid') !== this.occupant.get('jid')) {
+            this.save('from_real_jid', this.occupant.get('jid'));
+        }
+
+        this.trigger('occupant:add');
+        this.listenTo(this.occupant, 'change', (changed) => this.trigger('occupant:change', changed));
         this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
+        this.stopListening(this.chatbox.occupants, 'add', this.onOccupantAdded);
+
+        return this.occupant;
     }
 }
 

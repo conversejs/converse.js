@@ -276,7 +276,10 @@ class ChatBox extends ModelWithContact {
         }
     }
 
-    async close () {
+    /**
+     * @param {Object} [_ev]
+     */
+    async close (_ev) {
         if (api.connection.connected()) {
             // Immediately sending the chat state, because the
             // model is going to be destroyed afterwards.
@@ -285,7 +288,7 @@ class ChatBox extends ModelWithContact {
         }
         try {
             await new Promise((success, reject) => {
-                return this.destroy({success, 'error': (m, e) => reject(e)})
+                return this.destroy({success, 'error': (_m, e) => reject(e)})
             });
         } catch (e) {
             log.error(e);

@@ -12,11 +12,27 @@ export function onMAMError(iq: Element): void;
  *
  * Per JID preferences will be set in chat boxes, so it'll
  * probbaly be handled elsewhere in any case.
+ *
+ * @param {Element} iq
+ * @param {Model} feature
  */
-export function onMAMPreferences(iq: any, feature: any): void;
-export function getMAMPrefsFromFeature(feature: any): void;
-export function preMUCJoinMAMFetch(muc: any): void;
-export function handleMAMResult(model: any, result: any, query: any, options: any, should_page: any): Promise<void>;
+export function onMAMPreferences(iq: Element, feature: Model): void;
+/**
+ * @param {Model} feature
+ */
+export function getMAMPrefsFromFeature(feature: Model): void;
+/**
+ * @param {MUC} muc
+ */
+export function preMUCJoinMAMFetch(muc: MUC): void;
+/**
+ * @param {ChatBox|MUC} model
+ * @param {Object} result
+ * @param {Object} query
+ * @param {Object} options
+ * @param {('forwards'|'backwards'|null)} [should_page=null]
+ */
+export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, options: any, should_page?: ('forwards' | 'backwards' | null)): Promise<void>;
 /**
  * @typedef {Object} MAMOptions
  * A map of MAM related options that may be passed to fetchArchivedMessages
@@ -55,4 +71,5 @@ export function fetchNewestMessages(model: ChatBox): void;
 export type MAMOptions = any;
 export type MUC = import('../muc/muc.js').default;
 export type ChatBox = import('../chat/model.js').default;
+export type Model = import('@converse/skeletor/src/types/helpers.js').Model;
 //# sourceMappingURL=utils.d.ts.map

@@ -11,10 +11,17 @@ declare class MUCMessage extends Message {
     mayBeModerated(): boolean;
     checkValidity(): any;
     onOccupantRemoved(): void;
-    onOccupantAdded(occupant: any): void;
-    occupant: any;
+    /**
+     * @param {MUCOccupant} [occupant]
+     */
+    onOccupantAdded(occupant?: import("./occupant.js").default): void;
     getOccupant(): any;
-    setOccupant(): void;
+    /**
+     * @param {MUCOccupant} [occupant]
+     * @return {MUCOccupant}
+     */
+    setOccupant(occupant?: import("./occupant.js").default): import("./occupant.js").default;
+    occupant: any;
 }
 import Message from "../chat/message.js";
 //# sourceMappingURL=message.d.ts.map

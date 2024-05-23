@@ -267,7 +267,7 @@ export async function parseMUCMessage (stanza, chatbox) {
     attrs.from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza) ||
         chatbox.occupants.findOccupant(attrs)?.get('jid');
 
-    attrs = Object.assign( {
+    attrs = Object.assign({
         'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
         'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
         'message': attrs.body || attrs.error, // TODO: Should only be used for error and info messages
@@ -287,6 +287,7 @@ export async function parseMUCMessage (stanza, chatbox) {
     } else if (attrs.is_carbon) {
         return new StanzaParseError('Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied', stanza);
     }
+
     // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
     attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from_muc || attrs.from}`] || u.getUniqueId();
 

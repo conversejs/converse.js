@@ -39,12 +39,12 @@ declare class Message extends ModelWithContact {
     /**
      * Returns a boolean indicating whether this message is ephemeral,
      * meaning it will get automatically removed after ten seconds.
-     * @returns { boolean }
+     * @returns {boolean}
      */
     isEphemeral(): boolean;
     /**
      * Returns a boolean indicating whether this message is a XEP-0245 /me command.
-     * @returns { boolean }
+     * @returns {boolean}
      */
     isMeCommand(): boolean;
     /**

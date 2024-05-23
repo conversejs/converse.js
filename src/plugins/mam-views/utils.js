@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('../chatview/chat.js').default} ChatView
+ * @typedef {import('../muc-views/muc.js').default} MUCView
+ */
 import { html } from 'lit/html.js';
 import { _converse, api, log, constants, u, MAMPlaceholderMessage } from '@converse/headless';
 
@@ -12,6 +16,9 @@ export function getPlaceholderTemplate (message, tpl) {
     }
 }
 
+/**
+ * @param {ChatView|MUCView} view
+ */
 export async function fetchMessagesOnScrollUp (view) {
     if (view.model.ui.get('chat-content-spinner-top')) {
         return;
@@ -22,7 +29,7 @@ export async function fetchMessagesOnScrollUp (view) {
         if (oldest_message) {
             const bare_jid = _converse.session.get('bare_jid');
             const by_jid = is_groupchat ? view.model.get('jid') : bare_jid;
-            const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
+            const stanza_id = oldest_message.get(`stanza_id ${by_jid}`);
             view.model.ui.set('chat-content-spinner-top', true);
             try {
                 if (stanza_id) {

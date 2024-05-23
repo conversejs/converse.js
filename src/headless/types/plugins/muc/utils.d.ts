@@ -1,6 +1,13 @@
-export function isChatRoom(model: any): boolean;
+/**
+ * @param {import('@converse/skeletor').Model} model
+ */
+export function isChatRoom(model: import('@converse/skeletor').Model): boolean;
 export function shouldCreateGroupchatMessage(attrs: any): any;
-export function occupantsComparator(occupant1: any, occupant2: any): 0 | 1 | -1;
+/**
+ * @param {import('./muc.js').MUCOccupant} occupant1
+ * @param {import('./muc.js').MUCOccupant} occupant2
+ */
+export function occupantsComparator(occupant1: import('./muc.js').MUCOccupant, occupant2: import('./muc.js').MUCOccupant): 0 | 1 | -1;
 export function registerDirectInvitationHandler(): void;
 export function disconnectChatRooms(): any;
 export function onWindowStateChanged(): Promise<void>;
@@ -14,7 +21,7 @@ export function openChatRoom(jid: any, settings: any): Promise<any>;
  * See XEP-0249: Direct MUC invitations.
  * @private
  * @method _converse.ChatRoom#onDirectMUCInvitation
- * @param { Element } message - The message stanza containing the invitation.
+ * @param {Element} message - The message stanza containing the invitation.
  */
 export function onDirectMUCInvitation(message: Element): Promise<void>;
 export function getDefaultMUCNickname(): any;
@@ -35,5 +42,4 @@ export function onAddClientFeatures(): void;
 export function onBeforeTearDown(): void;
 export function onStatusInitialized(): void;
 export function onBeforeResourceBinding(): void;
-export type Model = import('@converse/skeletor').Model;
 //# sourceMappingURL=utils.d.ts.map

@@ -56,7 +56,10 @@ declare class ChatBox extends ModelWithContact {
     onMessageUploadChanged(message: any): Promise<void>;
     onMessageAdded(message: any): void;
     clearMessages(): Promise<void>;
-    close(): Promise<void>;
+    /**
+     * @param {Object} [_ev]
+     */
+    close(_ev?: any): Promise<void>;
     announceReconnection(): void;
     onReconnection(): Promise<void>;
     onPresenceChanged(item: any): void;

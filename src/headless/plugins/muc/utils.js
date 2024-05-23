@@ -1,6 +1,3 @@
-/**
- * @typedef {import('@converse/skeletor').Model} Model
- */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
@@ -12,6 +9,9 @@ import { getUnloadEvent } from '../../utils/session.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
+/**
+ * @param {import('@converse/skeletor').Model} model
+ */
 export function isChatRoom (model) {
     return model?.get('type') === 'chatroom';
 }
@@ -20,6 +20,10 @@ export function shouldCreateGroupchatMessage (attrs) {
     return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
 }
 
+/**
+ * @param {import('./muc.js').MUCOccupant} occupant1
+ * @param {import('./muc.js').MUCOccupant} occupant2
+ */
 export function occupantsComparator (occupant1, occupant2) {
     const role1 = occupant1.get('role') || 'none';
     const role2 = occupant2.get('role') || 'none';
@@ -82,6 +86,8 @@ export async function routeToRoom (event) {
 /* Opens a groupchat, making sure that certain attributes
  * are correct, for example that the "type" is set to
  * "chatroom".
+ * @param {string} jid
+ * @param {Object} settings
  */
 export async function openChatRoom (jid, settings) {
     settings.type = CHATROOMS_TYPE;
@@ -97,7 +103,7 @@ export async function openChatRoom (jid, settings) {
  * See XEP-0249: Direct MUC invitations.
  * @private
  * @method _converse.ChatRoom#onDirectMUCInvitation
- * @param { Element } message - The message stanza containing the invitation.
+ * @param {Element} message - The message stanza containing the invitation.
  */
 export async function onDirectMUCInvitation (message) {
     const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),

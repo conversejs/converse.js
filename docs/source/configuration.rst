@@ -848,6 +848,7 @@ settings, it's not possible to add new emoji categories. There is however a
 To add custom emojis, you need to edit ``src/headless/emojis.json`` to add new
 entries to the map under the  ``custom`` key.
 
+You can also listen for the ``loadEmojis`` hook, that allows you to modify emojis.json at runtime.
 
 emoji_categories_label
 ----------------------

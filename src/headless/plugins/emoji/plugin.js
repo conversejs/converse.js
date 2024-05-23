@@ -95,7 +95,9 @@ converse.plugins.add('converse-emoji', {
                          *      return json;
                          *  });
                          */
-                        const json = await api.hook('loadEmojis', module.default);
+                        const json = (
+                            await api.hook('loadEmojis', module.default)
+                        ) ?? module.default; // in case there is no plugin to listen for the hook.
                         converse.emojis.json = json;
 
                         

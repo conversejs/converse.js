@@ -80,11 +80,12 @@ converse.plugins.add('converse-emoji', {
                         /**
                          * *Hook* which allows plugins to modify emojis definition.
                          *
-                         * Note: This hook is only fired one time, when ConverseJS initiliazed.
+                         * Note: This hook is only fired one time, when Converse is initialized.
                          *
                          * @event _converse#loadEmojis
                          * @param json
-                         *      See src/headless/emojis.json for more information about the content of this parameter.
+                         *      See {@link src/headless/emojis.json} for more information about the content of
+                         *      this parameter.
                          * @example
                          *  api.listen.on('loadEmojis', (json) => {
                          *      json.custom??= {};

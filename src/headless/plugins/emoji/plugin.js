@@ -83,11 +83,13 @@ converse.plugins.add('converse-emoji', {
                          * Note: This hook is only fired one time, when Converse is initialized.
                          *
                          * @event _converse#loadEmojis
+                         * @param context
+                         *      An empty context object.
                          * @param json
                          *      See {@link src/headless/emojis.json} for more information about the content of
                          *      this parameter.
                          * @example
-                         *  api.listen.on('loadEmojis', (json) => {
+                         *  api.listen.on('loadEmojis', (context, json) => {
                          *      json.custom??= {};
                          *      json.custom[":my_emoji"] = {
                          *          "sn":":my_emoji:","url":"https://example.com/my_emoji.png","c":"custom"
@@ -97,8 +99,8 @@ converse.plugins.add('converse-emoji', {
                          *  });
                          */
                         const json = (
-                            await api.hook('loadEmojis', module.default)
-                        ) ?? module.default; // in case there is no plugin to listen for the hook.
+                            await api.hook('loadEmojis', {}, module.default)
+                        )
                         converse.emojis.json = json;
 
                         

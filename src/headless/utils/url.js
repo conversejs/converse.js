@@ -13,8 +13,7 @@ const settings = settings_api;
 export function isValidURL (text) {
     try {
         return !!(new URL(text));
-    } catch (error) {
-        log.debug(error);
+    } catch {
         return false;
     }
 }

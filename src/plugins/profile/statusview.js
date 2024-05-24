@@ -31,3 +31,5 @@ class Profile extends CustomElement {
 }
 
 api.elements.define('converse-user-profile', Profile);
+
+export default Profile;

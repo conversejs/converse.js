@@ -487,9 +487,6 @@ export function xFormField2TemplateResult(xfield, options = {}) {
     } else if (xfield['type'] === 'boolean') {
         return tplFormCheckbox({ ...default_vals, ...xfield });
 
-    } else if (xfield.var === 'url' || xfield.var === 'uri' || isValidURL(xfield.value)) {
-        return tplFormUrl(xfield);
-
     } else if (xfield.var === 'username') {
         return tplFormUsername({
             ...default_vals,
@@ -511,6 +508,9 @@ export function xFormField2TemplateResult(xfield, options = {}) {
             data: xfield.uri.data,
             type: xfield.uri.type,
         });
+    } else if (xfield.type !== 'hidden' && (xfield.var === 'url' || xfield.var === 'uri' || isValidURL(xfield.value))) {
+        return tplFormUrl(xfield);
+
     } else {
         const date = xfield.value ? dayjs(xfield.value) : null;
         if (date?.isValid()) {

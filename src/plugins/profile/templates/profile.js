@@ -14,11 +14,17 @@ function tplSignout () {
 
 function tplUserSettingsButton (o) {
     const i18n_details = __('Show details about this chat client');
-    return html`<a class="controlbox-heading__btn show-client-info align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}>
+    return html`<a class="controlbox-heading__btn show-client-info align-self-center"
+        title="${i18n_details}"
+        @click=${o.showUserSettingsModal}>
+
         <converse-icon class="fa fa-cog" size="1em"></converse-icon>
     </a>`;
 }
 
+/**
+ * @param {import('../statusview').default} el
+ */
 export default (el) => {
     const chat_status = el.model.get('status') || 'offline';
     const status_message = el.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status));

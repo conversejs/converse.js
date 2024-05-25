@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-05-15 05:01+0000\n"
+"PO-Revision-Date: 2024-05-26 08:09+0000\n"
 "Last-Translator: Sketch6580 <Sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -35,7 +35,7 @@ msgstr "抱歉，我们无法连接到以下域的 XMPP 主机：%1$s"
 
 #: dist/converse-no-dependencies.js:20598
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr "此 XMPP 服务器不提供支持的认证机制"
+msgstr "XMPP 服务器未提供支持的身份验证机制"
 
 #: dist/converse-no-dependencies.js:26892
 msgid "Smileys and emotions"
@@ -228,11 +228,11 @@ msgstr "错误：\"%1$s\" 命令包含两个参数，用户的昵称和可选原
 #: dist/converse-no-dependencies.js:38539
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr "被禁止：您没有这样做所需的从属关系。"
+msgstr "禁止：您没有这样做所需的从属关系。"
 
 #: dist/converse-no-dependencies.js:38569
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr "被禁止：您没有这样做所需的角色。"
+msgstr "禁止：您没有这样做所需的角色。"
 
 #: dist/converse-no-dependencies.js:38658
 msgid "Error: couldn't register new nickname in members only room"
@@ -296,7 +296,7 @@ msgstr "%1$s 已经有了发言权"
 #: dist/converse-no-dependencies.js:39706
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s 已被禁言"
+msgstr "已禁言 %1$s"
 
 #: dist/converse-no-dependencies.js:39714
 #, javascript-format
@@ -346,7 +346,7 @@ msgstr "%1$s 已经有了发言权"
 #: dist/converse-no-dependencies.js:39733
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr "%1$s 已被禁言"
+msgstr "已禁言 %1$s"
 
 #: dist/converse-no-dependencies.js:40063
 #, javascript-format
@@ -356,7 +356,7 @@ msgstr "%2$s 封禁了 %1$s"
 #: dist/converse-no-dependencies.js:40063
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr "%1$s 已被封禁"
+msgstr "已封禁 %1$s"
 
 #: dist/converse-no-dependencies.js:40065
 #, javascript-format
@@ -366,22 +366,22 @@ msgstr "%1$s 的昵称已更改"
 #: dist/converse-no-dependencies.js:40067
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s 已被 %2$s 踢出"
+msgstr "%2$s 踢出了 %1$s"
 
 #: dist/converse-no-dependencies.js:40067
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr "%1$s 已被踢出"
+msgstr "已踢出 %1$s"
 
 #: dist/converse-no-dependencies.js:40069
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "%1$s 因为从属关系更改而被移除"
+msgstr "由于从属关系的更改移除了 %1$s"
 
 #: dist/converse-no-dependencies.js:40071
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr "%1$s 因不是成员而被移除"
+msgstr "因不是成员移除了 %1$s"
 
 #: dist/converse-no-dependencies.js:40091
 #, javascript-format
@@ -396,7 +396,7 @@ msgstr "%1$s 不再是此群聊的所有者"
 #: dist/converse-no-dependencies.js:40101
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "%1$s 不再被此群聊封禁"
+msgstr "此群聊不再封禁 %1$s"
 
 #: dist/converse-no-dependencies.js:40107
 #, javascript-format
@@ -417,7 +417,7 @@ msgstr "%1$s 现在是此群聊的 %2$s"
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
-msgstr "您选择的昵称已被保留或正在使用，请选择其他昵称。"
+msgstr "您选择的昵称已保留或正在使用，请选择其他昵称。"
 
 #: dist/converse-no-dependencies.js:40290
 msgid "Password incorrect"
@@ -508,7 +508,7 @@ msgstr "您的昵称已更改为 %1$s"
 
 #: dist/converse-no-dependencies.js:45419
 msgid "You have been banned from this groupchat"
-msgstr "您被此群聊封禁了"
+msgstr "此群聊已将您封禁了"
 
 #: dist/converse-no-dependencies.js:45420
 msgid "You have exited this groupchat due to a technical problem"
@@ -516,24 +516,24 @@ msgstr "由于技术问题，您已退出此群聊"
 
 #: dist/converse-no-dependencies.js:45421
 msgid "You have been kicked from this groupchat"
-msgstr "您被此群聊踢出了"
+msgstr "此群聊已将您踢出了"
 
 #: dist/converse-no-dependencies.js:45422
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr "由于从属关系更改，您已被此群聊移除"
+msgstr "由于从属关系更改，此群聊已将您移除了"
 
 #: dist/converse-no-dependencies.js:45423
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
-msgstr "您已被此群聊移除，因为群聊已更改为仅成员进入，而您不是成员"
+msgstr "此群聊已将您移除了，因为群聊已更改为仅成员进入，而您不是成员"
 
 #: dist/converse-no-dependencies.js:45424
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
-msgstr "您已被此群聊移除，因为托管此群聊的服务正在关闭"
+msgstr "此群聊已将您移除了，因为托管此群聊的服务正在关闭"
 
 #: dist/converse-no-dependencies.js:46103
 #: dist/converse-no-dependencies.js:76259
@@ -742,7 +742,7 @@ msgstr "未找到此角色的用户。"
 
 #: dist/converse-no-dependencies.js:69746
 msgid "Type here to filter the search results"
-msgstr "在这里输入以筛选搜索结果"
+msgstr "在此处输入以筛选搜索结果"
 
 #: dist/converse-no-dependencies.js:69748
 msgid "Show users"
@@ -754,8 +754,8 @@ msgid ""
 "multi-user chat. They're assigned either explicitly or implicitly as part of "
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
-msgstr "在群聊中，角色被分配给用户以授予或拒绝他们特定权限。用户被明确或隐含地分配为"
-"从属关系的一部分。无从属关系的角色只在用户会话期间有效。"
+msgstr "在群聊中，给用户分配角色以授予或拒绝他们特定权限。明确或隐含地分配用户为从属"
+"关系的一部分。无从属关系的角色只在用户会话期间有效。"
 
 #: dist/converse-no-dependencies.js:69750
 msgid ""
@@ -1444,12 +1444,12 @@ msgstr "访客"
 
 #: dist/converse-no-dependencies.js:99610
 msgid "Filter by name"
-msgstr "以名称筛选"
+msgstr "按名称筛选"
 
 #: dist/converse-no-dependencies.js:99611
 #: dist/converse-no-dependencies.js:121515
 msgid "Filter by status"
-msgstr "以在线状态筛选"
+msgstr "按状态筛选"
 
 #: dist/converse-no-dependencies.js:99612
 #: dist/converse-no-dependencies.js:121516
@@ -2456,7 +2456,7 @@ msgstr "添加"
 
 #: dist/converse-no-dependencies.js:120849
 msgid "Group"
-msgstr "组"
+msgstr "分组"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:121352
@@ -2478,11 +2478,11 @@ msgstr "单击以隐藏这些联系人"
 
 #: dist/converse-no-dependencies.js:121513
 msgid "Filter by contact name"
-msgstr "以联系人名称筛选"
+msgstr "按联系人名称筛选"
 
 #: dist/converse-no-dependencies.js:121514
 msgid "Filter by group name"
-msgstr "以组名筛选"
+msgstr "按分组名称筛选"
 
 #: dist/converse-no-dependencies.js:121517
 msgid "Unread"

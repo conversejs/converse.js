@@ -847,7 +847,7 @@ settings, it's not possible to add new emoji categories. There is however a
 
 Please note that the ``custom`` category is disabled by default, as it does not
 rely on a standard for now, and will only work for users that are using the same
-ConverseJS.
+Converse.
 If you want to enable the ``custom`` category, please use ``:converse:`` as
 value.
 

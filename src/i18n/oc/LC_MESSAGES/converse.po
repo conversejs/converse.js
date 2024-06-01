@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2022-07-26 12:21+0000\n"
-"Last-Translator: Vincent L <vincent.laporte+weblate@mailbox.org>\n"
+"PO-Revision-Date: 2024-06-01 20:11+0000\n"
+"Last-Translator: Quentin PAGÈS <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
 "Language: oc\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: dist/converse-no-dependencies.js:20526
 #: dist/converse-no-dependencies.js:20580
@@ -142,7 +142,7 @@ msgstr "Sètz pas autorizat a enviar de messatges a aquesta sala."
 #: dist/converse-no-dependencies.js:37312
 msgid "Sorry, an error occurred while trying to send your message."
 msgstr ""
-"Desencusatz, i aguèt una error mentre que se mandava lo vòstre messatge."
+"Desencusatz, i a agut una error mentre que se mandava lo vòstre messatge."
 
 #: dist/converse-no-dependencies.js:32555
 #, javascript-format

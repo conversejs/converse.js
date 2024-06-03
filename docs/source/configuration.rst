@@ -846,15 +846,16 @@ settings, it's not possible to add new emoji categories. There is however a
 "stickers").
 
 Please note that the ``custom`` category is disabled by default, as it does not
-rely on a standard for now, and will only work for users that are using the same
-Converse.
-If you want to enable the ``custom`` category, please use ``:converse:`` as
-value.
+rely on a standard for now, and will only work for users that are using versions
+of Converse that support it.
 
-To add custom emojis, you need to edit ``src/headless/emojis.json`` to add new
-entries to the map under the  ``custom`` key.
+To enable the ``custom`` category, set it to one of the keys under the
+``custom`` section in ``src/headless/plugins/emoji/emojis.json`` (for example
+``:converse:``). You can also add new entries there, to create more custom
+emojis.
 
-You can also listen for the ``loadEmojis`` hook, that allows you to modify emojis.json at runtime.
+You can also listen for the ``loadEmojis`` hook, that allows you to modify
+``emojis.json`` at runtime.
 
 emoji_categories_label
 ----------------------

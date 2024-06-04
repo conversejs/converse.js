@@ -208,12 +208,13 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
     } else if (options.unicode_only) {
         return shortname;
     } else {
+        const { url } = converse.emojis.by_sn[shortname];
         return html`<img class="emoji"
             loading="lazy"
             draggable="false"
             title="${shortname}"
             alt="${shortname}"
-            src="${converse.emojis.by_sn[shortname].url}">`;
+            src="${url.startsWith('.') ? `${api.settings.get('assets_path')}/${url}` : url}">`;
     }
 }
 

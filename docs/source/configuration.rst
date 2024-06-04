@@ -1682,7 +1682,8 @@ XMPP servers.
 assets_path
 -----------
 
-* Default: ``'/dist/'`` or the `publicPath <https://webpack.js.org/guides/public-path/>`_ value as configured in the relevant Webpack configuration.
+* Default: ``'/dist/'`` or the `publicPath <https://webpack.js.org/guides/public-path/>`_
+  value as configured in the relevant Webpack configuration.
 
 Since version 5.0.0, Converse serves a smaller bundle by extracting various
 resources (for example emojis and translations) into separate files (aka

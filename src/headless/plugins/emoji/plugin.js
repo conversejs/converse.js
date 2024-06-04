@@ -101,7 +101,6 @@ converse.plugins.add('converse-emoji', {
                         const json = await api.hook('loadEmojis', {}, module.default);
                         converse.emojis.json = json;
 
-                        
                         converse.emojis.by_sn = Object.keys(json).reduce(
                             (result, cat) => Object.assign(result, json[cat]),
                             {}

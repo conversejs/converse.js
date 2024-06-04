@@ -53,24 +53,24 @@ function tplRoomItem (el, room) {
     const i18n_leave_room = __('Leave this groupchat');
     const has_unread_msgs = room.get('num_unread_general') || room.get('has_activity');
     return html`
-        <div class="list-item controlbox-padded available-chatroom d-flex flex-row ${ isCurrentlyOpen(room) ? 'open' : '' } ${ has_unread_msgs ? 'unread-msgs' : '' }"
+        <li class="list-item controlbox-padded available-chatroom d-flex flex-row ${ isCurrentlyOpen(room) ? 'open' : '' } ${ has_unread_msgs ? 'unread-msgs' : '' }"
             data-room-jid="${room.get('jid')}">
-
-            <converse-avatar
-                .model=${room}
-                class="avatar avatar-muc"
-                name="${room.getDisplayName()}"
-                nonce=${room.vcard?.get('vcard_updated')}
-                height="30" width="30"></converse-avatar>
-
-            ${ room.get('num_unread') ?
-                    tplUnreadIndicator(room) :
-                    (room.get('has_activity') ? tplActivityIndicator() : '') }
 
             <a class="list-item-link open-room available-room w-100"
                 data-room-jid="${room.get('jid')}"
                 title="${__('Click to open this groupchat')}"
-                @click=${ev => el.openRoom(ev)}>${room.getDisplayName()}</a>
+                @click=${ev => el.openRoom(ev)}>
+                <converse-avatar
+                    .model=${room}
+                    class="avatar avatar-muc"
+                    name="${room.getDisplayName()}"
+                    nonce=${room.vcard?.get('vcard_updated')}
+                    height="30" width="30"></converse-avatar>
+                ${ room.get('num_unread') ?
+                        tplUnreadIndicator(room) :
+                        (room.get('has_activity') ? tplActivityIndicator() : '') }
+                <span>${room.getDisplayName()}</span>
+            </a>
 
             ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }
 
@@ -84,7 +84,7 @@ function tplRoomItem (el, room) {
                     size="1.2em"
                     color="${ isCurrentlyOpen(room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
             </a>
-        </div>`;
+        </li>`;
 }
 
 /**
@@ -194,11 +194,11 @@ export default (el) => {
         </div>
 
         <div class="list-container list-container--openrooms ${ rooms.length ? '' : 'hidden' }">
-            <div class="items-list rooms-list open-rooms-list ${ is_closed ? 'collapsed' : '' }">
+            <ul class="items-list rooms-list open-rooms-list ${ is_closed ? 'collapsed' : '' }">
                 ${ group_by_domain ?
                     tplRoomDomainGroupList(el, rooms) :
                     rooms.map(room => tplRoomItem(el, room))
                 }
-            </div>
+            </ul>
         </div>`;
 }

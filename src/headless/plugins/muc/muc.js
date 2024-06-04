@@ -746,7 +746,7 @@ class MUC extends ChatBox {
     getDisplayName () {
         const name = this.get('name');
         if (name) {
-            return name;
+            return name.trim();
         } else if (api.settings.get('locked_muc_domain') === 'hidden') {
             return Strophe.getNodeFromJid(this.get('jid'));
         } else {

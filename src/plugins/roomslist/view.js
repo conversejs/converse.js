@@ -26,6 +26,7 @@ export class RoomsList extends CustomElement {
         this.listenTo(chatboxes, 'remove', this.renderIfChatRoom);
         this.listenTo(chatboxes, 'destroy', this.renderIfChatRoom);
         this.listenTo(chatboxes, 'change', this.renderIfRelevantChange);
+        this.listenTo(chatboxes, 'vcard:add', () => this.requestUpdate());
         this.listenTo(chatboxes, 'vcard:change', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
 

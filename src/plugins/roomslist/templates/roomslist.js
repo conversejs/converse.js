@@ -66,10 +66,10 @@ function tplRoomItem (el, room) {
                     name="${room.getDisplayName()}"
                     nonce=${room.vcard?.get('vcard_updated')}
                     height="30" width="30"></converse-avatar>
-                ${ room.get('num_unread') ?
-                        tplUnreadIndicator(room) :
-                        (room.get('has_activity') ? tplActivityIndicator() : '') }
-                <span>${room.getDisplayName()}</span>
+                <span>${ room.get('num_unread') ?
+                            tplUnreadIndicator(room) :
+                            (room.get('has_activity') ? tplActivityIndicator() : '') }
+                    ${room.getDisplayName()}</span>
             </a>
 
             ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }
@@ -197,7 +197,7 @@ export default (el) => {
             <ul class="items-list rooms-list open-rooms-list ${ is_closed ? 'collapsed' : '' }">
                 ${ group_by_domain ?
                     tplRoomDomainGroupList(el, rooms) :
-                    rooms.map(room => tplRoomItem(el, room))
+                    rooms.map(/** @param {MUC} room */(room) => tplRoomItem(el, room))
                 }
             </ul>
         </div>`;

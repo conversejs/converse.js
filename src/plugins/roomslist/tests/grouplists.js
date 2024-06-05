@@ -32,7 +32,7 @@ describe("The list of MUC domains", function () {
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
         let room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
-        expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
+        expect(room_els[0].querySelector('span').innerText).toBe('room@conference.shakespeare.lit');
 
         // Check that a second room in the same domain is shown in the same
         // domain group.
@@ -64,7 +64,7 @@ describe("The list of MUC domains", function () {
         expect(room_els.length).toBe(1);
         group_els = lview.querySelectorAll(".muc-domain-group");
         expect(group_els.length).toBe(1);
-        expect(room_els[0].innerText).toBe('lounge@montague.lit');
+        expect(room_els[0].querySelector('span').innerText).toBe('lounge@montague.lit');
         expect(group_els[0].children[0].innerText.trim()).toBe('montague.lit');
         list = controlbox.querySelector('.list-container--openrooms');
         u.waitUntil(() => Array.from(list.classList).includes('hidden'));

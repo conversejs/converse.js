@@ -88,7 +88,13 @@
         "lines-around-comment": "off",
         "lines-around-directive": "off",
         "max-depth": "error",
-        "max-len": ["error", { "code": 120 }],
+        "max-len": ["error", {
+            "code": 120,
+            "comments": 120,
+            "ignoreStrings": true,
+            "ignoreUrls": true,
+            "ignoreTemlateLiterals": true
+        }],
         "max-lines": "off",
         "max-nested-callbacks": "off",
         "max-params": "off",

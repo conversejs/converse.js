@@ -64,7 +64,7 @@
             .list-item-badge {
                 opacity: 1;
                 border-radius: 25%;
-                color: white;
+                color: var(--badge-color);
                 font-size: var(--font-size-small);
                 line-height: var(--font-size-small);
             }

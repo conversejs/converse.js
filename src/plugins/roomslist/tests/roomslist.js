@@ -22,7 +22,7 @@ describe("A list of open groupchats", function () {
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
         let room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
-        expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
+        expect(room_els[0].querySelector('span').innerText).toBe('room@conference.shakespeare.lit');
 
         await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
@@ -33,7 +33,7 @@ describe("A list of open groupchats", function () {
         await view.close();
         room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
-        expect(room_els[0].innerText).toBe('lounge@montague.lit');
+        expect(room_els[0].querySelector('span').innerText).toBe('lounge@montague.lit');
         list = controlbox.querySelector('.list-container--openrooms');
         u.waitUntil(() => Array.from(list.classList).includes('hidden'));
 
@@ -149,7 +149,7 @@ describe("A list of open groupchats", function () {
         expect(Array.from(list.classList).includes('hidden')).toBeFalsy();
         const items = list.querySelectorAll('.list-item');
         expect(items.length).toBe(1);
-        await u.waitUntil(() => list.querySelector('.list-item .open-room').textContent.trim() === 'Bookmarked Lounge');
+        await u.waitUntil(() => list.querySelector('.list-item .open-room span').textContent.trim() === 'Bookmarked Lounge');
         expect(_converse.bookmarks.fetchBookmarks).toHaveBeenCalled();
     }));
 });
@@ -175,7 +175,7 @@ describe("A groupchat shown in the groupchats list", function () {
         let item = room_els[0];
         await u.waitUntil(() => _converse.chatboxes.get(muc_jid).get('hidden') === false);
         await u.waitUntil(() => u.hasClass('open', item), 1000);
-        expect(item.querySelector('.open-room').textContent.trim()).toBe('coven@chat.shakespeare.lit');
+        expect(item.querySelector('.open-room span').textContent.trim()).toBe('coven@chat.shakespeare.lit');
         await _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'}, true);
         await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
         room_els = lview.querySelectorAll(".open-room");
@@ -184,7 +184,7 @@ describe("A groupchat shown in the groupchats list", function () {
         room_els = lview.querySelectorAll(".available-chatroom.open");
         expect(room_els.length).toBe(1);
         item = room_els[0];
-        expect(item.querySelector('a').textContent.trim()).toBe('balcony@chat.shakespeare.lit');
+        expect(item.querySelector('.open-room span').textContent.trim()).toBe('balcony@chat.shakespeare.lit');
     }));
 
     it("shows the MUC avatar", mock.initConverse(

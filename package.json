@@ -90,7 +90,7 @@
     "fast-text-encoding": "^1.0.3",
     "html-webpack-plugin": "^5.3.2",
     "http-server": "^14.1.0",
-    "imports-loader": "^4.0.0",
+    "imports-loader": "^5.0.0",
     "install": "^0.13.0",
     "jsdoc": "^4.0.0",
     "karma": "^6.3.19",

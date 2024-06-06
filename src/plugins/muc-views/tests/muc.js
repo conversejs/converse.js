@@ -1062,7 +1062,6 @@ describe("Groupchats", function () {
         }));
 
         it("can be configured if you're its owner", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
             let sent_IQ, IQ_id;
             const sendIQ = _converse.api.connection.get().sendIQ;
             spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -1070,7 +1069,8 @@ describe("Groupchats", function () {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
 
-            await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+            const muc_jid = 'coven@chat.shakespeare.lit';
+            await _converse.api.rooms.open(muc_jid, {'nick': 'some1'});
             const view = await u.waitUntil(() => _converse.chatboxviews.get('coven@chat.shakespeare.lit'));
             await u.waitUntil(() => u.isVisible(view));
             // We pretend this is a new room, so no disco info is returned.
@@ -1247,33 +1247,66 @@ describe("Groupchats", function () {
                         .c('value').t('cauldronburn');
             _converse.api.connection.get()._dataRecv(mock.createRequest(config_stanza));
 
-            const membersonly = await u.waitUntil(() => view.querySelector('input[name="muc#roomconfig_membersonly"]'));
+            const modal = _converse.api.modal.get('converse-muc-config-modal');
+
+            const membersonly = await u.waitUntil(() => modal.querySelector('input[name="muc#roomconfig_membersonly"]'));
             expect(membersonly.getAttribute('type')).toBe('checkbox');
             membersonly.checked = true;
 
-            const moderated = view.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
+            const moderated = modal.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
             expect(moderated.length).toBe(1);
             expect(moderated[0].getAttribute('type')).toBe('checkbox');
             moderated[0].checked = true;
 
-            const password = view.querySelectorAll('input[name="muc#roomconfig_roomsecret"]');
+            const password = modal.querySelectorAll('input[name="muc#roomconfig_roomsecret"]');
             expect(password.length).toBe(1);
             expect(password[0].getAttribute('type')).toBe('password');
 
-            const allowpm = view.querySelectorAll('select[name="muc#roomconfig_allowpm"]');
+            const allowpm = modal.querySelectorAll('select[name="muc#roomconfig_allowpm"]');
             expect(allowpm.length).toBe(1);
             allowpm[0].value = 'moderators';
 
-            const presencebroadcast = view.querySelectorAll('select[name="muc#roomconfig_presencebroadcast"]');
+            const presencebroadcast = modal.querySelectorAll('select[name="muc#roomconfig_presencebroadcast"]');
             expect(presencebroadcast.length).toBe(1);
             presencebroadcast[0].value = ['moderator'];
 
-            view.querySelector('.chatroom-form input[type="submit"]').click();
+            // Set image file for avatar upload
+            const avatar_picker = modal.querySelector('converse-image-picker input[type="file"]');
+            const image_file = new File([_converse.default_avatar_image], 'avatar.svg', {
+                type: _converse.default_avatar_image_type,
+                lastModified: new Date(),
+            });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(image_file);
+            avatar_picker.files = dataTransfer.files;
 
-            expect(sent_IQ.querySelector('field[var="muc#roomconfig_membersonly"] value').textContent.trim()).toBe('1');
-            expect(sent_IQ.querySelector('field[var="muc#roomconfig_moderatedroom"] value').textContent.trim()).toBe('1');
-            expect(sent_IQ.querySelector('field[var="muc#roomconfig_allowpm"] value').textContent.trim()).toBe('moderators');
-            expect(sent_IQ.querySelector('field[var="muc#roomconfig_presencebroadcast"] value').textContent.trim()).toBe('moderator');
+            modal.querySelector('.chatroom-form input[type="submit"]').click();
+
+            console.log(Strophe.serialize(sent_IQ));
+
+            expect(Strophe.serialize(sent_IQ)).toBe(
+            `<iq id="${IQ_id}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/muc#owner">`+
+                `<x type="submit" xmlns="jabber:x:data">`+
+                    `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#roomconfig</value></field>`+
+                    `<field var="muc#roomconfig_roomname"><value>A Dark Cave</value></field>`+
+                    `<field var="muc#roomconfig_roomdesc"><value>The place for all good witches!</value></field>`+
+                    `<field var="muc#roomconfig_enablelogging"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_changesubject"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_allowinvites"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_allowpm"><value>moderators</value></field>`+
+                    `<field var="muc#roomconfig_presencebroadcast"><value>moderator</value></field>`+
+                    `<field var="muc#roomconfig_getmemberlist"><value>moderator</value>,<value>participant</value>,<value>visitor</value></field>`+
+                    `<field var="muc#roomconfig_publicroom"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_publicroom"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_persistentroom"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_moderatedroom"><value>1</value></field>`+
+                    `<field var="muc#roomconfig_membersonly"><value>1</value></field>`+
+                    `<field var="muc#roomconfig_passwordprotectedroom"><value>1</value></field>`+
+                    `<field var="muc#roomconfig_roomsecret"><value>cauldronburn</value></field>`+
+                `</x>`+
+                `</query>`+
+            `</iq>`);
         }));
 
 
@@ -1734,11 +1767,14 @@ describe("Groupchats", function () {
                  </query>
                  </iq>`);
             _converse.api.connection.get()._dataRecv(mock.createRequest(response_el));
-            await u.waitUntil(() => document.querySelector('.chatroom-form input'));
-            expect(view.querySelector('.chatroom-form legend').textContent.trim()).toBe("Configuration for room@conference.example.org");
-            sizzle('[name="muc#roomconfig_membersonly"]', view).pop().click();
-            sizzle('[name="muc#roomconfig_roomname"]', view).pop().value = "New room name"
-            view.querySelector('.chatroom-form input[type="submit"]').click();
+
+
+            modal = _converse.api.modal.get('converse-muc-config-modal');
+            await u.waitUntil(() => modal.querySelector('.chatroom-form input'));
+            expect(modal.querySelector('.chatroom-form legend').textContent.trim()).toBe("Configuration for room@conference.example.org");
+            sizzle('[name="muc#roomconfig_membersonly"]', modal).pop().click();
+            sizzle('[name="muc#roomconfig_roomname"]', modal).pop().value = "New room name"
+            modal.querySelector('.chatroom-form input[type="submit"]').click();
 
             iq = await u.waitUntil(() => IQs.filter(iq => iq.matches(`iq[to="${muc_jid}"][type="set"]`)).pop());
             const result = $iq({

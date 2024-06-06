@@ -2,9 +2,11 @@
 
 ## 11.0.0 (Unreleased)
 
+- #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
 - #1349: XEP-0392 Consistent Color Generation
 - #2716: Fix issue with chat display when opening via URL
+- #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - #3155: Some ad-hoc commands not working
 - #3155: Some adhoc commands aren't working

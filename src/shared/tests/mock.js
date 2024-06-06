@@ -38,8 +38,14 @@ function initConverse (promise_names=[], settings=null, func) {
         }
         document.title = "Converse Tests";
 
+
         await _initConverse(settings);
         await Promise.all((promise_names || []).map(_converse.api.waitUntil));
+
+        // eslint-disable-next-line max-len
+        _converse.default_avatar_image = 'PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==';
+        _converse.default_avatar_image_type = 'image/svg+xml';
+
         try {
             await func(_converse);
         } catch(e) {

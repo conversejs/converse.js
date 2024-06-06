@@ -9,6 +9,17 @@ import { createStanza, getVCard } from './utils.js';
 
 const { dayjs, u } = converse.env;
 
+/**
+ * @typedef {Object} VCardData
+ * @property {string} [VCardData.fn]
+ * @property {string} [VCardData.nickname]
+ * @property {string} [VCardData.role]
+ * @property {string} [VCardData.email]
+ * @property {string} [VCardData.url]
+ * @property {string} [VCardData.image_type]
+ * @property {string} [VCardData.image]
+ */
+
 export default {
     /**
      * The XEP-0054 VCard API
@@ -28,7 +39,8 @@ export default {
          *
          * @method _converse.api.vcard.set
          * @param {string} jid The JID for which the VCard should be set
-         * @param {object} data A map of VCard keys and values
+         * @param {VCardData} data A map of VCard keys and values
+         *
          * @example
          * let jid = _converse.bare_jid;
          * _converse.api.vcard.set( jid, {
@@ -124,7 +136,7 @@ export default {
          */
         async update (model, force) {
             const data = await this.get(model, force);
-            model = typeof model === 'string' ? _converse.exports.vcards.get(model) : model;
+            model = typeof model === 'string' ? _converse.state.vcards.get(model) : model;
             if (!model) {
                 log.error(`Could not find a VCard model for ${model}`);
                 return;

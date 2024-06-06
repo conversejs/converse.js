@@ -9,7 +9,8 @@ declare namespace _default {
          *
          * @method _converse.api.vcard.set
          * @param {string} jid The JID for which the VCard should be set
-         * @param {object} data A map of VCard keys and values
+         * @param {VCardData} data A map of VCard keys and values
+         *
          * @example
          * let jid = _converse.bare_jid;
          * _converse.api.vcard.set( jid, {
@@ -21,7 +22,7 @@ declare namespace _default {
          *     // Failure, e is your error object
          * }).
          */
-        function set(jid: string, data: any): Promise<any>;
+        function set(jid: string, data: VCardData): Promise<any>;
         /**
          * @method _converse.api.vcard.get
          * @param {Model|string} model Either a `Model` instance, or a string JID.
@@ -66,4 +67,13 @@ declare namespace _default {
 }
 export default _default;
 export type Model = import('@converse/skeletor').Model;
+export type VCardData = {
+    fn?: string;
+    nickname?: string;
+    role?: string;
+    email?: string;
+    url?: string;
+    image_type?: string;
+    image?: string;
+};
 //# sourceMappingURL=api.d.ts.map

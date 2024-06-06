@@ -16,7 +16,9 @@ export function getHeadingButtons (view, buttons) {
         const names = buttons.map(t => t.name);
         const idx = names.indexOf('details');
         const data_promise = Bookmarks.checkBookmarksSupport().then((s) => (s ? data : null));
-        return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
+        return idx > -1
+            ? [...buttons.slice(0, idx+1), data_promise, ...buttons.slice(idx+1)]
+            : [data_promise, ...buttons];
     }
     return buttons;
 }

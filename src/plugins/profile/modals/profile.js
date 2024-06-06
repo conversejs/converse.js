@@ -1,21 +1,15 @@
 
 /**
+ * @typedef {import('@converse/headless/types/plugins/vcard/api').VCardData} VCardData
  * @typedef {import("@converse/headless").XMPPStatus} XMPPStatus
  */
-import Compress from 'client-compress';
+import { _converse, api, log } from "@converse/headless";
 import BaseModal from "plugins/modal/modal.js";
 import tplProfileModal from "../templates/profile_modal.js";
 import { __ } from 'i18n';
-import { _converse, api, log } from "@converse/headless";
 import '../password-reset.js';
+import { compressImage, isImageWithAlphaChannel } from 'utils/file.js';
 
-
-const compress = new Compress({
-    targetSize: 0.1,
-    quality: 0.75,
-    maxWidth: 256,
-    maxHeight: 256
-});
 
 export default class ProfileModal extends BaseModal {
 
@@ -44,6 +38,9 @@ export default class ProfileModal extends BaseModal {
         return __('Your Profile');
     }
 
+    /**
+     * @param {VCardData} data
+     */
     async setVCard (data) {
         const bare_jid = _converse.session.get('bare_jid');
         try {
@@ -56,40 +53,43 @@ export default class ProfileModal extends BaseModal {
             ].join(" "));
             return;
         }
-        this.modal.hide();
     }
 
-    onFormSubmitted (ev) {
+    /**
+     * @param {SubmitEvent} ev
+     */
+    async onFormSubmitted (ev) {
         ev.preventDefault();
-        const reader = new FileReader();
-        const form_data = new FormData(ev.target);
-        const image_file = /** @type {File} */(form_data.get('image'));
-        const data = {
-            'fn': form_data.get('fn'),
-            'nickname': form_data.get('nickname'),
-            'role': form_data.get('role'),
-            'email': form_data.get('email'),
-            'url': form_data.get('url'),
-        };
-        if (!image_file.size) {
-            Object.assign(data, {
-                'image': this.model.vcard.get('image'),
-                'image_type': this.model.vcard.get('image_type')
-            });
-            this.setVCard(data);
+        const form_data = new FormData(/** @type {HTMLFormElement} */(ev.target));
+        const image_file = /** @type {File} */(form_data.get('avatar_image'));
+
+        const data = /** @type {VCardData} */({
+            fn: form_data.get('fn'),
+            nickname: form_data.get('nickname'),
+            role: form_data.get('role'),
+            email: form_data.get('email'),
+            url: form_data.get('url'),
+        });
+
+        if (image_file.size) {
+            const image_data = isImageWithAlphaChannel ? image_file : await compressImage(image_file);
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                Object.assign(data, {
+                    image: btoa(/** @type {string} */(reader.result)),
+                    image_type: image_file.type
+                });
+                await this.setVCard(data);
+                this.modal.hide();
+            };
+            reader.readAsBinaryString(image_data);
         } else {
-            const files = [image_file];
-            compress.compress(files).then((conversions) => {
-                const { photo, } = conversions[0];
-                reader.onloadend = () => {
-                    Object.assign(data, {
-                        'image': btoa(/** @type {string} */(reader.result)),
-                        'image_type': image_file.type
-                    });
-                    this.setVCard(data);
-                };
-                reader.readAsBinaryString(photo.data);
+            Object.assign(data, {
+                image: this.model.vcard.get('image'),
+                image_type: this.model.vcard.get('image_type')
             });
+            await this.setVCard(data);
+            this.modal.hide();
         }
     }
 }

@@ -14,9 +14,13 @@ export default class ImagePicker extends CustomElement {
     width: any;
     height: any;
     render(): import("lit-html").TemplateResult<1>;
-    /** @param {Event} ev */
+    /**
+     * @param {Event} ev
+     */
     openFileSelection(ev: Event): void;
-    /** @param {InputEvent} ev */
+    /**
+     * @param {InputEvent} ev
+     */
     updateFilePreview(ev: InputEvent): void;
     data: {
         data_uri: string | ArrayBuffer;

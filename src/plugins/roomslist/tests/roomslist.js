@@ -251,9 +251,10 @@ describe("A groupchat shown in the groupchats list", function () {
                     .c('value').t('Coven').up().up()
         _converse.api.connection.get()._dataRecv(mock.createRequest(config_stanza));
 
-        const name_el = await u.waitUntil(() => muc_el.querySelector('input[name="muc#roomconfig_roomname"]'));
+        const modal = _converse.api.modal.get('converse-muc-config-modal');
+        const name_el = await u.waitUntil(() => modal.querySelector('input[name="muc#roomconfig_roomname"]'));
         name_el.value = 'New room name';
-        muc_el.querySelector('.chatroom-form input[type="submit"]').click();
+        modal.querySelector('.chatroom-form input[type="submit"]').click();
 
         iq = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.matches(`iq[to="${muc_jid}"][type="set"]`)).pop());
         IQ_stanzas.length = 0; // Empty the array
@@ -294,24 +295,24 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(muc_initials_el.textContent).toBe(initials_el.textContent);
         expect(getComputedStyle(muc_initials_el).backgroundColor).toBe(getComputedStyle(initials_el).backgroundColor);
 
-        // eslint-disable-next-line max-len
-        const image = 'PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==';
-        const image_type = 'image/svg+xml';
-
         // Change MUC avatar and check that it reflects
         muc_el.model.vcard.set({
-            image,
-            image_type,
+            image: _converse.default_avatar_image,
+            image_type: _converse.default_avatar_image_type,
             vcard_updated: (new Date()).toISOString()
         });
 
         const muc_heading_avatar = await u.waitUntil(() => muc_el.querySelector(
             `converse-muc-heading converse-avatar svg image`
         ));
-        expect(muc_heading_avatar.getAttribute('href')).toBe(`data:image/svg+xml;base64,${image}`);
+
+        const { default_avatar_image, default_avatar_image_type } = _converse;
+        expect(muc_heading_avatar.getAttribute('href'))
+            .toBe(`data:${default_avatar_image_type};base64,${default_avatar_image}`);
 
         const list_el_image = rooms_list.querySelector('converse-avatar svg image');
-        expect(list_el_image.getAttribute('href')).toBe(`data:image/svg+xml;base64,${image}`);
+        expect(list_el_image.getAttribute('href'))
+            .toBe(`data:${default_avatar_image_type};base64,${default_avatar_image}`);
     }));
 
     it("can be closed", mock.initConverse(

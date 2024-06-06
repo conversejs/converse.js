@@ -9,7 +9,7 @@ const u = converse.env.utils;
 export default class MUCInviteModal extends BaseModal {
     constructor (options) {
         super(options);
-        this.id = 'converse-modtools-modal';
+        this.id = 'converse-muc-invite-modal';
         this.chatroomview = options.chatroomview;
     }
 
@@ -27,7 +27,7 @@ export default class MUCInviteModal extends BaseModal {
     }
 
     getAutoCompleteList () {
-        return _converse.state.roster.map((i) => ({ 'label': i.getDisplayName(), 'value': i.get('jid') }));
+        return _converse.state.roster.map((i) => ({ label: i.getDisplayName(), value: i.get('jid') }));
     }
 
     submitInviteForm (ev) {

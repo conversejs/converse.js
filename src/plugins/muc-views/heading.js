@@ -1,3 +1,4 @@
+import './modals/config.js';
 import './modals/muc-details.js';
 import './modals/muc-invite.js';
 import './modals/nickname.js';
@@ -63,7 +64,7 @@ export default class MUCHeading extends CustomElement {
      */
     showRoomDetailsModal (ev) {
         ev.preventDefault();
-        api.modal.show('converse-muc-details-modal', { 'model': this.model }, ev);
+        api.modal.show('converse-muc-details-modal', { model: this.model }, ev);
     }
 
     /**
@@ -71,7 +72,7 @@ export default class MUCHeading extends CustomElement {
      */
     showInviteModal (ev) {
         ev.preventDefault();
-        api.modal.show('converse-muc-invite-modal', { 'model': new Model(), 'chatroomview': this }, ev);
+        api.modal.show('converse-muc-invite-modal', { model: new Model(), 'chatroomview': this }, ev);
     }
 
     /**
@@ -82,8 +83,12 @@ export default class MUCHeading extends CustomElement {
         this.model.toggleSubjectHiddenState();
     }
 
-    getAndRenderConfigurationForm () {
-        this.model.session.set('view', converse.MUC.VIEWS.CONFIG);
+    /**
+     * @param {Event} ev
+     */
+    showConfigModal(ev) {
+        ev.preventDefault();
+        api.modal.show('converse-muc-config-modal', { model: this.model }, ev);
     }
 
     /**
@@ -123,7 +128,7 @@ export default class MUCHeading extends CustomElement {
             buttons.push({
                 'i18n_text': __('Configure'),
                 'i18n_title': __('Configure this groupchat'),
-                'handler': () => this.getAndRenderConfigurationForm(),
+                'handler': ev => this.showConfigModal(ev),
                 'a_class': 'configure-chatroom-button',
                 'icon_class': 'fa-wrench',
                 'name': 'configure'

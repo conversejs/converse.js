@@ -13,6 +13,7 @@ module.exports = merge(common, {
     devServer: {
         static: [ path.resolve(__dirname, '../') ],
         port: 3003,
+        allowedHosts: ['chat.example.org'],
         // https: {
         //     key: './certs/chat.example.org.key',
         //     cert: './certs/chat.example.org.crt',

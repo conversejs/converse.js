@@ -16,4 +16,12 @@ export function getShortnameReferences(text: string): {
  * @param {string} text
  */
 export function getCodePointReferences(text: string): any[];
+/**
+ * Determines whether the passed in string is just a single emoji shortname;
+ * @namespace u
+ * @method u.isOnlyEmojis
+ * @param { String } text - A string which migh be just an emoji shortname
+ * @returns { Boolean }
+ */
+export function isOnlyEmojis(text: string): boolean;
 //# sourceMappingURL=utils.d.ts.map

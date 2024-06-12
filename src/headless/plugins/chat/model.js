@@ -849,7 +849,6 @@ class ChatBox extends ModelWithContact {
     }
 
     async getOutgoingMessageAttributes (attrs) {
-        await api.emojis.initialize();
         const is_spoiler = !!this.get('composing_spoiler');
         const origin_id = u.getUniqueId();
         const text = attrs?.body;
@@ -858,7 +857,6 @@ class ChatBox extends ModelWithContact {
             'from': _converse.session.get('bare_jid'),
             'fullname': _converse.state.xmppstatus.get('fullname'),
             'id': origin_id,
-            'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
             'jid': this.get('jid'),
             'message': body,
             'msgid': origin_id,

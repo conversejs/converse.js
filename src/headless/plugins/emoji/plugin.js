@@ -3,13 +3,13 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { getOpenPromise } from '@converse/openpromise';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { getOpenPromise } from '@converse/openpromise';
-import './utils.js';
 import EmojiPicker from './picker.js';
 import emojis from './api.js';
+import { isOnlyEmojis } from './utils.js';
 
 converse.emojis = {
     'initialized': false,
@@ -61,5 +61,25 @@ converse.plugins.add('converse-emoji', {
         Object.assign(_converse, exports); // XXX: DEPRECATED
         Object.assign(_converse.exports, exports);
         Object.assign(api, emojis);
+
+        api.listen.on('getOutgoingMessageAttributes', async (_chat, attrs) => {
+            await api.emojis.initialize();
+            const { original_text: text } = attrs;
+            return {
+                ...attrs,
+                is_only_emojis: text ? isOnlyEmojis(text) : false,
+            };
+        });
+
+        async function parseMessage (_stanza, attrs) {
+            await api.emojis.initialize();
+            return {
+                ...attrs,
+                is_only_emojis: attrs.body ? isOnlyEmojis(attrs.body) : false
+            }
+        }
+
+        api.listen.on('parseMUCMessage', parseMessage);
+        api.listen.on('parseMessage', parseMessage);
     },
 });

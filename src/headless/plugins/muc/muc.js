@@ -1064,8 +1064,11 @@ class MUC extends ChatBox {
         return [updated_message, updated_references];
     }
 
+    /**
+     * @param {Object} [attrs] - A map of attributes to be saved on the message
+     * @returns {Promise<MUCMessage>}
+     */
     async getOutgoingMessageAttributes (attrs) {
-        await api.emojis.initialize();
         const is_spoiler = this.get('composing_spoiler');
         let text = '', references;
         if (attrs?.body) {
@@ -1082,11 +1085,11 @@ class MUC extends ChatBox {
             'msgid': origin_id,
             'from': `${this.get('jid')}/${this.get('nick')}`,
             'fullname': this.get('nick'),
-            'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
             'message': body,
             'nick': this.get('nick'),
             'sender': 'me',
-            'type': 'groupchat'
+            'type': 'groupchat',
+            'original_text': text,
         }, u.getMediaURLsMetadata(text));
 
         /**

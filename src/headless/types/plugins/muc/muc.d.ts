@@ -232,6 +232,11 @@ declare class MUC extends ChatBox {
      */
     parseTextForReferences(text: string): any[];
     /**
+     * @param {Object} [attrs] - A map of attributes to be saved on the message
+     * @returns {Promise<MUCMessage>}
+     */
+    getOutgoingMessageAttributes(attrs?: any): Promise<MUCMessage>;
+    /**
      * Utility method to construct the JID for the current user as occupant of the groupchat.
      * @private
      * @method MUC#getRoomJIDAndNick

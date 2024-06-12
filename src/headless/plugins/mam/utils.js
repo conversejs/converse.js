@@ -10,8 +10,8 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '../../log.js';
-import { parseMUCMessage } from '../../plugins/muc/parsers';
-import { parseMessage } from '../../plugins/chat/parsers';
+import { parseMUCMessage } from '../../plugins/muc/parsers.js';
+import { parseMessage } from '../../plugins/chat/parsers.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 
 const { NS } = Strophe;
@@ -102,7 +102,6 @@ export function preMUCJoinMAMFetch(muc) {
  * @param {('forwards'|'backwards'|null)} [should_page=null]
  */
 export async function handleMAMResult(model, result, query, options, should_page) {
-    await api.emojis.initialize();
     const is_muc = model.get('type') === CHATROOMS_TYPE;
     const doParseMessage = /** @param {Element} s*/ (s) =>
         is_muc ? parseMUCMessage(s, /** @type {MUC} */ (model)) : parseMessage(s);

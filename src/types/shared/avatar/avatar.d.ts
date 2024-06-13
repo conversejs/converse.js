@@ -3,6 +3,9 @@ export default class Avatar extends CustomElement {
         model: {
             type: ObjectConstructor;
         };
+        pickerdata: {
+            type: ObjectConstructor;
+        };
         name: {
             type: StringConstructor;
         };
@@ -17,6 +20,7 @@ export default class Avatar extends CustomElement {
         };
     };
     model: any;
+    pickerdata: any;
     width: number;
     height: number;
     name: string;

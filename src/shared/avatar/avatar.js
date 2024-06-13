@@ -10,6 +10,7 @@ export default class Avatar extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },
+            pickerdata: { type: Object },
             name: { type: String },
             width: { type: String },
             height: { type: String },
@@ -20,13 +21,19 @@ export default class Avatar extends CustomElement {
     constructor() {
         super();
         this.model = null;
+        this.pickerdata = null;
         this.width = 36;
         this.height = 36;
         this.name = '';
     }
 
     render() {
-        const { image_type, image, data_uri } = this.model?.vcard?.attributes || {};
+        const { image_type, image, data_uri } = Object.assign(
+            {},
+            this.pickerdata?.attributes,
+            this.model?.vcard?.attributes
+        );
+
         if (image_type && (image || data_uri)) {
             return tplAvatar({
                 classes: this.getAttribute('class'),

@@ -9,17 +9,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2023-03-25 16:37+0000\n"
-"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
+"PO-Revision-Date: 2024-06-14 19:00+0000\n"
+"Last-Translator: Wojciech Teichert <wojtekt99@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
 "translations/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: dist/converse-no-dependencies.js:20526
 #: dist/converse-no-dependencies.js:20580
@@ -684,7 +684,7 @@ msgstr "Dalej"
 
 #: dist/converse-no-dependencies.js:66870
 msgid "Complete"
-msgstr ""
+msgstr "Ukończ"
 
 #: dist/converse-no-dependencies.js:69455
 msgid "Add to Contacts"
@@ -867,7 +867,7 @@ msgstr "Powód"
 
 #: dist/converse-no-dependencies.js:71151
 msgid "Optional XMPP address for a new groupchat that replaces this one"
-msgstr ""
+msgstr "Opcjonalny adres XMPP dla nowego czatu grupowego który zastępuje ten"
 
 #: dist/converse-no-dependencies.js:71152
 msgid "replacement@example.org"
@@ -907,6 +907,8 @@ msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
 msgstr ""
+"Niektóre usługi i postacie XMPP pozwalają uprawnionym użytkownikom na "
+"wykonywanie na nich komend ad-hoc."
 
 #: dist/converse-no-dependencies.js:71484
 msgid "Commands found"
@@ -963,7 +965,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:73038
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Błąd: niespodziewany wynik"
 
 #: dist/converse-no-dependencies.js:73473
 msgid "Bookmark this groupchat"
@@ -1120,11 +1122,11 @@ msgstr "Wycofaj"
 
 #: dist/converse-no-dependencies.js:76563
 msgid "Copy"
-msgstr ""
+msgstr "Kopiuj"
 
 #: dist/converse-no-dependencies.js:76573
 msgid "Quote"
-msgstr ""
+msgstr "Cytuj"
 
 #: dist/converse-no-dependencies.js:82063
 msgid "Older versions"
@@ -1348,11 +1350,11 @@ msgstr "Adres URL połączenia"
 
 #: dist/converse-no-dependencies.js:91858
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
-msgstr ""
+msgstr "URL HTTP albo websocket używany do podłączenia z twoim serwerem XMPP"
 
 #: dist/converse-no-dependencies.js:91859
 msgid "e.g. wss://example.org/xmpp-websocket"
-msgstr ""
+msgstr "n.p. wss://example.org/xmpp-websocket"
 
 #: dist/converse-no-dependencies.js:91864
 msgid "Password"
@@ -2056,7 +2058,7 @@ msgstr "Resetowanie hasła"
 
 #: dist/converse-no-dependencies.js:107520
 msgid "The new passwords must match"
-msgstr ""
+msgstr "Nowe hasła muszą się zgadzać"
 
 #: dist/converse-no-dependencies.js:107521
 msgid "New password"
@@ -2072,12 +2074,12 @@ msgstr "Błąd limitu czasu"
 
 #: dist/converse-no-dependencies.js:108036
 msgid "Your server does not support password reset"
-msgstr ""
+msgstr "Twój serwer nie wspiera resetowania hasła"
 
 #: dist/converse-no-dependencies.js:108043
 msgid ""
 "Your server responded with an unknown error, check the console for details"
-msgstr ""
+msgstr "Twój serwer odpowiedział nieznanym błędem, sprawdź konsolę po szczegóły"
 
 #: dist/converse-no-dependencies.js:108062
 #, fuzzy
@@ -2086,7 +2088,7 @@ msgstr "Przepraszam, coś poszło nie tak podczas próby ustalenia przynależno�
 
 #: dist/converse-no-dependencies.js:108064
 msgid "Your server does not allow password reset"
-msgstr ""
+msgstr "Twój serwer nie pozwala na reset hasła"
 
 #: dist/converse-no-dependencies.js:108066
 #: dist/converse-no-dependencies.js:108068
@@ -2221,6 +2223,7 @@ msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
 msgstr ""
+"Błąd: nie można odszyfrować odebranego pliku, ponieważ nie można go pobrać"
 
 #: dist/converse-no-dependencies.js:111570
 msgid ""
@@ -2606,7 +2609,7 @@ msgstr "Nieprzeczytane"
 
 #: dist/converse-no-dependencies.js:121518
 msgid "Available"
-msgstr ""
+msgstr "Dostępne"
 
 #. *
 #. * @param {RosterView} el

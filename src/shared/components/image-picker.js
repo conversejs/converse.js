@@ -1,3 +1,4 @@
+import { Model } from '@converse/skeletor';
 import { CustomElement } from './element.js';
 import { __ } from 'i18n';
 import { api } from "@converse/headless";
@@ -13,12 +14,14 @@ export default class ImagePicker extends CustomElement {
         this.model = null;
         this.width = null;
         this.height = null;
+        this.data = new Model();
+        this.nonce = null;
     }
 
     static get properties () {
         return {
             height: { type: Number },
-            model: { type: Object},
+            model: { type: Object },
             width: { type: Number },
         }
     }
@@ -28,10 +31,11 @@ export default class ImagePicker extends CustomElement {
             <a class="change-avatar" @click=${this.openFileSelection} title="${i18n_profile_picture}">
                 <converse-avatar
                     .model=${this.model}
+                    .pickerdata=${this.data}
                     class="avatar"
                     name="${this.model.getDisplayName()}"
                     height="${this.height}"
-                    nonce=${this.model.vcard?.get('vcard_updated')}
+                    nonce=${this.nonce || this.model.vcard?.get('vcard_updated')}
                     width="${this.width}"></converse-avatar>
             </a>
             <input @change=${this.updateFilePreview} class="hidden" name="avatar_image" type="file"/>
@@ -50,14 +54,15 @@ export default class ImagePicker extends CustomElement {
      * @param {InputEvent} ev
      */
     updateFilePreview (ev) {
-        // FIXME: this doesn't nothing currently
         const file = /** @type {HTMLInputElement} */(ev.target).files[0];
         const reader = new FileReader();
         reader.onloadend = () => {
-            this.data = {
+            this.data.set({
                 'data_uri': reader.result,
                 'image_type': file.type
-            }
+            });
+            this.nonce = new Date().toISOString();
+            this.requestUpdate();
         }
         reader.readAsDataURL(file);
     }

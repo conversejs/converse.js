@@ -68,6 +68,7 @@ Adding more types of chats:
 
 ## 10.1.3 (2023-06-23)
 
+- Add the ability to edit the name and group of a roster contact throught the edit user details modal
 - Add the ability to set roles and affiliations via the MUC occupant modal
 - Fix `isOnlyEmojis is not a function` when using only `@converse/headless`
 - Fix `autojoin` checkbox state in MUC bookmark form

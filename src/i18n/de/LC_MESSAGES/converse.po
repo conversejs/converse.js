@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-05-21 18:02+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"PO-Revision-Date: 2024-06-18 00:30+0000\n"
+"Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -173,12 +173,11 @@ msgstr ""
 "nicht unterstützt wird."
 
 #: dist/converse-no-dependencies.js:33516
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
-"Die Größe Ihrer Datei, %1$s, überschreitet das erlaubte Maximum vom Server, "
-"welches bei %2$s liegt."
+"Die Größe Ihrer Datei, %1$s, überschreitet das erlaubte Maximum vom Server."
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format
@@ -1142,7 +1141,7 @@ msgstr "Kopieren"
 
 #: dist/converse-no-dependencies.js:76573
 msgid "Quote"
-msgstr ""
+msgstr "Zitieren"
 
 #: dist/converse-no-dependencies.js:82063
 msgid "Older versions"

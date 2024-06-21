@@ -8,219 +8,224 @@ msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-06-22 17:09+0000\n"
+"Last-Translator: 홍다연 <ekdus00@ajou.ac.kr>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/conversejs/"
+"translations/ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.6-rc\n"
 
 #: dist/converse-no-dependencies.js:20526
 #: dist/converse-no-dependencies.js:20580
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "채팅 서버에 연결하는 동안 오류가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:20587
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "XMPP 주소나 암호, 혹은 둘 모두가 잘못되었습니다. 다시 시도하십시오."
 
 #: dist/converse-no-dependencies.js:20596
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "죄송합니다. 도메인이 있는 XMPP 호스트에 연결할 수 없습니다: %1$s"
 
 #: dist/converse-no-dependencies.js:20598
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "XMPP 서버가 지원되는 인증 메커니즘을 제공하지 않았습니다."
 
 #: dist/converse-no-dependencies.js:26892
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "이모티콘과 감정 표시"
 
 #: dist/converse-no-dependencies.js:26893
 msgid "People"
-msgstr ""
+msgstr "사람"
 
 #: dist/converse-no-dependencies.js:26894
 msgid "Activities"
-msgstr ""
+msgstr "활동"
 
 #: dist/converse-no-dependencies.js:26895
 msgid "Travel"
-msgstr ""
+msgstr "여행"
 
 #: dist/converse-no-dependencies.js:26896
 msgid "Objects"
-msgstr ""
+msgstr "데이터"
 
 #: dist/converse-no-dependencies.js:26897
 msgid "Animals and nature"
-msgstr ""
+msgstr "동물과 자연"
 
 #: dist/converse-no-dependencies.js:26898
 msgid "Food and drink"
-msgstr ""
+msgstr "식음료"
 
 #: dist/converse-no-dependencies.js:26899
 msgid "Symbols"
-msgstr ""
+msgstr "표시"
 
 #: dist/converse-no-dependencies.js:26900
 msgid "Flags"
-msgstr ""
+msgstr "국기"
 
 #: dist/converse-no-dependencies.js:26901
 msgid "Stickers"
-msgstr ""
+msgstr "스티커"
 
 #: dist/converse-no-dependencies.js:28301
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "암호화할 수 없는 OMEMO 메시지"
 
 #: dist/converse-no-dependencies.js:28372
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "죄송합니다. 업로드 URL을 확인할 수 없습니다."
 
 #: dist/converse-no-dependencies.js:28391
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "죄송합니다. 파일 업로드 URL을 확인할 수 없습니다."
 
 #: dist/converse-no-dependencies.js:28466
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
-msgstr ""
+msgstr "죄송합니다. 파일을 업로드하지 못했습니다. 서버의 응답: \"파일명\""
 
 #: dist/converse-no-dependencies.js:28468
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "죄송합니다. 파일을 업로드하지 못했습니다."
 
 #: dist/converse-no-dependencies.js:32166
 #: dist/converse-no-dependencies.js:39690
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "\"사용자\"가 입력하는 중..."
 
 #: dist/converse-no-dependencies.js:32168
 #: dist/converse-no-dependencies.js:39692
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "\"사용자\"가 입력을 멈췄습니다."
 
 #: dist/converse-no-dependencies.js:32170
 #: dist/converse-no-dependencies.js:32557
 #: dist/converse-no-dependencies.js:39694
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr ""
+msgstr "\"사용자\"가 채팅방을 나갔습니다."
 
 #: dist/converse-no-dependencies.js:32247
 #: dist/converse-no-dependencies.js:37299
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "메세지 전송을 취소할 수 없습니다."
 
 #: dist/converse-no-dependencies.js:32249
 #: dist/converse-no-dependencies.js:37303
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr ""
+msgstr "죄송합니다, 메시지 전송을 취소하는 동안 오류가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:32254
 msgid "You're not allowed to send a message."
-msgstr ""
+msgstr "메세지 전송이 불가한 상대입니다."
 
 #: dist/converse-no-dependencies.js:32256
 #: dist/converse-no-dependencies.js:37312
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr ""
+msgstr "죄송합니다, 메세지 전송 도중 오류가 발생하였습니다."
 
 #: dist/converse-no-dependencies.js:32555
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "\"사용자\"가 오프라인 상태가 되었습니다."
 
 #: dist/converse-no-dependencies.js:32559
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "\"사용자\"가 현재 바쁜 상태입니다."
 
 #: dist/converse-no-dependencies.js:32561
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "\"사용자\"가 접속중입니다."
 
 #: dist/converse-no-dependencies.js:33476
 #: dist/converse-no-dependencies.js:33495
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "죄송합니다. 서버에서 파일 업로드를 지원하지 않는 것 같습니다."
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr ""
+msgstr "파일 \"파일명\"의 크기는 서버의 최대 용량을 초과합니다."
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
-msgstr ""
+msgstr "파일 \"파일명\"의 크기는 서버 설정 용량인 \"설정값\"을 초과합니다."
 
 #: dist/converse-no-dependencies.js:35096
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "오류: MUC \"MUC명\"에 대한  \"목록 리스트\"  목록을 가져오는 동안 시간이 "
+"초과되었습니다"
 
 #: dist/converse-no-dependencies.js:35105
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "오류: MUC \"MUC명\"에 대한 \"목록명\" 목록을 가져올 수 없습니다"
 
 #: dist/converse-no-dependencies.js:37301
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
-msgstr ""
+msgstr "단체 채팅에 참여하지 않으셨기 때문에 회신이 전달되지 않았습니다."
 
 #: dist/converse-no-dependencies.js:37308
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
+msgstr "메시지 전송 권한이 허용되지 않았기 때문에 메시지가 전달되지 않았습니다."
 
 #: dist/converse-no-dependencies.js:37310
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "그룹 채팅에 참여하지 않으셨기 때문에 메시지가 전달되지 않았습니다."
 
 #: dist/converse-no-dependencies.js:37666
 msgid "A timeout happened while while trying to retract your message."
-msgstr ""
+msgstr "메시지를 전송을 취소하는 동안 시간 초과가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:38427
 msgid "Sorry, an error happened while running the command."
-msgstr ""
+msgstr "죄송합니다, 명령을 실행하는 동안 오류가 발생했습니다."
 
 #: dist/converse-no-dependencies.js:38427
 #: dist/converse-no-dependencies.js:101263
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "자세한 내용은 브라우저의 개발자 콘솔창을 확인하십시오."
 
 #: dist/converse-no-dependencies.js:38446
 #: dist/converse-no-dependencies.js:38464
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
+msgstr "오류 : 입력값에 따른 채팅 참가자가 존재하지 않습니다."
 
 #: dist/converse-no-dependencies.js:38454
 msgid "Error: found multiple groupchat participant based on your arguments"
-msgstr ""
+msgstr "오류 : 입력값에 따른 여러 명의 채팅 참가자가 존재하지 않습니다."
 
 #: dist/converse-no-dependencies.js:38478
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
-msgstr ""
+msgstr "오류: \"명령어 이름\" 명령은 사용자의 아이디와 경우에 따라서는 이유,  두 "
+"가지를 필요로 합니다."
 
 #: dist/converse-no-dependencies.js:38539
 msgid ""
@@ -229,7 +234,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38569
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "허가 제한 : 해당 사항 처리를 위한 필수적인 권한을 보유하고 있지 않습니다."
 
 #: dist/converse-no-dependencies.js:38658
 msgid "Error: couldn't register new nickname in members only room"
@@ -237,43 +242,44 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38973
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "이 그룹 채팅에 등록할 수 없습니다."
 
 #: dist/converse-no-dependencies.js:38975
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr ""
+msgstr "이 그룹 채팅은 회원 전용이므로 등록할 수 없습니다."
 
 #: dist/converse-no-dependencies.js:39011
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
-msgstr ""
+msgstr "이 그룹 채팅에서 닉네임을 등록할 수 없습니다. 등록을 지원하지 않습니다."
 
 #: dist/converse-no-dependencies.js:39013
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
-msgstr ""
+msgstr "이 그룹 채팅에 닉네임을 등록할 수 없습니다. 유효하지 않은 데이터 양식이 "
+"제공되었습니다."
 
 #: dist/converse-no-dependencies.js:39284
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "\"사용자\"가 항목을 설정하였습니다."
 
 #: dist/converse-no-dependencies.js:39284
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "\"사용자\"가 항목을 삭제하였습니다."
 
 #: dist/converse-no-dependencies.js:39696
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "\"사용자\"가 그룹 채팅방에 참여하였습니다."
 
 #: dist/converse-no-dependencies.js:39698
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "\"사용자\"가 그룹 채팅방을 나갔습니다."
 
 #: dist/converse-no-dependencies.js:39700
 #, javascript-format

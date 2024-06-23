@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 10.1.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-06-22 17:09+0000\n"
+"PO-Revision-Date: 2024-06-23 09:43+0000\n"
 "Last-Translator: 홍다연 <ekdus00@ajou.ac.kr>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/conversejs/"
 "translations/ko/>\n"
@@ -284,82 +284,82 @@ msgstr "\"사용자\"가 그룹 채팅방을 나갔습니다."
 #: dist/converse-no-dependencies.js:39700
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "현재 \"관리자명\"이 관리자입니다."
 
 #: dist/converse-no-dependencies.js:39702
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "\"사용자명\"은 더 이상 관리자가 아닙니다."
 
 #: dist/converse-no-dependencies.js:39704
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "\"사용자명\"가 발언 중입니다."
 
 #: dist/converse-no-dependencies.js:39706
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "\"사용자\"가 묵음 처리되었습니다."
 
 #: dist/converse-no-dependencies.js:39714
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "\"사용자1\"과 \"사용자2\""
 
 #: dist/converse-no-dependencies.js:39717
 #, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "\"사용자\"들이 현재 입력 중입니다."
 
 #: dist/converse-no-dependencies.js:39719
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "\"사용자명\"가 입력을 중지했습니다."
 
 #: dist/converse-no-dependencies.js:39721
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "\"사용자명\"가 채팅방에 자리를 비웠습니다."
 
 #: dist/converse-no-dependencies.js:39723
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "\"사용자명\"가 채팅방에 입장하였습니다."
 
 #: dist/converse-no-dependencies.js:39725
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "\"사용자명\"가 채팅방을 나갔습니다."
 
 #: dist/converse-no-dependencies.js:39727
 #, javascript-format
 msgid "%1$s are now moderators"
-msgstr ""
+msgstr "현재 \"사용자명\"들이 관리자가 되었습니다."
 
 #: dist/converse-no-dependencies.js:39729
 #, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr ""
+msgstr "\"사용자명\"들은 더이상 관리자가 아닙니다."
 
 #: dist/converse-no-dependencies.js:39731
 #, javascript-format
 msgid "%1$s have been given voices"
-msgstr ""
+msgstr "\"사용자명\"은 현재 발언 중입니다."
 
 #: dist/converse-no-dependencies.js:39733
 #, javascript-format
 msgid "%1$s have been muted"
-msgstr ""
+msgstr "\"사용자명\"가 현재 음소거되었습니다."
 
 #: dist/converse-no-dependencies.js:40063
 #, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr ""
+msgstr "\"사용자1\"이 \"사용자2\"에 의해 강퇴되었습니다."
 
 #: dist/converse-no-dependencies.js:40063
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "\"사용자\"가 강퇴되었습니다."
 
 #: dist/converse-no-dependencies.js:40065
 #, javascript-format

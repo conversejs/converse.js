@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2019-01-31 14:33+0000\n"
-"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"PO-Revision-Date: 2024-07-02 10:09+0000\n"
+"Last-Translator: 许艺菲 <yifeixu040@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
 "Language: eo\n"
@@ -17,65 +17,65 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: dist/converse-no-dependencies.js:20526
 #: dist/converse-no-dependencies.js:20580
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "Okazis eraro dum konekto al la babilservilo."
 
 #: dist/converse-no-dependencies.js:20587
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Via XMPP-adreso kaj/aŭ pasvorto estas malĝustaj. Bonvolu reprovi."
 
 #: dist/converse-no-dependencies.js:20596
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "Pardonu, ni ne povis konektiĝi al la XMPP-gastiganto kun domajno: %1$s"
 
 #: dist/converse-no-dependencies.js:20598
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "La XMPP-servilo ne ofertis subtenatan aŭtentikigmekanismon"
 
 #: dist/converse-no-dependencies.js:26892
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Ridetoj kaj emocioj"
 
 #: dist/converse-no-dependencies.js:26893
 msgid "People"
-msgstr ""
+msgstr "Personoj"
 
 #: dist/converse-no-dependencies.js:26894
 msgid "Activities"
-msgstr ""
+msgstr "Aktivecoj"
 
 #: dist/converse-no-dependencies.js:26895
 msgid "Travel"
-msgstr ""
+msgstr "Vojaĝado"
 
 #: dist/converse-no-dependencies.js:26896
 msgid "Objects"
-msgstr ""
+msgstr "Objektoj"
 
 #: dist/converse-no-dependencies.js:26897
 msgid "Animals and nature"
-msgstr ""
+msgstr "Bestoj kaj naturo"
 
 #: dist/converse-no-dependencies.js:26898
 msgid "Food and drink"
-msgstr ""
+msgstr "Manĝaĵo kaj trinkaĵo"
 
 #: dist/converse-no-dependencies.js:26899
 msgid "Symbols"
-msgstr ""
+msgstr "Simboloj"
 
 #: dist/converse-no-dependencies.js:26900
 msgid "Flags"
-msgstr ""
+msgstr "Flagoj"
 
 #: dist/converse-no-dependencies.js:26901
 msgid "Stickers"
-msgstr ""
+msgstr "Glumarkoj"
 
 #: dist/converse-no-dependencies.js:28301
 msgid "Undecryptable OMEMO message"

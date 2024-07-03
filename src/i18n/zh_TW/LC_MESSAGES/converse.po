@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2023-08-31 03:17+0000\n"
-"Last-Translator: Alan Lin <achihanlin@gmail.com>\n"
+"PO-Revision-Date: 2024-07-03 15:10+0000\n"
+"Last-Translator: Ricky From Hong Kong <lamricky11@hotmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 "domain: converse\n"
 "lang: zh\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -162,10 +162,10 @@ msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "抱歉，看來您的伺服器不支援檔案上傳。"
 
 #: dist/converse-no-dependencies.js:33516
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr "您的檔案大小 %1$s 超過了您的伺服器限制 %2$s。"
+msgstr "您的檔案大小 %1$s 超過了您的伺服器限制。"
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format

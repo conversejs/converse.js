@@ -2,6 +2,7 @@
 
 ## 11.0.0 (Unreleased)
 
+- Fix: image modal dialog cannot be opened the second time because the dialog is left in undefined, not initial state
 - #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
 - #1349: XEP-0392 Consistent Color Generation

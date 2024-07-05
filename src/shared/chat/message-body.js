@@ -37,6 +37,7 @@ export default class MessageBody extends CustomElement {
 
     onImgClick (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
+        api.modal.remove('converse-image-modal');
         api.modal.show('converse-image-modal', {'src': ev.target.src}, ev);
     }
 

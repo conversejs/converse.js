@@ -2,6 +2,7 @@
 
 ## 11.0.0 (Unreleased)
 
+- Fix: unhandled exception in disconnect function when chat panel is not shown by UI
 - #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
 - #1349: XEP-0392 Consistent Color Generation

@@ -2,6 +2,8 @@
 
 ## 11.0.0 (Unreleased)
 
+- Fix: unhandled exception on new message arriving when user has not permitted playing audio in the browser
+- Fix: incorrect unread messages counter badge on the application icon after switching to new XMPP user
 - #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
 - #1349: XEP-0392 Consistent Color Generation

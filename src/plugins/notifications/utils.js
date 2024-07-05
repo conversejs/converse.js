@@ -34,6 +34,7 @@ export function areDesktopNotificationsEnabled () {
  */
 
 export function clearFavicon () {
+    favicon?.badge(0);
     favicon = null;
     /** @type navigator */(navigator).clearAppBadge?.()
         .catch(e => log.error("Could not clear unread count in app badge " + e));
@@ -302,7 +303,12 @@ export async function handleMessageNotification (data) {
      * @example _converse.api.listen.on('messageNotification', data => { ... });
      */
     api.trigger('messageNotification', data);
-    playSoundNotification();
+    try{
+        playSoundNotification();
+    } catch (error) {
+        // Likely "play() failed because the user didn't interact with the document first"
+        log.error(error);
+    }
     showMessageNotification(data);
 }
 

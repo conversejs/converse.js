@@ -26,9 +26,12 @@ export function disconnect () {
      * we reconnect, "onConnected" will be called,
      * to fetch the roster again and to send out a presence stanza.
      */
-    const view = _converse.state.chatboxviews.get('controlbox');
-    view.model.set({ 'connected': false });
-    return view;
+    try{
+        const view = _converse.state.chatboxviews.get('controlbox');
+        view.model.set({ 'connected': false });
+        return view;
+    } catch(error){}
+    return {};
 }
 
 export function clearSession () {
@@ -102,3 +105,4 @@ export function validateJID (form) {
     jid_element.setCustomValidity('');
     return true;
 }
+

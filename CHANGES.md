@@ -2,8 +2,6 @@
 
 ## 11.0.0 (Unreleased)
 
-- Fix: unhandled exception on new message arriving when user has not permitted playing audio in the browser
-- Fix: incorrect unread messages counter badge on the application icon after switching to new XMPP user
 - #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
 - #1349: XEP-0392 Consistent Color Generation
@@ -22,6 +20,9 @@
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users
 - Fix: prevent busy-loop when session resumption fails
+- Fix: unhandled exception on new message arriving when user has not permitted playing audio in the browser
+- Fix: incorrect unread messages counter badge on the application icon after switching to new XMPP user
+- Fix: unhandled exception in disconnect function when controlbox is not shown by UI
 - Add an occupants filter to the MUC sidebar
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.

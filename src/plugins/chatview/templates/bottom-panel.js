@@ -16,7 +16,7 @@ export default (o) => {
                 html`<div class="new-msgs-indicator" @click=${ev => o.viewUnreadMessages(ev)}>▼ ${ unread_msgs } ▼</div>` : '' }
         ${api.settings.get('show_toolbar') ? html`
             <converse-chat-toolbar
-                class="chat-toolbar no-text-select"
+                class="btn-toolbar chat-toolbar no-text-select"
                 .model=${o.model}
                 ?composing_spoiler="${o.model.get('composing_spoiler')}"
                 ?show_call_button="${show_call_button}"

@@ -49,7 +49,7 @@ export default class EmojiDropdown extends DropdownBase {
         const color = is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
 
         return html`
-            <button class="dropdown-toggle dropdown-toggle--no-caret toggle-emojis"
+            <button class="btn dropdown-toggle dropdown-toggle--no-caret toggle-emojis"
                     type="button"
                     id="${this.id}"
                     title="${__('Insert emojis')}"

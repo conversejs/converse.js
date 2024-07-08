@@ -26,7 +26,7 @@ export default (o) => {
                     ${ (o.type !== HEADLINES_TYPE) ? html`<a class="user show-msg-author-modal" @click=${o.showUserDetailsModal}>${ display_name }</a>` : display_name }
                 </div>
             </div>
-            <div class="chatbox-title__buttons row g-0">
+            <div class="chatbox-title__buttons btn-toolbar g-0">
                 ${ until(getDropdownButtons(o.heading_buttons_promise), '') }
                 ${ until(getStandaloneButtons(o.heading_buttons_promise), '') }
             </div>

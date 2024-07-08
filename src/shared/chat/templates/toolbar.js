@@ -11,7 +11,7 @@ function tplSendButton () {
 
 export default (el) => {
     return html`
-        <span class="toolbar-buttons">${until(el.getButtons(), '')}</span>
+        <span class="btn-group toolbar-buttons">${until(el.getButtons(), '')}</span>
         ${ el.show_send_button ? tplSendButton() : '' }
     `;
 }

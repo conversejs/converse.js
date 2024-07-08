@@ -803,7 +803,11 @@ export function getOMEMOToolbarButton (toolbar_el, buttons) {
         color = `var(--muc-toolbar-btn-disabled-color)`;
     }
     buttons.push(html`
-        <button class="toggle-omemo" title="${title}" data-disabled=${!model.get('omemo_supported')} @click=${toggleOMEMO}>
+        <button type="button"
+                class="btn toggle-omemo"
+                title="${title}"
+                data-disabled=${!model.get('omemo_supported')}
+                @click=${toggleOMEMO}>
             <converse-icon
                 class="fa ${model.get('omemo_active') ? `fa-lock` : `fa-unlock`}"
                 path-prefix="${api.settings.get('assets_path')}"

@@ -68,7 +68,10 @@ export class ChatToolbar extends CustomElement {
             const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
             const i18n_start_call = __('Start a call');
             buttons.push(html`
-                <button class="toggle-call" @click=${this.toggleCall} title="${i18n_start_call}">
+                <button type="button"
+                        class="btn toggle-call"
+                        @click=${this.toggleCall}
+                        title="${i18n_start_call}">
                     <converse-icon color="var(${color})" class="fa fa-phone" size="1em"></converse-icon>
                 </button>`
             );
@@ -94,7 +97,8 @@ export class ChatToolbar extends CustomElement {
             const i18n_hide_occupants = __('Hide participants');
             const i18n_show_occupants = __('Show participants');
             buttons.push(html`
-                <button class="toggle_occupants right"
+                <button type="button"
+                        class="btn toggle_occupants"
                         title="${this.hidden_occupants ? i18n_show_occupants : i18n_hide_occupants}"
                         @click=${this.toggleOccupants}>
                     <converse-icon
@@ -124,13 +128,20 @@ export class ChatToolbar extends CustomElement {
             const i18n_choose_file =  __('Choose a file to send')
             const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
             return html`
-                <button title="${i18n_choose_file}" @click=${this.toggleFileUpload}>
+                <button type="button"
+                        class="btn"
+                        title="${i18n_choose_file}"
+                        @click=${this.toggleFileUpload}>
                     <converse-icon
                         color="var(${color})"
                         class="fa fa-paperclip"
                         size="1em"></converse-icon>
                 </button>
-                <input type="file" @change=${this.onFileSelection} class="fileupload" multiple="" style="display:none"/>`;
+                <input type="file"
+                    @change=${this.onFileSelection}
+                    class="fileupload"
+                    multiple=""
+                    style="display:none"/>`;
         } else {
             return '';
         }
@@ -150,7 +161,8 @@ export class ChatToolbar extends CustomElement {
         }
         const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
         const markup = html`
-            <button class="toggle-compose-spoiler"
+            <button type="button"
+                    class="btn toggle-compose-spoiler"
                     title="${i18n_toggle_spoiler}"
                     @click=${this.toggleComposeSpoilerMessage}>
                 <converse-icon

@@ -18,7 +18,7 @@ const tplCanEdit = (o) => {
             : ''}
         ${show_toolbar
             ? html` <converse-chat-toolbar
-                  class="chat-toolbar no-text-select"
+                  class="btn-toolbar chat-toolbar no-text-select"
                   .model=${o.model}
                   ?hidden_occupants="${o.model.get('hidden_occupants')}"
                   ?is_groupchat="${o.is_groupchat}"

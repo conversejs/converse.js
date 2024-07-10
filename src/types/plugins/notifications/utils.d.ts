@@ -7,7 +7,7 @@ export function clearFavicon(): void;
 export function updateUnreadFavicon(): void;
 /**
  * Is this a group message for which we should notify the user?
- * @param { MUCMessageAttributes } attrs
+ * @param {MUCMessageAttributes} attrs
  */
 export function shouldNotifyOfGroupMessage(attrs: any): Promise<any>;
 export function showFeedbackNotification(data: any): void;

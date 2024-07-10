@@ -52,16 +52,21 @@ export function updateUnreadFavicon () {
 }
 
 
+/**
+ * @param {Array<Object>} references - A list of objects representing XEP-0372 references
+ * @param {string} muc_jid
+ * @param {string} nick
+ */
 function isReferenced (references, muc_jid, nick) {
     const bare_jid = _converse.session.get('bare_jid');
-    const check = r => [bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
-    return references.reduce((acc, r) => acc || check(r), false);
+    const check = (r) => [bare_jid, `${muc_jid}/${nick}`].includes(r.uri.replace(/^xmpp:/, ''));
+    return references.reduce((acc, r) => (acc || (r.uri && check(r))), false);
 }
 
 
 /**
  * Is this a group message for which we should notify the user?
- * @param { MUCMessageAttributes } attrs
+ * @param {MUCMessageAttributes} attrs
  */
 export async function shouldNotifyOfGroupMessage (attrs) {
     if (!attrs?.body && !attrs?.message) {

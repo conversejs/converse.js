@@ -113,13 +113,13 @@
                 &:not(#controlbox) {
                     .box-flyout {
                         @include media-breakpoint-up(md) {
-                            max-width: 66.666667%;
+                            @include make-col(8);
                         }
                         @include media-breakpoint-up(lg) {
-                            max-width: 75%;
+                            @include make-col(9);
                         }
                         @include media-breakpoint-up(xl) {
-                            max-width: 83.333333%;
+                            @include make-col(10);
                         }
                     }
                 }

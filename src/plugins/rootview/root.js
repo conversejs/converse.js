@@ -32,6 +32,7 @@ export default class ConverseRoot extends CustomElement {
     setClasses () {
         this.className = "";
         this.classList.add('container-fluid');
+        this.classList.add('g-0');
         this.classList.add('conversejs');
         this.classList.add(`converse-${api.settings.get('view_mode')}`);
         this.classList.add(`theme-${getTheme()}`);

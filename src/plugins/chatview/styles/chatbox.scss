@@ -1,7 +1,16 @@
 .conversejs {
+    converse-chats {
+        &.converse-overlayed {
+            .chatbox {
+                margin: 0 var(--overlayed-chat-gutter);
+            }
+        }
+    }
+}
+
+.conversejs {
     .chatbox {
         text-align: left;
-        margin: 0 var(--chat-gutter);
 
         @media screen and (max-height: $mobile-landscape-height) {
             margin: 0;

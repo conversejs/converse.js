@@ -82,8 +82,6 @@
             background-color: var(--controlbox-pane-background-color);
         }
 
-        margin-right: calc(3 * var(--chat-gutter));
-
         &.logged-out {
             .box-flyout {
                 .controlbox-pane {
@@ -329,23 +327,17 @@
                 text-align: center;
                 background-color: var(--controlbox-head-color);
                 float: right;
-                margin: 0 var(--chat-gutter);
+                margin: 0 var(--overlayed-chat-gutter);
             }
 
             #controlbox {
                 order: -1;
                 min-width: var(--controlbox-width) !important;
                 width: var(--controlbox-width);
+
                 .box-flyout {
                     min-width: var(--controlbox-width) !important;
                     width: var(--controlbox-width);
-                }
-
-                @media screen and (max-width: $mobile-portrait-length) {
-                    margin-left: -15px;
-                }
-                @include media-breakpoint-down(sm) {
-                    margin-left: -15px;
                 }
 
                 .login-trusted {
@@ -510,7 +502,6 @@
 
         &.converse-fullscreen {
             #controlbox {
-                margin-left: -15px;
                 @media screen and (max-width: $mobile-portrait-length) {
                     margin-left: 0;
                 }
@@ -519,13 +510,13 @@
                 }
                 .box-flyout {
                     @include media-breakpoint-up(md) {
-                        max-width: 33.333333%;
+                        @include make-col(4);
                     }
                     @include media-breakpoint-up(lg) {
-                        max-width: 25%;
+                        @include make-col(3);
                     }
                     @include media-breakpoint-up(xl) {
-                        max-width: 17.666667%;
+                        @include make-col(2);
                     }
                 }
             }
@@ -570,7 +561,6 @@
                 .box-flyout {
                     width: 100vw !important;
                     height: var(--fullpage-chat-height);
-                    margin-right: -15px;
                 }
                 .sidebar {
                     display: block;

@@ -1,6 +1,6 @@
 export default class Confirm extends BaseModal {
     confirmation: any;
-    renderModal(): import("lit-html").TemplateResult<1>;
+    renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
     onConfimation(ev: any): void;
     renderModalFooter(): string;

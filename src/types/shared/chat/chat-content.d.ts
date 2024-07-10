@@ -8,7 +8,7 @@ export default class ChatContent extends CustomElement {
     initialize(): Promise<void>;
     setModels(): Promise<void>;
     model: any;
-    render(): import("lit-html").TemplateResult<1> | "";
+    render(): import("lit").TemplateResult<1> | "";
     scrollDown(): void;
 }
 import { CustomElement } from "../components/element.js";

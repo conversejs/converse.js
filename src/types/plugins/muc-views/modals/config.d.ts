@@ -1,5 +1,5 @@
 export default class MUCConfigModal extends BaseModal {
-    renderModal(): import("lit-html").TemplateResult<1>;
+    renderModal(): import("lit").TemplateResult<1>;
     connectedCallback(): void;
     getModalTitle(): any;
     getConfig(): Promise<void>;

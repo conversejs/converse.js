@@ -1,7 +1,7 @@
 export default class OccupantModal extends BaseModal {
     message: any;
     getVcard(): any;
-    renderModal(): import("lit-html").TemplateResult<1>;
+    renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
     addToContacts(): void;
     toggleForm(ev: any): void;

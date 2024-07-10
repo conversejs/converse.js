@@ -25,7 +25,7 @@ export default class ConverseGIFElement extends CustomElement {
     supergif: any;
     updated(changed: any): void;
     render(): any;
-    renderErrorFallback(): string | import("lit-html").TemplateResult<1>;
+    renderErrorFallback(): string | import("lit").TemplateResult<1>;
     setHover(): void;
     hover_timeout: NodeJS.Timeout;
     unsetHover(): void;

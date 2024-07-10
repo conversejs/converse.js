@@ -9,7 +9,7 @@ declare class MUCBookmarkForm extends CustomElement {
     willUpdate(changed_properties: any): void;
     model: any;
     bookmark: any;
-    render(): import("lit-html").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1>;
     onBookmarkFormSubmitted(ev: any): void;
     removeBookmark(ev: any): void;
     closeBookmarkForm(ev: any): void;

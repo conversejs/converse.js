@@ -5,7 +5,7 @@ declare class BaseModal extends ElementView {
     model: any;
     initialized: any;
     modal: any;
-    toHTML(): import("lit-html").TemplateResult<1>;
+    toHTML(): import("lit").TemplateResult<1>;
     /**
      * @returns {string|TemplateResult}
      */

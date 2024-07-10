@@ -16,7 +16,7 @@ export default class MUCChatArea extends CustomElement {
     model: any;
     onMouseMove: any;
     onMouseUp: any;
-    render(): import("lit-html").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1>;
     shouldShowSidebar(): boolean;
     getHelpMessages(): string[];
     onMousedown(ev: any): void;

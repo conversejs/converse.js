@@ -19,11 +19,11 @@ export default class MessageBody extends CustomElement {
     initialize(): void;
     onImgClick(ev: any): void;
     onImgLoad(): void;
-    render(): import("lit-html/directive").DirectiveResult<{
-        new (_partInfo: import("lit-html/directive").PartInfo): {
-            render(text: any, offset: any, options: any, callback: any): import("lit-html").TemplateResult<1>;
+    render(): import("lit/directive").DirectiveResult<{
+        new (_partInfo: import("lit/directive").PartInfo): {
+            render(text: any, offset: any, options: any, callback: any): import("lit").TemplateResult<1>;
             readonly _$isConnected: boolean;
-            update(_part: import("lit-html").Part, props: unknown[]): unknown;
+            update(_part: import("lit").Part, props: unknown[]): unknown;
         };
     }>;
 }

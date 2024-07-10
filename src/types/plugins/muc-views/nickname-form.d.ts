@@ -8,7 +8,7 @@ declare class MUCNicknameForm extends CustomElement {
     jid: any;
     connectedCallback(): void;
     model: any;
-    render(): import("lit-html").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1>;
     submitNickname(ev: any): void;
     closeModal(): void;
 }

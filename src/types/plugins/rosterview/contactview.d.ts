@@ -6,7 +6,7 @@ export default class RosterContact extends CustomElement {
     };
     model: any;
     initialize(): void;
-    render(): import("lit-html").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1>;
     openChat(ev: any): void;
     removeContact(ev: any): Promise<void>;
     acceptRequest(ev: any): Promise<void>;

@@ -215,6 +215,38 @@ For example, in your webpack config file, you could add the following to the
 This will override the template that gets imported at the path ``plugins/profile/templates/profile.js``
 with your own template at the path ``templates/custom-profile.js`` (relative to your webpack config file).
 
+Overriding templates
+--------------------
+
+Converse defines many custom elements.
+These elements are derived from the ``CustomElement`` class, and decared using ``api.elements.define``.
+You can redefine any custom element just by calling ``api.elements.define`` again in your plugin ``initialize`` method.
+If you want to extend the custom element class, you can get it using ``api.elements.registry``.
+Here is an example:
+
+.. code-block:: javascript
+
+    // You can get the lit html function in the converse env:
+    const html = converse.env.html;
+
+    converse.plugins.add('myplugin', {
+
+        initialize: function () {
+            const _converse = this._converse;
+            // to get the base class of the `converse-chat-message` custom element:
+            const Message = _converse.api.elements.registry['converse-chat-message'];
+            // Now you can override it:
+            class MyMessage extends Message {
+                // Override the render method:
+                render () {
+                    return html`MyPlugin was here - ${super.render()}`
+                }
+            }
+            // And now, just redefined the custom element:
+            _converse.api.elements.define('converse-chat-message', MyMessage)
+        },
+    });
+
 
 Object and class Overrides
 --------------------------

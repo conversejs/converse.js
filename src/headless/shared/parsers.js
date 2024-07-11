@@ -379,7 +379,8 @@ export function isArchived (original_stanza) {
  * @typedef {'list-single'|'list-multi'} XFormListTypes
  * @typedef {'jid-single'|'jid-multi'} XFormJIDTypes
  * @typedef {'text-multi'|'text-private'|'text-single'} XFormTextTypes
- * @typedef {XFormListTypes|XFormJIDTypes|XFormTextTypes|'fixed'|'boolean'|'url'|'hidden'} XFormFieldTypes
+ * @typedef {'date'|'datetime'} XFormDateTypes
+ * @typedef {XFormListTypes|XFormJIDTypes|XFormTextTypes|XFormDateTypes|'fixed'|'boolean'|'url'|'hidden'} XFormFieldTypes
  *
  * @typedef {Object} XFormField
  * @property {string} var

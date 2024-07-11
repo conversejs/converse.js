@@ -90,8 +90,8 @@
         "max-depth": "error",
         "max-len": ["error", {
             "code": 120,
-            "comments": 120,
             "ignoreStrings": true,
+            "ignoreComments": true,
             "ignoreUrls": true
         }],
         "max-lines": "off",

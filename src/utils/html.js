@@ -510,16 +510,17 @@ export function xFormField2TemplateResult(xfield, options = {}) {
         });
     } else if (xfield.type !== 'hidden' && (xfield.var === 'url' || xfield.var === 'uri' || isValidURL(xfield.value))) {
         return tplFormUrl(xfield);
-
-    } else {
+    } else if (xfield.type === 'datetime' || xfield.type === 'date') {
         const date = xfield.value ? dayjs(xfield.value) : null;
-        if (date?.isValid()) {
-            return tplDateInput({
-                ...default_vals,
-                ...xfield,
-                value: date.format('YYYY-MM-DDTHH:mm:ss'),
-            });
-        }
+        const value = date?.isValid()
+            ? (xfield.type === 'datetime' ? date.format('YYYY-MM-DDTHH:mm:ss') : date.format('YYYY-MM-DD'))
+            : null;
+        return tplDateInput({
+            ...default_vals,
+            ...xfield,
+            value
+        });
+    } else {
 
         return tplFormInput({
             ...default_vals,

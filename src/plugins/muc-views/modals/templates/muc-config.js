@@ -27,7 +27,7 @@ export default (el) => {
             new_password: !el.model.features.get('passwordprotected'),
             fixed_username: el.model.get('jid'),
         };
-        fieldTemplates = fields.map((f) => u.xFormField2TemplateResult(f, stanza, options));
+        fieldTemplates = fields.map((f) => u.xFormField2TemplateResult(f, options));
         instructions = stanza.querySelector('instructions')?.textContent;
         title = stanza.querySelector('title')?.textContent;
     }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-05-26 08:09+0000\n"
+"PO-Revision-Date: 2024-07-12 03:09+0000\n"
 "Last-Translator: Sketch6580 <Sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: dist/converse-no-dependencies.js:20526
 #: dist/converse-no-dependencies.js:20580
@@ -39,7 +39,7 @@ msgstr "XMPP 服务器未提供支持的身份验证机制"
 
 #: dist/converse-no-dependencies.js:26892
 msgid "Smileys and emotions"
-msgstr "表情"
+msgstr "微笑和表情"
 
 #: dist/converse-no-dependencies.js:26893
 msgid "People"
@@ -59,11 +59,11 @@ msgstr "物品"
 
 #: dist/converse-no-dependencies.js:26897
 msgid "Animals and nature"
-msgstr "动物与自然"
+msgstr "动物和自然"
 
 #: dist/converse-no-dependencies.js:26898
 msgid "Food and drink"
-msgstr "饮食"
+msgstr "食物和饮料"
 
 #: dist/converse-no-dependencies.js:26899
 msgid "Symbols"
@@ -94,7 +94,7 @@ msgstr "抱歉，无法确定文件上传 URL。"
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
-msgstr "抱歉，无法成功上传您的文件。您的服务器回应：\"%1$s\""
+msgstr "抱歉，无法成功上传您的文件。您的服务器回应：“%1$s”"
 
 #: dist/converse-no-dependencies.js:28468
 msgid "Sorry, could not succesfully upload your file."
@@ -162,14 +162,14 @@ msgstr "抱歉，您的服务器似乎不支持文件上传。"
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr "您的文件的大小，%1$s，超过您的服务器允许的最大值。"
+msgstr "文件的大小 %1$s 超过了服务器允许的最大值。"
 
 #: dist/converse-no-dependencies.js:33516
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
-msgstr "您的文件大小 %1$s 超过了您的服务器限制 %2$s。"
+msgstr "文件的大小 %1$s 超过了服务器允许的最大值 %2$s。"
 
 #: dist/converse-no-dependencies.js:35096
 #, javascript-format
@@ -198,7 +198,7 @@ msgstr "您的消息未传递，因为您不在群聊中。"
 
 #: dist/converse-no-dependencies.js:37666
 msgid "A timeout happened while while trying to retract your message."
-msgstr "尝试撤回您的消息超时。"
+msgstr "尝试撤回您的消息时发生超时。"
 
 #: dist/converse-no-dependencies.js:38427
 msgid "Sorry, an error happened while running the command."
@@ -216,14 +216,14 @@ msgstr "错误：找不到符合条件的群聊参与者"
 
 #: dist/converse-no-dependencies.js:38454
 msgid "Error: found multiple groupchat participant based on your arguments"
-msgstr "错误：找到多个群聊参与者"
+msgstr "错误：找到符合条件的多个群聊参与者"
 
 #: dist/converse-no-dependencies.js:38478
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
-msgstr "错误：\"%1$s\" 命令包含两个参数，用户的昵称和可选原因。"
+msgstr "错误：“%1$s”命令有两个参数，用户昵称和可选原因。"
 
 #: dist/converse-no-dependencies.js:38539
 msgid ""
@@ -271,12 +271,12 @@ msgstr "%1$s 清空了话题"
 #: dist/converse-no-dependencies.js:39696
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr "%1$s 已进入群聊"
+msgstr "%1$s 进入了群聊"
 
 #: dist/converse-no-dependencies.js:39698
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr "%1$s 已离开群聊"
+msgstr "%1$s 离开了群聊"
 
 #: dist/converse-no-dependencies.js:39700
 #, javascript-format
@@ -457,15 +457,15 @@ msgstr "尝试进入此群聊时出错"
 
 #: dist/converse-no-dependencies.js:45402
 msgid "This groupchat is not anonymous"
-msgstr "此群聊不是匿名的"
+msgstr "此群聊是非匿名的"
 
 #: dist/converse-no-dependencies.js:45403
 msgid "This groupchat now shows unavailable members"
-msgstr "此群聊现在显示不可用成员"
+msgstr "此群聊现在显示离线成员"
 
 #: dist/converse-no-dependencies.js:45404
 msgid "This groupchat does not show unavailable members"
-msgstr "此群聊不显示不可用的成员"
+msgstr "此群聊不显示离线成员"
 
 #: dist/converse-no-dependencies.js:45405
 msgid "The groupchat configuration has changed"
@@ -481,15 +481,15 @@ msgstr "群聊日志记录现已禁用"
 
 #: dist/converse-no-dependencies.js:45408
 msgid "This groupchat is now no longer anonymous"
-msgstr "此群聊现在不再匿名"
+msgstr "此群聊现在不再是匿名的"
 
 #: dist/converse-no-dependencies.js:45409
 msgid "This groupchat is now semi-anonymous"
-msgstr "此群聊现在是半匿名"
+msgstr "此群聊现在是半匿名的"
 
 #: dist/converse-no-dependencies.js:45410
 msgid "This groupchat is now fully-anonymous"
-msgstr "此群聊现在完全匿名"
+msgstr "此群聊现在是完全匿名的"
 
 #: dist/converse-no-dependencies.js:45411
 msgid "A new groupchat has been created"
@@ -552,7 +552,7 @@ msgstr "错误"
 
 #: dist/converse-no-dependencies.js:46103
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr "抱歉，尝试保存书签时出错。"
+msgstr "抱歉，尝试保存书签时出现问题。"
 
 #: dist/converse-no-dependencies.js:46184
 msgid "Timeout Error"
@@ -562,7 +562,7 @@ msgstr "超时错误"
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
-msgstr "服务器未在响应时间内返回书签。您可以尝试重新加载本页面。"
+msgstr "服务器未在允许的时间内返回书签。您可以重新加载页面以再次请求它们。"
 
 #: dist/converse-no-dependencies.js:51360
 msgid "An error occurred while trying to fetch the command form"
@@ -631,7 +631,7 @@ msgstr "取消"
 
 #: dist/converse-no-dependencies.js:66867
 msgid "Execute"
-msgstr "运行"
+msgstr "执行"
 
 #: dist/converse-no-dependencies.js:66868
 msgid "Previous"
@@ -643,7 +643,7 @@ msgstr "下一个"
 
 #: dist/converse-no-dependencies.js:66870
 msgid "Complete"
-msgstr "完毕"
+msgstr "完成"
 
 #: dist/converse-no-dependencies.js:69455
 msgid "Add to Contacts"
@@ -687,7 +687,7 @@ msgstr "头衔"
 
 #: dist/converse-no-dependencies.js:69470
 msgid "Occupant Id"
-msgstr "占用者 ID"
+msgstr "参与者 ID"
 
 #: dist/converse-no-dependencies.js:69608
 #: dist/converse-no-dependencies.js:70259
@@ -785,7 +785,7 @@ msgstr "%1$s 邀请您加入群聊：%2$s"
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
-msgstr "%1$s 邀请您加入群聊：%2$s，并且留下原因：\"%3$s\""
+msgstr "%1$s 邀请您加入群聊：%2$s，并且留下原因：“%3$s”"
 
 #: dist/converse-no-dependencies.js:71138
 msgid "Are you sure you want to destroy this groupchat?"
@@ -830,13 +830,13 @@ msgstr "确定"
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
-msgstr "找不到符合此昵称的参与者。他们可能已经离开了群聊。"
+msgstr "找不到有此昵称的参与者。他们可能已经离开了群聊。"
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:71421
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr "您的昵称为 \"%1$s\""
+msgstr "您的昵称为“%1$s”"
 
 #: dist/converse-no-dependencies.js:71439
 msgid "Error: invalid number of arguments"
@@ -869,7 +869,7 @@ msgstr "找不到命令"
 #: dist/converse-no-dependencies.js:71528
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr "下载文件 \"%1$s\""
+msgstr "下载文件“%1$s”"
 
 #: dist/converse-no-dependencies.js:72858
 msgid "Sorry, an error occurred while looking for commands on that entity."
@@ -887,12 +887,12 @@ msgstr "抱歉，尝试执行命令时出错。有关详细信息，请参阅开
 
 #: dist/converse-no-dependencies.js:72978
 msgid "Executing"
-msgstr "执行中"
+msgstr "正在执行"
 
 #: dist/converse-no-dependencies.js:72985
 #: dist/converse-no-dependencies.js:72990
 msgid "Completed"
-msgstr "完毕"
+msgstr "已完成"
 
 #: dist/converse-no-dependencies.js:73031
 msgid ""
@@ -913,16 +913,16 @@ msgstr "将此群聊添加书签"
 #: dist/converse-no-dependencies.js:74618
 #: dist/converse-no-dependencies.js:119670
 msgid "Bookmark"
-msgstr "加入书签"
+msgstr "书签"
 
 #: dist/converse-no-dependencies.js:73506
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "是否确定要移除此书签 \"%1$s\"？"
+msgstr "是否确定要移除书签“%1$s”？"
 
 #: dist/converse-no-dependencies.js:73558
 msgid "Unbookmark this groupchat"
-msgstr "取消此群聊的书签"
+msgstr "移除此群聊的书签"
 
 #: dist/converse-no-dependencies.js:73559
 #: dist/converse-no-dependencies.js:119193
@@ -956,11 +956,11 @@ msgstr "书签"
 #: dist/converse-no-dependencies.js:74302
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "\"%1$s\" 的书签"
+msgstr "“%1$s”的书签"
 
 #: dist/converse-no-dependencies.js:74303
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr "您希望在启动时自动加入此群聊吗？"
+msgstr "是否在启动时自动加入此群聊？"
 
 #: dist/converse-no-dependencies.js:74304
 msgid "Remove"
@@ -1005,15 +1005,15 @@ msgstr "是否确定要撤回此消息？"
 
 #: dist/converse-no-dependencies.js:76258
 msgid "A timeout occurred while trying to retract the message"
-msgstr "尝试撤回这条消息超时"
+msgstr "尝试撤回此消息时发生超时"
 
 #: dist/converse-no-dependencies.js:76262
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "抱歉，不允许您撤回这条消息。"
+msgstr "抱歉，不允许您撤回此消息。"
 
 #: dist/converse-no-dependencies.js:76336
 msgid "You are about to retract this message."
-msgstr "您正要撤回这条消息。"
+msgstr "您即将撤回此消息。"
 
 #: dist/converse-no-dependencies.js:76336
 msgid ""
@@ -1031,7 +1031,7 @@ msgstr "可选原因"
 
 #: dist/converse-no-dependencies.js:76349
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "抱歉，不允许您撤回这条消息"
+msgstr "抱歉，不允许您撤回此消息"
 
 #: dist/converse-no-dependencies.js:76468
 msgid "Show media"
@@ -1081,7 +1081,7 @@ msgstr "消息版本"
 
 #: dist/converse-no-dependencies.js:82292
 msgid "Remove as contact"
-msgstr "作为联系人移除"
+msgstr "移除联系人"
 
 #: dist/converse-no-dependencies.js:82299
 msgid "Refresh"
@@ -1111,7 +1111,7 @@ msgstr "URL"
 #: dist/converse-no-dependencies.js:122822
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "抱歉，尝试作为联系人移除 %1$s 时出错。"
+msgstr "抱歉，尝试移除联系人 %1$s 时出错。"
 
 #: dist/converse-no-dependencies.js:83530
 msgid "Sorry, something went wrong while trying to refresh"
@@ -1147,7 +1147,7 @@ msgstr "显示更少"
 #: dist/converse-no-dependencies.js:84902
 #, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s 移除了这条消息"
+msgstr "%1$s 移除了此消息"
 
 #: dist/converse-no-dependencies.js:86179
 msgid "Search results"
@@ -1168,7 +1168,7 @@ msgstr "消息剩余字数"
 
 #: dist/converse-no-dependencies.js:87805
 msgid "Send the message"
-msgstr "发送此消息"
+msgstr "发送消息"
 
 #: dist/converse-no-dependencies.js:88037
 msgid "Start a call"
@@ -1337,7 +1337,7 @@ msgstr "关闭这些公告"
 
 #: dist/converse-no-dependencies.js:95362
 msgid "Click to open this server message"
-msgstr "单击展开这条服务器消息"
+msgstr "单击打开此服务器消息"
 
 #: dist/converse-no-dependencies.js:95371
 msgid "Announcements"
@@ -1345,7 +1345,7 @@ msgstr "公告"
 
 #: dist/converse-no-dependencies.js:95997
 msgid "Click to load missing messages"
-msgstr "单击加载缺失的消息"
+msgstr "单击以加载丢失的消息"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:96990
@@ -1616,7 +1616,7 @@ msgstr "此群聊已不存在"
 #: dist/converse-no-dependencies.js:101323
 #, javascript-format
 msgid "The following reason was given: \"%1$s\""
-msgstr "给出了以下原因：\"%1$s\""
+msgstr "给出了以下原因：“%1$s”"
 
 #: dist/converse-no-dependencies.js:102024
 #, javascript-format
@@ -1626,7 +1626,7 @@ msgstr "此操作由 %1$s 完成。"
 #: dist/converse-no-dependencies.js:102028
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr "给出的原因是：\"%1$s\"。"
+msgstr "给出的原因是：“%1$s”。"
 
 #: dist/converse-no-dependencies.js:102059
 msgid "Topic"
@@ -1654,7 +1654,7 @@ msgstr "描述"
 
 #: dist/converse-no-dependencies.js:102074
 msgid "Features"
-msgstr "特性"
+msgstr "特征"
 
 #: dist/converse-no-dependencies.js:102075
 #: dist/converse-no-dependencies.js:119158
@@ -1739,7 +1739,7 @@ msgstr "持久"
 
 #: dist/converse-no-dependencies.js:102094
 msgid "This groupchat persists even if it's unoccupied"
-msgstr "即使所有用户离开，此群聊仍将持续存在"
+msgstr "即使所有参与者离开，此群聊仍将持续存在"
 
 #: dist/converse-no-dependencies.js:102095
 #: dist/converse-no-dependencies.js:119164
@@ -2321,7 +2321,7 @@ msgstr "提供者拒绝了您的注册尝试。请检查您输入的内容是否
 
 #: dist/converse-no-dependencies.js:118223
 msgid " e.g. conversejs.org"
-msgstr " 比如 conversejs.org"
+msgstr " 例如 conversejs.org"
 
 #: dist/converse-no-dependencies.js:118859
 msgid "This field is required"
@@ -2469,7 +2469,7 @@ msgstr "已添加此联系人"
 
 #: dist/converse-no-dependencies.js:121403
 msgid "Sorry, could not find a contact with that name"
-msgstr "抱歉，找不到具有该名称的联系人"
+msgstr "抱歉，找不到该名称的联系人"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:121482
@@ -2539,7 +2539,7 @@ msgstr "此联系人离开"
 #: dist/converse-no-dependencies.js:122262
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "单击可将 %1$s 作为联系人移除"
+msgstr "单击以移除联系人 %1$s"
 
 #: dist/converse-no-dependencies.js:122285
 #, javascript-format

@@ -61,6 +61,11 @@ declare class ConversePrivateGlobal extends ConversePrivateGlobal_base {
      */
     exports: Record<string, any>;
     /**
+     * Provides a way for 3rd party plugins to access constants used by
+     * Converse.
+     */
+    constants: Record<string, any>;
+    /**
      * Namespace for storing the state, as represented by instances of
      * Models and Collections.
      *

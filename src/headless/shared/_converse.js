@@ -122,6 +122,12 @@ class ConversePrivateGlobal extends EventEmitter(Object) {
         this.exports = /** @type {Record<string, Object>} */({});
 
         /**
+         * Provides a way for 3rd party plugins to access constants used by
+         * Converse.
+         */
+        this.constants = /** @type {Record<string, string|Object>} */({});
+
+        /**
          * Namespace for storing the state, as represented by instances of
          * Models and Collections.
          *

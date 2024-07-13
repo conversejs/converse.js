@@ -17,6 +17,7 @@ export type _converse = {
     api: any;
     labels: Record<string, string | Record<string, string>>;
     exports: Record<string, any>;
+    constants: Record<string, any>;
     state: any;
     initSession(): void;
     session: import("@converse/skeletor").Model;

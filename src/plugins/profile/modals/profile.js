@@ -71,7 +71,7 @@ export default class ProfileModal extends BaseModal {
             url: form_data.get('url'),
         });
 
-        if (image_file.size) {
+        if (image_file?.size) {
             const image_data = isImageWithAlphaChannel ? image_file : await compressImage(image_file);
             const reader = new FileReader();
             reader.onloadend = async () => {

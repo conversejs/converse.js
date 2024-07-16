@@ -1,3 +1,4 @@
+import 'shared/components/image-picker.js';
 import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { api, converse, parsers } from '@converse/headless';

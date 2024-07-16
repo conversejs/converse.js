@@ -46,6 +46,9 @@ export default class MUCConfigModal extends BaseModal {
      * @param {SubmitEvent} ev
      */
     async setAvatar (ev) {
+        if (!this.model.features.get('vcard-temp')) {
+            return;
+        }
         const form_data = new FormData(/** @type {HTMLFormElement} */ (ev.target));
         const image_file = /** @type {File} */ (form_data.get('avatar_image'));
 

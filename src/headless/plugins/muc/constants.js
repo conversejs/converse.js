@@ -62,6 +62,7 @@ export const ROOM_FEATURES = [
     'moderated',
     'unmoderated',
     'mam_enabled',
+    'vcard-temp'
 ];
 
 export const MUC_NICK_CHANGED_CODE = '303';

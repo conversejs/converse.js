@@ -20,6 +20,10 @@ export default (el, o) => {
     const contact = el.model.occupant || el.model.contact;
     const author_style = getAuthorStyle(contact);
 
+    // The model to use for the avatar.
+    // Note: it can happen that the contact has not the vcard attribute but the message has.
+    const avatar_model = contact?.vcard ? contact : el.model
+
     return html`
         ${ o.is_first_unread ? html`<div class="message separator">
             <hr class="separator">
@@ -37,10 +41,10 @@ export default (el, o) => {
             ${ (o.should_show_avatar && !is_followup) ?
                 html`<a class="show-msg-author-modal" @click=${el.showUserModal}>
                     <converse-avatar
-                        .model=${contact || el.model}
+                        .model=${avatar_model}
                         class="avatar align-self-center"
                         name="${el.model.getDisplayName()}"
-                        nonce="${el.model.vcard?.get('vcard_updated')}"
+                        nonce="${avatar_model.vcard?.get('vcard_updated')}"
                         height="40" width="40"></converse-avatar>
                 </a>` : '' }
 

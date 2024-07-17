@@ -32,7 +32,7 @@ export default class MessageHistory extends CustomElement {
     }
 
     renderMessage (model) {
-        if (model.get('dangling_retraction') || model.get('is_only_key')) {
+        if (model.get('dangling_retraction') || model.get('dangling_moderation') ||  model.get('is_only_key')) {
             return '';
         }
         const template_hook = model.get('template_hook')

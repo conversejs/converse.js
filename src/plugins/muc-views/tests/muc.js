@@ -1061,18 +1061,23 @@ describe("Groupchats", function () {
             expect(1).toBe(1);
         }));
 
-        it("can be configured if you're its owner", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        it("must first be configured if it's a new",
+            mock.initConverse(['chatBoxesFetched'],
+            { muc_instant_rooms: false },
+            async function (_converse) {
+
             let sent_IQ, IQ_id;
             const sendIQ = _converse.api.connection.get().sendIQ;
             spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_IQ = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                IQ_id = sendIQ.call(this, iq, callback, errback);
             });
 
             const muc_jid = 'coven@chat.shakespeare.lit';
             await _converse.api.rooms.open(muc_jid, {'nick': 'some1'});
             const view = await u.waitUntil(() => _converse.chatboxviews.get('coven@chat.shakespeare.lit'));
             await u.waitUntil(() => u.isVisible(view));
+
             // We pretend this is a new room, so no disco info is returned.
             const features_stanza = $iq({
                     from: 'coven@chat.shakespeare.lit',
@@ -1100,14 +1105,11 @@ describe("Groupchats", function () {
                     'jid': 'romeo@montague.lit/_converse.js-29092160',
                     'role': 'moderator'
                 }).up()
-                .c('status', {code: '110'});
+                .c('status', {code: '110'}).up()
+                .c('status', {code: '201'}); // This is a locked room that needs to be configured first
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() => view.querySelector('.configure-chatroom-button') !== null);
 
-            const own_occupant = view.model.getOwnOccupant();
-            await u.waitUntil(() => own_occupant.get('affiliation') === 'owner');
-
-            view.querySelector('.configure-chatroom-button').click();
+            await u.waitUntil(() => view.model.getOwnOccupant()?.get('affiliation') === 'owner');
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
             const sel = 'iq query[xmlns="http://jabber.org/protocol/muc#owner"]';
@@ -1125,14 +1127,265 @@ describe("Groupchats", function () {
              *  </iq>
              */
             expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+                `<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#owner"/>`+
                 `</iq>`);
 
             /* Server responds with the configuration form.
              * See: // https://xmpp.org/extensions/xep-0045.html#example-165
              */
-            const config_stanza = $iq({from: 'coven@chat.shakespeare.lit',
+            const config_stanza = $iq({from: muc_jid,
+                'id': iq.getAttribute('id'),
+                'to': 'romeo@montague.lit/desktop',
+                'type': 'result'})
+            .c('query', { 'xmlns': 'http://jabber.org/protocol/muc#owner'})
+                .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form'})
+                    .c('title').t('Configuration for "coven" Room').up()
+                    .c('instructions').t('Complete this form to modify the configuration of your room.').up()
+                    .c('field', {'type': 'hidden', 'var': 'FORM_TYPE'})
+                        .c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up()
+                    .c('field', {
+                        'label': 'Natural-Language Room Name',
+                        'type': 'text-single',
+                        'var': 'muc#roomconfig_roomname'})
+                        .c('value').t('A Dark Cave').up().up()
+                    .c('field', {
+                        'label': 'Short Description of Room',
+                        'type': 'text-single',
+                        'var': 'muc#roomconfig_roomdesc'})
+                        .c('value').t('The place for all good witches!').up().up()
+                    .c('field', {
+                        'label': 'Enable Public Logging?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_enablelogging'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Allow Occupants to Change Subject?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_changesubject'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Allow Occupants to Invite Others?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_allowinvites'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Who Can Send Private Messages?',
+                        'type': 'list-single',
+                        'var': 'muc#roomconfig_allowpm'})
+                        .c('value').t('anyone').up()
+                        .c('option', {'label': 'Anyone'})
+                            .c('value').t('anyone').up().up()
+                        .c('option', {'label': 'Anyone with Voice'})
+                            .c('value').t('participants').up().up()
+                        .c('option', {'label': 'Moderators Only'})
+                            .c('value').t('moderators').up().up()
+                        .c('option', {'label': 'Nobody'})
+                            .c('value').t('none').up().up().up()
+                    .c('field', {
+                        'label': 'Roles for which Presence is Broadcasted',
+                        'type': 'list-multi',
+                        'var': 'muc#roomconfig_presencebroadcast'})
+                        .c('value').t('moderator').up()
+                        .c('value').t('participant').up()
+                        .c('value').t('visitor').up()
+                        .c('option', {'label': 'Moderator'})
+                            .c('value').t('moderator').up().up()
+                        .c('option', {'label': 'Participant'})
+                            .c('value').t('participant').up().up()
+                        .c('option', {'label': 'Visitor'})
+                            .c('value').t('visitor').up().up().up()
+                    .c('field', {
+                        'label': 'Roles and Affiliations that May Retrieve Member List',
+                        'type': 'list-multi',
+                        'var': 'muc#roomconfig_getmemberlist'})
+                        .c('value').t('moderator').up()
+                        .c('value').t('participant').up()
+                        .c('value').t('visitor').up()
+                        .c('option', {'label': 'Moderator'})
+                            .c('value').t('moderator').up().up()
+                        .c('option', {'label': 'Participant'})
+                            .c('value').t('participant').up().up()
+                        .c('option', {'label': 'Visitor'})
+                            .c('value').t('visitor').up().up().up()
+                    .c('field', {
+                        'label': 'Make Room Publicly Searchable?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_publicroom'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Make Room Publicly Searchable?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_publicroom'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Make Room Persistent?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_persistentroom'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Make Room Moderated?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_moderatedroom'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Make Room Members Only?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_membersonly'})
+                        .c('value').t(0).up().up()
+                    .c('field', {
+                        'label': 'Password Required for Entry?',
+                        'type': 'boolean',
+                        'var': 'muc#roomconfig_passwordprotectedroom'})
+                        .c('value').t(1).up().up()
+                    .c('field', {'type': 'fixed'})
+                        .c('value').t(
+                            'If a password is required to enter this groupchat, you must specify the password below.'
+                        ).up().up()
+                    .c('field', {
+                        'label': 'Password',
+                        'type': 'text-private',
+                        'var': 'muc#roomconfig_roomsecret'})
+                        .c('value').t('cauldronburn');
+            _converse.api.connection.get()._dataRecv(mock.createRequest(config_stanza));
+
+            const modal = _converse.api.modal.get('converse-muc-config-modal');
+
+            const membersonly = await u.waitUntil(() => modal.querySelector('input[name="muc#roomconfig_membersonly"]'));
+            expect(membersonly.getAttribute('type')).toBe('checkbox');
+            membersonly.checked = true;
+
+            const moderated = modal.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
+            expect(moderated.length).toBe(1);
+            expect(moderated[0].getAttribute('type')).toBe('checkbox');
+            moderated[0].checked = true;
+
+            const password = modal.querySelectorAll('input[name="muc#roomconfig_roomsecret"]');
+            expect(password.length).toBe(1);
+            expect(password[0].getAttribute('type')).toBe('password');
+
+            const allowpm = modal.querySelectorAll('select[name="muc#roomconfig_allowpm"]');
+            expect(allowpm.length).toBe(1);
+            allowpm[0].value = 'moderators';
+
+            const presencebroadcast = modal.querySelectorAll('select[name="muc#roomconfig_presencebroadcast"]');
+            expect(presencebroadcast.length).toBe(1);
+            presencebroadcast[0].value = ['moderator'];
+
+            modal.querySelector('.chatroom-form input[type="submit"]').click();
+
+            console.log(Strophe.serialize(sent_IQ));
+
+            expect(Strophe.serialize(sent_IQ)).toBe(
+            `<iq id="${IQ_id}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/muc#owner">`+
+                `<x type="submit" xmlns="jabber:x:data">`+
+                    `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#roomconfig</value></field>`+
+                    `<field var="muc#roomconfig_roomname"><value>A Dark Cave</value></field>`+
+                    `<field var="muc#roomconfig_roomdesc"><value>The place for all good witches!</value></field>`+
+                    `<field var="muc#roomconfig_enablelogging"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_changesubject"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_allowinvites"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_allowpm"><value>moderators</value></field>`+
+                    `<field var="muc#roomconfig_presencebroadcast"><value>moderator</value></field>`+
+                    `<field var="muc#roomconfig_getmemberlist"><value>moderator</value>,<value>participant</value>,<value>visitor</value></field>`+
+                    `<field var="muc#roomconfig_publicroom"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_publicroom"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_persistentroom"><value>0</value></field>`+
+                    `<field var="muc#roomconfig_moderatedroom"><value>1</value></field>`+
+                    `<field var="muc#roomconfig_membersonly"><value>1</value></field>`+
+                    `<field var="muc#roomconfig_passwordprotectedroom"><value>1</value></field>`+
+                    `<field var="muc#roomconfig_roomsecret"><value>cauldronburn</value></field>`+
+                `</x>`+
+                `</query>`+
+            `</iq>`);
+        }));
+
+        it("can be configured if your its owner",
+            mock.initConverse(['chatBoxesFetched'],
+            { muc_instant_rooms: false },
+            async function (_converse) {
+
+            let sent_IQ, IQ_id;
+            const sendIQ = _converse.api.connection.get().sendIQ;
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
+                sent_IQ = iq;
+                IQ_id = sendIQ.call(this, iq, callback, errback);
+            });
+
+            const muc_jid = 'coven@chat.shakespeare.lit';
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_membersonly',
+                'muc_unmoderated',
+                'muc_anonymous',
+                'vcard-temp',
+            ]
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'some1', features);
+            const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
+            await u.waitUntil(() => u.isVisible(view));
+
+            // We pretend this is a new room, so no disco info is returned.
+            const features_stanza = $iq({
+                    from: muc_jid,
+                    'id': IQ_id,
+                    'to': 'romeo@montague.lit/desktop',
+                    'type': 'error'
+                }).c('error', {'type': 'cancel'})
+                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
+
+            /* <presence to="romeo@montague.lit/_converse.js-29092160"
+             *           from="coven@chat.shakespeare.lit/some1">
+             *      <x xmlns="http://jabber.org/protocol/muc#user">
+             *          <item affiliation="owner" jid="romeo@montague.lit/_converse.js-29092160" role="moderator"/>
+             *          <status code="110"/>
+             *      </x>
+             *  </presence></body>
+             */
+            const presence = $pres({
+                    to: 'romeo@montague.lit/_converse.js-29092160',
+                    from: 'coven@chat.shakespeare.lit/some1'
+                }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'owner',
+                    'jid': 'romeo@montague.lit/_converse.js-29092160',
+                    'role': 'moderator'
+                }).up()
+                .c('status', {code: '110'}).up()
+                .c('status', {code: '201'}); // This is a locked room that needs to be configured first
+            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+
+            await u.waitUntil(() => view.model.getOwnOccupant()?.get('affiliation') === 'owner');
+
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+            const sel = 'iq query[xmlns="http://jabber.org/protocol/muc#owner"]';
+            const iq = await u.waitUntil(() => sent_IQs.filter(iq => sizzle(sel, iq).length).pop());
+
+            /* Check that an IQ is sent out, asking for the
+             * configuration form.
+             * See: // https://xmpp.org/extensions/xep-0045.html#example-163
+             *
+             *  <iq from='crone1@shakespeare.lit/desktop'
+             *      id='config1'
+             *      to='coven@chat.shakespeare.lit'
+             *      type='get'>
+             *  <query xmlns='http://jabber.org/protocol/muc#owner'/>
+             *  </iq>
+             */
+            expect(Strophe.serialize(iq)).toBe(
+                `<iq id="${iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                    `<query xmlns="http://jabber.org/protocol/muc#owner"/>`+
+                `</iq>`);
+
+            /* Server responds with the configuration form.
+             * See: // https://xmpp.org/extensions/xep-0045.html#example-165
+             */
+            const config_stanza = $iq({from: muc_jid,
                 'id': iq.getAttribute('id'),
                 'to': 'romeo@montague.lit/desktop',
                 'type': 'result'})
@@ -1308,7 +1561,6 @@ describe("Groupchats", function () {
                 `</query>`+
             `</iq>`);
         }));
-
 
         it("properly handles notification that a room has been destroyed",
                 mock.initConverse([], {}, async function (_converse) {

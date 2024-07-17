@@ -702,7 +702,7 @@ async function _initConverse (settings) {
         discover_connection_methods: false,
         enable_smacks: false,
         i18n: 'en',
-        loglevel: window.location.pathname === 'debug.html' ? 'debug' : 'error',
+        loglevel: window.location.pathname === '/debug.html' ? 'debug' : 'error',
         no_trimming: true,
         persistent_store: 'localStorage',
         play_sounds: false,

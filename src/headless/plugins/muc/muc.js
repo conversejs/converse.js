@@ -2800,7 +2800,7 @@ class MUC extends ChatBox {
                 // Accept default configuration
                 await this.sendConfiguration().then(() => this.refreshDiscoInfo());
             } else {
-                this.session.save({ 'view': converse.MUC.VIEWS.CONFIG });
+                api.modal.show('converse-muc-config-modal', { model: this });
             }
         }
     }

@@ -11,15 +11,16 @@ describe("A chat room", function () {
             await mock.waitUntilBookmarksReturned(_converse);
             spyOn(_converse.api.rooms, 'create').and.callThrough();
             const jid = 'theplay@conference.shakespeare.lit';
-            const model = _converse.bookmarks.create({
+            const { bookmarks } = _converse.state;
+            const model = bookmarks.create({
                 'jid': jid,
                 'autojoin': false,
                 'name':  'The Play',
                 'nick': ''
             });
             expect(_converse.api.rooms.create).not.toHaveBeenCalled();
-            _converse.bookmarks.remove(model);
-            _converse.bookmarks.create({
+            bookmarks.remove(model);
+            bookmarks.create({
                 'jid': jid,
                 'autojoin': true,
                 'name':  'Hamlet',
@@ -42,8 +43,9 @@ describe("A bookmark", function () {
         const jid = _converse.session.get('jid');
         const muc1_jid = 'theplay@conference.shakespeare.lit';
         const { Strophe, sizzle, u } = converse.env;
+        const { bookmarks } = _converse.state;
 
-        _converse.bookmarks.createBookmark({
+        bookmarks.createBookmark({
             jid: muc1_jid,
             autojoin: true,
             name:  'Hamlet',
@@ -78,7 +80,7 @@ describe("A bookmark", function () {
 
 
         const muc2_jid = 'balcony@conference.shakespeare.lit';
-        _converse.bookmarks.createBookmark({
+        bookmarks.createBookmark({
             jid: muc2_jid,
             autojoin: true,
             name:  'Balcony',

@@ -115,7 +115,7 @@ describe("A list of open groupchats", function () {
             }).tree();
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        spyOn(_converse.Bookmarks.prototype, 'fetchBookmarks').and.callThrough();
+        spyOn(_converse.exports.Bookmarks.prototype, 'fetchBookmarks').and.callThrough();
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -150,7 +150,7 @@ describe("A list of open groupchats", function () {
         const items = list.querySelectorAll('.list-item');
         expect(items.length).toBe(1);
         await u.waitUntil(() => list.querySelector('.list-item .open-room span').textContent.trim() === 'Bookmarked Lounge');
-        expect(_converse.bookmarks.fetchBookmarks).toHaveBeenCalled();
+        expect(_converse.state.bookmarks.fetchBookmarks).toHaveBeenCalled();
     }));
 });
 

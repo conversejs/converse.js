@@ -133,9 +133,10 @@ describe("A chat room", function () {
             [{'category': 'pubsub', 'type': 'pep'}],
             ['http://jabber.org/protocol/pubsub#publish-options']
         );
-        await u.waitUntil(() => _converse.bookmarks);
+        await u.waitUntil(() => _converse.state.bookmarks);
+        const { bookmarks } = _converse.state;
         let jid = 'lounge@montague.lit';
-        _converse.bookmarks.create({
+        bookmarks.create({
             'jid': jid,
             'autojoin': false,
             'name':  'The Lounge',
@@ -144,7 +145,7 @@ describe("A chat room", function () {
         expect(_converse.chatboxviews.get(jid) === undefined).toBeTruthy();
 
         jid = 'theplay@conference.shakespeare.lit';
-        _converse.bookmarks.create({
+        bookmarks.create({
             'jid': jid,
             'autojoin': true,
             'name':  'The Play',
@@ -156,7 +157,7 @@ describe("A chat room", function () {
         // Check that we don't auto-join if muc_respect_autojoin is false
         api.settings.set('muc_respect_autojoin', false);
         jid = 'balcony@conference.shakespeare.lit';
-        _converse.bookmarks.create({
+        bookmarks.create({
             'jid': jid,
             'autojoin': true,
             'name':  'Balcony',
@@ -173,7 +174,8 @@ describe("A chat room", function () {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
             const muc_jid = 'coven@chat.shakespeare.lit';
-            _converse.bookmarks.create({
+            const { bookmarks } = _converse.state;
+            bookmarks.create({
                 'jid': muc_jid,
                 'autojoin': false,
                 'name':  'The Play',
@@ -206,7 +208,9 @@ describe("A chat room", function () {
 
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
-            _converse.bookmarks.create({
+
+            const { bookmarks } = _converse.state;
+            bookmarks.create({
                 'jid': view.model.get('jid'),
                 'autojoin': false,
                 'name':  'The lounge',
@@ -231,17 +235,19 @@ describe("A chat room", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('.toggle-bookmark'));
 
-            spyOn(view, 'showBookmarkModal').and.callThrough();
-            spyOn(_converse.bookmarks, 'sendBookmarkStanza').and.callThrough();
+            const { bookmarks } = _converse.state;
 
-            _converse.bookmarks.create({
+            spyOn(view, 'showBookmarkModal').and.callThrough();
+            spyOn(bookmarks, 'sendBookmarkStanza').and.callThrough();
+
+            bookmarks.create({
                 'jid': view.model.get('jid'),
                 'autojoin': false,
                 'name':  'The Play',
                 'nick': 'Othello'
             });
 
-            expect(_converse.bookmarks.length).toBe(1);
+            expect(bookmarks.length).toBe(1);
             await u.waitUntil(() => _converse.chatboxes.length >= 1);
             expect(view.model.get('bookmarked')).toBeTruthy();
             await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') !== null);
@@ -262,7 +268,7 @@ describe("A chat room", function () {
             modal.querySelector('.button-remove').click();
 
             await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') === null);
-            expect(_converse.bookmarks.length).toBe(0);
+            expect(bookmarks.length).toBe(0);
 
             // Check that an IQ stanza is sent out, containing no
             // conferences to bookmark (since we removed the one and
@@ -349,9 +355,11 @@ describe("Bookmarks", function () {
                             'jid':'another@conference.shakespeare.lit'
                         }).c('nick').t('JC');
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => _converse.bookmarks.length);
-        expect(_converse.bookmarks.length).toBe(2);
-        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', 'The Play&apos;s the Thing']);
+
+        const { bookmarks } = _converse.state;
+        await u.waitUntil(() => bookmarks.length);
+        expect(bookmarks.length).toBe(2);
+        expect(bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', 'The Play&apos;s the Thing']);
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
 
         stanza = $msg({
@@ -380,8 +388,8 @@ describe("Bookmarks", function () {
                         }).c('nick').t('JC');
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-        await u.waitUntil(() => _converse.bookmarks.length === 3);
-        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(
+        await u.waitUntil(() => bookmarks.length === 3);
+        expect(bookmarks.map(b => b.get('name'))).toEqual(
             ['Second bookmark', 'The Play&apos;s the Thing', 'Yet another bookmark']
         );
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();

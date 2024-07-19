@@ -28,7 +28,8 @@ converse.plugins.add('converse-bookmarks', {
         ChatRoom: {
             getDisplayName () {
                 const { _converse, getDisplayName } = this.__super__;
-                const bookmark = this.get('bookmarked') ? _converse.bookmarks?.get(this.get('jid')) : null;
+                const { bookmarks } = _converse.state;
+                const bookmark = this.get('bookmarked') ? bookmarks?.get(this.get('jid')) : null;
                 return bookmark?.get('name') || getDisplayName.apply(this, arguments);
             },
 

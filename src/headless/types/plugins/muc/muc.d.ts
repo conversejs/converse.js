@@ -199,7 +199,7 @@ declare class MUC extends ChatBox {
      */
     private leave;
     /**
-     * @param {{ name: 'closeAllChatBoxes' }} [ev]
+     * @param {{name: 'closeAllChatBoxes'}} [ev]
      */
     close(ev?: {
         name: 'closeAllChatBoxes';

@@ -288,10 +288,13 @@ class ChatBox extends ModelWithContact {
         }
         try {
             await new Promise((success, reject) => {
-                return this.destroy({success, 'error': (_m, e) => reject(e)})
+                return this.destroy({
+                    success,
+                    error: (_m, e) => reject(e)
+                })
             });
         } catch (e) {
-            log.error(e);
+            log.debug(e);
         } finally {
             if (api.settings.get('clear_messages_on_reconnection')) {
                 await this.clearMessages();

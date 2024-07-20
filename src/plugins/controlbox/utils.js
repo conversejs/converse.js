@@ -9,12 +9,18 @@ export function addControlBox () {
     return m;
 }
 
+/**
+ * @param {Event} [ev]
+ */
 export function showControlBox (ev) {
     ev?.preventDefault?.();
     const controlbox = _converse.state.chatboxes.get('controlbox') || addControlBox();
     u.safeSave(controlbox, {'closed': false});
 }
 
+/**
+ * @param {string} jid
+ */
 export function navigateToControlBox (jid) {
     showControlBox();
     const model = _converse.state.chatboxes.get(jid);
@@ -22,21 +28,16 @@ export function navigateToControlBox (jid) {
 }
 
 export function disconnect () {
-    /* Upon disconnection, set connected to `false`, so that if
-     * we reconnect, "onConnected" will be called,
-     * to fetch the roster again and to send out a presence stanza.
-     */
-    try{
-        const view = _converse.state.chatboxviews.get('controlbox');
-        view.model.set({ 'connected': false });
-        return view;
-    } catch(error){}
-    return {};
+    // Upon disconnection, set connected to `false`, so that if
+    // we reconnect, "onConnected" will be called,
+    // to fetch the roster again and to send out a presence stanza.
+    const model = _converse.state.chatboxes?.get('controlbox');
+    if (model) u.safeSave(model, { 'connected': false });
 }
 
 export function clearSession () {
-    const chatboxviews = _converse.state.chatboxviews;
-    const view = chatboxviews && chatboxviews.get('controlbox');
+    const { chatboxviews } = _converse.state;
+    const view = chatboxviews?.get('controlbox');
     if (view) {
         u.safeSave(view.model, { 'connected': false });
         if (view?.controlbox_pane) {

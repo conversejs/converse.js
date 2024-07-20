@@ -1,7 +1,13 @@
 export function addControlBox(): any;
-export function showControlBox(ev: any): void;
-export function navigateToControlBox(jid: any): void;
-export function disconnect(): any;
+/**
+ * @param {Event} [ev]
+ */
+export function showControlBox(ev?: Event): void;
+/**
+ * @param {string} jid
+ */
+export function navigateToControlBox(jid: string): void;
+export function disconnect(): void;
 export function clearSession(): void;
 export function onChatBoxesFetched(): void;
 /**

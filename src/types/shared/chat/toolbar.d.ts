@@ -43,7 +43,6 @@ export class ChatToolbar extends CustomElement {
      */
     onFileSelection(evt: InputEvent): void;
     toggleComposeSpoilerMessage(ev: any): void;
-    toggleOccupants(ev: any): void;
     toggleCall(ev: any): void;
 }
 import { CustomElement } from "shared/components/element.js";

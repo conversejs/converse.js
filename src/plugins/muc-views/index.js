@@ -55,9 +55,6 @@ converse.plugins.add('converse-muc-views', {
             'muc_search_service': 'api@search.jabber.network',
             'roomconfig_whitelist': [],
             'show_retraction_warning': true,
-            'visible_toolbar_buttons': {
-                'toggle_occupants': true
-            }
         });
 
         const exports = {

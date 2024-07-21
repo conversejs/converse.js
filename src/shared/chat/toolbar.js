@@ -93,22 +93,6 @@ export class ChatToolbar extends CustomElement {
         const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
         buttons.push(html`${until(http_upload_promise.then(is_supported => this.getHTTPUploadButton(is_supported)),'')}`);
 
-        if (this.is_groupchat && api.settings.get('visible_toolbar_buttons')?.toggle_occupants) {
-            const i18n_hide_occupants = __('Hide participants');
-            const i18n_show_occupants = __('Show participants');
-            buttons.push(html`
-                <button type="button"
-                        class="btn toggle_occupants"
-                        title="${this.hidden_occupants ? i18n_show_occupants : i18n_hide_occupants}"
-                        @click=${this.toggleOccupants}>
-                    <converse-icon
-                        color="var(--muc-toolbar-btn-color)"
-                        class="fa ${this.hidden_occupants ? `fa-angle-double-left` : `fa-angle-double-right`}"
-                        size="1em"></converse-icon>
-                </button>`
-            );
-        }
-
         /**
          * *Hook* which allows plugins to add more buttons to a chat's toolbar
          * @event _converse#getToolbarButtons
@@ -200,12 +184,6 @@ export class ChatToolbar extends CustomElement {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
-    }
-
-    toggleOccupants (ev) {
-        ev?.preventDefault?.();
-        ev?.stopPropagation?.();
-        this.model.save({'hidden_occupants': !this.model.get('hidden_occupants')});
     }
 
     toggleCall (ev) {

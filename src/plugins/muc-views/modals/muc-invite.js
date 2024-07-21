@@ -10,7 +10,7 @@ export default class MUCInviteModal extends BaseModal {
     constructor (options) {
         super(options);
         this.id = 'converse-muc-invite-modal';
-        this.chatroomview = options.chatroomview;
+        this.muc = options.muc;
     }
 
     initialize () {
@@ -30,15 +30,18 @@ export default class MUCInviteModal extends BaseModal {
         return _converse.state.roster.map((i) => ({ label: i.getDisplayName(), value: i.get('jid') }));
     }
 
+    /**
+     * @param {Event} ev
+     */
     submitInviteForm (ev) {
         ev.preventDefault();
         // TODO: Add support for sending an invite to multiple JIDs
-        const data = new FormData(ev.target);
+        const data = new FormData(/** @type {HTMLFormElement} */(ev.target));
         const jid = /** @type {string} */ (data.get('invitee_jids'))?.trim();
         const reason = data.get('reason');
         if (u.isValidJID(jid)) {
             // TODO: Create and use API here
-            this.chatroomview.model.directInvite(jid, reason);
+            this.muc.directInvite(jid, reason);
             this.modal.hide();
         } else {
             this.model.set({ 'invalid_invite_jid': true });

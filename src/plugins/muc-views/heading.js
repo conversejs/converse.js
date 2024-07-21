@@ -86,6 +86,15 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
+    toggleOccupants (ev) {
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+        this.model.save({'hidden_occupants': !this.model.get('hidden_occupants')});
+    }
+
+    /**
+     * @param {Event} ev
+     */
     showConfigModal(ev) {
         ev.preventDefault();
         api.modal.show('converse-muc-config-modal', { model: this.model }, ev);
@@ -162,12 +171,21 @@ export default class MUCHeading extends CustomElement {
                 'i18n_title': subject_hidden
                     ? __('Show the topic message in the heading')
                     : __('Hide the topic in the heading'),
-                'handler': ev => this.toggleTopic(ev),
+                'handler': /** @param {Event} ev */(ev) => this.toggleTopic(ev),
                 'a_class': 'hide-topic',
                 'icon_class': 'fa-minus-square',
                 'name': 'toggle-topic'
             });
         }
+
+        buttons.push({
+            'i18n_text': this.model.get('hidden_occupants') ? __('Show participants') : __('Hide participants'),
+            'i18n_title': this.model.get('hidden_occupants')
+                ? __('Show the groupchat participants')
+                : __('Hide the groupchat participants'),
+            'handler': /** @param {Event} ev */(ev) => this.toggleOccupants(ev),
+            'icon_class': 'fa-users',
+        });
 
         const conn_status = this.model.session.get('connection_status');
         if (conn_status === converse.ROOMSTATUS.ENTERED) {

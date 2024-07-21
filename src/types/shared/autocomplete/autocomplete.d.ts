@@ -30,7 +30,7 @@ export class AutoComplete extends AutoComplete_base {
     auto_first: boolean;
     data: (a: any, _v: any) => any;
     item: (text: any, input: any) => HTMLLIElement;
-    container: Element;
+    container: Element | HTMLElement;
     input: HTMLInputElement;
     ul: Element;
     status: Element;

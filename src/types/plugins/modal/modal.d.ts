@@ -7,7 +7,7 @@ declare class BaseModal extends ElementView {
     constructor(options: any);
     model: any;
     initialized: any;
-    modal: any;
+    modal: Modal;
     /**
      * @returns {TemplateResult|string}
      */
@@ -36,4 +36,5 @@ declare class BaseModal extends ElementView {
     show(): Promise<void>;
 }
 import { ElementView } from "@converse/skeletor";
+import { Modal } from "bootstrap";
 //# sourceMappingURL=modal.d.ts.map

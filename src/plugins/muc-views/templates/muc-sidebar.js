@@ -44,32 +44,52 @@ function shouldShowOccupant (el, occ, o) {
  */
 export default (el, o) => {
     const i18n_participants = el.model.occupants === 1 ? __('Participant') : __('Participants');
-    const i18n_close = __('Hide sidebar');
+    const i18n_close = __('Hide');
     const i18n_show_filter = __('Show filter');
     const i18n_hide_filter = __('Hide filter');
     const is_filter_visible = el.model.get('filter_visible');
+    const i18n_invite = __('Invite someone')
+    const i18n_invite_title = __('Invite someone to join this groupchat')
 
     const btns = /** @type {TemplateResult[]} */ [];
-    if (el.model.occupants < 6) {
-        // We don't show the filter
-        btns.push(
-            html` <i class="hide-occupants" @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>
-                <converse-icon class="fa fa-times" size="1em"></converse-icon>
-            </i>`
-        );
-    } else {
+
+    if (el.model.invitesAllowed()) {
+        btns.push(html`
+            <a href="#"
+               class="dropdown-item open-invite-modal"
+               title="${i18n_invite_title}"
+               @click=${(/** @type {MouseEvent} */ev) => el.showInviteModal(ev)}>
+                <converse-icon size="1em" class="fa fa-user-plus"></converse-icon>
+                ${i18n_invite}
+            </a>
+        `);
+    }
+
+    if (el.model.occupants.length > 5) {
+        btns.push(html`
+            <a href="#"
+               class="dropdown-item toggle-filter"
+               @click=${(/** @type {MouseEvent} */ev) => el.toggleFilter(ev)}>
+                <converse-icon size="1em" class="fa fa-filter"></converse-icon>
+                ${is_filter_visible ? i18n_hide_filter : i18n_show_filter}
+            </a>
+        `);
+    }
+
+    if (btns.length) {
         btns.push(html`
             <a href="#" class="dropdown-item" @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>
                 <converse-icon size="1em" class="fa fa-times"></converse-icon>
                 ${i18n_close}
             </a>
         `);
-        btns.push(html`
-            <a href="#" class="dropdown-item toggle-filter" @click=${(/** @type {MouseEvent} */ev) => el.toggleFilter(ev)}>
-                <converse-icon size="1em" class="fa fa-filter"></converse-icon>
-                ${is_filter_visible ? i18n_hide_filter : i18n_show_filter}
-            </a>
-        `);
+    } else {
+        // Only a single button is shown, not a dropdown.
+        btns.push(
+            html` <i class="hide-occupants" @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>
+                <converse-icon class="fa fa-times" size="1em"></converse-icon>
+            </i>`
+        );
     }
 
     return html`

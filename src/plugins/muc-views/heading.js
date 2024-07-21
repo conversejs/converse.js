@@ -1,10 +1,8 @@
 import './modals/config.js';
 import './modals/muc-details.js';
-import './modals/muc-invite.js';
 import './modals/nickname.js';
 import tplMUCHead from './templates/muc-head.js';
 import { CustomElement } from 'shared/components/element.js';
-import { Model } from '@converse/skeletor';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless";
 import { destroyMUC, showModeratorToolsModal } from './utils.js';
@@ -28,7 +26,6 @@ export default class MUCHeading extends CustomElement {
         this.listenTo(this.user_settings, 'change:mucs_with_hidden_subject', () => this.requestUpdate());
 
         await this.model.initialized;
-        this.listenTo(this.model.features, 'change:open', () => this.requestUpdate());
         this.model.occupants.forEach(o => this.onOccupantAdded(o));
         this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
         this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
@@ -65,14 +62,6 @@ export default class MUCHeading extends CustomElement {
     showRoomDetailsModal (ev) {
         ev.preventDefault();
         api.modal.show('converse-muc-details-modal', { model: this.model }, ev);
-    }
-
-    /**
-     * @param {Event} ev
-     */
-    showInviteModal (ev) {
-        ev.preventDefault();
-        api.modal.show('converse-muc-invite-modal', { model: new Model(), 'chatroomview': this }, ev);
     }
 
     /**
@@ -152,17 +141,6 @@ export default class MUCHeading extends CustomElement {
             'icon_class': 'fa-smile',
             'name': 'nickname'
         });
-
-        if (this.model.invitesAllowed()) {
-            buttons.push({
-                'i18n_text': __('Invite'),
-                'i18n_title': __('Invite someone to join this groupchat'),
-                'handler': ev => this.showInviteModal(ev),
-                'a_class': 'open-invite-modal',
-                'icon_class': 'fa-user-plus',
-                'name': 'invite'
-            });
-        }
 
         const subject = this.model.get('subject');
         if (subject && subject.text) {

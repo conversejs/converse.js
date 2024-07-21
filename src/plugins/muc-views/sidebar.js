@@ -1,8 +1,10 @@
 import debounce from 'lodash-es/debounce.js';
+import { Model } from '@converse/skeletor';
 import { _converse, api, u, RosterFilter } from "@converse/headless";
-import 'shared/autocomplete/index.js';
 import { CustomElement } from 'shared/components/element.js';
 import tplMUCSidebar from "./templates/muc-sidebar.js";
+import './modals/muc-invite.js';
+import 'shared/autocomplete/index.js';
 
 import 'shared/styles/status.scss';
 import './styles/muc-occupants.scss';
@@ -44,6 +46,7 @@ export default class MUCSidebar extends CustomElement {
         this.listenTo(this.model.occupants, 'sort', debouncedRequestUpdate);
         this.listenTo(this.model.occupants, 'vcard:change', debouncedRequestUpdate);
         this.listenTo(this.model.occupants, 'vcard:add', debouncedRequestUpdate);
+        this.listenTo(this.model.features, 'change:open', () => this.requestUpdate());
 
         this.model.initialized.then(() => this.requestUpdate());
     }
@@ -56,6 +59,14 @@ export default class MUCSidebar extends CustomElement {
             }
         ));
         return tpl;
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    showInviteModal (ev) {
+        ev.preventDefault();
+        api.modal.show('converse-muc-invite-modal', { model: new Model(), muc: this.model }, ev);
     }
 
     /** @param {MouseEvent} ev */

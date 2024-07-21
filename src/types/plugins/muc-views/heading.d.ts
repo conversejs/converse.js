@@ -29,6 +29,10 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
+    toggleOccupants(ev: Event): void;
+    /**
+     * @param {Event} ev
+     */
     showConfigModal(ev: Event): void;
     /**
      * @param {Event} ev

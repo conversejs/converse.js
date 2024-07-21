@@ -27,14 +27,10 @@
 
     .chat-toolbar {
         justify-content: space-between;
-
         .toolbar-buttons {
             .message-limit {
                 padding: 0.5em;
                 font-weight: bold;
-            }
-            .toggle_occupants {
-                order: 99;
             }
         }
     }

@@ -101,7 +101,6 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/rai.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/retractions.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/styling.js", type: 'module' },
-      { pattern: "src/plugins/muc-views/tests/toolbar.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/unfurls.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/xss.js", type: 'module' },
       { pattern: "src/plugins/notifications/tests/notification.js", type: 'module' },

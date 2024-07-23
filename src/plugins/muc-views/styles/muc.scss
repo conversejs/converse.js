@@ -73,19 +73,11 @@
                         color: var(--subdued-color);
                     }
                 }
-                .disconnect-container {
-                    margin: 1em;
-                    width: 100%;
-                    h3.disconnect-msg {
-                        padding-bottom: 1em;
-                    }
-                }
                 .chat-area {
                     display: flex;
                     flex-direction: column;
-                    flex: 0 1 100%;
+                    flex: 1 1 100%;
                     justify-content: flex-end;
-                    min-width: 25%;
                     word-wrap: break-word;
                     .new-msgs-indicator {
                         background-color: var(--chatroom-color);

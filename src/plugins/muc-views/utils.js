@@ -97,7 +97,7 @@ export async function destroyMUC (model) {
 export function getNicknameRequiredTemplate (model) {
     const jid = model.get('jid');
     if (api.settings.get('muc_show_logs_before_join')) {
-        return html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>`;
+        return html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>`;
     } else {
         return html`<converse-muc-nickname-form jid="${jid}"></converse-muc-nickname-form>`;
     }
@@ -114,7 +114,7 @@ export function getChatRoomBodyTemplate (o) {
     } else {
         return html`
             ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
-            ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea jid="${jid}"></converse-muc-chatarea>` : '' }
+            ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>` : '' }
             ${ conn_status == RS.CONNECTING ? tplSpinner() : '' }
             ${ conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(o.model) : '' }
             ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }

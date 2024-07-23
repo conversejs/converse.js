@@ -16,16 +16,28 @@ export default class MUCChatArea extends CustomElement {
     model: any;
     onMouseMove: any;
     onMouseUp: any;
-    render(): import("lit").TemplateResult<1>;
+    render(): import("lit").TemplateResult<1> | "";
     shouldShowSidebar(): boolean;
     getHelpMessages(): string[];
-    onMousedown(ev: any): void;
-    onStartResizeOccupants(ev: any): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMousedown(ev: MouseEvent): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    onStartResizeOccupants(ev: MouseEvent): void;
     resizing: boolean;
     width: number;
-    prev_pageX: any;
-    _onMouseMove(ev: any): void;
-    _onMouseUp(ev: any): void;
+    prev_pageX: number;
+    /**
+     * @param {MouseEvent} ev
+     */
+    _onMouseMove(ev: MouseEvent): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    _onMouseUp(ev: MouseEvent): void;
     calculateSidebarWidth(element_position: any, delta: any): any;
     is_minimum: boolean;
     is_maximum: boolean;

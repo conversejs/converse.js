@@ -21,18 +21,14 @@
                 flex-direction: column;
                 justify-content: space-between;
                 overflow: visible;
-                vertical-align: top;
                 background-color: var(--occupants-background-color);
                 border-left: var(--occupants-border-left);
-                padding: 0.5em;
-                max-width: 75%;
-                min-width: 25%;
-                flex: 0 0 25%;
 
                 .occupants-header--title {
                     display: flex;
                     flex-direction: row;
                     margin-bottom: 0.5em;
+                    padding: 0.5em;
 
                     .occupants-heading {
                         width: 100%;
@@ -69,6 +65,7 @@
                     list-style: none;
 
                     &.occupant-list {
+                        padding: 0.5em;
                         overflow-y: auto;
                         flex-basis: 0;
                         flex-grow: 1;

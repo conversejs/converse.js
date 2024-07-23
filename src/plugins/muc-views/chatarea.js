@@ -1,8 +1,7 @@
+import { api, converse } from '@converse/headless';
 import tplMUCChatarea from './templates/muc-chatarea.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { api, converse } from '@converse/headless';
-
 
 const { u } = converse.env;
 
@@ -37,15 +36,7 @@ export default class MUCChatArea extends CustomElement {
     }
 
     render () {
-        return tplMUCChatarea({
-            'getHelpMessages': () => this.getHelpMessages(),
-            'jid': this.jid,
-            'model': this.model,
-            'onMousedown': ev => this.onMousedown(ev),
-            'show_send_button': api.settings.get('show_send_button'),
-            'shouldShowSidebar': () => this.shouldShowSidebar(),
-            'type': this.type,
-        });
+        return this.model ? tplMUCChatarea(this) : '';
     }
 
     shouldShowSidebar () {
@@ -84,12 +75,18 @@ export default class MUCChatArea extends CustomElement {
             .filter(line => this.model.getAllowedCommands().some(c => line.startsWith(c + '<', 9)));
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     onMousedown (ev) {
         if (u.hasClass('dragresize-occupants-left', ev.target)) {
             this.onStartResizeOccupants(ev);
         }
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     onStartResizeOccupants (ev) {
         this.resizing = true;
         this.addEventListener('mousemove', this.onMouseMove);
@@ -101,6 +98,9 @@ export default class MUCChatArea extends CustomElement {
         this.prev_pageX = ev.pageX;
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     _onMouseMove (ev) {
         if (this.resizing) {
             ev.preventDefault();
@@ -110,6 +110,9 @@ export default class MUCChatArea extends CustomElement {
         }
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     _onMouseUp (ev) {
         if (this.resizing) {
             ev.preventDefault();

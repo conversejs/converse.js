@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { constants } from '@converse/headless';
+import { api, constants } from '@converse/headless';
 import '../bottom-panel.js';
 import '../sidebar.js';
 import 'shared/chat/chat-content.js';
@@ -7,29 +7,46 @@ import 'shared/chat/help-messages.js';
 
 const { CHATROOMS_TYPE } = constants;
 
-export default (o) => html`
-    <div class="chat-area">
-        <div class="chat-content ${ o.show_send_button ? 'chat-content-sendbutton' : '' }" aria-live="polite">
-            <converse-chat-content
-                class="chat-content__messages"
-                jid="${o.jid}"></converse-chat-content>
+/**
+ * @param {import('../chatarea').default} el
+ */
+export default (el) => {
+    const sidebar_width = el.model.get('occupants_width');
+    const show_send_button = api.settings.get('show_send_button');
+    const view_mode = api.settings.get('view_mode');
 
-            ${(o.model?.get('show_help_messages')) ?
-                html`<div class="chat-content__help">
-                    <converse-chat-help
-                        .model=${o.model}
-                        .messages=${o.getHelpMessages()}
-                        type="info"
-                        chat_type="${CHATROOMS_TYPE}"
-                    ></converse-chat-help></div>` : '' }
+    let chat_area_classes, sidebar_classes;
+
+    if (view_mode === 'overlayed') {
+        chat_area_classes = 'd-none d-md-flex col-s-10 col-md-8';
+        sidebar_classes = 'col-xs-12 col-s-2 col-md-4';
+    } else {
+        chat_area_classes = 'd-none d-md-flex col-md-8 col-xl-10';
+        sidebar_classes = 'col-xs-12 col-md-4 col-xl-2';
+    }
+
+    return html`
+        <div class="chat-area ${el.shouldShowSidebar() ? chat_area_classes : 'col-xs-12' }">
+            <div class="chat-content ${show_send_button ? 'chat-content-sendbutton' : ''}" aria-live="polite">
+                <converse-chat-content
+                    class="chat-content__messages"
+                    jid="${el.jid}"></converse-chat-content>
+
+                ${(el.model?.get('show_help_messages')) ?
+                    html`<div class="chat-content__help">
+                        <converse-chat-help
+                            .model=${el.model}
+                            .messages=${el.getHelpMessages()}
+                            type="info"
+                            chat_type="${CHATROOMS_TYPE}"
+                        ></converse-chat-help></div>` : '' }
+            </div>
+            <converse-muc-bottom-panel jid="${el.jid}" class="bottom-panel"></converse-muc-bottom-panel>
         </div>
-        <converse-muc-bottom-panel jid="${o.jid}" class="bottom-panel"></converse-muc-bottom-panel>
-    </div>
-    <div class="disconnect-container hidden"></div>
-    ${o.model ? html`
-        <converse-muc-sidebar
-            class="occupants col-md-3 col-4 ${o.shouldShowSidebar() ? '' : 'hidden' }"
-            style="flex: 0 0 ${o.model.get('occupants_width')}px"
-            jid=${o.jid}
-            @mousedown=${o.onMousedown}></converse-muc-sidebar>` : '' }
-`;
+        ${el.model ? html`
+            <converse-muc-sidebar
+                class="occupants ${el.shouldShowSidebar() ? sidebar_classes : 'col-xs-0 hidden' }"
+                style="${sidebar_width ? `flex: 0 0 ${sidebar_width}px` : ''}"
+                jid=${el.jid}
+                @mousedown=${(ev) => el.onMousedown(ev)}></converse-muc-sidebar>` : '' }`
+};

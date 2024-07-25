@@ -55,10 +55,8 @@
                     border-top-left-radius: 0;
                     border-top-right-radius: 0;
                     border-bottom-radius: var(--chatbox-border-radius);
-                    padding-left: 0.5em;
-                    padding-right: 4.5em;
-                    padding-top: 0.5em;
-                    padding-bottom:0.5em;
+                    field-sizing: content;
+                    padding: 0.5em;
                     width: 100%;
                     border: none;
                     min-height: var(--chat-textarea-height);

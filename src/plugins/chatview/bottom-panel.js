@@ -63,7 +63,7 @@ export default class ChatBottomPanel extends CustomElement {
         chatboxviews.get(this.getAttribute('jid'))?.emitBlurred(ev);
     }
 
-    onDragOver (ev) { // eslint-disable-line class-methods-use-this
+    onDragOver (ev) {
         ev.preventDefault();
     }
 

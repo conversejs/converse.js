@@ -18,8 +18,14 @@ export default class MinimizedChat extends CustomElement {
     type: any;
     title: any;
     render(): import("lit").TemplateResult<1>;
-    close(ev: any): void;
-    restore(ev: any): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    close(ev: MouseEvent): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    restore(ev: MouseEvent): void;
 }
 import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=minimized-chat.d.ts.map

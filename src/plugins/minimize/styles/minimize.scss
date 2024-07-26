@@ -33,13 +33,13 @@
                     width: var(--minimized-chats-width);
 
                     .chat-head {
+                        flex-shrink: 1;
                         min-height: 0;
                         padding: 0.3em;
                         border-radius: var(--chatbox-border-radius);
                         height: 35px;
                         margin-bottom: 0.2em;
                         width: 100%;
-                        max-width: 9em;
                         flex-wrap: nowrap;
                         background-color: var(--chat-head-color);
                     }

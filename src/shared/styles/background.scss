@@ -9,7 +9,6 @@
     .converse-brand {
         display: flex;
         justify-content: space-between;
-        margin-top: 15vh;
         animation-name: fadein;
         animation-fill-mode: forwards;
         animation-duration: 5s;
@@ -47,6 +46,10 @@
 
 .converse-fullscreen {
     #conversejs-bg {
+        .converse-brand {
+            margin-top: 15vh;
+        }
+
         .converse-brand__padding {
             @include make-col-ready();
             @include media-breakpoint-up(md) {
@@ -88,6 +91,9 @@
 
 .converse-overlayed {
     #conversejs-bg {
+        height: 100vh;
+        width: 100vw;
+        background-color: var(--global-background-color);
         .converse-brand__padding {
             @include make-col-ready();
             @include media-breakpoint-up(md) {

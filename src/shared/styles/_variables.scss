@@ -51,3 +51,9 @@ $mobile_portrait_length: 480px !default;
 
     --list-toggle-font-weight: normal;
 }
+
+.conversejs {
+    &.converse-overlayed {
+        --message-font-size: var(--font-size-small);
+    }
+}

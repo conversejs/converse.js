@@ -168,9 +168,6 @@
 
     --overlayed-badge-color: var(--gray);
 
-    --close-color: var(--text-color);
-    --close-color: #585B51;
-
     --list-toggle-color: var(--gray);
     --list-toggle-hover-color: #585B51;
     --list-item-hover-color: rgba(0, 0, 0, 0.035);
@@ -183,5 +180,9 @@
     --list-item-action-hover-color: var(--inverse-link-color);
     --list-group-item-bg-color: var(--background);
 
+    --chat-msg-quote-color: var(--subdued-color);
     --chat-msg-hover-color: var(--list-item-hover-color);
+
+    --close-color: var(--text-color);
+    --close-color: #585B51;
 }

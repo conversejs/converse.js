@@ -33,7 +33,7 @@
     --converse-secondary-rgb: var(--cyan-rgb);
 
     // Base theme variables
-    --subdued-color: var(--foreground);
+    --subdued-color: var(--comment);
     --muc-color: var(--orange);
     --chat-color: var(--green);
     --disabled-color-bg: lightgray;
@@ -68,6 +68,11 @@
     --controlbox-pane-background-color: var(--background);
     --controlbox-pane-bg-hover-color: var(--list-item-hover-color);
 
+    .card {
+        --converse-card-border-color: var(--comment);
+    }
+
+    --chat-msg-quote-color: var(--heading-color);
     --chat-msg-hover-color: var(--current-line);
     --chat-textarea-color: var(--foreground);
 
@@ -136,7 +141,7 @@
     --controlbox-text-color: var(--foreground);
     --message-text-color: var(--foreground);
     --text-color: var(--foreground);
-    --text-color-lighten-15-percent: var(--yellow);
+    --text-color-lighten-15-percent: var(--pink);
     --text-color-invert: var(--background);
 
     --message-author-color: var(--purple);

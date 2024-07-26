@@ -8,8 +8,6 @@
  */
 import debounce from 'lodash-es/debounce';
 import { _converse, api, converse, constants } from '@converse/headless';
-import './view.js';
-import './components/minimized-chat.js';
 import MinimizedChatsToggle from './toggle.js';
 import {
     addMinimizeButtonToChat,
@@ -20,6 +18,9 @@ import {
     onMinimizedChanged,
     trimChats
 } from './utils.js';
+
+import './view.js';
+import './minimized-chat.js';
 
 import './styles/minimize.scss';
 

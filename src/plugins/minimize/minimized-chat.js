@@ -1,7 +1,7 @@
 import { api } from "@converse/headless";
-import tplTrimmedChat from "../templates/trimmed_chat.js";
+import tplTrimmedChat from "./templates/trimmed_chat.js";
 import { CustomElement } from 'shared/components/element.js';
-import { maximize } from  '../utils.js';
+import { maximize } from  './utils.js';
 
 
 export default class MinimizedChat extends CustomElement {
@@ -24,21 +24,20 @@ export default class MinimizedChat extends CustomElement {
     }
 
     render () {
-        const data = {
-            'close': ev => this.close(ev),
-            'num_unread': this.num_unread,
-            'restore': ev => this.restore(ev),
-            'title': this.title,
-            'type': this.type
-        };
-        return tplTrimmedChat(data);
+        return tplTrimmedChat(this);
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     close (ev) {
         ev?.preventDefault();
         this.model.close();
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     restore (ev) {
         ev?.preventDefault();
         maximize(this.model);

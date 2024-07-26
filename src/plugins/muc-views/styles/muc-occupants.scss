@@ -1,6 +1,12 @@
 .conversejs {
     converse-muc.chatroom {
 
+        converse-icon {
+            svg {
+                fill: var(--chatroom-head-fg-color);
+            }
+        }
+
         .chat-status--avatar {
             background: var(--occupants-background-color);
             border: 1px solid var(--occupants-background-color);

@@ -221,8 +221,8 @@ describe("An incoming chat Message", function () {
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             'Here\'s a code block: \n'+
-            '<div class="styling-directive">```</div><code class="block">Inside the code-block, &lt;code&gt;hello&lt;/code&gt; we don\'t enable *styling hints* like ~these~\n'+
-            '</code><div class="styling-directive">```</div>'
+            '<div class="styling-directive">```</div><pre><code class="block">Inside the code-block, &lt;code&gt;hello&lt;/code&gt; we don\'t enable *styling hints* like ~these~\n'+
+            '</code></pre><div class="styling-directive">```</div>'
         );
 
         msg_text = "```\nignored\n(println \"Hello, world!\")\n```\nThis should show up as monospace, preformatted text ^";
@@ -232,7 +232,7 @@ describe("An incoming chat Message", function () {
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<div class="styling-directive">```</div>'+
-            '<code class="block">ignored\n(println "Hello, world!")\n</code>'+
+            '<pre><code class="block">ignored\n(println "Hello, world!")\n</code></pre>'+
             '<div class="styling-directive">```</div>\n'+
             'This should show up as monospace, preformatted text ^');
 
@@ -312,8 +312,8 @@ describe("An incoming chat Message", function () {
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             '<blockquote>'+
                 '<div class="styling-directive">```</div>'+
-                '<code class="block">\u200Bignored\n\u200B\u200B&lt;span&gt;&lt;/span&gt; (println "Hello, world!")\n\u200B'+
-                '</code><div class="styling-directive">```</div>\n\u200B\u200B'+
+                '<pre><code class="block">\u200Bignored\n\u200B\u200B&lt;span&gt;&lt;/span&gt; (println "Hello, world!")\n\u200B'+
+                '</code></pre><div class="styling-directive">```</div>\n\u200B\u200B'+
                 'This should show up as monospace, preformatted text ^'+
             '</blockquote>');
 

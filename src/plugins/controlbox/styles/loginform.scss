@@ -1,0 +1,92 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+.conversejs {
+    #controlbox {
+        #converse-login-panel {
+            padding-top: 0;
+            padding-bottom: 0;
+            flex-direction: row;
+        }
+
+        .toggle-register-login {
+            font-weight: bold;
+        }
+
+        .controlbox-pane {
+            .switch-form {
+                text-align: center;
+                padding: 0.5em 0;
+            }
+        }
+    }
+}
+
+.conversejs {
+    converse-chats {
+        &.converse-overlayed {
+            #controlbox {
+                .login-trusted {
+                    white-space: nowrap;
+                    font-size: 90%;
+                }
+
+                #converse-login-panel {
+                    height: 100%;
+                }
+
+                #converse-login-trusted {
+                    margin-top: 0.5em;
+                }
+
+                #converse-register, #converse-login {
+                    @include make-col(12);
+                    padding-bottom: 0;
+                }
+
+                #converse-register {
+                    .button-cancel {
+                        font-size: 90%;
+                    }
+                }
+            }
+        }
+
+        &.converse-embedded,
+        &.converse-fullscreen,
+        &.converse-mobile {
+            #controlbox {
+                .toggle-register-login {
+                    line-height: var(--line-height-huge);
+                }
+
+                #converse-register, #converse-login {
+                    @include make-col-ready();
+                    @include make-col(8);
+                    @include make-col-offset(2);
+
+                    @include media-breakpoint-up(sm) {
+                        @include make-col(8);
+                        @include make-col-offset(2);
+                    }
+                    @include media-breakpoint-up(md) {
+                        @include make-col(8);
+                        @include make-col-offset(2);
+                    }
+                    @include media-breakpoint-up(lg) {
+                        @include make-col(6);
+                        @include make-col-offset(3);
+                    }
+                    .title, .instructions {
+                        margin: 1em 0;
+                    }
+                    input[type=submit],
+                    input[type=button] {
+                        width: auto;
+                    }
+                }
+            }
+        }
+    }
+}

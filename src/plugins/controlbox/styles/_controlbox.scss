@@ -5,30 +5,6 @@
 @import "shared/styles/_mixins.scss";
 
 .conversejs {
-
-    .set-xmpp-status,
-    .xmpp-status {
-        .chat-status--online {
-            color: var(--chat-status-online);
-        }
-        .chat-status--busy {
-            color: var(--chat-status-busy);
-        }
-        .chat-status--away {
-            color: var(--chat-status-away);
-        }
-        .far.fa-circle,
-        .fa-times-circle {
-            color: var(--subdued-color);
-        }
-    }
-
-    .set-xmpp-status {
-        .chat-status {
-            padding-right: 0.5em;
-        }
-    }
-
     .room-info {
         font-size: var(--font-size-small);
         font-style: normal;
@@ -70,8 +46,13 @@
             display: block;
         }
 
+        converse-user-profile {
+            padding: 0.5em 1em;
+        }
+
         .brand-name-wrapper {
             font-size: 200%;
+            padding-right: 0.5em;
         }
 
         .brand-name-wrapper--fullscreen {
@@ -121,34 +102,6 @@
             }
         }
 
-        #converse-login-panel, #converse-register-panel {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-        #converse-login-panel {
-            flex-direction: row;
-        }
-
-        .toggle-register-login {
-            font-weight: bold;
-        }
-
-        .controlbox-pane {
-            .userinfo {
-                padding-bottom: 1em;
-
-                .username {
-                    margin-left: 0.5em;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .profile {
-                    margin-bottom: 0.75em;
-                }
-            }
-        }
-
         #chatrooms {
             padding: 0;
 
@@ -164,7 +117,6 @@
         }
 
         .controlbox-section {
-
             .controlbox-heading {
                 font-family: var(--heading-font);
                 color: var(--controlbox-heading-color);
@@ -186,100 +138,25 @@
             .controlbox-heading--headline {
                 color: var(--headlines-head-color);
             }
-
-            .controlbox-heading__btn {
-                cursor: pointer;
-                padding: 0 0 0 1em;
-                font-size: 1em;
-                margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0;
-                text-align: center;
-                &.fa-vcard {
-                    margin-top: 1em;
-                }
-            }
         }
 
-        .dropdown {
-            a {
-                width: 143px;
-                display: inline-block;
-            }
-            li {
-                list-style: none;
-                padding-left: 0;
-            }
-            dd {
-                ul {
-                    padding: 0;
-                    list-style: none;
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                    z-index: 21;
-                    background-color: var(--light-background-color);
-                    li:hover {
-                        background-color: var(--highlight-color);
-                    }
-                }
-            }
-
-            dd.search-xmpp {
-                height: 0;
-                .contact-form-container {
-                    position: absolute;
-                    z-index: 22;
-                    form {
-                        box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
-                        background-color: white;
-                    }
-                }
-                li:hover {
-                    background-color: var(--light-background-color);
-                }
-            }
-            dt a span {
-                cursor: pointer;
-                display: block;
-                padding: 4px 7px 0 5px;
-            }
-        }
-
-        .controlbox-panes {
-            background-color: var(--controlbox-pane-background-color);
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .controlbox-subtitle {
-            font-size: 90%;
-            padding: 0.5em;
-            text-align: right;
+        .controlbox-padded {
+            padding-left: 1em;
+            padding-right: 1em;
+            align-items: center;
+            line-height: normal;
         }
 
         .controlbox-pane {
             background-color: var(--controlbox-pane-background-color);
+            height: 100%;
+            overflow-y: auto;
             border: 0;
             font-size: var(--font-size);
             left: 0;
             text-align: left;
             overflow-x: hidden;
             padding: 0;
-
-            .controlbox-padded {
-                padding-left: 1em;
-                padding-right: 1em;
-                align-items: center;
-                line-height: normal;
-
-                .change-status {
-                    min-width: 25px;
-                    text-align: center;
-                    converse-icon {
-                        padding-right: 0.5em;
-                    }
-                }
-            }
 
             .add-converse-contact {
                 margin: 0 0 0.75em 0;
@@ -289,17 +166,6 @@
                 margin: 0;
             }
 
-            .switch-form {
-                text-align: center;
-                padding: 1em 0;
-            }
-            dd {
-                margin-left: 0;
-                margin-bottom: 0;
-                &.odd {
-                    background-color: #DCEAC5;
-                }
-            }
         }
 
         .add-xmpp-contact {
@@ -339,58 +205,34 @@
                     min-width: var(--controlbox-width) !important;
                     width: var(--controlbox-width);
                 }
-
-                .login-trusted {
-                    white-space: nowrap;
-                    font-size: 90%;
-                }
-
-                #converse-login-trusted {
-                    margin-top: 0.5em;
-                }
-                &:not(.logged-out) {
-                    .controlbox-head {
-                        height: 15px;
-                    }
-                }
-
-                #converse-register, #converse-login {
-                    @include make-col(12);
-                    padding-bottom: 0;
-                }
-
-                #converse-register {
-                    .button-cancel {
-                        font-size: 90%;
-                    }
-                }
             }
 
             .brand-heading {
-                padding-top: 0.8rem;
-                padding-left: 0.8rem;
+                padding-left: 1em;
                 width: 100%;
             }
+
             .converse-svg-logo {
+                margin-top: 0.25em;
                 height: 1em;
-            }
-            #controlbox {
-                #converse-login-panel {
-                    height: 100%;
-                }
-                .controlbox-panes {
-                    margin-top: 0.5em;
-                }
             }
         }
 
         &.converse-embedded,
-        &.converse-fullscreen{
-            .controlbox-panes {
-                border-right: 0.2rem solid var(--panel-divider-color);
+        &.converse-fullscreen {
+            #controlbox {
+                .flyout {
+                    border-right: 0.2rem solid var(--panel-divider-color);
+                }
             }
             .toggle-controlbox {
                 display: none;
+            }
+        }
+
+        &.converse-overlayed {
+            .flyout {
+                border: 0;
             }
         }
 
@@ -398,6 +240,8 @@
         &.converse-fullscreen,
         &.converse-mobile {
             #controlbox {
+                margin: 0;
+
                 @include make-col-ready();
 
                 @include media-breakpoint-up(md) {
@@ -412,23 +256,17 @@
 
                 &.logged-out {
                     @include make-col(12);
-                }
-
-                margin: 0;
-
-                .flyout {
-                    border-radius: 0;
-                }
-
-                #converse-login-panel {
-                    border-radius: 0;
-                    .converse-form {
-                        padding: 3em 2em 3em;
+                    @include fade-in;
+                    width: 100%;
+                    .box-flyout {
+                        width: 100%;
                     }
                 }
 
-                .toggle-register-login {
-                    line-height: var(--line-height-huge);
+                .flyout {
+                    border-radius: 0;
+                    width: 100%;
+                    z-index: 1;
                 }
 
                 converse-brand-logo {
@@ -450,51 +288,6 @@
                         .brand-heading {
                             font-size: 300%;
                         }
-                    }
-                }
-
-                &.logged-out {
-                    @include make-col(12);
-                    @include fade-in;
-                    width: 100%;
-                    .box-flyout {
-                        width: 100%;
-                    }
-                }
-                .box-flyout {
-                    border: 0;
-                    width: 100%;
-                    z-index: 1;
-                    background-color: var(--controlbox-head-color);
-
-                    .controlbox-head {
-                        display: none;
-                    }
-                }
-
-                #converse-register, #converse-login {
-                    @include make-col-ready();
-                    @include make-col(8);
-                    @include make-col-offset(2);
-
-                    @include media-breakpoint-up(sm) {
-                        @include make-col(8);
-                        @include make-col-offset(2);
-                    }
-                    @include media-breakpoint-up(md) {
-                        @include make-col(8);
-                        @include make-col-offset(2);
-                    }
-                    @include media-breakpoint-up(lg) {
-                        @include make-col(6);
-                        @include make-col-offset(3);
-                    }
-                    .title, .instructions {
-                        margin: 1em 0;
-                    }
-                    input[type=submit],
-                    input[type=button] {
-                        width: auto;
                     }
                 }
             }
@@ -520,7 +313,7 @@
                     }
                 }
             }
-            .controlbox-panes {
+            .controlbox-pane {
                 padding-top: 2em;
                 padding-bottom: 1em;
             }

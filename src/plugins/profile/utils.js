@@ -1,8 +1,9 @@
 import { __ } from 'i18n';
-import { api, converse, _converse } from '@converse/headless';
+import { _converse } from '@converse/headless';
 
-const { Strophe, $iq, sizzle, u } = converse.env;
-
+/**
+ * @param {string} stat
+ */
 export function getPrettyStatus (stat) {
     if (stat === 'chat') {
         return __('online');
@@ -16,13 +17,5 @@ export function getPrettyStatus (stat) {
         return __('offline');
     } else {
         return __(stat) || __('online');
-    }
-}
-
-export async function logOut (ev) {
-    ev?.preventDefault();
-    const result = await api.confirm(__("Are you sure you want to log out?"));
-    if (result) {
-        api.user.logout();
     }
 }

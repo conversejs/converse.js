@@ -25,7 +25,7 @@ describe("The Controlbox", function () {
         spyOn(view, 'close').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
 
-        view.querySelector('.close-chatbox-button').click();
+        view.querySelector(".controlbox-heading__btn.close").click();
         expect(view.close).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxClosed', jasmine.any(Object));
     }));

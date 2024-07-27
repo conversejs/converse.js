@@ -1,6 +1,9 @@
-import tplProfile from './templates/profile.js';
-import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
+import tplProfile from './templates/profile.js';
+
+import './styles/profile.scss';
+
 
 class Profile extends CustomElement {
     initialize () {
@@ -14,16 +17,25 @@ class Profile extends CustomElement {
         return tplProfile(this);
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     showProfileModal (ev) {
         ev?.preventDefault();
         api.modal.show('converse-profile-modal', { model: this.model }, ev);
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     showStatusChangeModal (ev) {
         ev?.preventDefault();
         api.modal.show('converse-chat-status-modal', { model: this.model }, ev);
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     showUserSettingsModal (ev) {
         ev?.preventDefault();
         api.modal.show('converse-user-settings-modal', { model: this.model, _converse }, ev);

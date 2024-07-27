@@ -19,37 +19,15 @@
     }
 
     #converse-roster {
-        text-align: left;
         width: 100%;
-        position: relative;
         margin: 0;
-        height: var(--roster-height);
         padding: 0;
-        overflow: hidden;
-        // XXX: FIXME
-        height: calc(100% - 70px);
-
-
-        /* Custom addition for CSP */
-        #online-count {
-            display: none;
-        }
-
-        .search-xmpp {
-            ul {
-                li.chat-info {
-                    padding-left: 10px;
-                }
-            }
-        }
 
         .roster-contacts {
             padding: 0;
             margin: 0 0 0.2em 0;
-            height: 100%;
-            overflow-x: hidden;
-            overflow-y: auto;
             color: var(--text-color);
+            display: contents;
 
             .roster-group-contacts {
                 .list-item {

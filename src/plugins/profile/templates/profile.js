@@ -1,26 +1,8 @@
+import { html } from "lit";
 import 'shared/avatar/avatar.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless";
-import { getPrettyStatus, logOut } from '../utils.js';
-import { html } from "lit";
+import { getPrettyStatus } from '../utils.js';
 
-
-function tplSignout () {
-    const i18n_logout = __('Log out');
-    return html`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${logOut}>
-        <converse-icon class="fa fa-sign-out-alt" size="1em"></converse-icon>
-    </a>`
-}
-
-function tplUserSettingsButton (o) {
-    const i18n_details = __('Show details about this chat client');
-    return html`<a class="controlbox-heading__btn show-client-info align-self-center"
-        title="${i18n_details}"
-        @click=${o.showUserSettingsModal}>
-
-        <converse-icon class="fa fa-cog" size="1em"></converse-icon>
-    </a>`;
-}
 
 /**
  * @param {import('../statusview').default} el
@@ -29,7 +11,6 @@ export default (el) => {
     const chat_status = el.model.get('status') || 'offline';
     const status_message = el.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status));
     const i18n_change_status = __('Click to change your chat status');
-    const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
     let classes, color;
     if (chat_status === 'online') {
         [classes, color] = ['fa fa-circle chat-status', 'chat-status-online'];
@@ -51,8 +32,7 @@ export default (el) => {
                         height="40" width="40"></converse-avatar>
                 </a>
                 <span class="username w-100 align-self-center">${el.model.getDisplayName()}</span>
-                ${show_settings_button  ? tplUserSettingsButton(el) : ''}
-                ${api.settings.get('allow_logout') ? tplSignout() : ''}
+                <converse-controlbox-buttons></converse-controlbox-buttons>
             </div>
             <div class="d-flex xmpp-status">
                 <a class="change-status"

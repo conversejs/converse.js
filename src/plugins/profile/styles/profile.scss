@@ -1,0 +1,36 @@
+converse-user-profile {
+    .change-status {
+        min-width: 25px;
+        text-align: center;
+        converse-icon {
+            padding-right: 0.5em;
+        }
+    }
+
+    .userinfo {
+        .username {
+            margin-left: 0.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .profile {
+            margin-bottom: 0.75em;
+        }
+    }
+
+    .xmpp-status {
+        .chat-status--online {
+            color: var(--chat-status-online);
+        }
+        .chat-status--busy {
+            color: var(--chat-status-busy);
+        }
+        .chat-status--away {
+            color: var(--chat-status-away);
+        }
+        .far.fa-circle,
+        .fa-times-circle {
+            color: var(--subdued-color);
+        }
+    }
+}

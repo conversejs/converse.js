@@ -1,6 +1,6 @@
-import tplControlbox from './templates/controlbox.js';
-import { CustomElement } from 'shared/components/element.js';
 import { _converse, api, constants, u } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
+import tplControlbox from './templates/controlbox.js';
 
 const { LOGOUT } = constants;
 
@@ -57,7 +57,7 @@ class ControlBoxView extends CustomElement {
         ) {
             return;
         }
-        if (api.settings.get('sticky_controlbox')) {
+        if (api.settings.get('sticky_controlbox') || api.settings.get('view_mode') !== 'overlayed') {
             return;
         }
         u.safeSave(this.model, { 'closed': true });

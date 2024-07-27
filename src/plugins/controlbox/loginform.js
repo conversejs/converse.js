@@ -4,6 +4,8 @@ import { CustomElement } from 'shared/components/element.js';
 import { updateSettingsWithFormData, validateJID } from './utils.js';
 import tplLoginPanel from './templates/loginform.js';
 
+import './styles/loginform.scss';
+
 const { Strophe } = converse.env;
 const { ANONYMOUS } = constants;
 

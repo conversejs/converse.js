@@ -7,6 +7,7 @@ import "shared/components/brand-heading.js";
 import "../chatview/index.js";
 import './loginform.js';
 import './navback.js';
+import './buttons.js';
 import ControlBox from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';
@@ -14,7 +15,6 @@ import controlbox_api from './api.js';
 import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
 
 import './styles/_controlbox.scss';
-import './styles/controlbox-head.scss';
 
 const { CONTROLBOX_TYPE } = constants;
 

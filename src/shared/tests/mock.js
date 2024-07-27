@@ -100,16 +100,12 @@ async function openControlBox(_converse) {
     const model = await _converse.api.controlbox.open();
     await u.waitUntil(() => model.get('connected'));
     toggleControlBox();
-    return this;
+    return model;
 }
 
 function closeControlBox () {
-    const controlbox = document.querySelector("#controlbox");
-    if (u.isVisible(controlbox)) {
-        const button = controlbox.querySelector(".close-chatbox-button");
-        (button !== null) && button.click();
-    }
-    return this;
+    const view = document.querySelector("#controlbox");
+    u.isVisible(view) && view.querySelector(".controlbox-heading__btn.close")?.click();
 }
 
 async function waitUntilBookmarksReturned (_converse, bookmarks=[]) {

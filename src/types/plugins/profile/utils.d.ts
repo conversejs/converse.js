@@ -1,3 +1,5 @@
-export function getPrettyStatus(stat: any): any;
-export function logOut(ev: any): Promise<void>;
+/**
+ * @param {string} stat
+ */
+export function getPrettyStatus(stat: string): any;
 //# sourceMappingURL=utils.d.ts.map

@@ -203,7 +203,7 @@ export default class Message extends CustomElement {
                     chatbox.occupants.findOccupant({'jid': retracted_by_mod}) ||
                     chatbox.occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
             }
-            const modname = this.model.mod ? this.model.mod.getDisplayName() : 'A moderator';
+            const modname = this.model.mod ? this.model.mod.getDisplayName() : __('A moderator');
             return __('%1$s has removed this message', modname);
         } else {
             return __('%1$s has removed this message', this.model.getDisplayName());

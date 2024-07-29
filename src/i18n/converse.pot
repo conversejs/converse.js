@@ -1134,6 +1134,10 @@ msgstr ""
 msgid "Show less"
 msgstr ""
 
+#: dist/converse-no-dependencies.js:75630
+msgid "A moderator"
+msgstr ""
+
 #: dist/converse-no-dependencies.js:84900
 #: dist/converse-no-dependencies.js:84902
 #, javascript-format

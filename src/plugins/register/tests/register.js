@@ -3,7 +3,7 @@
 const { stx, Strophe, $iq, sizzle, u } = converse.env;
 
 
-fdescribe("The Registration Panel", function () {
+describe("The Registration Panel", function () {
 
     afterEach(() => {
         // Remove the hash

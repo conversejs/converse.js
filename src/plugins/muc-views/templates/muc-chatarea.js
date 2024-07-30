@@ -11,7 +11,6 @@ const { CHATROOMS_TYPE } = constants;
  * @param {import('../chatarea').default} el
  */
 export default (el) => {
-    const sidebar_width = el.model.get('occupants_width');
     const show_send_button = api.settings.get('show_send_button');
     const view_mode = api.settings.get('view_mode');
 
@@ -46,7 +45,6 @@ export default (el) => {
         ${el.model ? html`
             <converse-muc-sidebar
                 class="occupants ${el.shouldShowSidebar() ? sidebar_classes : 'col-xs-0 hidden' }"
-                style="${sidebar_width ? `flex: 0 0 ${sidebar_width}px` : ''}"
                 jid=${el.jid}
                 @mousedown=${(ev) => el.onMousedown(ev)}></converse-muc-sidebar>` : '' }`
 };

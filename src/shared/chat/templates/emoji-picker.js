@@ -11,7 +11,7 @@ const emoji_category = (o) => {
             class="emoji-category ${o.category} ${(o.current_category === o.category) ? 'picked' : ''}"
             title="${__(api.settings.get('emoji_category_labels')[o.category])}">
 
-            <a class="pick-category"
+            <a class="btn pick-category"
                @click=${o.onCategoryPicked}
                href="#emoji-picker-${o.category}"
                data-category="${o.category}">${o.emoji} </a>
@@ -22,7 +22,7 @@ const emoji_category = (o) => {
 const emoji_picker_header = (o) => {
     const cats = api.settings.get('emoji_categories');
     const transform = c => cats[c] ? emoji_category(Object.assign({'category': c, 'emoji': o.sn2Emoji(cats[c])}, o)) : '';
-    return html`<ul>${ Object.keys(cats).map(transform) }</ul>`;
+    return html`<ul class="flex-wrap flex-md-nowrap">${ Object.keys(cats).map(transform) }</ul>`;
 }
 
 const emoji_item = (o) => {
@@ -33,7 +33,7 @@ const emoji_item = (o) => {
     `;
 }
 
-export const tplSearchResults = (o) => {
+export function tplSearchResults (o) {
     const i18n_search_results = __('Search results');
     return html`
         <span ?hidden=${!o.query} class="emoji-lists__container emojis-lists__container--search">
@@ -45,7 +45,7 @@ export const tplSearchResults = (o) => {
     `;
 }
 
-const emojis_for_category = (o) => {
+function emojis_for_category (o) {
     return html`
         <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(api.settings.get('emoji_category_labels')[o.category]) }</a>
         <ul class="emoji-picker" data-category="${o.category}">
@@ -53,7 +53,7 @@ const emojis_for_category = (o) => {
         </ul>`;
 }
 
-export const tplAllEmojis = (o) => {
+export function tplAllEmojis (o) {
     const cats = api.settings.get('emoji_categories');
     return html`
         <span ?hidden=${o.query} class="emoji-lists__container emoji-lists__container--browse">
@@ -62,17 +62,25 @@ export const tplAllEmojis = (o) => {
 }
 
 
-const skintone_emoji = (o) => {
+function skintone_emoji (o, skintone, skintone_emoji) {
     return html`
-        <li data-skintone="${o.skintone}" class="emoji-skintone ${(o.current_skintone === o.skintone) ? 'picked' : ''}">
-            <a class="pick-skintone" href="#" data-skintone="${o.skintone}" @click=${o.onSkintonePicked}>${u.shortnamesToEmojis(':'+o.skintone+':')}</a>
+        <li data-skintone="${skintone_emoji}" class="emoji-skintone ${(o.current_skintone === skintone) ? 'picked' : ''}">
+            <a class="pick-skintone" href="#" data-skintone="${skintone}" @click=${o.onSkintonePicked}>
+                ${u.shortnamesToEmojis(skintone_emoji)}
+            </a>
         </li>`;
 }
 
 
-export const tplEmojiPicker = (o) => {
+export function tplEmojiPicker (o) {
     const i18n_search = __('Search');
-    const skintones = ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'];
+    const skintones = {
+        "tone1": ":raised_hand_tone1:",
+        "tone2": ":raised_hand_tone2:",
+        "tone3": ":raised_hand_tone3:",
+        "tone4": ":raised_hand_tone4:",
+        "tone5": ":raised_hand_tone5:"
+    };
     return html`
         <div class="emoji-picker__header">
             <input class="form-control emoji-search" name="emoji-search" placeholder="${i18n_search}"
@@ -91,6 +99,7 @@ export const tplEmojiPicker = (o) => {
                 query="${o.query}"></converse-emoji-picker-content>` : ''}
 
         <div class="emoji-skintone-picker">
-            <ul>${ skintones.map(skintone => skintone_emoji(Object.assign({skintone}, o))) }</ul>
+            Skin tone:
+            <ul>${ Object.keys(skintones).map(k => skintone_emoji(o, k, skintones[k])) }</ul>
         </div>`;
 }

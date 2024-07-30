@@ -84,6 +84,32 @@ export default class MUCChatArea extends CustomElement {
         }
     }
 
+
+    /**
+     * Cache some important sizes when drag starts, so we don't have to do that
+     * continously:
+     *
+     * `size`: The total size of the pair. First + second + first gutter + second gutter.
+     * `start`: The leading side of the first element.
+     * ------------------------------------------------
+     * |      aGutterSize -> |||                      |
+     * |                     |||                      |
+     * |                     |||                      |
+     * |                     ||| <- bGutterSize       |
+     * ------------------------------------------------
+     * | <- start                             size -> |
+     */
+    calculateSizes () {
+        const a = this.firstElementChild;
+        const b = this.firstElementChild.nextElementSibling;
+        const aBounds = a.getBoundingClientRect()
+        const bBounds = b.getBoundingClientRect()
+
+        this.size = aBounds.width + bBounds.width;
+        this.start = aBounds.left
+        this.end = aBounds.right
+    }
+
     /**
      * @param {MouseEvent} ev
      */
@@ -93,6 +119,8 @@ export default class MUCChatArea extends CustomElement {
         this.resizing = true;
         this.addEventListener('mousemove', this.onMouseMove);
         this.addEventListener('mouseup', this.onMouseUp);
+
+        this.calculateSizes();
 
         const sidebar_el = this.querySelector('converse-muc-sidebar');
         const style = window.getComputedStyle(sidebar_el);

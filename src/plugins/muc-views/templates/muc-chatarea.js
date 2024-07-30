@@ -48,5 +48,6 @@ export default (el) => {
                 class="${el.shouldShowSidebar() ? sidebar_classes : 'col-xs-0 hidden' }"
                 style="${sidebar_width ? `flex: 0 0 ${sidebar_width}px` : ''}"
                 jid=${el.jid}
-                @mousedown=${(ev) => el.onMousedown(ev)}></converse-muc-sidebar>` : '' }`
+                @mousedown=${(ev) => el.onMousedown(ev)}
+                @touchstart=${(ev) => el.onMousedown(ev)}></converse-muc-sidebar>` : '' }`
 };

@@ -1,44 +1,27 @@
 .conversejs {
 
-    converse-chat-toolbar {
-        .btn {
-            padding: 0.25em 0.5em !important;
-        }
-
-        .send-button {
-            border-radius: 0;
-            bottom: var(--send-button-bottom);
-            color: var(--inverse-link-color);
-        }
-    }
-
-    .chatbox {
-        .send-button {
-            color: var(--background);
-            background-color: var(--chat-toolbar-btn-color);
-        }
-    }
-
-    .chatroom {
-        .send-button {
-            background-color: var(--muc-toolbar-btn-color);
-        }
-    }
-
-    .chat-toolbar {
+    converse-chat-toolbar.btn-toolbar {
+        background-color: var(--chat-background-color);
+        box-sizing: border-box;
+        width: 100%;
         justify-content: space-between;
+        margin-bottom: 1px; // So that bottom border on toolbar buttons is visible
+
         .toolbar-buttons {
             .message-limit {
                 padding: 0.5em;
                 font-weight: bold;
             }
         }
-    }
 
-    converse-chat-toolbar {
-        background-color: var(--chat-background-color);
-        box-sizing: border-box;
-        width: 100%;
+        .btn {
+            padding: 0.25em 0.5em !important;
+        }
+
+        .send-button {
+            color: var(--background);
+            border-radius: 0;
+        }
 
         .fa, .fa:hover,
         .far, .far:hover,
@@ -53,19 +36,20 @@
         .unencrypted {
             color: var(--text-color);
         }
+    }
 
-        button {
-            border: 1px transparent solid;
-            background-color: transparent;
-
-            &.send-button {
-                padding-top: 0.2em;
-                padding-bottom: 0.2em;
-                margin: 0;
-                margin-top: -1px;
-            }
+    .chatbox {
+        .send-button {
+            background-color: var(--chat-toolbar-btn-color);
         }
     }
+
+    .chatroom {
+        .send-button {
+            background-color: var(--muc-toolbar-btn-color);
+        }
+    }
+
 
     .chatbox {
         converse-chat-toolbar {

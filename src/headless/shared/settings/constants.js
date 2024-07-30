@@ -102,7 +102,7 @@ export const DEFAULT_SETTINGS = {
     sid: undefined,
     singleton: false,
     strict_plugin_dependencies: false,
-    stanza_timeout: 20000,
+    stanza_timeout: 60000,
     view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
     websocket_url: undefined,
     whitelisted_plugins: [],

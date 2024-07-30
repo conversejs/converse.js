@@ -21,14 +21,21 @@
             background-color: var(--groupchats-header-color);
         }
 
-        .box-flyout {
+        converse-muc-sidebar {
+            display: flex;
+            overflow-y: scroll;
+            border-left: var(--occupants-border-left);
+            background-color: var(--occupants-background-color);
+
+            .dragresize-occupants-left {
+                cursor: w-resize;
+                width: 0.25em;
+                height: 100%;
+            }
+
             .occupants {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+                width: 100%;
                 overflow: visible;
-                background-color: var(--occupants-background-color);
-                border-left: var(--occupants-border-left);
 
                 .occupants-header--title {
                     display: flex;

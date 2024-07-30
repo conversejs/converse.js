@@ -93,32 +93,34 @@ export default (el, o) => {
     }
 
     return html`
-        <div class="occupants-header">
-            <div class="occupants-header--title">
-                <span class="occupants-heading">${el.model.occupants.length} ${i18n_participants}</span>
-                ${btns.length === 1
-                    ? btns[0]
-                        : html`<converse-dropdown
-                            class="chatbox-btn btn-group dropstart"
-                            .items=${btns}></converse-dropdown>`}
+        <div class="dragresize-occupants-left">&nbsp;</div>
+        <div class="occupants">
+            <div class="occupants-header">
+                <div class="occupants-header--title">
+                    <span class="occupants-heading">${el.model.occupants.length} ${i18n_participants}</span>
+                    ${btns.length === 1
+                        ? btns[0]
+                            : html`<converse-dropdown
+                                class="chatbox-btn btn-group dropstart"
+                                .items=${btns}></converse-dropdown>`}
+                </div>
             </div>
+            <ul class="occupant-list">
+                ${is_filter_visible
+                    ? html` <converse-list-filter
+                        @update=${() => el.requestUpdate()}
+                        .promise=${el.model.initialized}
+                        .items=${el.model.occupants}
+                        .template=${tplOccupantsFilter}
+                        .model=${el.filter}
+                    ></converse-list-filter>`
+                    : ''}
+                ${repeat(
+                    el.model.occupants.models,
+                    (occ) => occ.get('jid'),
+                    (occ) => shouldShowOccupant(el, occ, o)
+                )}
+            </ul>
         </div>
-        <div class="dragresize dragresize-occupants-left"></div>
-        <ul class="occupant-list">
-            ${is_filter_visible
-                ? html` <converse-list-filter
-                      @update=${() => el.requestUpdate()}
-                      .promise=${el.model.initialized}
-                      .items=${el.model.occupants}
-                      .template=${tplOccupantsFilter}
-                      .model=${el.filter}
-                  ></converse-list-filter>`
-                : ''}
-            ${repeat(
-                el.model.occupants.models,
-                (occ) => occ.get('jid'),
-                (occ) => shouldShowOccupant(el, occ, o)
-            )}
-        </ul>
     `;
 };

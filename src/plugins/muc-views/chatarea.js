@@ -88,6 +88,8 @@ export default class MUCChatArea extends CustomElement {
      * @param {MouseEvent} ev
      */
     onStartResizeOccupants (ev) {
+        ev.preventDefault();
+
         this.resizing = true;
         this.addEventListener('mousemove', this.onMouseMove);
         this.addEventListener('mouseup', this.onMouseUp);

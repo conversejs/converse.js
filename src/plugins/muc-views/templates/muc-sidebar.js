@@ -50,7 +50,7 @@ export default (el, o) => {
     const is_filter_visible = el.model.get('filter_visible');
 
     const btns = /** @type {TemplateResult[]} */ [];
-    if (el.model.occupants < 6) {
+    if (el.model.occupants?.length < 6) {
         // We don't show the filter
         btns.push(
             html` <i class="hide-occupants" @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>

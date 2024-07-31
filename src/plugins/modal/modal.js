@@ -1,7 +1,7 @@
 /**
  * @typedef {import('lit-html').TemplateResult} TemplateResult
  */
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { getOpenPromise } from '@converse/openpromise';
 import { Modal } from "bootstrap";
 import { ElementView } from '@converse/skeletor';

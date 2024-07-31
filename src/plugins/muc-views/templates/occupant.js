@@ -57,7 +57,7 @@ export default (o, chat) => {
     }
 
     return html`
-        <li class="occupant" id="${o.id}" title="${occupant_title(o)}">
+        <li class="occupant" id="${o.id}">
             <div class="row no-gutters">
                 <div class="col-auto">
                     <a class="show-msg-author-modal" @click=${(ev) => showOccupantModal(ev, o)}>
@@ -77,6 +77,7 @@ export default (o, chat) => {
                 </div>
                 <div class="col occupant-nick-badge">
                     <span class="occupant-nick"
+                          title="${occupant_title(o)}"
                           @click=${chat.onOccupantClicked}
                           style="${getAuthorStyle(o)}">${o.getDisplayName()}</span>
                     <span class="occupant-badges">

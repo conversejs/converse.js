@@ -194,14 +194,13 @@ describe("The occupants sidebar", function () {
         occupants = view.querySelectorAll('.occupant-list li');
         expect(occupants.length).toBe(2);
         expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("moderatorman");
+        expect(occupants[0].querySelector('.occupant-nick').getAttribute('title')).toBe(
+            contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
+        );
         expect(occupants[1].querySelector('.occupant-nick').textContent.trim()).toBe("romeo");
         expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
         expect(occupants[0].querySelectorAll('.badge')[0].textContent.trim()).toBe('Admin');
         expect(occupants[0].querySelectorAll('.badge')[1].textContent.trim()).toBe('Moderator');
-
-        expect(occupants[0].getAttribute('title')).toBe(
-            contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
-        );
 
         contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         presence = $pres({
@@ -219,10 +218,10 @@ describe("The occupants sidebar", function () {
         occupants = view.querySelector('.occupant-list').querySelectorAll('li');
         expect(occupants.length).toBe(3);
         expect(occupants[2].querySelector('.occupant-nick').textContent.trim()).toBe("visitorwoman");
-        expect(occupants[2].querySelectorAll('.badge').length).toBe(1);
-        expect(sizzle('.badge', occupants[2]).pop().textContent.trim()).toBe('Visitor');
-        expect(occupants[2].getAttribute('title')).toBe(
+        expect(occupants[2].querySelector('.occupant-nick').getAttribute('title')).toBe(
             contact_jid + ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.'
         );
+        expect(occupants[2].querySelectorAll('.badge').length).toBe(1);
+        expect(sizzle('.badge', occupants[2]).pop().textContent.trim()).toBe('Visitor');
     }));
 });

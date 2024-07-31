@@ -21,6 +21,7 @@ const remove_button = (el) => {
 export const tplFooter = (el) => {
     const is_roster_contact = el.model.contact !== undefined;
     const i18n_refresh = __('Refresh');
+    const i18n_edit = __('Edit');
     const allow_contact_removal = api.settings.get('allow_contact_removal');
     return html`
         <div class="modal-footer">
@@ -33,6 +34,9 @@ export const tplFooter = (el) => {
                 ></converse-icon>
                 ${i18n_refresh}</button>
             ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }
+            <button type="button" class="btn btn-info" data-dismiss="modal" @click=${(ev) => el.editContact(ev)}>
+                ${i18n_edit}
+            </button>
         </div>
     `;
 }

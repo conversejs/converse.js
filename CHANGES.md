@@ -27,6 +27,7 @@
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 - New loadEmojis hook, to customize emojis at runtime.
+- Fix: "Click to mention..." title was misplaced in MUC occupant list.
 
 ### Breaking changes:
 

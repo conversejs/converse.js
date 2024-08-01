@@ -73,7 +73,6 @@ class DOMNavigator {
     /**
      * Directions.
      * @returns {DOMNavigatorDirection}
-     * @constructor
      */
     static get DIRECTION () {
         return ({

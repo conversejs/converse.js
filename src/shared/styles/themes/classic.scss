@@ -41,7 +41,6 @@
 
     --dark-link-color: #206485; // $dark-blue
     --inverse-link-color: var(--background);
-    --link-color-lighten-10-percent: #79a5ba; // lighten($light-blue, 10%)
     --link-color: var(--light-blue);
     --link-hover-color: #345566;
 
@@ -54,7 +53,6 @@
     --text-shadow-color: #FAFAFA;
     --text-color: var(--foreground);
     --controlbox-text-color: var(--foreground);
-    --text-color-lighten-15-percent: #8c8c8c; // lighten(#666, 15%)
     --message-author-color: var(--text-color);
     --text-color-invert: var(--background);
 
@@ -72,11 +70,10 @@
     --chat-textarea-disabled-bg-color: #EEE;
     --chat-textarea-height: 60px;
 
-    --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
+    --chat-correcting-color: var(--comment);
     --chat-head-fg-color: var(--background);
     --chat-head-color-dark: var(--dark-green);
     --chat-head-color-darker: #0E763B;
-    --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
     --chat-head-color: var(--green);
     --chat-head-text-color: var(--background);
     --chat-toolbar-btn-color: var(--green);

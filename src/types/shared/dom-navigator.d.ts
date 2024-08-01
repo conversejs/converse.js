@@ -22,6 +22,11 @@ export type DOMNavigatorDirection = {
  */
 declare class DOMNavigator {
     /**
+     * Directions.
+     * @returns {DOMNavigatorDirection}
+     */
+    static get DIRECTION(): DOMNavigatorDirection;
+    /**
      * The default options for the DOM navigator.
      * @returns {{
      *     home: string[],

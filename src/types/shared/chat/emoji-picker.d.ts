@@ -42,21 +42,52 @@ export default class EmojiPicker extends CustomElement {
     registerEvents(): void;
     onGlobalKeyDown: (ev: any) => void;
     connectedCallback(): void;
-    _onGlobalKeyDown(ev: any): void;
-    setCategoryForElement(el: any): void;
-    insertIntoTextArea(value: any): void;
-    chooseSkinTone(ev: any): void;
-    chooseCategory(ev: any): void;
-    onSearchInputKeyDown(ev: any): void;
-    onEnterPressed(ev: any): void;
-    onSearchInputFocus(ev: any): void;
-    getTonedShortname(shortname: any): any;
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    _onGlobalKeyDown(ev: KeyboardEvent): void;
+    /**
+     * @param {HTMLElement} el
+     */
+    setCategoryForElement(el: HTMLElement): void;
+    /**
+     * @param {string} value
+     */
+    insertIntoTextArea(value: string): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    chooseSkinTone(ev: MouseEvent): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    chooseCategory(ev: MouseEvent): void;
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    onSearchInputKeyDown(ev: KeyboardEvent): void;
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    onEnterPressed(ev: KeyboardEvent): void;
+    /**
+     * @param {FocusEvent} ev
+     */
+    onSearchInputFocus(ev: FocusEvent): void;
+    /**
+     * @param {string} shortname
+     */
+    getTonedShortname(shortname: string): string;
     initArrowNavigation(): void;
     navigator: DOMNavigator;
     disableArrowNavigation(): void;
-    enableArrowNavigation(ev: any): void;
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    enableArrowNavigation(ev: KeyboardEvent): void;
 }
 export type DOMNavigatorOptions = any;
+export type DOMNavigatorDirection = any;
 import { CustomElement } from "shared/components/element.js";
 import DOMNavigator from "shared/dom-navigator";
 //# sourceMappingURL=emoji-picker.d.ts.map

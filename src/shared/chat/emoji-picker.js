@@ -216,8 +216,8 @@ export default class EmojiPicker extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     onSearchInputKeyDown (ev) {
+        const target = /** @type {HTMLInputElement} */(ev.target);
         if (ev.keyCode === KEYCODES.TAB) {
-            const target = /** @type {HTMLInputElement} */(ev.target);
             if (target.value) {
                 ev.preventDefault();
                 const match = converse.emojis.shortnames.find(sn => FILTER_CONTAINS(sn, target.value));
@@ -231,7 +231,7 @@ export default class EmojiPicker extends CustomElement {
             ev.keyCode !== KEYCODES.ENTER &&
             ev.keyCode !== KEYCODES.DOWN_ARROW
         ) {
-            this.debouncedFilter(ev.target);
+            this.debouncedFilter(target);
         }
     }
 

@@ -28,7 +28,7 @@ export default class EmojiPicker extends CustomElement {
     model: any;
     query: string;
     _search_results: any[];
-    debouncedFilter: any;
+    debouncedFilter: import("lodash").DebouncedFunc<(input: HTMLInputElement) => any>;
     set search_results(arg: any[]);
     get search_results(): any[];
     render(): import("lit").TemplateResult<1>;

@@ -42,7 +42,10 @@ declare class OMEMOStore extends Model {
      * to use a pre-key, which it chooses randomly from the list of available
      * ones.
      */
-    generatePreKeys(): Promise<any>;
+    generatePreKeys(): Promise<{
+        id: any;
+        key: any;
+    }[]>;
     /**
      * Generate the cryptographic data used by the X3DH key agreement protocol
      * in order to build a session with other devices.

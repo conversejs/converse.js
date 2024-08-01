@@ -58,7 +58,7 @@ export function shortnamesToEmojis(str: string, options?: {
     unicode_only: boolean;
     add_title_wrapper: boolean;
 }): any[];
-export const markScrolled: any;
+export const markScrolled: import("lodash").DebouncedFunc<(ev: any) => void>;
 export type EmojiMarkupOptions = {
     unicode_only?: boolean;
     add_title_wrapper?: boolean;

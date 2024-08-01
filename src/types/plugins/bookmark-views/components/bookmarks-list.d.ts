@@ -1,6 +1,6 @@
 export default class BookmarksView extends CustomElement {
     initialize(): Promise<void>;
-    liveFilter: any;
+    liveFilter: import("lodash").DebouncedFunc<(ev: any) => false | Model>;
     model: Model;
     render(): import("lit").TemplateResult<1>;
     clearFilter(ev: any): void;

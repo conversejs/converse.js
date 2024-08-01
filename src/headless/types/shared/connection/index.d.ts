@@ -7,7 +7,7 @@ declare const Connection_base: typeof import("strophe.js/src/types/connection.js
 export class Connection extends Connection_base {
     constructor(service: any, options: any);
     send_initial_presence: boolean;
-    debouncedReconnect: any;
+    debouncedReconnect: import("lodash").DebouncedFunc<() => Promise<any>>;
     /** @param {Element} body */
     xmlInput(body: Element): void;
     bind(): Promise<void>;

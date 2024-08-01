@@ -13,7 +13,7 @@ export const RSM_ATTRIBUTES: string[];
  * @class RSM
  */
 export class RSM {
-    static getQueryParameters(options?: {}): any;
+    static getQueryParameters(options?: {}): Partial<{}>;
     static parseXMLResult(set: any): {
         index: number;
     };
@@ -23,7 +23,7 @@ export class RSM {
      * @constructor
      */
     constructor(options?: any);
-    query: any;
+    query: Partial<{}>;
     result: {};
     /**
      * Returns a `<set>` XML element that confirms to XEP-0059 Result Set Management.

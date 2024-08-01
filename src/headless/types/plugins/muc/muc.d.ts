@@ -28,7 +28,7 @@ declare class MUC extends ChatBox {
         time_sent: string;
         type: string;
     };
-    debouncedRejoin: any;
+    debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<MUC>>;
     isEntered(): boolean;
     /**
      * Checks whether this MUC qualifies for subscribing to XEP-0437 Room Activity Indicators (RAI)

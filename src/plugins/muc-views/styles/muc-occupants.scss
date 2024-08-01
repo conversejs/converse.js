@@ -22,13 +22,24 @@
         }
 
         .box-flyout {
-            .occupants {
+
+            converse-muc-sidebar {
                 display: flex;
-                flex-direction: column;
+                height: 100%;
+                flex-direction: row;
                 justify-content: space-between;
                 overflow: visible;
                 background-color: var(--occupants-background-color);
                 border-left: var(--occupants-border-left);
+            }
+
+            .occupants {
+                display: flex;
+                height: 100%;
+                flex-direction: column;
+                justify-content: space-between;
+                overflow-y: visible;
+                overflow-x: auto;
 
                 .occupants-header--title {
                     display: flex;

@@ -22,7 +22,7 @@ export default (el) => {
         [classes, color] = ['fa fa-circle chat-status', 'subdued-color'];
     }
     return html`
-        <div class="userinfo controlbox-padded">
+        <div class="userinfo">
             <div class="controlbox-section profile d-flex">
                 <a class="show-profile" href="#" @click=${el.showProfileModal}>
                     <converse-avatar class="avatar align-self-center"

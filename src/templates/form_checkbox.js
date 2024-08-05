@@ -8,5 +8,8 @@ export default  (o) => html`
                ?readonly=${o.readonly}
                ?checked=${o.checked}
                ?required=${o.required} />
-        <label class="form-check-label" for="${o.id}">${o.label}</label>
+        <label class="form-check-label" for="${o.id}">
+            ${o.label}
+            ${(o.desc) ? html`<small class="form-text text-muted">${o.desc}</small>` : ''}
+        </label>
     </fieldset>`;

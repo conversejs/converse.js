@@ -28,9 +28,11 @@ export default (el) => {
     const bare_jid = _converse.session.get('bare_jid');
     const not_me =  jid != bare_jid;
 
-    const add_to_contacts = api.contacts.get(jid)
-        .then(contact => !contact && not_me && can_see_real_jids)
-        .then(add => add ? html`<li><button class="btn btn-primary" type="button" @click=${() => el.addToContacts()}>${i18n_add_to_contacts}</button></li>` : '');
+    const add_to_contacts = api.settings.get('singleton')
+        ? '' // in singleton mode, there is no roster, so adding to contact makes no sense.
+        : api.contacts.get(jid)
+            .then(contact => !contact && not_me && can_see_real_jids)
+            .then(add => add ? html`<li><button class="btn btn-primary" type="button" @click=${() => el.addToContacts()}>${i18n_add_to_contacts}</button></li>` : '');
 
     return html`
         <div class="row">

@@ -35,6 +35,7 @@
 - Upgrade to Bootstrap 5
 - Add a new theme 'Cyberpunk' and remove the old 'Concord' theme.
 - Improved accessibility.
+- New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 
 ### Breaking changes:
 

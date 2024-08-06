@@ -109,14 +109,17 @@
 
                             .occupant-nick-badge {
                                 display: flex;
-                                justify-content: space-between;
+                                justify-content: flex-start;
                                 flex-wrap: wrap;
+                                align-items: center;
 
                                 .occupant-badges {
                                     display: flex;
                                     justify-content: flex-end;
                                     flex-wrap: wrap;
                                     flex-direction: row;
+
+                                    margin-left: auto; // this tricks align the item to the right.
 
                                     span {
                                         height: 1.6em;

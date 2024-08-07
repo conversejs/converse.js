@@ -17,6 +17,16 @@
         &.converse-mobile {
             flex-wrap: nowrap;
         }
+
+        &.converse-fullscreen {
+            &.converse-chatboxes {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                left: 0;
+            }
+        }
+
         &.converse-embedded {
             bottom: auto;
             height: 100%; // When embedded, it fills the containing element

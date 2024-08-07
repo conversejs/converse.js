@@ -54,7 +54,7 @@ async function tplActionButtons (o) {
     }
 
     return html`<converse-dropdown
-        class="btn btn--transparent btn--standalone dropdown-toggle dropdown-toggle--no-caret"
+        class="occupant-actions chatbox-btn"
         .items=${items}
     ></converse-dropdown>`;
 }
@@ -109,9 +109,6 @@ export default (o, chat) => {
                           title="${occupant_title(o)}"
                           @click=${chat.onOccupantClicked}
                           style="${getAuthorStyle(o)}">${o.getDisplayName()}</span>
-                    ${
-                        until(tplActionButtons(o))
-                    }
                     <span class="occupant-badges">
                         ${ (affiliation === "owner") ? html`<span class="badge badge-groupchat">${i18n_owner}</span>` : '' }
                         ${ (affiliation === "admin") ? html`<span class="badge badge-info">${i18n_admin}</span>` : '' }
@@ -119,6 +116,9 @@ export default (o, chat) => {
                         ${ (role === "moderator") ? html`<span class="badge badge-info">${i18n_moderator}</span>` : '' }
                         ${ (role === "visitor") ? html`<span class="badge badge-secondary">${i18n_visitor}</span>`  : '' }
                     </span>
+                    ${
+                        until(tplActionButtons(o))
+                    }
                 </div>
             </div>
         </li>

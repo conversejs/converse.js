@@ -13,7 +13,7 @@ import tplFile from 'templates/file.js';
 import tplDateInput from 'templates/form_date.js';
 import tplFormCaptcha from '../templates/form_captcha.js';
 import tplFormCheckbox from '../templates/form_checkbox.js';
-import tplFormHelp from '../templates/form_help.js';
+import tplFormFixed from '../templates/form_fixed.js';
 import tplFormInput from '../templates/form_input.js';
 import tplFormSelect from '../templates/form_select.js';
 import tplFormTextarea from '../templates/form_textarea.js';
@@ -479,7 +479,7 @@ export function xFormField2TemplateResult(xfield, options = {}) {
         });
 
     } else if (xfield['type'] === 'fixed') {
-        return tplFormHelp(xfield);
+        return tplFormFixed(xfield);
 
     } else if (xfield['type'] === 'jid-multi') {
         return tplFormTextarea({ ...default_vals, ...xfield });

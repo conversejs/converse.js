@@ -1,9 +1,11 @@
 /**
  * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
  */
+import { api } from '@converse/headless';
 import { PRETTY_CHAT_STATUS } from '../constants.js';
 import { __ } from 'i18n';
 import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 import { showOccupantModal } from '../utils.js';
 import { getAuthorStyle } from 'utils/color.js';
 
@@ -29,6 +31,33 @@ const occupant_title = /** @param {MUCOccupant} o */(o) => {
     }
 }
 
+/**
+ * @param {MUCOccupant} o
+ */
+async function tplActionButtons (o) {
+    const buttons = await api.hook('getOccupantActionButtons', o, []);
+    if (!buttons?.length) { return '' }
+
+    const items = buttons.map(b => {
+        return html`
+        <button class="dropdown-item ${b.button_class}" @click=${b.handler}>
+            <converse-icon
+                class="${b.icon_class}"
+                color="var(--inverse-link-color)"
+                size="1em"
+            ></converse-icon>&nbsp;${b.i18n_text}
+        </button>`
+    });
+
+    if (!items.length) {
+        return ''
+    }
+
+    return html`<converse-dropdown
+        class="btn btn--transparent btn--standalone dropdown-toggle dropdown-toggle--no-caret"
+        .items=${items}
+    ></converse-dropdown>`;
+}
 
 /**
  * @param {MUCOccupant} o
@@ -80,6 +109,9 @@ export default (o, chat) => {
                           title="${occupant_title(o)}"
                           @click=${chat.onOccupantClicked}
                           style="${getAuthorStyle(o)}">${o.getDisplayName()}</span>
+                    ${
+                        until(tplActionButtons(o))
+                    }
                     <span class="occupant-badges">
                         ${ (affiliation === "owner") ? html`<span class="badge badge-groupchat">${i18n_owner}</span>` : '' }
                         ${ (affiliation === "admin") ? html`<span class="badge badge-info">${i18n_admin}</span>` : '' }

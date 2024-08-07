@@ -55,7 +55,7 @@ export default class MUCSidebar extends CustomElement {
         const tpl = tplMUCSidebar(this, Object.assign(
             this.model.toJSON(), {
                 'occupants': [...this.model.occupants.models],
-                'onOccupantClicked': ev => this.onOccupantClicked(ev),
+                'onOccupantClicked': ev => this.onOccupantClicked(ev)
             }
         ));
         return tpl;

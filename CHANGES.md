@@ -31,6 +31,7 @@
 - New `loadEmojis` hook, to customize emojis at runtime.
 - Upgrade to Bootstrap 5
 - Fix: removing the "add to contact" button in occupant modal in singleton mode (as there is no roster).
+- New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 
 ### Breaking changes:
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-03 09:38+0200\n"
-"PO-Revision-Date: 2024-07-12 03:09+0000\n"
+"PO-Revision-Date: 2024-08-09 04:09+0000\n"
 "Last-Translator: Sketch6580 <Sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -411,7 +411,7 @@ msgstr "%1$s 现在是此群聊的成员"
 #: dist/converse-no-dependencies.js:40119
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s 现在是此群聊的 %2$s"
+msgstr "%1$s 现在是此群聊的一位%2$s"
 
 #: dist/converse-no-dependencies.js:40261
 msgid ""
@@ -508,7 +508,7 @@ msgstr "您的昵称已更改为 %1$s"
 
 #: dist/converse-no-dependencies.js:45419
 msgid "You have been banned from this groupchat"
-msgstr "此群聊已将您封禁了"
+msgstr "禁止您进入此群聊"
 
 #: dist/converse-no-dependencies.js:45420
 msgid "You have exited this groupchat due to a technical problem"
@@ -516,7 +516,7 @@ msgstr "由于技术问题，您已退出此群聊"
 
 #: dist/converse-no-dependencies.js:45421
 msgid "You have been kicked from this groupchat"
-msgstr "此群聊已将您踢出了"
+msgstr "已从群聊中踢出了您"
 
 #: dist/converse-no-dependencies.js:45422
 msgid ""
@@ -1690,7 +1690,7 @@ msgstr "名称"
 
 #: dist/converse-no-dependencies.js:102082
 msgid "This groupchat does not require a password upon entry"
-msgstr "此群聊在进入时不需要密码"
+msgstr "进入群聊不需要输入密码"
 
 #: dist/converse-no-dependencies.js:102083
 msgid "No password required"
@@ -1727,11 +1727,11 @@ msgstr "任何人都可以加入此群聊"
 
 #: dist/converse-no-dependencies.js:102091
 msgid "This groupchat requires a password before entry"
-msgstr "在进入此群聊前需要密码"
+msgstr "进入此群聊前需要输入密码"
 
 #: dist/converse-no-dependencies.js:102092
 msgid "Password protected"
-msgstr "受密码保护"
+msgstr "有密码保护"
 
 #: dist/converse-no-dependencies.js:102093
 msgid "Persistent"

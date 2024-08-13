@@ -35,6 +35,21 @@ const occupant_title = /** @param {MUCOccupant} o */(o) => {
  * @param {MUCOccupant} o
  */
 async function tplActionButtons (o) {
+    /**
+     * *Hook* which allows plugins to add action buttons on occupants
+     * @event _converse#getOccupantActionButtons
+     * @example
+     *  api.listen.on('getOccupantActionButtons', (el, buttons) => {
+     *      buttons.push({
+     *          'i18n_text': 'Foo',
+     *          'handler': ev => alert('Foo!'),
+     *          'button_class': 'chat-occupant__action-foo',
+     *          'icon_class': 'fa fa-check',
+     *          'name': 'foo'
+     *      });
+     *      return buttons;
+     *  });
+     */
     const buttons = await api.hook('getOccupantActionButtons', o, []);
     if (!buttons?.length) { return '' }
 
@@ -48,10 +63,6 @@ async function tplActionButtons (o) {
             ></converse-icon>&nbsp;${b.i18n_text}
         </button>`
     });
-
-    if (!items.length) {
-        return ''
-    }
 
     return html`<converse-dropdown
         class="occupant-actions chatbox-btn"

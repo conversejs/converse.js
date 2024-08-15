@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-13 09:01+0200\n"
+"POT-Creation-Date: 2024-08-15 07:56+0200\n"
 "PO-Revision-Date: 2024-08-09 04:09+0000\n"
 "Last-Translator: Sketch6580 <Sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1689,7 +1689,7 @@ msgstr "抱歉，尝试提交配置表单时出错。"
 
 #: dist/converse-no-dependencies.js:108000
 #, fuzzy
-msgid "Sorry, an error happened while trying to save the MUC avatar."
+msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr "抱歉，尝试保存您的个人资料数据时出错。"
 
 #: dist/converse-no-dependencies.js:108000

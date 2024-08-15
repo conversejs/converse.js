@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-13 09:01+0200\n"
+"POT-Creation-Date: 2024-08-15 07:56+0200\n"
 "PO-Revision-Date: 2023-05-05 08:53+0000\n"
 "Last-Translator: Sergi Font <sfont@tuta.io>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
@@ -1784,7 +1784,7 @@ msgstr "S'ha produït un error intentant desar el formulari de configuració."
 
 #: dist/converse-no-dependencies.js:108000
 #, fuzzy
-msgid "Sorry, an error happened while trying to save the MUC avatar."
+msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr "S'ha produït un error intentant guardar les dades del teu perfil."
 
 #: dist/converse-no-dependencies.js:108000

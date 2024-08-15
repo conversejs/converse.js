@@ -92,7 +92,7 @@ export default class MUCConfigModal extends BaseModal {
         } catch (err) {
             log.fatal(err);
             this.alert([
-                __("Sorry, an error happened while trying to save the MUC avatar."),
+                __("Sorry, an error happened while trying to save the groupchat avatar."),
                 __("You can check your browser's developer console for any error output.")
             ].join(" "));
             return;

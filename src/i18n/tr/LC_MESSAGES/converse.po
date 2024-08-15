@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-04-04 11:01+0000\n"
+"PO-Revision-Date: 2024-08-16 09:09+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -1196,7 +1196,6 @@ msgid "Show less"
 msgstr "Daha az göster"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
 msgstr "Moderatör"
 
@@ -1584,9 +1583,8 @@ msgid "Hide filter"
 msgstr "Süzgeci gizle"
 
 #: dist/converse-no-dependencies.js:104810
-#, fuzzy
 msgid "Invite someone"
-msgstr "Davet et"
+msgstr "Birini davet et"
 
 #: dist/converse-no-dependencies.js:104811
 msgid "Invite someone to join this groupchat"
@@ -1716,27 +1714,25 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Verilen sebep: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "Bu sohbeti geri yükle"
+msgstr "Yeni resim ayarlamak için tıklayın"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "Yapılandırma formu yükleniyor"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Yapılandır"
+msgstr "%1$s yapılandır"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "Üzgünüm, yapılandırma formunu göndermeye çalışırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr "Üzgünüm, profil verilerinizi kaydetmeye çalışırken bir hata oluştu."
+msgstr "Üzgünüm, grup sohbeti resminizi kaydetmeye çalışırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1887,9 +1883,8 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr "Bu grup sohbeti son kişi ayrıldıktan sonra kaybolacak"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "Grup sohbetleri bulundu"
+msgstr "Grup sohbeti bilgileri"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1945,14 +1940,12 @@ msgid "Hide participants"
 msgstr "Katılımcıları gizle"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "Katılımcıları göster"
+msgstr "Grup sohbeti katılımcılarını göster"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "Grup sohbeti konusunu gizle"
+msgstr "Grup sohbeti katılımcılarını gizle"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"

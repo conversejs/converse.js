@@ -16,6 +16,7 @@
 - #3307: Fix inconsistency between browsers on textarea outlines
 - #3337: Correctly display multiline nested quotes
 - #3362: Don't create empty nick element in bookmarks
+- #3476: better UI for form "fixed" fields
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users
@@ -24,14 +25,14 @@
 - Fix: incorrect unread messages counter badge on the application icon after switching to new XMPP user
 - Fix: unhandled exception in disconnect function when controlbox is not shown by UI
 - Fix: "Click to mention..." title was misplaced in MUC occupant list.
+- Fix: removing the "add to contact" button in occupant modal in singleton mode (as there is no roster).
 - Add an occupants filter to the MUC sidebar
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 - New loadEmojis hook, to customize emojis at runtime.
 - New `loadEmojis` hook, to customize emojis at runtime.
 - Upgrade to Bootstrap 5
-- Fix: removing the "add to contact" button in occupant modal in singleton mode (as there is no roster).
-- #3476: better UI for form "fixed" fields
+- Add a new theme 'Cyberpunk' and remove the old 'Concord' theme.
 
 ### Breaking changes:
 

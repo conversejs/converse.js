@@ -38,10 +38,6 @@
                 }
             }
 
-            .chatbox-title__buttons {
-                background-color: var(--chatroom-head-bg-color);
-            }
-
             a, a:visited, a:hover, a:not([href]):not([tabindex]) {
                 &.chatbox-btn {
                     &.fa {

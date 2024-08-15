@@ -166,11 +166,11 @@ msgstr ""
 "Jammer, dit blyk asof lêer-oplaai nie deur u bediener ondersteun word nie."
 
 #: dist/converse-no-dependencies.js:35368
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
-"Die grootte van u lêer, %1$s, oortref die maksimum grootte, %2$s, wat deur u "
+"Die grootte van u lêer, %1$s, oortref die maksimum grootte wat deur u "
 "bediener toegelaat word."
 
 #: dist/converse-no-dependencies.js:35368
@@ -1127,11 +1127,11 @@ msgstr "Herroep"
 
 #: dist/converse-no-dependencies.js:82321
 msgid "Copy"
-msgstr ""
+msgstr "Kopieer"
 
 #: dist/converse-no-dependencies.js:82331
 msgid "Quote"
-msgstr ""
+msgstr "Kwoteer"
 
 #: dist/converse-no-dependencies.js:82546
 msgid "Image: "
@@ -1220,9 +1220,8 @@ msgid "Show less"
 msgstr "Wys minder"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
-msgstr "Moderator"
+msgstr "'n Moderator"
 
 #: dist/converse-no-dependencies.js:90350
 #: dist/converse-no-dependencies.js:90352
@@ -1539,9 +1538,8 @@ msgid "Visitor"
 msgstr "Besoeker"
 
 #: dist/converse-no-dependencies.js:104727
-#, fuzzy
 msgid "Filter by name"
-msgstr "Filtreer volgens groepnaam"
+msgstr "Filtreer volgens naam"
 
 #: dist/converse-no-dependencies.js:104728
 #: dist/converse-no-dependencies.js:125957
@@ -1605,14 +1603,13 @@ msgstr "Verskuil"
 
 #: dist/converse-no-dependencies.js:104807
 #: dist/converse-no-dependencies.js:126022
-#, fuzzy
 msgid "Show filter"
-msgstr "Wys minder"
+msgstr "Wys filter"
 
 #: dist/converse-no-dependencies.js:104808
 #: dist/converse-no-dependencies.js:126023
 msgid "Hide filter"
-msgstr ""
+msgstr "Verskuil filter"
 
 #: dist/converse-no-dependencies.js:104810
 msgid "Invite someone"
@@ -1745,18 +1742,17 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Die gegewe rede is: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "Klik om hierdie klets te herstel"
+msgstr "Klik om 'n nuwe prent to stel"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "Laai konfigurasievorm"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Verstel"
+msgstr "Verstel %1$s"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1916,9 +1912,8 @@ msgstr ""
 "Hierdie groepgesprek sal verdwyn sodra die laaste deelnemer dit verlaat het"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "Groepgesprekke gevind"
+msgstr "Groepgesprek info"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1974,14 +1969,12 @@ msgid "Hide participants"
 msgstr "Verskuil deelnemers"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "Wys deelnemers"
+msgstr "Wys die groepgesprek se deelnemers"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "Verskuil die groepgesprek se onderwerp"
+msgstr "Verskuil die groepgesprek se deelnemers"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"
@@ -2572,9 +2565,8 @@ msgid "Leave this groupchat"
 msgstr "Verlaat hierdie groepgesprek"
 
 #: dist/converse-no-dependencies.js:124258
-#, fuzzy
 msgid "Click to hide these rooms"
-msgstr "Klik om hierdie kontakte te verskuil"
+msgstr "Klik om hierdie groepgesprekke te verskuil"
 
 #: dist/converse-no-dependencies.js:124311
 msgid "Click to toggle the list of open groupchats"
@@ -2586,12 +2578,11 @@ msgstr "Groepgesprekke"
 
 #: dist/converse-no-dependencies.js:124313
 msgid "Query server"
-msgstr ""
+msgstr "Bevraag bediener"
 
 #: dist/converse-no-dependencies.js:124314
-#, fuzzy
 msgid "Add groupchat"
-msgstr "Voeg 'n nuwe groepgesprek by"
+msgstr "Voeg 'n groepgesprek by"
 
 #: dist/converse-no-dependencies.js:124883
 #, javascript-format
@@ -2639,7 +2630,7 @@ msgstr "Ongelees"
 
 #: dist/converse-no-dependencies.js:125960
 msgid "Available"
-msgstr ""
+msgstr "Beskikbaar"
 
 #. *
 #. * @param {RosterView} el
@@ -2658,9 +2649,8 @@ msgid "Add a contact"
 msgstr "Voeg 'n kontak by"
 
 #: dist/converse-no-dependencies.js:126037
-#, fuzzy
 msgid "Re-sync contacts"
-msgstr "Hersinkroniseer u kontakte"
+msgstr "Hersinkroniseer kontakte"
 
 #: dist/converse-no-dependencies.js:126648
 msgid "This contact is busy"
@@ -2709,6 +2699,12 @@ msgstr "Klik om die kontakversoek van %1$s te verwyder"
 #: dist/converse-no-dependencies.js:127266
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Is u seker dat u hierdie kontakversoek wil afleun?"
+
+#: dist/converse-no-dependencies.js:108000
+msgid "Sorry, an error happened while trying to save the MUC avatar."
+msgstr ""
+"Jammer, 'n fout het voorgekom tydens storing van die groepgesprek se "
+"profielbeeld."
 
 #, fuzzy
 #~ msgid "Hide sidebar"

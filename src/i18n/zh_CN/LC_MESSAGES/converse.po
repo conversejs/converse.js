@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-08-09 04:09+0000\n"
-"Last-Translator: Sketch6580 <Sketch6580@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2024-08-16 09:09+0000\n"
+"Last-Translator: 大王叫我来巡山 <hamburger2048@users.noreply.hosted.weblate."
+"org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -1155,7 +1156,6 @@ msgid "Show less"
 msgstr "显示更少"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
 msgstr "主持人"
 
@@ -1540,9 +1540,8 @@ msgid "Hide filter"
 msgstr "隐藏筛选器"
 
 #: dist/converse-no-dependencies.js:104810
-#, fuzzy
 msgid "Invite someone"
-msgstr "邀请某人加入此群聊"
+msgstr "邀请某人"
 
 #: dist/converse-no-dependencies.js:104811
 msgid "Invite someone to join this groupchat"
@@ -1670,27 +1669,25 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "给出的原因是：“%1$s”。"
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "单击恢复此聊天"
+msgstr "单击设置新图片"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "正在加载配置表单"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "配置"
+msgstr "配置 %1$s"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "抱歉，尝试提交配置表单时出错。"
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr "抱歉，尝试保存您的个人资料数据时出错。"
+msgstr "抱歉，尝试保存群聊头像时出错。"
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1838,9 +1835,8 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr "最后一位用户离开后，此群聊将消失"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "已找到群聊"
+msgstr "群聊信息"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1896,14 +1892,12 @@ msgid "Hide participants"
 msgstr "隐藏参与者"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "显示参与者"
+msgstr "显示群聊参与者"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "隐藏群聊话题"
+msgstr "隐藏群聊参与者"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"

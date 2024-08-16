@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-04-04 11:01+0000\n"
+"PO-Revision-Date: 2024-08-16 09:09+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -1190,7 +1190,6 @@ msgid "Show less"
 msgstr "Mostrar menos"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
 msgstr "Moderadora"
 
@@ -1708,18 +1707,17 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "A razón dada é: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "Pulse para restaurar esta conversa"
+msgstr "Preme para establecer nova imaxe"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "Cargando formulario de configuración"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Configurar"
+msgstr "Configurar %1$s"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1727,9 +1725,9 @@ msgstr ""
 "Lamentámolo, algo fallou ao intentar enviar o formulario de configuración."
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr "Lamentámolo, algo fallou ao intentar gardar os datos do seu perfil."
+msgstr ""
+"Lamentámolo, algo fallou ao intentar gardar o avatar da conversa en grupo."
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1878,9 +1876,8 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr "Esta conversa en grupo desaparecerá unha vez saia a última persoa"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "Atopáronse conversas en grupo"
+msgstr "Info sobre a conversa"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1936,14 +1933,12 @@ msgid "Hide participants"
 msgstr "Agochar participantes"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "Mostrar participantes"
+msgstr "Mostrar participantes na conversa"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "Agochar o asunto da conversa en grupo"
+msgstr "Agochar participantes na conversa"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"

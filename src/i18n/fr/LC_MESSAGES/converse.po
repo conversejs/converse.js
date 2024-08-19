@@ -7,8 +7,9 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-04-04 11:01+0000\n"
-"Last-Translator: SilverYoCha <silveryocha@chastagnier.com>\n"
+"PO-Revision-Date: 2024-08-20 09:09+0000\n"
+"Last-Translator: John Livingston <JohnLivingston@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -16,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -1243,9 +1244,8 @@ msgid "Show less"
 msgstr "Afficher moins"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
-msgstr "Modérateur"
+msgstr "Un modérateur"
 
 #: dist/converse-no-dependencies.js:90350
 #: dist/converse-no-dependencies.js:90352
@@ -1765,18 +1765,17 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "La raison indiquée est : « %1$s »."
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "Cliquez pour afficher cette discussion"
+msgstr "Cliquez pour définir une nouvelle image"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "Chargement du formulaire de configuration"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Configurer"
+msgstr "Configurer %1$s"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1785,10 +1784,10 @@ msgstr ""
 "configuration."
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr ""
-"Désolé, quelque chose s’est mal passé pendant la sauvegarde de votre profil."
+"Désolé, quelque chose s’est mal passé pendant la sauvegarde de l'avatar du "
+"salon."
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1940,9 +1939,8 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr "Ce salon disparaîtra au départ de la dernière personne"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "Salons trouvés"
+msgstr "Information du salon"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1998,14 +1996,12 @@ msgid "Hide participants"
 msgstr "Cacher les participants"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "Afficher les participants"
+msgstr "Afficher les participants du salon"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "Masquer le sujet de la discussion de groupe"
+msgstr "Masquer les participants du salon"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"

@@ -39,7 +39,7 @@ export default (el) => {
         btns.push(html`
             <a
                 href="#"
-                class="dropdown-item add-contact"
+                class="dropdown-item add-contact" role="button"
                 @click=${(/** @type {MouseEvent} */ ev) => el.showAddContactModal(ev)}
                 title="${i18n_title_add_contact}"
                 data-toggle="modal"
@@ -54,7 +54,7 @@ export default (el) => {
     if (roster.length > 5) {
         btns.push(html`
             <a href="#"
-               class="dropdown-item toggle-filter"
+               class="dropdown-item toggle-filter" role="button"
                @click=${(/** @type {MouseEvent} */ ev) => el.toggleFilter(ev)}>
                 <converse-icon size="1em" class="fa fa-filter"></converse-icon>
                 ${is_filter_visible ? i18n_hide_filter : i18n_show_filter}
@@ -67,7 +67,7 @@ export default (el) => {
         btns.push(html`
             <a
                 href="#"
-                class="dropdown-item"
+                class="dropdown-item" role="button"
                 @click=${(/** @type {MouseEvent} */ ev) => el.syncContacts(ev)}
                 title="${i18n_title_sync_contacts}"
             >

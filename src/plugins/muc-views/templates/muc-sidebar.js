@@ -57,6 +57,7 @@ export default (el, o) => {
         btns.push(html`
             <a href="#"
                class="dropdown-item open-invite-modal"
+               role="button"
                title="${i18n_invite_title}"
                @click=${(/** @type {MouseEvent} */ev) => el.showInviteModal(ev)}>
                 <converse-icon size="1em" class="fa fa-user-plus"></converse-icon>
@@ -69,6 +70,7 @@ export default (el, o) => {
         btns.push(html`
             <a href="#"
                class="dropdown-item toggle-filter"
+               role="button"
                @click=${(/** @type {MouseEvent} */ev) => el.toggleFilter(ev)}>
                 <converse-icon size="1em" class="fa fa-filter"></converse-icon>
                 ${is_filter_visible ? i18n_hide_filter : i18n_show_filter}
@@ -78,7 +80,8 @@ export default (el, o) => {
 
     if (btns.length) {
         btns.push(html`
-            <a href="#" class="dropdown-item" @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>
+            <a href="#" class="dropdown-item" role="button"
+                @click=${(/** @type {MouseEvent} */ev) => el.closeSidebar(ev)}>
                 <converse-icon size="1em" class="fa fa-times"></converse-icon>
                 ${i18n_close}
             </a>

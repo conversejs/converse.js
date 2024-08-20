@@ -33,6 +33,7 @@
 - New `loadEmojis` hook, to customize emojis at runtime.
 - Upgrade to Bootstrap 5
 - Add a new theme 'Cyberpunk' and remove the old 'Concord' theme.
+- Improved accessibility.
 
 ### Breaking changes:
 

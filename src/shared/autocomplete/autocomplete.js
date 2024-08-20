@@ -253,6 +253,14 @@ export class AutoComplete extends EventEmitter(Object) {
 
         if (this.ac_triggers.includes(ev.key)) {
             if (ev.key === "Tab") {
+                if (ev.shiftKey) {
+                    // TAB + shift should give the focus to previous focusable element.
+                    return
+                }
+                // If the input is empty (and min_chars > 0), TAB should give focus to next focusable element.
+                if (this.min_chars > 0 && this.input.value === '') {
+                    return
+                }
                 ev.preventDefault();
             }
             this.auto_completing = true;

@@ -684,7 +684,7 @@ function getMockVcardFetcher (settings) {
     }
 }
 
-const theme = ['dracula', 'classic', 'concord'][Math.floor(Math.random()*3)];
+const theme = ['dracula', 'classic', 'cyberpunk'][Math.floor(Math.random()*3)];
 
 async function _initConverse (settings) {
     clearStores();

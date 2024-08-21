@@ -13,21 +13,32 @@
 // Once the rest converse.js has been loaded, window.converse will be replaced
 // with the full-fledged public API.
 
+/**
+ * @typedef {Object.<string, object>} Plugins
+ */
 const plugins = {};
 
 const converse = {
     plugins: {
-        add (name, plugin) {
+        /**
+         * Adds a Converse plugin
+         * @param {string} name The name of the plugin.
+         * @param {object} plugin The plugin object to be added.
+         * @throws {TypeError} If a plugin with the same name has already been registered.
+         */
+        add(name, plugin) {
             if (plugins[name] !== undefined) {
-                throw new TypeError(
-                    `Error: plugin with name "${name}" has already been ` + 'registered!'
-                );
+                throw new TypeError(`Error: plugin with name "${name}" has already been ` + 'registered!');
             }
             plugins[name] = plugin;
-        }
+        },
     },
 
-    initialize (settings={}) {
+    /**
+     * Initializes Converse with the provided settings.
+     * @param {object} settings
+     */
+    initialize(settings = {}) {
         return converse.load(settings).initialize(settings);
     },
 
@@ -47,23 +58,20 @@ const converse = {
      * `converse.initialize` has been called, then you need to call
      * `converse.load` first.
      *
-     * @memberOf converse
-     * @method load
-     * @param { object } settings A map of configuration-settings that are needed at load time.
-     * @example
-     * converse.load({assets_path: '/path/to/assets/'});
+     * @param {object} settings A map of configuration-settings that are needed at load time.
+     * @example converse.load({assets_path: '/path/to/assets/'});
      */
-    load (settings={}) {
+    load(settings = {}) {
         if (settings.assets_path) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             __webpack_public_path__ = settings.assets_path; // eslint-disable-line no-undef
         }
         require('./index.js');
-        Object.keys(plugins).forEach(name => converse.plugins.add(name, plugins[name]));
+        Object.keys(plugins).forEach((name) => converse.plugins.add(name, plugins[name]));
         return converse;
-    }
-}
+    },
+};
 
 window['converse'] = converse;
 
@@ -74,7 +82,7 @@ window['converse'] = converse;
  * @event converse-loaded
  * @example window.addEventListener('converse-loaded', () => converse.initialize());
  */
-const ev = new CustomEvent('converse-loaded', {'detail': { converse }});
+const ev = new CustomEvent('converse-loaded', { 'detail': { converse } });
 window.dispatchEvent(ev);
 
 export default converse;

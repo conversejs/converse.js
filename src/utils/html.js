@@ -296,7 +296,7 @@ function nextUntil (el, selector) {
  * Helper method that replace HTML-escaped symbols with equivalent characters
  * (e.g. transform occurrences of '&amp;' to '&')
  * @method u#unescapeHTML
- * @param { String } string - a String containing the HTML-escaped symbols.
+ * @param {String} string - a String containing the HTML-escaped symbols.
  */
 function unescapeHTML (string) {
     var div = document.createElement('div');

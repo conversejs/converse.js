@@ -6,13 +6,26 @@ declare class MUCBookmarkForm extends CustomElement {
         };
     };
     jid: any;
-    willUpdate(changed_properties: any): void;
+    /**
+     * @param {Map<PropertyKey, any>} changed_properties
+     * @return {void}
+     */
+    willUpdate(changed_properties: Map<PropertyKey, any>): void;
     model: any;
     bookmark: any;
     render(): import("lit").TemplateResult<1>;
-    onBookmarkFormSubmitted(ev: any): void;
-    removeBookmark(ev: any): void;
-    closeBookmarkForm(ev: any): void;
+    /**
+     * @param {Event} ev
+     */
+    onBookmarkFormSubmitted(ev: Event): void;
+    /**
+     * @param {Event} ev
+     */
+    removeBookmark(ev: Event): void;
+    /**
+     * @param {Event} ev
+     */
+    closeBookmarkForm(ev: Event): void;
 }
 import { CustomElement } from "shared/components/element";
 //# sourceMappingURL=bookmark-form.d.ts.map

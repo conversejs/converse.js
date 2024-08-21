@@ -1,7 +1,6 @@
 import tplMUCBookmarkForm from './templates/form.js';
 import { CustomElement } from 'shared/components/element';
-import { _converse, api } from "@converse/headless";
-
+import { _converse, api } from '@converse/headless';
 
 class MUCBookmarkForm extends CustomElement {
 
@@ -12,44 +11,61 @@ class MUCBookmarkForm extends CustomElement {
 
     static get properties () {
         return {
-            'jid': { type: String }
-        }
+            'jid': { type: String },
+        };
     }
 
-    willUpdate (changed_properties) {
+    /**
+     * @param {Map<PropertyKey, any>} changed_properties
+     * @return {void}
+     */
+    willUpdate(changed_properties) {
         const { chatboxes, bookmarks } = _converse.state;
         if (changed_properties.has('jid')) {
             this.model = chatboxes.get(this.jid);
-            this.bookmark  = bookmarks.get(this.jid);
+            this.bookmark = bookmarks.get(this.jid);
         }
     }
 
-    render () {
-        return tplMUCBookmarkForm(this)
+    render() {
+        return tplMUCBookmarkForm(this);
     }
 
+    /**
+     * @param {Event} ev
+     */
     onBookmarkFormSubmitted (ev) {
         ev.preventDefault();
         const { bookmarks } = _converse.state;
+        const form = /** @type {HTMLFormElement} */ (ev.target);
         bookmarks.createBookmark({
-            'jid': this.jid,
-            'autojoin': ev.target.querySelector('input[name="autojoin"]')?.checked || false,
-            'name': ev.target.querySelector('input[name=name]')?.value,
-            'nick': ev.target.querySelector('input[name=nick]')?.value
+            jid: this.jid,
+            autojoin: /** @type {HTMLInputElement} */ (form.querySelector('input[name="autojoin"]'))?.checked || false,
+            name: /** @type {HTMLInputElement} */ (form.querySelector('input[name=name]'))?.value,
+            nick: /** @type {HTMLInputElement} */ (form.querySelector('input[name=nick]'))?.value,
         });
         this.closeBookmarkForm(ev);
     }
 
+    /**
+     * @param {Event} ev
+     */
     removeBookmark (ev) {
         this.bookmark?.destroy();
         this.closeBookmarkForm(ev);
     }
 
+    /**
+     * @param {Event} ev
+     */
     closeBookmarkForm (ev) {
         ev.preventDefault();
-        const evt = document.createEvent('Event');
-        evt.initEvent('hide.bs.modal', true, true);
-        this.dispatchEvent(evt);
+        this.dispatchEvent(
+            new Event('hide.bs.modal', {
+                bubbles: true,
+                cancelable: true,
+            })
+        );
     }
 }
 

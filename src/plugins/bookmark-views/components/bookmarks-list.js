@@ -41,6 +41,9 @@ export default class BookmarksView extends CustomElement {
         return _converse.state.bookmarks && this.model ? tplBookmarksList(this) : tplSpinner();
     }
 
+    /**
+     * @param {Event} ev
+     */
     clearFilter (ev) {
         ev?.stopPropagation?.();
         this.model.set('text', '');

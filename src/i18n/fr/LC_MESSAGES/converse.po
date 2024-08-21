@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-08-20 09:09+0000\n"
+"PO-Revision-Date: 2024-08-22 05:09+0000\n"
 "Last-Translator: John Livingston <JohnLivingston@users.noreply.hosted.weblate"
 ".org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
@@ -1948,7 +1948,7 @@ msgstr "Masquer le sujet de la discussion de groupe"
 
 #: dist/converse-no-dependencies.js:108619
 msgid "This groupchat is bookmarked"
-msgstr "Cette salon est mis en marque-page"
+msgstr "Cet salon est mis en marque-page"
 
 #: dist/converse-no-dependencies.js:108622
 #: dist/converse-no-dependencies.js:123782

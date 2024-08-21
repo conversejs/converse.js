@@ -41,6 +41,7 @@ export default class Avatar extends CustomElement {
                 width: this.width,
                 image: data_uri || `data:${image_type};base64,${image}`,
                 image_type,
+                alt_text: this.name
             });
         }
 
@@ -52,8 +53,9 @@ export default class Avatar extends CustomElement {
             line-height: ${this.height}px;`;
 
         const author_style = this.model.getAvatarStyle(css);
-        return html`<div class="avatar-initials" style="${until(author_style, default_bg_css + css)}">
-            ${this.getInitials(this.name)}
+        return html`<div class="avatar-initials" style="${until(author_style, default_bg_css + css)}"
+            aria-label="${this.name}">
+                ${this.getInitials(this.name)}
         </div>`;
     }
 

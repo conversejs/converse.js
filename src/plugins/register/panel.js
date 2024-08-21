@@ -343,7 +343,7 @@ class RegisterPanel extends CustomElement {
      * @param {HTMLElement} form - The HTML form that was submitted
      */
     submitRegistrationForm (form) {
-        const inputs = sizzle(':input:not([type=button]):not([type=submit])', form);
+        const /** @type {HTMLInputElement[]} */inputs = sizzle(':input:not([type=button]):not([type=submit])', form);
         const iq = $iq({'type': 'set', 'id': u.getUniqueId()})
                     .c("query", {xmlns:Strophe.NS.REGISTER});
 
@@ -357,7 +357,7 @@ class RegisterPanel extends CustomElement {
         }
 
         const connection = api.connection.get();
-        connection._addSysHandler((iq) => this._onRegisterIQ(iq), null, "iq", null, null);
+        connection._addSysHandler(/** @param {Element} iq */(iq) => this._onRegisterIQ(iq), null, "iq", null, null);
         connection.send(iq);
         this.setFields(iq.tree());
     }
@@ -371,14 +371,17 @@ class RegisterPanel extends CustomElement {
         const query = stanza.querySelector('query');
         const xform = sizzle(`x[xmlns="${Strophe.NS.XFORM}"]`, query);
         if (xform.length > 0) {
-            this._setFieldsFromXForm(xform.pop());
+            this.setFieldsFromXForm(xform.pop());
         } else {
-            this._setFieldsFromLegacy(query);
+            this.setFieldsFromLegacy(query);
         }
     }
 
-    _setFieldsFromLegacy (query) {
-        [].forEach.call(query.children, field => {
+    /**
+     * @param {Element} query
+     */
+    setFieldsFromLegacy (query) {
+        [].forEach.call(query.children, /** @param {Element} field */(field) => {
             if (field.tagName.toLowerCase() === 'instructions') {
                 this.instructions = Strophe.getText(field);
                 return;
@@ -396,7 +399,7 @@ class RegisterPanel extends CustomElement {
     /**
      * @param {Element} xform
      */
-    _setFieldsFromXForm (xform) {
+    setFieldsFromXForm (xform) {
         this.title = xform.querySelector('title')?.textContent ?? '';
         this.instructions = xform.querySelector('instructions')?.textContent ?? '';
         xform.querySelectorAll('field').forEach(field => {

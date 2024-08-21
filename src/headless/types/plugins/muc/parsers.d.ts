@@ -1,7 +1,7 @@
 /**
- * Parses a message stanza for XEP-0317 MEP notification data
- * @param { Element } stanza - The message stanza
- * @returns { Array } Returns an array of objects representing <activity> elements.
+ * Parses a message stanza for XEP-0316 MEP notification data
+ * @param {Element} stanza - The message stanza
+ * @returns {Array} Returns an array of objects representing <activity> elements.
  */
 export function getMEPActivities(stanza: Element): any[];
 /**
@@ -22,10 +22,10 @@ export function parseMUCMessage(stanza: Element, chatbox: MUC): Promise<MUCMessa
  * @property {string} [jid]
  * @property {string} [nick]
  *
- * @method muc_utils#parseMemberListIQ
- * @returns { MemberListItem[] }
+ * @param {Element} iq
+ * @returns {MemberListItem[]}
  */
-export function parseMemberListIQ(iq: any): MemberListItem[];
+export function parseMemberListIQ(iq: Element): MemberListItem[];
 /**
  * Parses a passed in MUC presence stanza and returns an object of attributes.
  * @method parseMUCPresence

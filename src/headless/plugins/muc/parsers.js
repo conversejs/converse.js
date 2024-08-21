@@ -32,9 +32,9 @@ const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;
 
 /**
- * Parses a message stanza for XEP-0317 MEP notification data
- * @param { Element } stanza - The message stanza
- * @returns { Array } Returns an array of objects representing <activity> elements.
+ * Parses a message stanza for XEP-0316 MEP notification data
+ * @param {Element} stanza - The message stanza
+ * @returns {Array} Returns an array of objects representing <activity> elements.
  */
 export function getMEPActivities (stanza) {
     const items_el = sizzle(`items[node="${Strophe.NS.CONFINFO}"]`, stanza).pop();
@@ -46,7 +46,7 @@ export function getMEPActivities (stanza) {
     const selector = `item `+
         `conference-info[xmlns="${Strophe.NS.CONFINFO}"] `+
         `activity[xmlns="${Strophe.NS.ACTIVITY}"]`;
-    return sizzle(selector, items_el).map(el => {
+    return sizzle(selector, items_el).map(/** @param {Element} el */(el) => {
         const message = el.querySelector('text')?.textContent;
         if (message) {
             const references = getReferences(stanza);
@@ -66,9 +66,8 @@ export function getMEPActivities (stanza) {
  *
  * Note, this function doesn't check whether this is actually a MAM archived stanza.
  *
- * @private
- * @param { Element } stanza - The message stanza
- * @returns { Object }
+ * @param {Element} stanza - The message stanza
+ * @returns {Object}
  */
 function getJIDFromMUCUserData (stanza) {
     const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
@@ -76,7 +75,6 @@ function getJIDFromMUCUserData (stanza) {
 }
 
 /**
- * @private
  * @param {Element} stanza - The message stanza
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns {Object}
@@ -116,6 +114,10 @@ function getModerationAttributes (stanza) {
     return {};
 }
 
+/**
+ * @param {Element} stanza
+ * @param {MUC} chatbox
+ */
 function getOccupantID (stanza, chatbox) {
     if (chatbox.features.get(Strophe.NS.OCCUPANTID)) {
         return sizzle(`occupant-id[xmlns="${Strophe.NS.OCCUPANTID}"]`, stanza).pop()?.getAttribute('id');
@@ -311,32 +313,34 @@ export async function parseMUCMessage (stanza, chatbox) {
  * @property {string} [jid]
  * @property {string} [nick]
  *
- * @method muc_utils#parseMemberListIQ
- * @returns { MemberListItem[] }
+ * @param {Element} iq
+ * @returns {MemberListItem[]}
  */
 export function parseMemberListIQ (iq) {
-    return sizzle(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`, iq).map(item => {
-        const data = {
-            'affiliation': item.getAttribute('affiliation')
-        };
-        const jid = item.getAttribute('jid');
-        if (u.isValidJID(jid)) {
-            data['jid'] = jid;
-        } else {
-            // XXX: Prosody sends nick for the jid attribute value
-            // Perhaps for anonymous room?
-            data['nick'] = jid;
+    return sizzle(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`, iq).map(
+        /** @param {Element} item */ (item) => {
+            const data = {
+                'affiliation': item.getAttribute('affiliation'),
+            };
+            const jid = item.getAttribute('jid');
+            if (u.isValidJID(jid)) {
+                data['jid'] = jid;
+            } else {
+                // XXX: Prosody sends nick for the jid attribute value
+                // Perhaps for anonymous room?
+                data['nick'] = jid;
+            }
+            const nick = item.getAttribute('nick');
+            if (nick) {
+                data['nick'] = nick;
+            }
+            const role = item.getAttribute('role');
+            if (role) {
+                data['role'] = nick;
+            }
+            return data;
         }
-        const nick = item.getAttribute('nick');
-        if (nick) {
-            data['nick'] = nick;
-        }
-        const role = item.getAttribute('role');
-        if (role) {
-            data['role'] = nick;
-        }
-        return data;
-    });
+    );
 }
 
 /**

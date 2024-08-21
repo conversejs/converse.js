@@ -55,11 +55,12 @@ async function tplActionButtons (o) {
 
     const items = buttons.map(b => {
         return html`
-        <button class="dropdown-item ${b.button_class}" @click=${b.handler}>
+        <button class="dropdown-item ${b.button_class}" @click=${b.handler} type="button">
             <converse-icon
                 class="${b.icon_class}"
                 color="var(--inverse-link-color)"
                 size="1em"
+                aria-hidden="true"
             ></converse-icon>&nbsp;${b.i18n_text}
         </button>`
     });

@@ -7,6 +7,7 @@ import { api, constants, u } from "@converse/headless";
 import DOMNavigator from "shared/dom-navigator.js";
 import DropdownBase from 'shared/components/dropdownbase.js';
 import 'shared/components/icons.js';
+import { __ } from 'i18n';
 
 import './styles/dropdown.scss';
 
@@ -38,8 +39,9 @@ export default class Dropdown extends DropdownBase {
                     type="button"
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
-                    aria-expanded="false">
-                <converse-icon size="1em" class="${ this.icon_classes }">
+                    aria-expanded="false"
+                    aria-label=${ __('Menu') }>
+                <converse-icon aria-hidden="true" size="1em" class="${ this.icon_classes }">
             </button>
             <ul class="dropdown-menu" aria-labelledby="${this.id}">
                 ${ this.items.map(b => html`<li>${until(b, '')}</li>`) }

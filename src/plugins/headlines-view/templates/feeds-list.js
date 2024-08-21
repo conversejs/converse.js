@@ -24,7 +24,9 @@ export default (el) => {
     return html`
         <div class="controlbox-section" id="headline">
             <div class="d-flex controlbox-padded ${ feeds.length ? '' : 'hidden' }">
-                <span class="w-100 controlbox-heading controlbox-heading--headline">${heading_headline}</span>
+                <span class="w-100 controlbox-heading controlbox-heading--headline"
+                    role="heading" aria-level="3"
+                >${heading_headline}</span>
             </div>
         </div>
         <div class="list-container list-container--headline ${ feeds.length ? '' : 'hidden' }">

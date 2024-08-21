@@ -80,7 +80,9 @@ export default (el) => {
     return html`
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--contacts">
-                <a class="list-toggle open-contacts-toggle" title="${i18n_toggle_contacts}" @click=${el.toggleRoster}>
+                <a class="list-toggle open-contacts-toggle" title="${i18n_toggle_contacts}"
+                    role="heading" aria-level="3"
+                    @click=${el.toggleRoster}>
                     ${i18n_heading_contacts}
 
                     ${ roster.length ? html`<converse-icon

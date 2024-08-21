@@ -34,6 +34,7 @@ export default (el) => {
                 ${ (!_converse.api.settings.get("singleton")) ?
                         html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>` : '' }
                 <div class="chatbox-title__text"
+                     role="heading" aria-level="2"
                      title="${ (api.settings.get('locked_muc_domain') !== 'hidden') ? o.jid : '' }">
                     ${ el.model.getDisplayName() }
                     ${ (o.bookmarked) ?

@@ -31,7 +31,9 @@ export default (el) => {
                         nonce=${el.model.vcard?.get('vcard_updated')}
                         height="40" width="40"></converse-avatar>
                 </a>
-                <span class="username w-100 align-self-center">${el.model.getDisplayName()}</span>
+                <span class="username w-100 align-self-center" role="heading" aria-level="2">
+                    ${el.model.getDisplayName()}
+                </span>
                 <converse-controlbox-buttons></converse-controlbox-buttons>
             </div>
             <div class="d-flex xmpp-status">

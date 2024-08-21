@@ -180,7 +180,7 @@ export default (el) => {
     return html`
         <div class="d-flex controlbox-padded">
             <span class="w-100 controlbox-heading controlbox-heading--groupchats">
-                <a class="list-toggle open-rooms-toggle"
+                <a class="list-toggle open-rooms-toggle" role="heading" aria-level="3"
                    title="${i18n_desc_rooms}"
                    @click=${ev => el.toggleRoomsList(ev)}>
 

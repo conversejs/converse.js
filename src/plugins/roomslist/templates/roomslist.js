@@ -25,6 +25,7 @@ function tplBookmark (room) {
     const i18n_bookmark = __('Bookmark');
     return html`
         <a class="list-item-action add-bookmark"
+            tabindex="0"
             data-room-jid="${room.get('jid')}"
             data-bookmark-name="${room.getDisplayName()}"
             @click=${(ev) => addBookmarkViaEvent(ev)}
@@ -75,6 +76,7 @@ function tplRoomItem (el, room) {
             ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }
 
             <a class="list-item-action close-room"
+                tabindex="0"
                 data-room-jid="${room.get('jid')}"
                 data-room-name="${room.getDisplayName()}"
                 title="${i18n_leave_room}"

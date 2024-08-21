@@ -91,6 +91,9 @@
                     color: var(--list-toggle-hover-color);
                     opacity: 1;
                 }
+                &:focus {
+                    opacity: 1;
+                }
             }
 
             .list-item-action--visible {

@@ -13,6 +13,7 @@ export default (bm) => {
                 @click=${openRoomViaEvent}>${bm.getDisplayName()}</a>
 
             <a class="list-item-action remove-bookmark align-self-center ${ bm.get('bookmarked') ? 'button-on' : '' }"
+                tabindex="0"
                 data-room-jid="${jid}"
                 data-bookmark-name="${bm.getDisplayName()}"
                 title="${info_remove_bookmark}"

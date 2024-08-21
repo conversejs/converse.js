@@ -18,6 +18,9 @@ converse-message-actions {
         .btn--standalone {
             opacity: 0;
             margin-top: -0.2em;
+            &:focus {
+                opacity: 1;
+            }
         }
         .chat-msg__action {
             width: 100%;

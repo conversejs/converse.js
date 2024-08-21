@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 
 /**
  * @param {string} image
@@ -15,6 +15,8 @@ export default (o) => {
             class="avatar ${o.classes}"
             width="${o.width}"
             height="${o.height}"
+            aria-label="${o.alt_text}"
+            role=${o.alt_text ? nothing : 'presentation'}
         >
             <image
                 width="${o.width}"

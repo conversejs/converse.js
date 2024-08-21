@@ -8,7 +8,8 @@ export default  (o) => html`
         <!-- This is a hack to prevent Chrome from auto-filling the username in
              any of the other input fields in the MUC configuration form. -->
         ${ (o.type === 'password' && o.fixed_username) ? html`
-            <input class="hidden-username" type="text" autocomplete="username" value="${o.fixed_username}"></input>
+            <input class="hidden-username" aria-hidden="true" type="text"
+                autocomplete="username" value="${o.fixed_username}"></input>
         ` : '' }
         <input
             autocomplete="${o.autocomplete || ''}"

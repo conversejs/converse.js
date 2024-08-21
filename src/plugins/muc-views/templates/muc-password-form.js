@@ -11,7 +11,8 @@ export default (o) => {
             <fieldset>
                 <label class="form-label">${i18n_heading}</label>
                 <p class="validation-message">${o.validation_message}</p>
-                <input class="hidden-username" type="text" autocomplete="username" value="${o.jid}"></input>
+                <input class="hidden-username" aria-hidden="true" type="text"
+                    autocomplete="username" value="${o.jid}"></input>
                 <input type="password"
                     name="password"
                     required="required"

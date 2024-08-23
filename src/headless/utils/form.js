@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the form utilities module.
  */
-import { toStanza } from 'strophe.js';
+import { Strophe, toStanza } from 'strophe.js';
 
 /**
  * @param {string} name
@@ -12,7 +12,7 @@ import { toStanza } from 'strophe.js';
 const tplXformField = (name, value) => `<field var="${name}">${value}</field>`;
 
 /** @param {string} value */
-const tplXformValue = (value) => `<value>${value}</value>`;
+const tplXformValue = (value) => `<value>${Strophe.xmlescape(value)}</value>`;
 
 /**
  * @param {HTMLSelectElement} select

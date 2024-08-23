@@ -16,6 +16,10 @@
             display: block;
             margin-bottom: 0.5em;
 
+            svg {
+                fill: var(--chatroom-head-fg-color);
+            }
+
             .list-item {
                 padding-top: 0;
                 padding-bottom: 0;

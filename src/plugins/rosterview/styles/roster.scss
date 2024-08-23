@@ -23,6 +23,10 @@
         margin: 0;
         padding: 0;
 
+        svg {
+            fill: var(--chat-color);
+        }
+
         .roster-contacts {
             padding: 0;
             margin: 0 0 0.2em 0;

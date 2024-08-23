@@ -105,7 +105,7 @@ describe("Message Archive Management", function () {
 
             const placeholder_el = view.querySelector('converse-mam-placeholder');
             placeholder_el.firstElementChild.click();
-            await u.waitUntil(() => view.querySelector('converse-mam-placeholder .spinner'));
+            await u.waitUntil(() => view.querySelector('converse-mam-placeholder .spinner-grow'));
 
             iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
             expect(Strophe.serialize(iq_get)).toBe(

@@ -11,7 +11,7 @@ const { ANONYMOUS } = constants;
 function whenNotConnected(el) {
     const connection_status = _converse.state.connfeedback.get('connection_status');
     if ([Strophe.Status.RECONNECTING, Strophe.Status.CONNECTING].includes(connection_status)) {
-        return tplSpinner();
+        return tplSpinner({class: 'vertically-centered'});
     }
     if (el.model.get('active-form') === 'register') {
         return html`<converse-register-panel></converse-register-panel>`;

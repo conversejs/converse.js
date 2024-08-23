@@ -150,13 +150,6 @@
             flex-direction: column;
             justify-content: space-between;
 
-            converse-chat-message {
-                .spinner {
-                    width: 100%;
-                    overflow-y: hidden;
-                }
-            }
-
             .chat-content__help {
                 max-height: 100%;
                 converse-chat-help {

@@ -1,5 +1,5 @@
-converse-root.converse-js {
-    &.converse-fullpage,
+converse-root {
+    &.converse-fullscreen,
     &.converse-overlayed,
     &.converse-mobile {
         bottom: 0;
@@ -8,6 +8,11 @@ converse-root.converse-js {
         padding-right: env(safe-area-inset-right);
         position: fixed;
         z-index: 1031; // One more than bootstrap navbar
+    }
+
+    &.converse-fullscreen {
+        height: 100vh;
+        width: 100vw;
     }
 
     &.converse-embedded {

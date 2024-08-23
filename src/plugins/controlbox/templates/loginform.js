@@ -156,7 +156,7 @@ export default (el) => {
                 <p class="feedback-message ${!conn_feedback_message ? 'hidden' : ''}">${conn_feedback_message}</p>
             </div>
             ${CONNECTION_STATUS[connection_status] === 'CONNECTING'
-                ? tplSpinner({ 'classes': 'hor_centered' })
+                ? tplSpinner()
                 : form_fields(el)}
         </form>`;
 };

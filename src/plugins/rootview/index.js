@@ -1,4 +1,5 @@
 import ConverseRoot from './root.js';
+import ConverseBackground from './background.js';
 import { api, converse } from '@converse/headless';
 import { ensureElement } from './utils.js';
 

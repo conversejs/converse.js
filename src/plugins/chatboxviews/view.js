@@ -1,6 +1,4 @@
-import { render } from 'lit';
 import { api, _converse } from '@converse/headless';
-import tplBackgroundLogo from '../../templates/background_logo.js';
 import tplChats from './templates/chats.js';
 import { CustomElement } from 'shared/components/element.js';
 
@@ -26,10 +24,6 @@ class ConverseChats extends CustomElement {
         this.listenTo(settings, 'change:view_mode', () => this.requestUpdate())
         this.listenTo(settings, 'change:singleton', () => this.requestUpdate())
 
-        const bg = document.getElementById('conversejs-bg');
-        if (bg && !bg.innerHTML.trim()) {
-            render(tplBackgroundLogo(), bg);
-        }
         const body = document.querySelector('body');
         body.classList.add(`converse-${api.settings.get('view_mode')}`);
 

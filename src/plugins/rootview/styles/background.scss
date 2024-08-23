@@ -1,14 +1,18 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/maps";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/utilities";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
 
 converse-bg {
     display: inline-block;
     height: 100vh;
     width: 100vw;
     background-color: var(--global-background-color);
+
+    &.theme-cyberpunk {
+        background: linear-gradient(#121212, #212938, #304468, #ab38bc, #121212);
+    }
 
     .subdued {
         opacity: 0.35;

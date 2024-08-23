@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-03-26 13:01+0000\n"
+"PO-Revision-Date: 2024-08-25 00:09+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7.1-dev\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -161,10 +161,10 @@ msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "サーバーはファイルアップロードに対応していないようです。"
 
 #: dist/converse-no-dependencies.js:35368
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr "ファイルのサイズ %1$s は、サーバーの制限値 %2$s を超えています。"
+msgstr "ファイルのサイズ %1$s は、サーバーの制限値を超えています。"
 
 #: dist/converse-no-dependencies.js:35368
 #, javascript-format
@@ -1182,7 +1182,6 @@ msgid "Show less"
 msgstr "少ない表示"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
 msgstr "司会者"
 
@@ -1699,9 +1698,8 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "理由は次のとおり: \"%1$s\"。"
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "クリックしてこのチャットを復元"
+msgstr "クリックして新しい画像を設定"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
@@ -1717,9 +1715,8 @@ msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "設定欄を受け付ける際にエラーが発生しました。"
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr "プロフィールの保存中にエラーが起きました。"
+msgstr "グループチャットのアバターの保存中にエラーが起きました。"
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1867,9 +1864,8 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr "このグループチャットは最後の在室者が退出すると消滅します"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "グループチャットが見つかりました:"
+msgstr "グループチャットの情報"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1925,14 +1921,12 @@ msgid "Hide participants"
 msgstr "参加者を隠す"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "参加者を表示"
+msgstr "グループチャットの参加者を表示"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "グループチャットのトピックを非表示"
+msgstr "グループチャットの参加者を非表示"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"

@@ -42,7 +42,7 @@ export default el => {
             ${el.passwords_mismatched ? html`<span class="error">${i18n_passwords_must_match}</span>` : ''}
         </div>
 
-        <input class="py-3 save-form btn btn-primary"
+        <input class="save-form btn btn-primary"
                type="submit"
                value=${i18n_submit}
                ?disabled="${el.alert_message}" />

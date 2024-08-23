@@ -1,186 +1,152 @@
 body.converse-fullscreen,
 converse-bg.theme-classic,
 converse-root.theme-classic {
-    // Theme-defined variables:
-    --green: #3AA569;
-    --dark-green: #1E9652;
-    --blue: #387592;
-    --dark-blue: #397491;
-    --redder-orange: #E77051;
-    --orange: #E7A151;
-    --light-blue: #578EA9;
-    --lighter-blue: #eff4f7;
-    --dark-red: #D24E2B;
-    --comment: #A8ABA1;
-    --gray: #818479;
+	$theme: 'classic' !default;
 
-    // Base variables
-    --foreground: #666;
-    --background: white;
-    --subdued-color: var(--comment);
-    --muc-color: var(--redder-orange);
-    --chat-color: var(--green);
-    --disabled-color-bg: lightgray;
-    --disabled-color: gray;
-    --error-color: var(--dark-red);
-    --focus-color: var(--background);
-    --header-color: var(--foreground);
+	// Theme-defined variables:
+	// Hex color values
+	--background: white;
+	--blue: #387592;
+	--comment: #a8aba1;
+	--dark-blue: #397491;
+	--dark-green: #1e9652;
+	--dark-red: #d24e2b;
+	--foreground: #666;
+	--gray: #818479;
+	--green: #3aa569;
+	--header-color: var(--foreground);
+	--light-blue: #578ea9;
+	--lighter-blue: #eff4f7;
+	--orange: #e7a151;
+	--redder-orange: #e77051;
+	--subdued-color: var(--comment);
 
-    // ---
-
-    --icon-hover-color: var(--text-color);
-    --info-color: var(--dark-green);
-
-    --chat-status-online: var(--green);
-    --chat-status-busy: var(--redder-orange);
-    --chat-status-away: var(--orange);
-
-    --brand-heading-color: var(--blue); // $blue
-
-    --completion-light-color: #FFB9A7; // $lightest-red
-    --completion-normal-color: var(--redder-orange);
-    --completion-dark-color: #D24E2B; // $dark-red
-
-    --dark-link-color: #206485; // $dark-blue
-    --inverse-link-color: var(--background);
-    --link-color: var(--light-blue);
-    --link-hover-color: #345566;
-
-    --global-background-color: var(--dark-blue);
-    --modal-background-color: var(--background);
-
-    --img-thumbnail-background-color: var(--background);
-    --img-thumbnail-border-color: #DEE2E6;
-
-    --text-shadow-color: #FAFAFA;
-    --text-color: var(--foreground);
-    --controlbox-text-color: var(--foreground);
-    --message-author-color: var(--text-color);
-    --text-color-invert: var(--background);
-
-    --message-text-color: #555;
-    --message-receipt-color: var(--green);
-
-    --save-button-color: var(--green);
-
-    --button-text-color: var(--background);
-    --button-hover-text-color: var(--background);
-
-    --chat-background-color: var(--background);
-    --chat-textarea-color: var(--foreground);
-    --chat-textarea-background-color: var(--background);
-    --chat-textarea-disabled-bg-color: #EEE;
-    --chat-textarea-height: 60px;
-
-    --chat-correcting-color: var(--comment);
-    --chat-head-fg-color: var(--background);
-    --chat-head-color-dark: var(--dark-green);
-    --chat-head-color-darker: #0E763B;
-    --chat-head-color: var(--green);
-    --chat-head-text-color: var(--background);
-    --chat-toolbar-btn-color: var(--green);
-    --chat-toolbar-btn-disabled-color: gray;
-
-    --toolbar-btn-text-color: var(--background);
-
-    --chat-content-background-color: var(--background);
-
-    --chat-info-color: var(--chatroom-head-bg-color);
-
-    --danger-color-dark: #A93415; // darker red
-    --danger-color: var(--redder-orange); // dark-red
-    --highlight-color-darker: #B0E8E2;
-    --highlight-color: #DCF9F6;
-    --primary-color-dark:  var(--dark-blue);
-    --primary-color: var(--light-blue);
-    --primary-color-light: var(--lighter-blue);
-    --secondary-color-dark: #585B51;
-    --secondary-color: var(--gray);
-    --warning-color-dark: #D2842B;
-    --warning-color: var(--orange);
-
-    --light-background-color: #FCFDFD;
-
-
-    --groupchats-header-color: var(--chatroom-head-bg-color);
-    --groupchats-header-color-dark: var(--chatroom-head-bg-color-dark);
-
-    --controlbox-head-color: var(--light-blue);
-    --controlbox-heading-color: inherit;
-    --controlbox-heading-font-weight: bold;
-    --controlbox-heading-top-margin: 0.75em;
-    --controlbox-pane-background-color: var(--background);
-    --controlbox-pane-bg-hover-color: #eff4f7;
-    --panel-divider-color: #e7e7e7;
-
-    // TODO: figure out a way to concatenate custom properties with strings.
-    // --font-path: "webfonts/icomoon/fonts/";
-
-    --heading-display: block;
-    --heading-color: var(--background);
-
-    --badge-color: var(--background);
-
-    --chatroom-color: var(--redder-orange);
-    --chatroom-badge-color: var(--chatroom-head-bg-color);
-    --chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
-    --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
-    --chatroom-head-bg-color-dark: #D24E2B; // $red
-    --chatroom-head-bg-color: var(--redder-orange);
-    --chatroom-head-border-bottom: 0px;
-    --chatroom-head-button-color: var(--chatroom-head-bg-color);
-    --chatroom-head-color: var(--background);
-    --chatroom-head-description-display: block;
-    --chatroom-head-description-link-color: var(--background);
-    --chatroom-head-fg-color: var(--background);
-    --chatroom-head-title-font-weight: normal;
-    --chatroom-head-title-padding-right: 0px;
-    --muc-toolbar-btn-color: var(--redder-orange);
-    --muc-toolbar-btn-disabled-color: gray;
-
-    --headlines-color: var(--orange);
-    --headlines-head-text-color: var(--background);
-    --headlines-head-fg-color: var(--background);
-    --headlines-head-bg-color: var(--headlines-color);
-    --headline-message-color: #D2842B;
-    --headline-separator-border-bottom: 2px solid var(--headlines-color);
-
-    --chatbox-button-size: 14px;
-    --fullpage-chatbox-button-size: 16px;
-
-    --separator-text-color: var(--message-text-color);
-    --chat-separator-border-bottom: 2px solid var(--chat-color);
-    --chatroom-separator-border-bottom: 2px solid var(--chatroom-head-bg-color);
-
-    --chatbox-message-input-border-top: 4px solid var(--chat-head-color);
-    --chatroom-message-input-border-top: 4px solid var(--chatroom-head-bg-color);
-
-    --occupants-background-color: var(--background);
-    --occupants-border-left: 0.2rem solid var(--panel-divider-color);
-    --occupants-border-bottom: 1px solid lightgrey;
-
-    --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
-    --fullpage-chat-width: 100%;
-    --fullpage-emoji-picker-height: 300px;
-    --fullpage-max-chat-textarea-height: 15em;
-
-    --overlayed-badge-color: var(--gray);
-
-    --list-toggle-color: var(--gray);
-    --list-toggle-hover-color: #585B51;
-    --list-item-hover-color: rgba(0, 0, 0, 0.035);
-    --list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)
-    --list-item-link-color: inherit;
-    --list-item-link-hover-color: var(--dark-link-color);
-    --list-item-open-color: var(--controlbox-head-color);
-    --list-item-open-hover-color: var(--controlbox-head-color);
-    --list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
-    --list-item-action-hover-color: var(--inverse-link-color);
-    --list-group-item-bg-color: var(--background);
-
-    --chat-msg-quote-color: var(--subdued-color);
-    --chat-msg-hover-color: var(--list-item-hover-color);
-
-    --close-color: var(--text-color);
-    --close-color: #585B51;
+	// Common variables
+	--badge-color: var(--background);
+	--brand-heading-color: var(--blue);
+	--button-hover-text-color: var(--background);
+	--button-text-color: var(--background);
+	--chat-background-color: var(--background);
+	--chat-color: var(--green);
+	--chat-content-background-color: var(--background);
+	--chat-correcting-color: var(--comment);
+	--chat-head-border-bottom: 0;
+	--chat-head-color-dark: var(--dark-green);
+	--chat-head-color-darker: #0e763b;
+	--chat-head-color: var(--green);
+	--chat-head-fg-color: var(--background);
+	--chat-head-text-color: var(--background);
+	--chat-info-color: var(--chatroom-head-bg-color);
+	--chat-msg-hover-color: var(--list-item-hover-color);
+	--chat-msg-quote-color: var(--subdued-color);
+	--chat-separator-border-bottom: 2px solid var(--chat-color);
+	--chat-status-away: var(--orange);
+	--chat-status-busy: var(--redder-orange);
+	--chat-status-online: var(--green);
+	--chat-textarea-background-color: var(--background);
+	--chat-textarea-color: var(--foreground);
+	--chat-textarea-disabled-bg-color: #eee;
+	--chat-textarea-height: 60px;
+	--chat-toolbar-btn-color: var(--green);
+	--chat-toolbar-btn-disabled-color: gray;
+	--chatbox-button-size: 14px;
+	--chatbox-message-input-border-top: 4px solid var(--chat-head-color);
+	--chatroom-badge-color: var(--chatroom-head-bg-color);
+	--chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
+	--chatroom-color: var(--redder-orange);
+	--chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
+	--chatroom-head-bg-color-dark: #d24e2b; // $red
+	--chatroom-head-bg-color: var(--redder-orange);
+	--chatroom-head-border-bottom: 0px;
+	--chatroom-head-button-color: var(--chatroom-head-bg-color);
+	--chatroom-head-color: var(--background);
+	--chatroom-head-description-display: block;
+	--chatroom-head-description-link-color: var(--background);
+	--chatroom-head-fg-color: var(--background);
+	--chatroom-head-title-font-weight: normal;
+	--chatroom-head-title-padding-right: 0px;
+	--chatroom-message-input-border-top: 4px solid var(--chatroom-head-bg-color);
+	--chatroom-separator-border-bottom: 2px solid var(--chatroom-head-bg-color);
+	--close-color: #585b51;
+	--close-color: var(--text-color);
+	--completion-dark-color: #d24e2b; // $dark-red
+	--completion-light-color: #ffb9a7; // $lightest-red
+	--completion-normal-color: var(--redder-orange);
+	--controlbox-head-color: var(--light-blue);
+	--controlbox-heading-color: inherit;
+	--controlbox-heading-font-weight: bold;
+	--controlbox-heading-top-margin: 0.75em;
+	--controlbox-pane-background-color: var(--background);
+	--controlbox-pane-bg-hover-color: #eff4f7;
+	--controlbox-text-color: var(--foreground);
+	--danger-color-dark: #a93415; // darker red
+	--danger-color: var(--redder-orange); // dark-red
+	--dark-link-color: #206485; // $dark-blue
+	--disabled-color-bg: lightgray;
+	--disabled-color: gray;
+	--error-color: var(--dark-red);
+	--focus-color: var(--background);
+	--fullpage-chat-height: calc(var(--vh, 1vh) * 100);
+	--fullpage-chat-width: 100%;
+	--fullpage-chatbox-button-size: 16px;
+	--fullpage-emoji-picker-height: 300px;
+	--fullpage-max-chat-textarea-height: 15em;
+	--global-background-color: var(--dark-blue);
+	--groupchats-header-color-dark: var(--chatroom-head-bg-color-dark);
+	--groupchats-header-color: var(--chatroom-head-bg-color);
+	--heading-color: var(--background);
+	--heading-display: block;
+	--headline-message-color: #d2842b;
+	--headline-separator-border-bottom: 2px solid var(--headlines-color);
+	--headlines-color: var(--orange);
+	--headlines-head-bg-color: var(--headlines-color);
+	--headlines-head-fg-color: var(--background);
+	--headlines-head-text-color: var(--background);
+	--highlight-color-darker: #b0e8e2;
+	--highlight-color: #dcf9f6;
+	--icon-hover-color: var(--text-color);
+	--img-thumbnail-background-color: var(--background);
+	--img-thumbnail-border-color: #dee2e6;
+	--info-color: var(--dark-green);
+	--inverse-link-color: var(--background);
+	--light-background-color: #fcfdfd;
+	--link-color: var(--light-blue);
+	--link-hover-color: #345566;
+	--list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
+	--list-group-item-bg-color: var(--background);
+	--list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)
+	--list-item-action-hover-color: var(--inverse-link-color);
+	--list-item-hover-color: rgba(0, 0, 0, 0.035);
+	--list-item-link-color: inherit;
+	--list-item-link-hover-color: var(--dark-link-color);
+	--list-item-open-color: var(--controlbox-head-color);
+	--list-item-open-hover-color: var(--controlbox-head-color);
+	--list-toggle-color: var(--gray);
+	--list-toggle-hover-color: #585b51;
+	--message-author-color: var(--text-color);
+	--message-receipt-color: var(--green);
+	--message-text-color: #555;
+	--modal-background-color: var(--background);
+	--muc-color: var(--redder-orange);
+	--muc-toolbar-btn-color: var(--redder-orange);
+	--muc-toolbar-btn-disabled-color: gray;
+	--occupants-background-color: var(--background);
+	--occupants-border-bottom: 1px solid lightgrey;
+	--occupants-border-left: 0.2rem solid var(--panel-divider-color);
+	--overlayed-badge-color: var(--gray);
+	--panel-divider-color: #e7e7e7;
+	--primary-color-dark: var(--dark-blue);
+	--primary-color-light: var(--lighter-blue);
+	--primary-color: var(--light-blue);
+	--save-button-color: var(--green);
+	--secondary-color-dark: #585b51;
+	--secondary-color: var(--gray);
+	--separator-text-color: var(--message-text-color);
+	--text-color-invert: var(--background);
+	--text-color: var(--foreground);
+	--text-shadow-color: #fafafa;
+	--toolbar-btn-text-color: var(--background);
+	--unread-msgs-color: var(--orange);
+	--warning-color-dark: #d2842b;
+	--warning-color: var(--orange);
 }

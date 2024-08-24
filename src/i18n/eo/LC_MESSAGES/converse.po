@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-07-02 10:09+0000\n"
-"Last-Translator: 许艺菲 <yifeixu040@gmail.com>\n"
+"PO-Revision-Date: 2024-08-25 00:09+0000\n"
+"Last-Translator: programutox <programutox@disroot.org>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
 "Language: eo\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.7.1-dev\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -95,10 +95,12 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: "
 "\"%1$s\""
 msgstr ""
+"Pardonu, neeblas sukcese alŝuti vian dosieron. Respondo de via servilo: \"%1$"
+"s\""
 
 #: dist/converse-no-dependencies.js:30738
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Pardonu, neeblas sukcese alŝuti vian dosieron."
 
 #: dist/converse-no-dependencies.js:34015
 #: dist/converse-no-dependencies.js:41351
@@ -117,35 +119,31 @@ msgstr "%1$s ĉesis tajpi"
 #: dist/converse-no-dependencies.js:41355
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr "%1$s iris for"
+msgstr "%1$s foriris"
 
 #: dist/converse-no-dependencies.js:34100
 #: dist/converse-no-dependencies.js:38942
-#, fuzzy
 msgid "You're not allowed to retract your message."
-msgstr "Vi ne estas permesita krei novajn babilejojn."
+msgstr "Vi ne estas permesita retiri vian mesaĝon."
 
 #: dist/converse-no-dependencies.js:34102
 #: dist/converse-no-dependencies.js:38946
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Pardonu, io malĝustis dum provanta reŝargi"
+msgstr "Pardonu, io malĝustis dum provanta retiri vian mesaĝon."
 
 #: dist/converse-no-dependencies.js:34107
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "Vi ne estas permesita krei novajn babilejojn."
+msgstr "Vi ne estas permesita sendi mesaĝon."
 
 #: dist/converse-no-dependencies.js:34109
 #: dist/converse-no-dependencies.js:38955
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Pardonu, io malĝustis dum provanta reŝargi"
+msgstr "Pardonu, io malĝustis dum provanta sendi vian mesaĝon."
 
 #: dist/converse-no-dependencies.js:34411
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr ""
+msgstr "%1$s iĝis eksterreta"
 
 #: dist/converse-no-dependencies.js:34415
 #, javascript-format
@@ -201,13 +199,12 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:39311
-#, fuzzy
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Pardonu, io malĝustis dum provanta reŝargi"
+msgstr "Pardonu, io malĝustis dum provanta retiri vian mesaĝon."
 
 #: dist/converse-no-dependencies.js:40087
 msgid "Sorry, an error happened while running the command."
-msgstr ""
+msgstr "Pardonu, io malĝustis dum rulanta la komandon."
 
 #: dist/converse-no-dependencies.js:40087
 #: dist/converse-no-dependencies.js:107987
@@ -229,6 +226,8 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Eraro: la komando \"%1$s\" bezonas du argumentojn, la uzantalnomon kaj opcie "
+"kialon."
 
 #: dist/converse-no-dependencies.js:40199
 msgid ""

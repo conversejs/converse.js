@@ -249,13 +249,12 @@ converse-root.theme-cyberpunk {
 		&:before {
 			content: '';
 			position: absolute;
-			top: 60px;
-			left: 0;
+			top: 4rem;
 			width: 100%;
-			height: 5px;
+			height: 0;
 			box-shadow:
-				0 0 1rem 0rem rgba(234, 57, 184, 0.5),
-				0 0 2rem 0rem rgba(234, 57, 184, 0.2),
+				0 0 1rem 0.5rem rgba(255, 255, 255, 0.5),
+				0 0 2rem 0rem rgba(234, 57, 184, 0.3),
 				0 0 4rem 2rem rgba(234, 57, 184, 0.1) !important;
 		}
 		.container {

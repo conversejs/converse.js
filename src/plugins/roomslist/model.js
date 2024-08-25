@@ -6,10 +6,9 @@ const { OPENED } = constants;
 
 class RoomsListModel extends Model {
 
-    defaults () {  // eslint-disable-line class-methods-use-this
+    defaults () {
         return {
             'muc_domain': api.settings.get('muc_domain'),
-            'nick': _converse.exports.getDefaultMUCNickname(),
             'toggle_state':  OPENED,
             'collapsed_domains': [],
         };

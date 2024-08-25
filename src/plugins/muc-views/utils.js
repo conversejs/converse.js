@@ -115,7 +115,7 @@ export function getChatRoomBodyTemplate (o) {
         return html`
             ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
             ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>` : '' }
-            ${ conn_status == RS.CONNECTING ? tplSpinner() : '' }
+            ${ conn_status == RS.CONNECTING ? tplSpinner({class: 'vertically-centered'}) : '' }
             ${ conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(o.model) : '' }
             ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
             ${ conn_status == RS.BANNED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }

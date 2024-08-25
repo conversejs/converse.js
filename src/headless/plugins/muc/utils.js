@@ -143,9 +143,9 @@ export function getDefaultMUCNickname () {
     // locked_muc_nickname setting.
     const { xmppstatus } = _converse.state;
     if (!xmppstatus) {
-        throw new Error(
-            "Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired."
-        );
+        log.error("Called getDefaultMUCNickname before statusInitialized has been fired.");
+        return '';
+
     }
     const nick = xmppstatus.getNickname();
     if (nick) {

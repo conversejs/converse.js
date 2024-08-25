@@ -28,12 +28,10 @@ export default class AddMUCModal extends BaseModal {
     }
 
     getModalTitle () {
-        // eslint-disable-line class-methods-use-this
         return __('Enter a new Groupchat');
     }
 
     parseRoomDataFromEvent (form) {
-        // eslint-disable-line class-methods-use-this
         const data = new FormData(form);
         const jid = /** @type {string} */ (data.get('chatroom'))?.trim();
         let nick;

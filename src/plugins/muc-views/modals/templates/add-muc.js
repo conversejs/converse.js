@@ -1,6 +1,6 @@
 import DOMPurify from 'dompurify';
 import { __ } from 'i18n';
-import { api } from '@converse/headless';
+import { _converse, api } from '@converse/headless';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { getAutoCompleteList } from '../../search.js';
@@ -16,7 +16,7 @@ const nickname_input = (el) => {
                 title="${i18n_required_field}"
                 required="required"
                 name="nickname"
-                value="${el.model.get('nick') || ''}"
+                value="${_converse.exports.getDefaultMUCNickname() || ''}"
                 class="form-control"
             />
         </div>

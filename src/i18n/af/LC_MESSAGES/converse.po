@@ -2583,7 +2583,7 @@ msgstr "Bevraag bediener"
 
 #: dist/converse-no-dependencies.js:124314
 msgid "Add groupchat"
-msgstr "Voeg 'n groepgesprek by"
+msgstr "Nuwe groepgesprek"
 
 #: dist/converse-no-dependencies.js:124883
 #, javascript-format
@@ -2602,7 +2602,7 @@ msgstr "Groep"
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125800
 msgid "Add a Contact"
-msgstr "Voeg 'n kontak by"
+msgstr "Nuwe kontak"
 
 #: dist/converse-no-dependencies.js:125811
 msgid "This contact has already been added"
@@ -2647,7 +2647,7 @@ msgstr "Klik om kontakte te wissel"
 
 #: dist/converse-no-dependencies.js:126012
 msgid "Add a contact"
-msgstr "Voeg 'n kontak by"
+msgstr "Nuwe kontak"
 
 #: dist/converse-no-dependencies.js:126037
 msgid "Re-sync contacts"

@@ -1,9 +1,60 @@
-declare const XMPPStatus_base: {
+declare const ChatBoxBase_base: {
     new (...args: any[]): {
-        setColor(): Promise<void>;
-        getIdentifier(): any;
-        getColor(): Promise<string>;
-        getAvatarStyle(append_style?: string): Promise<string>;
+        initialize(): Promise<void>;
+        initNotifications(): void;
+        notifications: Model;
+        initUI(): void;
+        ui: Model;
+        getDisplayName(): string;
+        createMessage(attrs: any, options: any): Promise<any>;
+        getMessagesCacheKey(): string;
+        getMessagesCollection(): any;
+        getNotificationsText(): any;
+        initMessages(): void;
+        messages: any;
+        fetchMessages(): any;
+        afterMessagesFetched(): void;
+        onMessage(_promise: Promise<import("../plugins/chat/parsers.js").MessageAttributes>): Promise<void>;
+        getUpdatedMessageAttributes(message: import("../index.js").Message, attrs: import("../plugins/chat/parsers.js").MessageAttributes): object;
+        updateMessage(message: import("../index.js").Message, attrs: import("../plugins/chat/parsers.js").MessageAttributes): void;
+        handleCorrection(attrs: import("../plugins/chat/parsers.js").MessageAttributes | import("../plugins/muc/parsers.js").MUCMessageAttributes): Promise<import("../index.js").Message | void>;
+        queueMessage(attrs: Promise<import("../plugins/chat/parsers.js").MessageAttributes>): any;
+        msg_chain: any;
+        getOutgoingMessageAttributes(_attrs?: import("../plugins/chat/parsers.js").MessageAttributes): Promise<import("../plugins/chat/parsers.js").MessageAttributes>;
+        sendMessage(attrs?: any): Promise<import("../index.js").Message>;
+        setEditable(attrs: any, send_time: string): void;
+        onMessageAdded(message: import("../index.js").Message): void;
+        onMessageUploadChanged(message: import("../index.js").Message): Promise<void>;
+        onScrolledChanged(): void;
+        pruneHistoryWhenScrolledDown(): void;
+        clearMessages(): Promise<void>;
+        editEarlierMessage(): void;
+        editLaterMessage(): any;
+        getOldestMessage(): any;
+        getMostRecentMessage(): any;
+        getMessageReferencedByError(attrs: object): any;
+        findDanglingRetraction(attrs: object): import("../index.js").Message | null;
+        getDuplicateMessage(attrs: object): import("../index.js").Message;
+        getOriginIdQueryAttrs(attrs: object): {
+            origin_id: any;
+            from: any;
+        };
+        getStanzaIdQueryAttrs(attrs: object): {}[];
+        getMessageBodyQueryAttrs(attrs: object): {
+            from: any;
+            msgid: any;
+        };
+        sendMarkerForMessage(msg: import("../index.js").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
+        handleUnreadMessage(message: import("../index.js").Message): void;
+        incrementUnreadMsgsCounter(message: import("../index.js").Message): void;
+        clearUnreadMsgCounter(): void;
+        handleRetraction(attrs: import("../plugins/chat/parsers.js").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("../plugins/chat/parsers.js").MessageAttributes): boolean;
+        createMessageStanza(message: import("../index.js").Message): Promise<any>;
+        pruneHistory(): void;
+        debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
+        isScrolledUp(): any;
+        isHidden(): boolean;
         cid: any;
         attributes: {};
         validationError: string;
@@ -14,7 +65,6 @@ declare const XMPPStatus_base: {
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(): void;
-        initialize(): void;
         validate(attrs: object, options?: object): string;
         toJSON(): any;
         sync(method: "create" | "update" | "patch" | "delete" | "read", model: Model, options: import("@converse/skeletor/src/types/model.js").Options): any;
@@ -68,28 +118,22 @@ declare const XMPPStatus_base: {
         propertyIsEnumerable(v: PropertyKey): boolean;
     };
 } & typeof Model;
-export default class XMPPStatus extends XMPPStatus_base {
-    constructor(attributes: any, options: any);
-    vcard: any;
-    defaults(): {
-        status: any;
-    };
+/**
+ * Base class for all chat boxes. Provides common methods.
+ */
+export default class ChatBoxBase extends ChatBoxBase_base {
+    validate(attrs: any): string;
     /**
-     * @param {string|Object} key
-     * @param {string|Object} [val]
-     * @param {Object} [options]
+     * @param {boolean} force
      */
-    set(key: string | any, val?: string | any, options?: any): false | this;
-    getDisplayName(): any;
-    getNickname(): any;
-    getFullname(): string;
-    /** Constructs a presence stanza
-     * @param {string} [type]
-     * @param {string} [to] - The JID to which this presence should be sent
-     * @param {string} [status_message]
+    maybeShow(force: boolean): this;
+    /**
+     * @param {Object} [_ev]
      */
-    constructPresence(type?: string, to?: string, status_message?: string): Promise<any>;
+    close(_ev?: any): Promise<void>;
+    announceReconnection(): void;
+    onReconnection(): Promise<void>;
 }
 import { Model } from '@converse/skeletor';
 export {};
-//# sourceMappingURL=status.d.ts.map
+//# sourceMappingURL=chatbox.d.ts.map

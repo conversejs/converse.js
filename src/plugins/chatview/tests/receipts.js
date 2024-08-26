@@ -41,13 +41,17 @@ describe("A delivery receipt", function () {
             async function (_converse) {
 
         const { api } = _converse;
+        const bare_jid = _converse.session.get('bare_jid');
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const msg_id = u.getUniqueId();
-        const view = await mock.openChatBoxFor(_converse, sender_jid);
-        spyOn(view.model, 'sendReceiptStanza').and.callThrough();
+        await mock.openChatBoxFor(_converse, sender_jid);
+
+        const sent_stanzas = [];
+        spyOn(api.connection.get(), 'send').and.callFake(stanza => sent_stanzas.push(stanza));
+
         const msg = $msg({
-                'from': sender_jid,
+                'from': bare_jid,
                 'to': api.connection.get().jid,
                 'type': 'chat',
                 'id': u.getUniqueId(),
@@ -56,13 +60,17 @@ describe("A delivery receipt", function () {
             .c('message', {
                     'xmlns': 'jabber:client',
                     'from': sender_jid,
-                    'to': _converse.bare_jid+'/another-resource',
+                    'to': bare_jid+'/another-resource',
                     'type': 'chat',
                     'id': msg_id
             }).c('body').t('Message!').up()
             .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
         await _converse.handleMessageStanza(msg);
-        expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
+
+        const sent_messages = sent_stanzas
+            .map(s => u.isElement(s) ? s : s.nodeTree)
+            .filter(s => s.nodeName === 'message');
+        expect(sent_messages.length).toBe(0);
     }));
 
     it("is not emitted for an archived message",
@@ -70,10 +78,13 @@ describe("A delivery receipt", function () {
             ['chatBoxesFetched'], {},
             async function (_converse) {
 
+        const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const view = await mock.openChatBoxFor(_converse, sender_jid);
-        spyOn(view.model, 'sendReceiptStanza').and.callThrough();
+
+        const sent_stanzas = [];
+        spyOn(api.connection.get(), 'send').and.callFake(stanza => sent_stanzas.push(stanza));
 
         const stanza = u.toStanza(
             `<message xmlns="jabber:client" to="${_converse.jid}">
@@ -92,13 +103,17 @@ describe("A delivery receipt", function () {
         spyOn(view.model, 'getDuplicateMessage').and.callThrough();
         _converse.handleMAMResult(view.model, { 'messages': [stanza] });
         let message_attrs;
-        _converse.api.listen.on('MAMResult', async data => {
+        api.listen.on('MAMResult', async data => {
             message_attrs = await data.messages[0];
         });
         await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
         expect(message_attrs.is_archived).toBe(true);
         expect(message_attrs.is_valid_receipt_request).toBe(false);
-        expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
+
+        const sent_messages = sent_stanzas
+            .map(s => u.isElement(s) ? s : s.nodeTree)
+            .filter(s => s.nodeName === 'message');
+        expect(sent_messages.length).toBe(0);
     }));
 
     it("can be received for a sent message",

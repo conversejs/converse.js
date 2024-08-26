@@ -72,20 +72,28 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const sent_stanzas = [];
         spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
         view.model.save({'hidden': true});
-        await u.waitUntil(() => sent_stanzas.length === 3);
+        await u.waitUntil(() => sent_stanzas.length === 4);
 
         expect(Strophe.serialize(sent_stanzas[0])).toBe(
-            `<message from="${_converse.jid}" id="${sent_stanzas[0].getAttribute('id')}" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
+            `<message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
+                `<inactive xmlns="http://jabber.org/protocol/chatstates"/>`+
+                `<no-store xmlns="urn:xmpp:hints"/>`+
+                `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+            `</message>`
+        );
+
+        expect(Strophe.serialize(sent_stanzas[1])).toBe(
+            `<message from="${_converse.jid}" id="${sent_stanzas[1].getAttribute('id')}" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
                 `<received id="${last_msg_id}" xmlns="urn:xmpp:chat-markers:0"/>`+
             `</message>`
         );
-        expect(Strophe.serialize(sent_stanzas[1])).toBe(
+        expect(Strophe.serialize(sent_stanzas[2])).toBe(
             `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
                 `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
-        expect(Strophe.serialize(sent_stanzas[2])).toBe(
+        expect(Strophe.serialize(sent_stanzas[3])).toBe(
             `<presence to="montague.lit" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
                 `<c hash="sha-1" node="https://conversejs.org" ver="/5ng/Bnz6MXvkSDu6hjAlgQ8C60=" xmlns="http://jabber.org/protocol/caps"/>`+

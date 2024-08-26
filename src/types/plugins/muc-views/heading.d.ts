@@ -1,6 +1,6 @@
 export default class MUCHeading extends CustomElement {
     /**
-     * @typedef {import('@converse/headless/types/plugins/muc/muc').MUCOccupant} MUCOccupant
+     * @typedef {import('@converse/headless/types/plugins/muc/occupant').default} MUCOccupant
      */
     initialize(): Promise<void>;
     model: any;

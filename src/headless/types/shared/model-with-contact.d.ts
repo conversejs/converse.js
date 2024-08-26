@@ -2,19 +2,29 @@
  * @template {import('./types').ModelExtender} T
  * @param {T} BaseModel
  */
-export default function ColorAwareModel<T extends import("./types").ModelExtender>(BaseModel: T): {
+export default function ModelWithContact<T extends import("./types").ModelExtender>(BaseModel: T): {
     new (...args: any[]): {
-        setColor(): Promise<void>;
-        getIdentifier(): any;
         /**
-        * @returns {Promise<string>}
+        * @typedef {import('../plugins/vcard/vcard').default} VCard
+        * @typedef {import('../plugins/roster/contact').default} RosterContact
+        * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
         */
-        getColor(): Promise<string>;
+        initialize(): void;
+        rosterContactAdded: any;
         /**
-        * @param {string} append_style
-        * @returns {Promise<string>}
+        * @public
+        * @type {RosterContact|XMPPStatus}
         */
-        getAvatarStyle(append_style?: string): Promise<string>;
+        contact: import("../plugins/roster/contact").default | import("../index.js").XMPPStatus;
+        /**
+        * @public
+        * @type {VCard}
+        */
+        vcard: import("../plugins/vcard/vcard").default;
+        /**
+        * @param {string} jid
+        */
+        setModelContact(jid: string): Promise<void>;
         cid: any;
         attributes: {};
         validationError: string;
@@ -25,7 +35,6 @@ export default function ColorAwareModel<T extends import("./types").ModelExtende
         readonly idAttribute: string;
         readonly cidPrefix: string;
         preinitialize(): void;
-        initialize(): void;
         validate(attrs: object, options?: object): string;
         toJSON(): any;
         sync(method: "create" | "update" | "patch" | "delete" | "read", model: import("@converse/skeletor").Model, options: import("@converse/skeletor/src/types/model.js").Options): any;
@@ -79,4 +88,4 @@ export default function ColorAwareModel<T extends import("./types").ModelExtende
         propertyIsEnumerable(v: PropertyKey): boolean;
     };
 } & T;
-//# sourceMappingURL=color.d.ts.map
+//# sourceMappingURL=model-with-contact.d.ts.map

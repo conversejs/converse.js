@@ -749,7 +749,7 @@ describe("Chatboxes", function () {
 
             const view = _converse.chatboxviews.get(contact_jid);
             expect(view.model.messages.length).toBe(1);
-            expect(view.model.messages.at(0).get('is_ephemeral')).toBe(30000);
+            expect(view.model.messages.at(0).get('is_ephemeral')).toBe(20000);
             expect(view.model.messages.at(0).get('type')).toBe('error');
             expect(view.model.messages.at(0).get('message')).toBe('Timeout while trying to fetch archived messages.');
 

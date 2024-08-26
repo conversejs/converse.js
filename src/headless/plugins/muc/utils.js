@@ -21,8 +21,8 @@ export function shouldCreateGroupchatMessage (attrs) {
 }
 
 /**
- * @param {import('./muc.js').MUCOccupant} occupant1
- * @param {import('./muc.js').MUCOccupant} occupant2
+ * @param {import('./occupant').default} occupant1
+ * @param {import('./occupant').default} occupant2
  */
 export function occupantsComparator (occupant1, occupant2) {
     const role1 = occupant1.get('role') || 'none';

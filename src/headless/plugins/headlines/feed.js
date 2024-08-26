@@ -1,39 +1,32 @@
-import ChatBox from '../../plugins/chat/model.js';
-import api from "../../shared/api/index.js";
+import api from '../../shared/api/index.js';
 import { isUniView } from '../../utils/session.js';
 import { HEADLINES_TYPE } from '../../shared/constants.js';
-
+import ChatBoxBase from '../../shared/chatbox.js';
 
 /**
  * Shows headline messages
- * @class
- * @namespace _converse.HeadlinesFeed
- * @memberOf _converse
  */
-export default class HeadlinesFeed extends ChatBox {
-
-    defaults () {
+export default class HeadlinesFeed extends ChatBoxBase {
+    defaults() {
         return {
             'bookmarked': false,
             'hidden': isUniView() && !api.settings.get('singleton'),
             'message_type': 'headline',
             'num_unread': 0,
-            'time_opened': this.get('time_opened') || (new Date()).getTime(),
+            'time_opened': this.get('time_opened') || new Date().getTime(),
             'time_sent': undefined,
-            'type': HEADLINES_TYPE
-        }
+            'type': HEADLINES_TYPE,
+        };
     }
 
-    constructor (attrs, options) {
+    constructor(attrs, options) {
         super(attrs, options);
         this.disable_mam = true; // Don't do MAM queries for this box
     }
 
-    async initialize () {
-        super.initialize();
-        this.set({'box_id': `box-${this.get('jid')}`});
-        this.initUI();
-        this.initMessages();
+    async initialize() {
+        await super.initialize();
+        this.set({ 'box_id': `box-${this.get('jid')}` });
         await this.fetchMessages();
         /**
          * Triggered once a { @link _converse.HeadlinesFeed } has been created and initialized.
@@ -42,5 +35,9 @@ export default class HeadlinesFeed extends ChatBox {
          * @example _converse.api.listen.on('headlinesFeedInitialized', model => { ... });
          */
         api.trigger('headlinesFeedInitialized', this);
+    }
+
+    canPostMessages() {
+        return false;
     }
 }

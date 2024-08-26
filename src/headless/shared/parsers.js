@@ -1,6 +1,5 @@
 /**
  * @module:headless-shared-parsers
- * @typedef {module:headless-shared-parsers.Reference} Reference
  */
 import sizzle from 'sizzle';
 import _converse from './_converse.js';
@@ -209,9 +208,19 @@ export function getErrorAttributes (stanza) {
 }
 
 /**
+ * @typedef {Object} Reference
+ * An object representing XEP-0372 reference data
+ * @property {number} begin
+ * @property {number} end
+ * @property {string} type
+ * @property {String} value
+ * @property {String} uri
+ */
+
+/**
  * Given a message stanza, find and return any XEP-0372 references
  * @param {Element} stanza - The message stanza
- * @returns {Reference}
+ * @returns {Reference[]}
  */
 export function getReferences (stanza) {
     return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
@@ -221,22 +230,13 @@ export function getReferences (stanza) {
             log.warn(`Could not find referenced text for ${ref}`);
             return null;
         }
-        const begin = ref.getAttribute('begin');
-        const end = ref.getAttribute('end');
-        /**
-         * @typedef {Object} Reference
-         * An object representing XEP-0372 reference data
-         * @property {string} begin
-         * @property {string} end
-         * @property {string} type
-         * @property {String} value
-         * @property {String} uri
-         */
+        const begin = Number(ref.getAttribute('begin'));
+        const end = Number(ref.getAttribute('end'));
         return {
             begin, end,
-            'type': ref.getAttribute('type'),
-            'value': text.slice(begin, end),
-            'uri': ref.getAttribute('uri')
+            type: ref.getAttribute('type'),
+            value: text.slice(begin, end),
+            uri: ref.getAttribute('uri')
         };
     }).filter(r => r);
 }

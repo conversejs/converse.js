@@ -98,6 +98,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/muc-views/tests/muc-registration.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/muc.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/mute.js", type: 'module' },
+      { pattern: "src/plugins/muc-views/tests/muc-private-messages.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/nickname.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/occupants-filter.js", type: 'module' },
       { pattern: "src/plugins/muc-views/tests/occupants.js", type: 'module' },

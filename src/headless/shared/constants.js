@@ -13,6 +13,25 @@ export const STATUS_WEIGHTS = {
     online: 1,
 };
 
+export const METADATA_ATTRIBUTES = [
+    "og:article:author",
+    "og:article:published_time",
+    "og:description",
+    "og:image",
+    "og:image:height",
+    "og:image:width",
+    "og:site_name",
+    "og:title",
+    "og:type",
+    "og:url",
+    "og:video:height",
+    "og:video:secure_url",
+    "og:video:tag",
+    "og:video:type",
+    "og:video:url",
+    "og:video:width"
+];
+
 export const ANONYMOUS = 'anonymous';
 export const CLOSED = 'closed';
 export const EXTERNAL = 'external';

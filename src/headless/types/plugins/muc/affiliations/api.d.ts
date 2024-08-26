@@ -49,7 +49,7 @@ declare namespace _default {
          * @param {string} jid - The JID of the MUC for which the affiliation list should be fetched
          * @returns {Promise<MemberListItem[]|Error>}
          */
-        function get(affiliation: "owner" | "admin" | "member", jid: string): Promise<MemberListItem[] | Error>;
+        function get(affiliation: "admin" | "member" | "owner", jid: string): Promise<MemberListItem[] | Error>;
     }
 }
 export default _default;

@@ -4,10 +4,10 @@
 export function isChatRoom(model: import("@converse/skeletor").Model): boolean;
 export function shouldCreateGroupchatMessage(attrs: any): any;
 /**
- * @param {import('./muc.js').MUCOccupant} occupant1
- * @param {import('./muc.js').MUCOccupant} occupant2
+ * @param {import('./occupant').default} occupant1
+ * @param {import('./occupant').default} occupant2
  */
-export function occupantsComparator(occupant1: import("./muc.js").MUCOccupant, occupant2: import("./muc.js").MUCOccupant): 0 | 1 | -1;
+export function occupantsComparator(occupant1: import("./occupant").default, occupant2: import("./occupant").default): 0 | 1 | -1;
 export function registerDirectInvitationHandler(): void;
 export function disconnectChatRooms(): any;
 export function onWindowStateChanged(): Promise<void>;

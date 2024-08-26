@@ -12,3 +12,5 @@ export class TimeoutError extends Error {
         this.retry_event_id = null;
     }
 }
+
+export class NotImplementedError extends Error {}

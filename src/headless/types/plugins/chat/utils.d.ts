@@ -19,7 +19,8 @@ export function handleMessageStanza(stanza: Element | Builder): Promise<void>;
  */
 export function enableCarbons(): Promise<void>;
 export type ChatBox = import("./model.js").default;
-export type MessageAttributes = any;
+export type MessageAttributes = import("./parsers").MessageAttributes;
+export type StanzaParseError = import("../../shared/parsers").StanzaParseError;
 export type Builder = import("strophe.js").Builder;
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=utils.d.ts.map

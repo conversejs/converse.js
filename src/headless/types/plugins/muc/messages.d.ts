@@ -5,6 +5,7 @@ export default MUCMessages;
 declare class MUCMessages extends Collection {
     constructor(attrs: any, options?: {});
     model: typeof MUCMessage;
+    fetched: any;
 }
 import { Collection } from '@converse/skeletor';
 import MUCMessage from './message';

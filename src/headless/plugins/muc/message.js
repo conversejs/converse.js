@@ -6,7 +6,7 @@ import { Strophe } from 'strophe.js';
 
 class MUCMessage extends Message {
     /**
-     * @typedef {import('./muc.js').MUCOccupant} MUCOccupant
+     * @typedef {import('./occupant').default} MUCOccupant
      */
 
     async initialize () { // eslint-disable-line require-await

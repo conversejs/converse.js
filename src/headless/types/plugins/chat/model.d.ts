@@ -1,15 +1,272 @@
 export default ChatBox;
+declare const ChatBox_base: {
+    new (...args: any[]): {
+        initialize(): Promise<void>;
+        initNotifications(): void;
+        notifications: import("@converse/skeletor").Model;
+        initUI(): void;
+        ui: import("@converse/skeletor").Model;
+        getDisplayName(): string;
+        createMessage(attrs: any, options: any): Promise<any>;
+        getMessagesCacheKey(): string;
+        getMessagesCollection(): any;
+        getNotificationsText(): any;
+        initMessages(): void;
+        messages: any;
+        fetchMessages(): any;
+        afterMessagesFetched(): void;
+        onMessage(_promise: Promise<import("./parsers.js").MessageAttributes>): Promise<void>;
+        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./parsers.js").MessageAttributes): object;
+        updateMessage(message: import("./message.js").default, attrs: import("./parsers.js").MessageAttributes): void;
+        handleCorrection(attrs: import("./parsers.js").MessageAttributes | import("../muc/parsers.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
+        queueMessage(attrs: Promise<import("./parsers.js").MessageAttributes>): any;
+        msg_chain: any;
+        getOutgoingMessageAttributes(_attrs?: import("./parsers.js").MessageAttributes): Promise<import("./parsers.js").MessageAttributes>;
+        sendMessage(attrs?: any): Promise<import("./message.js").default>;
+        setEditable(attrs: any, send_time: string): void;
+        onMessageAdded(message: import("./message.js").default): void;
+        onMessageUploadChanged(message: import("./message.js").default): Promise<void>;
+        onScrolledChanged(): void;
+        pruneHistoryWhenScrolledDown(): void;
+        clearMessages(): Promise<void>;
+        editEarlierMessage(): void;
+        editLaterMessage(): any;
+        getOldestMessage(): any;
+        getMostRecentMessage(): any;
+        getMessageReferencedByError(attrs: object): any;
+        findDanglingRetraction(attrs: object): import("./message.js").default | null;
+        getDuplicateMessage(attrs: object): import("./message.js").default;
+        getOriginIdQueryAttrs(attrs: object): {
+            origin_id: any;
+            from: any;
+        };
+        getStanzaIdQueryAttrs(attrs: object): {}[];
+        getMessageBodyQueryAttrs(attrs: object): {
+            from: any;
+            msgid: any;
+        };
+        sendMarkerForMessage(msg: import("./message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
+        handleUnreadMessage(message: import("./message.js").default): void;
+        incrementUnreadMsgsCounter(message: import("./message.js").default): void;
+        clearUnreadMsgCounter(): void;
+        handleRetraction(attrs: import("./parsers.js").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("./parsers.js").MessageAttributes): boolean;
+        createMessageStanza(message: import("./message.js").default): Promise<any>;
+        pruneHistory(): void;
+        debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
+        isScrolledUp(): any;
+        isHidden(): boolean;
+        cid: any;
+        attributes: {};
+        validationError: string;
+        collection: any;
+        changed: {};
+        browserStorage: Storage;
+        _browserStorage: Storage;
+        readonly idAttribute: string;
+        readonly cidPrefix: string;
+        preinitialize(): void;
+        validate(attrs: object, options?: object): string;
+        toJSON(): any;
+        sync(method: "create" | "update" | "patch" | "delete" | "read", model: import("@converse/skeletor").Model, options: import("@converse/skeletor/src/types/model.js").Options): any;
+        get(attr: string): any;
+        keys(): string[];
+        values(): any[];
+        pairs(): [string, any][];
+        entries(): [string, any][];
+        invert(): any;
+        pick(...args: any[]): any;
+        omit(...args: any[]): any;
+        isEmpty(): any;
+        has(attr: string): boolean;
+        matches(attrs: import("@converse/skeletor/src/types/model.js").Attributes): boolean;
+        set(key: string | any, val?: string | any, options?: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        _changing: boolean;
+        _previousAttributes: any;
+        id: any;
+        _pending: boolean | import("@converse/skeletor/src/types/model.js").Options;
+        unset(attr: string, options?: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        clear(options: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        hasChanged(attr?: string): any;
+        changedAttributes(diff: any): any;
+        previous(attr?: string): any;
+        previousAttributes(): any;
+        fetch(options?: import("@converse/skeletor/src/types/model.js").Options): any;
+        save(key?: string | import("@converse/skeletor/src/types/model.js").Attributes, val?: boolean | number | string | import("@converse/skeletor/src/types/model.js").Options, options?: import("@converse/skeletor/src/types/model.js").Options): any;
+        destroy(options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        url(): any;
+        parse(resp: import("@converse/skeletor/src/types/model.js").Options, options?: import("@converse/skeletor/src/types/model.js").Options): import("@converse/skeletor/src/types/model.js").Options;
+        isNew(): boolean;
+        isValid(options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        _validate(attrs: import("@converse/skeletor/src/types/model.js").Attributes, options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        on(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        _events: any;
+        _listeners: {};
+        listenTo(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        _listeningTo: {};
+        _listenId: any;
+        off(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        once(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        listenToOnce(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        trigger(name: string, ...args: any[]): any;
+        constructor: Function;
+        toString(): string;
+        toLocaleString(): string;
+        valueOf(): Object;
+        hasOwnProperty(v: PropertyKey): boolean;
+        isPrototypeOf(v: Object): boolean;
+        propertyIsEnumerable(v: PropertyKey): boolean;
+    };
+} & {
+    new (...args: any[]): {
+        initialize(): void;
+        rosterContactAdded: any;
+        contact: import("../roster/contact.js").default | import("../status/status.js").default;
+        vcard: import("../vcard/vcard.js").default;
+        setModelContact(jid: string): Promise<void>;
+        cid: any;
+        attributes: {};
+        validationError: string;
+        collection: any;
+        changed: {};
+        browserStorage: Storage;
+        _browserStorage: Storage;
+        readonly idAttribute: string;
+        readonly cidPrefix: string;
+        preinitialize(): void;
+        validate(attrs: object, options?: object): string;
+        toJSON(): any;
+        sync(method: "create" | "update" | "patch" | "delete" | "read", model: import("@converse/skeletor").Model, options: import("@converse/skeletor/src/types/model.js").Options): any;
+        get(attr: string): any;
+        keys(): string[];
+        values(): any[];
+        pairs(): [string, any][];
+        entries(): [string, any][];
+        invert(): any;
+        pick(...args: any[]): any;
+        omit(...args: any[]): any;
+        isEmpty(): any;
+        has(attr: string): boolean;
+        matches(attrs: import("@converse/skeletor/src/types/model.js").Attributes): boolean;
+        set(key: string | any, val?: string | any, options?: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        _changing: boolean;
+        _previousAttributes: any;
+        id: any;
+        _pending: boolean | import("@converse/skeletor/src/types/model.js").Options;
+        unset(attr: string, options?: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        clear(options: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        hasChanged(attr?: string): any;
+        changedAttributes(diff: any): any;
+        previous(attr?: string): any;
+        previousAttributes(): any;
+        fetch(options?: import("@converse/skeletor/src/types/model.js").Options): any;
+        save(key?: string | import("@converse/skeletor/src/types/model.js").Attributes, val?: boolean | number | string | import("@converse/skeletor/src/types/model.js").Options, options?: import("@converse/skeletor/src/types/model.js").Options): any;
+        destroy(options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        url(): any;
+        parse(resp: import("@converse/skeletor/src/types/model.js").Options, options?: import("@converse/skeletor/src/types/model.js").Options): import("@converse/skeletor/src/types/model.js").Options;
+        isNew(): boolean;
+        isValid(options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        _validate(attrs: import("@converse/skeletor/src/types/model.js").Attributes, options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        on(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        _events: any;
+        _listeners: {};
+        listenTo(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        _listeningTo: {};
+        _listenId: any;
+        off(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        once(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        listenToOnce(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        trigger(name: string, ...args: any[]): any;
+        constructor: Function;
+        toString(): string;
+        toLocaleString(): string;
+        valueOf(): Object;
+        hasOwnProperty(v: PropertyKey): boolean;
+        isPrototypeOf(v: Object): boolean;
+        propertyIsEnumerable(v: PropertyKey): boolean;
+    };
+} & {
+    new (...args: any[]): {
+        setColor(): Promise<void>;
+        getIdentifier(): any;
+        getColor(): Promise<string>;
+        getAvatarStyle(append_style?: string): Promise<string>;
+        cid: any;
+        attributes: {};
+        validationError: string;
+        collection: any;
+        changed: {};
+        browserStorage: Storage;
+        _browserStorage: Storage;
+        readonly idAttribute: string;
+        readonly cidPrefix: string;
+        preinitialize(): void;
+        initialize(): void;
+        validate(attrs: object, options?: object): string;
+        toJSON(): any;
+        sync(method: "create" | "update" | "patch" | "delete" | "read", model: import("@converse/skeletor").Model, options: import("@converse/skeletor/src/types/model.js").Options): any;
+        get(attr: string): any;
+        keys(): string[];
+        values(): any[];
+        pairs(): [string, any][];
+        entries(): [string, any][];
+        invert(): any;
+        pick(...args: any[]): any;
+        omit(...args: any[]): any;
+        isEmpty(): any;
+        has(attr: string): boolean;
+        matches(attrs: import("@converse/skeletor/src/types/model.js").Attributes): boolean;
+        set(key: string | any, val?: string | any, options?: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        _changing: boolean;
+        _previousAttributes: any;
+        id: any;
+        _pending: boolean | import("@converse/skeletor/src/types/model.js").Options;
+        unset(attr: string, options?: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        clear(options: import("@converse/skeletor/src/types/model.js").Options): false | any;
+        hasChanged(attr?: string): any;
+        changedAttributes(diff: any): any;
+        previous(attr?: string): any;
+        previousAttributes(): any;
+        fetch(options?: import("@converse/skeletor/src/types/model.js").Options): any;
+        save(key?: string | import("@converse/skeletor/src/types/model.js").Attributes, val?: boolean | number | string | import("@converse/skeletor/src/types/model.js").Options, options?: import("@converse/skeletor/src/types/model.js").Options): any;
+        destroy(options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        url(): any;
+        parse(resp: import("@converse/skeletor/src/types/model.js").Options, options?: import("@converse/skeletor/src/types/model.js").Options): import("@converse/skeletor/src/types/model.js").Options;
+        isNew(): boolean;
+        isValid(options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        _validate(attrs: import("@converse/skeletor/src/types/model.js").Attributes, options?: import("@converse/skeletor/src/types/model.js").Options): boolean;
+        on(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        _events: any;
+        _listeners: {};
+        listenTo(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        _listeningTo: {};
+        _listenId: any;
+        off(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context?: any): any;
+        stopListening(obj?: any, name?: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        once(name: string, callback: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any, context: any): any;
+        listenToOnce(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor").Model, collection: import("@converse/skeletor").Collection, options: Record<string, any>) => any): any;
+        trigger(name: string, ...args: any[]): any;
+        constructor: Function;
+        toString(): string;
+        toLocaleString(): string;
+        valueOf(): Object;
+        hasOwnProperty(v: PropertyKey): boolean;
+        isPrototypeOf(v: Object): boolean;
+        propertyIsEnumerable(v: PropertyKey): boolean;
+    };
+} & typeof ChatBoxBase;
 /**
- * Represents an open/ongoing chat conversation.
+ * Represents a one-on-one chat conversation.
  */
-declare class ChatBox extends ModelWithContact {
+declare class ChatBox extends ChatBox_base {
     constructor(attrs: any, options: any);
     /**
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
-     * @typedef {import('../muc/message.js').default} MUCMessage
-     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
-     * @typedef {import('strophe.js').Builder} Builder
+     * @typedef {import('./parsers').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
      */
     defaults(): {
         bookmarked: boolean;
@@ -24,56 +281,16 @@ declare class ChatBox extends ModelWithContact {
     initialize(): Promise<void>;
     initialized: any;
     presence: any;
-    getMessagesCollection(): any;
-    getMessagesCacheKey(): string;
-    initMessages(): void;
-    messages: any;
-    initUI(): void;
-    ui: Model;
-    initNotifications(): void;
-    notifications: Model;
-    getNotificationsText(): any;
-    afterMessagesFetched(): void;
-    fetchMessages(): any;
     /**
      * @param {Element} stanza
      */
     handleErrorMessageStanza(stanza: Element): Promise<void>;
     /**
-     * Queue an incoming `chat` message stanza for processing.
-     * @async
-     * @method ChatBox#queueMessage
-     * @param {MessageAttributes} attrs - A promise which resolves to the message attributes
+     * @param {Promise<MessageAttributes|StanzaParseError>} attrs_promise
      */
-    queueMessage(attrs: any): any;
-    msg_chain: any;
-    /**
-     * @async
-     * @method ChatBox#onMessage
-     * @param {Promise<MessageAttributes>} attrs_promise - A promise which resolves to the message attributes.
-     */
-    onMessage(attrs_promise: Promise<any>): Promise<void>;
-    onMessageUploadChanged(message: any): Promise<void>;
-    onMessageAdded(message: any): void;
-    clearMessages(): Promise<void>;
-    /**
-     * @param {Object} [_ev]
-     */
-    close(_ev?: any): Promise<void>;
-    announceReconnection(): void;
-    onReconnection(): Promise<void>;
+    onMessage(attrs_promise: Promise<import("./parsers.js").MessageAttributes | import("../../shared/parsers").StanzaParseError>): Promise<void>;
     onPresenceChanged(item: any): void;
-    onScrolledChanged(): void;
-    pruneHistoryWhenScrolledDown(): void;
-    validate(attrs: any): string;
-    getDisplayName(): any;
-    createMessageFromError(error: any): Promise<void>;
-    editEarlierMessage(): void;
-    editLaterMessage(): any;
-    getOldestMessage(): any;
-    getMostRecentMessage(): any;
-    getUpdatedMessageAttributes(message: any, attrs: any): any;
-    updateMessage(message: any, attrs: any): void;
+    close(): Promise<void>;
     /**
      * Mutator for setting the chat state of this chat session.
      * Handles clearing of any chat state notification timeouts and
@@ -81,172 +298,44 @@ declare class ChatBox extends ModelWithContact {
      * Timeouts are set when the  state being set is COMPOSING or PAUSED.
      * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
      * See XEP-0085 Chat State Notifications.
-     * @method ChatBox#setChatState
-     * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+     * @param {string} state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+     * @param {object} [options]
      */
-    setChatState(state: string, options: any): this;
+    setChatState(state: string, options?: object): this;
     chat_state_timeout: NodeJS.Timeout;
     /**
-     * Given an error `<message>` stanza's attributes, find the saved message model which is
-     * referenced by that error.
-     * @param {object} attrs
+     * @returns {string}
      */
-    getMessageReferencedByError(attrs: object): any;
+    getDisplayName(): string;
     /**
-     * @method ChatBox#shouldShowErrorMessage
-     * @param {object} attrs
+     * @param {MessageAttributes} attrs
      * @returns {Promise<boolean>}
      */
-    shouldShowErrorMessage(attrs: object): Promise<boolean>;
+    shouldShowErrorMessage(attrs: import("./parsers.js").MessageAttributes): Promise<boolean>;
     /**
      * @param {string} jid1
      * @param {string} jid2
      */
     isSameUser(jid1: string, jid2: string): any;
     /**
-     * Looks whether we already have a retraction for this
-     * incoming message. If so, it's considered "dangling" because it
-     * probably hasn't been applied to anything yet, given that the
-     * relevant message is only coming in now.
-     * @private
-     * @method ChatBox#findDanglingRetraction
-     * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link parseMessage}
-     * @returns { Message }
-     */
-    private findDanglingRetraction;
-    /**
-     * Handles message retraction based on the passed in attributes.
-     * @method ChatBox#handleRetraction
-     * @param {object} attrs - Attributes representing a received
-     *  message, as returned by {@link parseMessage}
-     * @returns {Promise<Boolean>} Returns `true` or `false` depending on
-     *  whether a message was retracted or not.
-     */
-    handleRetraction(attrs: object): Promise<boolean>;
-    /**
-     * Returns an already cached message (if it exists) based on the
-     * passed in attributes map.
-     * @method ChatBox#getDuplicateMessage
-     * @param {object} attrs - Attributes representing a received
-     *  message, as returned by {@link parseMessage}
-     * @returns {Message}
-     */
-    getDuplicateMessage(attrs: object): import("./message.js").default;
-    getOriginIdQueryAttrs(attrs: any): {
-        origin_id: any;
-        from: any;
-    };
-    getStanzaIdQueryAttrs(attrs: any): {}[];
-    getMessageBodyQueryAttrs(attrs: any): {
-        from: any;
-        msgid: any;
-    };
-    /**
      * Retract one of your messages in this chat
-     * @method ChatBoxView#retractOwnMessage
-     * @param { Message } message - The message which we're retracting.
+     * @param {Message} message - The message which we're retracting.
      */
     retractOwnMessage(message: import("./message.js").default): void;
     /**
-     * Sends a message stanza to retract a message in this chat
-     * @private
-     * @method ChatBox#sendRetractionMessage
-     * @param { Message } message - The message which we're retracting.
+     * @param {MessageAttributes} attrs
      */
-    private sendRetractionMessage;
+    handleChatMarker(attrs: import("./parsers.js").MessageAttributes): boolean;
     /**
-     * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
-     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
-     * @param { Boolean } force - Whether a marker should be sent for the
-     *  message, even if it didn't include a `markable` element.
+     * @param {MessageAttributes} [attrs]
+     * @return {Promise<MessageAttributes>}
      */
-    sendMarkerForLastMessage(type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
-    /**
-     * Given the passed in message object, send a XEP-0333 chat marker.
-     * @param { Message } msg
-     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
-     * @param { Boolean } force - Whether a marker should be sent for the
-     *  message, even if it didn't include a `markable` element.
-     */
-    sendMarkerForMessage(msg: import("./message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
-    handleChatMarker(attrs: any): boolean;
-    sendReceiptStanza(to_jid: any, id: any): void;
-    handleReceipt(attrs: any): boolean;
-    /**
-     * Given a {@link Message} return the XML stanza that represents it.
-     * @private
-     * @method ChatBox#createMessageStanza
-     * @param { Message } message - The message object
-     */
-    private createMessageStanza;
-    getOutgoingMessageAttributes(attrs: any): Promise<any>;
-    /**
-     * Responsible for setting the editable attribute of messages.
-     * If api.settings.get('allow_message_corrections') is "last", then only the last
-     * message sent from me will be editable. If set to "all" all messages
-     * will be editable. Otherwise no messages will be editable.
-     * @method ChatBox#setEditable
-     * @memberOf ChatBox
-     * @param {Object} attrs An object containing message attributes.
-     * @param {String} send_time - time when the message was sent
-     */
-    setEditable(attrs: any, send_time: string): void;
-    /**
-     * Queue the creation of a message, to make sure that we don't run
-     * into a race condition whereby we're creating a new message
-     * before the collection has been fetched.
-     * @method ChatBox#createMessage
-     * @param {Object} attrs
-     */
-    createMessage(attrs: any, options: any): Promise<any>;
-    /**
-     * Responsible for sending off a text message inside an ongoing chat conversation.
-     * @method ChatBox#sendMessage
-     * @memberOf ChatBox
-     * @param {Object} [attrs] - A map of attributes to be saved on the message
-     * @returns {Promise<Message>}
-     * @example
-     * const chat = api.chats.get('buddy1@example.org');
-     * chat.sendMessage({'body': 'hello world'});
-     */
-    sendMessage(attrs?: any): Promise<import("./message.js").default>;
-    /**
-     * Sends a message with the current XEP-0085 chat state of the user
-     * as taken from the `chat_state` attribute of the {@link ChatBox}.
-     * @method ChatBox#sendChatState
-     */
-    sendChatState(): void;
+    getOutgoingMessageAttributes(attrs?: import("./parsers.js").MessageAttributes): Promise<import("./parsers.js").MessageAttributes>;
     /**
      * @param {File[]} files
      */
     sendFiles(files: File[]): Promise<void>;
-    /**
-     * @param {boolean} force
-     */
-    maybeShow(force: boolean): this;
-    /**
-     * Indicates whether the chat is hidden and therefore
-     * whether a newly received message will be visible
-     * to the user or not.
-     * @returns {boolean}
-     */
-    isHidden(): boolean;
-    /**
-     * Given a newly received {@link Message} instance,
-     * update the unread counter if necessary.
-     * @method ChatBox#handleUnreadMessage
-     * @param {Message} message
-     */
-    handleUnreadMessage(message: import("./message.js").default): void;
-    /**
-     * @param {Message} message
-     */
-    incrementUnreadMsgsCounter(message: import("./message.js").default): void;
-    clearUnreadMsgCounter(): void;
-    isScrolledUp(): any;
     canPostMessages(): boolean;
 }
-import ModelWithContact from './model-with-contact.js';
-import { Model } from '@converse/skeletor';
+import ChatBoxBase from '../../shared/chatbox.js';
 //# sourceMappingURL=model.d.ts.map

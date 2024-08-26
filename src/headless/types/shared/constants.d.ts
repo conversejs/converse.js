@@ -9,6 +9,7 @@ export namespace STATUS_WEIGHTS {
     let chat: number;
     let online: number;
 }
+export const METADATA_ATTRIBUTES: string[];
 export const ANONYMOUS: "anonymous";
 export const CLOSED: "closed";
 export const EXTERNAL: "external";

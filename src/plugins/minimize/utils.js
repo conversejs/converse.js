@@ -167,7 +167,6 @@ export function minimize (ev, model) {
     } else {
         model = ev;
     }
-    model.setChatState(INACTIVE);
     u.safeSave(model, {
         'hidden': true,
         'minimized': true,

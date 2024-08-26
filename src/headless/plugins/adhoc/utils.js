@@ -56,7 +56,7 @@ export function parseCommandResult(iq) {
         note: note
             ? {
                   text: note.textContent,
-                  type: note.getAttribute('type'),
+                  type: /** @type {'info'|'warn'|'error'} */ (note.getAttribute('type')),
               }
             : null,
         actions: Array.from(cmd_el.querySelector('actions')?.children ?? []).map((a) => a.nodeName.toLowerCase()),

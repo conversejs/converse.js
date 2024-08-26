@@ -10,11 +10,7 @@ export type Options = import("@converse/skeletor/src/types/collection").Options;
  */
 declare class MUCOccupants extends Collection {
     static getAutoFetchedAffiliationLists(): any[];
-    /**
-     * @param {MUCOccupant[]} attrs
-     * @param {CollectionOptions} options
-     */
-    constructor(attrs: MUCOccupant[], options: CollectionOptions);
+    constructor(attrs: any, options: any);
     chatroom: any;
     get model(): typeof MUCOccupant;
     fetchMembers(): Promise<void>;

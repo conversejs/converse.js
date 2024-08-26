@@ -1,14 +1,15 @@
 import { getOpenPromise } from '@converse/openpromise';
+import { Model } from '@converse/skeletor';
 import '../../plugins/status/api.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { ColorAwareModel } from '../../shared/color.js';
+import ColorAwareModel from '../../shared/color.js';
 import { rejectPresenceSubscription } from './utils.js';
 
 const { Strophe, $iq, $pres } = converse.env;
 
-class RosterContact extends ColorAwareModel {
+class RosterContact extends ColorAwareModel(Model) {
     get idAttribute () {
         return 'jid';
     }

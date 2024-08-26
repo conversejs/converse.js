@@ -2,7 +2,7 @@
  * @typedef {import('../../plugins/muc/message').default} MUCMessage
  * @typedef {import('../../plugins/status/status').default} XMPPStatus
  * @typedef {import('../../plugins/vcard/vcards').default} VCards
- * @typedef {import('../chat/model-with-contact.js').default} ModelWithContact
+ * @typedef {import('../../shared/model-with-contact.js').default} ModelWithContact
  * @typedef {import('../muc/occupant.js').default} MUCOccupant
  */
 import _converse from '../../shared/_converse.js';
@@ -77,7 +77,7 @@ export function onOccupantAvatarChanged (occupant) {
 
 
 /**
- * @param {ModelWithContact} model
+ * @param {InstanceType<ReturnType<ModelWithContact>>} model
  */
 export async function setVCardOnModel (model) {
     let jid;

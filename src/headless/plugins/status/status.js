@@ -1,12 +1,13 @@
+import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { ColorAwareModel } from '../../shared/color.js';
+import ColorAwareModel from '../../shared/color.js';
 import { isIdle, getIdleSeconds } from './utils.js';
 
 const { Strophe, $pres } = converse.env;
 
-export default class XMPPStatus extends ColorAwareModel {
+export default class XMPPStatus extends ColorAwareModel(Model) {
 
   constructor(attributes, options) {
         super(attributes, options);
@@ -26,7 +27,7 @@ export default class XMPPStatus extends ColorAwareModel {
         } else if (attr === 'nickname') {
             return api.settings.get('nickname');
         }
-        return ColorAwareModel.prototype.get.call(this, attr);
+        return super.get(attr);
     }
 
   /**
@@ -38,7 +39,7 @@ export default class XMPPStatus extends ColorAwareModel {
         if (key === 'jid' || key === 'nickname') {
             throw new Error('Readonly property')
         }
-        return ColorAwareModel.prototype.set.call(this, key, val, options);
+        return super.set(key, val, options);
     }
 
     initialize () {

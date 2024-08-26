@@ -25,10 +25,6 @@ const { u } = converse.env;
  */
 class MUCOccupants extends Collection {
 
-    /**
-     * @param {MUCOccupant[]} attrs
-     * @param {CollectionOptions} options
-     */
     constructor (attrs, options) {
         super(
             attrs,
@@ -37,6 +33,8 @@ class MUCOccupants extends Collection {
         this.chatroom = null;
     }
 
+    // FIXME
+    // @ts-ignore
     get model() {
         return MUCOccupant;
     }
@@ -175,4 +173,5 @@ class MUCOccupants extends Collection {
 }
 
 
+// @ts-ignore
 export default MUCOccupants;

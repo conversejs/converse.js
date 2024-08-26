@@ -1,5 +1,10 @@
-export const ROLES: string[];
+export const ACTION_INFO_CODES: string[];
+export const ADMIN_COMMANDS: string[];
 export const AFFILIATIONS: string[];
+export const MODERATOR_COMMANDS: string[];
+export const OWNER_COMMANDS: string[];
+export const ROLES: string[];
+export const VISITOR_COMMANDS: string[];
 export namespace MUC_ROLE_WEIGHTS {
     let moderator: number;
     let participant: number;

@@ -1,7 +1,6 @@
 /**
  * @module:plugin-muc-parsers
  * @typedef {import('../muc/muc.js').default} MUC
- * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
  */
 import dayjs from 'dayjs';
 import _converse from '../../shared/_converse.js';
@@ -30,6 +29,21 @@ import {
 
 const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;
+
+/**
+ * @typedef {Object} ExtraMUCAttributes
+ * @property {Array<Object>} activities - A list of objects representing XEP-0316 MEP notification data
+ * @property {String} from_muc - The JID of the MUC from which this message was sent
+ * @property {String} from_real_jid - The real JID of the sender, if available
+ * @property {String} moderated - The type of XEP-0425 moderation (if any) that was applied
+ * @property {String} moderated_by - The JID of the user that moderated this message
+ * @property {String} moderated_id - The  XEP-0359 Stanza ID of the message that this one moderates
+ * @property {String} moderation_reason - The reason provided why this message moderates another
+ * @property {String} occupant_id - The XEP-0421 occupant ID
+ *
+ * The object which {@link parseMUCMessage} returns
+ * @typedef {import('../chat/parsers').MessageAttributes & ExtraMUCAttributes} MUCMessageAttributes
+ */
 
 /**
  * Parses a message stanza for XEP-0316 MEP notification data
@@ -150,7 +164,7 @@ function getSender (attrs, chatbox) {
  * Parses a passed in message stanza and returns an object of attributes.
  * @param {Element} stanza - The message stanza
  * @param {MUC} chatbox
- * @returns {Promise<MUCMessageAttributes|Error>}
+ * @returns {Promise<MUCMessageAttributes|StanzaParseError>}
  */
 export async function parseMUCMessage (stanza, chatbox) {
     throwErrorIfInvalidForward(stanza);
@@ -169,63 +183,7 @@ export async function parseMUCMessage (stanza, chatbox) {
     const from = stanza.getAttribute('from');
     const marker = getChatMarker(stanza);
 
-    /**
-     * @typedef {Object} MUCMessageAttributes
-     * The object which {@link parseMUCMessage} returns
-     * @property {('me'|'them')} sender - Whether the message was sent by the current user or someone else
-     * @property {Array<Object>} activities - A list of objects representing XEP-0316 MEP notification data
-     * @property {Array<Object>} references - A list of objects representing XEP-0372 references
-     * @property {Boolean} editable - Is this message editable via XEP-0308?
-     * @property {Boolean} is_archived -  Is this message from a XEP-0313 MAM archive?
-     * @property {Boolean} is_carbon - Is this message a XEP-0280 Carbon?
-     * @property {Boolean} is_delayed - Was delivery of this message was delayed as per XEP-0203?
-     * @property {Boolean} is_encrypted -  Is this message XEP-0384  encrypted?
-     * @property {Boolean} is_error - Whether an error was received for this message
-     * @property {Boolean} is_headline - Is this a "headline" message?
-     * @property {Boolean} is_markable - Can this message be marked with a XEP-0333 chat marker?
-     * @property {Boolean} is_marker - Is this message a XEP-0333 Chat Marker?
-     * @property {Boolean} is_only_emojis - Does the message body contain only emojis?
-     * @property {Boolean} is_spoiler - Is this a XEP-0382 spoiler message?
-     * @property {Boolean} is_tombstone - Is this a XEP-0424 tombstone?
-     * @property {Boolean} is_unstyled - Whether XEP-0393 styling hints should be ignored
-     * @property {Boolean} is_valid_receipt_request - Does this message request a XEP-0184 receipt (and is not from us or a carbon or archived message)
-     * @property {Object} encrypted -  XEP-0384 encryption payload attributes
-     * @property {String} body - The contents of the <body> tag of the message stanza
-     * @property {String} chat_state - The XEP-0085 chat state notification contained in this message
-     * @property {String} edited - An ISO8601 string recording the time that the message was edited per XEP-0308
-     * @property {String} error_condition - The defined error condition
-     * @property {String} error_text - The error text received from the server
-     * @property {String} error_type - The type of error received from the server
-     * @property {String} from - The sender JID (${muc_jid}/${nick})
-     * @property {String} from_muc - The JID of the MUC from which this message was sent
-     * @property {String} from_real_jid - The real JID of the sender, if available
-     * @property {String} fullname - The full name of the sender
-     * @property {String} marker - The XEP-0333 Chat Marker value
-     * @property {String} marker_id - The `id` attribute of a XEP-0333 chat marker
-     * @property {String} moderated - The type of XEP-0425 moderation (if any) that was applied
-     * @property {String} moderated_by - The JID of the user that moderated this message
-     * @property {String} moderated_id - The  XEP-0359 Stanza ID of the message that this one moderates
-     * @property {String} moderation_reason - The reason provided why this message moderates another
-     * @property {String} msgid - The root `id` attribute of the stanza
-     * @property {String} nick - The MUC nickname of the sender
-     * @property {String} occupant_id - The XEP-0421 occupant ID
-     * @property {String} oob_desc - The description of the XEP-0066 out of band data
-     * @property {String} oob_url - The URL of the XEP-0066 out of band data
-     * @property {String} origin_id - The XEP-0359 Origin ID
-     * @property {String} receipt_id - The `id` attribute of a XEP-0184 <receipt> element
-     * @property {String} received - An ISO8601 string recording the time that the message was received
-     * @property {String} replace_id - The `id` attribute of a XEP-0308 <replace> element
-     * @property {String} retracted - An ISO8601 string recording the time that the message was retracted
-     * @property {String} retracted_id - The `id` attribute of a XEP-424 <retracted> element
-     * @property {String} spoiler_hint  The XEP-0382 spoiler hint
-     * @property {String} stanza_id - The XEP-0359 Stanza ID. Note: the key is actualy `stanza_id ${by_jid}` and there can be multiple.
-     * @property {String} subject - The <subject> element value
-     * @property {String} thread - The <thread> element value
-     * @property {String} time - The time (in ISO8601 format), either given by the XEP-0203 <delay> element, or of receipt.
-     * @property {String} to - The recipient JID
-     * @property {String} type - The type of message
-     */
-    let attrs = Object.assign(
+    let attrs = /** @type {MUCMessageAttributes} */(Object.assign(
         {
             from,
             'activities': getMEPActivities(stanza),
@@ -262,7 +220,7 @@ export async function parseMUCMessage (stanza, chatbox) {
         getRetractionAttributes(stanza, original_stanza),
         getModerationAttributes(stanza),
         getEncryptionAttributes(stanza),
-    );
+    ));
 
     attrs.from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza) ||
         chatbox.occupants.findOccupant(attrs)?.get('jid');

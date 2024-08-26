@@ -1,7 +1,6 @@
 /**
  * @typedef {import('lit').TemplateResult} TemplateResult
  * @typedef {import('shared/chat/message').default} Message
- * @typedef {import('@converse/headless/types/shared/color').ColorAwareModel} ColorAwareModel
  */
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
@@ -17,7 +16,6 @@ function getCSS(color, append_style = '') {
 }
 
 /**
- * @param {ColorAwareModel} occupant
  * @returns {string|TemplateResult}
  */
 export function getAuthorStyle(occupant) {

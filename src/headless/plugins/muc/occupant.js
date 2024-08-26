@@ -1,36 +1,46 @@
+import { Model } from '@converse/skeletor';
+import log from '../../log';
 import api from '../../shared/api/index.js';
-import { ColorAwareModel } from '../../shared/color.js';
+import _converse from '../../shared/_converse.js';
+import ColorAwareModel from '../../shared/color.js';
+import ModelWithMessages from '../../shared/model-with-messages.js';
 import { AFFILIATIONS, ROLES } from './constants.js';
+import MUCMessages from './messages.js';
+import { isErrorObject } from '../../utils/index.js';
+import { shouldCreateGroupchatMessage } from './utils';
 
 /**
  * Represents a participant in a MUC
- * @class
- * @namespace _converse.MUCOccupant
- * @memberOf _converse
  */
-class MUCOccupant extends ColorAwareModel {
+class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
+    /**
+     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+     */
 
-    constructor (attributes, options) {
+    constructor(attributes, options) {
         super(attributes, options);
         this.vcard = null;
     }
 
-    initialize () {
+    async initialize() {
+        await super.initialize()
+        await this.fetchMessages();
         this.on('change:nick', () => this.setColor());
         this.on('change:jid', () => this.setColor());
     }
 
-    defaults () {
+    defaults() {
         return {
             hats: [],
             show: 'offline',
-            states: []
-        }
+            states: [],
+        };
     }
 
-    save (key, val, options) {
+    save(key, val, options) {
         let attrs;
-        if (key == null) { // eslint-disable-line no-eq-null
+        if (key == null) {
+            // eslint-disable-line no-eq-null
             return super.save(key, val, options);
         } else if (typeof key === 'object') {
             attrs = key;
@@ -45,7 +55,43 @@ class MUCOccupant extends ColorAwareModel {
         return super.save(attrs, options);
     }
 
-    getDisplayName () {
+    getMessagesCollection() {
+        return new MUCMessages();
+    }
+
+    /**
+     * Handler for all MUC private messages sent to this occupant.
+     * This method houldn't be called directly, instead {@link MUC#queueMessage} should be called.
+     * @param {Promise<MessageAttributes>} promise
+     */
+    async onMessage(promise) {
+        const attrs = await promise;
+        if (isErrorObject(attrs)) {
+            return log.error(attrs.message);
+        } else if (attrs.type === 'error') {
+            return;
+        }
+
+        const message = this.getDuplicateMessage(attrs);
+        if (message) {
+            this.updateMessage(message, attrs);
+            return;
+        } else if (await this.handleRetraction(attrs)) {
+            return;
+        }
+
+        this.setEditable(attrs, attrs.time);
+
+        if (shouldCreateGroupchatMessage(attrs)) {
+            const msg = (await this.handleCorrection(attrs)) || (await this.createMessage(attrs));
+            this.handleUnreadMessage(msg);
+        }
+    }
+
+    /**
+     * @returns {string}
+     */
+    getDisplayName() {
         return this.get('nick') || this.get('jid');
     }
 
@@ -53,13 +99,13 @@ class MUCOccupant extends ColorAwareModel {
      * Return roles which may be assigned to this occupant
      * @returns {typeof ROLES} - An array of assignable roles
      */
-    getAssignableRoles () {
+    getAssignableRoles() {
         let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
             disabled = disabled ? ROLES : [];
         }
         if (this.get('role') === 'moderator') {
-            return ROLES.filter(r => !disabled.includes(r));
+            return ROLES.filter((r) => !disabled.includes(r));
         } else {
             return [];
         }
@@ -69,29 +115,29 @@ class MUCOccupant extends ColorAwareModel {
      * Return affiliations which may be assigned by this occupant
      * @returns {typeof AFFILIATIONS} An array of assignable affiliations
      */
-    getAssignableAffiliations () {
+    getAssignableAffiliations() {
         let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
             disabled = disabled ? AFFILIATIONS : [];
         }
         if (this.get('affiliation') === 'owner') {
-            return AFFILIATIONS.filter(a => !disabled.includes(a));
+            return AFFILIATIONS.filter((a) => !disabled.includes(a));
         } else if (this.get('affiliation') === 'admin') {
-            return AFFILIATIONS.filter(a => !['owner', 'admin', ...disabled].includes(a));
+            return AFFILIATIONS.filter((a) => !['owner', 'admin', ...disabled].includes(a));
         } else {
             return [];
         }
     }
 
-    isMember () {
+    isMember() {
         return ['admin', 'owner', 'member'].includes(this.get('affiliation'));
     }
 
-    isModerator () {
+    isModerator() {
         return ['admin', 'owner'].includes(this.get('affiliation')) || this.get('role') === 'moderator';
     }
 
-    isSelf () {
+    isSelf() {
         return this.get('states').includes('110');
     }
 }

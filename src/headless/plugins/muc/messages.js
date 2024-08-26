@@ -9,6 +9,7 @@ class MUCMessages extends Collection {
     constructor (attrs, options={}) {
         super(attrs, Object.assign({ comparator: 'time' }, options));
         this.model = MUCMessage;
+        this.fetched = null;
     }
 }
 

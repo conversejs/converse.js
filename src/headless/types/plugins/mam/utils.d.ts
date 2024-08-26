@@ -52,19 +52,19 @@ export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, o
  */
 /**
  * Fetch XEP-0313 archived messages based on the passed in criteria.
- * @param {ChatBox} model
+ * @param {ChatBox|MUC} model
  * @param {MAMOptions} [options]
  * @param {('forwards'|'backwards'|null)} [should_page=null] - Determines whether
  *  this function should recursively page through the entire result set if a limited
  *  number of results were returned.
  */
-export function fetchArchivedMessages(model: ChatBox, options?: MAMOptions, should_page?: ("forwards" | "backwards" | null)): Promise<void>;
+export function fetchArchivedMessages(model: ChatBox | MUC, options?: MAMOptions, should_page?: ("forwards" | "backwards" | null)): Promise<void>;
 /**
  * Fetches messages that might have been archived *after*
  * the last archived message in our local cache.
- * @param {ChatBox} model
+ * @param {ChatBox|MUC} model
  */
-export function fetchNewestMessages(model: ChatBox): void;
+export function fetchNewestMessages(model: ChatBox | MUC): void;
 /**
  * A map of MAM related options that may be passed to fetchArchivedMessages
  */

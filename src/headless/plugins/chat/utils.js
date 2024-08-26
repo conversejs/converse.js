@@ -1,7 +1,8 @@
 /**
  * @module:headless-plugins-chat-utils
  * @typedef {import('./model.js').default} ChatBox
- * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+ * @typedef {import('./parsers').MessageAttributes} MessageAttributes
+ * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
  * @typedef {import('strophe.js').Builder} Builder
  */
 import sizzle from "sizzle";
@@ -149,12 +150,16 @@ export async function handleMessageStanza (stanza) {
         return log.error(e);
     }
     if (u.isErrorObject(attrs)) {
-        attrs.stanza && log.error(attrs.stanza);
-        return log.error(attrs.message);
+        const { stanza, message } = /** @type {StanzaParseError} */(attrs);
+        if (stanza) log.error(stanza);
+        return log.error(message);
     }
+
+    const { body, plaintext, contact_jid, nick } = /** @type {MessageAttributes} */(attrs);
+
     // XXX: Need to take XEP-428 <fallback> into consideration
-    const has_body = !!(attrs.body || attrs.plaintext)
-    const chatbox = await api.chats.get(attrs.contact_jid, { 'nickname': attrs.nick }, has_body);
+    const has_body = !!(body || plaintext)
+    const chatbox = await api.chats.get(contact_jid, { 'nickname': nick }, has_body);
     await chatbox?.queueMessage(attrs);
     /**
      * @typedef {Object} MessageData

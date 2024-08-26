@@ -53,7 +53,7 @@ converse.plugins.add('converse-chatview', {
                 'call': false,
                 'clear': true,
                 'emoji': true,
-                'spoiler': true
+                'spoiler': false
             }
         });
 

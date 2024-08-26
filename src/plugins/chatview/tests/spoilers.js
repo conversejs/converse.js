@@ -2,13 +2,20 @@
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
+const settings = {
+    'visible_toolbar_buttons': {
+        'emoji': true,
+        'spoiler': true
+    }
+}
+
 describe("A spoiler message", function () {
 
     beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     it("can be received with a hint",
-        mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+        mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
 
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
@@ -46,7 +53,7 @@ describe("A spoiler message", function () {
     }));
 
     it("can be received without a hint",
-            mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+            mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
 
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
@@ -83,7 +90,7 @@ describe("A spoiler message", function () {
     }));
 
     it("can be sent without a hint",
-            mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+            mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
 
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
@@ -160,7 +167,7 @@ describe("A spoiler message", function () {
     }));
 
     it("can be sent with a hint",
-            mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+            mock.initConverse(['chatBoxesFetched'], settings, async (_converse) => {
 
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-04-13 21:01+0000\n"
+"PO-Revision-Date: 2024-08-28 14:09+0000\n"
 "Last-Translator: Random <random-r@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7.1-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1235,9 +1235,8 @@ msgid "Show less"
 msgstr "Mostra meno"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
-msgstr "Moderatore"
+msgstr "Un moderatore"
 
 #: dist/converse-no-dependencies.js:90350
 #: dist/converse-no-dependencies.js:90352
@@ -1758,18 +1757,17 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "La motivazione data è: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "Clicca per ripristinare questa conversazione"
+msgstr "Clicca per impostare una nuova immagine"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "Caricamento del modulo di configurazione"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Configura"
+msgstr "Configura %1$s"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1778,11 +1776,10 @@ msgstr ""
 "di configurazione."
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr ""
-"Scusa, si è verificato un errore durante il salvataggio dei dati del tuo "
-"profilo."
+"Spiacenti, si è verificato un errore durante il salvataggio dell'avatar del "
+"gruppo."
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1938,9 +1935,8 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr "Questa conversazione di gruppo sparirà se diventa inoccupata"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "Conversazioni di gruppo trovate"
+msgstr "Info del gruppo"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1996,14 +1992,12 @@ msgid "Hide participants"
 msgstr "Nascondi partecipanti"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "Mosta partecipanti"
+msgstr "Mosta partecipanti del gruppo"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "Nascondi l'argomento della conversazione"
+msgstr "Nascondi partecipanti del gruppo"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"

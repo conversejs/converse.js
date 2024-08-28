@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-08-25 00:09+0000\n"
+"PO-Revision-Date: 2024-08-28 14:09+0000\n"
 "Last-Translator: programutox <programutox@disroot.org>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
@@ -79,15 +79,15 @@ msgstr "Glumarkoj"
 
 #: dist/converse-no-dependencies.js:30571
 msgid "Undecryptable OMEMO message"
-msgstr ""
+msgstr "Nemalĉifrebla OMEMO mesaĝo"
 
 #: dist/converse-no-dependencies.js:30642
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Pardonu, ne eblas determini alŝuto-URLn."
 
 #: dist/converse-no-dependencies.js:30661
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Pardonu, ne eblas determini la URLn de dosieralŝuto."
 
 #: dist/converse-no-dependencies.js:30736
 #, javascript-format
@@ -159,12 +159,15 @@ msgstr "%1$s estas enreta"
 #: dist/converse-no-dependencies.js:35347
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
+"Pardonu, ŝajnas, ke dosieralŝuto ne estas taskiĝata fare de via servilo."
 
 #: dist/converse-no-dependencies.js:35368
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
+"La longo de via dosiero, %1$s, superas la permesitan maksimumon de via "
+"servilo."
 
 #: dist/converse-no-dependencies.js:35368
 #, javascript-format
@@ -172,16 +175,18 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"La longo de via dosiero, %1$s, superas la permesitan maksimumon de via "
+"servilo, kiu estas %2$s."
 
 #: dist/converse-no-dependencies.js:36763
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Eraro: tempolimo dum alportante liston %1s por MUC %2s"
 
 #: dist/converse-no-dependencies.js:36772
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Eraro: ne permesita alporti liston %1s por MUC %2s"
 
 #: dist/converse-no-dependencies.js:38944
 msgid ""
@@ -191,20 +196,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38951
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
+msgstr "Via mesaĝo ne estas sendita, ĉar vi ne estas permesita sendi ĝin."
 
 #: dist/converse-no-dependencies.js:38953
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "Via mesaĝo ne estas sendita, ĉar vi ne ĉeestas en la grupobabilejo."
 
 #: dist/converse-no-dependencies.js:39311
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Pardonu, io malĝustis dum provanta retiri vian mesaĝon."
+msgstr "Tempolimo okazis dum provante retiri vian mesaĝon."
 
 #: dist/converse-no-dependencies.js:40087
 msgid "Sorry, an error happened while running the command."
-msgstr "Pardonu, io malĝustis dum rulanta la komandon."
+msgstr "Pardonu, io malĝustis dum rulante la komandon."
 
 #: dist/converse-no-dependencies.js:40087
 #: dist/converse-no-dependencies.js:107987

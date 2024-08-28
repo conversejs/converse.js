@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-08-28 14:09+0000\n"
+"PO-Revision-Date: 2024-08-29 15:09+0000\n"
 "Last-Translator: programutox <programutox@disroot.org>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
@@ -181,7 +181,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36763
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr "Eraro: tempolimo dum alportante liston %1s por MUC %2s"
+msgstr "Eraro: tempolimo atingita dum havigo de listo %1s por MUC %2s"
 
 #: dist/converse-no-dependencies.js:36772
 #, javascript-format
@@ -192,7 +192,7 @@ msgstr "Eraro: ne permesita alporti liston %1s por MUC %2s"
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
-msgstr ""
+msgstr "Via retiro ne estas liverita ĉar vi ne ĉeestas en la babilejo."
 
 #: dist/converse-no-dependencies.js:38951
 msgid "Your message was not delivered because you weren't allowed to send it."
@@ -201,11 +201,11 @@ msgstr "Via mesaĝo ne estas sendita, ĉar vi ne estas permesita sendi ĝin."
 #: dist/converse-no-dependencies.js:38953
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Via mesaĝo ne estas sendita, ĉar vi ne ĉeestas en la grupobabilejo."
+msgstr "Via mesaĝo ne estas sendita, ĉar vi ne ĉeestas en la babilejo."
 
 #: dist/converse-no-dependencies.js:39311
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Tempolimo okazis dum provante retiri vian mesaĝon."
+msgstr "Tempolimo atingita dum provo retiri vian mesaĝon."
 
 #: dist/converse-no-dependencies.js:40087
 msgid "Sorry, an error happened while running the command."
@@ -214,16 +214,17 @@ msgstr "Pardonu, io malĝustis dum rulante la komandon."
 #: dist/converse-no-dependencies.js:40087
 #: dist/converse-no-dependencies.js:107987
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "Inspektu la disvolvigista konzolo de via retumilo por detaloj."
 
 #: dist/converse-no-dependencies.js:40106
 #: dist/converse-no-dependencies.js:40124
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
+msgstr "Eraro: ne eblas trovi grupobabilejan partoprenanton laŭ viaj argumentoj"
 
 #: dist/converse-no-dependencies.js:40114
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
+"Eraro: trovis plurajn grupobabilejajn partoprenantojn laŭ viaj argumentoj"
 
 #: dist/converse-no-dependencies.js:40138
 #, javascript-format
@@ -237,7 +238,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:40199
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Malpermesita: vi ne havas la necesan permeson por fari tion."
 
 #: dist/converse-no-dependencies.js:40229
 msgid "Forbidden: you do not have the necessary role in order to do that."
@@ -249,123 +250,127 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:40633
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "Vi ne rajtas aliĝi al tiu babilejo."
 
 #: dist/converse-no-dependencies.js:40635
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr ""
+msgstr "Vi ne rajtas aliĝi al tiu babilejo, ĉar tiu estas nur por membroj."
 
 #: dist/converse-no-dependencies.js:40671
+#, fuzzy
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Ne eblas aligi vian kromnomon en tiu babilejo, tiu ne administras aligon."
 
 #: dist/converse-no-dependencies.js:40673
+#, fuzzy
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Ne eblas aligi vian kromnomon en tiu babilejo, nevalida aliĝilo provizita."
 
 #: dist/converse-no-dependencies.js:40944
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Topic kreita fare de %1$s"
 
 #: dist/converse-no-dependencies.js:40944
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Temo purigita de %1$s"
 
 #: dist/converse-no-dependencies.js:41357
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr "%1$s eniris la babilejon"
+msgstr "%1$s eniris en la babilejo"
 
 #: dist/converse-no-dependencies.js:41359
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "%1$s deiris de la babilejo"
 
 #: dist/converse-no-dependencies.js:41361
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "%1$s nun estas moderiganto"
 
 #: dist/converse-no-dependencies.js:41363
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "%1$s ne estas plu moderiganto"
 
 #: dist/converse-no-dependencies.js:41365
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice"
-msgstr "%1$s estis malpermesita"
+msgstr "%1$s estas malsilentigita"
 
 #: dist/converse-no-dependencies.js:41367
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s estis silentigita"
+msgstr "%1$s estas silentigita"
 
 #: dist/converse-no-dependencies.js:41375
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$s"
-msgstr "%1$s diras"
+msgstr "%1$s kaj %2$s"
 
 #: dist/converse-no-dependencies.js:41378
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are typing"
-msgstr "%1$s estas tajpanta"
+msgstr "%1$s estas tajpantaj"
 
 #: dist/converse-no-dependencies.js:41380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have stopped typing"
 msgstr "%1$s ĉesis tajpi"
 
 #: dist/converse-no-dependencies.js:41382
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have gone away"
-msgstr "%1$s iris for"
+msgstr "%1$s foriris"
 
 #: dist/converse-no-dependencies.js:41384
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr "%1$s eniris la babilejon"
+msgstr "%1$s eniris en la babilejon"
 
 #: dist/converse-no-dependencies.js:41386
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr "%1$s eniris la babilejon"
+msgstr "%1$s deiris de la babilejon"
 
 #: dist/converse-no-dependencies.js:41388
 #, javascript-format
 msgid "%1$s are now moderators"
-msgstr ""
+msgstr "%1$s nun estas moderigantoj"
 
 #: dist/converse-no-dependencies.js:41390
 #, javascript-format
 msgid "%1$s are no longer moderators"
-msgstr ""
+msgstr "%1$s ne estas plu moderigantoj"
 
 #: dist/converse-no-dependencies.js:41392
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have been given voices"
-msgstr "%1$s estis malpermesita"
+msgstr "%1$s estis malsilentigitaj"
 
 #: dist/converse-no-dependencies.js:41394
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have been muted"
-msgstr "%1$s estis silentigita"
+msgstr "%1$s estis silentigitaj"
 
 #: dist/converse-no-dependencies.js:41724
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s estis malpermesita"
+msgstr "%1$s estas proskribita de %2$s"
 
 #: dist/converse-no-dependencies.js:41724
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr "%1$s estis malpermesita"
+msgstr "%1$s estas proskribita"
 
 #: dist/converse-no-dependencies.js:41726
 #, javascript-format
@@ -373,14 +378,14 @@ msgid "%1$s's nickname has changed"
 msgstr "Kromnomo de %1$s ŝanĝis"
 
 #: dist/converse-no-dependencies.js:41728
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s estis silentigita"
+msgstr "%1$s estas eksterenĵetita de %2$s"
 
 #: dist/converse-no-dependencies.js:41728
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out"
-msgstr "%1$s estis silentigita"
+msgstr "%1$s estas eksterenĵetita"
 
 #: dist/converse-no-dependencies.js:41730
 #, fuzzy, javascript-format
@@ -395,27 +400,27 @@ msgstr "%1$s estis forigita ĉar ne estanta ano"
 #: dist/converse-no-dependencies.js:41752
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s ne plu estas administranto de tiu grupbabilejo"
+msgstr "%1$s ne plu estas administranto de tiu babilejo"
 
 #: dist/converse-no-dependencies.js:41757
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "%1$s ne plu estas posedanto de tiu grupbabilejo"
+msgstr "%1$s ne plu estas posedanto de tiu babilejo"
 
 #: dist/converse-no-dependencies.js:41762
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr ""
+msgstr "%1$s ne estas plu proskribata el tiu babilejo"
 
 #: dist/converse-no-dependencies.js:41768
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr "%1$s ne plu estas posedanto de tiu grupbabilejo"
+msgstr "%1$s ne estas plu membro de tiu babilejo"
 
 #: dist/converse-no-dependencies.js:41774
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr "%1$s nun estas konstanta ano de tiu babilejo"
+msgstr "%1$s nun estas membro de tiu babilejo"
 
 #: dist/converse-no-dependencies.js:41780
 #, javascript-format
@@ -427,23 +432,24 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"La kromnomo, kion vi elektis, estas rezervita aŭ ĉimomente uzita, bonvolu "
+"elekti alion."
 
 #: dist/converse-no-dependencies.js:41951
-#, fuzzy
 msgid "Password incorrect"
-msgstr "Pasvorto: "
+msgstr "Neĝusta pasvorto"
 
 #: dist/converse-no-dependencies.js:41958
 msgid "You are not on the member list of this groupchat."
-msgstr ""
+msgstr "Vi ne estas en la membrolisto de tiu babilejo."
 
 #: dist/converse-no-dependencies.js:41965
 msgid "You are not allowed to create new groupchats."
-msgstr "Vi ne estas permesita krei novajn babilejojn."
+msgstr "Vi ne rajtas krei novajn babilejojn."
 
 #: dist/converse-no-dependencies.js:41968
 msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr ""
+msgstr "Via kromnomo ne konformas kun la regularo de tiu babilejo."
 
 #: dist/converse-no-dependencies.js:41983
 msgid "This groupchat does not (yet) exist."
@@ -451,21 +457,19 @@ msgstr "Ĉi tiu babilejo ne (ankoraŭ) ekzistas."
 
 #: dist/converse-no-dependencies.js:41986
 msgid "This groupchat has reached its maximum number of participants."
-msgstr ""
+msgstr "Ĉi tiu babilejo atingis sian maksimuma nombro da partoprenantoj."
 
 #: dist/converse-no-dependencies.js:41989
 msgid "Remote server not found"
-msgstr ""
+msgstr "Ne trovis foran servilon"
 
 #: dist/converse-no-dependencies.js:41992
-#, fuzzy
 msgid "You're not allowed to enter this groupchat"
-msgstr "Vi ne estas permesita krei novajn babilejojn."
+msgstr "Vi ne rajtas enriri en tiu babilejo"
 
 #: dist/converse-no-dependencies.js:41995
-#, fuzzy
 msgid "An error happened while trying to enter this groupchat"
-msgstr "Pardonu, io malĝustis dum provanta reŝargi"
+msgstr "Eraro okazis dum provante eniri en tiu babilejo"
 
 #: dist/converse-no-dependencies.js:46923
 msgid "This groupchat is not anonymous"
@@ -485,11 +489,11 @@ msgstr "La babilejo konfiguracio ŝanĝis"
 
 #: dist/converse-no-dependencies.js:46927
 msgid "Groupchat logging is now enabled"
-msgstr ""
+msgstr "Babilejo estas nun protokolita"
 
 #: dist/converse-no-dependencies.js:46928
 msgid "Groupchat logging is now disabled"
-msgstr ""
+msgstr "Babilejo estas nun neprotokolita"
 
 #: dist/converse-no-dependencies.js:46929
 msgid "This groupchat is now no longer anonymous"
@@ -524,11 +528,11 @@ msgstr "Vi estis malpermesita de ĉi tiu babilejo"
 
 #: dist/converse-no-dependencies.js:46941
 msgid "You have exited this groupchat due to a technical problem"
-msgstr ""
+msgstr "Vi eliris el ĉi tiu babilejo kaŭze de teknika problemo"
 
 #: dist/converse-no-dependencies.js:46942
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "Vi estas eksterenĵetita el ĉi tiu babilejo"
 
 #: dist/converse-no-dependencies.js:46943
 msgid ""
@@ -536,16 +540,20 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:46944
+#, fuzzy
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
 msgstr ""
+"Vi estas forigita de la babilejo ĉar ĝi devenis nur-membra kaj vi ne membras"
 
 #: dist/converse-no-dependencies.js:46945
+#, fuzzy
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr ""
+"Vi estas forigita de tiu babilejo ĉar la servilo gastiganta ĝin estas ĉesanta"
 
 #: dist/converse-no-dependencies.js:47608
 #: dist/converse-no-dependencies.js:82017
@@ -568,36 +576,37 @@ msgstr "Pardonu, io malĝustis dum provanta savi vian legosignon."
 
 #: dist/converse-no-dependencies.js:47689
 msgid "Timeout Error"
-msgstr ""
+msgstr "Tempolima Eraro"
 
 #: dist/converse-no-dependencies.js:47689
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"La servilo ne redonis viajn legosignojn en la permesita tempo. Vi povas "
+"reŝarĝi la retpaĝon por informmendi ilin denove."
 
 #: dist/converse-no-dependencies.js:50597
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Tempolimo atingita"
 
 #: dist/converse-no-dependencies.js:53667
-#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr "Pardonu, io malĝustis dum provanta reŝargi"
+msgstr "Tempolimo atingita dum provo havigi arkivitajn mesaĝojn."
 
 #: dist/converse-no-dependencies.js:53680
-#, fuzzy
 msgid "An error occurred while querying for archived messages."
-msgstr "Pardonu, io malĝustis dum provanta reŝargi"
+msgstr "Eraro okazis dum informmendo pri arkivitaj mesaĝoj."
 
 #: dist/converse-no-dependencies.js:57382
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr ""
+msgstr "Pardonu, estis eraro dum provo aldoni %1$s kiel kontakto."
 
 #: dist/converse-no-dependencies.js:57657
+#, fuzzy
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "Tiu programaro ne permesas abonojn de ĉeesto"
 
 #: dist/converse-no-dependencies.js:59540
 msgid "My contacts"
@@ -615,13 +624,12 @@ msgstr "Kontaktoj"
 
 #: dist/converse-no-dependencies.js:59543
 msgid "Ungrouped"
-msgstr ""
+msgstr "Nearigita"
 
 #: dist/converse-no-dependencies.js:59544
 #: dist/converse-no-dependencies.js:89558
-#, fuzzy
 msgid "New messages"
-msgstr "Forigi mesaĝojn"
+msgstr "Novaj mesaĝoj"
 
 #: dist/converse-no-dependencies.js:69993
 #: dist/converse-no-dependencies.js:69994
@@ -632,7 +640,7 @@ msgstr "Fermi"
 
 #: dist/converse-no-dependencies.js:70799
 msgid "OK"
-msgstr ""
+msgstr "Okej"
 
 #: dist/converse-no-dependencies.js:70799
 #: dist/converse-no-dependencies.js:73769
@@ -644,23 +652,24 @@ msgstr "Nuligi"
 #: dist/converse-no-dependencies.js:72948
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "Elŝuti dosieron \"%1$s\""
 
 #: dist/converse-no-dependencies.js:73738
 msgid "Execute"
-msgstr ""
+msgstr "Ruli"
 
 #: dist/converse-no-dependencies.js:73739
 msgid "Previous"
-msgstr ""
+msgstr "Antaŭa"
 
 #: dist/converse-no-dependencies.js:73740
+#, fuzzy
 msgid "Next"
-msgstr ""
+msgstr "Malantaŭa"
 
 #: dist/converse-no-dependencies.js:73741
 msgid "Complete"
-msgstr ""
+msgstr "Kompleta"
 
 #: dist/converse-no-dependencies.js:76272
 #, fuzzy
@@ -674,7 +683,7 @@ msgstr "Aldoni kontakton"
 #: dist/converse-no-dependencies.js:112861
 #: dist/converse-no-dependencies.js:123484
 msgid "Nickname"
-msgstr ""
+msgstr "Kromnomo"
 
 #: dist/converse-no-dependencies.js:76284
 #: dist/converse-no-dependencies.js:78259
@@ -701,11 +710,11 @@ msgstr "Rolo"
 
 #: dist/converse-no-dependencies.js:76288
 msgid "Hats"
-msgstr ""
+msgstr "Ĉapeloj"
 
 #: dist/converse-no-dependencies.js:76288
 msgid "Occupant Id"
-msgstr ""
+msgstr "Identigilo de la okupanto"
 
 #: dist/converse-no-dependencies.js:76396
 #: dist/converse-no-dependencies.js:77019
@@ -715,63 +724,78 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76399
 #, fuzzy
 msgid "role changed"
-msgstr "Baskuli babilejon"
+msgstr "rolo ŝanĝis"
 
 #: dist/converse-no-dependencies.js:76490
+#, fuzzy
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Moderigantoj estas privilegiaj uzantoj, kiuj povas ŝanĝi la rolojn de aliaj "
+"uzantoj (escepte de tiuj kun admino aŭ posedanto-aparteno)"
 
 #: dist/converse-no-dependencies.js:76492
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "La defaŭlta rolo implicas, ke vi povas legi kaj skribi mesaĝojn."
 
 #: dist/converse-no-dependencies.js:76494
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Vizitantoj ne rajtas skribi mesaĝojn en moderigita multaj-uzantoj babilejo."
 
 #: dist/converse-no-dependencies.js:76499
+#, fuzzy
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Posedanto estas la plej altranga aparteno. Posedantoj povas modifi rolojn "
+"kaj apartenojn de ĉiuj aliaj uzantoj."
 
 #: dist/converse-no-dependencies.js:76501
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Admino estas la 2-a plej altranga aparteno. Adminoj povas modifi rolojn kaj "
+"apartenojn de ĉiuj aliaj uzantoj escepte de posedantoj."
 
 #: dist/converse-no-dependencies.js:76503
+#, fuzzy
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "Por foririgi uzanton, vi donas rin la aparteno de \"pario\"."
 
 #: dist/converse-no-dependencies.js:76529
+#, fuzzy
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Neniu uzanto kun tiu aparteno trovita."
 
 #: dist/converse-no-dependencies.js:76530
 msgid "No users with that role found."
-msgstr ""
+msgstr "Neniu uzanto kun tiu rolo trovita."
 
 #: dist/converse-no-dependencies.js:76531
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "Tajpu ĉi tie por filtri la serĉorezultojn"
 
 #: dist/converse-no-dependencies.js:76533
-#, fuzzy
 msgid "Show users"
-msgstr "Montri pli"
+msgstr "Montri uzantojn"
 
 #: dist/converse-no-dependencies.js:76534
+#, fuzzy
 msgid ""
 "Roles are assigned to users to grant or deny them certain abilities in a "
 "multi-user chat. They're assigned either explicitly or implicitly as part of "
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Roloj estas asignita al uzantoj por (mal)permesi al ili kelkajn povojn en "
+"multaj uzantoj babilejo. Tiuj estas asignita (mal)implice kiel parto de "
+"aparteno. Rolo, kiu ne estas kauzita de aparteno, estas nur valida dum la "
+"daŭro de la uzantoseanco."
 
 #: dist/converse-no-dependencies.js:76535
 msgid ""
@@ -779,21 +803,23 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Aparteno estas longdaŭra titolo, kiu specife implicas certa kelkan rolon kaj "
+"donas privilegiojn kaj responcojn. Ekzemple adminoj kaj posedantoj aŭtomate "
+"havas la rolo de moderiganto."
 
 #: dist/converse-no-dependencies.js:77024
-#, fuzzy
 msgid "Role changed"
-msgstr "Baskuli babilejon"
+msgstr "Rolo ŝanĝis"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:77435
 msgid "Moderator Tools"
-msgstr ""
+msgstr "Iloj de Moderiganto"
 
 #: dist/converse-no-dependencies.js:77852
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
-msgstr ""
+msgstr "%1$s invitis vin aligi al babilejo: %2$s"
 
 #: dist/converse-no-dependencies.js:77854
 #, javascript-format
@@ -801,15 +827,16 @@ msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
+"%1$s invitis vin aligi al babilejo: %2$s, kaj lasis la sekvanta motivo: \"%3$"
+"s\""
 
 #: dist/converse-no-dependencies.js:77883
-#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "Ĉu vi certas ke vi volas forigi tiun kontakton ?"
+msgstr "Ĉu vi certas, ke vi volas detrui tiun babilejon?"
 
 #: dist/converse-no-dependencies.js:77886
 msgid "Please enter the XMPP address of this groupchat to confirm"
-msgstr ""
+msgstr "Bonvolu enigi la XMPP-adreso de ĉi tiu babilejo por jesigi"
 
 #: dist/converse-no-dependencies.js:77888
 #: dist/converse-no-dependencies.js:125331
@@ -817,24 +844,23 @@ msgid "name@example.org"
 msgstr "nomo@ekzemplo.org"
 
 #: dist/converse-no-dependencies.js:77892
-#, fuzzy
 msgid "Optional reason for destroying this groupchat"
-msgstr "Ĉu vi certas ke vi volas forigi tiun kontakton ?"
+msgstr "Opcia motivo por detrui ĉi tiun babilejon"
 
 #: dist/converse-no-dependencies.js:77893
 #: dist/converse-no-dependencies.js:102283
 #: dist/converse-no-dependencies.js:102830
 msgid "Reason"
-msgstr ""
+msgstr "Motivo"
 
 #: dist/converse-no-dependencies.js:77896
+#, fuzzy
 msgid "Optional XMPP address for a new groupchat that replaces this one"
-msgstr ""
+msgstr "Opcia XMPP-adreso por nova babilejo substituanta ĉi tiun."
 
 #: dist/converse-no-dependencies.js:77897
-#, fuzzy
 msgid "replacement@example.org"
-msgstr "nomo@ekzemplo.org"
+msgstr "substituo@ekzemplo.org"
 
 #: dist/converse-no-dependencies.js:77901
 #: dist/converse-no-dependencies.js:81980
@@ -842,23 +868,25 @@ msgstr "nomo@ekzemplo.org"
 #: dist/converse-no-dependencies.js:82082
 #: dist/converse-no-dependencies.js:109338
 msgid "Confirm"
-msgstr ""
+msgstr "Jesigi"
 
 #: dist/converse-no-dependencies.js:78079
+#, fuzzy
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
 msgstr ""
+"Ne trovis partoprenanto kun tiu kromnomo. Ri eble deiris de la babilejo."
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:78190
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr "Via kromnomo estis ŝanĝita al %1$s"
+msgstr "Via kromnomo estas %1$s"
 
 #: dist/converse-no-dependencies.js:78208
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Eraro: nevalida nombro da argumentoj"
 
 #. *
 #. * @typedef {import('../adhoc-commands').default} AdHocCommands
@@ -879,21 +907,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:78257
 msgid "Commands found"
-msgstr ""
+msgstr "Trovitaj komandoj"
 
 #: dist/converse-no-dependencies.js:78258
 msgid "List available commands"
-msgstr ""
+msgstr "Listigi haveblajn komandojn"
 
 #: dist/converse-no-dependencies.js:78260
-#, fuzzy
 msgid "No commands found"
-msgstr "Neniu babilejoj trovita"
+msgstr "Neniu komando trovita"
 
 #: dist/converse-no-dependencies.js:78775
-#, fuzzy
 msgid "Sorry, an error occurred while looking for commands on that entity."
-msgstr "Pardonu, io malĝustis dum provanta reŝargi"
+msgstr "Pardonu, eraro okazis dum serĉo pri komandoj …"
 
 #: dist/converse-no-dependencies.js:78785
 msgid "The specified entity doesn't support ad-hoc commands"
@@ -913,12 +939,12 @@ msgstr "Pardonu, io malĝustis dum provanta reŝargi"
 
 #: dist/converse-no-dependencies.js:78934
 msgid "Executing"
-msgstr ""
+msgstr "Rulante"
 
 #: dist/converse-no-dependencies.js:78938
 #: dist/converse-no-dependencies.js:78943
 msgid "Completed"
-msgstr ""
+msgstr "Kompetita"
 
 #: dist/converse-no-dependencies.js:78987
 #, fuzzy
@@ -929,7 +955,7 @@ msgstr "Pardonu, io malĝustis dum provanta reŝargi"
 
 #: dist/converse-no-dependencies.js:78994
 msgid "Error: unexpected result"
-msgstr ""
+msgstr "Eraro: neatendita rezulto"
 
 #: dist/converse-no-dependencies.js:79423
 msgid "Bookmark this groupchat"
@@ -939,9 +965,8 @@ msgstr "Legosigni tiun babilejon"
 #: dist/converse-no-dependencies.js:79424
 #: dist/converse-no-dependencies.js:80468
 #: dist/converse-no-dependencies.js:124223
-#, fuzzy
 msgid "Bookmark"
-msgstr "Legosignoj"
+msgstr "Legosigno"
 
 #: dist/converse-no-dependencies.js:79456
 #, javascript-format
@@ -984,15 +1009,16 @@ msgstr "Legosignoj"
 #: dist/converse-no-dependencies.js:80195
 #, fuzzy, javascript-format
 msgid "Bookmark for \"%1$s\""
-msgstr "Legosignoj"
+msgstr "Legosigno por \"%1$s\""
 
 #: dist/converse-no-dependencies.js:80196
+#, fuzzy
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr ""
+msgstr "Ĉu vi volas, ke ĉi tiu babilejo estu aŭtomate aligita starte?"
 
 #: dist/converse-no-dependencies.js:80197
 msgid "Remove"
-msgstr ""
+msgstr "Forigi"
 
 #: dist/converse-no-dependencies.js:80198
 msgid "The name for this bookmark:"
@@ -1004,7 +1030,7 @@ msgstr "Kiu devas esti vian kromnomon por tiu babilejo ?"
 
 #: dist/converse-no-dependencies.js:80200
 msgid "Update"
-msgstr ""
+msgstr "Ĝisdatigi"
 
 #: dist/converse-no-dependencies.js:80200
 #: dist/converse-no-dependencies.js:106873
@@ -1016,104 +1042,100 @@ msgstr "Konservi"
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
+"Vi havas nesenditan mesaĝon, kiu estas perdota se vi daŭrigas. Ĉu vi certas?"
 
 #: dist/converse-no-dependencies.js:81974
 #: dist/converse-no-dependencies.js:82044
+#, fuzzy
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
+"Sciu, ke aliaj XMPP/Jabbero programaro (kaj serviloj) eble ne taskiĝas "
+"malaperigojn, kaj ĉi tiu mesaĝo eble ne estas forigita ĉie."
 
 #: dist/converse-no-dependencies.js:81975
 #: dist/converse-no-dependencies.js:82049
 #: dist/converse-no-dependencies.js:82077
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Ĉu vi certas ke vi volas forigi tiun kontakton ?"
+msgstr "Ĉu vi certas, ke vi volas forigi tiun mesaĝon?"
 
 #: dist/converse-no-dependencies.js:82016
 msgid "A timeout occurred while trying to retract the message"
-msgstr ""
+msgstr "Tempolimo atingita dum provo forigi la mesaĝon"
 
 #: dist/converse-no-dependencies.js:82020
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "Vi ne estas permesita krei novajn babilejojn."
+msgstr "Vi ne rajtas forigi ĉi tiun mesaĝon."
 
 #: dist/converse-no-dependencies.js:82094
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "Vi havas nelegitajn mesaĝojn"
+msgstr "Vi estas forigonta ĉi tiun mesaĝon."
 
 #: dist/converse-no-dependencies.js:82094
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
-msgstr ""
+msgstr "Vi opce povas inkluzivi mesaĝon eksplikanta la motivo de la forigo."
 
 #: dist/converse-no-dependencies.js:82099
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Eksaj versioj"
+msgstr "Mesaĝoforigo"
 
 #: dist/converse-no-dependencies.js:82099
-#, fuzzy
 msgid "Optional reason"
-msgstr "Nedeviga kromnomo"
+msgstr "Opca motivo"
 
 #: dist/converse-no-dependencies.js:82107
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Vi ne estas permesita krei novajn babilejojn."
+msgstr "Pardonu, vi ne rajtas forigi ĉi tiun mesaĝon"
 
 #: dist/converse-no-dependencies.js:82226
 #, fuzzy
 msgid "Show media"
-msgstr "Montri pli"
+msgstr "Montri komunikilon"
 
 #: dist/converse-no-dependencies.js:82226
+#, fuzzy
 msgid "Hide media"
-msgstr ""
+msgstr "Kaŝi komunikilon"
 
 #. * @type {MessageActionAttributes}
 #: dist/converse-no-dependencies.js:82281
-#, fuzzy
 msgid "Cancel Editing"
-msgstr "Nuligi"
+msgstr "Nuligi Modifon"
 
 #: dist/converse-no-dependencies.js:82281
 msgid "Edit"
-msgstr ""
+msgstr "Modifi"
 
 #: dist/converse-no-dependencies.js:82304
 msgid "Retract"
-msgstr ""
+msgstr "Forigi"
 
 #: dist/converse-no-dependencies.js:82321
 msgid "Copy"
-msgstr ""
+msgstr "Kopii"
 
 #: dist/converse-no-dependencies.js:82331
 msgid "Quote"
-msgstr ""
+msgstr "Citi"
 
 #: dist/converse-no-dependencies.js:82546
 msgid "Image: "
-msgstr ""
+msgstr "Bildo: "
 
 #: dist/converse-no-dependencies.js:87625
-#, fuzzy
 msgid "Older versions"
-msgstr "Eksaj versioj"
+msgstr "Pli malnovaj versioj"
 
 #: dist/converse-no-dependencies.js:87627
-#, fuzzy
 msgid "No older versions found"
-msgstr "Neniu babilejoj trovita"
+msgstr "Neniu pli malnova versio trovita"
 
 #: dist/converse-no-dependencies.js:87627
 msgid "Current version"
-msgstr ""
+msgstr "Aktuala versio"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:87749
@@ -1126,7 +1148,7 @@ msgstr "Forigi kontakton"
 
 #: dist/converse-no-dependencies.js:87829
 msgid "Refresh"
-msgstr ""
+msgstr "Aktualigi"
 
 #: dist/converse-no-dependencies.js:87841
 #: dist/converse-no-dependencies.js:112858
@@ -1169,11 +1191,11 @@ msgstr "Alŝutado de dosiero:"
 
 #: dist/converse-no-dependencies.js:89109
 msgid "Retry"
-msgstr ""
+msgstr "Reprovi"
 
 #: dist/converse-no-dependencies.js:89592
 msgid "This message has been edited"
-msgstr ""
+msgstr "Ĉi tiu mesaĝo estas modifita"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:89599
@@ -1181,28 +1203,26 @@ msgid "Show more"
 msgstr "Montri pli"
 
 #: dist/converse-no-dependencies.js:89601
-#, fuzzy
 msgid "Show less"
-msgstr "Montri pli"
+msgstr "Montri malpli"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
-msgstr "Nekontrolata"
+msgstr "Moderiganto"
 
 #: dist/converse-no-dependencies.js:90350
 #: dist/converse-no-dependencies.js:90352
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s estis forigita ĉar ne estanta ano"
+msgstr "%1$s forigis ĉi tiun mesaĝon"
 
 #: dist/converse-no-dependencies.js:91520
 msgid "Search results"
-msgstr ""
+msgstr "Serĉorezultoj"
 
 #: dist/converse-no-dependencies.js:91546
 msgid "Search"
-msgstr ""
+msgstr "Serĉi"
 
 #: dist/converse-no-dependencies.js:92294
 msgid "Insert emojis"

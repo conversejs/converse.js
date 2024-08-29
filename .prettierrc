@@ -3,5 +3,6 @@
   "quoteProps": "preserve",
   "singleQuote": true,
   "spaceBeforeFunctionParen": true,
-  "tabWidth": 4
+  "tabWidth": 4,
+  "useTabs": false
 }

@@ -2,6 +2,7 @@
 
 ## 11.0.0 (Unreleased)
 
+- #1057: Removed the `mobile` view mode. Instead of setting `view_mode` to `mobile`, set it to `fullscreen`.
 - #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
 - #1349: XEP-0392 Consistent Color Generation

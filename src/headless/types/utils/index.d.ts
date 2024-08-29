@@ -53,7 +53,7 @@ declare const _default: {
     getAttributes(stanza: Element): any;
     isUniView(): boolean;
     isTestEnv(): boolean;
-    getUnloadEvent(): "pagehide" | "beforeunload" | "unload"; /** @type {keyof LEVELS} */
+    getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
     replacePromise(_converse: any, name: string): void;
     shouldClearCache(_converse: any): boolean;
     tearDown(_converse: any): Promise<any>;

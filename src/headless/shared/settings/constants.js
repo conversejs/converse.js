@@ -28,7 +28,7 @@
  * @property { String } [sid]
  * @property { Boolean } [singleton=false]
  * @property { Boolean } [strict_plugin_dependencies=false]
- * @property { ('overlayed'|'fullscreen'|'mobile') } [view_mode='overlayed']
+ * @property { ('overlayed'|'fullscreen'|'embedded') } [view_mode='overlayed']
  * @property { String } [websocket_url]
  * @property { Array<String>} [whitelisted_plugins]
  */
@@ -103,7 +103,7 @@ export const DEFAULT_SETTINGS = {
     singleton: false,
     strict_plugin_dependencies: false,
     stanza_timeout: 60000,
-    view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
+    view_mode: 'overlayed',
     websocket_url: undefined,
     whitelisted_plugins: [],
 };

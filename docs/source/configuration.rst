@@ -2287,60 +2287,13 @@ view_mode
 ---------
 
 * Default: ``overlayed``
-* Allowed values: ``overlayed``, ``fullscreen``, ``mobile``, ``embedded``
+* Allowed values: ``overlayed``, ``fullscreen``, ``embedded``
 
 The ``view_mode`` setting configures Converse's mode and resulting behavior.
 
 * ``overlayed`` is the original mode, in which the chats appeared as small boxes overlaying a webpage which can contain arbitrary content.
 * ``fullscreen`` is for a fullpage and single-page app.
 * ``embedded`` is used to embed Converse into a particular part of the web page. Put the custom element ``<converse-root></converse-root>`` into your page HTML there were you want Converse to appear. See `conversejs.org/demo/embedded.html <https://conversejs.org/demo/embedded.html>`_ for an example of this view mode.
-* ``mobile`` is for smaller viewports. Converse is responsive, and the other views will also resize to fit a smaller viewport, but certain behavioural changes won't be made. For example, when using ``overlayed`` in a mobile view, Converse won't know which chat is currently visible and therefore won't be able to properly show notifications for chats that are obscured.
-
-.. note::
-
-    Before the introduction of this setting (in version 3.3.0), there were there
-    different builds, each for the different modes.
-
-    These were:
-
-    * ``converse-mobile.js`` for the ``mobile`` mode
-    * ``converse-muc-embedded.js`` for embedding a single MUC room into a DOM element with id ``conversejs``
-    * ``converse.js`` for the ``overlayed`` mode
-    * ``inverse.js`` for the ``fullscreen`` mode
-
-    Besides having different builds, certain plugins had to be whitelisted
-    and blacklisted for the different modes.
-
-    ``converse-singleton`` had to be whitelisted for the ``mobile`` and ``fullscreen``
-    modes, additionally ``converse-inverse`` had to be whitelisted for the
-    ``fullscreen`` mode.
-
-    For both those modes the ``converse-minimize`` and ``converse-dragresize``
-    plugins had to be blacklisted.
-
-    When using ``converse-muc-embedded.js`` various plugins also had to manually be
-    blacklisted.
-
-    Since version 3.3.0 it's no longer necessary to blacklist any plugins (except
-    for ``converse-muc-embedded.js``, which is from version 3.3.3).
-
-    Blacklisting now happens automatically.
-
-    Since version 3.3.0, the ``inverse.js`` and ``converse-mobile.js`` builds no
-    longer exist. Instead the standard ``converse.js`` build is used, together with
-    the appropriate ``view_mode`` value.
-
-    Since version 4.0.0, there is now also only one CSS file to be used for all
-    the different view modes, ``converse.css``.
-
-    The ``converse-muc-embedded.js`` build can still be built, because it's smaller
-    than ``converse.js`` due to unused code being removed. It doesn't however contain
-    any new code, so the full ``converse.js`` build could be used instead, as long
-    as ``view_mode`` is set to ``embedded``.
-
-    Furthermore, it's no longer necessary to whitelist or blacklist any plugins
-    when switching view modes.
-
 
 .. _`whitelisted_plugins`:
 

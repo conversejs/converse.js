@@ -54,8 +54,7 @@
         }
 
         &.converse-embedded,
-        &.converse-fullscreen,
-        &.converse-mobile {
+        &.converse-fullscreen {
             #controlbox {
                 .toggle-register-login {
                     line-height: var(--line-height-huge);

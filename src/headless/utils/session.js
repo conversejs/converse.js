@@ -15,7 +15,7 @@ const settings = settings_api;
  * MultiView means that multiple chats may be visible simultaneously.
  */
 export function isUniView () {
-    return ['mobile', 'fullscreen', 'embedded'].includes(settings.get("view_mode"));
+    return ['fullscreen', 'embedded'].includes(settings.get("view_mode"));
 }
 
 export function isTestEnv () {

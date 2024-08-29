@@ -37,6 +37,8 @@
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 
+- New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
+
 ### Breaking changes:
 
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.

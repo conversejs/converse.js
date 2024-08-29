@@ -50,20 +50,6 @@ converse-bg {
         }
     }
 
-    .converse-brand__padding {
-        @include make-col-ready();
-        @include media-breakpoint-up(md) {
-            @include make-col(4);
-        }
-        @include media-breakpoint-up(lg) {
-            @include make-col(3);
-        }
-        @include media-breakpoint-up(xl) {
-            @include make-col(2);
-        }
-        padding: 0;
-    }
-
     .converse-brand__heading {
         @include make-col-ready();
         @include media-breakpoint-up(md) {
@@ -79,11 +65,12 @@ converse-bg {
             @include make-col(10);
         }
         padding: 0;
+        padding-top: 15%;
         display: flex;
         justify-content: center;
         margin: auto;
         svg {
-            margin-top: 0.3em;
+            margin-top: 0.4em;
         }
     }
 }

@@ -16,7 +16,6 @@
 </head>
 
 <body class="reset" style="background-color: var(--global-background-color)">
-<converse-bg></converse-bg>
 
 <script>
     converse.plugins.add('converse-debug', {
@@ -33,6 +32,7 @@
         enable_smacks: true,
         loglevel: 'debug',
         prune_messages_above: 100,
+        show_background: true,
         message_archiving: 'always',
         muc_respect_autojoin: true,
         muc_show_logs_before_join: true,

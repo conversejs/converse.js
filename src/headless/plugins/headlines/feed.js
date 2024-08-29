@@ -1,5 +1,6 @@
 import ChatBox from '../../plugins/chat/model.js';
 import api from "../../shared/api/index.js";
+import { isUniView } from '../../utils/session.js';
 import { HEADLINES_TYPE } from '../../shared/constants.js';
 
 
@@ -14,7 +15,7 @@ export default class HeadlinesFeed extends ChatBox {
     defaults () {
         return {
             'bookmarked': false,
-            'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
+            'hidden': isUniView() && !api.settings.get('singleton'),
             'message_type': 'headline',
             'num_unread': 0,
             'time_opened': this.get('time_opened') || (new Date()).getTime(),

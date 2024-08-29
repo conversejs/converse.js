@@ -13,7 +13,7 @@ class ConverseBackground extends CustomElement {
     }
 
     render() {
-        return api.settings.get('view_mode') === 'fullscreen' && tplBackground();
+        return tplBackground();
     }
 
     setClasses () {

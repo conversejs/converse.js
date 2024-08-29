@@ -1953,6 +1953,14 @@ purpose of this setting is merely to turn on or off the sending of the
 individual markers.
 
 
+show_background
+---------------
+
+* Default: ``true``
+
+Wether a background with the Converse logo should be shown.
+
+
 show_chat_state_notifications
 -----------------------------
 

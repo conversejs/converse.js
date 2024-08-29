@@ -109,18 +109,31 @@
                             .occupant-nick-badge {
                                 display: flex;
                                 justify-content: space-between;
-                                flex-wrap: wrap;
+                                flex-wrap: nowrap;
+                                align-items: center;
+                                gap: 0.25rem;
+
+                                .occupant-nick {
+                                    flex-grow: 2;
+                                }
 
                                 .occupant-badges {
                                     display: flex;
                                     justify-content: flex-end;
                                     flex-wrap: wrap;
                                     flex-direction: row;
+                                    flex-shrink: 1;
+                                    gap: 0.25rem;
 
                                     span {
                                         height: 1.6em;
-                                        margin-right: 0.25rem;
                                     }
+                                }
+
+                                .occupant-actions {
+                                    // We must specify the position, else there is a bug:
+                                    // clicking on an action would close the dropdown without triggering the action.
+                                    position: static;
                                 }
                             }
 

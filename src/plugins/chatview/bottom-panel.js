@@ -3,11 +3,11 @@
  * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
  * @typedef {import('./message-form.js').default} MessageForm
  */
-import './message-form.js';
-import tplBottomPanel from './templates/bottom-panel.js';
-import { CustomElement } from 'shared/components/element.js';
 import { _converse, api } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
+import tplBottomPanel from './templates/bottom-panel.js';
 import { clearMessages } from './utils.js';
+import './message-form.js';
 
 import './styles/chat-bottom-panel.scss';
 

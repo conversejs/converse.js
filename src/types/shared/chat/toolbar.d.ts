@@ -27,23 +27,28 @@ export class ChatToolbar extends CustomElement {
     };
     model: any;
     is_groupchat: any;
-    hidden_occupants: any;
-    show_spoiler_button: any;
-    show_call_button: any;
-    show_emoji_button: any;
+    hidden_occupants: boolean;
+    show_send_button: boolean;
+    show_spoiler_button: boolean;
+    show_call_button: boolean;
+    show_emoji_button: boolean;
     connectedCallback(): void;
     render(): import("lit").TemplateResult<1>;
     firstUpdated(): void;
     getButtons(): any;
-    getHTTPUploadButton(is_supported: any): import("lit").TemplateResult<1> | "";
-    getSpoilerButton(): import("lit").TemplateResult<1>;
-    toggleFileUpload(ev: any): void;
     /**
-     * @param {InputEvent} evt
+     * @param {boolean} is_supported
      */
-    onFileSelection(evt: InputEvent): void;
-    toggleComposeSpoilerMessage(ev: any): void;
-    toggleCall(ev: any): void;
+    getHTTPUploadButton(is_supported: boolean): import("lit").TemplateResult<1> | "";
+    getSpoilerButton(): import("lit").TemplateResult<1>;
+    /** @param {MouseEvent} ev */
+    toggleFileUpload(ev: MouseEvent): void;
+    /** @param {InputEvent} ev */
+    onFileSelection(ev: InputEvent): void;
+    /** @param {MouseEvent} ev */
+    toggleComposeSpoilerMessage(ev: MouseEvent): void;
+    /** @param {MouseEvent} ev */
+    toggleCall(ev: MouseEvent): void;
 }
 import { CustomElement } from "shared/components/element.js";
 //# sourceMappingURL=toolbar.d.ts.map

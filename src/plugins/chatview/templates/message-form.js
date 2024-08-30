@@ -4,31 +4,54 @@ import { html } from "lit";
 import { resetElementHeight } from '../utils.js';
 
 
-export default (o) => {
-    const label_message = o.composing_spoiler ? __('Hidden message') : __('Message');
+/**
+ * @param {import('../message-form').default} el
+ */
+export default (el) => {
+    const composing_spoiler = el.model.get('composing_spoiler');
+    const label_message = composing_spoiler ? __('Hidden message') : __('Message');
     const label_spoiler_hint = __('Optional hint');
+    const message_limit = api.settings.get('message_limit');
+    const show_call_button = api.settings.get('visible_toolbar_buttons').call;
+    const show_emoji_button = api.settings.get('visible_toolbar_buttons').emoji;
     const show_send_button = api.settings.get('show_send_button');
+    const show_spoiler_button = api.settings.get('visible_toolbar_buttons').spoiler;
+    const show_toolbar = api.settings.get('show_toolbar');
+    const hint_value = /** @type {HTMLInputElement} */(el.querySelector('.spoiler-hint'))?.value;
+    const message_value = /** @type {HTMLTextAreaElement} */(el.querySelector('.chat-textarea'))?.value;
 
     return html`
-        <form class="sendXMPPMessage">
-            <input type="text"
-                   enterkeyhint="send"
-                   placeholder="${label_spoiler_hint || ''}"i
-                   value="${o.hint_value || ''}"
-                   class="${o.composing_spoiler ? '' : 'hidden'} spoiler-hint"/>
-            <textarea
-                autofocus
-                type="text"
-                enterkeyhint="send"
-                @drop=${o.onDrop}
-                @input=${resetElementHeight}
-                @keydown=${o.onKeyDown}
-                @keyup=${o.onKeyUp}
-                @paste=${o.onPaste}
-                @change=${o.onChange}
-                class="chat-textarea
-                    ${ show_send_button ? 'chat-textarea-send-button' : '' }
-                    ${ o.composing_spoiler ? 'spoiler' : '' }"
-                placeholder="${label_message}">${ o.message_value || '' }</textarea>
+        <form class="sendXMPPMessage" @submit=${(ev) => el.onFormSubmitted(ev)}>
+            ${show_toolbar ? html`
+                <converse-chat-toolbar
+                    class="btn-toolbar chat-toolbar no-text-select"
+                    .model=${el.model}
+                    ?composing_spoiler="${composing_spoiler}"
+                    ?show_call_button="${show_call_button}"
+                    ?show_emoji_button="${show_emoji_button}"
+                    ?show_send_button="${show_send_button}"
+                    ?show_spoiler_button="${show_spoiler_button}"
+                    ?show_toolbar="${show_toolbar}"
+                    message_limit="${message_limit}"></converse-chat-toolbar>` : '' }
+
+                <input type="text"
+                    enterkeyhint="send"
+                    placeholder="${label_spoiler_hint || ''}"i
+                    value="${hint_value || ''}"
+                    class="${composing_spoiler ? '' : 'hidden'} spoiler-hint"/>
+                <textarea
+                    autofocus
+                    type="text"
+                    enterkeyhint="send"
+                    @drop=${ev => el.onDrop(ev)}
+                    @input=${resetElementHeight}
+                    @keydown=${ev => el.onKeyDown(ev)}
+                    @keyup=${ev => el.onKeyUp(ev)}
+                    @paste=${ev => el.onPaste(ev)}
+                    @change=${ev => el.model.set({'draft': ev.target.value})}
+                    class="chat-textarea
+                        ${ show_send_button ? 'chat-textarea-send-button' : '' }
+                        ${ composing_spoiler ? 'spoiler' : '' }"
+                    placeholder="${label_message}">${ message_value || '' }</textarea>
         </form>`;
 }

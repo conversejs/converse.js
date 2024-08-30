@@ -15,17 +15,7 @@ export default class MUCMessageForm extends MessageForm {
     }
 
     render () {
-        return tplMUCMessageForm(
-            Object.assign(this.model.toJSON(), {
-                'hint_value': /** @type {HTMLInputElement} */(this.querySelector('.spoiler-hint'))?.value,
-                'message_value': /** @type {HTMLInputElement} */(this.querySelector('.chat-textarea'))?.value,
-                'onChange': ev => this.model.set({'draft': ev.target.value}),
-                'onDrop': ev => this.onDrop(ev),
-                'onKeyDown': ev => this.onKeyDown(ev),
-                'onKeyUp': ev => this.onKeyUp(ev),
-                'onPaste': ev => this.onPaste(ev),
-                'scrolled': this.model.ui.get('scrolled'),
-            }));
+        return tplMUCMessageForm(this);
     }
 
     shouldAutoComplete () {

@@ -60,6 +60,9 @@
             .far, .far:hover,
             .fa, .fa:hover {
                 color: var(--chat-toolbar-btn-color);
+                svg, svg:hover {
+                    fill: var(--chat-toolbar-btn-color);
+                }
             }
             button {
                 &:focus {

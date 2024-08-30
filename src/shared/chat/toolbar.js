@@ -31,10 +31,11 @@ export class ChatToolbar extends CustomElement {
         super();
         this.model = null;
         this.is_groupchat = null;
-        this.hidden_occupants = null;
-        this.show_spoiler_button = null;
-        this.show_call_button = null;
-        this.show_emoji_button = null;
+        this.hidden_occupants = false;
+        this.show_send_button = false;
+        this.show_spoiler_button = false;
+        this.show_call_button = false;
+        this.show_emoji_button = false;
     }
 
     connectedCallback () {
@@ -91,7 +92,7 @@ export class ChatToolbar extends CustomElement {
 
         const domain = _converse.session.get('domain');
         const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
-        buttons.push(html`${until(http_upload_promise.then(is_supported => this.getHTTPUploadButton(is_supported)),'')}`);
+        buttons.push(html`${until(http_upload_promise.then(is_supported => this.getHTTPUploadButton(!!is_supported)),'')}`);
 
         /**
          * *Hook* which allows plugins to add more buttons to a chat's toolbar
@@ -107,17 +108,18 @@ export class ChatToolbar extends CustomElement {
         return _converse.api.hook('getToolbarButtons', this, buttons);
     }
 
+    /**
+     * @param {boolean} is_supported
+     */
     getHTTPUploadButton (is_supported) {
         if (is_supported) {
             const i18n_choose_file =  __('Choose a file to send')
-            const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
             return html`
                 <button type="button"
                         class="btn"
                         title="${i18n_choose_file}"
                         @click=${this.toggleFileUpload}>
                     <converse-icon
-                        color="var(${color})"
                         class="fa fa-paperclip"
                         size="1em"></converse-icon>
                 </button>
@@ -167,25 +169,26 @@ export class ChatToolbar extends CustomElement {
         }
     }
 
+    /** @param {MouseEvent} ev */
     toggleFileUpload (ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         /** @type {HTMLInputElement} */(this.querySelector('.fileupload')).click();
     }
 
-    /**
-     * @param {InputEvent} evt
-     */
-    onFileSelection (evt) {
-        this.model.sendFiles(/** @type {HTMLInputElement} */(evt.target).files);
+    /** @param {InputEvent} ev */
+    onFileSelection (ev) {
+        this.model.sendFiles(/** @type {HTMLInputElement} */(ev.target).files);
     }
 
+    /** @param {MouseEvent} ev */
     toggleComposeSpoilerMessage (ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
     }
 
+    /** @param {MouseEvent} ev */
     toggleCall (ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();

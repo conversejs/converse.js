@@ -34,17 +34,7 @@ export default class MessageForm extends CustomElement {
     }
 
     render () {
-        return tplMessageForm(
-            Object.assign(this.model.toJSON(), {
-                'onDrop': ev => this.onDrop(ev),
-                'hint_value': /** @type {HTMLInputElement} */(this.querySelector('.spoiler-hint'))?.value,
-                'message_value': /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'))?.value,
-                'onChange': ev => this.model.set({'draft': ev.target.value}),
-                'onKeyDown': ev => this.onKeyDown(ev),
-                'onKeyUp': ev => this.onKeyUp(ev),
-                'onPaste': ev => this.onPaste(ev)
-            })
-        );
+        return tplMessageForm(this);
     }
 
     /**

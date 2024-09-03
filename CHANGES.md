@@ -37,6 +37,7 @@
 - Add a new theme 'Cyberpunk' and remove the old 'Concord' theme.
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
+- MUC occupants badges: displays short labels, with full label as title.
 
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
 

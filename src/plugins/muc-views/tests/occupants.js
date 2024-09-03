@@ -175,8 +175,11 @@ describe("The occupants sidebar", function () {
         expect(occupants.length).toBe(1);
         expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("romeo");
         expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
-        expect(occupants[0].querySelectorAll('.badge')[0].textContent.trim()).toBe('Owner');
-        expect(sizzle('.badge:last', occupants[0]).pop().textContent.trim()).toBe('Moderator');
+        expect(occupants[0].querySelectorAll('.badge')[0].textContent.trim()).toBe('O');
+        expect(occupants[0].querySelectorAll('.badge')[0].getAttribute('title').trim()).toBe('Owner');
+        expect(occupants[0].querySelectorAll('.badge')[0].getAttribute('aria-label').trim()).toBe('Owner');
+        expect(sizzle('.badge:last', occupants[0]).pop().textContent.trim()).toBe('MO');
+        expect(sizzle('.badge:last', occupants[0]).pop().getAttribute('title').trim()).toBe('Moderator');
 
         var presence = $pres({
                 to:'romeo@montague.lit/pda',
@@ -199,8 +202,12 @@ describe("The occupants sidebar", function () {
         );
         expect(occupants[1].querySelector('.occupant-nick').textContent.trim()).toBe("romeo");
         expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
-        expect(occupants[0].querySelectorAll('.badge')[0].textContent.trim()).toBe('Admin');
-        expect(occupants[0].querySelectorAll('.badge')[1].textContent.trim()).toBe('Moderator');
+        expect(occupants[0].querySelectorAll('.badge')[0].textContent.trim()).toBe('A');
+        expect(occupants[0].querySelectorAll('.badge')[0].getAttribute('title').trim()).toBe('Admin');
+        expect(occupants[0].querySelectorAll('.badge')[0].getAttribute('aria-label').trim()).toBe('Admin');
+        expect(occupants[0].querySelectorAll('.badge')[1].textContent.trim()).toBe('MO');
+        expect(occupants[0].querySelectorAll('.badge')[1].getAttribute('title').trim()).toBe('Moderator');
+        expect(occupants[0].querySelectorAll('.badge')[1].getAttribute('aria-label').trim()).toBe('Moderator');
 
         contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         presence = $pres({
@@ -222,6 +229,7 @@ describe("The occupants sidebar", function () {
             contact_jid + ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.'
         );
         expect(occupants[2].querySelectorAll('.badge').length).toBe(1);
-        expect(sizzle('.badge', occupants[2]).pop().textContent.trim()).toBe('Visitor');
+        expect(sizzle('.badge', occupants[2]).pop().textContent.trim()).toBe('V');
+        expect(sizzle('.badge', occupants[2]).pop().getAttribute('title').trim()).toBe('Visitor');
     }));
 });

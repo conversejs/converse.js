@@ -198,7 +198,7 @@ export default class MessageForm extends CustomElement {
         let spoiler_hint,
             hint_el = {};
         if (this.model.get('composing_spoiler')) {
-            hint_el = /** @type {HTMLInputElement} */(this.querySelector('form.sendXMPPMessage input.spoiler-hint'));
+            hint_el = /** @type {HTMLInputElement} */(this.querySelector('form.chat-message-form input.spoiler-hint'));
             spoiler_hint = hint_el.value;
         }
         u.addClass('disabled', textarea);

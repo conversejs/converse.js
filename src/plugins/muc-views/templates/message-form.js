@@ -23,7 +23,7 @@ export default (el) => {
         <form class="setNicknameButtonForm hidden">
             <input type="submit" class="btn btn-primary" name="join" value="Join"/>
         </form>
-        <form class="sendXMPPMessage" @submit=${(ev) => el.onFormSubmitted(ev)}>
+        <form class="chat-message-form" @submit=${(ev) => el.onFormSubmitted(ev)}>
             ${show_toolbar
                 ? html` <converse-chat-toolbar
                     class="btn-toolbar chat-toolbar no-text-select"

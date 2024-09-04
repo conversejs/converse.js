@@ -11,7 +11,7 @@
                 height: calc(100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin)));
             }
 
-            .sendXMPPMessage {
+            .chat-message-form {
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
                 border-bottom-radius: var(--chatbox-border-radius);

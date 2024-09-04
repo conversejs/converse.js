@@ -21,7 +21,7 @@ export default (el) => {
     const message_value = /** @type {HTMLTextAreaElement} */(el.querySelector('.chat-textarea'))?.value;
 
     return html`
-        <form class="sendXMPPMessage" @submit=${(ev) => el.onFormSubmitted(ev)}>
+        <form class="chat-message-form" @submit=${(ev) => el.onFormSubmitted(ev)}>
             ${show_toolbar ? html`
                 <converse-chat-toolbar
                     class="btn-toolbar chat-toolbar no-text-select"

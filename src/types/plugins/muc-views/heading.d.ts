@@ -9,11 +9,11 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {MUCOccupant} occupant
      */
-    onOccupantAdded(occupant: import("@converse/headless/types/plugins/muc/occupant.js").default): void;
+    onOccupantAdded(occupant: import("@converse/headless").MUCOccupant): void;
     /**
      * @param {MUCOccupant} occupant
      */
-    onOccupantAffiliationChanged(occupant: import("@converse/headless/types/plugins/muc/occupant.js").default): void;
+    onOccupantAffiliationChanged(occupant: import("@converse/headless").MUCOccupant): void;
     /**
      * @param {Event} ev
      */
@@ -46,5 +46,5 @@ export default class MUCHeading extends CustomElement {
      */
     getHeadingButtons(subject_hidden: boolean): any;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=heading.d.ts.map

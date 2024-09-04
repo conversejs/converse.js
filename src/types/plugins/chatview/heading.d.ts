@@ -50,5 +50,5 @@ export type HeadingButtonAttributes = {
      */
     name: string;
 };
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=heading.d.ts.map

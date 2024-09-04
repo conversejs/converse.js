@@ -22,14 +22,15 @@ export default class ConverseGIFElement extends CustomElement {
     fallback: string;
     progress_color: any;
     initGIF(): void;
-    supergif: any;
+    supergif: ConverseGif;
     updated(changed: any): void;
-    render(): any;
+    render(): string | import("lit").TemplateResult<1>;
     renderErrorFallback(): string | import("lit").TemplateResult<1>;
     setHover(): void;
     hover_timeout: NodeJS.Timeout;
     unsetHover(): void;
     onControlsClicked(ev: any): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
+import ConverseGif from 'shared/gif/index.js';
 //# sourceMappingURL=gif.d.ts.map

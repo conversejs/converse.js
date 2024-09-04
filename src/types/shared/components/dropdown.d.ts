@@ -18,6 +18,6 @@ export default class Dropdown extends DropdownBase {
     handleKeyUp(ev: any): void;
 }
 export type DOMNavigatorOptions = any;
-import DropdownBase from "shared/components/dropdownbase.js";
+import DropdownBase from 'shared/components/dropdownbase.js';
 import DOMNavigator from "shared/dom-navigator.js";
 //# sourceMappingURL=dropdown.d.ts.map

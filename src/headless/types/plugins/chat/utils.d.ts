@@ -18,8 +18,8 @@ export function handleMessageStanza(stanza: Element | Builder): Promise<void>;
  * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)
  */
 export function enableCarbons(): Promise<void>;
-export type ChatBox = import('./model.js').default;
+export type ChatBox = import("./model.js").default;
 export type MessageAttributes = any;
-export type Builder = import('strophe.js').Builder;
-import { Model } from "@converse/skeletor";
+export type Builder = import("strophe.js").Builder;
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=utils.d.ts.map

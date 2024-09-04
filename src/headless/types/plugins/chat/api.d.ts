@@ -6,7 +6,7 @@ declare namespace _default {
          * @param {object} [attrs] An object containing configuration attributes.
          * @returns {Promise<ChatBox|ChatBox[]>}
          */
-        function create(jids: string | string[], attrs?: any): Promise<import("./model.js").default | import("./model.js").default[]>;
+        function create(jids: string | string[], attrs?: object): Promise<ChatBox | ChatBox[]>;
         /**
          * Opens a new one-on-one chat.
          *
@@ -72,9 +72,9 @@ declare namespace _default {
          * const models = await api.chats.get();
          *
          */
-        function get(jids: string | string[], attrs?: any, create?: boolean): Promise<import("./model.js").default[]>;
+        function get(jids: string | string[], attrs?: any, create?: boolean): Promise<ChatBox[]>;
     }
 }
 export default _default;
-export type ChatBox = import('./model.js').default;
+export type ChatBox = import("./model.js").default;
 //# sourceMappingURL=api.d.ts.map

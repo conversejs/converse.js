@@ -25,5 +25,5 @@ declare class Device extends Model {
      */
     getBundle(): Promise<any>;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=device.d.ts.map

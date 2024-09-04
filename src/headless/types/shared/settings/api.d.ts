@@ -20,7 +20,7 @@ export namespace settings_api {
      *     'enable_foo': false
      * });
      */
-    function extend(settings: any): void;
+    function extend(settings: object): void;
     function update(settings: any): void;
     /**
      * @method _converse.api.settings.get
@@ -49,7 +49,7 @@ export namespace settings_api {
      *     "hide_offline_users": true
      * });
      */
-    function set(settings_or_key?: any, value?: string): void;
+    function set(settings_or_key?: any | string, value?: string): void;
     namespace listen {
         /**
          * Register an event listener for the passed in event.
@@ -61,7 +61,7 @@ export namespace settings_api {
          *  handler function.
          * @example api.settings.listen.on('change', callback);
          */
-        function on(name: "change", handler: Function, context?: any): void;
+        function on(name: ("change"), handler: Function, context?: any): void;
         /**
          * To stop listening to an event, you can use the `not` method.
          * @method _converse.api.settings.listen.not
@@ -72,5 +72,5 @@ export namespace settings_api {
         function not(name: string, handler: Function): void;
     }
 }
-export type Model = import('@converse/skeletor').Model;
+export type Model = import("@converse/skeletor").Model;
 //# sourceMappingURL=api.d.ts.map

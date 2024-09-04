@@ -27,7 +27,7 @@ declare namespace _default {
          *      ]
          *  )
          */
-        function set(muc_jids: string | string[], users: {
+        function set(muc_jids: string | Array<string>, users: {
             /**
              * - The JID of the user whose affiliation will change
              */
@@ -49,7 +49,7 @@ declare namespace _default {
          * @param {string} jid - The JID of the MUC for which the affiliation list should be fetched
          * @returns {Promise<MemberListItem[]|Error>}
          */
-        function get(affiliation: "owner" | "admin" | "member", jid: string): Promise<Error | any[]>;
+        function get(affiliation: "owner" | "admin" | "member", jid: string): Promise<MemberListItem[] | Error>;
     }
 }
 export default _default;

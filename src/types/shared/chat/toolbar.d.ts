@@ -50,5 +50,5 @@ export class ChatToolbar extends CustomElement {
     /** @param {MouseEvent} ev */
     toggleCall(ev: MouseEvent): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=toolbar.d.ts.map

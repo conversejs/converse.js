@@ -1,5 +1,5 @@
 export default Bookmarks;
-export type MUC = import('../muc/muc.js').default;
+export type MUC = import("../muc/muc.js").default;
 declare class Bookmarks extends Collection {
     static checkBookmarksSupport(): Promise<any>;
     constructor();
@@ -32,5 +32,5 @@ declare class Bookmarks extends Collection {
     getUnopenedBookmarks(): Promise<any>;
 }
 import { Collection } from "@converse/skeletor";
-import Bookmark from "./model.js";
+import Bookmark from './model.js';
 //# sourceMappingURL=collection.d.ts.map

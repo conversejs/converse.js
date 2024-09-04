@@ -1,8 +1,8 @@
 export default MUCOccupants;
 export type MemberListItem = any;
-export type Attributes = import('@converse/skeletor/src/types/collection').Attributes;
-export type CollectionOptions = import('@converse/skeletor/src/types/collection').CollectionOptions;
-export type Options = import('@converse/skeletor/src/types/collection').Options;
+export type Attributes = import("@converse/skeletor/src/types/collection").Attributes;
+export type CollectionOptions = import("@converse/skeletor/src/types/collection").CollectionOptions;
+export type Options = import("@converse/skeletor/src/types/collection").Options;
 /**
  * A list of {@link MUCOccupant} instances, representing participants in a MUC.
  * @class
@@ -54,6 +54,6 @@ declare class MUCOccupants extends Collection {
      */
     getOwnOccupant(): MUCOccupant;
 }
-import { Collection } from "@converse/skeletor";
-import MUCOccupant from "./occupant.js";
+import { Collection } from '@converse/skeletor';
+import MUCOccupant from './occupant.js';
 //# sourceMappingURL=occupants.d.ts.map

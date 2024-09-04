@@ -2352,7 +2352,6 @@ class MUC extends ChatBox {
     async onMessage (attrs) {
         attrs = await attrs;
         if (isErrorObject(attrs)) {
-            attrs.stanza && log.error(attrs.stanza);
             return log.error(attrs.message);
         } else if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
             return;

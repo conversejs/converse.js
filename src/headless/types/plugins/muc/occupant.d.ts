@@ -29,7 +29,7 @@ declare class MUCOccupant extends ColorAwareModel {
     isModerator(): boolean;
     isSelf(): any;
 }
-import { ColorAwareModel } from "../../shared/color.js";
-import { ROLES } from "./constants.js";
-import { AFFILIATIONS } from "./constants.js";
+import { ColorAwareModel } from '../../shared/color.js';
+import { ROLES } from './constants.js';
+import { AFFILIATIONS } from './constants.js';
 //# sourceMappingURL=occupant.d.ts.map

@@ -20,5 +20,5 @@ export default class XMPPStatus extends ColorAwareModel {
      */
     constructPresence(type?: string, to?: string, status_message?: string): Promise<any>;
 }
-import { ColorAwareModel } from "../../shared/color.js";
+import { ColorAwareModel } from '../../shared/color.js';
 //# sourceMappingURL=status.d.ts.map

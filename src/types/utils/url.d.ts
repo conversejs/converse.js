@@ -6,7 +6,7 @@ export function isDomainAllowed(url: any, setting: any): any;
  * @param {MediaURLData} o
  * @returns {boolean}
  */
-export function isMediaURLDomainAllowed(o: any): boolean;
+export function isMediaURLDomainAllowed(o: MediaURLData): boolean;
 /**
  * @param {string} url_text
  * @param {"audio"|"image"|"video"} type

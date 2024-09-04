@@ -58,9 +58,9 @@ export default class RichText extends CustomElement {
         new (_partInfo: import("lit/directive").PartInfo): {
             render(text: any, offset: any, options: any, callback: any): import("lit").TemplateResult<1>;
             readonly _$isConnected: boolean;
-            update(_part: import("lit").Part, props: unknown[]): unknown;
+            update(_part: import("lit").Part, props: Array<unknown>): unknown;
         };
     }>;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=rich-text.d.ts.map

@@ -43,5 +43,5 @@ export default class MUCChatArea extends CustomElement {
     is_maximum: boolean;
     resizeSidebarView(delta: any, current_mouse_position: any): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=chatarea.d.ts.map

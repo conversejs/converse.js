@@ -9,7 +9,7 @@ declare namespace modal_api {
          * @param {Object} [properties] - Optional properties that will be set on a newly created modal instance.
          * @param {Event} [ev] - The DOM event that causes the modal to be shown.
          */
-        function show(name: any, properties?: any, ev?: Event): any;
+        function show(name: string | any, properties?: any, ev?: Event): any;
         /**
          * Return a modal with the passed-in identifier, if it exists.
          * @param { String } id
@@ -49,7 +49,7 @@ declare namespace modal_api {
      * @returns { Promise<Array|false> } A promise which resolves with an array of
      *  filled in fields or `false` if the confirm dialog was closed or canceled.
      */
-    function confirm(title: string, messages?: string | string[], fields?: {
+    function confirm(title: string, messages?: (Array<string> | string), fields?: Array<{
         /**
          * - The form label for the input field.
          */
@@ -70,7 +70,7 @@ declare namespace modal_api {
          * - Whether the field is required or not
          */
         required?: boolean;
-    }[]): Promise<false | any[]>;
+    }>): Promise<any[] | false>;
     /**
      * Show a prompt modal to the user.
      * @method _converse.api.prompt
@@ -80,7 +80,7 @@ declare namespace modal_api {
      * @returns { Promise<String|false> } A promise which resolves with the text provided by the
      *  user or `false` if the user canceled the prompt.
      */
-    function prompt(title: string, messages?: string | string[], placeholder?: string): Promise<string | false>;
+    function prompt(title: string, messages?: (Array<string> | string), placeholder?: string): Promise<string | false>;
     /**
      * Show an alert modal to the user.
      * @method _converse.api.alert
@@ -88,6 +88,6 @@ declare namespace modal_api {
      * @param { String } title - The header text for the alert.
      * @param { (Array<String>|String) } messages - The alert text to show to the user.
      */
-    function alert(type: "error" | "info" | "warn", title: string, messages: string | string[]): void;
+    function alert(type: ("info" | "warn" | "error"), title: string, messages: (Array<string> | string)): void;
 }
 //# sourceMappingURL=api.d.ts.map

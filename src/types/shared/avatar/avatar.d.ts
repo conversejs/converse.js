@@ -31,5 +31,5 @@ export default class Avatar extends CustomElement {
      */
     getInitials(name: string): string;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=avatar.d.ts.map

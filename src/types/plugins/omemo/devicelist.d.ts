@@ -22,5 +22,5 @@ declare class DeviceList extends Model {
     publishDevices(): any;
     removeOwnDevices(device_ids: any): Promise<any>;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=devicelist.d.ts.map

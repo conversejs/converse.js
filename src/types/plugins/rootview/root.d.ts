@@ -10,5 +10,5 @@ export default class ConverseRoot extends CustomElement {
     initialize(): void;
     setClasses(): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=root.d.ts.map

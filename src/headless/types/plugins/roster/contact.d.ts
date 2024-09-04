@@ -28,7 +28,7 @@ declare class RosterContact extends ColorAwareModel {
      * @param {string} message - An optional message to explain the
      *      reason for the subscription request.
      */
-    subscribe(message: string): RosterContact;
+    subscribe(message: string): this;
     /**
      * Upon receiving the presence stanza of type "subscribed",
      * the user SHOULD acknowledge receipt of that subscription
@@ -51,13 +51,13 @@ declare class RosterContact extends ColorAwareModel {
      * @method RosterContacts#unauthorize
      * @param {string} message - Optional message to send to the person being unauthorized
      */
-    unauthorize(message: string): RosterContact;
+    unauthorize(message: string): this;
     /**
      * Authorize presence subscription
      * @method RosterContacts#authorize
      * @param {string} message - Optional message to send to the person being authorized
      */
-    authorize(message: string): RosterContact;
+    authorize(message: string): this;
     /**
      * Instruct the XMPP server to remove this contact from our roster
      * @method RosterContacts#removeFromRoster
@@ -65,5 +65,5 @@ declare class RosterContact extends ColorAwareModel {
      */
     removeFromRoster(): Promise<any>;
 }
-import { ColorAwareModel } from "../../shared/color.js";
+import { ColorAwareModel } from '../../shared/color.js';
 //# sourceMappingURL=contact.d.ts.map

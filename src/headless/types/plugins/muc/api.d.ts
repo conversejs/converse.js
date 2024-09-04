@@ -1,5 +1,5 @@
 export default rooms_api;
-export type MUC = import('./muc.js').default;
+export type MUC = import("./muc.js").default;
 declare namespace rooms_api {
     export { rooms };
 }
@@ -16,7 +16,7 @@ declare namespace rooms {
      * @param {object} [attrs] attrs The room attributes
      * @returns {Promise<MUC[]|MUC>} Promise which resolves with the Model representing the chat.
      */
-    function create(jids: string | string[], attrs?: any): Promise<import("./muc.js").default | import("./muc.js").default[]>;
+    function create(jids: (string[] | string), attrs?: object): Promise<MUC[] | MUC>;
     /**
      * Opens a MUC chatroom (aka groupchat)
      *
@@ -81,10 +81,10 @@ declare namespace rooms {
         nick?: string;
         hidden?: boolean;
         auto_configure?: boolean;
-        roomconfig?: any;
+        roomconfig?: object;
         minimized?: boolean;
         bring_to_foreground?: boolean;
-    }, force?: boolean): Promise<import("./muc.js").default | import("./muc.js").default[]>;
+    }, force?: boolean): Promise<MUC[] | MUC>;
     /**
      * Fetches the object representing a MUC chatroom (aka groupchat)
      *
@@ -110,6 +110,6 @@ declare namespace rooms {
     function get(jids?: string | string[], attrs?: {
         nick?: string;
         password?: string;
-    }, create?: boolean): Promise<import("./muc.js").default | import("./muc.js").default[]>;
+    }, create?: boolean): Promise<MUC[] | MUC>;
 }
 //# sourceMappingURL=api.d.ts.map

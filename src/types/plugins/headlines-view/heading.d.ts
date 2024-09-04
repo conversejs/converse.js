@@ -17,5 +17,5 @@ export default class HeadlinesHeading extends CustomElement {
     getHeadingButtons(): any;
     close(ev: any): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=heading.d.ts.map

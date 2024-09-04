@@ -44,7 +44,7 @@ declare namespace _default {
          *     );
          * });
          */
-        function get(model: string | import("@converse/skeletor").Model, force?: boolean): Promise<any>;
+        function get(model: Model | string, force?: boolean): Promise<any>;
         /**
          * Fetches the VCard associated with a particular `Model` instance
          * (by using its `jid` or `muc_jid` attribute) and then updates the model with the
@@ -62,11 +62,11 @@ declare namespace _default {
          *     api.vcard.update(chatbox);
          * });
          */
-        function update(model: import("@converse/skeletor").Model, force?: boolean): Promise<any>;
+        function update(model: Model, force?: boolean): Promise<any>;
     }
 }
 export default _default;
-export type Model = import('@converse/skeletor').Model;
+export type Model = import("@converse/skeletor").Model;
 export type VCardData = {
     fn?: string;
     nickname?: string;

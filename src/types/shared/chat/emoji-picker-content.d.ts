@@ -29,5 +29,5 @@ export default class EmojiPickerContent extends CustomElement {
     shouldBeHidden(shortname: any): boolean;
 }
 export type EmojiPicker = any;
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=emoji-picker-content.d.ts.map

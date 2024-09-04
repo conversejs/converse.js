@@ -12,5 +12,5 @@ declare class ControlboxButtons extends CustomElement {
      */
     closeControlBox(ev: MouseEvent): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=buttons.d.ts.map

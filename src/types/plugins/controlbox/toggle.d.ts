@@ -4,5 +4,5 @@ declare class ControlBoxToggle extends CustomElement {
     model: any;
     render(): import("lit").TemplateResult<1>;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=toggle.d.ts.map

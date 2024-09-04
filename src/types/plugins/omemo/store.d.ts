@@ -28,7 +28,7 @@ declare class OMEMOStore extends Model {
     removeSignedPreKey(key_id: any): Promise<void>;
     loadSession(identifier: any): Promise<any>;
     storeSession(identifier: any, record: any): Promise<any>;
-    removeSession(identifier: any): Promise<false | OMEMOStore>;
+    removeSession(identifier: any): Promise<false | Awaited<this>>;
     removeAllSessions(identifier: any): Promise<void>;
     publishBundle(): any;
     generateMissingPreKeys(): Promise<void>;
@@ -42,10 +42,7 @@ declare class OMEMOStore extends Model {
      * to use a pre-key, which it chooses randomly from the list of available
      * ones.
      */
-    generatePreKeys(): Promise<{
-        id: any;
-        key: any;
-    }[]>;
+    generatePreKeys(): Promise<any>;
     /**
      * Generate the cryptographic data used by the X3DH key agreement protocol
      * in order to build a session with other devices.
@@ -58,5 +55,5 @@ declare class OMEMOStore extends Model {
     fetchSession(): Promise<any>;
     _setup_promise: Promise<any>;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=store.d.ts.map

@@ -35,7 +35,7 @@ export function setAffiliations(muc_jid: string | Array<string>, users: Array<Us
  *  same affiliation as being currently set will be considered.
  * @returns {Promise} A promise which resolves and fails depending on the XMPP server response.
  */
-export function setAffiliation(affiliation: any[][number], muc_jids: string | Array<string>, members: object): Promise<any>;
+export function setAffiliation(affiliation: AFFILIATIONS[number], muc_jids: string | Array<string>, members: object): Promise<any>;
 /**
  * Given two lists of objects with 'jid', 'affiliation' and
  * 'reason' properties, return a new list containing
@@ -65,13 +65,13 @@ export function setAffiliation(affiliation: any[][number], muc_jids: string | Ar
 export function computeAffiliationsDelta(exclude_existing: boolean, remove_absentees: boolean, new_list: any[], old_list: any[]): any[];
 /**
  * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
- * Returns an array of {@link MemberListItem } objects, representing occupants
+ * Returns an array of {@link MemberListItem} objects, representing occupants
  * that have the given affiliation.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
  */
 export type NonOutcastAffiliation = ("admin" | "owner" | "member");
 export type MemberListItem = any;
 export type User = any;
-export type Model = import('@converse/skeletor').Model;
+export type Model = import("@converse/skeletor").Model;
 export type AFFILIATIONS = any[];
 //# sourceMappingURL=utils.d.ts.map

@@ -20,6 +20,6 @@ export default class MUCSidebar extends CustomElement {
     /** @param {MouseEvent} ev */
     onOccupantClicked(ev: MouseEvent): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 import { RosterFilter } from "@converse/headless";
 //# sourceMappingURL=sidebar.d.ts.map

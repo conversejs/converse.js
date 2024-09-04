@@ -172,7 +172,7 @@ declare namespace _default {
         function query(options: any): Promise<{
             messages: any[];
             /**
-             * - An instance of {@link RSM }.
+             * - An instance of {@link RSM}.
              * You can call `next()` or `previous()` on this instance,
              * to get the RSM query parameters for the next or previous
              * page in the result set.
@@ -185,5 +185,5 @@ declare namespace _default {
 }
 export default _default;
 export type RSMQueryParameters = any;
-import { RSM } from "../../shared/rsm";
+import { RSM } from '../../shared/rsm';
 //# sourceMappingURL=api.d.ts.map

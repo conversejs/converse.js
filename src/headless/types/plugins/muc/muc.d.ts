@@ -1,12 +1,12 @@
 export default MUC;
-export type MUCMessage = import('./message.js').default;
-export type MUCOccupant = import('./occupant.js').default;
-export type NonOutcastAffiliation = import('./affiliations/utils.js').NonOutcastAffiliation;
+export type MUCMessage = import("./message.js").default;
+export type MUCOccupant = import("./occupant.js").default;
+export type NonOutcastAffiliation = import("./affiliations/utils.js").NonOutcastAffiliation;
 export type MemberListItem = any;
 export type MessageAttributes = any;
 export type MUCMessageAttributes = any;
 export type UserMessage = any;
-export type Builder = import('strophe.js').Builder;
+export type Builder = import("strophe.js").Builder;
 /**
  * Represents an open/ongoing groupchat conversation.
  * @namespace MUC
@@ -28,7 +28,7 @@ declare class MUC extends ChatBox {
         time_sent: string;
         type: string;
     };
-    debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<MUC>>;
+    debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<this>>;
     isEntered(): boolean;
     /**
      * Checks whether this MUC qualifies for subscribing to XEP-0437 Room Activity Indicators (RAI)
@@ -62,7 +62,7 @@ declare class MUC extends ChatBox {
     /**
      * @param {string} password
      */
-    constructJoinPresence(password: string): Promise<import("strophe.js/src/types/builder").default>;
+    constructJoinPresence(password: string): Promise<import("strophe.js").Builder>;
     clearOccupantsCache(): void;
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
@@ -71,7 +71,7 @@ declare class MUC extends ChatBox {
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForMessage(msg: MUCMessage, type?: ('received' | 'displayed' | 'acknowledged'), force?: boolean): void;
+    sendMarkerForMessage(msg: MUCMessage, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
     /**
      * Ensures that the user is subscribed to XEP-0437 Room Activity Indicators
      * if `muc_subscribe_to_rai` is set to `true`.
@@ -144,7 +144,7 @@ declare class MUC extends ChatBox {
     message_handler: any;
     domain_message_handler: any;
     affiliation_message_handler: any;
-    removeHandlers(): MUC;
+    removeHandlers(): this;
     invitesAllowed(): any;
     /**
      * Sends a message stanza to the XMPP server and expects a reflection
@@ -202,7 +202,7 @@ declare class MUC extends ChatBox {
      * @param {{name: 'closeAllChatBoxes'}} [ev]
      */
     close(ev?: {
-        name: 'closeAllChatBoxes';
+        name: "closeAllChatBoxes";
     }): Promise<any>;
     canModerateMessages(): any;
     /**
@@ -574,7 +574,7 @@ declare class MUC extends ChatBox {
      * messages for them.
      * @param {MessageAttributes} attrs
      */
-    handleMEPNotification(attrs: any): boolean;
+    handleMEPNotification(attrs: MessageAttributes): boolean;
     /**
      * Returns an already cached message (if it exists) based on the
      * passed in attributes map.
@@ -591,7 +591,7 @@ declare class MUC extends ChatBox {
      * @method MUC#onMessage
      * @param {MessageAttributes} attrs - A promise which resolves to the message attributes.
      */
-    onMessage(attrs: any): Promise<void>;
+    onMessage(attrs: MessageAttributes): Promise<void>;
     /**
      * @param {Element} pres
      */
@@ -681,11 +681,11 @@ declare class MUC extends ChatBox {
     isUserMentioned(message: MUCMessage): any;
     incrementUnreadMsgsCounter(message: any): void;
 }
-import ChatBox from "../chat/model.js";
+import ChatBox from '../chat/model.js';
 declare class MUCSession extends Model {
     defaults(): {
         connection_status: number;
     };
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=muc.d.ts.map

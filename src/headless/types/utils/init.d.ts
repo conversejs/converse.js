@@ -4,15 +4,15 @@
  * @fires _converse#pluginsInitialized - Triggered once all plugins have been initialized.
  * @memberOf _converse
  */
-export function initPlugins(_converse: any): void;
+export function initPlugins(_converse: ConversePrivateGlobal): void;
 /**
  * @param {ConversePrivateGlobal} _converse
  */
-export function initClientConfig(_converse: any): Promise<void>;
+export function initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
 /**
  * @param {ConversePrivateGlobal} _converse
  */
-export function initSessionStorage(_converse: any): Promise<void>;
+export function initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
 /**
  * Stores the passed in JID for the current user, potentially creating a
  * resource if the JID is bare.
@@ -30,17 +30,17 @@ export function setUserJID(jid: string): Promise<string>;
  * @param {ConversePrivateGlobal} _converse
  * @param {string} jid
  */
-export function initSession(_converse: any, jid: string): Promise<void>;
+export function initSession(_converse: ConversePrivateGlobal, jid: string): Promise<void>;
 /**
  * @param {ConversePrivateGlobal} _converse
  */
-export function registerGlobalEventHandlers(_converse: any): void;
+export function registerGlobalEventHandlers(_converse: ConversePrivateGlobal): void;
 /**
  * Make sure everything is reset in case this is a subsequent call to
  * converse.initialize (happens during tests).
  * @param {ConversePrivateGlobal} _converse
  */
-export function cleanup(_converse: any): Promise<void>;
+export function cleanup(_converse: ConversePrivateGlobal): Promise<void>;
 export function attemptNonPreboundSession(credentials: any, automatic: any): Promise<void>;
 /**
  * Fetch the stored SCRAM keys for the given JID, if available.

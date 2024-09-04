@@ -6,6 +6,6 @@ declare class Messages extends Collection {
     fetched: any;
     chatbox: any;
 }
-import { Collection } from "@converse/skeletor";
-import Message from "./message.js";
+import { Collection } from '@converse/skeletor';
+import Message from './message.js';
 //# sourceMappingURL=messages.d.ts.map

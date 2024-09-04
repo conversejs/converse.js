@@ -1,5 +1,5 @@
 export default Message;
-export type Model = import('@converse/skeletor').Model;
+export type Model = import("@converse/skeletor").Model;
 /**
  * Represents a (non-MUC) message.
  * These can be either `chat`, `normal` or `headline` messages.
@@ -74,5 +74,5 @@ declare class Message extends ModelWithContact {
     };
     uploadFile(): void;
 }
-import ModelWithContact from "./model-with-contact.js";
+import ModelWithContact from './model-with-contact.js';
 //# sourceMappingURL=message.d.ts.map

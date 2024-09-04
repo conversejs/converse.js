@@ -51,5 +51,5 @@ export default class ListFilter extends CustomElement {
      */
     clearFilter(ev: Event): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=list-filter.d.ts.map

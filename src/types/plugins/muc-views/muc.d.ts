@@ -5,5 +5,5 @@ export default class MUCView extends BaseChatView {
     render(): import("lit").TemplateResult<1>;
     onConnectionStatusChanged(): void;
 }
-import BaseChatView from "shared/chat/baseview.js";
+import BaseChatView from 'shared/chat/baseview.js';
 //# sourceMappingURL=muc.d.ts.map

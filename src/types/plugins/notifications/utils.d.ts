@@ -9,7 +9,7 @@ export function updateUnreadFavicon(): void;
  * Is this a group message for which we should notify the user?
  * @param {MUCMessageAttributes} attrs
  */
-export function shouldNotifyOfGroupMessage(attrs: any): Promise<any>;
+export function shouldNotifyOfGroupMessage(attrs: MUCMessageAttributes): Promise<any>;
 export function showFeedbackNotification(data: any): void;
 /**
  * Event handler for the on('message') event. Will call methods
@@ -35,5 +35,5 @@ export type navigator = Navigator & {
 export type MUCMessageAttributes = any;
 export type MUCMessageData = any;
 export type MessageData = any;
-export type RosterContact = import('@converse/headless').RosterContact;
+export type RosterContact = import("@converse/headless").RosterContact;
 //# sourceMappingURL=utils.d.ts.map

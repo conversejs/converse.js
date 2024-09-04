@@ -10,7 +10,7 @@ declare namespace _default {
      *  Whether the pinged entity responded with a non-error IQ stanza.
      *  If we already know we're not connected, no ping is sent out and `null` is returned.
      */
-    function ping(jid?: string, timeout?: number): Promise<boolean>;
+    function ping(jid?: string, timeout?: number): Promise<boolean | null>;
 }
 export default _default;
 //# sourceMappingURL=api.d.ts.map

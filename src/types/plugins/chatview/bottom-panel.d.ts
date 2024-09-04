@@ -11,8 +11,8 @@ export default class ChatBottomPanel extends CustomElement {
     clearMessages(ev: any): void;
     autocompleteInPicker(input: any, value: any): Promise<void>;
 }
-export type EmojiPicker = import('shared/chat/emoji-picker.js').default;
-export type EmojiDropdown = import('shared/chat/emoji-dropdown.js').default;
-export type MessageForm = import('./message-form.js').default;
-import { CustomElement } from "shared/components/element.js";
+export type EmojiPicker = import("shared/chat/emoji-picker.js").default;
+export type EmojiDropdown = import("shared/chat/emoji-dropdown.js").default;
+export type MessageForm = import("./message-form.js").default;
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=bottom-panel.d.ts.map

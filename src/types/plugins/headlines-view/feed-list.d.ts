@@ -11,5 +11,5 @@ export class HeadlinesFeedsList extends CustomElement {
     renderIfHeadline(model: any): void;
     openHeadline(ev: any): Promise<void>;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=feed-list.d.ts.map

@@ -36,7 +36,7 @@ export function getAutoCompleteList(): Promise<any[]>;
 export function showModeratorToolsModal(muc: MUC, affiliation?: string): void;
 export function showOccupantModal(ev: any, occupant: any): void;
 export function parseMessageForMUCCommands(data: any, handled: any): any;
-export type MUC = import('@converse/headless/types/plugins/muc/muc.js').default;
+export type MUC = import("@converse/headless/types/plugins/muc/muc.js").default;
 export type Avatar = import("shared/avatar/avatar").default;
 export type Suggestion = import("shared/autocomplete/suggestion").default;
 //# sourceMappingURL=utils.d.ts.map

@@ -46,6 +46,6 @@ declare namespace _default {
     function isType(type: any): boolean;
 }
 export default _default;
-import { Connection } from "./index.js";
-import { MockConnection } from "./index.js";
+import { Connection } from './index.js';
+import { MockConnection } from './index.js';
 //# sourceMappingURL=api.d.ts.map

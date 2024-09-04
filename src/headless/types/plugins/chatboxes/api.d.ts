@@ -8,7 +8,7 @@ declare namespace _default {
      * @param {Object} attrs An object containing configuration attributes
      * @param {ModelClass} model - The type of chatbox that should be created
      */
-    function create(jids: string | string[], attrs: any, model: new (attrs: any, options: any) => import("../chat/model.js").default): Promise<import("../chat/model.js").default | import("../chat/model.js").default[]>;
+    function create(jids: string | string[], attrs: any, model: new (attrs: object, options: object) => ChatBox): Promise<import("../chat/model.js").default | import("../chat/model.js").default[]>;
     /**
      * @method api.chatboxes.get
      * @param {string|string[]} [jids] - A JID or array of JIDs
@@ -24,16 +24,16 @@ declare namespace _default {
          * @param {string} type - The type name
          * @param {ModelClass} model - The model which will be instantiated for the given type name.
          */
-        function add(type: string, model: new (attrs: any, options: any) => import("../chat/model.js").default): void;
+        function add(type: string, model: new (attrs: object, options: object) => ChatBox): void;
         /**
          * @method api.chatboxes.registry.get
          * @param {string} type - The type name
          * @return {ModelClass} model - The model which will be instantiated for the given type name.
          */
-        function get(type: string): new (attrs: any, options: any) => import("../chat/model.js").default;
+        function get(type: string): new (attrs: object, options: object) => ChatBox;
     }
 }
 export default _default;
-export type Model = import('@converse/skeletor').Model;
-export type ChatBox = import('../chat/model.js').default;
+export type Model = import("@converse/skeletor").Model;
+export type ChatBox = import("../chat/model.js").default;
 //# sourceMappingURL=api.d.ts.map

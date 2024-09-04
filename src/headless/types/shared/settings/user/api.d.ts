@@ -6,7 +6,7 @@ export namespace user_settings_api {
      * @returns {Promise<Model>}
      * @example const settings = await api.user.settings.getModel();
      */
-    function getModel(): Promise<import("@converse/skeletor").Model>;
+    function getModel(): Promise<Model>;
     /**
      * Get the value of a particular user setting.
      * @method _converse.api.user.settings.get
@@ -29,7 +29,7 @@ export namespace user_settings_api {
      *     "baz": "buz"
      * });
      */
-    function set(key: any, val?: string): Promise<any>;
+    function set(key: any | string, val?: string): Promise<any>;
     /**
      * Clears all the user settings
      * @async
@@ -37,5 +37,5 @@ export namespace user_settings_api {
      */
     function clear(): Promise<any>;
 }
-export type Model = import('@converse/skeletor').Model;
+export type Model = import("@converse/skeletor").Model;
 //# sourceMappingURL=api.d.ts.map

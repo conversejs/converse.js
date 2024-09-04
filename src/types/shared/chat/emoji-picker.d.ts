@@ -29,7 +29,7 @@ export default class EmojiPicker extends CustomElement {
     query: string;
     _search_results: any[];
     debouncedFilter: import("lodash").DebouncedFunc<(input: HTMLInputElement) => any>;
-    set search_results(arg: any[]);
+    set search_results(value: any[]);
     get search_results(): any[];
     render(): import("lit").TemplateResult<1>;
     updated(changed: any): void;
@@ -88,6 +88,6 @@ export default class EmojiPicker extends CustomElement {
 }
 export type DOMNavigatorOptions = any;
 export type DOMNavigatorDirection = any;
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 import DOMNavigator from "shared/dom-navigator";
 //# sourceMappingURL=emoji-picker.d.ts.map

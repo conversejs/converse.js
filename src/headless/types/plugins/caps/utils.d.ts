@@ -2,7 +2,7 @@
  * Given a stanza, adds a XEP-0115 CAPS element
  * @param {Strophe.Builder} stanza
  */
-export function addCapsNode(stanza: any): Promise<any>;
+export function addCapsNode(stanza: Strophe.Builder): Promise<any>;
 export namespace Strophe {
     type Builder = any;
 }

@@ -12,5 +12,5 @@ declare class Profile extends CustomElement {
      */
     showStatusChangeModal(ev: MouseEvent): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=statusview.d.ts.map

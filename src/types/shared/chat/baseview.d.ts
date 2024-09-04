@@ -9,7 +9,7 @@ export default class BaseChatView extends CustomElement {
     updated(): void;
     close(ev: any): any;
     maybeFocus(): void;
-    focus(): BaseChatView;
+    focus(): this;
     emitBlurred(ev: any): void;
     emitFocused(ev: any): void;
     getBottomPanel(): Element;
@@ -24,6 +24,6 @@ export default class BaseChatView extends CustomElement {
     scrollDown(ev?: Event): void;
     onWindowStateChanged(): void;
 }
-export type Model = import('@converse/skeletor').Model;
-import { CustomElement } from "../components/element.js";
+export type Model = import("@converse/skeletor").Model;
+import { CustomElement } from '../components/element.js';
 //# sourceMappingURL=baseview.d.ts.map

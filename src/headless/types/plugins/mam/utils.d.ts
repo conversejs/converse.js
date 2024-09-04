@@ -32,7 +32,7 @@ export function preMUCJoinMAMFetch(muc: MUC): void;
  * @param {Object} options
  * @param {('forwards'|'backwards'|null)} [should_page=null]
  */
-export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, options: any, should_page?: ('forwards' | 'backwards' | null)): Promise<void>;
+export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, options: any, should_page?: ("forwards" | "backwards" | null)): Promise<void>;
 /**
  * @typedef {Object} MAMOptions
  * A map of MAM related options that may be passed to fetchArchivedMessages
@@ -58,7 +58,7 @@ export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, o
  *  this function should recursively page through the entire result set if a limited
  *  number of results were returned.
  */
-export function fetchArchivedMessages(model: ChatBox, options?: MAMOptions, should_page?: ('forwards' | 'backwards' | null)): any;
+export function fetchArchivedMessages(model: ChatBox, options?: MAMOptions, should_page?: ("forwards" | "backwards" | null)): Promise<void>;
 /**
  * Fetches messages that might have been archived *after*
  * the last archived message in our local cache.
@@ -69,7 +69,7 @@ export function fetchNewestMessages(model: ChatBox): void;
  * A map of MAM related options that may be passed to fetchArchivedMessages
  */
 export type MAMOptions = any;
-export type MUC = import('../muc/muc.js').default;
-export type ChatBox = import('../chat/model.js').default;
-export type Model = import('@converse/skeletor/src/types/helpers.js').Model;
+export type MUC = import("../muc/muc.js").default;
+export type ChatBox = import("../chat/model.js").default;
+export type Model = import("@converse/skeletor/src/types/helpers.js").Model;
 //# sourceMappingURL=utils.d.ts.map

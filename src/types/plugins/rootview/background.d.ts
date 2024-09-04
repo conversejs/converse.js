@@ -4,5 +4,5 @@ declare class ConverseBackground extends CustomElement {
     render(): import("lit").TemplateResult<1>;
     setClasses(): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=background.d.ts.map

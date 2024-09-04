@@ -9,9 +9,9 @@ declare namespace _default {
          * @param { Boolean } [create=false] - Whether the chat should be created if it's not found.
          * @returns { Promise<HeadlinesFeed[]|HeadlinesFeed> }
          */
-        function get(jids: string | string[], attrs?: any, create?: boolean): Promise<import("./feed.js").default | import("./feed.js").default[]>;
+        function get(jids: string | string[], attrs?: any, create?: boolean): Promise<HeadlinesFeed[] | HeadlinesFeed>;
     }
 }
 export default _default;
-export type HeadlinesFeed = import('./feed.js').default;
+export type HeadlinesFeed = import("./feed.js").default;
 //# sourceMappingURL=api.d.ts.map

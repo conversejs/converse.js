@@ -35,7 +35,7 @@ export class AutoComplete extends AutoComplete_base {
     ul: Element;
     status: Element;
     index: number;
-    set list(arg: any);
+    set list(list: any);
     get list(): any;
     bindEvents(): void;
     _list: any;

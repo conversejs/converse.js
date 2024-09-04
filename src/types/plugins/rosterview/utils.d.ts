@@ -27,7 +27,7 @@ export function getNamesAutoCompleteList(query: string): Promise<{
     label: any;
     value: any;
 }[]>;
-export type Model = import('@converse/skeletor').Model;
-export type RosterContact = import('@converse/headless').RosterContact;
-export type RosterContacts = import('@converse/headless').RosterContacts;
+export type Model = import("@converse/skeletor").Model;
+export type RosterContact = import("@converse/headless").RosterContact;
+export type RosterContacts = import("@converse/headless").RosterContacts;
 //# sourceMappingURL=utils.d.ts.map

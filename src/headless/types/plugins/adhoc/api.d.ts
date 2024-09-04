@@ -11,7 +11,7 @@ declare namespace _default {
          * @param {string} node
          * @returns {Promise<AdHocCommandResult>}
          */
-        function fetchCommandForm(jid: string, node: string): Promise<import("./utils.js").AdHocCommandResult>;
+        function fetchCommandForm(jid: string, node: string): Promise<AdHocCommandResult>;
         /**
          * @method api.adhoc.runCommand
          * @param {String} jid
@@ -20,9 +20,9 @@ declare namespace _default {
          * @param {String} node
          * @param {Array<{ [k:string]: string }>} inputs
          */
-        function runCommand(jid: string, sessionid: string, node: string, action: AdHocCommandAction, inputs: {
+        function runCommand(jid: string, sessionid: string, node: string, action: AdHocCommandAction, inputs: Array<{
             [k: string]: string;
-        }[]): Promise<{
+        }>): Promise<{
             note: any;
             type?: import("../../shared/parsers.js").XFormResponseType;
             title?: string;
@@ -37,7 +37,7 @@ declare namespace _default {
     }
 }
 export default _default;
-export type AdHocCommand = import('./utils').AdHocCommand;
-export type AdHocCommandResult = import('./utils').AdHocCommandResult;
-export type AdHocCommandAction = 'execute' | 'cancel' | 'prev' | 'next' | 'complete';
+export type AdHocCommand = import("./utils").AdHocCommand;
+export type AdHocCommandResult = import("./utils").AdHocCommandResult;
+export type AdHocCommandAction = "execute" | "cancel" | "prev" | "next" | "complete";
 //# sourceMappingURL=api.d.ts.map

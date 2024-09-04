@@ -8,6 +8,6 @@ export default class BookmarksView extends CustomElement {
      */
     clearFilter(ev: Event): void;
 }
-import { CustomElement } from "shared/components/element.js";
-import { Model } from "@converse/skeletor";
+import { CustomElement } from 'shared/components/element.js';
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=bookmarks-list.d.ts.map

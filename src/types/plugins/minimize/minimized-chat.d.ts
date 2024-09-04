@@ -27,5 +27,5 @@ export default class MinimizedChat extends CustomElement {
      */
     restore(ev: MouseEvent): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=minimized-chat.d.ts.map

@@ -29,7 +29,7 @@ declare class DiscoEntity extends Model {
      * @method _converse.DiscoEntity#getFeature
      * @param { String } feature - The feature that might be supported.
      */
-    getFeature(feature: string): Promise<DiscoEntity>;
+    getFeature(feature: string): Promise<this>;
     onFeatureAdded(feature: any): void;
     onFieldAdded(field: any): void;
     fetchFeatures(options: any): Promise<void>;
@@ -44,6 +44,6 @@ declare class DiscoEntity extends Model {
      */
     onInfo(stanza: Element): Promise<void>;
 }
-import { Model } from "@converse/skeletor";
-import { Collection } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
+import { Collection } from '@converse/skeletor';
 //# sourceMappingURL=entity.d.ts.map

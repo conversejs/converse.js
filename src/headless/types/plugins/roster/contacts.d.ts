@@ -80,6 +80,6 @@ declare class RosterContacts extends Collection {
     presenceHandler(presence: any): true | void;
 }
 import { Collection } from "@converse/skeletor";
-import RosterContact from "./contact.js";
+import RosterContact from './contact.js';
 import { Model } from "@converse/skeletor";
 //# sourceMappingURL=contacts.d.ts.map

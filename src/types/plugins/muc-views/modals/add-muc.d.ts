@@ -9,5 +9,5 @@ export default class AddMUCModal extends BaseModal {
     openChatRoom(ev: any): void;
     checkRoomidPolicy(): boolean;
 }
-import BaseModal from "plugins/modal/modal.js";
+import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=add-muc.d.ts.map

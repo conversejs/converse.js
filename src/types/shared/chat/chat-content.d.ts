@@ -11,5 +11,5 @@ export default class ChatContent extends CustomElement {
     render(): import("lit").TemplateResult<1> | "";
     scrollDown(): void;
 }
-import { CustomElement } from "../components/element.js";
+import { CustomElement } from '../components/element.js';
 //# sourceMappingURL=chat-content.d.ts.map

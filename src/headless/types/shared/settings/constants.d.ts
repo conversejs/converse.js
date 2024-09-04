@@ -1,36 +1,36 @@
 export namespace DEFAULT_SETTINGS {
-    const allow_non_roster_messaging: boolean;
-    const allow_url_history_change: boolean;
-    const assets_path: string;
-    const authentication: string;
-    const auto_login: boolean;
-    const auto_reconnect: boolean;
-    const blacklisted_plugins: any[];
-    const clear_cache_on_logout: boolean;
-    const connection_options: {};
-    const credentials_url: any;
-    const disable_effects: boolean;
-    const discover_connection_methods: boolean;
-    const geouri_regex: RegExp;
-    const geouri_replacement: string;
-    const i18n: any;
-    const jid: any;
-    const reuse_scram_keys: boolean;
-    const keepalive: boolean;
-    const loglevel: string;
-    const locales: string[];
-    const nickname: any;
-    const password: any;
-    const persistent_store: string;
-    const rid: any;
-    const root: Document;
-    const sid: any;
-    const singleton: boolean;
-    const strict_plugin_dependencies: boolean;
-    const stanza_timeout: number;
-    const view_mode: string;
-    const websocket_url: any;
-    const whitelisted_plugins: any[];
+    let allow_non_roster_messaging: boolean;
+    let allow_url_history_change: boolean;
+    let assets_path: string;
+    let authentication: string;
+    let auto_login: boolean;
+    let auto_reconnect: boolean;
+    let blacklisted_plugins: any[];
+    let clear_cache_on_logout: boolean;
+    let connection_options: {};
+    let credentials_url: any;
+    let disable_effects: boolean;
+    let discover_connection_methods: boolean;
+    let geouri_regex: RegExp;
+    let geouri_replacement: string;
+    let i18n: any;
+    let jid: any;
+    let reuse_scram_keys: boolean;
+    let keepalive: boolean;
+    let loglevel: string;
+    let locales: string[];
+    let nickname: any;
+    let password: any;
+    let persistent_store: string;
+    let rid: any;
+    let root: Document;
+    let sid: any;
+    let singleton: boolean;
+    let strict_plugin_dependencies: boolean;
+    let stanza_timeout: number;
+    let view_mode: string;
+    let websocket_url: any;
+    let whitelisted_plugins: any[];
 }
 /**
  * Converse's core configuration values
@@ -39,7 +39,7 @@ export type ConfigurationSettings = {
     allow_non_roster_messaging?: boolean;
     allow_url_history_change?: boolean;
     assets_path?: string;
-    authentication?: ('login' | 'prebind' | 'anonymous' | 'external');
+    authentication?: ("login" | "prebind" | "anonymous" | "external");
     /**
      * - Currently only used in connection with anonymous login
      */
@@ -62,17 +62,17 @@ export type ConfigurationSettings = {
     i18n?: string;
     jid?: string;
     keepalive?: boolean;
-    loglevel?: ('debug' | 'info' | 'eror');
+    loglevel?: ("debug" | "info" | "eror");
     locales?: Array<string>;
     nickname?: string;
     password?: string;
-    persistent_store?: ('IndexedDB' | 'localStorage');
+    persistent_store?: ("IndexedDB" | "localStorage");
     rid?: string;
     root?: Element;
     sid?: string;
     singleton?: boolean;
     strict_plugin_dependencies?: boolean;
-    view_mode?: ('overlayed' | 'fullscreen' | 'embedded');
+    view_mode?: ("overlayed" | "fullscreen" | "embedded");
     websocket_url?: string;
     whitelisted_plugins?: Array<string>;
 };

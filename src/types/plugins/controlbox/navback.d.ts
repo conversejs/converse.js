@@ -8,5 +8,5 @@ declare class ControlBoxNavback extends CustomElement {
     jid: any;
     render(): import("lit").TemplateResult<1>;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=navback.d.ts.map

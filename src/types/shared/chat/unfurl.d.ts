@@ -25,5 +25,5 @@ export default class MessageUnfurl extends CustomElement {
     render(): import("lit").TemplateResult<1> | "";
     onImageLoad(): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=unfurl.d.ts.map

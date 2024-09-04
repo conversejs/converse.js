@@ -25,6 +25,6 @@ export default class ImagePicker extends CustomElement {
      */
     updateFilePreview(ev: InputEvent): void;
 }
-import { CustomElement } from "./element.js";
-import { Model } from "@converse/skeletor";
+import { CustomElement } from './element.js';
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=image-picker.d.ts.map

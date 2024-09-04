@@ -10,7 +10,7 @@ export default class RosterContact extends CustomElement {
     openChat(ev: any): void;
     removeContact(ev: any): Promise<void>;
     acceptRequest(ev: any): Promise<void>;
-    declineRequest(ev: any): Promise<RosterContact>;
+    declineRequest(ev: any): Promise<this>;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=contactview.d.ts.map

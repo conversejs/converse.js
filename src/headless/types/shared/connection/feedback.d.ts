@@ -5,5 +5,5 @@ declare class Feedback extends Model {
         message: string;
     };
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=feedback.d.ts.map

@@ -227,7 +227,7 @@ declare class DOMNavigator {
      * @param {'down'|'right'|'left'|'up'} direction
      * @returns {HTMLElement}
      */
-    getNextElement(direction: 'down' | 'right' | 'left' | 'up'): HTMLElement;
+    getNextElement(direction: "down" | "right" | "left" | "up"): HTMLElement;
     /**
      * Select the given element.
      * @param {HTMLElement} el The DOM element to select.

@@ -26,6 +26,6 @@ declare class Presence extends Model {
      */
     removeResource(name: string): void;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 import Resources from "./resources.js";
 //# sourceMappingURL=presence.d.ts.map

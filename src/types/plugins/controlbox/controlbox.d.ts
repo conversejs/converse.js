@@ -11,8 +11,8 @@ declare class ControlBoxView extends CustomElement {
     setModel(): void;
     model: any;
     render(): import("lit").TemplateResult<1> | "";
-    close(ev: any): ControlBoxView;
-    afterShown(): ControlBoxView;
+    close(ev: any): this;
+    afterShown(): this;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=controlbox.d.ts.map

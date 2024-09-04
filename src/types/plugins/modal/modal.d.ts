@@ -1,5 +1,5 @@
 export default BaseModal;
-export type TemplateResult = import('lit-html').TemplateResult;
+export type TemplateResult = import("lit-html").TemplateResult;
 declare class BaseModal extends ElementView {
     /**
      * @param {Object} options
@@ -32,9 +32,9 @@ declare class BaseModal extends ElementView {
      * @param {string} message
      * @param {'primary'|'secondary'|'danger'} type
      */
-    alert(message: string, type?: 'primary' | 'secondary' | 'danger'): void;
+    alert(message: string, type?: "primary" | "secondary" | "danger"): void;
     show(): Promise<void>;
 }
-import { ElementView } from "@converse/skeletor";
+import { ElementView } from '@converse/skeletor';
 import { Modal } from "bootstrap";
 //# sourceMappingURL=modal.d.ts.map

@@ -12,7 +12,7 @@ declare namespace _default {
      * });
      * _converse.api.send(msg);
      */
-    function send(stanza: any): void;
+    function send(stanza: Element | Strophe.Builder): void;
     /**
      * Send an IQ stanza
      * @method _converse.api.sendIQ
@@ -26,7 +26,7 @@ declare namespace _default {
      *  If the IQ stanza being sent is of type `result` or `error`, there's
      *  nothing to wait for, so an already resolved promise is returned.
      */
-    function sendIQ(stanza: any, timeout?: number, reject?: boolean): Promise<any>;
+    function sendIQ(stanza: Element | Strophe.Builder, timeout?: number, reject?: boolean): Promise<any>;
 }
 export default _default;
 export namespace Strophe {

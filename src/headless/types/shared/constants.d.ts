@@ -1,13 +1,13 @@
 export const BOSH_WAIT: 59;
 export const VERSION_NAME: "v11.0.0";
 export namespace STATUS_WEIGHTS {
-    const offline: number;
-    const unavailable: number;
-    const xa: number;
-    const away: number;
-    const dnd: number;
-    const chat: number;
-    const online: number;
+    let offline: number;
+    let unavailable: number;
+    let xa: number;
+    let away: number;
+    let dnd: number;
+    let chat: number;
+    let online: number;
 }
 export const ANONYMOUS: "anonymous";
 export const CLOSED: "closed";
@@ -30,24 +30,24 @@ export const CONTROLBOX_TYPE: "controlbox";
 export const CONNECTION_STATUS: typeof CONNECTION_STATUS;
 export const CORE_PLUGINS: string[];
 export namespace URL_PARSE_OPTIONS {
-    const start: RegExp;
+    let start: RegExp;
 }
 export const CHAT_STATES: string[];
 export namespace KEYCODES {
-    const TAB: number;
-    const ENTER: number;
-    const SHIFT: number;
-    const CTRL: number;
-    const ALT: number;
-    const ESCAPE: number;
-    const LEFT_ARROW: number;
-    const UP_ARROW: number;
-    const RIGHT_ARROW: number;
-    const DOWN_ARROW: number;
-    const FORWARD_SLASH: number;
-    const AT: number;
-    const META: number;
-    const META_RIGHT: number;
+    let TAB: number;
+    let ENTER: number;
+    let SHIFT: number;
+    let CTRL: number;
+    let ALT: number;
+    let ESCAPE: number;
+    let LEFT_ARROW: number;
+    let UP_ARROW: number;
+    let RIGHT_ARROW: number;
+    let DOWN_ARROW: number;
+    let FORWARD_SLASH: number;
+    let AT: number;
+    let META: number;
+    let META_RIGHT: number;
 }
 export const XFORM_TYPE_MAP: {
     'text-private': string;

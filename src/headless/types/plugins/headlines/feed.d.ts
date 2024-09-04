@@ -15,5 +15,5 @@ export default class HeadlinesFeed extends ChatBox {
         type: string;
     };
 }
-import ChatBox from "../../plugins/chat/model.js";
+import ChatBox from '../../plugins/chat/model.js';
 //# sourceMappingURL=feed.d.ts.map

@@ -29,11 +29,11 @@ declare namespace _default {
      * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
      * @returns {Promise<any>} - A promise that resolves with the modified data structure.
      */
-    function hook(name: string, context: any, data: any): Promise<any>;
+    function hook(name: string, context: any[], data: any[]): Promise<any>;
     namespace listen {
-        const once: any;
-        const on: any;
-        const not: any;
+        let once: any;
+        let on: any;
+        let not: any;
         /**
          * An options object which lets you set filter criteria for matching
          * against stanzas.
@@ -52,7 +52,7 @@ declare namespace _default {
          * @param {MatchingOptions|Function} options Matching options or callback
          * @param {function} handler The callback method to be called when the stanza appears
          */
-        function stanza(name: string, options: Function | {
+        function stanza(name: string, options: {
             /**
              * - The namespace to match against
              */
@@ -69,7 +69,7 @@ declare namespace _default {
              * - The stanza sender to match against
              */
             from?: string;
-        }, handler: Function): void;
+        } | Function, handler: Function): void;
     }
 }
 export default _default;

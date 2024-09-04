@@ -50,7 +50,7 @@ export type module = Record<string, Function>;
 /**
  * ### The private API
  *
- * The private API methods are only accessible via the closured {@link _converse }
+ * The private API methods are only accessible via the closured {@link _converse}
  * object, which is only available to plugins.
  *
  * These methods are kept private (i.e. not global) because they may return
@@ -61,7 +61,7 @@ export type APINamespace = Record<string, APIEndpoint | Function>;
 /**
  * ### The private API
  *
- * The private API methods are only accessible via the closured {@link _converse }
+ * The private API methods are only accessible via the closured {@link _converse}
  * object, which is only available to plugins.
  *
  * These methods are kept private (i.e. not global) because they may return

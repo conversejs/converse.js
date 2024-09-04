@@ -1,9 +1,9 @@
 export namespace STATUSES {
-    const dnd: any;
-    const online: any;
-    const offline: any;
-    const unavailable: any;
-    const xa: any;
-    const away: any;
+    let dnd: any;
+    let online: any;
+    let offline: any;
+    let unavailable: any;
+    let xa: any;
+    let away: any;
 }
 //# sourceMappingURL=constants.d.ts.map

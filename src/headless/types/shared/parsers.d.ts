@@ -73,7 +73,7 @@ export function getErrorAttributes(stanza: Element): {
  * @param {Element} stanza - The message stanza
  * @returns {Reference}
  */
-export function getReferences(stanza: Element): any;
+export function getReferences(stanza: Element): Reference;
 /**
  * @param {Element} stanza
  */
@@ -157,11 +157,11 @@ export type XFormCaptchaURI = {
     type: string;
     data: string;
 };
-export type XFormListTypes = 'list-single' | 'list-multi';
-export type XFormJIDTypes = 'jid-single' | 'jid-multi';
-export type XFormTextTypes = 'text-multi' | 'text-private' | 'text-single';
-export type XFormDateTypes = 'date' | 'datetime';
-export type XFormFieldTypes = XFormListTypes | XFormJIDTypes | XFormTextTypes | XFormDateTypes | 'fixed' | 'boolean' | 'url' | 'hidden';
+export type XFormListTypes = "list-single" | "list-multi";
+export type XFormJIDTypes = "jid-single" | "jid-multi";
+export type XFormTextTypes = "text-multi" | "text-private" | "text-single";
+export type XFormDateTypes = "date" | "datetime";
+export type XFormFieldTypes = XFormListTypes | XFormJIDTypes | XFormTextTypes | XFormDateTypes | "fixed" | "boolean" | "url" | "hidden";
 export type XFormField = {
     var: string;
     label: string;
@@ -174,7 +174,7 @@ export type XFormField = {
     uri?: XFormCaptchaURI;
     readonly: boolean;
 };
-export type XFormResponseType = 'result' | 'form';
+export type XFormResponseType = "result" | "form";
 export type XForm = {
     type: XFormResponseType;
     title?: string;

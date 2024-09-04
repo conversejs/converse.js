@@ -38,13 +38,13 @@ export function parseMUCPresence(stanza: Element, chatbox: MUC): {
     /**
      * - An array of XEP-0317 hats
      */
-    hats: {
+    hats: Array<{
         title: string;
         /**
-         * The object which {@link parseMUCPresence } returns
+         * The object which {@link parseMUCPresence} returns
          */
         uri: string;
-    }[];
+    }>;
     states: Array<string>;
     /**
      * - The sender JID (${muc_jid}/${nick})
@@ -74,6 +74,6 @@ export type MemberListItem = {
     jid?: string;
     nick?: string;
 };
-export type MUC = import('../muc/muc.js').default;
+export type MUC = import("../muc/muc.js").default;
 export type MUCMessageAttributes = any;
 //# sourceMappingURL=parsers.d.ts.map

@@ -69,5 +69,5 @@ export default class ModeratorTools extends CustomElement {
     clearAlert(): void;
 }
 export type NonOutcastAffiliation = any;
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=modtools.d.ts.map

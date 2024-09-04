@@ -7,5 +7,5 @@ export default VCard;
 declare class VCard extends Model {
     getDisplayName(): any;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=vcard.d.ts.map

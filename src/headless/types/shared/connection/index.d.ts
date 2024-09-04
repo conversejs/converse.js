@@ -1,4 +1,4 @@
-declare const Connection_base: typeof import("strophe.js/src/types/connection.js").default;
+declare const Connection_base: typeof import("strophe.js/src/types/connection").default;
 /**
  * The Connection class manages the connection to the XMPP server. It's
  * agnostic concerning the underlying protocol (i.e. websocket, long-polling
@@ -45,7 +45,6 @@ export class Connection extends Connection_base {
      * for the old transport are removed.
      */
     switchTransport(): Promise<void>;
-    _proto: any;
     reconnect(): Promise<any>;
     reconnecting: boolean;
     /**
@@ -65,7 +64,7 @@ export class Connection extends Connection_base {
      * @param {Boolean} [override] - An optional flag to replace any previous
      *  disconnection cause and reason.
      */
-    setDisconnectionCause(cause?: number | 'logout', reason?: string, override?: boolean): void;
+    setDisconnectionCause(cause?: number | "logout", reason?: string, override?: boolean): void;
     disconnection_cause: number | "logout";
     disconnection_reason: string;
     /**
@@ -103,6 +102,11 @@ export class Connection extends Connection_base {
  * @class
  */
 export class MockConnection extends Connection {
+    /**
+     * @param {string} service - The BOSH or WebSocket service URL.
+     * @param {import('strophe.js/src/types/connection').ConnectionOptions} options - The configuration options
+     */
+    constructor(service: string, options: import("strophe.js/src/types/connection").ConnectionOptions);
     sent_stanzas: any[];
     IQ_stanzas: any[];
     IQ_ids: any[];

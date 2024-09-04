@@ -39,7 +39,7 @@ export type AdHocCommand = {
 };
 export type AdHocCommandResultNote = {
     text: string;
-    type: 'info' | 'warn' | 'error';
+    type: "info" | "warn" | "error";
 };
 export type AdHocCommandAttrs = {
     sessionid: string;
@@ -47,6 +47,6 @@ export type AdHocCommandAttrs = {
     note?: AdHocCommandResultNote;
 };
 export type AdHocCommandResult = XForm & AdHocCommandAttrs;
-export type TemplateResult = import('lit').TemplateResult;
-export type XForm = import('../../shared/parsers').XForm;
+export type TemplateResult = import("lit").TemplateResult;
+export type XForm = import("../../shared/parsers").XForm;
 //# sourceMappingURL=utils.d.ts.map

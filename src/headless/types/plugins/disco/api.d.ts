@@ -255,7 +255,7 @@ declare namespace _default {
     }
 }
 export default _default;
-export type DiscoState = import('./index').DiscoState;
-export type DiscoEntities = import('./entities').default;
-export type Collection = import('@converse/skeletor').Collection;
+export type DiscoState = import("./index").DiscoState;
+export type DiscoEntities = import("./entities").default;
+export type Collection = import("@converse/skeletor").Collection;
 //# sourceMappingURL=api.d.ts.map

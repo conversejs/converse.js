@@ -5,7 +5,7 @@
  */
 export function getNameAndValue(field: HTMLInputElement | HTMLSelectElement): {
     [key: string]: string | number | string[];
-};
+} | null;
 export function getFileName(url: any): any;
 /**
  * Returns the markup for a URL that points to a downloadable asset
@@ -78,7 +78,7 @@ export function xFormField2TemplateResult(xfield: XFormField, options?: any): Te
  */
 export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
 export default u;
-export type TemplateResult = import('lit').TemplateResult;
-export type XFormField = import('@converse/headless/types/shared/parsers').XFormField;
-import { u } from "@converse/headless";
+export type TemplateResult = import("lit").TemplateResult;
+export type XFormField = import("@converse/headless/types/shared/parsers").XFormField;
+import { u } from '@converse/headless';
 //# sourceMappingURL=html.d.ts.map

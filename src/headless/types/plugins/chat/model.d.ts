@@ -84,7 +84,7 @@ declare class ChatBox extends ModelWithContact {
      * @method ChatBox#setChatState
      * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
      */
-    setChatState(state: string, options: any): ChatBox;
+    setChatState(state: string, options: any): this;
     chat_state_timeout: NodeJS.Timeout;
     /**
      * Given an error `<message>` stanza's attributes, find the saved message model which is
@@ -161,7 +161,7 @@ declare class ChatBox extends ModelWithContact {
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForLastMessage(type?: ('received' | 'displayed' | 'acknowledged'), force?: boolean): void;
+    sendMarkerForLastMessage(type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
     /**
      * Given the passed in message object, send a XEP-0333 chat marker.
      * @param { Message } msg
@@ -169,7 +169,7 @@ declare class ChatBox extends ModelWithContact {
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForMessage(msg: import("./message.js").default, type?: ('received' | 'displayed' | 'acknowledged'), force?: boolean): void;
+    sendMarkerForMessage(msg: import("./message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
     handleChatMarker(attrs: any): boolean;
     sendReceiptStanza(to_jid: any, id: any): void;
     handleReceipt(attrs: any): boolean;
@@ -224,7 +224,7 @@ declare class ChatBox extends ModelWithContact {
     /**
      * @param {boolean} force
      */
-    maybeShow(force: boolean): ChatBox;
+    maybeShow(force: boolean): this;
     /**
      * Indicates whether the chat is hidden and therefore
      * whether a newly received message will be visible
@@ -247,6 +247,6 @@ declare class ChatBox extends ModelWithContact {
     isScrolledUp(): any;
     canPostMessages(): boolean;
 }
-import ModelWithContact from "./model-with-contact.js";
-import { Model } from "@converse/skeletor";
+import ModelWithContact from './model-with-contact.js';
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=model.d.ts.map

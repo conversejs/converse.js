@@ -23,5 +23,5 @@ declare class MUCMessage extends Message {
     setOccupant(occupant?: import("./occupant.js").default): import("./occupant.js").default;
     occupant: any;
 }
-import Message from "../chat/message.js";
+import Message from '../chat/message.js';
 //# sourceMappingURL=message.d.ts.map

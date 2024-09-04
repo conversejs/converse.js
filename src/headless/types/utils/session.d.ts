@@ -11,19 +11,19 @@ export function getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
  * @param {ConversePrivateGlobal} _converse
  * @param {string} name
  */
-export function replacePromise(_converse: any, name: string): void;
+export function replacePromise(_converse: ConversePrivateGlobal, name: string): void;
 /**
  * @param {ConversePrivateGlobal} _converse
  * @returns {boolean}
  */
-export function shouldClearCache(_converse: any): boolean;
+export function shouldClearCache(_converse: ConversePrivateGlobal): boolean;
 /**
  * @param {ConversePrivateGlobal} _converse
  */
-export function tearDown(_converse: any): Promise<any>;
+export function tearDown(_converse: ConversePrivateGlobal): Promise<any>;
 /**
  * @param {ConversePrivateGlobal} _converse
  */
-export function clearSession(_converse: any): any;
+export function clearSession(_converse: ConversePrivateGlobal): any;
 export type ConversePrivateGlobal = any;
 //# sourceMappingURL=session.d.ts.map

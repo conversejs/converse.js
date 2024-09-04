@@ -1,9 +1,9 @@
 export namespace LEVELS {
-    const debug: number;
-    const info: number;
-    const warn: number;
-    const error: number;
-    const fatal: number;
+    let debug: number;
+    let info: number;
+    let warn: number;
+    let error: number;
+    let fatal: number;
 }
 declare namespace _default {
     /**

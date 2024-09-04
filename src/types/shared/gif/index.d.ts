@@ -14,7 +14,7 @@ export default class ConverseGif {
      * @param { String } [options.progress_color='rgba(255,0,22,.8)']
      * @param { Number } [options.progress_bar_height=5]
      */
-    constructor(el: import('lit').LitElement, opts: any);
+    constructor(el: import("lit").LitElement, opts: any);
     options: any;
     el: import("lit").LitElement;
     gif_el: HTMLImageElement;

@@ -107,6 +107,6 @@ export default class AutoCompleteComponent extends CustomElement {
     onKeyDown(ev: any): void;
     onKeyUp(ev: any): void;
 }
-import { CustomElement } from "shared/components/element.js";
-import AutoComplete from "./autocomplete.js";
+import { CustomElement } from 'shared/components/element.js';
+import AutoComplete from './autocomplete.js';
 //# sourceMappingURL=component.d.ts.map

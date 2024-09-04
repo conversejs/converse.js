@@ -9,5 +9,5 @@ declare class EmojiPicker extends Model {
         scroll_position: number;
     };
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=picker.d.ts.map

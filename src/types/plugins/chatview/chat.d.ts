@@ -11,5 +11,5 @@ export default class ChatView extends BaseChatView {
     getHelpMessages(): string[];
     afterShown(): void;
 }
-import BaseChatView from "shared/chat/baseview.js";
+import BaseChatView from 'shared/chat/baseview.js';
 //# sourceMappingURL=chat.d.ts.map

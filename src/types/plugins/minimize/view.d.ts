@@ -9,6 +9,6 @@ export default class MinimizedChats extends CustomElement {
      */
     toggle(ev?: Event): void;
 }
-import { CustomElement } from "shared/components/element";
-import MinimizedChatsToggle from "./toggle.js";
+import { CustomElement } from 'shared/components/element';
+import MinimizedChatsToggle from './toggle.js';
 //# sourceMappingURL=view.d.ts.map

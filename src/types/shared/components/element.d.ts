@@ -12,10 +12,10 @@ declare const CustomElement_base: (new (...args: any[]) => {
     trigger(name: string, ...args: any[]): any;
 }) & typeof LitElement;
 export class CustomElement extends CustomElement_base {
-    createRenderRoot(): CustomElement;
+    createRenderRoot(): this;
     initialize(): any;
     connectedCallback(): any;
 }
-import { LitElement } from "lit-element/lit-element";
+import { LitElement } from 'lit';
 export {};
 //# sourceMappingURL=element.d.ts.map

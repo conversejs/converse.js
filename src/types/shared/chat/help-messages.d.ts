@@ -20,5 +20,5 @@ export default class ChatHelp extends CustomElement {
     close(): void;
     renderHelpMessage(o: any): import("lit").TemplateResult<1>;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=help-messages.d.ts.map

@@ -1,26 +1,21 @@
 export default _converse;
-export type Storage = import('@converse/skeletor').Storage;
-export type Collection = import('@converse/skeletor').Collection;
-export type DiscoState = import('../plugins/disco/index').DiscoState;
-export type XMPPStatus = import('../plugins/status/status').default;
-export type VCards = import('../plugins/vcard/vcard').default;
+export type Storage = import("@converse/skeletor").Storage;
+export type Collection = import("@converse/skeletor").Collection;
+export type DiscoState = import("../plugins/disco/index").DiscoState;
+export type XMPPStatus = import("../plugins/status/status").default;
+export type VCards = import("../plugins/vcard/vcard").default;
 declare const _converse: ConversePrivateGlobal;
 declare const ConversePrivateGlobal_base: (new (...args: any[]) => {
-    on(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any; /**
-     * A private, closured namespace containing the private api (via {@link _converse.api})
-     * as well as private methods and internal data-structures.
-     * @global
-     * @namespace _converse
-     */
+    on(name: string, callback: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any;
     _events: any;
     _listeners: {};
-    listenTo(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
+    listenTo(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
     _listeningTo: {};
     _listenId: any;
-    off(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context?: any): any;
-    stopListening(obj?: any, name?: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
-    once(name: string, callback: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any;
-    listenToOnce(obj: any, name: string, callback?: (event: any, model: Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
+    off(name: string, callback: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context?: any): any;
+    stopListening(obj?: any, name?: string, callback?: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
+    once(name: string, callback: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any, context: any): any;
+    listenToOnce(obj: any, name: string, callback?: (event: any, model: import("@converse/skeletor/src/types/model.js").Model, collection: import("@converse/skeletor").Collection, options?: Record<string, any>) => any): any;
     trigger(name: string, ...args: any[]): any;
 }) & ObjectConstructor;
 /**
@@ -101,5 +96,5 @@ declare class ConversePrivateGlobal extends ConversePrivateGlobal_base {
      */
     ___(str: string): string;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=_converse.d.ts.map

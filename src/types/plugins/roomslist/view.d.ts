@@ -18,7 +18,7 @@ export class RoomsList extends CustomElement {
      */
     toggleDomainList(ev: Event, domain: string): void;
 }
-export type Model = import('@converse/skeletor').Model;
-import { CustomElement } from "shared/components/element.js";
-import RoomsListModel from "./model.js";
+export type Model = import("@converse/skeletor").Model;
+import { CustomElement } from 'shared/components/element.js';
+import RoomsListModel from './model.js';
 //# sourceMappingURL=view.d.ts.map

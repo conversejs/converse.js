@@ -10,5 +10,5 @@ export class ColorAwareModel extends Model {
      */
     getAvatarStyle(append_style?: string): Promise<string>;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=color.d.ts.map

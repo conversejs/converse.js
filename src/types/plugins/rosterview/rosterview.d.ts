@@ -17,6 +17,6 @@ export default class RosterView extends CustomElement {
     /** @param {MouseEvent} [ev] */
     toggleFilter(ev?: MouseEvent): void;
 }
-import { CustomElement } from "shared/components/element.js";
-import { Model } from "@converse/skeletor";
+import { CustomElement } from 'shared/components/element.js';
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=rosterview.d.ts.map

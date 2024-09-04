@@ -11,7 +11,7 @@ export default class ProfileModal extends BaseModal {
      */
     onFormSubmitted(ev: SubmitEvent): Promise<void>;
 }
-export type VCardData = import('@converse/headless/types/plugins/vcard/api').VCardData;
+export type VCardData = import("@converse/headless/types/plugins/vcard/api").VCardData;
 export type XMPPStatus = import("@converse/headless").XMPPStatus;
 import BaseModal from "plugins/modal/modal.js";
 //# sourceMappingURL=profile.d.ts.map

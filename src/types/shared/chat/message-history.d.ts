@@ -11,5 +11,5 @@ export default class MessageHistory extends CustomElement {
     messages: any[];
     renderMessage(model: any): import("lit/directive").DirectiveResult<typeof import("lit/directives/until.js").UntilDirective>;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=message-history.d.ts.map

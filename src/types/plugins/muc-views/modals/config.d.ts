@@ -13,6 +13,6 @@ export default class MUCConfigModal extends BaseModal {
      */
     submitConfigForm(ev: SubmitEvent): Promise<void>;
 }
-export type VCardData = import('@converse/headless/types/plugins/vcard/api').VCardData;
-import BaseModal from "plugins/modal/modal.js";
+export type VCardData = import("@converse/headless/types/plugins/vcard/api").VCardData;
+import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=config.d.ts.map

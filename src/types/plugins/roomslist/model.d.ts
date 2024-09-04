@@ -10,5 +10,5 @@ declare class RoomsListModel extends Model {
      */
     setDomain(jid: string): void;
 }
-import { Model } from "@converse/skeletor";
+import { Model } from '@converse/skeletor';
 //# sourceMappingURL=model.d.ts.map

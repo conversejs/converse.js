@@ -34,5 +34,5 @@ export function siblingIndex(el: Element): number;
  * @return {string}
  */
 export function decodeHTMLEntities(str: string): string;
-import { Strophe } from "strophe.js";
+import { Strophe } from 'strophe.js';
 //# sourceMappingURL=html.d.ts.map

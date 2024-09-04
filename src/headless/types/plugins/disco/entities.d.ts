@@ -5,5 +5,5 @@ declare class DiscoEntities extends Collection {
     fetchEntities(): Promise<any>;
 }
 import { Collection } from "@converse/skeletor";
-import DiscoEntity from "./entity.js";
+import DiscoEntity from './entity.js';
 //# sourceMappingURL=entities.d.ts.map

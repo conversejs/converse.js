@@ -1,6 +1,6 @@
 export default api;
 declare namespace api {
-    const user: {
+    let user: {
         /**
          * @method _converse.api.user.jid
          * @returns {string} The current user's full JID (Jabber ID)
@@ -32,12 +32,12 @@ declare namespace api {
          */
         logout(): Promise<any>;
         presence: {
-            send(type?: string, to?: string, status?: string, nodes?: Element | import("strophe.js/src/types/builder.js").default | Element[] | import("strophe.js/src/types/builder.js").default[]): Promise<void>;
+            send(type?: string, to?: string, status?: string, nodes?: Array<Element> | Array<Builder> | Element | Builder): Promise<void>;
         };
         settings: {
-            getModel(): Promise<import("@converse/skeletor").Model>;
+            getModel(): Promise<Model>;
             get(key: string, fallback?: any): Promise<any>;
-            set(key: any, val?: string): Promise<any>;
+            set(key: any | string, val?: string): Promise<any>;
             clear(): Promise<any>;
         };
     };

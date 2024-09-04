@@ -63,16 +63,16 @@ export default class AdHocCommands extends CustomElement {
      */
     cancel(ev: MouseEvent): Promise<void>;
 }
-export type AdHocCommand = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommand;
-export type AdHocCommandResult = import('@converse/headless/types/plugins/adhoc/utils').AdHocCommandResult;
-export type AdHocCommandAction = import('@converse/headless/types/plugins/adhoc/api').AdHocCommandAction;
+export type AdHocCommand = import("@converse/headless/types/plugins/adhoc/utils").AdHocCommand;
+export type AdHocCommandResult = import("@converse/headless/types/plugins/adhoc/utils").AdHocCommandResult;
+export type AdHocCommandAction = import("@converse/headless/types/plugins/adhoc/api").AdHocCommandAction;
 export type UIProps = {
     instructions: string;
     jid: string;
     alert?: string;
-    alert_type?: 'danger' | 'primary';
-    name: 'cancel' | 'complete' | 'execute' | 'next' | 'prev';
+    alert_type?: "danger" | "primary";
+    name: "cancel" | "complete" | "execute" | "next" | "prev";
 };
 export type AdHocCommandUIProps = AdHocCommand & AdHocCommandResult & UIProps;
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=adhoc-commands.d.ts.map

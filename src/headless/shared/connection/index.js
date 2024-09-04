@@ -445,6 +445,10 @@ export class Connection extends Strophe.Connection {
  */
 export class MockConnection extends Connection {
 
+    /**
+     * @param {string} service - The BOSH or WebSocket service URL.
+     * @param {import('strophe.js/src/types/connection').ConnectionOptions} options - The configuration options
+     */
     constructor (service, options) {
         super(service, options);
 
@@ -466,7 +470,7 @@ export class MockConnection extends Connection {
                 '</session>'+
             '</stream:features>').firstElementChild;
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        // @ts-ignore
         this._proto._processRequest = () => {};
         this._proto._disconnect = () => this._onDisconnectTimeout();
         // eslint-disable-next-line @typescript-eslint/no-empty-function

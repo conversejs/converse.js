@@ -15,8 +15,8 @@ export function pruneHistory(model: ChatBox | MUC): void;
  */
 export function handleCorrection(model: ChatBox | MUC, attrs: object): Promise<Message | void>;
 export const debouncedPruneHistory: import("lodash").DebouncedFunc<typeof pruneHistory>;
-export type Message = import('../../plugins/chat/message.js').default;
-export type ChatBox = import('../../plugins/chat/model.js').default;
-export type MUC = import('../../plugins/muc/muc.js').default;
+export type Message = import("../../plugins/chat/message.js").default;
+export type ChatBox = import("../../plugins/chat/model.js").default;
+export type MUC = import("../../plugins/muc/muc.js").default;
 export type MediaURLData = any;
 //# sourceMappingURL=utils.d.ts.map

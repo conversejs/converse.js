@@ -46,5 +46,5 @@ export default class Message extends CustomElement {
     showMessageVersionsModal(ev: any): void;
     toggleSpoilerMessage(ev: any): void;
 }
-import { CustomElement } from "shared/components/element.js";
+import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=message.d.ts.map

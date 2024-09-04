@@ -13,6 +13,6 @@ declare class ImageDirective extends AsyncDirective {
     renderImage(src: any, href: any, onLoad: any, onClick: any): import("lit").TemplateResult<1>;
     onError(src: any, href: any, onLoad: any, onClick: any): void;
 }
-import { AsyncDirective } from "lit/node_modules/lit-html/async-directive";
+import { AsyncDirective } from 'lit/async-directive.js';
 export {};
 //# sourceMappingURL=image.d.ts.map

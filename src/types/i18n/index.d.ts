@@ -12,5 +12,5 @@ export const i18n: typeof i18nStub & {
     initialize(): Promise<void>;
     __(str: any, ...args: any[]): any;
 };
-import { i18n as i18nStub } from "@converse/headless";
+import { i18n as i18nStub } from '@converse/headless';
 //# sourceMappingURL=index.d.ts.map

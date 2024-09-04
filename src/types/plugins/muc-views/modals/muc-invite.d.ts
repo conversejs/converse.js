@@ -9,5 +9,5 @@ export default class MUCInviteModal extends BaseModal {
      */
     submitInviteForm(ev: Event): void;
 }
-import BaseModal from "plugins/modal/modal.js";
+import BaseModal from 'plugins/modal/modal.js';
 //# sourceMappingURL=muc-invite.d.ts.map

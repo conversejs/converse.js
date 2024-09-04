@@ -1,7 +1,7 @@
 export default ChatBoxes;
-export type ChatBox = import('../../plugins/chat/model.js').default;
-export type MUC = import('../../plugins/muc/muc').default;
-export type Model = import('@converse/skeletor').Model;
+export type ChatBox = import("../../plugins/chat/model.js").default;
+export type MUC = import("../../plugins/muc/muc").default;
+export type Model = import("@converse/skeletor").Model;
 declare class ChatBoxes extends Collection {
     /**
      * @param {Model[]} models

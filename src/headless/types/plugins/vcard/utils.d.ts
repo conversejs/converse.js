@@ -33,9 +33,9 @@ export function getVCard(jid: string): Promise<{
     error: any;
     vcard_error: string;
 }>;
-export type MUCMessage = import('../../plugins/muc/message').default;
-export type XMPPStatus = import('../../plugins/status/status').default;
-export type VCards = import('../../plugins/vcard/vcards').default;
-export type ModelWithContact = import('../chat/model-with-contact.js').default;
-export type MUCOccupant = import('../muc/occupant.js').default;
+export type MUCMessage = import("../../plugins/muc/message").default;
+export type XMPPStatus = import("../../plugins/status/status").default;
+export type VCards = import("../../plugins/vcard/vcards").default;
+export type ModelWithContact = import("../chat/model-with-contact.js").default;
+export type MUCOccupant = import("../muc/occupant.js").default;
 //# sourceMappingURL=utils.d.ts.map

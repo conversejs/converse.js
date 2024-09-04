@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { u } = converse.env;
+const { u, stx } = converse.env;
 
 describe('Groupchats', () => {
     describe('A Groupchat', () => {
@@ -30,8 +30,7 @@ describe('Groupchats', () => {
             })
         );
 
-        it(
-            'has an avatar which opens a details modal when clicked',
+        it('has an avatar which opens a details modal when clicked',
             mock.initConverse(
                 ['chatBoxesFetched'],
                 {
@@ -40,7 +39,7 @@ describe('Groupchats', () => {
                     // have to mock stanza traffic.
                 },
                 async function (_converse) {
-                    const { Strophe, $iq, $pres, u } = converse.env;
+                    const { Strophe, u } = converse.env;
                     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
                     const muc_jid = 'coven@chat.shakespeare.lit';
                     await mock.waitForRoster(_converse, 'current', 0);
@@ -51,79 +50,52 @@ describe('Groupchats', () => {
                     const features_query = await u.waitUntil(() =>
                         IQ_stanzas.filter((iq) => iq.querySelector(selector)).pop()
                     );
-                    const features_stanza = $iq({
-                        'from': 'coven@chat.shakespeare.lit',
-                        'id': features_query.getAttribute('id'),
-                        'to': 'romeo@montague.lit/desktop',
-                        'type': 'result',
-                    })
-                        .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info' })
-                        .c('identity', {
-                            'category': 'conference',
-                            'name': 'A Dark Cave',
-                            'type': 'text',
-                        })
-                        .up()
-                        .c('feature', { 'var': 'http://jabber.org/protocol/muc' })
-                        .up()
-                        .c('feature', { 'var': 'muc_passwordprotected' })
-                        .up()
-                        .c('feature', { 'var': 'muc_hidden' })
-                        .up()
-                        .c('feature', { 'var': 'muc_temporary' })
-                        .up()
-                        .c('feature', { 'var': 'muc_open' })
-                        .up()
-                        .c('feature', { 'var': 'muc_unmoderated' })
-                        .up()
-                        .c('feature', { 'var': 'muc_nonanonymous' })
-                        .up()
-                        .c('feature', { 'var': 'urn:xmpp:mam:0' })
-                        .up()
-                        .c('x', { 'xmlns': 'jabber:x:data', 'type': 'result' })
-                        .c('field', { 'var': 'FORM_TYPE', 'type': 'hidden' })
-                        .c('value')
-                        .t('http://jabber.org/protocol/muc#roominfo')
-                        .up()
-                        .up()
-                        .c('field', {
-                            'type': 'text-single',
-                            'var': 'muc#roominfo_description',
-                            'label': 'Description',
-                        })
-                        .c('value')
-                        .t('This is the description')
-                        .up()
-                        .up()
-                        .c('field', {
-                            'type': 'text-single',
-                            'var': 'muc#roominfo_occupants',
-                            'label': 'Number of occupants',
-                        })
-                        .c('value')
-                        .t(0);
+
+                    const features_stanza = stx`
+                        <iq from="coven@chat.shakespeare.lit"
+                                id="${features_query.getAttribute('id')}"
+                                to="romeo@montague.lit/desktop"
+                                type="result"
+                                xmlns="jabber:client">
+                            <query xmlns="http://jabber.org/protocol/disco#info">
+                                <identity category="conference" name="A Dark Cave" type="text"/>
+                                <feature var="http://jabber.org/protocol/muc"/>
+                                <feature var="muc_passwordprotected"/>
+                                <feature var="muc_hidden"/>
+                                <feature var="muc_temporary"/>
+                                <feature var="muc_open"/>
+                                <feature var="muc_unmoderated"/>
+                                <feature var="muc_nonanonymous"/>
+                                <feature var="urn:xmpp:mam:0"/>
+                                <x xmlns="jabber:x:data" type="result">
+                                    <field var="FORM_TYPE" type="hidden">
+                                        <value>http://jabber.org/protocol/muc#roominfo</value>
+                                    </field>
+                                    <field type="text-single" var="muc#roominfo_description" label="Description">
+                                        <value>This is the description</value>
+                                    </field>
+                                    <field type="text-single" var="muc#roominfo_occupants" label="Number of occupants">
+                                        <value>0</value>
+                                    </field>
+                                </x>
+                            </query>
+                        </iq>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
                     const view = _converse.chatboxviews.get(muc_jid);
                     await u.waitUntil(
                         () => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING
                     );
-                    let presence = $pres({
-                        to: _converse.api.connection.get().jid,
-                        from: 'coven@chat.shakespeare.lit/some1',
-                        id: 'DC352437-C019-40EC-B590-AF29E879AF97',
-                    })
-                        .c('x')
-                        .attrs({ xmlns: 'http://jabber.org/protocol/muc#user' })
-                        .c('item')
-                        .attrs({
-                            affiliation: 'member',
-                            jid: _converse.bare_jid,
-                            role: 'participant',
-                        })
-                        .up()
-                        .c('status')
-                        .attrs({ code: '110' });
+                    let presence = stx`
+                        <presence to="${_converse.api.connection.get().jid}"
+                                  from="coven@chat.shakespeare.lit/some1"
+                                  id="DC352437-C019-40EC-B590-AF29E879AF97"
+                                  xmlns="jabber:client">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="member" jid="${_converse.bare_jid}" role="participant"/>
+                            </x>
+                            <status code="110"/>
+                        </presence>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
                     const avatar_el = await u.waitUntil(
@@ -163,16 +135,14 @@ describe('Groupchats', () => {
                         'Not anonymous - All other groupchat participants can see your XMPP address' +
                         'Not moderated - Participants entering this groupchat can write right away '
                     );
-                    presence = $pres({
-                        to: 'romeo@montague.lit/_converse.js-29092160',
-                        from: 'coven@chat.shakespeare.lit/newguy',
-                    })
-                        .c('x', { xmlns: Strophe.NS.MUC_USER })
-                        .c('item', {
-                            'affiliation': 'none',
-                            'jid': 'newguy@montague.lit/_converse.js-290929789',
-                            'role': 'participant',
-                        });
+                    presence = stx`
+                        <presence to="romeo@montague.lit/_converse.js-29092160"
+                                from="coven@chat.shakespeare.lit/newguy"
+                                xmlns="jabber:client">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
+                            </x>
+                        </presence>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
                     els = modal.querySelectorAll('p.room-info');

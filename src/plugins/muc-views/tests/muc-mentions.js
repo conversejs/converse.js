@@ -1,9 +1,8 @@
 /*global mock, converse */
 
-const { dayjs } = converse.env;
-const u = converse.env.utils;
-// See: https://xmpp.org/rfcs/rfc3921.html
+const { dayjs, stx, u } = converse.env;
 
+// See: https://xmpp.org/rfcs/rfc3921.html
 
 describe("MUC Mention Notfications", function () {
 
@@ -34,8 +33,8 @@ describe("MUC Mention Notfications", function () {
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
         const base_time = new Date();
-        let message = u.toStanza(`
-            <message from="${muc_jid}">
+        let message = stx`
+            <message from="${muc_jid}" xmlns="jabber:client">
                 <mentions xmlns='urn:xmpp:mmn:0'>
                     <forwarded xmlns='urn:xmpp:forward:0'>
                         <delay xmlns='urn:xmpp:delay' stamp='${dayjs(base_time).subtract(5, 'minutes').toISOString()}'/>
@@ -52,15 +51,14 @@ describe("MUC Mention Notfications", function () {
                         </message>
                     </forwarded>
                 </mentions>
-            </message>
-        `);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
         await u.waitUntil(() => Array.from(room_el.classList).includes('unread-msgs'));
         expect(room_el.querySelector('.msgs-indicator')?.textContent.trim()).toBe('1');
 
-        message = u.toStanza(`
-            <message from="${muc_jid}">
+        message = stx`
+            <message from="${muc_jid}" xmlns="jabber:client">
                 <mentions xmlns='urn:xmpp:mmn:0'>
                     <forwarded xmlns='urn:xmpp:forward:0'>
                         <delay xmlns='urn:xmpp:delay' stamp='${dayjs(base_time).subtract(4, 'minutes').toISOString()}'/>
@@ -77,8 +75,7 @@ describe("MUC Mention Notfications", function () {
                         </message>
                     </forwarded>
                 </mentions>
-            </message>
-        `);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
         await u.waitUntil(() => room_el.querySelector('.msgs-indicator')?.textContent.trim() === '2');

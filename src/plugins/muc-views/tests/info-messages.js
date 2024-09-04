@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const u = converse.env.utils;
+const { u, stx } = converse.env;
 
 describe("an info message", function () {
 
@@ -11,27 +11,25 @@ describe("an info message", function () {
         const nick = 'romeo';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
-        let presence = u.toStanza(`
+        let presence = stx`
             <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <status code="201"/>
                     <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
                     <status code="110"/>
                 </x>
-            </presence>
-        `);
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
 
-        presence = u.toStanza(`
+        presence = stx`
             <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo1">
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <status code="210"/>
                     <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
                     <status code="110"/>
                 </x>
-            </presence>
-        `);
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
 
@@ -46,15 +44,14 @@ describe("an info message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
-        const presence = u.toStanza(`
+        const presence = stx`
             <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <status code="201"/>
                     <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
                     <status code="110"/>
                 </x>
-            </presence>
-        `);
+            </presence>`;
         // XXX: We wait for createInfoMessages to complete, if we don't
         // we still get two info messages due to messages
         // created from presences not being queued and run

@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, sizzle, u } = converse.env;
+const { Strophe, sizzle, stx, u } = converse.env;
 
 describe("Groupchats", function () {
 
@@ -13,18 +13,18 @@ describe("Groupchats", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], false, {'hidden': true});
         const model = _converse.chatboxes.get(muc_jid);
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
             <message xmlns="jabber:client" type="groupchat" id="1" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
                 <body>Romeo oh romeo</body>
-            </message>`)));
+            </message>`));
         await u.waitUntil(() => model.messages.length);
         expect(model.get('num_unread_general')).toBe(1);
         expect(model.get('num_unread')).toBe(1);
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
             <message xmlns="jabber:client" type="groupchat" id="2" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
                 <body>Wherefore art though?</body>
-            </message>`)));
+            </message>`));
 
         await u.waitUntil(() => model.messages.length === 2);
 
@@ -101,7 +101,7 @@ describe("Groupchats", function () {
             expect(model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
             model.sendMessage({'body': 'hello world'});
 
-            const stanza = u.toStanza(`
+            const stanza = stx`
                 <message xmlns='jabber:client'
                          from='${muc_jid}'
                          type='error'
@@ -109,7 +109,7 @@ describe("Groupchats", function () {
                     <error type='cancel'>
                         <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
-                </message>`);
+                </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             let sent_stanzas = _converse.api.connection.get().sent_stanzas;
@@ -119,15 +119,16 @@ describe("Groupchats", function () {
                     `<ping xmlns="urn:xmpp:ping"/>`+
                 `</iq>`);
 
-            const result = u.toStanza(`
+            const result = stx`
                 <iq from='${muc_jid}'
                     id='${iq.getAttribute('id')}'
                     to='${_converse.bare_jid}'
+                    xmlns="jabber:server"
                     type='error'>
                 <error type='cancel'>
                     <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                 </error>
-                </iq>`);
+                </iq>`;
             sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const index = sent_stanzas.length -1;
 

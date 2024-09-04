@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $msg, u } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 describe("A Groupchat Message", function () {
 
@@ -9,16 +9,16 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const stanza = $pres({
-                to: 'romeo@montague.lit/_converse.js-29092160',
-                from: 'coven@chat.shakespeare.lit/newguy'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'newguy@montague.lit/_converse.js-290929789',
-                'role': 'participant'
-            }).tree();
+
+        const stanza = stx`
+            <presence
+                to="romeo@montague.lit/_converse.js-29092160"
+                from="coven@chat.shakespeare.lit/newguy"
+                xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
+                </x>
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const view = _converse.chatboxviews.get(muc_jid);
@@ -28,12 +28,15 @@ describe("A Groupchat Message", function () {
 
         const firstMessageText = 'But soft, what light through yonder airlock breaks?';
         const msg_id = u.getUniqueId();
-        await model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': msg_id,
-            }).c('body').t(firstMessageText).tree());
+        await model.handleMessageStanza(stx`
+            <message
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${msg_id}"
+                xmlns="jabber:client">
+                <body>${firstMessageText}</body>
+            </message>`);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
         let firstAction = view.querySelector('.chat-msg__action-copy');
         expect(firstAction).not.toBeNull();
@@ -61,26 +64,28 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const stanza = $pres({
-                to: 'romeo@montague.lit/_converse.js-29092160',
-                from: 'coven@chat.shakespeare.lit/newguy'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'newguy@montague.lit/_converse.js-290929789',
-                'role': 'participant'
-            }).tree();
+        const stanza = stx`
+            <presence
+                to="romeo@montague.lit/_converse.js-29092160"
+                from="coven@chat.shakespeare.lit/newguy"
+                xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
+                </x>
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const firstMessageText = 'But soft, what light through yonder airlock breaks?';
         const msg_id = u.getUniqueId();
-        await model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': msg_id,
-            }).c('body').t(firstMessageText).tree());
+        await model.handleMessageStanza(stx`
+            <message
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${msg_id}"
+                xmlns="jabber:client">
+                <body>${firstMessageText}</body>
+            </message>`);
 
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
@@ -107,37 +112,44 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', ['muc_moderated']);
-        const stanza = $pres({
-                to: 'romeo@montague.lit/_converse.js-29092160',
-                from: 'coven@chat.shakespeare.lit/newguy'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'newguy@montague.lit/_converse.js-290929789',
-                'role': 'participant'
-            }).tree();
+        const stanza = stx`
+            <presence
+                to="romeo@montague.lit/_converse.js-29092160"
+                from="coven@chat.shakespeare.lit/newguy"
+                xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
+                </x>
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const view = _converse.chatboxviews.get(muc_jid);
 
         const msg_id = u.getUniqueId();
-        await model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': msg_id,
-            }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+        await model.handleMessageStanza(stx`
+            <message
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${msg_id}"
+                xmlns="jabber:client">
+                <body>But soft, what light through yonder airlock breaks?</body>
+            </message>`);
+
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
         // Quoting should be available before losing permission to speak
         expect(view.querySelector('.chat-msg__action-quote')).not.toBeNull();
 
-        const presence = $pres({
-                to: 'romeo@montague.lit/orchard',
-                from: `${muc_jid}/romeo`
-            }).c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {'affiliation': 'none', 'role': 'visitor'}).up()
-            .c('status', {code: '110'});
+        const presence = stx`
+            <presence
+                to="romeo@montague.lit/orchard"
+                from="${muc_jid}/romeo"
+                xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" role="visitor"/>
+                </x>
+                <status code="110"/>
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
         await u.waitUntil(() => occupant.get('role') === 'visitor');

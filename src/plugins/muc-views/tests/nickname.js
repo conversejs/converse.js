@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $pres, $iq, Strophe, sizzle, u, stx } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 describe("A MUC", function () {
 
@@ -128,21 +128,22 @@ describe("A MUC", function () {
         const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
         expect(csntext.trim()).toEqual("oldnick has entered the groupchat");
 
-        let presence = $pres().attrs({
-                from:'lounge@montague.lit/oldnick',
-                id:'DC352437-C019-40EC-B590-AF29E879AF98',
-                to:'romeo@montague.lit/pda',
-                type:'unavailable'
-            })
-            .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: 'owner',
-                jid: 'romeo@montague.lit/pda',
-                nick: 'newnick',
-                role: 'moderator'
-            }).up()
-            .c('status').attrs({code:'303'}).up()
-            .c('status').attrs({code:'110'}).nodeTree;
+        let presence = stx`
+            <presence
+                    xmlns="jabber:client"
+                    from='lounge@montague.lit/oldnick'
+                    id='DC352437-C019-40EC-B590-AF29E879AF98'
+                    to='romeo@montague.lit/pda'
+                    type='unavailable'>
+                <x xmlns='http://jabber.org/protocol/muc#user'>
+                    <item affiliation='owner'
+                        jid='romeo@montague.lit/pda'
+                        nick='newnick'
+                        role='moderator'/>
+                    <status code='303'/>
+                    <status code='110'/>
+                </x>
+            </presence>`;
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length);
@@ -155,18 +156,19 @@ describe("A MUC", function () {
         occupants = view.querySelector('.occupant-list');
         expect(occupants.querySelectorAll('.occupant-nick').length).toBe(1);
 
-        presence = $pres().attrs({
-                from:'lounge@montague.lit/newnick',
-                id:'5B4F27A4-25ED-43F7-A699-382C6B4AFC67',
-                to:'romeo@montague.lit/pda'
-            })
-            .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: 'owner',
-                jid: 'romeo@montague.lit/pda',
-                role: 'moderator'
-            }).up()
-            .c('status').attrs({code:'110'}).nodeTree;
+        presence = stx`
+            <presence
+                    from='lounge@montague.lit/newnick'
+                    id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
+                    to='romeo@montague.lit/pda'
+                    xmlns="jabber:client">
+                <x xmlns='http://jabber.org/protocol/muc#user'>
+                    <item affiliation='owner'
+                        jid='romeo@montague.lit/pda'
+                        role='moderator'/>
+                    <status code='110'/>
+                </x>
+            </presence>`;
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
@@ -195,13 +197,16 @@ describe("A MUC", function () {
                 )).pop()
             );
             // We pretend this is a new room, so no disco info is returned.
-            const features_stanza = $iq({
-                    from: 'lounge@montague.lit',
-                    'id': stanza.getAttribute('id'),
-                    'to': 'romeo@montague.lit/desktop',
-                    'type': 'error'
-                }).c('error', {'type': 'cancel'})
-                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            const features_stanza = stx`
+                <iq from="lounge@montague.lit"
+                        id="${stanza.getAttribute("id")}"
+                        to="romeo@montague.lit/desktop"
+                        type="error"
+                        xmlns="jabber:client">
+                    <error type="cancel">
+                        <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                    </error>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
 
@@ -222,45 +227,37 @@ describe("A MUC", function () {
                     `type="get" xmlns="jabber:client">`+
                         `<query node="x-roomuser-item" xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
-            /* <iq from='coven@chat.shakespeare.lit'
-             *     id='getnick1'
-             *     to='hag66@shakespeare.lit/pda'
-             *     type='result'>
-             *     <query xmlns='http://jabber.org/protocol/disco#info'
-             *             node='x-roomuser-item'>
-             *         <identity
-             *             category='conference'
-             *             name='thirdwitch'
-             *             type='text'/>
-             *     </query>
-             * </iq>
-             */
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            stanza = $iq({
-                'type': 'result',
-                'id': iq.getAttribute('id'),
-                'from': view.model.get('jid'),
-                'to': _converse.api.connection.get().jid
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
-            .c('identity', {'category': 'conference', 'name': 'thirdwitch', 'type': 'text'});
+            stanza = stx`
+                <iq type="result"
+                    id="${iq.getAttribute("id")}"
+                    from="${view.model.get("jid")}"
+                    to="${_converse.api.connection.get().jid}"
+                    xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/disco#info" node="x-roomuser-item">
+                        <identity category="conference" name="thirdwitch" type="text"/>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             // The user has just entered the groupchat (because join was called)
             // and receives their own presence from the server.
             // See example 24:
             // https://xmpp.org/extensions/xep-0045.html#enter-pres
-            const presence = $pres({
-                    to:'romeo@montague.lit/orchard',
-                    from:'lounge@montague.lit/thirdwitch',
-                    id:'DC352437-C019-40EC-B590-AF29E879AF97'
-            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-                .c('item').attrs({
-                    affiliation: 'member',
-                    jid: 'romeo@montague.lit/orchard',
-                    role: 'participant'
-                }).up()
-                .c('status').attrs({code:'110'}).up()
-                .c('status').attrs({code:'210'}).nodeTree;
+            const presence = stx`
+                <presence
+                    to="romeo@montague.lit/orchard"
+                    from="lounge@montague.lit/thirdwitch"
+                    id="DC352437-C019-40EC-B590-AF29E879AF97"
+                    xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="member"
+                            jid="romeo@montague.lit/orchard"
+                            role="participant"/>
+                        <status code="110"/>
+                        <status code="210"/>
+                    </x>
+                </presence>`;
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
@@ -290,30 +287,36 @@ describe("A MUC", function () {
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
 
-            const features_stanza = $iq({
-                    'from': muc_jid,
-                    'id': iq.getAttribute('id'),
-                    'to': 'romeo@montague.lit/desktop',
-                    'type': 'result'
-                })
-                .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                    .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
-                    .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                    .c('feature', {'var': 'muc_hidden'}).up()
-                    .c('feature', {'var': 'muc_temporary'}).up()
+            const features_stanza = stx`
+                <iq from="${muc_jid}"
+                        id="${iq.getAttribute('id')}"
+                        to="romeo@montague.lit/desktop"
+                        type="result"
+                        xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/disco#info">
+                        <identity category="conference" name="A Dark Cave" type="text"/>
+                        <feature var="http://jabber.org/protocol/muc"/>
+                        <feature var="muc_hidden"/>
+                        <feature var="muc_temporary"/>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
 
-            const presence = $pres().attrs({
-                    from: `${muc_jid}/romeo`,
-                    id: u.getUniqueId(),
-                    to: 'romeo@montague.lit/pda',
-                    type: 'error'
-                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                  .c('error').attrs({by: muc_jid, type:'cancel'})
-                      .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+            const presence = stx`
+                <presence
+                        from="${muc_jid}/romeo"
+                        id="${u.getUniqueId()}"
+                        to="romeo@montague.lit/pda"
+                        type="error"
+                        xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <error by="${muc_jid}" type="cancel">
+                        <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                    </error>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             const el = await u.waitUntil(() => view.querySelector('.muc-nickname-form .validation-message'));
@@ -340,16 +343,18 @@ describe("A MUC", function () {
              */
             api.settings.set('muc_nickname_from_jid', true);
 
-            const attrs = {
-                'from': `${muc_jid}/romeo`,
-                'id': u.getUniqueId(),
-                'to': 'romeo@montague.lit/pda',
-                'type': 'error'
-            };
-            let presence = $pres().attrs(attrs)
-                .c('x').attrs({'xmlns':'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({'by': muc_jid, 'type':'cancel'})
-                    .c('conflict').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+            let presence = stx`
+                <presence
+                        xmlns="jabber:client"
+                        from='${muc_jid}/romeo'
+                        id='${u.getUniqueId()}'
+                        to='romeo@montague.lit/pda'
+                        type='error'>
+                    <x xmlns='http://jabber.org/protocol/muc'/>
+                    <error by='${muc_jid}' type='cancel'>
+                        <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                    </error>
+                </presence>`;
 
             const view = _converse.chatboxviews.get(muc_jid);
             spyOn(view.model, 'join').and.callThrough();
@@ -359,22 +364,34 @@ describe("A MUC", function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             expect(view.model.join).toHaveBeenCalledWith('romeo-2');
 
-            attrs.from = `${muc_jid}/romeo-2`;
-            attrs.id = u.getUniqueId();
-            presence = $pres().attrs(attrs)
-                .c('x').attrs({'xmlns':'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({'by': muc_jid, type:'cancel'})
-                    .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+            presence = stx`
+                <presence
+                        xmlns="jabber:client"
+                        from="${muc_jid}/romeo-2"
+                        id="${u.getUniqueId()}"
+                        to="romeo@montague.lit/pda"
+                        type="error">
+                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <error by="${muc_jid}" type="cancel">
+                        <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                    </error>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             expect(view.model.join).toHaveBeenCalledWith('romeo-3');
 
-            attrs.from = `${muc_jid}/romeo-3`;
-            attrs.id = new Date().getTime();
-            presence = $pres().attrs(attrs)
-                .c('x').attrs({'xmlns': 'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({'by': muc_jid, 'type': 'cancel'})
-                    .c('conflict').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+            presence = stx`
+                <presence
+                        xmlns="jabber:client"
+                        from="${muc_jid}/romeo-3"
+                        id="${u.getUniqueId()}"
+                        to="romeo@montague.lit/pda"
+                        type="error">
+                    <x xmlns="http://jabber.org/protocol/muc"/>
+                    <error by="${muc_jid}" type="cancel">
+                        <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                    </error>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             expect(view.model.join).toHaveBeenCalledWith('romeo-4');
         }));
@@ -389,27 +406,34 @@ describe("A MUC", function () {
                 iq => iq.querySelector(
                     `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                 )).pop());
-            const features_stanza = $iq({
-                    'from': muc_jid,
-                    'id': iq.getAttribute('id'),
-                    'to': 'romeo@montague.lit/desktop',
-                    'type': 'result'
-                }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                    .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
-                    .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+            const features_stanza = stx`
+                <iq from="${muc_jid}"
+                        id="${iq.getAttribute('id')}"
+                        to="romeo@montague.lit/desktop"
+                        type="result"
+                        xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/disco#info">
+                        <identity category="conference" name="A Dark Cave" type="text"/>
+                        <feature var="http://jabber.org/protocol/muc"/>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
 
-            const presence = $pres().attrs({
-                    from: `${muc_jid}/romeo`,
-                    id: u.getUniqueId(),
-                    to:'romeo@montague.lit/pda',
-                    type:'error'
-                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                  .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
-                      .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+            const presence = stx`
+                <presence
+                    xmlns="jabber:client"
+                    from='${muc_jid}/romeo'
+                    id='${u.getUniqueId()}'
+                    to='romeo@montague.lit/pda'
+                    type='error'>
+                    <x xmlns='http://jabber.org/protocol/muc'/>
+                    <error by='lounge@montague.lit' type='cancel'>
+                        <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                    </error>
+                </presence>`;
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             const el = await u.waitUntil(() => view.querySelector('.chatroom-body converse-muc-disconnected .disconnect-msg:last-child'));

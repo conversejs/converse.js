@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $msg, $pres, Strophe, u, stx } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 describe("A Groupchat Message", function () {
 
@@ -9,24 +9,26 @@ describe("A Groupchat Message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const stanza = $pres({
-                to: 'romeo@montague.lit/_converse.js-29092160',
-                from: 'coven@chat.shakespeare.lit/newguy'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'newguy@montague.lit/_converse.js-290929789',
-                'role': 'participant'
-            }).tree();
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <presence
+                to="romeo@montague.lit/_converse.js-29092160"
+                from="coven@chat.shakespeare.lit/newguy"
+                xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
+                </x>
+            </presence>`));
+
         const msg_id = u.getUniqueId();
-        await model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': msg_id,
-            }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+        await model.handleMessageStanza(stx`
+            <message
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${msg_id}"
+                xmlns="jabber:client">
+                <body>But soft, what light through yonder airlock breaks?</body>
+            </message>`);
 
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
@@ -34,25 +36,32 @@ describe("A Groupchat Message", function () {
         expect(view.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
 
-        await view.model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': u.getUniqueId(),
-            }).c('body').t('But soft, what light through yonder chimney breaks?').up()
-                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+        await view.model.handleMessageStanza(stx`
+            <message
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${u.getUniqueId()}"
+                xmlns="jabber:client">
+                <body>But soft, what light through yonder chimney breaks?</body>
+                <replace id="${msg_id}" xmlns="urn:xmpp:message-correct:0"/>
+            </message>`);
+
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
             'But soft, what light through yonder chimney breaks?', 500);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => view.querySelector('.chat-msg__content .fa-edit'));
 
-        await view.model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': u.getUniqueId(),
-            }).c('body').t('But soft, what light through yonder window breaks?').up()
-                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+        await view.model.handleMessageStanza(stx`
+            <message
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${u.getUniqueId()}"
+                xmlns="jabber:client">
+                <body>But soft, what light through yonder window breaks?</body>
+                <replace id="${msg_id}" xmlns="urn:xmpp:message-correct:0"/>
+            </message>`);
 
         await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
             'But soft, what light through yonder window breaks?', 500);
@@ -74,72 +83,74 @@ describe("A Groupchat Message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
-        const stanza = $pres({
-                to: 'romeo@montague.lit/_converse.js-29092160',
-                from: 'coven@chat.shakespeare.lit/newguy'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'newguy@montague.lit/_converse.js-290929789',
-                'role': 'participant'
-            }).tree();
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <presence
+                to="romeo@montague.lit/_converse.js-29092160"
+                from="coven@chat.shakespeare.lit/newguy"
+                xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
+                </x>
+            </presence>`));
+
         const msg_id = u.getUniqueId();
 
         // Receiving the first message
-        await view.model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': msg_id,
-            }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+        await view.model.handleMessageStanza(stx`
+            <message
+                xmlns="jabber:client"
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${msg_id}">
+                <body>But soft, what light through yonder airlock breaks?</body>
+            </message>`);
 
         // Receiving own message to check order against
-        await view.model.handleMessageStanza($msg({
-            'from': 'lounge@montague.lit/romeo',
-            'to': _converse.api.connection.get().jid,
-            'type': 'groupchat',
-            'id': u.getUniqueId(),
-        }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
-
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
-        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
-        expect(view.querySelectorAll('.chat-msg__text')[0].textContent)
-            .toBe('But soft, what light through yonder airlock breaks?');
-        expect(view.querySelectorAll('.chat-msg__text')[1].textContent)
-        .toBe('But soft, what light through yonder airlock breaks?');
+        await view.model.handleMessageStanza(stx`
+            <message
+                xmlns="jabber:client"
+                from="lounge@montague.lit/romeo"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${u.getUniqueId()}">
+                <body>But soft, what light through yonder airlock breaks?</body>
+            </message>`);
 
         // First message correction
-        await view.model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': u.getUniqueId(),
-            }).c('body').t('But soft, what light through yonder chimney breaks?').up()
-                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
-
-        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
-            'But soft, what light through yonder chimney breaks?', 500);
-        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
-        await u.waitUntil(() => view.querySelector('.chat-msg__content .fa-edit'));
+        await view.model.handleMessageStanza(stx`
+            <message
+                xmlns="jabber:client"
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${u.getUniqueId()}">
+                <body>But soft, what light through yonder chimney breaks?</body>
+                <replace id="${msg_id}" xmlns="urn:xmpp:message-correct:0"/>
+            </message>`);
 
         // Second message correction
-        await view.model.handleMessageStanza($msg({
-                'from': 'lounge@montague.lit/newguy',
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'id': u.getUniqueId(),
-            }).c('body').t('But soft, what light through yonder window breaks?').up()
-                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+        await view.model.handleMessageStanza(stx`
+            <message
+                xmlns="jabber:client"
+                from="lounge@montague.lit/newguy"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${u.getUniqueId()}">
+                <body>But soft, what light through yonder window breaks?</body>
+                <replace id="${msg_id}" xmlns="urn:xmpp:message-correct:0"/>
+            </message>`);
 
         // Second own message
-        await view.model.handleMessageStanza($msg({
-            'from': 'lounge@montague.lit/romeo',
-            'to': _converse.api.connection.get().jid,
-            'type': 'groupchat',
-            'id': u.getUniqueId(),
-        }).c('body').t('But soft, what light through yonder window breaks?').tree());
+        await view.model.handleMessageStanza(stx`
+            <message
+                xmlns="jabber:client"
+                from="lounge@montague.lit/romeo"
+                to="${_converse.api.connection.get().jid}"
+                type="groupchat"
+                id="${u.getUniqueId()}">
+                <body>But soft, what light through yonder window breaks?</body>
+            </message>`);
 
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text')[0].textContent ===
             'But soft, what light through yonder window breaks?', 500);
@@ -232,12 +243,14 @@ describe("A Groupchat Message", function () {
         expect(u.hasClass('correcting', view.querySelector('.chat-msg'))).toBe(false);
 
         // Check that messages from other users are skipped
-        await view.model.handleMessageStanza($msg({
-            'from': muc_jid+'/someone-else',
-            'id': u.getUniqueId(),
-            'to': 'romeo@montague.lit',
-            'type': 'groupchat'
-        }).c('body').t('Hello world').tree());
+        await view.model.handleMessageStanza(stx`
+            <message from="${muc_jid}/someone-else"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>Hello world</body>
+            </message>`);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 

@@ -1,12 +1,6 @@
 /*global mock, converse, _ */
 
-
-const $iq = converse.env.$iq;
-const $pres = converse.env.$pres;
-const sizzle = converse.env.sizzle;
-const Strophe = converse.env.Strophe;
-const u = converse.env.utils;
-
+const { stx, sizzle, Strophe, u } = converse.env;
 
 async function openModtools (_converse, view) {
     const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -101,7 +95,8 @@ describe("The groupchat moderator tool", function () {
             'type': 'result',
             'id': sent_IQ.getAttribute('id'),
             'from': view.model.get('jid'),
-            'to': _converse.api.connection.get().jid
+            'to': _converse.api.connection.get().jid,
+            'xmlns': 'jabber:client'
         });
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
@@ -200,58 +195,46 @@ describe("The groupchat moderator tool", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', []);
         const view = _converse.chatboxviews.get(muc_jid);
         _converse.api.connection.get()._dataRecv(mock.createRequest(
-            $pres({to: _converse.jid, from: `${muc_jid}/nomorenicks`})
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `nomorenicks@montague.lit`,
-                    'role': 'participant'
-                })
+            stx`<presence to="${_converse.jid}" from="${muc_jid}/nomorenicks" xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="nomorenicks@montague.lit" role="participant"/>
+                    </x>
+                </presence>`
         ));
         _converse.api.connection.get()._dataRecv(mock.createRequest(
-            $pres({to: _converse.jid, from: `${muc_jid}/newb`})
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `newb@montague.lit`,
-                    'role': 'participant'
-                })
+            stx`<presence to="${_converse.jid}" from="${muc_jid}/newb" xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="newb@montague.lit" role="participant"/>
+                    </x>
+                </presence>`
         ));
         _converse.api.connection.get()._dataRecv(mock.createRequest(
-            $pres({to: _converse.jid, from: `${muc_jid}/some1`})
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `some1@montague.lit`,
-                    'role': 'participant'
-                })
+            stx`<presence to="${_converse.jid}" from="${muc_jid}/some1" xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="some1@montague.lit" role="participant"/>
+                    </x>
+                </presence>`
         ));
         _converse.api.connection.get()._dataRecv(mock.createRequest(
-            $pres({to: _converse.jid, from: `${muc_jid}/oldhag`})
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `oldhag@montague.lit`,
-                    'role': 'participant'
-                })
+            stx`<presence to="${_converse.jid}" from="${muc_jid}/oldhag" xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="oldhag@montague.lit" role="participant"/>
+                    </x>
+                </presence>`
         ));
         _converse.api.connection.get()._dataRecv(mock.createRequest(
-            $pres({to: _converse.jid, from: `${muc_jid}/crone`})
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `crone@montague.lit`,
-                    'role': 'participant'
-                })
+            stx`<presence to="${_converse.jid}" from="${muc_jid}/crone" xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="crone@montague.lit" role="participant"/>
+                    </x>
+                </presence>`
         ));
         _converse.api.connection.get()._dataRecv(mock.createRequest(
-            $pres({to: _converse.jid, from: `${muc_jid}/tux`})
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `tux@montague.lit`,
-                    'role': 'participant'
-                })
+            stx`<presence to="${_converse.jid}" from="${muc_jid}/tux" xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="tux@montague.lit" role="participant"/>
+                    </x>
+                </presence>`
         ));
         await u.waitUntil(() => (view.model.occupants.length === 7), 1000);
 
@@ -314,6 +297,7 @@ describe("The groupchat moderator tool", function () {
         await u.waitUntil(() => (view.model.occupants.length === 5));
         const modal = await openModtools(_converse, view);
         const tab = modal.querySelector('#affiliations-tab');
+
         // Clear so that we don't match older stanzas
         _converse.api.connection.get().IQ_stanzas = [];
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
@@ -330,16 +314,16 @@ describe("The groupchat moderator tool", function () {
             ).length
         ).pop());
 
-        const error = u.toStanza(
-            `<iq from="${muc_jid}"
-                 id="${iq_query.getAttribute('id')}"
-                 type="error"
-                 to="${_converse.jid}">
-
+        const error =
+            stx`<iq from="${muc_jid}"
+                    id="${iq_query.getAttribute('id')}"
+                    type="error"
+                    to="${_converse.jid}"
+                    xmlns="jabber:client">
                  <error type="auth">
                     <forbidden xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
-            </iq>`);
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(error));
         await u.waitUntil(() => !modal.loading_users_with_affiliation);
 
@@ -401,16 +385,16 @@ describe("The groupchat moderator tool", function () {
                 `</query>`+
             `</iq>`);
 
-        const error = u.toStanza(
-            `<iq from="${muc_jid}"
-                 id="${sent_IQ.getAttribute('id')}"
-                 type="error"
-                 to="${_converse.jid}">
-
+        const error =
+            stx`<iq from="${muc_jid}"
+                    id="${sent_IQ.getAttribute('id')}"
+                    type="error"
+                    to="${_converse.jid}"
+                    xmlns="jabber:client">
                  <error type="cancel">
                     <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
                  </error>
-            </iq>`);
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(error));
 
     }));

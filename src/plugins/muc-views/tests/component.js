@@ -60,7 +60,6 @@ describe("The <converse-muc> component", function () {
         span_el.classList.add('conversejs');
         span_el.classList.add('converse-embedded');
 
-
         const muc_el = document.createElement('converse-muc');
         muc_el.classList.add('chatbox');
         muc_el.classList.add('chatroom');

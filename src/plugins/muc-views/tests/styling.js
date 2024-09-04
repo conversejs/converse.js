@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { u, $msg } = converse.env;
+const { u, stx } = converse.env;
 
 describe("An incoming groupchat Message", function () {
 
@@ -12,13 +12,15 @@ describe("An incoming groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         const msg_text = "This *message mentions romeo*";
-        const msg = $msg({
-                from: 'lounge@montague.lit/gibson',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t(msg_text).up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'23', 'end':'29', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).nodeTree;
+        const msg = stx`
+                <message xmlns="jabber:client"
+                         from="lounge@montague.lit/gibson"
+                         id="${u.getUniqueId()}"
+                         to="romeo@montague.lit"
+                         type="groupchat">
+                    <body>${msg_text}</body>
+                    <reference xmlns="urn:xmpp:reference:0" begin="23" end="29" type="mention" uri="xmpp:romeo@montague.lit"/>
+                </message>`;
         await view.model.handleMessageStanza(msg);
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.classList.length).toEqual(1);
@@ -39,13 +41,15 @@ describe("An incoming groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         const msg_text = "x_y_z_ hello";
-        const msg = $msg({
-                from: 'lounge@montague.lit/gibson',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t(msg_text).up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'0', 'end':'6', 'type':'mention', 'uri':'xmpp:xyz@montague.lit'}).nodeTree;
+        const msg = stx`
+            <message xmlns="jabber:client"
+                        from="lounge@montague.lit/gibson"
+                        id="${u.getUniqueId()}"
+                        to="romeo@montague.lit"
+                        type="groupchat">
+                <body>${msg_text}</body>
+                <reference xmlns="urn:xmpp:reference:0" begin="0" end="6" type="mention" uri="xmpp:xyz@montague.lit"/>
+            </message>`;
         await view.model.handleMessageStanza(msg);
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.classList.length).toEqual(1);

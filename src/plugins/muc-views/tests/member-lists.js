@@ -1,5 +1,5 @@
 /*global mock, converse */
-const { $iq, Strophe, u }  = converse.env;
+const { $iq, Strophe, u, stx }  = converse.env;
 
 describe("A Groupchat", function () {
 
@@ -14,6 +14,7 @@ describe("A Groupchat", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             let view = _converse.chatboxviews.get(muc_jid);
             expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(3);
+
 
             // Check in reverse order that we requested all three lists
             const owner_iq = sent_IQs.pop();
@@ -129,18 +130,16 @@ describe("A Groupchat", function () {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(err_stanza));
 
                 // Now the service sends the member lists to the user
-                const member_list_stanza = $iq({
-                        'from': muc_jid,
-                        'id': member_iq.getAttribute('id'),
-                        'to': 'romeo@montague.lit/orchard',
-                        'type': 'result'
-                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
-                        .c('item', {
-                            'affiliation': 'member',
-                            'jid': 'hag66@shakespeare.lit',
-                            'nick': 'thirdwitch',
-                            'role': 'participant'
-                        });
+                const member_list_stanza = stx`
+                    <iq from="${muc_jid}"
+                        id="${member_iq.getAttribute('id')}"
+                        to="romeo@montague.lit/orchard"
+                        type="result"
+                        xmlns="jabber:client">
+                        <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                            <item affiliation="member" jid="hag66@shakespeare.lit" nick="thirdwitch" role="participant"/>
+                        </query>
+                    </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(member_list_stanza));
 
                 await u.waitUntil(() => view.model.occupants.length > 1);
@@ -176,22 +175,20 @@ describe("Someone being invited to a groupchat", function () {
 
         // State that the chat is members-only via the features IQ
         const view = _converse.chatboxviews.get(muc_jid);
-        const features_stanza = $iq({
-                from: 'coven@chat.shakespeare.lit',
-                'id': stanza.getAttribute('id'),
-                'to': 'romeo@montague.lit/desktop',
-                'type': 'result'
-            })
-            .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                .c('identity', {
-                    'category': 'conference',
-                    'name': 'A Dark Cave',
-                    'type': 'text'
-                }).up()
-                .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                .c('feature', {'var': 'muc_hidden'}).up()
-                .c('feature', {'var': 'muc_temporary'}).up()
-                .c('feature', {'var': 'muc_membersonly'}).up();
+        const features_stanza = stx`
+            <iq from="coven@chat.shakespeare.lit"
+                id="${stanza.getAttribute('id')}"
+                to="romeo@montague.lit/desktop"
+                type="result"
+                xmlns="jabber:client">
+                <query xmlns="http://jabber.org/protocol/disco#info">
+                    <identity category="conference" name="A Dark Cave" type="text"/>
+                    <feature var="http://jabber.org/protocol/muc"/>
+                    <feature var="muc_hidden"/>
+                    <feature var="muc_temporary"/>
+                    <feature var="muc_membersonly"/>
+                </query>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
         const sent_stanzas = _converse.api.connection.get().sent_stanzas;
         await u.waitUntil(() => sent_stanzas.filter(s => s.matches(`presence[to="${muc_jid}/${nick}"]`)).pop());
@@ -231,43 +228,40 @@ describe("Someone being invited to a groupchat", function () {
             `</iq>`);
 
         // Now the service sends the member lists to the user
-        const member_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': member_iq.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
-                .c('item', {
-                    'affiliation': 'member',
-                    'jid': 'hag66@shakespeare.lit',
-                    'nick': 'thirdwitch',
-                    'role': 'participant'
-                });
+        const member_list_stanza = stx`
+            <iq from="coven@chat.shakespeare.lit"
+                id="${member_iq.getAttribute('id')}"
+                to="romeo@montague.lit/orchard"
+                type="result"
+                xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                    <item affiliation="member" jid="hag66@shakespeare.lit" nick="thirdwitch" role="participant"/>
+                </query>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(member_list_stanza));
 
-        const admin_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': admin_iq.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
-                .c('item', {
-                    'affiliation': 'admin',
-                    'jid': 'wiccarocks@shakespeare.lit',
-                    'nick': 'secondwitch'
-                });
+        const admin_list_stanza = stx`
+            <iq from="coven@chat.shakespeare.lit"
+                id="${admin_iq.getAttribute('id')}"
+                to="romeo@montague.lit/orchard"
+                type="result"
+                xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                    <item affiliation="admin" jid="wiccarocks@shakespeare.lit" nick="secondwitch"/>
+                </query>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(admin_list_stanza));
 
-        const owner_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': owner_iq.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
-                .c('item', {
-                    'affiliation': 'owner',
-                    'jid': 'crone1@shakespeare.lit',
-                });
+        const owner_list_stanza = stx`
+            <iq from="coven@chat.shakespeare.lit"
+                id="${owner_iq.getAttribute('id')}"
+                to="romeo@montague.lit/orchard"
+                type="result"
+                xmlns="jabber:client">
+                <query xmlns="${Strophe.NS.MUC_ADMIN}">
+                    <item affiliation="owner" jid="crone1@shakespeare.lit"/>
+                </query>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(owner_list_stanza));
 
         // Converse puts the user on the member list
@@ -281,12 +275,12 @@ describe("Someone being invited to a groupchat", function () {
                 `</query>`+
             `</iq>`);
 
-        const result = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': stanza.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            });
+        const result = stx`
+            <iq from="coven@chat.shakespeare.lit"
+                id="${stanza.getAttribute('id')}"
+                to="romeo@montague.lit/orchard"
+                type="result"
+                xmlns="jabber:client"/>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
         await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());

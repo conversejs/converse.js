@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $iq, Strophe, sizzle, u } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 describe("Chatrooms", function () {
 
@@ -28,18 +28,21 @@ describe("Chatrooms", function () {
                 .toBe(`<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
                             `type="get" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:register"/></iq>`);
-            const result = $iq({
-                'from': view.model.get('jid'),
-                'id': stanza.getAttribute('id'),
-                'to': _converse.bare_jid,
-                'type': 'result',
-            }).c('query', {'type': 'jabber:iq:register'})
-                .c('x', {'xmlns': 'jabber:x:data', 'type': 'form'})
-                    .c('field', {
-                        'label': 'Desired Nickname',
-                        'type': 'text-single',
-                        'var': 'muc#register_roomnick'
-                    }).c('required');
+
+            const result = stx`
+                <iq from="${view.model.get('jid')}"
+                        id="${stanza.getAttribute('id')}"
+                        to="${_converse.bare_jid}"
+                        type="result"
+                        xmlns="jabber:client">
+                    <query xmlns="jabber:iq:register">
+                        <x xmlns="jabber:x:data" type="form">
+                            <field label="Desired Nickname" type="text-single" var="muc#register_roomnick">
+                                <required/>
+                            </field>
+                        </x>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(result));
             stanza = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(
                 iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length

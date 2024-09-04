@@ -1,7 +1,6 @@
 /*global mock, converse */
 
-const $pres = converse.env.$pres;
-const u = converse.env.utils;
+const { stx, u } = converse.env;
 
 describe("XSS", function () {
     describe("A Groupchat", function () {
@@ -10,30 +9,23 @@ describe("XSS", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            /* <presence xmlns="jabber:client" to="jc@chat.example.org/converse.js-17184538"
-             *      from="oo@conference.chat.example.org/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;">
-             *   <x xmlns="http://jabber.org/protocol/muc#user">
-             *    <item jid="jc@chat.example.org/converse.js-17184538" affiliation="owner" role="moderator"/>
-             *    <status code="110"/>
-             *   </x>
-             * </presence>"
-             */
-            const presence = $pres({
-                    to:'romeo@montague.lit/pda',
-                    from:"lounge@montague.lit/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;"
-            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-                .c('item').attrs({
-                    jid: 'someone@montague.lit',
-                    role: 'moderator',
-                }).up()
-                .c('status').attrs({code:'110'}).nodeTree;
+
+            const presence = stx`
+                <presence xmlns="jabber:client"
+                          to="romeo@montague.lit/pda"
+                          from="lounge@montague.lit/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item jid="someone@montague.lit" role="moderator"/>
+                        <status code="110"/>
+                    </x>
+                </presence>`;
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             await u.waitUntil(() => view.querySelectorAll('.occupant-list .occupant-nick').length === 2);
             const occupants = view.querySelectorAll('.occupant-list li .occupant-nick');
             expect(occupants.length).toBe(2);
-            expect(occupants[0].textContent.trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
+            expect(occupants[0].textContent.trim()).toBe('<img src="x" onerror="alert(123)"/>');
         }));
 
         it("escapes the subject before rendering it, to avoid JS-injection attacks",

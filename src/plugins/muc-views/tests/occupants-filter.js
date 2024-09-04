@@ -1,6 +1,6 @@
 /* global mock, converse */
 
-const { $pres, u } = converse.env;
+const { u, stx } = converse.env;
 
 describe("The MUC occupants filter", function () {
 
@@ -30,15 +30,16 @@ describe("The MUC occupants filter", function () {
             const name = mock.chatroom_names[i];
             const role = mock.chatroom_roles[name].role;
             // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-            const presence = $pres({
-                    to:'romeo@montague.lit/pda',
-                    from:'lounge@montague.lit/'+name
-            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: mock.chatroom_roles[name].affiliation,
-                jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                role: role
-            });
+            const presence = stx`
+                <presence to="romeo@montague.lit/pda"
+                        from="lounge@montague.lit/${name}"
+                        xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="${mock.chatroom_roles[name].affiliation}"
+                                jid="${name.replace(/ /g,'.').toLowerCase()}@montague.lit"
+                                role="${role}"/>
+                    </x>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         }
 

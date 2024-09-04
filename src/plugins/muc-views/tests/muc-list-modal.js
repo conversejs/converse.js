@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $iq, Strophe, Promise, sizzle, u } = converse.env;
+const { Strophe, Promise, sizzle, u, stx } = converse.env;
 
 describe('The "Groupchats" List modal', function () {
 
@@ -36,23 +36,26 @@ describe('The "Groupchats" List modal', function () {
                         `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
                     `</iq>`
             );
-            const iq = $iq({
-                'from': 'muc.montague.lit',
-                'to': 'romeo@montague.lit/pda',
-                'id': id,
-                'type': 'result',
-            })
-                .c('query')
-                .c('item', { jid: 'heath@chat.shakespeare.lit', name: 'A Lonely Heath' }).up()
-                .c('item', { jid: 'coven@chat.shakespeare.lit', name: 'A Dark Cave' }).up()
-                .c('item', { jid: 'forres@chat.shakespeare.lit', name: 'The Palace' }).up()
-                .c('item', { jid: 'inverness@chat.shakespeare.lit', name: 'Macbeth&apos;s Castle' }).up()
-                .c('item', { jid: 'orchard@chat.shakespeare.lit', name: "Capulet's Orchard" }).up()
-                .c('item', { jid: 'friar@chat.shakespeare.lit', name: "Friar Laurence's cell" }).up()
-                .c('item', { jid: 'hall@chat.shakespeare.lit', name: "Hall in Capulet's house" }).up()
-                .c('item', { jid: 'chamber@chat.shakespeare.lit', name: "Juliet's chamber" }).up()
-                .c('item', { jid: 'public@chat.shakespeare.lit', name: 'A public place' }).up()
-                .c('item', { jid: 'street@chat.shakespeare.lit', name: 'A street' }).nodeTree;
+
+            const iq = stx`
+                <iq from="muc.montague.lit"
+                        to="romeo@montague.lit/pda"
+                        id="${id}"
+                        type="result"
+                        xmlns="jabber:client">
+                    <query>
+                        <item jid="heath@chat.shakespeare.lit" name="A Lonely Heath"/>
+                        <item jid="coven@chat.shakespeare.lit" name="A Dark Cave"/>
+                        <item jid="forres@chat.shakespeare.lit" name="The Palace"/>
+                        <item jid="inverness@chat.shakespeare.lit" name="Macbeth&apos;s Castle"/>
+                        <item jid="orchard@chat.shakespeare.lit" name="Capulet's Orchard"/>
+                        <item jid="friar@chat.shakespeare.lit" name="Friar Laurence's cell"/>
+                        <item jid="hall@chat.shakespeare.lit" name="Hall in Capulet's house"/>
+                        <item jid="chamber@chat.shakespeare.lit" name="Juliet's chamber"/>
+                        <item jid="public@chat.shakespeare.lit" name="A public place"/>
+                        <item jid="street@chat.shakespeare.lit" name="A street"/>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(iq));
 
             await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 11);
@@ -117,16 +120,18 @@ describe('The "Groupchats" List modal', function () {
                             `<query xmlns="http://jabber.org/protocol/disco#items"/>` +
                         `</iq>`
                 );
-                const iq = $iq({
-                    from: 'muc.montague.lit',
-                    to: 'romeo@montague.lit/pda',
-                    id: sent_stanza.getAttribute('id'),
-                    type: 'result',
-                })
-                    .c('query')
-                    .c('item', { jid: 'heath@chat.shakespeare.lit', name: 'A Lonely Heath' }).up()
-                    .c('item', { jid: 'coven@chat.shakespeare.lit', name: 'A Dark Cave' }).up()
-                    .c('item', { jid: 'forres@chat.shakespeare.lit', name: 'The Palace' }).up();
+                const iq = stx`
+                    <iq from="muc.montague.lit"
+                        to="romeo@montague.lit/pda"
+                        id="${sent_stanza.getAttribute('id')}"
+                        type="result"
+                        xmlns="jabber:client">
+                        <query>
+                            <item jid="heath@chat.shakespeare.lit" name="A Lonely Heath"/>
+                            <item jid="coven@chat.shakespeare.lit" name="A Dark Cave"/>
+                            <item jid="forres@chat.shakespeare.lit" name="The Palace"/>
+                        </query>
+                    </iq>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(iq));
 
                 await u.waitUntil(() => modal.querySelectorAll('.available-chatrooms li').length === 4);

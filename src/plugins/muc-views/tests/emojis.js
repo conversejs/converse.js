@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $pres, sizzle } = converse.env;
+const { sizzle, stx } = converse.env;
 const u = converse.env.utils;
 
 describe("Emojis", function () {
@@ -53,17 +53,16 @@ describe("Emojis", function () {
             await u.waitUntil(() => textarea.value === ':grimacing: ');
 
             // Test that username starting with : doesn't cause issues
-            const presence = $pres({
-                    'from': `${muc_jid}/:username`,
-                    'id': '27C55F89-1C6A-459A-9EB5-77690145D624',
-                    'to': _converse.jid
-                })
-                .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
-                    .c('item', {
-                        'jid': 'some1@montague.lit',
-                        'affiliation': 'member',
-                        'role': 'participant'
-                    });
+            const presence = stx`
+                <presence
+                        from="${muc_jid}/:username"
+                        id="27C55F89-1C6A-459A-9EB5-77690145D624"
+                        to="${_converse.jid}"
+                        xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item jid="some1@montague.lit" affiliation="member" role="participant"/>
+                    </x>
+                </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             textarea.value = ':use';

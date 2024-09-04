@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, $msg, $pres } = converse.env;
+const { Strophe, stx } = converse.env;
 const u = converse.env.utils;
 
 describe("A MAM archived message", function () {
@@ -13,8 +13,7 @@ describe("A MAM archived message", function () {
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
 
         const messages = [
-            u.toStanza(`
-                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
+            stx`<message to="${_converse.api.connection.get().jid}" from="${muc_jid}" xmlns="jabber:server">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="9fe1a9d9-c979-488c-93a4-8a3c4dcbc63e">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:51:20Z"/>
@@ -25,10 +24,9 @@ describe("A MAM archived message", function () {
                             </message>
                         </forwarded>
                     </result>
-                </message>`),
+                </message>`,
 
-            u.toStanza(`
-                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
+            stx`<message to="${_converse.api.connection.get().jid}" from="${muc_jid}" xmlns="jabber:server">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="64f68d52-76e6-4fa6-93ef-9fbf96bb237b">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:51:25Z"/>
@@ -39,10 +37,9 @@ describe("A MAM archived message", function () {
                             </message>
                         </forwarded>
                     </result>
-                </message>`),
+                </message>`,
 
-            u.toStanza(`
-                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
+            stx`<message to="${_converse.api.connection.get().jid}" from="${muc_jid}" xmlns="jabber:server">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="c2c07703-b285-4529-a4b4-12594f749c58">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:52:17Z"/>
@@ -64,10 +61,9 @@ describe("A MAM archived message", function () {
                             </message>
                         </forwarded>
                     </result>
-                </message>`),
+                </message>`,
 
-            u.toStanza(`
-                <message to="${_converse.api.connection.get().jid}" from="${muc_jid}">
+            stx`<message to="${_converse.api.connection.get().jid}" from="${muc_jid}" xmlns="jabber:server">
                     <result xmlns="urn:xmpp:mam:2" queryid="c03f0f53-8501-4ed9-9261-2eddd055486c" id="c2b2b039-f808-4b4c-bfbd-607173e012f9">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2021-10-13T17:52:22Z"/>
@@ -78,10 +74,10 @@ describe("A MAM archived message", function () {
                             </message>
                         </forwarded>
                     </result>
-                </message>`)
+                </message>`
         ]
         spyOn(model, 'updateMessage');
-        _converse.handleMAMResult(model, { messages });
+        _converse.handleMAMResult(model, { messages: messages.map((m) => m.tree()) });
 
         await u.waitUntil(() => model.messages.length === 4);
         expect(model.messages.at(0).get('time')).toBe('2021-10-13T17:51:20.000Z');
@@ -96,7 +92,7 @@ describe("A MAM archived message", function () {
         const muc_jid = 'room@muc.example.com';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         spyOn(model, 'getDuplicateMessage').and.callThrough();
-        let stanza = u.toStanza(`
+        let stanza = stx`
             <message xmlns="jabber:client"
                      from="room@muc.example.com/some1"
                      to="${_converse.api.connection.get().jid}"
@@ -105,14 +101,14 @@ describe("A MAM archived message", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0"
                            id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                            by="room@muc.example.com"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => model.messages.length === 1);
         await u.waitUntil(() => model.getDuplicateMessage.calls.count() === 1);
         let result = await model.getDuplicateMessage.calls.all()[0].returnValue;
         expect(result).toBe(undefined);
 
-        stanza = u.toStanza(`
+        stanza = stx`
             <message xmlns="jabber:client"
                     to="${_converse.api.connection.get().jid}"
                     from="room@muc.example.com">
@@ -124,10 +120,10 @@ describe("A MAM archived message", function () {
                         </message>
                     </forwarded>
                 </result>
-            </message>`);
+            </message>`;
 
         spyOn(model, 'updateMessage');
-        _converse.handleMAMResult(model, { 'messages': [stanza] });
+        _converse.handleMAMResult(model, { 'messages': [stanza.tree()] });
         await u.waitUntil(() => model.getDuplicateMessage.calls.count() === 2);
         result = await model.getDuplicateMessage.calls.all()[1].returnValue;
         expect(result instanceof _converse.Message).toBe(true);
@@ -144,45 +140,34 @@ describe("A MAM archived message", function () {
         const sender_jid = `${muc_jid}/romeo`;
         const impersonated_jid = `${muc_jid}/i_am_groot`
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const stanza = $pres({
-                to: 'romeo@montague.lit/_converse.js-29092160',
-                from: sender_jid
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'owner',
-                'jid': 'newguy@montague.lit/_converse.js-290929789',
-                'role': 'participant'
-            }).tree();
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-        /*
-         * <message to="romeo@montague.im/poezio" id="718d40df-3948-4798-a99b-35cc9f03cc4f-641" type="groupchat" from="xsf@muc.xmpp.org/romeo">
-         *     <received xmlns="urn:xmpp:carbons:2">
-         *         <forwarded xmlns="urn:xmpp:forward:0">
-         *         <message xmlns="jabber:client" to="xsf@muc.xmpp.org" type="groupchat" from="xsf@muc.xmpp.org/i_am_groot">
-         *             <body>I am groot.</body>
-         *         </message>
-         *         </forwarded>
-         *     </received>
-         * </message>
-         */
-        const msg = $msg({
-                'from': sender_jid,
-                'id': _converse.api.connection.get().getUniqueId(),
-                'to': _converse.api.connection.get().jid,
-                'type': 'groupchat',
-                'xmlns': 'jabber:client'
-            }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
-              .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-              .c('message', {
-                    'xmlns': 'jabber:client',
-                    'from': impersonated_jid,
-                    'to': muc_jid,
-                    'type': 'groupchat'
-            }).c('body').t('I am groot').tree();
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<presence to='romeo@montague.lit/_converse.js-29092160' from='${sender_jid}' xmlns="jabber:client">
+                    <x xmlns='${Strophe.NS.MUC_USER}'>
+                        <item affiliation='owner' jid='newguy@montague.lit/_converse.js-290929789' role='participant'/>
+                    </x>
+            </presence>`)
+        );
+
+        const msg = stx`
+            <message from="${sender_jid}"
+                     id="${_converse.api.connection.get().getUniqueId()}"
+                     to="${_converse.api.connection.get().jid}"
+                     type="groupchat"
+                     xmlns="jabber:client">
+                <received xmlns="urn:xmpp:carbons:2">
+                    <forwarded xmlns="urn:xmpp:forward:0">
+                        <message xmlns="jabber:client"
+                                 from="${impersonated_jid}"
+                                 to="${muc_jid}"
+                                 type="groupchat">
+                            <body>I am groot</body>
+                        </message>
+                    </forwarded>
+                </received>
+            </message>`;
         const view = _converse.chatboxviews.get(muc_jid);
         spyOn(converse.env.log, 'error');
-        await _converse.handleMAMResult(model, { 'messages': [msg] });
+        await _converse.handleMAMResult(model, { 'messages': [msg.tree()] });
         await u.waitUntil(() => converse.env.log.error.calls.count());
         expect(converse.env.log.error).toHaveBeenCalledWith(
             'Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied'

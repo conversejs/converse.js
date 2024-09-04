@@ -1,7 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, $msg, $pres, sizzle } = converse.env;
-const u = converse.env.utils;
+const { Strophe, sizzle, stx, u } = converse.env;
 
 
 describe("An incoming groupchat message", function () {
@@ -14,18 +13,19 @@ describe("An incoming groupchat message", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         if (!view.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
         const message = 'romeo: Your attention is required';
-        const nick = mock.chatroom_names[0],
-            msg = $msg({
-                from: 'lounge@montague.lit/'+nick,
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t(message).tree();
+        const nick = mock.chatroom_names[0];
+        const msg =
+            stx`<message from="lounge@montague.lit/${nick}"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>${message}</body>
+            </message>`;
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(u.hasClass('mentioned', view.querySelector('.chat-msg'))).toBeTruthy();
     }));
-
 
     it("highlights all users mentioned via XEP-0372 references",
             mock.initConverse([], {}, async function (_converse) {
@@ -35,28 +35,28 @@ describe("An incoming groupchat message", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
             _converse.api.connection.get()._dataRecv(mock.createRequest(
-                $pres({
-                    'to': 'tom@montague.lit/resource',
-                    'from': `lounge@montague.lit/${nick}`
-                })
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `${nick}@montague.lit/resource`,
-                    'role': 'participant'
-                }))
-            );
+                stx`<presence
+                        to="tom@montague.lit/resource"
+                        from="lounge@montague.lit/${nick}"
+                        xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                    </x>
+                </presence>`
+            ));
         });
-        let msg = $msg({
-                from: 'lounge@montague.lit/gibson',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t('hello z3r0 tom mr.robot, how are you?').up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'6', 'end':'10', 'type':'mention', 'uri':'xmpp:z3r0@montague.lit'}).up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
-        await view.model.handleMessageStanza(msg);
+        await view.model.handleMessageStanza(
+            stx`<message from="lounge@montague.lit/gibson"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>hello z3r0 tom mr.robot, how are you?</body>
+                <reference xmlns="urn:xmpp:reference:0" begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit"/>
+                <reference xmlns="urn:xmpp:reference:0" begin="11" end="14" type="mention" uri="xmpp:romeo@montague.lit"/>
+                <reference xmlns="urn:xmpp:reference:0" begin="15" end="23" type="mention" uri="xmpp:mr.robot@montague.lit"/>
+            </message>`.tree());
+
         await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!-.*?->/g, '') ===
             'hello <span class="mention" data-uri="xmpp:z3r0@montague.lit">z3r0</span> '+
             '<span class="mention mention--self badge badge-info" data-uri="xmpp:romeo@montague.lit">tom</span> '+
@@ -64,14 +64,15 @@ describe("An incoming groupchat message", function () {
         let message = view.querySelector('.chat-msg__text');
         expect(message.classList.length).toEqual(1);
 
-        msg = $msg({
-                from: 'lounge@montague.lit/sw0rdf1sh',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t('@gibson').up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'1', 'end':'7', 'type':'mention', 'uri':'xmpp:gibson@montague.lit'}).nodeTree;
-        await view.model.handleMessageStanza(msg);
+        await view.model.handleMessageStanza(
+            stx`<message from="lounge@montague.lit/sw0rdf1sh"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>@gibson</body>
+                <reference xmlns="urn:xmpp:reference:0" begin="1" end="7" type="mention" uri="xmpp:gibson@montague.lit"/>
+            </message>`.tree());
 
         await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
@@ -88,17 +89,15 @@ describe("An incoming groupchat message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         _converse.api.connection.get()._dataRecv(mock.createRequest(
-            $pres({
-                'to': 'romeo@montague.lit/resource',
-                'from': `lounge@montague.lit/ThUnD3r|Gr33n`
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': `${nick}@montague.lit/resource`,
-                'role': 'participant'
-            }))
-        );
+            stx`<presence
+                    to="romeo@montague.lit/resource"
+                    from="lounge@montague.lit/ThUnD3r|Gr33n"
+                    xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                </x>
+            </presence>`
+        ));
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
         textarea.value = 'hello @ThUnD3r|Gr33n'
         const enter_event = {
@@ -136,29 +135,29 @@ describe("An incoming groupchat message", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
             _converse.api.connection.get()._dataRecv(mock.createRequest(
-                $pres({
-                    'to': 'tom@montague.lit/resource',
-                    'from': `lounge@montague.lit/${nick}`
-                })
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `${nick}@montague.lit/resource`,
-                    'role': 'participant'
-                }))
-            );
+                stx`<presence
+                        to="tom@montague.lit/resource"
+                        from="lounge@montague.lit/${nick}"
+                        xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                    </x>
+                </presence>`
+            ));
         });
-        const msg = $msg({
-                from: 'lounge@montague.lit/gibson',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t('>hello z3r0 tom mr.robot, how are you?').up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'7', 'end':'11', 'type':'mention', 'uri':'xmpp:z3r0@montague.lit'}).up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'12', 'end':'15', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
-                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'16', 'end':'24', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
 
-        await view.model.handleMessageStanza(msg);
+        await view.model.handleMessageStanza(
+            stx`<message from="lounge@montague.lit/gibson"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>>hello z3r0 tom mr.robot, how are you?</body>
+                <reference xmlns="urn:xmpp:reference:0" begin="7" end="11" type="mention" uri="xmpp:z3r0@montague.lit"/>
+                <reference xmlns="urn:xmpp:reference:0" begin="12" end="15" type="mention" uri="xmpp:romeo@montague.lit"/>
+                <reference xmlns="urn:xmpp:reference:0" begin="16" end="24" type="mention" uri="xmpp:mr.robot@montague.lit"/>
+            </message>`.tree());
+
         await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!-.*?->/g, '') ===
             '<blockquote>hello <span class="mention" data-uri="xmpp:z3r0@montague.lit">z3r0</span> '+
             '<span class="mention mention--self badge badge-info" data-uri="xmpp:romeo@montague.lit">tom</span> '+
@@ -195,26 +194,24 @@ describe("A sent groupchat message", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve', 'robot'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
-                    $pres({
-                        'to': 'tom@montague.lit/resource',
-                        'from': `lounge@montague.lit/${nick}`
-                    })
-                    .c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'none',
-                        'jid': `${nick.replace(/\s/g, '-')}@montague.lit/resource`,
-                        'role': 'participant'
-                    })));
+                    stx`<presence
+                            to="tom@montague.lit/resource"
+                            from="lounge@montague.lit/${nick}"
+                            xmlns="jabber:client">
+                        <x xmlns="${Strophe.NS.MUC_USER}">
+                            <item affiliation="none" jid="${nick.replace(/\s/g, '-')}@montague.lit/resource" role="participant"/>
+                        </x>
+                    </presence>`))
             });
 
             // Also check that nicks from received messages, (but for which we don't have occupant objects) can be mentioned.
-            const stanza = u.toStanza(`
+            const stanza = stx`
                 <message xmlns="jabber:client"
                         from="${muc_jid}/gh0st"
-                        to="${_converse.api.connection.get().bare_jid}"
+                        to="${_converse.session.get('bare_jid')}"
                         type="groupchat">
                     <body>Boo!</body>
-                </message>`);
+                </message>`;
             await view.model.handleMessageStanza(stanza);
 
             // Run a few unit tests for the parseTextForReferences method
@@ -310,16 +307,14 @@ describe("A sent groupchat message", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             ['NotAnAdress', 'darnuria'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
-                    $pres({
-                        'to': 'tom@montague.lit/resource',
-                        'from': `lounge@montague.lit/${nick}`
-                    })
-                    .c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'none',
-                        'jid': `${nick.replace(/\s/g, '-')}@montague.lit/resource`,
-                        'role': 'participant'
-                    })));
+                    stx`<presence
+                            to="tom@montague.lit/resource"
+                            from="lounge@montague.lit/${nick}"
+                            xmlns="jabber:client">
+                        <x xmlns="${Strophe.NS.MUC_USER}">
+                            <item affiliation="none" jid="${nick.replace(/\s/g, '-')}@montague.lit/resource" role="participant"/>
+                        </x>
+                    </presence>`))
             });
 
             // Test that we don't match @nick in email adresses.
@@ -340,15 +335,14 @@ describe("A sent groupchat message", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.api.connection.get()._dataRecv(mock.createRequest(
-                $pres({
-                    'to': 'tom@montague.lit/resource',
-                    'from': `lounge@montague.lit/Link Mauve`
-                })
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'role': 'participant'
-                })));
+                stx`<presence
+                        to="tom@montague.lit/resource"
+                        from="lounge@montague.lit/Link Mauve"
+                        xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" role="participant"/>
+                    </x>
+                </presence>`));
             await u.waitUntil(() => view.model.occupants.length === 2);
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -397,16 +391,15 @@ describe("A sent groupchat message", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
-                    $pres({
-                        'to': 'tom@montague.lit/resource',
-                        'from': `lounge@montague.lit/${nick}`
-                    })
-                    .c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'none',
-                        'jid': `${nick}@montague.lit/resource`,
-                        'role': 'participant'
-                    })));
+                    stx`<presence
+                            to="tom@montague.lit/resource"
+                            from="lounge@montague.lit/${nick}"
+                            xmlns="jabber:client">
+                        <x xmlns="${Strophe.NS.MUC_USER}">
+                            <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                        </x>
+                    </presence>`
+                ));
             });
             await u.waitUntil(() => view.model.occupants.length === 5);
 
@@ -479,18 +472,17 @@ describe("A sent groupchat message", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
+
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
-                    $pres({
-                        'to': 'tom@montague.lit/resource',
-                        'from': `lounge@montague.lit/${nick}`
-                    })
-                    .c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'none',
-                        'jid': `${nick}@montague.lit/resource`,
-                        'role': 'participant'
-                    })));
+                    stx`<presence
+                            to="tom@montague.lit/resource"
+                            from="lounge@montague.lit/${nick}"
+                            xmlns="jabber:client">
+                        <x xmlns="${Strophe.NS.MUC_USER}">
+                            <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                        </x>
+                    </presence>`));
             });
             await u.waitUntil(() => view.model.occupants.length === 5);
 

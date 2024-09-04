@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { u, Strophe } = converse.env;
+const { u, Strophe, stx } = converse.env;
 
 describe("A XEP-0316 MEP notification", function () {
 
@@ -13,16 +13,17 @@ describe("A XEP-0316 MEP notification", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         let msg = 'An anonymous user has saluted romeo';
         let reason = 'Thank you for helping me yesterday';
-        let message = u.toStanza(`
-            <message from='${muc_jid}'
-                    to='${_converse.jid}'
-                    type='headline'
-                    id='zns61f38'>
-                <event xmlns='http://jabber.org/protocol/pubsub#event'>
-                    <items node='urn:ietf:params:xml:ns:conference-info'>
-                        <item id='ehs51f40'>
-                            <conference-info xmlns='urn:ietf:params:xml:ns:conference-info'>
-                                <activity xmlns='http://jabber.org/protocol/activity'>
+        let message = stx`
+            <message from="${muc_jid}"
+                    to="${_converse.jid}"
+                    type="headline"
+                    id="zns61f38"
+                    xmlns="jabber:client">
+                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="urn:ietf:params:xml:ns:conference-info">
+                        <item id="ehs51f40">
+                            <conference-info xmlns="urn:ietf:params:xml:ns:conference-info">
+                                <activity xmlns="http://jabber.org/protocol/activity">
                                     <other/>
                                     <text id="activity-text" xml:lang="en">${msg}</text>
                                     <reference anchor="activity-text" xmlns="urn:xmpp:reference:0" begin="30" end="35" type="mention" uri="xmpp:${_converse.bare_jid}"/>
@@ -32,7 +33,7 @@ describe("A XEP-0316 MEP notification", function () {
                         </item>
                     </items>
                 </event>
-            </message>`);
+            </message>`;
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
@@ -51,16 +52,17 @@ describe("A XEP-0316 MEP notification", function () {
         // Also check a MEP message of type "groupchat"
         msg = 'An anonymous user has poked romeo';
         reason = 'Can you please help me with something else?';
-        message = u.toStanza(`
-            <message from='${muc_jid}'
-                    to='${_converse.jid}'
-                    type='groupchat'
-                    id='zns61f39'>
-                <event xmlns='http://jabber.org/protocol/pubsub#event'>
-                    <items node='urn:ietf:params:xml:ns:conference-info'>
-                        <item id='ehs51f40'>
-                            <conference-info xmlns='urn:ietf:params:xml:ns:conference-info'>
-                                <activity xmlns='http://jabber.org/protocol/activity'>
+        message = stx`
+            <message from="${muc_jid}"
+                    to="${_converse.jid}"
+                    type="groupchat"
+                    id="zns61f39"
+                    xmlns="jabber:client">
+                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="urn:ietf:params:xml:ns:conference-info">
+                        <item id="ehs51f40">
+                            <conference-info xmlns="urn:ietf:params:xml:ns:conference-info">
+                                <activity xmlns="http://jabber.org/protocol/activity">
                                     <other/>
                                     <text id="activity-text" xml:lang="en">${msg}</text>
                                     <reference anchor="activity-text" xmlns="urn:xmpp:reference:0" begin="28" end="33" type="mention" uri="xmpp:${_converse.bare_jid}"/>
@@ -70,7 +72,7 @@ describe("A XEP-0316 MEP notification", function () {
                         </item>
                     </items>
                 </event>
-            </message>`);
+            </message>`;
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
@@ -98,16 +100,17 @@ describe("A XEP-0316 MEP notification", function () {
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true, {'hidden': true});
         const msg = 'An anonymous user has saluted romeo';
         const reason = 'Thank you for helping me yesterday';
-        const message = u.toStanza(`
-            <message from='${muc_jid}'
-                    to='${_converse.jid}'
-                    type='headline'
-                    id='zns61f38'>
-                <event xmlns='http://jabber.org/protocol/pubsub#event'>
-                    <items node='urn:ietf:params:xml:ns:conference-info'>
-                        <item id='ehs51f40'>
-                            <conference-info xmlns='urn:ietf:params:xml:ns:conference-info'>
-                                <activity xmlns='http://jabber.org/protocol/activity'>
+        const message = stx`
+            <message from="${muc_jid}"
+                    to="${_converse.jid}"
+                    type="headline"
+                    id="zns61f38"
+                    xmlns="jabber:client">
+                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="urn:ietf:params:xml:ns:conference-info">
+                        <item id="ehs51f40">
+                            <conference-info xmlns="urn:ietf:params:xml:ns:conference-info">
+                                <activity xmlns="http://jabber.org/protocol/activity">
                                     <other/>
                                     <text id="activity-text" xml:lang="en">${msg}</text>
                                     <reference anchor="activity-text" xmlns="urn:xmpp:reference:0" begin="30" end="35" type="mention" uri="xmpp:${_converse.bare_jid}"/>
@@ -117,7 +120,7 @@ describe("A XEP-0316 MEP notification", function () {
                         </item>
                     </items>
                 </event>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => model.messages.length === 1);
         // expect(window.Notification.calls.count()).toBe(1);
@@ -136,16 +139,17 @@ describe("A XEP-0316 MEP notification", function () {
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true);
         const msg = 'An anonymous user has waved at romeo';
         const reason = 'Check out https://conversejs.org';
-        const message = u.toStanza(`
-            <message from='${muc_jid}'
-                    to='${_converse.jid}'
-                    type='headline'
-                    id='zns61f38'>
-                <event xmlns='http://jabber.org/protocol/pubsub#event'>
-                    <items node='urn:ietf:params:xml:ns:conference-info'>
-                        <item id='ehs51f40'>
-                            <conference-info xmlns='urn:ietf:params:xml:ns:conference-info'>
-                                <activity xmlns='http://jabber.org/protocol/activity'>
+        const message = stx`
+            <message from="${muc_jid}"
+                    to="${_converse.jid}"
+                    type="headline"
+                    id="zns61f38"
+                    xmlns="jabber:client">
+                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="urn:ietf:params:xml:ns:conference-info">
+                        <item id="ehs51f40">
+                            <conference-info xmlns="urn:ietf:params:xml:ns:conference-info">
+                                <activity xmlns="http://jabber.org/protocol/activity">
                                     <other/>
                                     <text id="activity-text" xml:lang="en">${msg}</text>
                                     <reference anchor="activity-text" xmlns="urn:xmpp:reference:0" begin="31" end="37" type="mention" uri="xmpp:${_converse.bare_jid}"/>
@@ -155,7 +159,7 @@ describe("A XEP-0316 MEP notification", function () {
                         </item>
                     </items>
                 </event>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => model.messages.length === 1);
 
@@ -176,16 +180,17 @@ describe("A XEP-0316 MEP notification", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         const msg = 'An anonymous user has saluted romeo';
         const reason = 'Thank you for helping me yesterday';
-        _converse.api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
-            <message from='${muc_jid}'
-                    to='${_converse.jid}'
-                    type='headline'
-                    id='zns61f38'>
-                <event xmlns='http://jabber.org/protocol/pubsub#event'>
-                    <items node='urn:ietf:params:xml:ns:conference-info'>
-                        <item id='ehs51f40'>
-                            <conference-info xmlns='urn:ietf:params:xml:ns:conference-info'>
-                                <activity xmlns='http://jabber.org/protocol/activity'>
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <message from="${muc_jid}"
+                    to="${_converse.jid}"
+                    type="headline"
+                    id="zns61f38"
+                    xmlns="jabber:client">
+                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                    <items node="urn:ietf:params:xml:ns:conference-info">
+                        <item id="ehs51f40">
+                            <conference-info xmlns="urn:ietf:params:xml:ns:conference-info">
+                                <activity xmlns="http://jabber.org/protocol/activity">
                                     <other/>
                                     <text id="activity-text" xml:lang="en">${msg}</text>
                                     <reference anchor="activity-text" xmlns="urn:xmpp:reference:0" begin="30" end="35" type="mention" uri="xmpp:${_converse.bare_jid}"/>
@@ -195,9 +200,9 @@ describe("A XEP-0316 MEP notification", function () {
                         </item>
                     </items>
                 </event>
-                <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
+                <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
             </message>`
-        )));
+        ));
 
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
         expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
@@ -226,15 +231,19 @@ describe("A XEP-0316 MEP notification", function () {
             `</iq>`);
 
         // The server responds with a retraction message
-        const retraction = u.toStanza(`
-            <message type="groupchat" id='retraction-id-1' from="${muc_jid}" to="${muc_jid}/${nick}">
+        const retraction = stx`
+            <message type="groupchat"
+                    id="retraction-id-1"
+                    from="${muc_jid}"
+                    to="${muc_jid}/${nick}"
+                    xmlns="jabber:client">
                 <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                    <moderated by='${_converse.bare_jid}' xmlns='urn:xmpp:message-moderate:0'>
-                        <retract xmlns='urn:xmpp:message-retract:0' />
+                    <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0">
+                        <retract xmlns="urn:xmpp:message-retract:0" />
                         <reason></reason>
                     </moderated>
                 </apply-to>
-            </message>`);
+            </message>`;
         await view.model.handleMessageStanza(retraction);
         expect(view.model.messages.length).toBe(1);
         expect(view.model.messages.at(0).get('moderated')).toBe('retracted');

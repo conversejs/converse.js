@@ -1,9 +1,8 @@
 /*global mock, converse */
 
-const { Strophe } = converse.env;
-const u = converse.env.utils;
-// See: https://xmpp.org/rfcs/rfc3921.html
+const { Strophe, u, stx } = converse.env;
 
+// See: https://xmpp.org/rfcs/rfc3921.html
 
 describe("XEP-0437 Room Activity Indicators", function () {
 
@@ -26,8 +25,8 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
         const first_msg_id = _converse.api.connection.get().getUniqueId();
         const last_msg_id = _converse.api.connection.get().getUniqueId();
-        let message = u.toStanza(
-            `<message xmlns="jabber:client"
+        let message =
+            stx`<message xmlns="jabber:client"
                     to="romeo@montague.lit/orchard"
                     from="${muc_jid}">
                 <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${first_msg_id}">
@@ -38,11 +37,10 @@ describe("XEP-0437 Room Activity Indicators", function () {
                         </message>
                     </forwarded>
                 </result>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
-        message = u.toStanza(
-            `<message xmlns="jabber:client"
+        message = stx`<message xmlns="jabber:client"
                     to="romeo@montague.lit/orchard"
                     from="${muc_jid}">
                 <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${last_msg_id}">
@@ -53,19 +51,21 @@ describe("XEP-0437 Room Activity Indicators", function () {
                         </message>
                     </forwarded>
                 </result>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
 
-        const result = u.toStanza(
-            `<iq type='result' id='${iq_get.getAttribute('id')}'>
-                <fin xmlns='urn:xmpp:mam:2'>
-                    <set xmlns='http://jabber.org/protocol/rsm'>
-                        <first index='0'>${first_msg_id}</first>
+        const result =
+            stx`<iq type="result"
+                    id="${iq_get.getAttribute("id")}"
+                    xmlns="jabber:client">
+                <fin xmlns="urn:xmpp:mam:2">
+                    <set xmlns="http://jabber.org/protocol/rsm">
+                        <first index="0">${first_msg_id}</first>
                         <last>${last_msg_id}</last>
                         <count>2</count>
                     </set>
                 </fin>
-            </iq>`);
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(result));
         await u.waitUntil(() => view.model.messages.length === 2);
 
@@ -99,13 +99,14 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const room_el = await u.waitUntil(() => document.querySelector("converse-rooms-list .available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
-        const activity_stanza = u.toStanza(`
-            <message from="${Strophe.getDomainFromJid(muc_jid)}">
+        const activity_stanza = stx`
+            <message from="${Strophe.getDomainFromJid(muc_jid)}"
+                    xmlns="jabber:client">
                 <rai xmlns="urn:xmpp:rai:0">
                     <activity>${muc_jid}</activity>
                 </rai>
             </message>
-        `);
+        `;
         _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => view.model.get('has_activity'));
@@ -161,13 +162,14 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const room_el = await u.waitUntil(() => document.querySelector("converse-rooms-list .available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
-        const activity_stanza = u.toStanza(`
-            <message from="${Strophe.getDomainFromJid(muc_jid)}">
+        const activity_stanza = stx`
+            <message from="${Strophe.getDomainFromJid(muc_jid)}"
+                    xmlns="jabber:client">
                 <rai xmlns="urn:xmpp:rai:0">
                     <activity>${muc_jid}</activity>
                 </rai>
             </message>
-        `);
+        `;
         _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => model.get('has_activity'));
@@ -208,11 +210,13 @@ describe("XEP-0437 Room Activity Indicators", function () {
             `</presence>`
         );
         // If an error presence with "resource-constraint" is returned, we rejoin
-        const activity_stanza = u.toStanza(`
-            <presence type="error" from="${Strophe.getDomainFromJid(muc_jid)}">
+        const activity_stanza = stx`
+            <presence type="error"
+                    from="${Strophe.getDomainFromJid(muc_jid)}"
+                    xmlns="jabber:client">
                 <error type="wait"><resource-constraint xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
             </presence>
-        `);
+        `;
         _converse.api.connection.get()._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);

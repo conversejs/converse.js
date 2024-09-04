@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, sizzle, u } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 
 describe("XEP-0363: HTTP File Upload", function () {
@@ -87,19 +87,20 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</iq>`);
 
                     const message = base_url+"/logo/conversejs-filled.svg";
-                    const stanza = u.toStanza(`
-                        <iq from='upload.montague.tld'
-                            id="${iq.getAttribute('id')}"
-                            to='romeo@montague.lit/orchard'
-                            type='result'>
-                        <slot xmlns='urn:xmpp:http:upload:0'>
-                            <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>
-                            <header name='Authorization'>Basic Base64String==</header>
-                            <header name='Cookie'>foo=bar; user=romeo</header>
+                    const stanza = stx`
+                        <iq from="upload.montague.tld"
+                            id="${iq.getAttribute("id")}"
+                            to="romeo@montague.lit/orchard"
+                            type="result"
+                            xmlns="jabber:client">
+                        <slot xmlns="urn:xmpp:http:upload:0">
+                            <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg">
+                                <header name="Authorization">Basic Base64String==</header>
+                                <header name="Cookie">foo=bar; user=romeo</header>
                             </put>
                             <get url="${message}" />
                         </slot>
-                        </iq>`);
+                        </iq>`.tree();
 
                     spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async function () {
                         const message = view.model.messages.at(0);

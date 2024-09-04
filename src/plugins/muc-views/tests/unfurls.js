@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, u } = converse.env;
+const { Strophe, u, stx } = converse.env;
 
 describe("A Groupchat Message", function () {
 
@@ -13,19 +13,19 @@ describe("A Groupchat Message", function () {
         const unfurl_image_src = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg";
         const unfurl_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>https://www.youtube.com/watch?v=dQw4w9WgXcQ</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -42,7 +42,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:width" content="1280" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
@@ -58,19 +58,19 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>https://mempool.space</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://mempool.space');
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://conversejs.org/dist/images/custom_emojis/converse.png" />
@@ -78,7 +78,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:width" content="1000" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="500" />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
@@ -94,19 +94,19 @@ describe("A Groupchat Message", function () {
         const unfurl_url = "https://giphy.com/gifs/giphyqa-4YY4DnqeUDBXNTcYMu";
         const gif_url = "https://media4.giphy.com/media/4YY4DnqeUDBXNTcYMu/giphy.gif?foo=bar";
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>${unfurl_url}</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe(unfurl_url);
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:title" content="Animated GIF" />
@@ -117,7 +117,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:width" content="360" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image:height" content="302" />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
@@ -130,19 +130,19 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>Check out https://www.youtube.com/watch?v=dQw4w9WgXcQ and https://duckduckgo.com</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('Check out https://www.youtube.com/watch?v=dQw4w9WgXcQ and https://duckduckgo.com');
 
-        let metadata_stanza = u.toStanza(`
+        let metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -159,11 +159,11 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:width" content="1280" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
         await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 1);
 
-        metadata_stanza = u.toStanza(`
+        metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="https://duckduckgo.com" />
@@ -172,7 +172,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:title" content="DuckDuckGo - Privacy, simplified." />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="The Internet privacy company that empowers you to seamlessly take control of your personal information online, without any tradeoffs." />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.querySelectorAll('converse-message-unfurl').length === 2);
@@ -184,21 +184,21 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>https://www.youtube.com/watch?v=dQw4w9WgXcQ</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
         spyOn(view.model, 'handleMetadataFastening').and.callThrough();
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}/arzu" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -207,7 +207,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.model.handleMetadataFastening.calls.count());
@@ -226,21 +226,21 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>https://www.youtube.com/watch?v=dQw4w9WgXcQ</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
         spyOn(view.model, 'handleMetadataFastening').and.callThrough();
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -249,7 +249,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         expect(view.querySelector('converse-message-unfurl')).toBe(null);
@@ -273,21 +273,21 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>https://www.youtube.com/watch?v=dQw4w9WgXcQ</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
         spyOn(view.model, 'handleMetadataFastening').and.callThrough();
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -296,7 +296,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
@@ -318,19 +318,19 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>https://www.youtube.com/watch?v=dQw4w9WgXcQ</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -339,7 +339,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:image" content="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => !view.querySelector('converse-message-unfurl'));
@@ -360,19 +360,19 @@ describe("A Groupchat Message", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
 
-        const message_stanza = u.toStanza(`
+        const message_stanza = stx`
             <message xmlns="jabber:client" type="groupchat" from="${muc_jid}/arzu" xml:lang="en" to="${_converse.jid}" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                 <body>https://www.youtube.com/watch?v=dQw4w9WgXcQ</body>
                 <active xmlns="http://jabber.org/protocol/chatstates"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04"/>
                 <stanza-id xmlns="urn:xmpp:sid:0" by="${muc_jid}" id="8f7613cc-27d4-40ca-9488-da25c4baf92a"/>
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(message_stanza));
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="eda6c790-b4f3-4c07-b5e2-13fff99e6c04">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:url" content="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
@@ -381,7 +381,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:description" content="Rick Astley&amp;#39;s official music video for &quot;Never Gonna Give You Up&quot; Listen to Rick Astley: https://RickAstley.lnk.to/_listenYD Subscribe to the official Rick Ast..." />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:type" content="video.other" />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         await u.waitUntil(() => view.querySelector('converse-message-unfurl'));
@@ -440,7 +440,7 @@ describe("A Groupchat Message", function () {
         const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(el.textContent).toBe(unfurl_url);
 
-        const metadata_stanza = u.toStanza(`
+        const metadata_stanza = stx`
             <message xmlns="jabber:client" from="${muc_jid}" to="${_converse.jid}" type="groupchat">
                 <apply-to xmlns="urn:xmpp:fasten:0" id="${msg.getAttribute('id')}">
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:site_name" content="YouTube" />
@@ -457,7 +457,7 @@ describe("A Groupchat Message", function () {
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:width" content="1280" />
                     <meta xmlns="http://www.w3.org/1999/xhtml" property="og:video:height" content="720" />
                 </apply-to>
-            </message>`);
+            </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(metadata_stanza));
 
         const unfurl = await u.waitUntil(() => view.querySelector('converse-message-unfurl'));

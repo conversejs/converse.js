@@ -1,9 +1,6 @@
 /*global mock, converse */
 
-const $pres = converse.env.$pres;
-const $msg = converse.env.$msg;
-const Strophe = converse.env.Strophe;
-const u = converse.env.utils;
+const { Strophe, u, stx } = converse.env;
 
 describe("The nickname autocomplete feature", function () {
 
@@ -13,30 +10,29 @@ describe("The nickname autocomplete feature", function () {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
-
         // Nicknames from presences
         ['dick', 'harry'].forEach((nick) => {
             _converse.api.connection.get()._dataRecv(mock.createRequest(
-                $pres({
-                    'to': 'tom@montague.lit/resource',
-                    'from': `lounge@montague.lit/${nick}`
-                })
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `${nick}@montague.lit/resource`,
-                    'role': 'participant'
-                })));
+                stx`<presence
+                    to="tom@montague.lit/resource"
+                    from="lounge@montague.lit/${nick}"
+                    xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                    </x>
+                </presence>`));
         });
 
         // Nicknames from messages
-        const msg = $msg({
-                from: 'lounge@montague.lit/jane',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t('Hello world').tree();
-        await view.model.handleMessageStanza(msg);
+        await view.model.handleMessageStanza(
+            stx`<message
+                    from="lounge@montague.lit/jane"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>Hello world</body>
+            </message>`.tree());
         await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
@@ -81,26 +77,26 @@ describe("The nickname autocomplete feature", function () {
         // Nicknames from presences
         ['dick', 'harry'].forEach((nick) => {
             _converse.api.connection.get()._dataRecv(mock.createRequest(
-                $pres({
-                    'to': 'tom@montague.lit/resource',
-                    'from': `lounge@montague.lit/${nick}`
-                })
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `${nick}@montague.lit/resource`,
-                    'role': 'participant'
-                })));
+                stx`<presence
+                        to="tom@montague.lit/resource"
+                        from="lounge@montague.lit/${nick}"
+                        xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                    </x>
+                </presence>`));
         });
 
         // Nicknames from messages
-        const msg = $msg({
-                from: 'lounge@montague.lit/jane',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t('Hello world').tree();
-        await view.model.handleMessageStanza(msg);
+        await view.model.handleMessageStanza(
+            stx`<message
+                    from="lounge@montague.lit/jane"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>Hello world</body>
+            </message>`.tree());
         await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
@@ -147,26 +143,27 @@ describe("The nickname autocomplete feature", function () {
         // Nicknames from presences
         ['dick', 'harry'].forEach((nick) => {
             _converse.api.connection.get()._dataRecv(mock.createRequest(
-                $pres({
-                    'to': 'tom@montague.lit/resource',
-                    'from': `lounge@montague.lit/${nick}`
-                })
-                .c('x', {xmlns: Strophe.NS.MUC_USER})
-                .c('item', {
-                    'affiliation': 'none',
-                    'jid': `${nick}@montague.lit/resource`,
-                    'role': 'participant'
-                })));
+                stx`<presence
+                    to="tom@montague.lit/resource"
+                    from="lounge@montague.lit/${nick}"
+                    xmlns="jabber:client">
+                    <x xmlns="${Strophe.NS.MUC_USER}">
+                        <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                    </x>
+                </presence>`))
         });
 
         // Nicknames from messages
-        const msg = $msg({
-                from: 'lounge@montague.lit/jane',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t('Hello world').tree();
-        await view.model.handleMessageStanza(msg);
+        await view.model.handleMessageStanza(
+            stx`<message
+                    from="lounge@montague.lit/jane"
+                    id="${u.getUniqueId()}"
+                    to="romeo@montague.lit"
+                    type="groupchat"
+                    xmlns="jabber:client">
+                <body>Hello world</body>
+            </message>`);
+
         await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
@@ -210,16 +207,14 @@ describe("The nickname autocomplete feature", function () {
             // Nicknames from presences
             ['bernard', 'naber', 'helberlo', 'john', 'jones'].forEach((nick) => {
                 _converse.api.connection.get()._dataRecv(mock.createRequest(
-                    $pres({
-                        'to': 'tom@montague.lit/resource',
-                        'from': `lounge@montague.lit/${nick}`
-                    })
-                        .c('x', { xmlns: Strophe.NS.MUC_USER })
-                        .c('item', {
-                            'affiliation': 'none',
-                            'jid': `${nick}@montague.lit/resource`,
-                            'role': 'participant'
-                        })));
+                    stx`<presence
+                        to="tom@montague.lit/resource"
+                        from="lounge@montague.lit/${nick}"
+                        xmlns="jabber:client">
+                        <x xmlns="${Strophe.NS.MUC_USER}">
+                            <item affiliation="none" jid="${nick}@montague.lit/resource" role="participant"/>
+                        </x>
+                    </presence>`));
             });
 
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -270,16 +265,14 @@ describe("The nickname autocomplete feature", function () {
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         expect(view.model.occupants.length).toBe(1);
-        let presence = $pres({
-                'to': 'romeo@montague.lit/orchard',
-                'from': 'lounge@montague.lit/some1'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'some1@montague.lit/resource',
-                'role': 'participant'
-            });
+        let presence = stx`<presence
+                    to="romeo@montague.lit/orchard"
+                    from="lounge@montague.lit/some1"
+                    xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="some1@montague.lit/resource" role="participant"/>
+                </x>
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
         expect(view.model.occupants.length).toBe(2);
 
@@ -316,16 +309,14 @@ describe("The nickname autocomplete feature", function () {
         }
         await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === true);
 
-        presence = $pres({
-                'to': 'romeo@montague.lit/orchard',
-                'from': 'lounge@montague.lit/some2'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'some2@montague.lit/resource',
-                'role': 'participant'
-            });
+        presence = stx`<presence
+                to="romeo@montague.lit/orchard"
+                from="lounge@montague.lit/some2"
+                xmlns="jabber:client">
+            <x xmlns="${Strophe.NS.MUC_USER}">
+                <item affiliation="none" jid="some2@montague.lit/resource" role="participant"/>
+            </x>
+        </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
         textarea.value = "hello s s";
@@ -356,17 +347,16 @@ describe("The nickname autocomplete feature", function () {
         expect(textarea.value).toBe('hello s @some2 ');
 
         // Test that pressing tab twice selects
-        presence = $pres({
-                'to': 'romeo@montague.lit/orchard',
-                'from': 'lounge@montague.lit/z3r0'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'z3r0@montague.lit/resource',
-                'role': 'participant'
-            });
-        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<presence
+                    to="romeo@montague.lit/orchard"
+                    from="lounge@montague.lit/z3r0"
+                    xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="z3r0@montague.lit/resource" role="participant"/>
+                </x>
+            </presence>`));
+
         textarea.value = "hello z";
         message_form.onKeyDown(tab_event);
         message_form.onKeyUp(tab_event);
@@ -383,17 +373,15 @@ describe("The nickname autocomplete feature", function () {
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         expect(view.model.occupants.length).toBe(1);
-        const presence = $pres({
-                'to': 'romeo@montague.lit/orchard',
-                'from': 'lounge@montague.lit/some1'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'some1@montague.lit/resource',
-                'role': 'participant'
-            });
-        _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<presence
+                    to="romeo@montague.lit/orchard"
+                    from="lounge@montague.lit/some1"
+                    xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="some1@montague.lit/resource" role="participant"/>
+                </x>
+            </presence>`));
         expect(view.model.occupants.length).toBe(2);
 
         const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));

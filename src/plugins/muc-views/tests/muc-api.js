@@ -1,7 +1,7 @@
 /*global mock, converse */
 
 const Model = converse.env.Model;
-const { $pres, $iq, Strophe, sizzle, u } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 describe("Groupchats", function () {
 
@@ -173,42 +173,30 @@ describe("Groupchats", function () {
 
             // We pretend this is a new room, so no disco info is returned.
             const features_stanza = $iq({
-                    from: 'room@conference.example.org',
-                    'id': features_query.getAttribute('id'),
-                    'to': 'romeo@montague.lit/desktop',
-                    'type': 'error'
-                }).c('error', {'type': 'cancel'})
-                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+                    from: "room@conference.example.org",
+                    id: features_query.getAttribute("id"),
+                    to: "romeo@montague.lit/desktop",
+                    type: "error",
+                    xmlns: "jabber:client"
+                }).c("error", {"type": "cancel"})
+                    .c("item-not-found", {"xmlns": "urn:ietf:params:xml:ns:xmpp-stanzas"});
             _converse.api.connection.get()._dataRecv(mock.createRequest(features_stanza));
 
-            /* <presence xmlns="jabber:client" to="romeo@montague.lit/pda" from="room@conference.example.org/yo">
-             *  <x xmlns="http://jabber.org/protocol/muc#user">
-             *      <item affiliation="owner" jid="romeo@montague.lit/pda" role="moderator"/>
-             *      <status code="110"/>
-             *      <status code="201"/>
-             *  </x>
-             * </presence>
-             */
-            const presence = $pres({
-                    from:'room@conference.example.org/some1',
-                    to:'romeo@montague.lit/pda'
-                })
-                .c('x', {xmlns:'http://jabber.org/protocol/muc#user'})
-                .c('item', {
-                    affiliation: 'owner',
-                    jid: 'romeo@montague.lit/pda',
-                    role: 'moderator'
-                }).up()
-                .c('status', {code:'110'}).up()
-                .c('status', {code:'201'});
-            _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/pda" from="room@conference.example.org/some1">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="owner" jid="romeo@montague.lit/pda" role="moderator"/>
+                        <status code="110"/>
+                        <status code="201"/>
+                    </x>
+                </presence>`));
 
             const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop());
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">`+
                 `<query xmlns="http://jabber.org/protocol/muc#owner"/></iq>`);
 
-            const node = u.toStanza(`
+            const node = stx`
                <iq xmlns="jabber:client"
                     type="result"
                     to="romeo@montague.lit/pda"
@@ -244,7 +232,7 @@ describe("Groupchats", function () {
                        <value>20</value></field>
                     </x>
                 </query>
-                </iq>`);
+                </iq>`;
 
             mucview = _converse.chatboxviews.get('room@conference.example.org');
             spyOn(mucview.model, 'sendConfiguration').and.callThrough();

@@ -108,7 +108,7 @@ export function getShortnameReferences (text) {
     }
     const references = [...text.matchAll(converse.emojis.shortnames_regex)].filter(ref => ref[0].length > 0);
     return references.map(ref => {
-        const cp = converse.emojis.by_sn[ref[0]].cp;
+        const cp = converse.emojis.by_sn[ref[0].toLowerCase()].cp;
         return {
             cp,
             'begin': ref.index,
@@ -146,7 +146,7 @@ export function getCodePointReferences (text) {
             'cp': icon_id,
             'emoji': emoji,
             'end': offset + emoji.length,
-            'shortname': getEmojisByAtrribute('cp')[icon_id]?.sn || ''
+            'shortname': getEmojisByAttribute('cp')[icon_id]?.sn || ''
         });
     });
     return references;
@@ -190,20 +190,20 @@ export function isOnlyEmojis (text) {
     }
     const emojis = words.filter(text => {
         const refs = getCodePointReferences(u.shortnamesToUnicode(text));
-        return refs.length === 1 && (text === refs[0]['shortname'] || text === refs[0]['emoji']);
+        return refs.length === 1 && (text.toLowerCase() === refs[0]['shortname'] || text === refs[0]['emoji']);
     });
     return emojis.length === words.length;
 }
 
 /**
  * @namespace u
- * @method u.getEmojisByAtrribute
+ * @method u.getEmojisByAttribute
  * @param { 'category'|'cp'|'sn' } attr
  *  The attribute according to which the returned map should be keyed.
  * @returns { Object }
  *  Map of emojis with the passed in `attr` used as key and a list of emojis as values.
  */
-function getEmojisByAtrribute (attr) {
+function getEmojisByAttribute (attr) {
     if (emojis_by_attribute[attr]) {
         return emojis_by_attribute[attr];
     }
@@ -223,7 +223,7 @@ Object.assign(u, {
     getCodePointReferences,
     getShortnameReferences,
     convertASCII2Emoji,
-    getEmojisByAtrribute,
+    getEmojisByAttribute,
     isOnlyEmojis,
     shortnamesToUnicode,
 });

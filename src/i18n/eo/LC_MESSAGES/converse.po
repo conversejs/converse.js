@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-08-29 15:09+0000\n"
-"Last-Translator: programutox <programutox@disroot.org>\n"
+"PO-Revision-Date: 2024-09-09 03:09+0000\n"
+"Last-Translator: phlostically <phlostically@mailinator.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
 "Language: eo\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.1-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -663,7 +663,6 @@ msgid "Previous"
 msgstr "Antaŭa"
 
 #: dist/converse-no-dependencies.js:73740
-#, fuzzy
 msgid "Next"
 msgstr "Malantaŭa"
 
@@ -672,7 +671,6 @@ msgid "Complete"
 msgstr "Kompleta"
 
 #: dist/converse-no-dependencies.js:76272
-#, fuzzy
 msgid "Add to Contacts"
 msgstr "Aldoni kontakton"
 
@@ -722,9 +720,8 @@ msgid "Affiliation changed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76399
-#, fuzzy
 msgid "role changed"
-msgstr "rolo ŝanĝis"
+msgstr "rolo ŝanĝiĝis"
 
 #: dist/converse-no-dependencies.js:76490
 #, fuzzy
@@ -809,7 +806,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:77024
 msgid "Role changed"
-msgstr "Rolo ŝanĝis"
+msgstr "Rolo ŝanĝiĝis"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:77435
@@ -882,7 +879,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:78190
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr "Via kromnomo estas %1$s"
+msgstr "Via kromnomo estas «%1$s»"
 
 #: dist/converse-no-dependencies.js:78208
 msgid "Error: invalid number of arguments"
@@ -1234,18 +1231,16 @@ msgid "Message characters remaining"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:93061
-#, fuzzy
 msgid "Send the message"
-msgstr "Kaŝita mesaĝo"
+msgstr "Sendi la mesaĝon"
 
 #: dist/converse-no-dependencies.js:93259
 msgid "Start a call"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:93292
-#, fuzzy
 msgid "Choose a file to send"
-msgstr "Elekti dosieron"
+msgstr "Elekti sendotan dosieron"
 
 #: dist/converse-no-dependencies.js:93309
 msgid "Click to write as a normal (non-spoiler) message"
@@ -1258,7 +1253,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:93641
 #: dist/converse-no-dependencies.js:109243
 msgid "Details"
-msgstr ""
+msgstr "Detaloj"
 
 #: dist/converse-no-dependencies.js:93642
 #, fuzzy
@@ -1585,13 +1580,12 @@ msgstr "Elrete"
 #.
 #. harmony default export
 #: dist/converse-no-dependencies.js:104805
-#, fuzzy
 msgid "Participant"
-msgstr "Partoprenantoj:"
+msgstr "Partoprenanto"
 
 #: dist/converse-no-dependencies.js:104805
 msgid "Participants"
-msgstr ""
+msgstr "Partoprenantoj"
 
 #: dist/converse-no-dependencies.js:104806
 msgid "Hide"
@@ -1624,7 +1618,6 @@ msgid "Invite"
 msgstr "Inviti"
 
 #: dist/converse-no-dependencies.js:104854
-#, fuzzy
 msgid "user@example.org"
 msgstr "nomo@ekzemplo.org"
 
@@ -1943,7 +1936,7 @@ msgstr "Afiŝi pli da informo pri tiu babilejo"
 
 #: dist/converse-no-dependencies.js:109254
 msgid "Configure"
-msgstr ""
+msgstr "Agordi"
 
 #: dist/converse-no-dependencies.js:109255
 msgid "Configure this groupchat"
@@ -1972,9 +1965,8 @@ msgid "Hide the topic in the heading"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:109290
-#, fuzzy
 msgid "Show participants"
-msgstr "Partoprenantoj:"
+msgstr "Montri partoprenantojn"
 
 #: dist/converse-no-dependencies.js:109290
 #, fuzzy
@@ -2002,13 +1994,12 @@ msgid "Moderate this groupchat"
 msgstr "Lasi ĉi tiun babilejon"
 
 #: dist/converse-no-dependencies.js:109314
-#, fuzzy
 msgid "Destroy"
-msgstr "Detrui ĉambron"
+msgstr "Malkrei"
 
 #: dist/converse-no-dependencies.js:109327
 msgid "Leave"
-msgstr ""
+msgstr "Forlasi"
 
 #: dist/converse-no-dependencies.js:109328
 #, fuzzy
@@ -2111,7 +2102,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:112863
 msgid "Save and close"
-msgstr ""
+msgstr "Konservi kaj fermi"
 
 #: dist/converse-no-dependencies.js:112864
 msgid ""
@@ -2124,9 +2115,8 @@ msgid "OMEMO"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:112867
-#, fuzzy
 msgid "Profile"
-msgstr "Via profilo"
+msgstr "Profilo"
 
 #: dist/converse-no-dependencies.js:112868
 #, fuzzy
@@ -2138,9 +2128,8 @@ msgid "The new passwords must match"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:112898
-#, fuzzy
 msgid "New password"
-msgstr "Neniu pasvorto"
+msgstr "Nova pasvorto"
 
 #: dist/converse-no-dependencies.js:112899
 #, fuzzy
@@ -2177,7 +2166,7 @@ msgstr "Vi ne estas permesita krei novajn babilejojn."
 
 #: dist/converse-no-dependencies.js:113422
 msgid "Success"
-msgstr ""
+msgstr "Sukceso"
 
 #: dist/converse-no-dependencies.js:113422
 #, fuzzy
@@ -2195,11 +2184,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:114084
 msgid "About"
-msgstr ""
+msgstr "Pri"
 
 #: dist/converse-no-dependencies.js:114085
 msgid "Commands"
-msgstr ""
+msgstr "Komandoj"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:114093
@@ -2216,7 +2205,7 @@ msgstr ""
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:114209
 msgid "Settings"
-msgstr ""
+msgstr "Agordoj"
 
 #: dist/converse-no-dependencies.js:114224
 #: dist/converse-no-dependencies.js:114234
@@ -2451,7 +2440,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:122573
 msgid "Now logging you in"
-msgstr ""
+msgstr "Salutante"
 
 #: dist/converse-no-dependencies.js:122575
 msgid "Registered successfully"
@@ -2505,9 +2494,8 @@ msgid "Description:"
 msgstr "Priskribo :"
 
 #: dist/converse-no-dependencies.js:123747
-#, fuzzy
 msgid "Groupchat XMPP Address:"
-msgstr "Adreso de babilejo"
+msgstr "XMPP-adreso de la grupa babilo:"
 
 #: dist/converse-no-dependencies.js:123748
 msgid "Participants:"
@@ -2600,9 +2588,8 @@ msgid "Add"
 msgstr "Aldoni"
 
 #: dist/converse-no-dependencies.js:125332
-#, fuzzy
 msgid "Group"
-msgstr "Grupoj"
+msgstr "Grupo"
 
 #. eslint-disable-line class-methods-use-this
 #: dist/converse-no-dependencies.js:125800
@@ -2637,7 +2624,7 @@ msgstr "Nelegita"
 
 #: dist/converse-no-dependencies.js:125960
 msgid "Available"
-msgstr ""
+msgstr "Disponebla"
 
 #. *
 #. * @param {RosterView} el
@@ -2657,9 +2644,8 @@ msgid "Add a contact"
 msgstr "Aldoni kontakton"
 
 #: dist/converse-no-dependencies.js:126037
-#, fuzzy
 msgid "Re-sync contacts"
-msgstr "Miaj kontaktoj"
+msgstr "Resinkronigi kontaktojn"
 
 #: dist/converse-no-dependencies.js:126648
 msgid "This contact is busy"

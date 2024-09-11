@@ -258,8 +258,9 @@ test:
 
 .PHONY: docsdev
 docsdev: ./bin/activate requirements.txt
-	./bin/pip install --upgrade pip==21.3.1
-	./bin/pip install -r requirements.txt
+	./bin/python -m ensurepip --upgrade
+	./bin/python -m pip install --upgrade setuptools
+	./bin/pip3 install -r requirements.txt
 
 .PHONY: html
 html: doc

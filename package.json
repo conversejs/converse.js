@@ -109,7 +109,7 @@
     "postcss-loader": "^8.1.1",
     "sass": "^1.51.0",
     "sass-loader": "^14.2.1",
-    "style-loader": "^3.1.0",
+    "style-loader": "^4.0.0",
     "typescript": "^5.5.4",
     "uglify-js": "^3.17.4",
     "webpack": "^5.90.3",

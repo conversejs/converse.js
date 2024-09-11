@@ -168,7 +168,8 @@ We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapa
 
 <p>
   <a href="https://www.dotcom-monitor.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="Dotcom-Monitor" src="https://raw.githubusercontent.com/conversejs/media/logos/dotcom-monitor.svg" width="200">
+    <img alt="Dotcom-Monitor" src="https://raw.githubusercontent.com/conversejs/media/main/logos/dotcom-monitor.svg" width="200">
+                                   
   </a>
 </p>
 <p>

@@ -29,7 +29,7 @@ export default (el) => {
                     class="btn-toolbar chat-toolbar no-text-select"
                     .model=${el.model}
                     ?hidden_occupants="${el.model.get('hidden_occupants')}"
-                    ?is_groupchat="${el.model.get('is_groupchat')}"
+                    ?is_groupchat="${el.model.get('message_type') === 'groupchat'}"
                     ?show_call_button="${show_call_button}"
                     ?show_emoji_button="${show_emoji_button}"
                     ?show_send_button="${show_send_button}"

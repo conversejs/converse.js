@@ -1,13 +1,23 @@
 import { Model } from '@converse/skeletor';
 import u from '../utils/index.js';
+import { CHATROOMS_TYPE } from './constants.js';
 
 const { safeSave, colorize } = u;
 
 class ColorAwareModel extends Model {
-
     async setColor() {
-        const color = await colorize(this.get('jid'));
+        const color = await colorize(this.getIdentifier());
         safeSave(this, { color });
+    }
+
+    getIdentifier() {
+        if (this.get('type') === CHATROOMS_TYPE) {
+            return this.get('jid');
+        } else if (this.get('type') === 'groupchat') {
+            return this.get('from_real_jid') || this.get('from');
+        } else {
+            return this.get('occupant_id') || this.get('jid') || this.get('from') || this.get('nick');
+        }
     }
 
     /**

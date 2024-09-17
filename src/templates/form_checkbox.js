@@ -1,10 +1,11 @@
 import { html } from "lit";
 
 export default  (o) => html`
-    <fieldset class="pb-2">
+    <fieldset class="pb-2 form-check">
         <input id="${o.id}"
                name="${o.name}"
                type="checkbox"
+               class="form-check-input"
                ?readonly=${o.readonly}
                ?checked=${o.checked}
                ?required=${o.required} />

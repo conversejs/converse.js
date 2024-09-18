@@ -1,7 +1,7 @@
-import tplChatHead from './templates/chat-head.js';
+import { _converse, api } from "@converse/headless";
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless";
+import tplChatHead from './templates/chat-head.js';
 
 
 export default class HeadlinesHeading extends CustomElement {

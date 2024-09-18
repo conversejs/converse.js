@@ -11,7 +11,7 @@ export default (o) => {
                 ${ (!_converse.api.settings.get("singleton")) ?  html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>` : '' }
                 <div class="chatbox-title__text" title="${o.jid}">${ o.display_name }</div>
             </div>
-            <div class="chatbox-title__buttons row g-0">
+            <div class="chatbox-title__buttons btn-toolbar g-0">
                 ${ until(getDropdownButtons(o.heading_buttons_promise), '') }
                 ${ until(getStandaloneButtons(o.heading_buttons_promise), '') }
             </div>

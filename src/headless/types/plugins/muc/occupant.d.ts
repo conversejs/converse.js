@@ -1,12 +1,14 @@
 export default MUCOccupant;
 declare const MUCOccupant_base: {
     new (...args: any[]): {
+        disable_mam: boolean;
         initialize(): Promise<void>;
         initNotifications(): void;
         notifications: Model;
         initUI(): void;
         ui: Model;
         getDisplayName(): string;
+        canPostMessages(): boolean;
         createMessage(attrs: any, options: any): Promise<any>;
         getMessagesCacheKey(): string;
         getMessagesCollection(): any;
@@ -23,11 +25,16 @@ declare const MUCOccupant_base: {
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../chat/parsers").MessageAttributes): Promise<import("../chat/parsers").MessageAttributes>;
         sendMessage(attrs?: any): Promise<import("../chat").Message>;
+        retractOwnMessage(message: import("../chat").Message): void;
+        sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
+        setChatState(state: string, options?: object): any;
+        chat_state_timeout: NodeJS.Timeout;
         onMessageAdded(message: import("../chat").Message): void;
         onMessageUploadChanged(message: import("../chat").Message): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
+        shouldShowErrorMessage(attrs: import("../chat/parsers").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -47,6 +54,7 @@ declare const MUCOccupant_base: {
         };
         sendMarkerForMessage(msg: import("../chat").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
         handleUnreadMessage(message: import("../chat").Message): void;
+        handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat").Message): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../chat/parsers").MessageAttributes): Promise<boolean>;

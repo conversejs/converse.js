@@ -1,3 +1,2 @@
-export type MUC = import("@converse/headless").MUC;
-export type ChatBox = import("@converse/headless").ChatBox;
+export {};
 //# sourceMappingURL=index.d.ts.map

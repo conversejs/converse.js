@@ -1,5 +1,5 @@
 /**
- * @param { ChatBox|MUC } chat
+ * @param {ChatBox|MUC} chat
  */
 export function initializeChat(chat: ChatBox | MUC): void;
 /**
@@ -7,8 +7,7 @@ export function initializeChat(chat: ChatBox | MUC): void;
  * It checks whether there is enough space on the page to show
  * another chat box. Otherwise it minimizes the oldest chat box
  * to create space.
- * @method _converse.ChatBoxViews#trimChats
- * @param { ChatView|MUCView|ControlBoxView|HeadlinesFeedView } [newchat]
+ * @param {ChatView|MUCView|ControlBoxView|HeadlinesFeedView} [newchat]
  */
 export function trimChats(newchat?: ChatView | MUCView | ControlBoxView | HeadlinesFeedView): void;
 export function addMinimizeButtonToChat(view: any, buttons: any): any[];
@@ -16,7 +15,7 @@ export function addMinimizeButtonToMUC(view: any, buttons: any): any[];
 export function maximize(ev: any, chatbox: any): void;
 export function minimize(ev: any, model: any): void;
 /**
- * @param { ChatBox|MUC } model
+ * @param {ChatBox|MUC} model
  */
 export function onMinimizedChanged(model: ChatBox | MUC): void;
 export type MUC = import("@converse/headless").MUC;

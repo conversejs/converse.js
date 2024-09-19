@@ -1,12 +1,14 @@
 export default ChatBox;
 declare const ChatBox_base: {
     new (...args: any[]): {
+        disable_mam: boolean;
         initialize(): Promise<void>;
         initNotifications(): void;
         notifications: import("@converse/skeletor").Model;
         initUI(): void;
         ui: import("@converse/skeletor").Model;
         getDisplayName(): string;
+        canPostMessages(): boolean;
         createMessage(attrs: any, options: any): Promise<any>;
         getMessagesCacheKey(): string;
         getMessagesCollection(): any;
@@ -15,19 +17,24 @@ declare const ChatBox_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(_promise: Promise<import("./parsers.js").MessageAttributes>): Promise<void>;
-        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./parsers.js").MessageAttributes): object;
-        updateMessage(message: import("./message.js").default, attrs: import("./parsers.js").MessageAttributes): void;
-        handleCorrection(attrs: import("./parsers.js").MessageAttributes | import("../muc/parsers.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
-        queueMessage(attrs: Promise<import("./parsers.js").MessageAttributes>): any;
+        onMessage(_promise: Promise<import("./parsers").MessageAttributes>): Promise<void>;
+        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./parsers").MessageAttributes): object;
+        updateMessage(message: import("./message.js").default, attrs: import("./parsers").MessageAttributes): void;
+        handleCorrection(attrs: import("./parsers").MessageAttributes | import("../muc/parsers.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
+        queueMessage(attrs: Promise<import("./parsers").MessageAttributes>): any;
         msg_chain: any;
-        getOutgoingMessageAttributes(_attrs?: import("./parsers.js").MessageAttributes): Promise<import("./parsers.js").MessageAttributes>;
+        getOutgoingMessageAttributes(_attrs?: import("./parsers").MessageAttributes): Promise<import("./parsers").MessageAttributes>;
         sendMessage(attrs?: any): Promise<import("./message.js").default>;
+        retractOwnMessage(message: import("./message.js").default): void;
+        sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
+        setChatState(state: string, options?: object): any;
+        chat_state_timeout: NodeJS.Timeout;
         onMessageAdded(message: import("./message.js").default): void;
         onMessageUploadChanged(message: import("./message.js").default): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
+        shouldShowErrorMessage(attrs: import("./parsers").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -47,10 +54,11 @@ declare const ChatBox_base: {
         };
         sendMarkerForMessage(msg: import("./message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
         handleUnreadMessage(message: import("./message.js").default): void;
+        handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("./message.js").default): void;
         clearUnreadMsgCounter(): void;
-        handleRetraction(attrs: import("./parsers.js").MessageAttributes): Promise<boolean>;
-        handleReceipt(attrs: import("./parsers.js").MessageAttributes): boolean;
+        handleRetraction(attrs: import("./parsers").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("./parsers").MessageAttributes): boolean;
         createMessageStanza(message: import("./message.js").default): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
@@ -277,64 +285,33 @@ declare class ChatBox extends ChatBox_base {
         time_sent: string;
         type: string;
     };
-    disable_mam: boolean;
     initialize(): Promise<void>;
     initialized: any;
     presence: any;
     /**
-     * @param {Element} stanza
-     */
-    handleErrorMessageStanza(stanza: Element): Promise<void>;
-    /**
      * @param {Promise<MessageAttributes|StanzaParseError>} attrs_promise
      */
-    onMessage(attrs_promise: Promise<import("./parsers.js").MessageAttributes | import("../../shared/parsers").StanzaParseError>): Promise<void>;
+    onMessage(attrs_promise: Promise<import("./parsers").MessageAttributes | import("../../shared/parsers").StanzaParseError>): Promise<void>;
     onPresenceChanged(item: any): void;
     close(): Promise<void>;
-    /**
-     * Mutator for setting the chat state of this chat session.
-     * Handles clearing of any chat state notification timeouts and
-     * setting new ones if necessary.
-     * Timeouts are set when the  state being set is COMPOSING or PAUSED.
-     * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
-     * See XEP-0085 Chat State Notifications.
-     * @param {string} state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-     * @param {object} [options]
-     */
-    setChatState(state: string, options?: object): this;
-    chat_state_timeout: NodeJS.Timeout;
     /**
      * @returns {string}
      */
     getDisplayName(): string;
-    /**
-     * @param {MessageAttributes} attrs
-     * @returns {Promise<boolean>}
-     */
-    shouldShowErrorMessage(attrs: import("./parsers.js").MessageAttributes): Promise<boolean>;
     /**
      * @param {string} jid1
      * @param {string} jid2
      */
     isSameUser(jid1: string, jid2: string): any;
     /**
-     * Retract one of your messages in this chat
-     * @param {Message} message - The message which we're retracting.
-     */
-    retractOwnMessage(message: import("./message.js").default): void;
-    /**
      * @param {MessageAttributes} attrs
      */
-    handleChatMarker(attrs: import("./parsers.js").MessageAttributes): boolean;
+    handleChatMarker(attrs: import("./parsers").MessageAttributes): boolean;
     /**
      * @param {MessageAttributes} [attrs]
      * @return {Promise<MessageAttributes>}
      */
-    getOutgoingMessageAttributes(attrs?: import("./parsers.js").MessageAttributes): Promise<import("./parsers.js").MessageAttributes>;
-    /**
-     * @param {File[]} files
-     */
-    sendFiles(files: File[]): Promise<void>;
+    getOutgoingMessageAttributes(attrs?: import("./parsers").MessageAttributes): Promise<import("./parsers").MessageAttributes>;
     canPostMessages(): boolean;
 }
 import ChatBoxBase from '../../shared/chatbox.js';

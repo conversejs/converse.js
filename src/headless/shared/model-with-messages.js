@@ -44,6 +44,7 @@ export default function ModelWithMessages(BaseModel) {
         /** @param {...any} args */
         constructor(...args) {
             super(args[0], args[1]);
+            this.disable_mam = false;
         }
 
         async initialize() {

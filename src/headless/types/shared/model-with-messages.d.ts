@@ -1,9 +1,17 @@
 /**
+ * Adds a messages collection to a model and various methods related to sending
+ * and receiving chat messages.
+ *
+ * This model should be UX-agnostic, except when it comes to the rendering of
+ * messages. So there's no assumption of uniformity with regards to UI elements
+ * represented by this object.
+ *
  * @template {import('./types').ModelExtender} T
  * @param {T} BaseModel
  */
 export default function ModelWithMessages<T extends import("./types").ModelExtender>(BaseModel: T): {
     new (...args: any[]): {
+        disable_mam: boolean;
         initialize(): Promise<void>;
         initNotifications(): void;
         notifications: Model;
@@ -13,6 +21,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @returns {string}
          */
         getDisplayName(): string;
+        canPostMessages(): boolean;
         /**
          * Queue the creation of a message, to make sure that we don't run
          * into a race condition whereby we're creating a new message
@@ -73,6 +82,15 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          */
         sendMessage(attrs?: any): Promise<import("../plugins/chat/message").default>;
         /**
+         * Retract one of your messages in this chat
+         * @param {Message} message - The message which we're retracting.
+         */
+        retractOwnMessage(message: import("../plugins/chat/message").default): void;
+        /**
+         * @param {File[]} files
+         */
+        sendFiles(files: File[]): Promise<void>;
+        /**
          * Responsible for setting the editable attribute of messages.
          * If api.settings.get('allow_message_corrections') is "last", then only the last
          * message sent from me will be editable. If set to "all" all messages
@@ -81,6 +99,18 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {String} send_time - time when the message was sent
          */
         setEditable(attrs: any, send_time: string): void;
+        /**
+         * Mutator for setting the chat state of this chat session.
+         * Handles clearing of any chat state notification timeouts and
+         * setting new ones if necessary.
+         * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+         * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+         * See XEP-0085 Chat State Notifications.
+         * @param {string} state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+         * @param {object} [options]
+         */
+        setChatState(state: string, options?: object): any;
+        chat_state_timeout: NodeJS.Timeout;
         /**
          * @param {Message} message
          */
@@ -91,6 +121,11 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         onMessageUploadChanged(message: import("../plugins/chat/message").default): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
+        /**
+         * @param {MessageAttributes} attrs
+         * @returns {Promise<boolean>}
+         */
+        shouldShowErrorMessage(attrs: import("../plugins/chat/parsers").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -152,6 +187,10 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {Message} message
          */
         handleUnreadMessage(message: import("../plugins/chat/message").default): void;
+        /**
+         * @param {Element} stanza
+         */
+        handleErrorMessageStanza(stanza: Element): Promise<void>;
         /**
          * @param {Message} message
          */

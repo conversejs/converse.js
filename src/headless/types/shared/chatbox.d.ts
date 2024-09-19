@@ -1,11 +1,13 @@
 declare const ChatBoxBase_base: {
     new (...args: any[]): {
+        disable_mam: boolean;
         initialize(): Promise<void>;
         initNotifications(): void;
         notifications: Model;
         initUI(): void;
         ui: Model;
         getDisplayName(): string;
+        canPostMessages(): boolean;
         createMessage(attrs: any, options: any): Promise<any>;
         getMessagesCacheKey(): string;
         getMessagesCollection(): any;
@@ -22,11 +24,16 @@ declare const ChatBoxBase_base: {
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../plugins/chat/parsers.js").MessageAttributes): Promise<import("../plugins/chat/parsers.js").MessageAttributes>;
         sendMessage(attrs?: any): Promise<import("../index.js").Message>;
+        retractOwnMessage(message: import("../index.js").Message): void;
+        sendFiles(files: File[]): Promise<void>;
         setEditable(attrs: any, send_time: string): void;
+        setChatState(state: string, options?: object): any;
+        chat_state_timeout: NodeJS.Timeout;
         onMessageAdded(message: import("../index.js").Message): void;
         onMessageUploadChanged(message: import("../index.js").Message): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
+        shouldShowErrorMessage(attrs: import("../plugins/chat/parsers.js").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -46,6 +53,7 @@ declare const ChatBoxBase_base: {
         };
         sendMarkerForMessage(msg: import("../index.js").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
         handleUnreadMessage(message: import("../index.js").Message): void;
+        handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../index.js").Message): void;
         clearUnreadMsgCounter(): void;
         handleRetraction(attrs: import("../plugins/chat/parsers.js").MessageAttributes): Promise<boolean>;

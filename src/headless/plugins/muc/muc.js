@@ -11,7 +11,6 @@ import p from '../../utils/parse-helpers';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import ChatBox from '../chat/model.js';
 import {
     ROOMSTATUS,
     OWNER_COMMANDS,
@@ -30,6 +29,9 @@ import { getUniqueId, isErrorObject, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
 import { sendMarker } from '../../shared/actions.js';
+import ModelWithMessages from '../../shared/model-with-messages';
+import ColorAwareModel from '../../shared/color';
+import ChatBoxBase from '../../shared/chatbox';
 import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
 import MUCSession from './session';
 
@@ -38,8 +40,9 @@ const { u } = converse.env;
 /**
  * Represents a groupchat conversation.
  */
-class MUC extends ChatBox {
+class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
     /**
+     * @typedef {import('../vcard/vcard').default} VCard
      * @typedef {import('../chat/message.js').default} Message
      * @typedef {import('./message.js').default} MUCMessage
      * @typedef {import('./occupant.js').default} MUCOccupant
@@ -79,13 +82,19 @@ class MUC extends ChatBox {
     }
 
     async initialize () {
+        super.initialize();
+
+        /**
+         * @public
+         * @type {VCard}
+         */
+        this.vcard = null;
+
         this.initialized = getOpenPromise();
 
         this.debouncedRejoin = debounce(this.rejoin, 250);
         this.set('box_id', `box-${this.get('jid')}`);
-        this.initNotifications();
-        this.initMessages();
-        this.initUI();
+
         this.initOccupants();
         this.initDiscoModels(); // sendChatState depends on this.features
         this.registerHandlers();
@@ -93,7 +102,6 @@ class MUC extends ChatBox {
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
         this.on('destroy', this.removeHandlers, this);
-        this.ui.on('change:scrolled', this.onScrolledChanged, this);
 
         await this.restoreSession();
         this.session.on('change:connection_status', this.onConnectionStatusChanged, this);

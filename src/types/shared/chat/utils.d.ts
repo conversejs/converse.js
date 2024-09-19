@@ -1,13 +1,13 @@
 export function getHeadingDropdownItem(promise_or_data: any): Promise<import("lit").TemplateResult<1> | "">;
 export function getHeadingStandaloneButton(promise_or_data: any): Promise<import("lit").TemplateResult<1>>;
 /**
- * @param {Promise} promise
+ * @param {Promise<Array<object>>} promise
  */
-export function getStandaloneButtons(promise: Promise<any>): Promise<any>;
+export function getStandaloneButtons(promise: Promise<Array<object>>): Promise<import("lit/directive.js").DirectiveResult<typeof import("lit/directives/until.js").UntilDirective>[]>;
 /**
- * @param {Promise} promise
+ * @param {Promise<Array<object>>} promise
  */
-export function getDropdownButtons(promise: Promise<any>): Promise<import("lit").TemplateResult<1> | "">;
+export function getDropdownButtons(promise: Promise<Array<object>>): Promise<import("lit").TemplateResult<1> | "">;
 export function onScrolledDown(model: any): void;
 /**
  * Given a message object, returns a TemplateResult indicating a new day if

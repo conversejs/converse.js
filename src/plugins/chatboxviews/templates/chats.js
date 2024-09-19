@@ -5,7 +5,7 @@ import { _converse, api, constants } from '@converse/headless';
 const { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = constants;
 
 function shouldShowChat(c) {
-    const is_minimized = api.settings.get('view_mode') === 'overlayed' && c.get('minimized');
+    const is_minimized = api.settings.get('view_mode') === 'overlayed' && c.get('hidden');
     return c.get('type') === CONTROLBOX_TYPE || !(c.get('hidden') || is_minimized);
 }
 

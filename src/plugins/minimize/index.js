@@ -2,12 +2,9 @@
  * @module converse-minimize
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
- *
- * @typedef {import('@converse/headless').MUC} MUC
- * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
 import debounce from 'lodash-es/debounce';
-import { _converse, api, converse, constants } from '@converse/headless';
+import { _converse, api, converse, constants, u } from '@converse/headless';
 import MinimizedChatsToggle from './toggle.js';
 import {
     addMinimizeButtonToChat,
@@ -15,28 +12,27 @@ import {
     initializeChat,
     maximize,
     minimize,
-    onMinimizedChanged,
     trimChats
 } from './utils.js';
 
 import './view.js';
 import './minimized-chat.js';
-
 import './styles/minimize.scss';
 
 const { CHATROOMS_TYPE } = constants;
 
 
 converse.plugins.add('converse-minimize', {
+    /**
+     * @typedef {import('@converse/headless').MUC} MUC
+     * @typedef {import('@converse/headless').ChatBox} ChatBox
+     */
+
     /* Optional dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
      * this plugin. They are called "optional" because they might not be
      * available, in which case any overrides applicable to them will be
      * ignored.
-     *
-     * It's possible however to make optional dependencies non-optional.
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found.
      */
     dependencies: [
         "converse-chatview",
@@ -50,46 +46,6 @@ converse.plugins.add('converse-minimize', {
         return _converse.api.settings.get("view_mode") === 'overlayed';
     },
 
-    // Overrides mentioned here will be picked up by converse.js's
-    // plugin architecture they will replace existing methods on the
-    // relevant objects or classes.
-    // New functions which don't exist yet can also be added.
-    overrides: {
-        ChatBox: {
-            maybeShow (force) {
-                if (!force && this.get('minimized')) {
-                    // Must return the chatbox
-                    return this;
-                }
-                return this.__super__.maybeShow.apply(this, arguments);
-            },
-
-            isHidden () {
-                return this.__super__.isHidden.call(this) || this.get('minimized');
-            }
-        },
-
-        ChatBoxView: {
-            isNewMessageHidden () {
-                return this.model.get('minimized') ||
-                    this.__super__.isNewMessageHidden.apply(this, arguments);
-            },
-
-            setChatBoxHeight (height) {
-                if (!this.model.get('minimized')) {
-                    return this.__super__.setChatBoxHeight.call(this, height);
-                }
-            },
-
-            setChatBoxWidth (width) {
-                if (!this.model.get('minimized')) {
-                    return this.__super__.setChatBoxWidth.call(this, width);
-                }
-            }
-        }
-    },
-
-
     initialize () {
         api.settings.extend({'no_trimming': false});
 
@@ -100,20 +56,13 @@ converse.plugins.add('converse-minimize', {
         Object.assign(_converse.exports, exports);
         Object.assign(_converse, { minimize: { trimChats, minimize, maximize }}); // DEPRECATED
         Object.assign(_converse.exports, { minimize: { trimChats, minimize, maximize }});
+        Object.assign(u, { trimChats, minimize, maximize });
 
-        /**
-         * @param { ChatBox|MUC } model
-         */
-        function onChatInitialized (model) {
-            initializeChat(model);
-            model.on( 'change:minimized', () => onMinimizedChanged(model));
-        }
-
-        api.listen.on('chatBoxViewInitialized', view => _converse.exports.minimize.trimChats(view));
-        api.listen.on('chatRoomViewInitialized', view => _converse.exports.minimize.trimChats(view));
-        api.listen.on('controlBoxOpened', view => _converse.exports.minimize.trimChats(view));
-        api.listen.on('chatBoxInitialized', onChatInitialized);
-        api.listen.on('chatRoomInitialized', onChatInitialized);
+        api.listen.on('chatBoxViewInitialized', view => trimChats(view));
+        api.listen.on('chatRoomViewInitialized', view => trimChats(view));
+        api.listen.on('controlBoxOpened', view => trimChats(view));
+        api.listen.on('chatBoxInitialized', initializeChat);
+        api.listen.on('chatRoomInitialized', initializeChat);
 
         api.listen.on('getHeadingButtons', (view, buttons) => {
             if (view.model.get('type') === CHATROOMS_TYPE) {
@@ -123,7 +72,7 @@ converse.plugins.add('converse-minimize', {
             }
         });
 
-        const debouncedTrimChats = debounce(() => _converse.exports.minimize.trimChats(), 250);
+        const debouncedTrimChats = debounce(() => trimChats(), 250);
         api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
         api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
     }

@@ -41,9 +41,11 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
                 // So before opening a chat, we make sure all other chats are hidden.
                 other_chats.forEach((c) => u.safeSave(c, { 'hidden': true }));
                 u.safeSave(this, { 'hidden': false });
+                this.trigger('show');
             }
-            return;
+            return this;
         }
+        // Overlayed view mode
         u.safeSave(this, { 'hidden': false });
         this.trigger('show');
         return this;

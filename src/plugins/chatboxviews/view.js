@@ -11,7 +11,6 @@ class ConverseChats extends CustomElement {
         this.listenTo(this.model, 'change:closed', () => this.requestUpdate());
         this.listenTo(this.model, 'change:hidden', () => this.requestUpdate());
         this.listenTo(this.model, 'change:jid', () => this.requestUpdate());
-        this.listenTo(this.model, 'change:minimized', () => this.requestUpdate());
         this.listenTo(this.model, 'destroy', () => this.requestUpdate());
 
         // Use listenTo instead of api.listen.to so that event handlers

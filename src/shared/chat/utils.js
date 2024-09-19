@@ -43,29 +43,26 @@ export async function getHeadingStandaloneButton (promise_or_data) {
 }
 
 /**
- * @param {Promise} promise
+ * @param {Promise<Array<object>>} promise
  */
-export function getStandaloneButtons (promise) {
-    return promise.then(
-        btns => btns
-            .filter(b => b.standalone)
-            .map(b => getHeadingStandaloneButton(b))
-            .reverse()
-            .map(b => until(b, '')));
+export async function getStandaloneButtons (promise) {
+    const btns = await promise;
+    return btns
+        .filter((b) => b.standalone)
+        .map((b) => getHeadingStandaloneButton(b))
+        .reverse()
+        .map((b) => until(b, ''));
 }
 
 /**
- * @param {Promise} promise
+ * @param {Promise<Array<object>>} promise
  */
-export function getDropdownButtons (promise) {
-    return promise.then((btns) => {
-        const dropdown_btns = btns.filter((b) => !b.standalone).map((b) => getHeadingDropdownItem(b));
-        return dropdown_btns.length
-            ? html`<converse-dropdown
-                class="chatbox-btn btn-group dropstart"
-                .items=${dropdown_btns}></converse-dropdown>`
-            : '';
-    });
+export async function getDropdownButtons (promise) {
+    const btns = await promise;
+    const dropdown_btns = btns.filter((b) => !b.standalone).map((b) => getHeadingDropdownItem(b));
+    return dropdown_btns.length
+        ? html`<converse-dropdown class="chatbox-btn btn-group dropstart" .items=${dropdown_btns}></converse-dropdown>`
+        : '';
 }
 
 

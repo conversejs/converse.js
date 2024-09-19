@@ -10,20 +10,20 @@ import { _converse, api, converse, u, constants } from '@converse/headless';
 import { __ } from 'i18n';
 
 const { dayjs } = converse.env;
-const { ACTIVE, INACTIVE } = constants;
+const { ACTIVE } = constants;
 
 /**
- * @param { ChatBox|MUC } chat
+ * @param {ChatBox|MUC} chat
  */
 export function initializeChat (chat) {
-    chat.on('change:hidden', m => !m.get('hidden') && maximize(chat), chat);
+    chat.on('change:hidden', () => onMinimizedChanged(chat));
 
     if (chat.get('id') === 'controlbox') {
         return;
     }
     chat.save({
-        'minimized': chat.get('minimized') || false,
-        'time_minimized': chat.get('time_minimized') || dayjs(),
+        'hidden': !!chat.get('hidden'),
+        'time_minimized': chat.get('time_minimized'),
     });
 }
 
@@ -37,7 +37,7 @@ function getChatBoxWidth (view) {
             const toggle = document.querySelector('converse-controlbox-toggle');
             return toggle ? u.getOuterWidth(toggle, true) : 0;
         }
-    } else if (!view.model.get('minimized') && u.isVisible(view)) {
+    } else if (!view.model.get('hidden') && u.isVisible(view)) {
         return u.getOuterWidth(view, true);
     }
     return 0;
@@ -47,13 +47,13 @@ function getShownChats () {
     return _converse.state.chatboxviews.filter(el =>
         // The controlbox can take a while to close,
         // so we need to check its state. That's why we checked the 'closed' state.
-        !el.model.get('minimized') && !el.model.get('closed') && u.isVisible(el)
+        !el.model.get('hidden') && !el.model.get('closed') && u.isVisible(el)
     );
 }
 
 function getMinimizedWidth () {
     const minimized_el = document.querySelector('converse-minimized-chats');
-    return _converse.state.chatboxes.pluck('minimized').includes(true) ? u.getOuterWidth(minimized_el, true) : 0;
+    return _converse.state.chatboxes.pluck('hidden').includes(true) ? u.getOuterWidth(minimized_el, true) : 0;
 }
 
 function getBoxesWidth (newchat) {
@@ -68,11 +68,10 @@ function getBoxesWidth (newchat) {
  * It checks whether there is enough space on the page to show
  * another chat box. Otherwise it minimizes the oldest chat box
  * to create space.
- * @method _converse.ChatBoxViews#trimChats
- * @param { ChatView|MUCView|ControlBoxView|HeadlinesFeedView } [newchat]
+ * @param {ChatView|MUCView|ControlBoxView|HeadlinesFeedView} [newchat]
  */
 export function trimChats (newchat) {
-    if (u.isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
+    if (api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
         return;
     }
     const shown_chats = getShownChats();
@@ -107,7 +106,7 @@ function getOldestMaximizedChat (exclude_ids) {
     exclude_ids.push('controlbox');
     let i = 0;
     let model = _converse.state.chatboxes.sort().at(i);
-    while (exclude_ids.includes(model.get('id')) || model.get('minimized') === true) {
+    while (exclude_ids.includes(model.get('id')) || model.get('hidden') === true) {
         i++;
         model = _converse.state.chatboxes.at(i);
         if (!model) {
@@ -156,7 +155,6 @@ export function maximize (ev, chatbox) {
     }
     u.safeSave(chatbox, {
         'hidden': false,
-        'minimized': false,
         'time_opened': new Date().getTime()
     });
 }
@@ -169,17 +167,13 @@ export function minimize (ev, model) {
     }
     u.safeSave(model, {
         'hidden': true,
-        'minimized': true,
         'time_minimized': new Date().toISOString()
     });
 }
 
 /**
- * Handler which gets called when a {@link _converse#ChatBox} has it's
- * `minimized` property set to false.
- *
  * Will trigger {@link _converse#chatBoxMaximized}
- * @param { ChatBox|MUC } model
+ * @param {ChatBox|MUC} model
  */
 function onMaximized (model) {
     if (!model.isScrolledUp()) {
@@ -189,7 +183,7 @@ function onMaximized (model) {
     /**
      * Triggered when a previously minimized chat gets maximized
      * @event _converse#chatBoxMaximized
-     * @type { ChatBox | MUC }
+     * @type {ChatBox|MUC}
      * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
      */
     api.trigger('chatBoxMaximized', model);
@@ -198,7 +192,7 @@ function onMaximized (model) {
 /**
  * Handler which gets called when a {@link _converse#ChatBox} has it's
  * `minimized` property set to true.
- * @param { ChatBox|MUC } model
+ * @param {ChatBox|MUC} model
  *
  * Will trigger {@link _converse#chatBoxMinimized}
  */
@@ -213,10 +207,10 @@ function onMinimized (model) {
 }
 
 /**
- * @param { ChatBox|MUC } model
+ * @param {ChatBox|MUC} model
  */
 export function onMinimizedChanged (model) {
-    if (model.get('minimized')) {
+    if (model.get('hidden')) {
         onMinimized(model);
     } else {
         onMaximized(model);

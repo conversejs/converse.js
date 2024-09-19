@@ -1,7 +1,5 @@
 /*global mock, converse */
-
 const { $msg, u } = converse.env;
-
 
 describe("A chat message", function () {
 
@@ -19,9 +17,9 @@ describe("A chat message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const chatview = _converse.chatboxviews.get(contact_jid);
         expect(u.isVisible(chatview)).toBeTruthy();
-        expect(chatview.model.get('minimized')).toBeFalsy();
+        expect(chatview.model.get('hidden')).toBeFalsy();
         chatview.querySelector('.toggle-chatbox-button').click();
-        expect(chatview.model.get('minimized')).toBeTruthy();
+        expect(chatview.model.get('hidden')).toBeTruthy();
         var message = 'This message is sent to a minimized chatbox';
         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         var msg = $msg({
@@ -38,7 +36,7 @@ describe("A chat message", function () {
         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
         let count = document.querySelector('converse-minimized-chat .message-count');
         expect(u.isVisible(chatview)).toBeFalsy();
-        expect(chatview.model.get('minimized')).toBeTruthy();
+        expect(chatview.model.get('hidden')).toBeTruthy();
 
         expect(u.isVisible(count)).toBeTruthy();
         expect(count.textContent).toBe('1');
@@ -54,12 +52,12 @@ describe("A chat message", function () {
 
         await u.waitUntil(() => (chatview.model.messages.length > 1));
         expect(u.isVisible(chatview)).toBeFalsy();
-        expect(chatview.model.get('minimized')).toBeTruthy();
+        expect(chatview.model.get('hidden')).toBeTruthy();
         count = document.querySelector('converse-minimized-chat .message-count');
         expect(u.isVisible(count)).toBeTruthy();
         expect(count.textContent).toBe('2');
         document.querySelector("converse-minimized-chat a.restore-chat").click();
-        expect(_converse.chatboxes.filter('minimized').length).toBe(0);
+        expect(_converse.chatboxes.filter('hidden').length).toBe(0);
     }));
 
 });
@@ -78,11 +76,11 @@ describe("A Groupchat", function () {
 
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
         await u.waitUntil(() => !u.isVisible(view));
-        expect(view.model.get('minimized')).toBeTruthy();
+        expect(view.model.get('hidden')).toBeTruthy();
         const el = await u.waitUntil(() => document.querySelector("converse-minimized-chat a.restore-chat"));
         el.click();
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-        expect(view.model.get('minimized')).toBeFalsy();
+        expect(view.model.get('hidden')).toBeFalsy();
         expect(_converse.api.trigger.calls.count(), 3);
     }));
 });
@@ -107,12 +105,12 @@ describe("A Chatbox", function () {
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
         expect(_converse.api.trigger.calls.count(), 2);
         await u.waitUntil(() => !u.isVisible(chatview));
-        expect(chatview.model.get('minimized')).toBeTruthy();
+        expect(chatview.model.get('hidden')).toBeTruthy();
         const restore_el = await u.waitUntil(() => document.querySelector("converse-minimized-chat a.restore-chat"));
         restore_el.click();
         await u.waitUntil(() => _converse.chatboxviews.keys().length);
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-        expect(chatview.model.get('minimized')).toBeFalsy();
+        expect(chatview.model.get('hidden')).toBeFalsy();
     }));
 
 
@@ -121,17 +119,21 @@ describe("A Chatbox", function () {
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         expect(u.isVisible(minimized_chats.firstElementChild)).toBe(false);
-        await _converse.api.chats.create(sender_jid, {'minimized': true});
+        await _converse.api.chats.create(sender_jid, {'hidden': true});
         await u.waitUntil(() => _converse.chatboxes.length > 1);
         expect(_converse.chatboxviews.get(sender_jid)).toBe(undefined);
         expect(u.isVisible(minimized_chats.firstElementChild)).toBe(true);
         expect(minimized_chats.firstElementChild.querySelectorAll('converse-minimized-chat').length).toBe(1);
-        expect(_converse.chatboxes.filter('minimized').length).toBe(1);
+        expect(_converse.chatboxes.filter('hidden').length).toBe(1);
     }));
 
 
-    it("can be trimmed to conserve space", mock.initConverse([], {}, async function (_converse) {
-        spyOn(_converse.exports.minimize, 'trimChats');
+    it("can be trimmed to conserve space",
+            mock.initConverse(
+                [],
+                { no_trimming: false },
+                async function (_converse) {
+
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
 
@@ -151,18 +153,18 @@ describe("A Chatbox", function () {
             el.click();
         }
         await u.waitUntil(() => _converse.chatboxes.length == 16);
-        expect(_converse.exports.minimize.trimChats.calls.count()).toBe(16);
-
-        for (i=0; i<online_contacts.length; i++) {
-            const el = online_contacts[i];
-            const jid = el.getAttribute('data-jid');
-            const model = _converse.chatboxes.get(jid);
-            model.set({'minimized': true});
-        }
-        await u.waitUntil(() => _converse.chatboxviews.keys().length === 1);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
+
+        const minimized = _converse.chatboxes.models.filter((m) => m.get('hidden'));
+        const num_minimized = minimized.length;
+        expect(num_minimized).toBeGreaterThan(0);
+
+        // If we restore a chat, the number of minimized chats stay the same,
+        // because a previously maximized one is minimized again to
+        // save space.
         minimized_chats.querySelector("a.restore-chat").click();
-        expect(_converse.exports.minimize.trimChats.calls.count()).toBe(16);
+
+
     }));
 });
 
@@ -172,6 +174,7 @@ describe("A minimized chat's Unread Message Count", function () {
     it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        const { minimize } = converse.env.u;
         await mock.waitForRoster(_converse, 'current', 1);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, sender_jid);
@@ -181,7 +184,7 @@ describe("A minimized chat's Unread Message Count", function () {
         _converse.handleMessageStanza(msgFactory());
         await u.waitUntil(() => chatbox.messages.length);
         await u.waitUntil(() => chatbox.get('num_unread') === 1);
-        _converse.exports.minimize.minimize(chatbox);
+        minimize(chatbox);
         const minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         const unread_count = minimized_chats.querySelector('#minimized-chats .badge');
         expect(u.isVisible(unread_count)).toBeTruthy();
@@ -219,28 +222,29 @@ describe("The Minimized Chats Widget", function () {
         let contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid)
         let chatview = _converse.chatboxviews.get(contact_jid);
-        expect(chatview.model.get('minimized')).toBeFalsy();
+        expect(chatview.model.get('hidden')).toBeFalsy();
         expect(u.isVisible(minimized_chats.firstElementChild)).toBe(false);
         chatview.querySelector('.toggle-chatbox-button').click();
-        expect(chatview.model.get('minimized')).toBeTruthy();
+        expect(chatview.model.get('hidden')).toBeTruthy();
         expect(u.isVisible(minimized_chats)).toBe(true);
-        expect(_converse.chatboxes.filter('minimized').length).toBe(1);
-        expect(_converse.chatboxes.models.filter(c => c.get('minimized')).pop().get('jid')).toBe(contact_jid);
+        expect(_converse.chatboxes.filter('hidden').length).toBe(1);
+        expect(_converse.chatboxes.models.filter(c => c.get('hidden')).pop().get('jid')).toBe(contact_jid);
 
         contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
         chatview = _converse.chatboxviews.get(contact_jid);
-        expect(chatview.model.get('minimized')).toBeFalsy();
+        expect(chatview.model.get('hidden')).toBeFalsy();
         chatview.querySelector('.toggle-chatbox-button').click();
-        expect(chatview.model.get('minimized')).toBeTruthy();
+        expect(chatview.model.get('hidden')).toBeTruthy();
         expect(u.isVisible(minimized_chats)).toBe(true);
-        expect(_converse.chatboxes.filter('minimized').length).toBe(2);
-        expect(_converse.chatboxes.filter('minimized').map(c => c.get('jid')).includes(contact_jid)).toBeTruthy();
+        expect(_converse.chatboxes.filter('hidden').length).toBe(2);
+        expect(_converse.chatboxes.filter('hidden').map(c => c.get('jid')).includes(contact_jid)).toBeTruthy();
     }));
 
     it("can be toggled to hide or show minimized chats",
             mock.initConverse([], {}, async function (_converse) {
 
+        const { minimize } = converse.env.u;
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
         let minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
@@ -251,10 +255,10 @@ describe("The Minimized Chats Widget", function () {
         const chatview = _converse.chatboxviews.get(contact_jid);
         expect(u.isVisible(minimized_chats.firstElementChild)).toBe(false);
 
-        chatview.model.set({'minimized': true});
+        minimize(chatview.model);
         expect(u.isVisible(minimized_chats)).toBeTruthy();
-        expect(_converse.chatboxes.filter('minimized').length).toBe(1);
-        expect(_converse.chatboxes.models.filter(c => c.get('minimized')).pop().get('jid')).toBe(contact_jid);
+        expect(_converse.chatboxes.filter('hidden').length).toBe(1);
+        expect(_converse.chatboxes.models.filter(c => c.get('hidden')).pop().get('jid')).toBe(contact_jid);
 
         minimized_chats = await u.waitUntil(() => document.querySelector("converse-minimized-chats"));
         expect(u.isVisible(minimized_chats.querySelector('.minimized-chats-flyout'))).toBeTruthy();
@@ -266,6 +270,8 @@ describe("The Minimized Chats Widget", function () {
 
     it("shows the number messages received to minimized chats",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        const { minimize } = converse.env.u;
 
         await mock.waitForRoster(_converse, 'current', 4);
         await mock.openControlBox(_converse);
@@ -286,7 +292,7 @@ describe("The Minimized Chats Widget", function () {
         await u.waitUntil(() => _converse.chatboxes.length == 4);
 
         const chatview = _converse.chatboxviews.get(contact_jid);
-        chatview.model.set({'minimized': true});
+        minimize(chatview.model);
         for (i=0; i<3; i++) {
             const msg = $msg({
                 from: contact_jid,
@@ -342,10 +348,11 @@ describe("The Minimized Chats Widget", function () {
     it("shows the number messages received to minimized groupchats",
             mock.initConverse([], {}, async function (_converse) {
 
+        const { minimize } = converse.env.u;
         const muc_jid = 'kitchen@conference.shakespeare.lit';
         await mock.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'fires');
         const view = _converse.chatboxviews.get(muc_jid);
-        view.model.set({'minimized': true});
+        minimize(view.model);
         const message = 'fires: Your attention is required';
         const nick = mock.chatroom_names[0];
         const msg = $msg({

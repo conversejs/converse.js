@@ -61,6 +61,8 @@ describe("The Controlbox", function () {
         it("shows the number of unread mentions received",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+            const { minimize, maximize } = converse.env.u;
+
             await mock.waitForRoster(_converse, 'all');
             await mock.openControlBox(_converse);
 
@@ -68,7 +70,7 @@ describe("The Controlbox", function () {
             await mock.openChatBoxFor(_converse, sender_jid);
             await u.waitUntil(() => _converse.chatboxes.length);
             const chatview = _converse.chatboxviews.get(sender_jid);
-            chatview.model.set({'minimized': true});
+            minimize(chatview.model);
 
             const el = document.querySelector('converse-chats');
             expect(el.querySelector('.restore-chat .message-count') === null).toBeTruthy();
@@ -99,7 +101,7 @@ describe("The Controlbox", function () {
             await u.waitUntil(() => chatview.model.handleUnreadMessage.calls.count());
             await u.waitUntil(() => el.querySelector('.restore-chat .message-count')?.textContent === '2');
             expect(rosterview.querySelector('.msgs-indicator').textContent).toBe('2');
-            chatview.model.set({'minimized': false});
+            maximize(chatview.model);
             await u.waitUntil(() => el.querySelector('.restore-chat .message-count') === null);
             await u.waitUntil(() => rosterview.querySelector('.msgs-indicator') === null);
         }));

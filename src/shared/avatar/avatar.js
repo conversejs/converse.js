@@ -52,15 +52,11 @@ export default class Avatar extends CustomElement {
             font: ${this.width / 2}px Arial;
             line-height: ${this.height}px;`;
 
-        try {
-            const author_style = this.model.getAvatarStyle(css);
-            return html`<div class="avatar-initials" style="${until(author_style, default_bg_css + css)}"
-                aria-label="${this.name}">
-                    ${this.getInitials(this.name)}
-            </div>`;
-        } catch (e) {
-            debugger;
-        }
+        const author_style = this.model.getAvatarStyle(css);
+        return html`<div class="avatar-initials" style="${until(author_style, default_bg_css + css)}"
+            aria-label="${this.name}">
+                ${this.getInitials(this.name)}
+        </div>`;
     }
 
     /**

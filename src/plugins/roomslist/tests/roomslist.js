@@ -63,7 +63,7 @@ describe("A list of open groupchats", function () {
         expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
         expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(0);
 
-        view.model.set({'minimized': true});
+        u.minimize(view.model);
 
         const nick = mock.chatroom_names[0];
         await view.model.handleMessageStanza($msg({
@@ -87,7 +87,8 @@ describe("A list of open groupchats", function () {
         expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
         expect(roomspanel.querySelectorAll('.msgs-indicator').length).toBe(1);
         expect(roomspanel.querySelector('.msgs-indicator').textContent.trim()).toBe('2');
-        view.model.set({'minimized': false});
+
+        u.maximize(view.model);
         expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
         await u.waitUntil(() => roomspanel.querySelectorAll('.msgs-indicator').length === 0);
     }));
@@ -351,15 +352,14 @@ describe("A groupchat shown in the groupchats list", function () {
             allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             }, async (_converse) => {
 
-        const { $msg } = converse.env;
-        const u = converse.env.utils;
+        const { $msg, u } = converse.env;
         await mock.openControlBox(_converse);
         const room_jid = 'kitchen@conference.shakespeare.lit';
         const rooms_list = document.querySelector('converse-rooms-list');
         await u.waitUntil(() => rooms_list !== undefined, 500);
         await mock.openAndEnterChatRoom(_converse, room_jid, 'romeo');
         const view = _converse.chatboxviews.get(room_jid);
-        view.model.set({'minimized': true});
+        u.minimize(view.model);
         const nick = mock.chatroom_names[0];
         await view.model.handleMessageStanza(
             $msg({
@@ -401,7 +401,7 @@ describe("A groupchat shown in the groupchats list", function () {
         await u.waitUntil(() => lview.querySelector(".msgs-indicator").textContent === '2', 1000);
 
         // When the chat gets maximized again, the unread indicators are removed
-        view.model.set({'minimized': false});
+        u.maximize(view.model);
         indicator_el = lview.querySelector(".msgs-indicator");
         expect(indicator_el === null);
         room_el = lview.querySelector(".available-chatroom");

@@ -704,7 +704,8 @@ async function _initConverse (settings) {
         play_sounds: false,
         use_emojione: false,
         theme,
-        view_mode
+        view_mode,
+        no_trimming: true,
     }, settings || {}));
 
     window._converse = _converse;

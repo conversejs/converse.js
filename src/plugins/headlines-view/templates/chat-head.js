@@ -5,6 +5,7 @@ import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
 
 
 export default (o) => {
+    debugger;
     return html`
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">

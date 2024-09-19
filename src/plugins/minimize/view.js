@@ -13,7 +13,7 @@ export default class MinimizedChats extends CustomElement {
         this.listenTo(this.model, 'add', () => this.requestUpdate())
         this.listenTo(this.model, 'change:fullname', () => this.requestUpdate())
         this.listenTo(this.model, 'change:jid', () => this.requestUpdate())
-        this.listenTo(this.model, 'change:minimized', () => this.requestUpdate())
+        this.listenTo(this.model, 'change:hidden', () => this.requestUpdate())
         this.listenTo(this.model, 'change:name', () => this.requestUpdate())
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate())
         this.listenTo(this.model, 'remove', () => this.requestUpdate())

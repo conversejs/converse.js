@@ -47,23 +47,10 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         this.initialized = getOpenPromise();
 
         const jid = this.get('jid');
-        if (!jid) {
-            // XXX: The `validate` method will prevent this model
-            // from being persisted if there's no jid, but that gets
-            // called after model instantiation, so we have to deal
-            // with invalid models here also.
-            // This happens when the controlbox is in browser storage,
-            // but we're in embedded mode.
-            return;
-        }
-        this.set({'box_id': `box-${jid}`});
-
-        if (this.get('type') === PRIVATE_CHAT_TYPE) {
-            const { presences } = _converse.state;
-            this.presence = presences.get(jid) || presences.create({ jid });
-            await this.setModelContact(jid);
-            this.presence.on('change:show', (item) => this.onPresenceChanged(item));
-        }
+        const { presences } = _converse.state;
+        this.presence = presences.get(jid) || presences.create({ jid });
+        await this.setModelContact(jid);
+        this.presence.on('change:show', (item) => this.onPresenceChanged(item));
 
         this.on('change:chat_state', () => sendChatState(this.get('jid'), this.get('chat_state')));
         this.on('change:hidden', () => (this.get('hidden') && this.setChatState(INACTIVE)));

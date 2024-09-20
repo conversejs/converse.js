@@ -130,6 +130,7 @@ declare const ChatBoxBase_base: {
  * Base class for all chat boxes. Provides common methods.
  */
 export default class ChatBoxBase extends ChatBoxBase_base {
+    initialize(): Promise<void>;
     validate(attrs: any): string;
     /**
      * @param {boolean} force

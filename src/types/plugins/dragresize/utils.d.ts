@@ -1,3 +1,16 @@
+export function registerGlobalEventHandlers(): void;
+export function unregisterGlobalEventHandlers(): void;
+/**
+ * This function registers mousedown and mouseup events hadlers to
+ * all iframes in the DOM when converse UI resizing events are called
+ * to prevent mouse drag stutter effect which is bad user experience.
+ * @param {Element} e - dragging node element.
+ */
+export function dragresizeOverIframeHandler(e: Element): void;
+/**
+ * @param {import('@converse/headless/types/shared/chatbox').default} model
+ */
+export function initializeDragResize(model: import("@converse/headless/types/shared/chatbox").default): void;
 /**
  * @returns {string}
  */

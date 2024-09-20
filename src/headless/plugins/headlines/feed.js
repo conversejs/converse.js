@@ -26,7 +26,6 @@ export default class HeadlinesFeed extends ChatBoxBase {
 
     async initialize() {
         await super.initialize();
-        this.set({ 'box_id': `box-${this.get('jid')}` });
         await this.fetchMessages();
         /**
          * Triggered once a { @link _converse.HeadlinesFeed } has been created and initialized.

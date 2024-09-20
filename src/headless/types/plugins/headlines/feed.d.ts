@@ -12,7 +12,6 @@ export default class HeadlinesFeed extends ChatBoxBase {
         time_sent: any;
         type: string;
     };
-    initialize(): Promise<void>;
 }
 import ChatBoxBase from '../../shared/chatbox.js';
 //# sourceMappingURL=feed.d.ts.map

@@ -93,7 +93,6 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         this.initialized = getOpenPromise();
 
         this.debouncedRejoin = debounce(this.rejoin, 250);
-        this.set('box_id', `box-${this.get('jid')}`);
 
         this.initOccupants();
         this.initDiscoModels(); // sendChatState depends on this.features

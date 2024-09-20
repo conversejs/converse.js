@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../chatview/index.js';
-import './view.js';
+import HeadlinesFeedView from './view.js';
 import { HeadlinesFeedsList } from './feed-list.js';
 import { _converse, converse } from '@converse/headless';
 
@@ -27,7 +27,8 @@ converse.plugins.add('converse-headlines-view', {
 
     initialize () {
         const exports =  {
-            HeadlinesFeedsList: HeadlinesFeedsList,
+            HeadlinesFeedView,
+            HeadlinesFeedsList,
             HeadlinesPanel: HeadlinesFeedsList, // DEPRECATED
         }
         Object.assign(_converse, exports); // DEPRECATED

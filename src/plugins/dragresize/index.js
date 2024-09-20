@@ -1,10 +1,10 @@
-/**
- * @module converse-dragresize
- * @copyright 2022, the Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- */
 import './components/dragresize.js';
-import { applyDragResistance, onMouseUp, onMouseMove } from './utils.js';
+import {
+    initializeDragResize,
+    dragresizeOverIframeHandler,
+    registerGlobalEventHandlers,
+    unregisterGlobalEventHandlers,
+} from './utils.js';
 import DragResizableMixin from './mixin.js';
 import { _converse, api, converse } from '@converse/headless';
 
@@ -12,86 +12,35 @@ converse.plugins.add('converse-dragresize', {
     /* Plugin dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
      * this plugin.
-     *
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found. By default it's
-     * false, which means these plugins are only loaded opportunistically.
      */
     dependencies: ['converse-chatview', 'converse-headlines-view', 'converse-muc-views'],
 
-    enabled () {
+    enabled() {
         return api.settings.get('view_mode') == 'overlayed';
     },
 
-    // Overrides mentioned here will be picked up by converse.js's
-    // plugin architecture they will replace existing methods on the
-    // relevant objects or classes.
-    overrides: {
-        ChatBox: {
-            initialize () {
-                const result = this.__super__.initialize.apply(this, arguments);
-                const height = this.get('height');
-                const width = this.get('width');
-                const save = this.get('id') === 'controlbox' ? a => this.set(a) : a => this.save(a);
-                save({
-                    'height': applyDragResistance(height, this.get('default_height')),
-                    'width': applyDragResistance(width, this.get('default_width'))
-                });
-                return result;
-            }
-        }
-    },
-
-    initialize () {
+    initialize() {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
         api.settings.extend({
-            'allow_dragresize': true
+            'allow_dragresize': true,
         });
 
-        Object.assign(_converse.exports.ChatView.prototype, DragResizableMixin);
-        Object.assign(_converse.exports.MUCView.prototype, DragResizableMixin);
-        if (_converse.exports.ControlBoxView) {
-            Object.assign(_converse.exports.ControlBoxView.prototype, DragResizableMixin);
-        }
+        Object.assign(_converse.exports.ChatView?.prototype ?? {}, DragResizableMixin);
+        Object.assign(_converse.exports.MUCView?.prototype ?? {}, DragResizableMixin);
+        Object.assign(_converse.exports.HeadlinesFeedView?.prototype ?? {}, DragResizableMixin);
+        Object.assign(_converse.exports.ControlBoxView?.prototype ?? {}, DragResizableMixin);
 
-        /************************ BEGIN Event Handlers ************************/
-        function registerGlobalEventHandlers () {
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        }
-
-        function unregisterGlobalEventHandlers () {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        }
-
-        /**
-         * This function registers mousedown and mouseup events hadlers to
-         * all iframes in the DOM when converse UI resizing events are called
-         * to prevent mouse drag stutter effect which is bad user experience.
-         * @function dragresizeOverIframeHandler
-         * @param {Object} e - dragging node element.
-         */
-        function dragresizeOverIframeHandler (e) {
-          const iframes = Array.from(document.getElementsByTagName('iframe'));
-          for (const iframe of iframes) {
-            e.addEventListener('mousedown', () => {
-                iframe.style.pointerEvents  = 'none';
-            }, { once: true });
-
-            e.addEventListener('mouseup', () => {
-                iframe.style.pointerEvents  = 'initial';
-            }, { once: true });
-          }
-        }
+        api.listen.on('headlinesFeedInitialized', initializeDragResize);
+        api.listen.on('chatBoxInitialized', initializeDragResize);
+        api.listen.on('chatRoomInitialized', initializeDragResize);
 
         api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
         api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
-        api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
+        api.listen.on('beforeShowingChatView', (view) => view.initDragResize().setDimensions());
         api.listen.on('startDiagonalResize', dragresizeOverIframeHandler);
         api.listen.on('startHorizontalResize', dragresizeOverIframeHandler);
         api.listen.on('startVerticalResize', dragresizeOverIframeHandler);
-    }
+    },
 });

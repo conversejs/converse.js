@@ -5,7 +5,7 @@
     direction: ltr;
 
     .flyout {
-      position: absolute;
+        position: absolute;
     }
 
     .img-thumbnail {
@@ -22,17 +22,17 @@
     }
 
     .close {
-      color: var(--close-color);
-      text-shadow: none;
+        color: var(--close-color);
+        text-shadow: none;
 
-      &:hover {
-        color: var(--close-color-hover);
-      }
+        &:hover {
+            color: var(--close-color-hover);
+        }
     }
 
     .no-scrolling {
-      overflow-x: none;
-      overflow-y: none;
+        overflow-x: none;
+        overflow-y: none;
     }
 
     converse-brand-heading {
@@ -46,60 +46,60 @@
         font-family: var(--branding-font);
         color: var(--link-color);
 
-      .brand-name-wrapper {
-        display: flex;
-        white-space: nowrap;
-        margin: auto;
-      }
+        .brand-name-wrapper {
+            display: flex;
+            white-space: nowrap;
+            margin: auto;
+        }
 
-      .brand-name {
-          color: var(--link-color);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-top: -0.25em;
+        .brand-name {
+            color: var(--link-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -0.25em;
 
-          .byline {
-              font-family: var(--heading-font);
-              font-size: 0.3em;
-              margin-bottom: 0.75em;
-              margin-left: -2.7em;
-              opacity: 0.55;
-              word-spacing: 5px;
-          }
-      }
+            .byline {
+                font-family: var(--heading-font);
+                font-size: 0.3em;
+                margin-bottom: 0.75em;
+                margin-left: -2.7em;
+                opacity: 0.55;
+                word-spacing: 5px;
+            }
+        }
 
-      .brand-subtitle {
-          color: var(--text-color);
-      }
+        .brand-subtitle {
+            color: var(--text-color);
+        }
 
-      .brand-name__text {
-          font-size: 120%;
-          vertical-align: text-bottom;
-      }
+        .brand-name__text {
+            font-size: 120%;
+            vertical-align: text-bottom;
+        }
 
-      .converse-svg-logo {
-          color: var(--link-color);
-          height: 1.5em;
-          margin-right: 0.25em;
-          margin-bottom: -0.25em;
-          .cls-1 {
-              isolation: isolate;
-          }
-          .cls-2 {
-              opacity: 0.5;
-              mix-blend-mode: multiply;
-          }
-          .cls-3 {
-              fill: var(--link-color);
-          }
-          .cls-4 {
-              fill: var(--link-color);
-          }
-      }
-  }
+        .converse-svg-logo {
+            color: var(--link-color);
+            height: 1.5em;
+            margin-right: 0.25em;
+            margin-bottom: -0.25em;
+            .cls-1 {
+                isolation: isolate;
+            }
+            .cls-2 {
+                opacity: 0.5;
+                mix-blend-mode: multiply;
+            }
+            .cls-3 {
+                fill: var(--link-color);
+            }
+            .cls-4 {
+                fill: var(--link-color);
+            }
+        }
+    }
 
-  .brand-heading--inverse {
+    .brand-heading--inverse {
         .converse-svg-logo {
             margin-bottom: 0em;
             margin-top: -0.2em;
@@ -114,26 +114,10 @@
         }
     }
 
-    ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-        color: var(--subdued-color);
-    }
-    ::-moz-placeholder { /* Firefox 19+ */
-        color: var(--subdued-color);
-    }
-    :-ms-input-placeholder { /* IE 10+ */
-        color: var(--subdued-color);
-    }
-    :-moz-placeholder { /* Firefox 18- */
-        color: var(--subdued-color);
-    }
     ::placeholder {
         color: var(--subdued-color);
     }
-
     ::selection {
-        background-color: var(--highlight-color);
-    }
-    ::-moz-selection {
         background-color: var(--highlight-color);
     }
 
@@ -150,15 +134,24 @@
         bottom: 5px;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         color: var(--header-color);
     }
 
-    ul li { height: auto; }
+    ul li {
+        height: auto;
+    }
 
     textarea,
-    input[type=submit], input[type=button],
-    input[type=text], input[type=password],
+    input[type='submit'],
+    input[type='button'],
+    input[type='text'],
+    input[type='password'],
     button {
         font-size: var(--font-size);
         min-height: 0;
@@ -172,20 +165,26 @@
         font-style: italic;
     }
 
-    ol, ul {
+    ol,
+    ul {
         list-style: none;
     }
 
-    ul, ol, dl {
+    ul,
+    ol,
+    dl {
         font: inherit;
         margin: 0;
     }
 
     a {
-      cursor: pointer;
+        cursor: pointer;
     }
 
-    a, a:visited, a:not([href]):not([tabindex]), .clickable {
+    a,
+    a:visited,
+    a:not([href]):not([tabindex]),
+    .clickable {
         text-decoration: none;
         color: var(--link-color);
         text-shadow: none;
@@ -196,7 +195,9 @@
             text-shadow: none;
         }
 
-        &.fa, &.far, &.fas {
+        &.fa,
+        &.far,
+        &.fas {
             color: var(--subdued-color);
             &:hover {
                 color: var(--icon-hover-color);
@@ -214,15 +215,17 @@
         border-radius: var(--chatbox-border-radius);
     }
 
-    .fa, .far, .fas {
+    .fa,
+    .far,
+    .fas {
         color: var(--subdued-color);
     }
 
     q {
-      quotes: "“" "”" "‘" "’";
-      &.reason {
-        display: inline;
-      }
+        quotes: '“' '”' '‘' '’';
+        &.reason {
+            display: inline;
+        }
     }
     q:before {
         content: open-quote;
@@ -249,49 +252,109 @@
     }
 
     @keyframes colorchange-chatmessage {
-        0%   {background-color: rgba(141, 216, 174, 1);}
-        25%  {background-color: rgba(141, 216, 174, 0.75);}
-        50%  {background-color: rgba(141, 216, 174, 0.5);}
-        75%  {background-color: rgba(141, 216, 174, 0.25);}
-        100% {background-color: transparent;}
+        0% {
+            background-color: rgba(141, 216, 174, 1);
+        }
+        25% {
+            background-color: rgba(141, 216, 174, 0.75);
+        }
+        50% {
+            background-color: rgba(141, 216, 174, 0.5);
+        }
+        75% {
+            background-color: rgba(141, 216, 174, 0.25);
+        }
+        100% {
+            background-color: transparent;
+        }
     }
     @-webkit-keyframes colorchange-chatmessage {
-        0%   {background-color: rgba(141, 216, 174, 1);}
-        25%  {background-color: rgba(141, 216, 174, 0.75);}
-        50%  {background-color: rgba(141, 216, 174, 0.5);}
-        75%  {background-color: rgba(141, 216, 174, 0.25);}
-        100% {background-color: transparent;}
+        0% {
+            background-color: rgba(141, 216, 174, 1);
+        }
+        25% {
+            background-color: rgba(141, 216, 174, 0.75);
+        }
+        50% {
+            background-color: rgba(141, 216, 174, 0.5);
+        }
+        75% {
+            background-color: rgba(141, 216, 174, 0.25);
+        }
+        100% {
+            background-color: transparent;
+        }
     }
 
     @keyframes colorchange-chatmessage-muc {
-        0%   {background-color: rgba(255, 181, 162, 1);}
-        25%  {background-color: rgba(255, 181, 162, 0.75);}
-        50%  {background-color: rgba(255, 181, 162, 0.5);}
-        75%  {background-color: rgba(255, 181, 162, 0.25);}
-        100% {background-color: transparent;}
+        0% {
+            background-color: rgba(255, 181, 162, 1);
+        }
+        25% {
+            background-color: rgba(255, 181, 162, 0.75);
+        }
+        50% {
+            background-color: rgba(255, 181, 162, 0.5);
+        }
+        75% {
+            background-color: rgba(255, 181, 162, 0.25);
+        }
+        100% {
+            background-color: transparent;
+        }
     }
     @-webkit-keyframes colorchange-chatmessage-muc {
-        0%   {background-color: rgba(255, 181, 162, 1);}
-        25%  {background-color: rgba(255, 181, 162, 0.75);}
-        50%  {background-color: rgba(255, 181, 162, 0.5);}
-        75%  {background-color: rgba(255, 181, 162, 0.25);}
-        100% {background-color: transparent;}
+        0% {
+            background-color: rgba(255, 181, 162, 1);
+        }
+        25% {
+            background-color: rgba(255, 181, 162, 0.75);
+        }
+        50% {
+            background-color: rgba(255, 181, 162, 0.5);
+        }
+        75% {
+            background-color: rgba(255, 181, 162, 0.25);
+        }
+        100% {
+            background-color: transparent;
+        }
     }
     @keyframes fadein {
-        0% { opacity: 0 }
-        100% { opacity: 1 }
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
     }
     @-webkit-keyframes fadein {
-        0% { opacity: 0 }
-        100% { opacity: 1 }
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
     }
     @-webkit-keyframes fadeOut {
-        0% { opacity: 1; visibility: visible; }
-        100% { opacity: 0; visibility: hidden;  }
+        0% {
+            opacity: 1;
+            visibility: visible;
+        }
+        100% {
+            opacity: 0;
+            visibility: hidden;
+        }
     }
     @keyframes fadeOut {
-        0% { opacity: 1; visibility: visible; }
-        100% { opacity: 0; visibility: hidden;  }
+        0% {
+            opacity: 1;
+            visibility: visible;
+        }
+        100% {
+            opacity: 0;
+            visibility: hidden;
+        }
     }
 
     .fade-in {
@@ -299,7 +362,7 @@
     }
 
     .visible {
-        opacity:0;  /* make things invisible upon start */
+        opacity: 0; /* make things invisible upon start */
         animation-name: fadein;
         animation-fill-mode: forwards;
         animation-duration: 500ms;
@@ -328,8 +391,7 @@
         padding-right: 22px;
     }
 
-
-    @keyframes spin  {
+    @keyframes spin {
         from {
             transform: rotate(0deg);
         }
@@ -388,6 +450,10 @@
         font-size: 90%;
     }
 
+	.nav {
+		--converse-nav-link-color: var(--primary-color);
+        --converse-nav-link-hover-color: var(--focus-color);
+	}
     .nav-pills .nav-link.active,
     .nav-pills .show > .nav-link {
         background-color: var(--primary-color);
@@ -396,12 +462,12 @@
 
 @media screen and (max-width: 575px) {
     body {
-      .converse-brand {
-        font-size: 3.75em;
-      }
+        .converse-brand {
+            font-size: 3.75em;
+        }
     }
-    .conversejs:not(.converse-embedded)  {
-        .chatbox  {
+    .conversejs:not(.converse-embedded) {
+        .chatbox {
             .chat-body {
                 border-radius: var(--chatbox-border-radius);
             }
@@ -411,7 +477,6 @@
         }
     }
 }
-
 
 @media screen and (min-width: 576px) {
     .conversejs .offset-sm-2 {
@@ -440,7 +505,7 @@
     }
 }
 @media screen and (max-height: 450px) {
-  .conversejs {
-    left: 0;
-  }
+    .conversejs {
+        left: 0;
+    }
 }

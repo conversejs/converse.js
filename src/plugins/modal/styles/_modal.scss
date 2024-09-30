@@ -44,8 +44,8 @@ $prefix: 'converse-';
                 }
                 &:hover {
                     .nav-link {
-                        color: var(--foreground);
-                        background-color: var(--primary-color-light);
+                        color: var(--focus-color);
+                        background-color: var(--background);
                         &.active {
                             color: var(--background);
                             background-color: var(--primary-color);

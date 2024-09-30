@@ -106,7 +106,7 @@ converse-root.theme-cyberpunk {
 	--headlines-head-fg-color: var(--headlines-color);
 	--headlines-head-text-color: var(--headlines-color);
 	--highlight-color-darker: var(--comment);
-	--highlight-color: var(--foreground);
+	--highlight-color: var(--background);
 	--icon-hover-color: var(--cyan);
 	--img-thumbnail-background-color: var(--comment);
 	--img-thumbnail-border-color: black;
@@ -154,9 +154,6 @@ converse-root.theme-cyberpunk {
 
 	.card {
 		--converse-card-border-color: var(--comment);
-	}
-	.nav {
-		--converse-nav-link-color: var(--primary-color);
 	}
 
 	#controlbox {

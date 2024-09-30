@@ -35,6 +35,7 @@
             .occupants {
                 display: flex;
                 height: 100%;
+                width: 100%;
                 flex-direction: column;
                 justify-content: space-between;
                 overflow-y: visible;
@@ -111,9 +112,12 @@
                                 flex-wrap: nowrap;
                                 align-items: center;
                                 gap: 0.25rem;
+                                overflow-x: hidden;
 
                                 .occupant-nick {
                                     flex-grow: 2;
+                                    overflow-x: hidden;
+                                    text-overflow: ellipsis;
                                 }
 
                                 .occupant-badges {

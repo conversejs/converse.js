@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-06-18 00:30+0000\n"
+"PO-Revision-Date: 2024-10-08 22:15+0000\n"
 "Last-Translator: nautilusx <translate@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1234,9 +1234,8 @@ msgid "Show less"
 msgstr "Weniger anzeigen"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
-msgstr "Moderator"
+msgstr "Ein Moderator"
 
 #: dist/converse-no-dependencies.js:90350
 #: dist/converse-no-dependencies.js:90352
@@ -1762,18 +1761,17 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Angegebener Grund: „%1$s”."
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "Klicken Sie hier, um diesen Chat wiederherzustellen"
+msgstr "Klicken Sie hier, um ein neues Bild einzustellen"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "Konfigurationsformular laden"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Konfigurieren"
+msgstr "%1$s konfigurieren"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1781,9 +1779,8 @@ msgstr ""
 "Leider ist beim Senden des Konfigurationsformulars ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr "Leider ist beim Speichern Ihrer Profildaten ein Fehler aufgetreten."
+msgstr "Leider ist beim Speichern des Gruppenchatbildes ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1937,9 +1934,8 @@ msgstr ""
 "verlässt"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "Gruppenchats gefunden"
+msgstr "Informationen zum Gruppenchat"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1995,14 +1991,12 @@ msgid "Hide participants"
 msgstr "Teilnehmer ausblenden"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "Teilnehmer anzeigen"
+msgstr "Teilnehmer des Gruppenchats anzeigen"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "Thema des Gruppenchats ausblenden"
+msgstr "Teilnehmer des Gruppenchats ausblenden"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"
@@ -2616,11 +2610,11 @@ msgstr "Gruppenteilnehmer anzeigen"
 
 #: dist/converse-no-dependencies.js:124312
 msgid "Groupchats"
-msgstr "Gruppenchat"
+msgstr "Gruppenchats"
 
 #: dist/converse-no-dependencies.js:124313
 msgid "Query server"
-msgstr ""
+msgstr "Server abfragen"
 
 #: dist/converse-no-dependencies.js:124314
 msgid "Add groupchat"

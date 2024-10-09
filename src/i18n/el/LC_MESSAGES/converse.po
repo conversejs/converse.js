@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 7.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2023-03-09 15:46+0000\n"
-"Last-Translator: Ze-oZ <zeoz_olikis@proton.me>\n"
+"PO-Revision-Date: 2024-10-10 21:15+0000\n"
+"Last-Translator: scr22ch <much@genocide.fun>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/conversejs/"
 "translations/el/>\n"
 "Language: el\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -171,12 +171,12 @@ msgstr ""
 "διακομιστή σας."
 
 #: dist/converse-no-dependencies.js:35368
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
 msgstr ""
 "Το μέγεθος του αρχείου σας, %1$s, υπερβαίνει το μέγιστο επιτρεπόμενο από τον "
-"διακομιστή σας, το οποίο είναι %2$s."
+"διακομιστή σας."
 
 #: dist/converse-no-dependencies.js:35368
 #, javascript-format
@@ -698,7 +698,7 @@ msgstr "Επόμενο"
 
 #: dist/converse-no-dependencies.js:73741
 msgid "Complete"
-msgstr ""
+msgstr "Ολοκληρωμένο"
 
 #: dist/converse-no-dependencies.js:76272
 msgid "Add to Contacts"
@@ -750,7 +750,6 @@ msgid "Affiliation changed"
 msgstr "Τα χαρακτηριστικά του χρήστη άλλαξαν"
 
 #: dist/converse-no-dependencies.js:76399
-#, fuzzy
 msgid "role changed"
 msgstr "Ο ρόλος άλλαξε"
 

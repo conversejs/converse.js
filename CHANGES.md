@@ -41,6 +41,7 @@
 - Fix: trying to use emojis with an uppercase letter breaks the message field.
 - Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
+- Fix some typos in CHANGES
 
 ### Breaking changes:
 

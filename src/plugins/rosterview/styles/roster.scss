@@ -90,9 +90,24 @@
                     }
                 }
 
+                &:hover {
+                    .open-chat {
+                        converse-icon.chat-status {
+                            border: 2px solid var(--controlbox-pane-bg-hover-color);
+                        }
+                    }
+                }
+
                 .open-chat {
                     margin: 0;
                     padding: 0;
+                    converse-icon.chat-status {
+                        border: 2px solid var(--controlbox-pane-background-color);
+                        svg {
+                            display: flex;
+                        }
+                    }
+
                     &.unread-msgs {
                         font-weight: bold;
                         color: var(--unread-msgs-color);

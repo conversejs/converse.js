@@ -19,6 +19,7 @@
 - #3337: Correctly display multiline nested quotes
 - #3362: Don't create empty nick element in bookmarks
 - #3476: better UI for form "fixed" fields
+- #3478: MUC participant status indicator misplaced 
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users
@@ -31,7 +32,6 @@
 - Add an occupants filter to the MUC sidebar
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
-- New loadEmojis hook, to customize emojis at runtime.
 - New `loadEmojis` hook, to customize emojis at runtime.
 - Upgrade to Bootstrap 5
 - Add a new theme 'Cyberpunk' and remove the old 'Concord' theme.

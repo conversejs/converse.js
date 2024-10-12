@@ -2,7 +2,7 @@
 const { stx, u } = converse.env;
 
 describe('When receiving a MUC private message', function () {
-    it(
+    fit(
         "doesn't appear in the main MUC chatarea",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'coven@chat.shakespeare.lit';
@@ -54,7 +54,8 @@ describe('When receiving a MUC private message', function () {
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.pop().get('message')).toBe('Harpier cries: "tis time, "tis time.');
 
-            const occupant = view.model.occupants.findOccupant({nick: 'firstwitch'});
+            const occupant = view.model.occupants.findOccupant({ nick: 'firstwitch' });
+            expect(occupant.get('num_unread')).toBe(1);
             expect(occupant.messages.length).toBe(1);
             expect(occupant.messages.pop().get('message')).toBe("I'll give thee a wind.");
         })

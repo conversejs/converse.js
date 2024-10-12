@@ -34,6 +34,8 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
             hats: [],
             show: 'offline',
             states: [],
+            hidden: true,
+            num_unread: 0,
         };
     }
 

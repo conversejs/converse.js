@@ -8,6 +8,7 @@ import u from './utils/index.js';
 import converse from './shared/api/public.js';
 import log from './log.js';
 
+
 // START: Removable components
 // ---------------------------
 // The following components may be removed if they're not needed.
@@ -22,11 +23,15 @@ import './plugins/disco/index.js'; // XEP-0030 Service discovery
 import './plugins/adhoc/index.js'; // XEP-0050 Ad Hoc Commands
 import './plugins/headlines/index.js'; // Support for headline messages
 
+import ModelWithMessages from './shared/model-with-messages.js';
+export { ModelWithMessages };
+
 // XEP-0313 Message Archive Management
 export { MAMPlaceholderMessage } from './plugins/mam/index.js';
 
 // XEP-0045 Multi-user chat
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from './plugins/muc/index.js';
+
 
 import './plugins/ping/index.js'; // XEP-0199 XMPP Ping
 import './plugins/pubsub.js'; // XEP-0060 Pubsub

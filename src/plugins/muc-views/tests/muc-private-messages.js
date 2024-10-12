@@ -2,7 +2,7 @@
 const { stx, u } = converse.env;
 
 describe('When receiving a MUC private message', function () {
-    fit(
+    it(
         "doesn't appear in the main MUC chatarea",
         mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'coven@chat.shakespeare.lit';

@@ -110,6 +110,11 @@
                                 color: var(--link-hover-color);
                             }
 
+                            .msgs-indicator {
+                                margin-left: -0.5em;
+                                margin-right: 0.5em;
+                            }
+
                             .occupant-nick-badge {
                                 display: flex;
                                 justify-content: space-between;

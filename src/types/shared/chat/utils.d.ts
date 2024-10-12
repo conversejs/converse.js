@@ -1,3 +1,7 @@
+/**
+ * @param {Model} model
+ */
+export function getUnreadMsgsDisplay(model: Model): any;
 export function getHeadingDropdownItem(promise_or_data: any): Promise<import("lit").TemplateResult<1> | "">;
 export function getHeadingStandaloneButton(promise_or_data: any): Promise<import("lit").TemplateResult<1>>;
 /**
@@ -64,5 +68,6 @@ export type EmojiMarkupOptions = {
     add_title_wrapper?: boolean;
 };
 export type Message = import("@converse/headless").Message;
+export type Model = import("@converse/skeletor").Model;
 export type MUCView = import("../../plugins/muc-views/muc.js").default;
 //# sourceMappingURL=utils.d.ts.map

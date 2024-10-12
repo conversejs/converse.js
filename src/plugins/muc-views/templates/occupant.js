@@ -8,6 +8,7 @@ import { html } from "lit";
 import { until } from 'lit/directives/until.js';
 import { showOccupantModal } from '../utils.js';
 import { getAuthorStyle } from 'utils/color.js';
+import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
 
 const i18n_occupant_hint = /** @param {MUCOccupant} o */(o) => {
     return __('Click to mention %1$s in your message.', o.get('nick'));
@@ -158,6 +159,8 @@ export default (o, chat) => {
         [classes, color] = ['fa fa-circle', 'subdued-color'];
     }
 
+   const num_unread = getUnreadMsgsDisplay(o);
+
     return html`
         <li class="occupant" id="${o.id}">
             <div class="row g-0">
@@ -175,6 +178,7 @@ export default (o, chat) => {
                            style="margin-top: -0.1em"
                            size="0.82em"
                            class="${classes} chat-status chat-status--avatar"></converse-icon>
+                        ${ num_unread ? html`<span class="msgs-indicator">${ num_unread }</span>` : '' }
                     </a>
                 </div>
                 <div class="col occupant-nick-badge">

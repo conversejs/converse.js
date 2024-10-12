@@ -1,15 +1,24 @@
 /**
  * @typedef {import('@converse/headless').Message} Message
+ * @typedef {import('@converse/skeletor').Model} Model
  * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
  */
 import debounce from 'lodash-es/debounce';
-import tplNewDay from './templates/new-day.js';
 import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
+import tplNewDay from './templates/new-day.js';
 
 const { dayjs, u } = converse.env;
 const { convertASCII2Emoji, getShortnameReferences, getCodePointReferences } = u;
+
+/**
+ * @param {Model} model
+ */
+export function getUnreadMsgsDisplay (model) {
+    const num_unread = model.get('num_unread') || 0;
+    return num_unread < 100 ? num_unread : '99+';
+}
 
 export async function getHeadingDropdownItem (promise_or_data) {
     const data = await promise_or_data;

@@ -210,6 +210,8 @@ declare class MUCOccupant extends MUCOccupant_base {
         hats: any[];
         show: string;
         states: any[];
+        hidden: boolean;
+        num_unread: number;
     };
     save(key: any, val: any, options: any): any;
     getMessagesCollection(): MUCMessages;

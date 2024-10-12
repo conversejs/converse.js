@@ -33,8 +33,6 @@ class MUCOccupants extends Collection {
         this.chatroom = null;
     }
 
-    // FIXME
-    // @ts-ignore
     get model() {
         return MUCOccupant;
     }

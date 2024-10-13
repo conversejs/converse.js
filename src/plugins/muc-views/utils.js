@@ -103,11 +103,14 @@ export function getNicknameRequiredTemplate (model) {
     }
 }
 
-export function getChatRoomBodyTemplate (o) {
-    const view = o.model.session.get('view');
-    const jid = o.model.get('jid');
+/**
+ * @param {MUC} model
+ */
+export function getChatRoomBodyTemplate (model) {
+    const view = model.session.get('view');
+    const jid = model.get('jid');
     const RS = converse.ROOMSTATUS;
-    const conn_status =  o.model.session.get('connection_status');
+    const conn_status =  model.session.get('connection_status');
 
     if (view === converse.MUC.VIEWS.CONFIG) {
         return html`<converse-muc-config-form class="muc-form-container" jid="${jid}"></converse-muc-config-form>`;
@@ -116,7 +119,7 @@ export function getChatRoomBodyTemplate (o) {
             ${ conn_status == RS.PASSWORD_REQUIRED ? html`<converse-muc-password-form class="muc-form-container" jid="${jid}"></converse-muc-password-form>` : '' }
             ${ conn_status == RS.ENTERED ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>` : '' }
             ${ conn_status == RS.CONNECTING ? tplSpinner({class: 'vertically-centered'}) : '' }
-            ${ conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(o.model) : '' }
+            ${ conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(model) : '' }
             ${ conn_status == RS.DISCONNECTED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
             ${ conn_status == RS.BANNED ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>` : '' }
             ${ conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : '' }

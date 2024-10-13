@@ -8,6 +8,7 @@ import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
 import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
+import { getUnreadMsgsDisplay } from "shared/chat/utils";
 
 import '../styles/roomsgroups.scss';
 
@@ -39,7 +40,7 @@ function tplBookmark (room) {
 
 /** @param {MUC} room */
 function tplUnreadIndicator (room) {
-    return html`<span class="list-item-badge badge badge--muc msgs-indicator">${ room.get('num_unread') }</span>`;
+    return html`<span class="list-item-badge badge badge--muc msgs-indicator">${ getUnreadMsgsDisplay(room) }</span>`;
 }
 
 function tplActivityIndicator () {

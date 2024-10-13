@@ -29,7 +29,7 @@ export default class MUCView extends BaseChatView {
     }
 
     render () {
-        return tplMuc({ 'model': this.model });
+        return tplMuc(this);
     }
 
     onConnectionStatusChanged () {

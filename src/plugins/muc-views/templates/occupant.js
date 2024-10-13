@@ -178,7 +178,7 @@ export default (o, chat) => {
                            style="margin-top: -0.1em"
                            size="0.82em"
                            class="${classes} chat-status chat-status--avatar"></converse-icon>
-                        ${ num_unread ? html`<span class="msgs-indicator">${ num_unread }</span>` : '' }
+                        ${ num_unread ? html`<span class="msgs-indicator badge">${ num_unread }</span>` : '' }
                     </a>
                 </div>
                 <div class="col occupant-nick-badge">

@@ -4,6 +4,7 @@
 import { __ } from 'i18n';
 import { api } from "@converse/headless";
 import { html } from "lit";
+import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
 import { STATUSES } from '../constants.js';
 
 /**
@@ -35,7 +36,7 @@ export default  (el) => {
         [classes, color] = ['fa fa-circle', 'subdued-color'];
     }
    const desc_status = STATUSES[show];
-   const num_unread = el.model.get('num_unread') || 0;
+   const num_unread = getUnreadMsgsDisplay(el.model);
    const display_name = el.model.getDisplayName();
    const jid = el.model.get('jid');
    const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
@@ -58,7 +59,7 @@ export default  (el) => {
             size="1em"
             class="${classes} chat-status chat-status--avatar"></converse-icon>
       </span>
-      ${ num_unread ? html`<span class="msgs-indicator">${ num_unread }</span>` : '' }
+      ${ num_unread ? html`<span class="msgs-indicator badge">${ num_unread }</span>` : '' }
       <span class="contact-name contact-name--${show} ${ num_unread ? 'unread-msgs' : ''}">${display_name}</span>
    </a>
    ${ api.settings.get('allow_contact_removal') ? tplRemoveLink(el) : '' }`;

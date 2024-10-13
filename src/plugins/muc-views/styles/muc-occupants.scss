@@ -111,8 +111,11 @@
                             }
 
                             .msgs-indicator {
-                                margin-left: -0.5em;
+                                margin-left: -3em;
                                 margin-right: 0.5em;
+                                margin-top: -0.25em;
+                                position: absolute;
+                                font-size: xx-small;
                             }
 
                             .occupant-nick-badge {

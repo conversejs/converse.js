@@ -6,7 +6,6 @@ import { PRETTY_CHAT_STATUS } from '../constants.js';
 import { __ } from 'i18n';
 import { html } from "lit";
 import { until } from 'lit/directives/until.js';
-import { showOccupantModal } from '../utils.js';
 import { getAuthorStyle } from 'utils/color.js';
 import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
 
@@ -165,7 +164,7 @@ export default (el, o) => {
         <li class="occupant" id="${o.id}">
             <div class="row g-0">
                 <div class="col-auto">
-                    <a class="show-msg-author-modal" @click=${(ev) => showOccupantModal(ev, o)}>
+                    <a @click=${(ev) => el.model.save({'sidebar_view': `occupant:${o.id}`})}>
                         <converse-avatar
                             .model=${o}
                             class="avatar chat-msg__avatar"

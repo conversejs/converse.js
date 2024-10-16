@@ -1,0 +1,10 @@
+.conversejs {
+    converse-muc-sidebar {
+        .sidebar-heading {
+            width: 100%;
+            font-family: var(--heading-font);
+            color: var(--groupchats-header-color-dark);
+            padding-left: 0;
+        }
+    }
+}

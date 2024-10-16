@@ -3,8 +3,9 @@ import { Model } from '@converse/skeletor';
 import { _converse, api, u, RosterFilter } from "@converse/headless";
 import { CustomElement } from 'shared/components/element.js';
 import tplMUCOccupants from "./templates/muc-occupants.js";
-import './modals/muc-invite.js';
 import 'shared/autocomplete/index.js';
+import './modals/muc-invite.js';
+import './occupant.js';
 
 import 'shared/styles/status.scss';
 import './styles/muc-occupants.scss';

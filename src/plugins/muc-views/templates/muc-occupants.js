@@ -96,7 +96,7 @@ export default (el) => {
         <div class="occupants">
             <div class="occupants-header">
                 <div class="occupants-header--title">
-                    <span class="occupants-heading">${el.model.occupants.length} ${i18n_participants}</span>
+                    <span class="occupants-heading sidebar-heading">${el.model.occupants.length} ${i18n_participants}</span>
                     ${btns.length === 1
                         ? btns[0]
                             : html`<converse-dropdown

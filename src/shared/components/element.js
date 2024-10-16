@@ -4,6 +4,10 @@ import { EventEmitter } from '@converse/skeletor';
 
 export class CustomElement extends EventEmitter(LitElement) {
 
+    constructor () {
+        super();
+    }
+
     createRenderRoot () {
         // Render without the shadow DOM
         return this;

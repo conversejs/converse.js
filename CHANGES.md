@@ -38,9 +38,10 @@
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 - MUC occupants badges: displays short labels, with full label as title.
-- Fix: trying to use an emojis with an uppercase letter breaks the message field.
+- Fix: trying to use emojis with an uppercase letter breaks the message field.
 - Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
+- Fix some typos in CHANGES
 
 ### Breaking changes:
 
@@ -754,7 +755,7 @@ version 1.7.0 and below. You're advised to stay on Converse version 4.1.2 until 
 - #1268 Switch from SASS variables to CSS custom properties
 - #1278 Replace the default avatar with a SVG version
 - #1288 Add CSS classes to differentiate between incoming and outgoing messages
-- #1305 added value 'all' for 'show_desktop_notifications' to notifiy even if converse.js is open
+- #1305 added value 'all' for 'show_desktop_notifications' to notify even if converse.js is open
 - #1306 added option `notification_delay`
 - #1312 Error `unrecognized expression` in Safari
 - #1316 show version info in login dialog

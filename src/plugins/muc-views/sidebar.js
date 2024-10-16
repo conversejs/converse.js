@@ -6,6 +6,7 @@ import './occupants.js';
 import 'shared/autocomplete/index.js';
 
 import 'shared/styles/status.scss';
+import './styles/muc-sidebar.scss';
 
 export default class MUCSidebar extends CustomElement {
 

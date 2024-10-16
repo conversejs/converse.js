@@ -139,10 +139,10 @@ async function tplActionButtons (o) {
 }
 
 /**
+ * @param {import('../occupants').default} el
  * @param {MUCOccupant} o
- * @param {Object} chat
  */
-export default (o, chat) => {
+export default (el, o) => {
     const affiliation = o.get('affiliation');
     const hint_show = PRETTY_CHAT_STATUS[o.get('show')];
     const role = o.get('role');
@@ -184,7 +184,7 @@ export default (o, chat) => {
                 <div class="col occupant-nick-badge">
                     <span class="occupant-nick"
                           title="${occupant_title(o)}"
-                          @click=${chat.onOccupantClicked}
+                          @click=${(ev) => el.onOccupantClicked(ev)}
                           style="${getAuthorStyle(o)}">${o.getDisplayName()}</span>
                     <span class="occupant-badges">
                         ${ (affiliation === "owner") ? tplBadge('owner') : '' }

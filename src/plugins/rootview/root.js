@@ -21,21 +21,24 @@ export default class ConverseRoot extends CustomElement {
 
     initialize () {
         this.setAttribute('id', 'conversejs');
-        this.setClasses();
+        this.setThemeAttributes();
         const settings = api.settings.get();
-        this.listenTo(settings, 'change:view_mode', () => this.setClasses())
-        this.listenTo(settings, 'change:singleton', () => this.setClasses())
-        window.matchMedia('(prefers-color-scheme: dark)').addListener(() => this.setClasses());
-        window.matchMedia('(prefers-color-scheme: light)').addListener(() => this.setClasses());
+        this.listenTo(settings, 'change:view_mode', () => this.setThemeAttributes())
+        this.listenTo(settings, 'change:singleton', () => this.setThemeAttributes())
+        window.matchMedia('(prefers-color-scheme: dark)').addListener(() => this.setThemeAttributes());
+        window.matchMedia('(prefers-color-scheme: light)').addListener(() => this.setThemeAttributes());
     }
 
-    setClasses () {
+    setThemeAttributes() {
+        const theme = getTheme();
         this.className = "";
         this.classList.add('container-fluid');
         this.classList.add('g-0');
         this.classList.add('conversejs');
         this.classList.add(`converse-${api.settings.get('view_mode')}`);
-        this.classList.add(`theme-${getTheme()}`);
+        this.classList.add(`theme-${theme}`);
+        this.setAttribute('data-bs-theme', theme);
+        this.setAttribute('data-converse-theme', theme);
         this.requestUpdate();
     }
 }

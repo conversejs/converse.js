@@ -9,15 +9,24 @@ import './styles/background.scss';
 class ConverseBackground extends CustomElement {
 
     initialize() {
-        this.setClasses();
+        this.setThemeAttributes();
+
+        const settings = api.settings.get();
+        this.listenTo(settings, 'change:view_mode', () => this.setThemeAttributes())
+        this.listenTo(settings, 'change:singleton', () => this.setThemeAttributes())
+        window.matchMedia('(prefers-color-scheme: dark)').addListener(() => this.setThemeAttributes());
+        window.matchMedia('(prefers-color-scheme: light)').addListener(() => this.setThemeAttributes());
     }
 
     render() {
         return tplBackground();
     }
 
-    setClasses () {
-        this.classList.add(`theme-${getTheme()}`);
+    setThemeAttributes () {
+        const theme = getTheme();
+        this.classList.add(`theme-${theme}`);
+        this.setAttribute('data-converse-theme', theme);
+        this.setAttribute('data-bs-theme', theme);
         this.requestUpdate();
     }
 }

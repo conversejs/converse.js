@@ -1,6 +1,5 @@
-body.converse-fullscreen,
-converse-bg.theme-classic,
-converse-root.theme-classic {
+&[data-converse-theme="classic"],
+&[data-bs-theme="classic"] {
 	$theme: 'classic' !default;
 
 	// Theme-defined variables:

@@ -1,10 +1,5 @@
 .conversejs {
     .btn {
-        font-weight: normal;
-        color: var(--button-text-color);
-        &:hover {
-            color: var(--button-hover-text-color);
-        }
         &.fa {
             color: var(--button-text-color) !important;
         }
@@ -20,18 +15,95 @@
         converse-icon {
             display: inline-block;
             margin-right: 0;
+            svg {
+                color: var(--button-text-color);
+            }
         }
     }
 
-    .btn-primary {
-        background-color: var(--primary-color) !important;
-        border-color: transparent !important;
-        &:focus, &:hover, &:active {
-            color: var(--button-text-color);
-            background-color: var(--primary-color-dark) !important;
-            border-color: transparent !important;
-        }
-    }
+    .btn-primary,
+	.btn-outline-primary {
+		--converse-btn-color: var(--button-text-color);
+		--converse-btn-bg: var(--primary);
+		--converse-btn-disabled-bg: var(--disabled-color);
+		--converse-btn-border-color: var(--primary);
+		--converse-btn-hover-bg: var(--primary);
+		--converse-btn-hover-border-color: var(--primary-color-dark);
+		--converse-btn-active-bg: var(--primary);
+		--converse-btn-active-border-color: var(--primary);
+		--converse-btn-disabled-color: var(--primary);
+		--converse-btn-disabled-border-color: var(--primary);
+	}
+
+    .btn-secondary,
+	.btn-outline-secondary {
+		--converse-btn-color: var(--button-text-color);
+		--converse-btn-bg: var(--secondary);
+		--converse-btn-disabled-bg: var(--disabled-color);
+		--converse-btn-border-color: var(--secondary);
+		--converse-btn-hover-bg: var(--secondary);
+		--converse-btn-hover-border-color: var(--secondary-color-dark);
+		--converse-btn-active-bg: var(--secondary);
+		--converse-btn-active-border-color: var(--secondary);
+		--converse-btn-disabled-color: var(--secondary);
+		--converse-btn-disabled-border-color: var(--secondary);
+	}
+
+    .btn-success,
+	.btn-outline-success {
+		--converse-btn-color: var(--button-text-color);
+		--converse-btn-bg: var(--success);
+		--converse-btn-disabled-bg: var(--disabled-color);
+		--converse-btn-border-color: var(--success);
+		--converse-btn-hover-bg: var(--success-color-dark);
+		--converse-btn-hover-border-color: var(--success-color-dark);
+		--converse-btn-active-bg: var(--success);
+		--converse-btn-active-border-color: var(--success);
+		--converse-btn-disabled-color: var(--success);
+		--converse-btn-disabled-border-color: var(--success);
+	}
+
+    .btn-warning,
+	.btn-outline-warning {
+		--converse-btn-color: var(--button-text-color);
+		--converse-btn-bg: var(--warning);
+		--converse-btn-disabled-bg: var(--disabled-color);
+		--converse-btn-border-color: var(--warning);
+		--converse-btn-hover-bg: var(--warning-color-dark);
+		--converse-btn-hover-border-color: var(--warning-color-dark);
+		--converse-btn-active-bg: var(--warning);
+		--converse-btn-active-border-color: var(--warning);
+		--converse-btn-disabled-color: var(--warning);
+		--converse-btn-disabled-border-color: var(--warning);
+	}
+
+    .btn-danger,
+	.btn-outline-danger {
+		--converse-btn-color: var(--button-text-color);
+		--converse-btn-bg: var(--danger);
+		--converse-btn-disabled-bg: var(--disabled-color);
+		--converse-btn-border-color: var(--danger);
+		--converse-btn-hover-bg: var(--danger-color-dark);
+		--converse-btn-hover-border-color: var(--danger-color-dark);
+		--converse-btn-active-bg: var(--danger);
+		--converse-btn-active-border-color: var(--danger);
+		--converse-btn-disabled-color: var(--danger);
+		--converse-btn-disabled-border-color: var(--danger);
+	}
+
+    .btn-info,
+	.btn-outline-info {
+		--converse-btn-color: var(--button-text-color);
+		--converse-btn-bg: var(--info);
+		--converse-btn-disabled-bg: var(--disabled-color);
+		--converse-btn-border-color: var(--info);
+		--converse-btn-hover-bg: var(--info-color-dark);
+		--converse-btn-hover-border-color: var(--info-color-dark);
+		--converse-btn-active-bg: var(--info);
+		--converse-btn-active-border-color: var(--info);
+		--converse-btn-disabled-color: var(--info);
+		--converse-btn-disabled-border-color: var(--info);
+	}
 
     .btn--transparent {
         background: transparent;
@@ -46,46 +118,5 @@
         font-size: var(--font-size-small);
         line-height: 1.428571429;
         border-radius: 50%;
-    }
-
-    .btn-info, .badge-info {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        &:hover {
-            background-color: var(--primary-color-dark);
-            border-color: var(--primary-color-dark);
-        }
-    }
-
-    .button-cancel,
-    .btn-secondary, .badge-secondary {
-        color: var(--button-text-color);
-        background-color: var(--secondary-color);
-        border-color: var(--secondary-color);
-        &:hover {
-            background-color: var(--secondary-color-dark);
-            border-color: var(--secondary-color-dark);
-        }
-    }
-
-    .btn-warning {
-        color: var(--button-text-color);
-        background-color: var(--warning-color);
-        border-color: var(--warning-color);
-        &:hover {
-            color: var(--button-text-color);
-            background-color: var(--warning-color-dark);
-            border-color: var(--warning-color-dark)
-        }
-    }
-
-    .btn-danger {
-        color: var(--button-text-color);
-        background-color: var(--danger-color);
-        border-color: var(--danger-color) !important;
-        &:hover {
-            background-color: var(--danger-color-dark);
-            border-color: var(--danger-color-dark);
-        }
     }
 }

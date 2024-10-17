@@ -1,7 +1,6 @@
-// https://draculatheme.com
-converse-bg.theme-dracula,
-converse-root.theme-dracula {
-	$theme: 'dracula' !default;
+&[data-converse-theme="dracula"],
+&[data-bs-theme="dracula"] {
+    $theme: 'dracula' !default;
 
     // Hex color values
     --background: #282a36;

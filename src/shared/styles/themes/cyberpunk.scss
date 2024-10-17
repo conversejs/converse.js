@@ -1,6 +1,7 @@
 // https://bootswatch.com/vapor
-converse-bg.theme-cyberpunk,
-converse-root.theme-cyberpunk {
+
+&[data-converse-theme="cyberpunk"],
+&[data-bs-theme="cyberpunk"] {
 	$theme: 'vapor' !default;
 
 	// Hex color values
@@ -141,8 +142,8 @@ converse-root.theme-cyberpunk {
 	--primary-color: var(--primary);
 	--raised-el-shadow: 1px 1px 10px black;
 	--redder-orange: var(--muc-color);
-	--secondary-color-dark: var(--cyan);
-	--secondary-color: var(--cyan);
+	--secondary-color-dark: var(--secondary);
+	--secondary-color: var(--secondary);
 	--separator-text-color: var(--message-text-color);
 	--subdued-color: var(--comment);
 	--text-color-invert: var(--background);

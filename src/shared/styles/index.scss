@@ -9,6 +9,7 @@
 // Set custom bootstrap prefix (default is bs-) to avoid clashes
 $prefix: 'converse-';
 
+
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/variables-dark";
@@ -17,7 +18,7 @@ $prefix: 'converse-';
 @import "bootstrap/scss/utilities";
 @import "bootstrap/scss/root";
 
-.conversejs {
+.conversejs, converse-bg {
     @import "bootstrap/scss/reboot";
     @import "bootstrap/scss/type";
     @import "bootstrap/scss/images";
@@ -50,14 +51,17 @@ $prefix: 'converse-';
     @import "bootstrap/scss/placeholders";
     @import "bootstrap/scss/helpers";
     @import "bootstrap/scss/utilities/api";
+
 }
 
 @import "variables";
 @import "mixins";
 
-@import "themes/classic";
-@import "themes/dracula";
-@import "themes/cyberpunk";
+.conversejs, converse-bg {
+    @import "themes/classic";
+    @import "themes/dracula";
+    @import "themes/cyberpunk";
+}
 
 @import "core";
 @import "alerts";

@@ -2,7 +2,7 @@
     .chatroom {
         .box-flyout {
             .muc-form-container {
-                background-color: var(--background);
+                background-color: var(--background-color);
                 border: 0;
                 color: var(--text-color);
                 font-size: var(--font-size);
@@ -19,7 +19,7 @@
                     margin: 0 0.5em;
                 }
                 .button-primary {
-                    background-color: var(--chatroom-head-fg-color);
+                    background-color: var(--muc-color);
                 }
             }
 

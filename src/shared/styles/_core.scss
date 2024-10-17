@@ -9,12 +9,12 @@
     }
 
     .img-thumbnail {
-        background-color: var(--img-thumbnail-background-color);
-        border: 1px solid var(--img-thumbnail-border-color);
+        background-color: var(--highlight-color);
+        border: 1px solid black;
     }
 
     textarea:disabled {
-        background-color: var(--chat-textarea-disabled-bg-color) !important;
+        background-color: var(--disabled) !important;
     }
 
     .subdued {
@@ -22,11 +22,11 @@
     }
 
     .close {
-        color: var(--close-color);
+        color: var(--foreground-color);
         text-shadow: none;
 
         &:hover {
-            color: var(--close-color-hover);
+            color: var(--primary-color);
         }
     }
 
@@ -115,10 +115,10 @@
     }
 
     ::placeholder {
-        color: var(--subdued-color);
+        color: var(--secondary-color);
     }
     ::selection {
-        background-color: var(--highlight-color);
+        background-color: var(--selection-color);
     }
 
     @media screen and (max-width: $mobile-portrait-length) {
@@ -140,7 +140,7 @@
     h4,
     h5,
     h6 {
-        color: var(--header-color);
+        color: var(--heading-color);
     }
 
     ul li {
@@ -190,7 +190,7 @@
         text-shadow: none;
         cursor: pointer;
         &:hover {
-            color: var(--link-hover-color);
+            color: var(--link-color-hover);
             text-decoration: none;
             text-shadow: none;
         }
@@ -198,7 +198,7 @@
         &.fa,
         &.far,
         &.fas {
-            color: var(--subdued-color);
+            color: var(--secondary-color);
             &:hover {
                 color: var(--icon-hover-color);
             }
@@ -218,7 +218,7 @@
     .fa,
     .far,
     .fas {
-        color: var(--subdued-color);
+        color: var(--secondary-color);
     }
 
     q {
@@ -236,7 +236,7 @@
 
     .helptext {
         font-size: var(--font-size-tiny);
-        color: var(--comment);
+        color: var(--secondary-color);
     }
 
     .selected {
@@ -446,7 +446,7 @@
     }
 
     .form-help {
-        color: var(--subdued-color);
+        color: var(--secondary-color);
         font-size: 90%;
     }
 

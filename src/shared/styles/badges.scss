@@ -2,7 +2,7 @@
     @import "bootstrap/scss/badge";
 
     .badge {
-        color: var(--badge-color);
+        color: var(--background-color);
         font-size: 90%;
         font-weight: normal;
         line-height: 1;
@@ -17,26 +17,24 @@
         background-color: var(--primary-color);
         border-color: transparent;
         &:focus, &:hover, &:active {
-            background-color: var(--primary-color-dark) !important;
+            background-color: var(--primary-color-hover) !important;
             border-color: transparent !important;
         }
     }
 
     .badge-info {
-        background-color: var(--primary);
-        border-color: var(--primary);
+        background-color: var(--primary-color);
         &:hover {
-            background-color: var(--primary-color-dark);
-            border-color: var(--primary-color-dark);
+            background-color: var(--primary-color-hover);
         }
     }
 
     .badge-secondary {
-        background-color: var(--secondary-color);
-        border-color: var(--secondary-color);
+        background-color: var(--secondary-color-color);
+        border-color: var(--secondary-color-color);
         &:hover {
-            background-color: var(--secondary-color-dark);
-            border-color: var(--secondary-color-dark);
+            background-color: var(--secondary-color-color-dark);
+            border-color: var(--secondary-color-color-dark);
         }
     }
 }

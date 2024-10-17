@@ -53,7 +53,7 @@ export default  (o) => {
     return html`
         <div class="roster-group" data-group="${o.name}">
             <a href="#" class="list-toggle group-toggle controlbox-padded" title="${i18n_title}" @click=${ev => toggleGroup(ev, o.name)}>
-                <converse-icon color="var(--chat-head-color-dark)" size="1em" class="fa ${ (collapsed.includes(o.name)) ? 'fa-caret-right' : 'fa-caret-down' }"></converse-icon> ${o.name}
+                <converse-icon color="var(--background-color)" size="1em" class="fa ${ (collapsed.includes(o.name)) ? 'fa-caret-right' : 'fa-caret-down' }"></converse-icon> ${o.name}
             </a>
             <ul class="items-list roster-group-contacts ${ (collapsed.includes(o.name)) ? 'collapsed' : '' }" data-group="${o.name}">
                 ${ repeat(o.contacts, (c) => c.get('jid'), renderContact) }

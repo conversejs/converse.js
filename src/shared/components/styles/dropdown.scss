@@ -24,7 +24,7 @@
         }
 
         .dropdown-menu {
-            background: var(--background);
+            background: var(--background-color);
             margin-top: -0.2em !important;
             box-shadow: var(--raised-el-shadow);
         }
@@ -39,15 +39,10 @@
                 margin-right: 0.25rem;
             }
             &:active, &.selected {
-                color: white !important;
-                background-color: var(--list-item-open-color);
-                .fa {
-                    color: white !important;
-                }
+                background-color: var(--highlight-color);
             }
             &:hover {
-                color: var(--text-color) !important;
-                background-color: var(--list-item-hover-color);
+                background-color: var(--highlight-color-hover);
             }
         }
     }

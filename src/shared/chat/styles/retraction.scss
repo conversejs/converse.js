@@ -2,7 +2,7 @@ converse-chat-message {
     .message {
         &.chat-msg--retracted {
             .chat-msg__message {
-                color: var(--subdued-color);
+                color: var(--secondary-color);
             }
         }
 

@@ -59,7 +59,7 @@ export default (el) => {
                                 <a href="#"
                                 data-form="affiliation-form"
                                 class="toggle-form right"
-                                color="var(--subdued-color)"
+                                color="var(--secondary-color)"
                                 @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
                                 </a>
                                 ${ el.show_affiliation_form ? html`<converse-muc-affiliation-form jid=${jid} .muc=${muc} affiliation=${affiliation}></converse-muc-affiliation-form>` : '' }` : ''
@@ -73,7 +73,7 @@ export default (el) => {
                                 <a href="#"
                                    data-form="row-form"
                                    class="toggle-form right"
-                                   color="var(--subdued-color)"
+                                   color="var(--secondary-color)"
                                    @click=${(ev) => el.toggleForm(ev)}><converse-icon class="fa fa-wrench" size="1em"></converse-icon>
                                 </a>
                                 ${ el.show_role_form ? html`<converse-muc-role-form jid=${jid} .muc=${muc} role=${role}></converse-muc-role-form>` : '' }` : ''

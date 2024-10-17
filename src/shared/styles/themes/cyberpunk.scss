@@ -2,305 +2,223 @@
 
 &[data-converse-theme="cyberpunk"],
 &[data-bs-theme="cyberpunk"] {
-	$theme: 'vapor' !default;
+    $theme: 'vapor' !default;
 
-	// Hex color values
-	--black: #000;
-	--blue: #1ba2f6;
-	--cyan: #32fbe2;
-	--green: #3cf281;
-	--indigo: #6610f2;
-	--orange: #f1b633;
-	--pink: #ea39b8;
-	--purple: #6f42c1;
-	--red: #e44c55;
-	--teal: #3f81a2;
-	--white: #fff;
-	--yellow: #ffc107;
+    // Hex color values
+    // ----------------
+    --blue: #1ba2f6;
+    --cyan: #32fbe2;
+    --green: #3cf281;
+    --indigo: #6610f2;
+    --orange: #f1b633;
+    --pink: #ea39b8;
+    --purple: #6f42c1;
+    --red: #e44c55;
+    --teal: #3f81a2;
+    --white: #efefef;
+    --yellow: #ffc107;
 
-	// Base variables
-	--background: var(--body-bg);
-	--body-bg-alt: rgb(48, 17, 94);
-	--body-bg: #1a0933;
-	--body-color: var(--cyan);
-	--danger: var(--red);
-	--dark: var(--gray-900);
-	--foreground: var(--white);
-	--info: var(--blue);
-	--light: #44d9e8;
-	--primary: var(--purple);
-	--secondary: var(--pink);
-	--success: var(--green);
-	--warning: var(--yellow);
+    // Base variables
+    // --------------
+    --background-color: #1a0933;
+    --foreground-color: var(--white);
 
-	// Common variables
-	--badge-color: var(--background);
-	--brand-heading-color: var(--cyan);
-	--button-hover-text-color: var(--background);
-	--button-text-color: var(--background);
-	--chat-background-color: var(--background);
-	--chat-color: var(--green);
-	--chat-content-background-color: var(--background);
-	--chat-correcting-color: var(--comment);
-	--chat-head-border-bottom: 0.15em solid var(--chat-color);
-	--chat-head-color-dark: var(--chat-color);
-	--chat-head-color-darker: var(--chat-color);
-	--chat-head-color: var(--background);
-	--chat-head-fg-color: var(--chat-color);
-	--chat-head-text-color: var(--chat-color);
-	--chat-info-color: var(--orange);
-	--chat-msg-hover-color: var(--body-bg-alt);
-	--chat-msg-quote-color: var(--pink);
-	--chat-separator-border-bottom: 2px solid var(--chat-color);
-	--chat-status-away: var(--orange);
-	--chat-status-busy: var(--red);
-	--chat-status-online: var(--green);
-	--chat-textarea-background-color: var(--background);
-	--chat-textarea-color: var(--foreground);
-	--chat-textarea-disabled-bg-color: var(--disabled-color);
-	--chat-toolbar-btn-color: var(--chat-color);
-	--chatbox-message-input-border-top: 0.15em solid var(--chat-color);
-	--chatroom-correcting-color: var(--comment);
-	--chatroom-head-bg-color-dark: var(--muc-color);
-	--chatroom-head-bg-color: var(--background);
-	--chatroom-head-border-bottom: 0.15em solid var(--muc-color);
-	--chatroom-head-color: var(--muc-color);
-	--chatroom-head-description-link-color: var(--link-color);
-	--chatroom-head-fg-color: var(--muc-color);
-	--chatroom-message-input-border-top: 0.15em solid var(--muc-color);
-	--chatroom-separator-border-bottom: 0.15em solid var(--muc-color);
-	--close-color-hover: var(--purple);
-	--close-color: var(--foreground);
-	--comment: var(--secondary);
-	--completion-dark-color: var(--current-line);
-	--completion-light-color: var(--pink);
-	--completion-normal-color: var(--red);
-	--controlbox-head-color: var(--purple);
-	--close-color: var(--text-color);
-	--completion-normal-color: var(--redder-orange);
-	--controlbox-head-color: var(--light-blue);
-	--controlbox-heading-color: inherit;
-	--controlbox-heading-font-weight: bold;
-	--controlbox-heading-top-margin: 0.75em;
-	--controlbox-pane-background-color: var(--background);
-	--controlbox-pane-bg-hover-color: var(--list-item-hover-color);
-	--controlbox-text-color: var(--foreground);
-	--current-line: var(--primary);
-	--danger-color-dark: var(--pink);
-	--dark-link-color: var(--cyan);
-	--disabled-color-bg: lightgray;
-	--disabled-color: var(--comment);
-	--error-color: var(--danger);
-	--error-color: var(--red);
-	--focus-color: var(--comment);
-	--global-background-color: var(--background);
-	--gray-color: var(--current-line);
-	--groupchats-header-color-dark: var(--muc-color);
-	--groupchats-header-color: var(--muc-color);
-	--header-color: var(--pink);
-	--heading-color: var(--purple);
-	--headline-message-color: var(--headlines-color);
-	--headline-separator-border-bottom: 2px solid var(--headlines-color);
-	--headlines-color: var(--pink);
-	--headlines-head-bg-color: var(--background);
-	--headlines-head-border-bottom: 0.15em solid var(--headlines-color);
-	--headlines-head-fg-color: var(--headlines-color);
-	--headlines-head-text-color: var(--headlines-color);
-	--highlight-color-darker: var(--comment);
-	--highlight-color: var(--background);
-	--icon-hover-color: var(--cyan);
-	--img-thumbnail-background-color: var(--comment);
-	--img-thumbnail-border-color: black;
-	--info-color: var(--yellow);
-	--inverse-link-color: var(--foreground);
-	--light-background-color: var(--background);
-	--link-color: var(--body-color);
-	--link-hover-color: var(--green);
-	--list-dot-circle-color: var(--orange);
-	--list-group-item-bg-color: var(--comment);
-	--list-item-action-color: var(--comment);
-	--list-item-action-hover-color: var(--cyan);
-	--list-item-hover-color: var(--current-line);
-	--list-item-link-color: var(--foreground);
-	--list-item-link-hover-color: var(--link-color);
-	--list-item-open-color: var(--current-line);
-	--list-item-open-hover-color: var(--current-line);
-	--list-toggle-color: var(--comment);
-	--list-toggle-hover-color: var(--comment);
-	--message-author-color: var(--cyan);
-	--message-receipt-color: var(--green);
-	--message-text-color: var(--foreground);
-	--modal-background-color: var(--background);
-	--muc-color: var(--orange);
-	--muc-toolbar-btn-color: var(--muc-color);
-	--muc-toolbar-btn-disabled-color: var(--disabled-color);
-	--occupants-background-color: var(--background);
-	--occupants-border-bottom: 0.15em solid var(--muc-color);
-	--occupants-border-left: 0.15em solid var(--muc-color);
-	--panel-divider-color: var(--comment);
-	--primary-color-dark: var(--purple);
-	--primary-color: var(--primary);
-	--raised-el-shadow: 1px 1px 10px black;
-	--redder-orange: var(--muc-color);
-	--secondary-color-dark: var(--secondary);
-	--secondary-color: var(--secondary);
-	--separator-text-color: var(--message-text-color);
-	--subdued-color: var(--comment);
-	--text-color-invert: var(--background);
-	--text-color: var(--foreground);
-	--toolbar-btn-text-color: var(--background);
-	--unread-msgs-color: var(--yellow);
-	--warning-color-dark: var(--orange);
-	--warning-color: var(--orange);
+    // Common bootstrap variables
+    --primary-color: var(--purple) !important;
+    --secondary-color: var(--indigo) !important;
+    --success-color: var(--green);
+    --danger-color: var(--red);
+    --warning-color: var(--orange);
+    --info-color: var(--yellow);
 
-	.card {
-		--converse-card-border-color: var(--comment);
-	}
+    // Online status indicators
+    --chat-status-away: var(--orange);
+    --chat-status-busy: var(--red);
+    --chat-status-offline: gray;
+    --chat-status-online: var(--green);
 
-	#controlbox {
-		.flyout {
-			box-shadow:
-				0 0 1rem 0rem rgba(234, 57, 184, 0.5) inset,
-				0 0 2rem 0rem rgba(234, 57, 184, 0.2) inset,
-				0 0 4rem 2rem rgba(234, 57, 184, 0.1) inset !important;
-		}
-	}
+    --controlbox-color: var(--purple);
+    --disabled-color: var(--secondary-color);
+    --error-color: var(--red);
+    --focus-color: var(--secondary-color);
+    --heading-color: var(--purple);
+    --headlines-color: var(--pink);
+    --link-color: var(--cyan);
 
-	.modal-header {
-		.btn-close {
-			background-color: var(--header-color);
-		}
-	}
+    // The background when selecting text with your mouse
+    --selection-color: black;
 
-	.message .separator-text {
-		border-radius: 50px;
-		box-shadow:
-			0 0 0.25rem rgba(60, 242, 129, 0.8),
-			0 0 1rem rgba(60, 242, 129, 0.2),
-			0 0 4rem rgba(60, 242, 129, 0.1) !important;
-	}
+    // Used to indicate selected or open items in lists.
+    --highlight-color: var(--purple);
+    --highlight-color-hover: var(--indigo);
 
-	.card {
-		box-shadow:
-			inset 0 0 0.5rem rgba(234, 57, 184, 0.8),
-			inset 0 0 1rem rgba(234, 57, 184, 0.4),
-			inset 0 0 2rem rgba(234, 57, 184, 0.3),
-			inset 0 0 4rem rgba(234, 57, 184, 0.1) !important;
-	}
+    // 1:1 Chat-related colors
+    --chat-color: var(--green);
+    --chat-header-fg-color: var(--chat-color);
+    --chat-header-bg-color: var(--background-color);
 
-	.chat-toolbar {
-		box-shadow:
-			0 0 0.5rem rgba(60, 242, 129, 0.4),
-			0 0 2rem rgba(60, 242, 129, 0.2),
-			0 0 4rem rgba(60, 242, 129, 0.1) !important;
-	}
+    // MUC-related colors
+    --muc-color: var(--orange);
+    --muc-header-fg-color: var(--muc-color);
+    --muc-header-bg-color: var(--background-color);
 
-	.chat-head-chatbox {
-		box-shadow:
-			0 0 1rem 0rem rgba(60, 242, 129, 0.5) inset,
-			0 0 2rem 0rem rgba(60, 242, 129, 0.4) inset,
-			0 0 4rem 2rem rgba(60, 242, 129, 0.2) inset,
-			0 0 1rem 0rem rgba(60, 242, 129, 0.4),
-			0 0 2rem 0rem rgba(60, 242, 129, 0.2),
-			0 0 4rem 0rem rgba(60, 242, 129, 0.1) !important;
-	}
+    // Derived colors
+    // --------------
+    --brand-heading-color: var(--cyan);
+    --chat-color-hover: var(--chat-color);
+    --danger-color-hover: var(--danger-color);
+    --global-background-color: var(--background-color);
+    --link-color-hover: var(--link-color);
+    --muc-color-hover: var(--muc-color);
+    --primary-color-hover: var(--purple);
+    --secondary-color-hover: var(--secondary-color);
+    --success-color-hover: var(--success);
+    --warning-color-hover: var(--orange);
 
-	.chatroom {
-		.message .separator-text {
-			border-radius: 50px;
-			box-shadow:
-				0 0 0.25rem rgba(255, 193, 7, 0.8),
-				0 0 1rem rgba(255, 193, 7, 0.2),
-				0 0 4rem rgba(255, 193, 7, 0.1) !important;
-		}
+    #controlbox {
+        .flyout {
+            box-shadow:
+                0 0 1rem 0rem rgba(234, 57, 184, 0.5) inset,
+                0 0 2rem 0rem rgba(234, 57, 184, 0.2) inset,
+                0 0 4rem 2rem rgba(234, 57, 184, 0.1) inset !important;
+        }
+    }
 
-		.chat-head-chatroom {
-			box-shadow:
-				0 0 1rem 0rem rgba(255, 193, 7, 0.5) inset,
-				0 0 2rem 0rem rgba(255, 193, 7, 0.4) inset,
-				0 0 4rem 2rem rgba(255, 193, 7, 0.2) inset,
-				0 0 1rem 0rem rgba(255, 193, 7, 0.4),
-				0 0 2rem 0rem rgba(255, 193, 7, 0.2),
-				0 0 4rem 0rem rgba(255, 193, 7, 0.1) !important;
-		}
+    .modal-header {
+        .btn-close {
+            background-color: var(--header-color);
+        }
+    }
 
-		converse-muc-sidebar {
-			box-shadow: 0 0 1rem 1rem rgba(255, 193, 7, 0.1) inset !important;
-		}
+    .message .separator-text {
+        border-radius: 50px;
+        box-shadow:
+            0 0 0.25rem rgba(60, 242, 129, 0.8),
+            0 0 1rem rgba(60, 242, 129, 0.2),
+            0 0 4rem rgba(60, 242, 129, 0.1) !important;
+    }
 
-		.chat-toolbar {
-			box-shadow:
-				0 0 0.5rem rgba(255, 193, 7, 0.4),
-				0 0 2rem rgba(255, 193, 7, 0.2),
-				0 0 4rem rgba(255, 193, 7, 0.1) !important;
-		}
-	}
+    .card {
+        box-shadow:
+            inset 0 0 0.5rem rgba(234, 57, 184, 0.8),
+            inset 0 0 1rem rgba(234, 57, 184, 0.4),
+            inset 0 0 2rem rgba(234, 57, 184, 0.3),
+            inset 0 0 4rem rgba(234, 57, 184, 0.1) !important;
+    }
 
-	.moving-grid {
-		position: absolute;
-		top: 42%;
-		left: 0;
-		width: 100%;
-		height: 70%;
-		perspective: 1000px;
-		&:before {
-			content: '';
-			position: absolute;
-			top: 4rem;
-			width: 100%;
-			height: 0;
-			box-shadow:
-				0 0 1rem 0.5rem rgba(255, 255, 255, 0.5),
-				0 0 2rem 0rem rgba(234, 57, 184, 0.3),
-				0 0 4rem 2rem rgba(234, 57, 184, 0.1) !important;
-		}
-		.container {
-			position: relative;
-			width: 100%;
-			height: 300%;
-			border: 2px solid pink;
-			box-sizing: border-box;
-			transform-origin: top;
-			transform: rotateX(57deg) translateY(10%);
-			overflow: hidden;
-			.static-lines {
-				display: inline-block;
-				width: 100%;
-				height: 100%;
-				.vert {
-					display: inline-block;
-					height: 100%;
-					width: 2px;
-					background-color: pink;
-					margin-left: 4.5%;
-					box-shadow: 0 2px 21px pink;
-				}
-			}
-			.moving-lines {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 300%;
-				.horz {
-					display: inline-block;
-					width: 100%;
-					height: 3px;
-					margin-top: 4.8%;
-					background-color: pink;
-					box-shadow: 2px 0 21px pink;
-					animation: lines 15000ms linear infinite;
-				}
-			}
-		}
-	}
+    .chat-toolbar {
+        box-shadow:
+            0 0 0.5rem rgba(60, 242, 129, 0.4),
+            0 0 2rem rgba(60, 242, 129, 0.2),
+            0 0 4rem rgba(60, 242, 129, 0.1) !important;
+    }
 
-	@keyframes lines {
-		from {
-			transform: translateY(-65px);
-		}
-		to {
-			transform: translateY(65px);
-		}
-	}
+    .chat-head-chatbox {
+        box-shadow:
+            0 0 1rem 0rem rgba(60, 242, 129, 0.5) inset,
+            0 0 2rem 0rem rgba(60, 242, 129, 0.4) inset,
+            0 0 4rem 2rem rgba(60, 242, 129, 0.2) inset,
+            0 0 1rem 0rem rgba(60, 242, 129, 0.4),
+            0 0 2rem 0rem rgba(60, 242, 129, 0.2),
+            0 0 4rem 0rem rgba(60, 242, 129, 0.1) !important;
+    }
+
+    .chatroom {
+        .message .separator-text {
+            border-radius: 50px;
+            box-shadow:
+                0 0 0.25rem rgba(255, 193, 7, 0.8),
+                0 0 1rem rgba(255, 193, 7, 0.2),
+                0 0 4rem rgba(255, 193, 7, 0.1) !important;
+        }
+
+        .chat-head-chatroom {
+            box-shadow:
+                0 0 1rem 0rem rgba(255, 193, 7, 0.5) inset,
+                0 0 2rem 0rem rgba(255, 193, 7, 0.4) inset,
+                0 0 4rem 2rem rgba(255, 193, 7, 0.2) inset,
+                0 0 1rem 0rem rgba(255, 193, 7, 0.4),
+                0 0 2rem 0rem rgba(255, 193, 7, 0.2),
+                0 0 4rem 0rem rgba(255, 193, 7, 0.1) !important;
+        }
+
+        converse-muc-sidebar {
+            box-shadow: 0 0 1rem 1rem rgba(255, 193, 7, 0.1) inset !important;
+        }
+
+        .chat-toolbar {
+            box-shadow:
+                0 0 0.5rem rgba(255, 193, 7, 0.4),
+                0 0 2rem rgba(255, 193, 7, 0.2),
+                0 0 4rem rgba(255, 193, 7, 0.1) !important;
+        }
+    }
+
+    .moving-grid {
+        position: absolute;
+        top: 42%;
+        left: 0;
+        width: 100%;
+        height: 70%;
+        perspective: 1000px;
+        &:before {
+            content: '';
+            position: absolute;
+            top: 4rem;
+            width: 100%;
+            height: 0;
+            box-shadow:
+                0 0 1rem 0.5rem rgba(255, 255, 255, 0.5),
+                0 0 2rem 0rem rgba(234, 57, 184, 0.3),
+                0 0 4rem 2rem rgba(234, 57, 184, 0.1) !important;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            height: 300%;
+            border: 2px solid pink;
+            box-sizing: border-box;
+            transform-origin: top;
+            transform: rotateX(57deg) translateY(10%);
+            overflow: hidden;
+            .static-lines {
+                display: inline-block;
+                width: 100%;
+                height: 100%;
+                .vert {
+                    display: inline-block;
+                    height: 100%;
+                    width: 2px;
+                    background-color: pink;
+                    margin-left: 4.5%;
+                    box-shadow: 0 2px 21px pink;
+                }
+            }
+            .moving-lines {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 300%;
+                .horz {
+                    display: inline-block;
+                    width: 100%;
+                    height: 3px;
+                    margin-top: 4.8%;
+                    background-color: pink;
+                    box-shadow: 2px 0 21px pink;
+                    animation: lines 15000ms linear infinite;
+                }
+            }
+        }
+    }
+
+    @keyframes lines {
+        from {
+            transform: translateY(-65px);
+        }
+        to {
+            transform: translateY(65px);
+        }
+    }
 }

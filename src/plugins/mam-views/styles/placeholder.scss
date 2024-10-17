@@ -22,7 +22,7 @@ converse-mam-placeholder {
         &:after {
             height: 1em;
             top: 0.75em;
-            background: linear-gradient(-135deg, var(--chat-background-color) 0.5em, transparent 0) 0 0.5em, linear-gradient( 135deg, var(--chat-background-color) 0.5em, transparent 0) 0 0.5em;
+            background: linear-gradient(-135deg, var(--background-color) 0.5em, transparent 0) 0 0.5em, linear-gradient( 135deg, var(--background-color) 0.5em, transparent 0) 0 0.5em;
             background-position: top left;
             background-repeat: repeat-x;
             background-size: 1em 1em;

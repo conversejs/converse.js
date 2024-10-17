@@ -30,14 +30,6 @@ function isOccupantFiltered (el, occ) {
 
 /**
  * @param {import('../occupants').default} el
- * @param {MUCOccupant} occ
- */
-function shouldShowOccupant (el, occ) {
-    return isOccupantFiltered(el, occ) ? '' : tplOccupant(el, occ);
-}
-
-/**
- * @param {import('../occupants').default} el
  */
 export default (el) => {
     const i18n_participants = el.model.occupants === 1 ? __('Participant') : __('Participants');
@@ -104,7 +96,7 @@ export default (el) => {
                                 .items=${btns}></converse-dropdown>`}
                 </div>
             </div>
-            <ul class="occupant-list">
+            <ul class="items-list occupant-list">
                 ${is_filter_visible
                     ? html` <converse-list-filter
                         @update=${() => el.requestUpdate()}
@@ -117,7 +109,7 @@ export default (el) => {
                 ${repeat(
                     el.model.occupants.models,
                     (occ) => occ.get('jid'),
-                    (occ) => shouldShowOccupant(el, occ)
+                    (occ) => isOccupantFiltered(el, occ) ? '' : tplOccupant(el, occ)
                 )}
             </ul>
         </div>

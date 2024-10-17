@@ -39,7 +39,7 @@ const affiliation_option = (o) => html`
 
 
 const tplRoleFormToggle = (o) => html`
-    <a href="#" data-form="converse-muc-role-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+    <a href="#" data-form="converse-muc-role-form" class="toggle-form right" color="var(--secondary-color)" @click=${o.toggleForm}>
         <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
     </a>`;
 
@@ -65,7 +65,7 @@ const tplRoleListItem = (el, o) => html`
 
 
 const affiliation_form_toggle = (o) => html`
-    <a href="#" data-form="converse-muc-affiliation-form" class="toggle-form right" color="var(--subdued-color)" @click=${o.toggleForm}>
+    <a href="#" data-form="converse-muc-affiliation-form" class="toggle-form right" color="var(--secondary-color)" @click=${o.toggleForm}>
         <converse-icon class="fa fa-wrench" size="1em"></converse-icon>
     </a>`;
 

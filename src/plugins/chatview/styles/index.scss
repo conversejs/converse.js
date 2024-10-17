@@ -171,7 +171,7 @@
             .chat-body {
                 height: inherit;
                 overflow: hidden;
-                background-color: var(--chat-background-color);
+                background-color: var(--background-color);
             }
             .chat-title {
                 font-size: var(--font-size-huge);
@@ -220,7 +220,7 @@
                     display: flex;
                     .fa-arrow-left {
                         svg {
-                            fill: var(--chat-head-text-color);
+                            fill: var(--chat-color);
                         }
                     }
                 }

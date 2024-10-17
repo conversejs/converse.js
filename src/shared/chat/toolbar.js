@@ -66,7 +66,7 @@ export class ChatToolbar extends CustomElement {
         }
 
         if (this.show_call_button) {
-            const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
+            const color = this.is_groupchat ? '--muc-color' : '--chat-color';
             const i18n_start_call = __('Start a call');
             buttons.push(html`
                 <button type="button"
@@ -145,7 +145,7 @@ export class ChatToolbar extends CustomElement {
         } else {
             i18n_toggle_spoiler = __("Click to write your message as a spoiler");
         }
-        const color = this.is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
+        const color = this.is_groupchat ? '--muc-color' : '--chat-color';
         const markup = html`
             <button type="button"
                     class="btn toggle-compose-spoiler"

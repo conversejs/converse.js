@@ -6,9 +6,9 @@
         }
 
         .muc-domain-group-toggle, .muc-domain-group-toggle .fa {
-            color: var(--groupchats-header-color);
+            color: var(--muc-color);
             &:hover {
-                color: var(--chatroom-head-bg-color-dark);
+                color: var(--muc-color-hover);
             }
         }
 
@@ -17,7 +17,7 @@
             margin-bottom: 0.5em;
 
             svg {
-                fill: var(--chatroom-head-fg-color);
+                fill: var(--muc-color);
             }
 
             .list-item {

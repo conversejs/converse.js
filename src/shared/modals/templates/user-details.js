@@ -10,7 +10,7 @@ const remove_button = (el) => {
         <button type="button" @click="${ev => el.removeContact(ev)}" class="btn btn-danger remove-contact">
             <converse-icon
                 class="fas fa-trash-alt"
-                color="var(--inverse-link-color)"
+                color="var(--foreground-color)"
                 size="1em"
             ></converse-icon>&nbsp;${i18n_remove_contact}
         </button>
@@ -27,7 +27,7 @@ export const tplFooter = (el) => {
             <button type="button" class="btn btn-info refresh-contact" @click=${ev => el.refreshContact(ev)}>
                 <converse-icon
                     class="fa fa-refresh"
-                    color="var(--inverse-link-color)"
+                    color="var(--foreground-color)"
                     size="1em"
                 ></converse-icon>&nbsp;${i18n_refresh}</button>
             ${ (allow_contact_removal && is_roster_contact) ? remove_button(el) : '' }

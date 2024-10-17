@@ -7,7 +7,7 @@
             padding: 0.5em;
             text-align: center;
             font-size: var(--font-size-small);
-            background-color: var(--chatroom-head-bg-color);
+            background-color: var(--background-color);
             color: white;
 
             &.muc-bottom-panel--muted {
@@ -34,11 +34,14 @@
 
         converse-muc-bottom-panel {
             .chat-message-form {
+                border-top: 0.25em solid var(--muc-color) !important;
+                border-right: 0 !important;
+
                 .suggestion-box__results--above {
                     bottom: 4.5em;
                 }
                 .chat-textarea, input {
-                    outline: 1px solid var(--chatroom-head-bg-color) !important;
+                    outline: 1px solid var(--background-color) !important;
                     &:active, &:focus{
                         outline-width: 2px !important;
                     }

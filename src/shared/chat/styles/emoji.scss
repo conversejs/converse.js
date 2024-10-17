@@ -32,13 +32,13 @@
             width: 100%;
             padding-top: 0;
             padding-bottom: 0;
-            background-color: var(--chat-head-color);
+            background-color: var(--background-color);
             overflow-y: hidden;
 
             converse-emoji-picker-content {
                 width: 100%;
                 .emoji-picker__lists {
-                    background-color: var(--background);
+                    background-color: var(--background-color);
                     display: flex;
                     flex-direction: column;
                     height: 8em;
@@ -46,7 +46,7 @@
                     width: 100%;
                     .emoji-category__heading {
                         clear: both;
-                        color: var(--subdued-color);
+                        color: var(--secondary-color);
                         cursor: auto;
                         display: block;
                         font-size: var(--font-size);
@@ -55,7 +55,7 @@
                     }
 
                     .emoji-lists__container {
-                        background-color: var(--background);
+                        background-color: var(--background-color);
                         overflow-x: hidden;
                     }
 
@@ -69,8 +69,8 @@
             .emoji-skintone-picker {
                 display: flex;
                 padding: 0.5em 0 0.5em 0.5em;
-                color: var(--subdued-color);
-                background-color: var(--chat-head-color);
+                color: var(--secondary-color);
+                background-color: var(--background-color);
                 width: 100%;
                 font-size: var(--font-size);
                 ul {
@@ -84,7 +84,7 @@
                 }
             }
             .emoji-picker {
-                background-color: var(--background);
+                background-color: var(--background-color);
                 padding: 0.5em 0 0 0.5em;
                 &:last-child {
                     padding-bottom: 0.5em;
@@ -100,7 +100,7 @@
                     &.insert-emoji {
                         text-align: center;
                         &.selected a {
-                            background-color: var(--highlight-color-darker);
+                            background-color: var(--secondary-color);
                         }
                         img {
                             margin: 0 auto;
@@ -117,7 +117,7 @@
                             width: calc(var(--font-size-huge) * 1.5);
                             overflow: hidden;
                             &:hover {
-                                background-color: var(--highlight-color-darker);
+                                background-color: var(--secondary-color);
                             }
                         }
                     }
@@ -129,7 +129,7 @@
                 display: flex;
                 flex-direction: column;
                 padding: 0.1em 0;
-                background-color: var(--chat-head-color);
+                background-color: var(--background-color);
                 .emoji-search {
                     width: auto;
                     margin: 1em 0.25em 0.5em;
@@ -148,7 +148,7 @@
                             background-color: var(--heading-color);
                         }
                         &.selected a, &:hover a {
-                            background-color: var(--highlight-color-darker);
+                            background-color: var(--secondary-color);
                         }
                         a {
                             padding: 0.25em;
@@ -166,12 +166,12 @@
 
     .chatroom {
         converse-emoji-picker {
-            background-color: var(--chatroom-head-bg-color);
+            background-color: var(--background-color);
             .emoji-skintone-picker {
-                background-color: var(--chatroom-head-bg-color);
+                background-color: var(--background-color);
             }
             .emoji-picker__header {
-                background-color: var(--chatroom-head-bg-color);
+                background-color: var(--background-color);
             }
         }
     }

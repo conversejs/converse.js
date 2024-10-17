@@ -70,9 +70,9 @@
             }
 
             .group-toggle, .group-toggle .fa {
-                color: var(--chat-head-color-dark) !important;
+                color: var(--chat-color) !important;
                 &:hover {
-                    color: var(--chat-head-color-darker) !important;
+                    color: var(--chat-color-hover) !important;
                 }
             }
 
@@ -90,19 +90,11 @@
                     }
                 }
 
-                &:hover {
-                    .open-chat {
-                        converse-icon.chat-status {
-                            border: 2px solid var(--controlbox-pane-bg-hover-color);
-                        }
-                    }
-                }
-
                 .open-chat {
                     margin: 0;
                     padding: 0;
                     converse-icon.chat-status {
-                        border: 2px solid var(--controlbox-pane-background-color);
+                        border: 2px solid var(--background-color);
                         svg {
                             display: flex;
                         }
@@ -110,7 +102,7 @@
 
                     &.unread-msgs {
                         font-weight: bold;
-                        color: var(--unread-msgs-color);
+                        color: var(--info-color);
                         .contact-name {
                             width: 70%;
                         }
@@ -145,7 +137,7 @@
                     margin-left: 5px;
                 }
                 &:hover {
-                    background-color: var(--controlbox-pane-bg-hover-color);
+                    background-color: var(--highlight-color-hover);
                 }
             }
         }

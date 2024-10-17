@@ -3,13 +3,13 @@
 
         converse-icon {
             svg {
-                fill: var(--chatroom-head-fg-color);
+                fill: var(--muc-color);
             }
         }
 
         .chat-status--avatar {
-            background: var(--occupants-background-color);
-            border: 2px solid var(--occupants-background-color);
+            background: var(--background-color);
+            border: 2px solid var(--background-color);
             font-size: 0.6rem;
             margin-top: 0;
             margin-left: -0.3em;
@@ -22,19 +22,10 @@
         }
 
         .badge-groupchat {
-            background-color: var(--groupchats-header-color);
+            background-color: var(--muc-color);
         }
 
         .box-flyout {
-
-            converse-muc-sidebar {
-                display: flex;
-                height: 100%;
-                flex-direction: row;
-                overflow: visible;
-                background-color: var(--occupants-background-color);
-                border-left: var(--occupants-border-left);
-            }
 
             .occupants {
                 display: flex;
@@ -74,7 +65,7 @@
                         }
                     }
                 }
-                ul {
+                .items-list {
                     padding: 0;
                     margin-bottom: 0.5em;
                     overflow-x: hidden;
@@ -87,11 +78,10 @@
                         flex-basis: 0;
                         flex-grow: 1;
                     }
-                    li {
+                    .list-item {
+                        height: auto;
                         cursor: default;
-                        display: block;
                         font-size: var(--font-size-small);
-                        overflow: hidden;
                         padding: 0.25em 0.25em 0.25em 0;
                         text-overflow: ellipsis;
                         .fa {
@@ -102,11 +92,6 @@
                         }
                         &.occupant {
                             cursor: pointer;
-                            color: var(--link-color);
-                            &:hover {
-                                color: var(--link-hover-color);
-                            }
-
                             .msgs-indicator {
                                 margin-left: -3em;
                                 margin-right: 0.5em;

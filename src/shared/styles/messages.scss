@@ -1,10 +1,10 @@
 .conversejs {
     .styling-directive {
-        color: var(--subdued-color);
+        color: var(--secondary-color);
     }
 
     .msgs-indicator {
-        color: var(--text-color-invert);
+        color: var(--background-color);
         background-color: var(--chat-color);
     }
 
@@ -12,15 +12,15 @@
         .show-msg-author-modal {
             align-self: flex-start; // Don't expand height to that of largest sibling
                                     // https://stackoverflow.com/questions/27575779/prevent-a-flex-items-height-from-expanding-to-match-other-flex-items/40156422#40156422
-            color: var(--message-author-color) !important;
+            color: var(--link-color) !important;
         }
 
         blockquote {
             margin-left: 0.5em;
             margin-bottom: 0.25em;
             padding-right: 1em;
-            color: var(--chat-msg-quote-color);
-            border-left: 0.3em solid var(--chat-msg-quote-color);
+            color: var(--info-color);
+            border-left: 0.3em solid var(--info-color);
             padding-left: 0.5em;
             display: inline-block;
         }
@@ -52,9 +52,9 @@
             }
 
             .separator-text {
-                background: var(--chat-background-color);
+                background: var(--background-color);
                 bottom: 1px; // Offset needed due to .separator border size
-                color: var(--separator-text-color);
+                color: var(--foreground-color);
                 display: inline-block;
                 line-height: 2em;
                 padding: 0 1em;
@@ -64,14 +64,14 @@
         }
 
         &.chat-info {
-            color: var(--chat-info-color);
+            color: var(--info-color);
             font-size: var(--message-font-size);
             line-height: var(--line-height-small);
             font-size: 90%;
             padding: 0.17rem 1rem;
 
             &.badge {
-                color: var(--chat-head-text-color);
+                color: var(--chat-color);
             }
             &.chat-state-notification {
                 font-style: italic;
@@ -115,15 +115,10 @@
                 -webkit-animation: colorchange-chatmessage 1s;
             }
             &:hover {
-                background-color: var(--chat-msg-hover-color);
+                background-color: var(--highlight-color-hover);
             }
             &.correcting {
-                &.groupchat  {
-                    background-color: var(--chatroom-correcting-color);
-                }
-                &:not(.groupchat) {
-                    background-color: var(--chat-correcting-color);
-                }
+                background-color: var(--highlight-color);
             }
 
             .spoiler {
@@ -133,9 +128,9 @@
                 margin-bottom: 0.5em;
             }
             .spoiler-toggle {
-                color: var(--background);
+                color: var(--background-color);
                 i {
-                    color: var(--background);
+                    color: var(--background-color);
                     padding-right: 0.5em;
                 }
                 &:before {
@@ -147,11 +142,11 @@
             .chat-msg__content--me {
                 .chat-msg__body--groupchat {
                     .chat-msg__text {
-                        color: var(--subdued-color);
+                        color: var(--secondary-color);
                     }
                     &.chat-msg__body--delayed .chat-msg__text,
                     &.chat-msg__body--received .chat-msg__text {
-                        color: var(--message-text-color);
+                        color: var(--foreground-color);
                     }
                 }
             }
@@ -183,7 +178,7 @@
             }
 
             .chat-msg__text {
-                color: var(--message-text-color);
+                color: var(--foreground-color);
                 padding: 0;
                 white-space: pre-wrap;
                 word-wrap: break-word;
@@ -252,7 +247,7 @@
                 .chat-msg__time {
                     padding-left: 0.25em;
                     padding-right: 0.25em;
-                    color: var(--comment);
+                    color: var(--secondary-color);
                 }
                 .fa-lock {
                     svg {
@@ -303,7 +298,7 @@
             .chat-msg__receipt {
                 margin-left: 0.5em;
                 margin-right: 0.5em;
-                color: var(--message-receipt-color);
+                color: var(--success-color);
             }
         }
 
@@ -334,7 +329,7 @@
         }
         .separator {
             border-top: 0px;
-            border-bottom: var(--chatroom-separator-border-bottom);
+            border-bottom: 0.15em solid var(--muc-color);
         }
     }
 

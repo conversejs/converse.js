@@ -7,17 +7,17 @@ $prefix: 'converse-';
     .modal-header {
         &.alert-danger {
             background-color: var(--error-color);
-            color: var(--background);
+            color: var(--background-color);
             border-bottom: none;
 
             .close {
-                color: var(--background);
+                color: var(--background-color);
             }
         }
     }
 
     .modal-content {
-        background-color: var(--modal-background-color);
+        background-color: var(--background-color);
     }
 
     .modal-body {
@@ -39,15 +39,15 @@ $prefix: 'converse-';
                 margin: 0.25em;
                 .nav-link {
                     &.active {
-                        color: var(--background);
+                        color: var(--background-color);
                     }
                 }
                 &:hover {
                     .nav-link {
                         color: var(--focus-color);
-                        background-color: var(--background);
+                        background-color: var(--background-color);
                         &.active {
-                            color: var(--background);
+                            color: var(--background-color);
                             background-color: var(--primary-color);
                         }
                     }

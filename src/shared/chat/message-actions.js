@@ -86,7 +86,7 @@ class MessageActions extends CustomElement {
             <button type="button" class="dropdown-item chat-msg__action ${o.button_class}" @click=${o.handler}>
                 <converse-icon
                     class="${o.icon_class}"
-                    color="var(--inverse-link-color)"
+                    color="var(--foreground-color)"
                     size="1em"
                 ></converse-icon>&nbsp;${o.i18n_text}
             </button>

@@ -4,9 +4,9 @@
     .list-group-item {
         &.active {
             background-color: var(--primary-color);
-            border-color: var(--primary-color-dark);
+            border-color: var(--primary-color-hover);
         }
-        background-color: var(--list-group-item-bg-color);
+        background-color: var(--secondary-color);
     }
 
     .list-container {
@@ -17,11 +17,8 @@
             font-family: var(--heading-font);
             font-weight: var(--list-toggle-font-weight);
             display: block;
-            color: var(--list-toggle-color);
+            color: var(--secondary-color);
             padding: 0 0 0.5rem 0;
-            &:hover {
-                color: var(--list-toggle-hover-color);
-            }
         }
     }
 
@@ -35,7 +32,6 @@
             color: var(--text-color);
             overflow: hidden;
             padding: 0.5em 0;
-            text-shadow: 0 1px 0 var(--text-shadow-color);
             word-wrap: break-word;
             height: 2.5em;
 
@@ -45,15 +41,15 @@
 
             &:hover {
                 .list-item-link {
-                    color: var(--list-item-link-hover-color);
+                    color: var(--foreground-color) !important;
                 }
             }
 
             .list-item-link {
-                color: var(--list-item-link-color);
                 &:hover {
-                    color: var(--list-item-link-hover-color);
+                    color: var(--foreground-color) !important;
                 }
+                color: var(--foreground-color);
                 margin: auto;
                 font-size: var(--font-size);
                 overflow: hidden;
@@ -65,7 +61,7 @@
             .list-item-badge {
                 opacity: 1;
                 border-radius: 25%;
-                color: var(--badge-color);
+                color: var(--background-color);
                 font-size: var(--font-size-small);
                 line-height: var(--font-size-small);
             }
@@ -81,14 +77,14 @@
                     font-size: var(--font-size);
                 }
                 &.button-on {
-                    color: var(--list-item-link-color);
+                    color: var(--foreground-color);
                     &:hover {
-                        color: var(--list-item-link-hover-color);
+                        color: var(--link-color-hover);
                     }
                 }
-                color: var(--subdued-color);
+                color: var(--secondary-color);
                 &:hover {
-                    color: var(--list-toggle-hover-color);
+                    color: var(--secondary-color);
                     opacity: 1;
                 }
                 &:focus {
@@ -101,32 +97,26 @@
             }
 
             &.open {
+                background-color: var(--highlight-color);
                 &:hover {
+                    background-color: var(--highlight-color-hover);
                     .list-item-link {
-                        color: var(--inverse-link-color);
-                        &:hover {
-                            color: var(--inverse-link-color);
-                        }
+                        color: var(--foreground-color);
                     }
                 }
-
-                background-color: var(--list-item-open-color);
-                &:hover {
-                    background-color: var(--list-item-open-hover-color);
-                }
                 a {
-                    color: var(--inverse-link-color);
+                    color: var(--foreground-color);
                 }
                 .list-item-action {
-                    color: var(--list-item-action-color);
+                    color: var(--secondary-color);
                     &:hover {
-                        color: var(--list-item-action-hover-color);
+                        color: var(--primary-color);
                     }
                 }
             }
 
             &:hover {
-                background-color: var(--controlbox-pane-bg-hover-color);
+                background-color: var(--highlight-color-hover);
                 .list-item-action {
                     opacity: 1;
                 }

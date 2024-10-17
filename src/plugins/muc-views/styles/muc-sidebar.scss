@@ -1,9 +1,16 @@
 .conversejs {
     converse-muc-sidebar {
+        display: flex;
+        height: 100%;
+        flex-direction: row;
+        overflow: visible;
+        background-color: var(--background-color);
+        border-left: 0.25em solid var(--muc-color);
+
         .sidebar-heading {
             width: 100%;
             font-family: var(--heading-font);
-            color: var(--groupchats-header-color-dark);
+            color: var(--muc-color);
             padding-left: 0;
         }
     }

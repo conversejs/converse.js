@@ -2,19 +2,18 @@
     .chatbox {
         &.headlines {
             .chat-body {
-                background-color: var(--background);
+                background-color: var(--background-color);
                 .chat-message {
-                    color: var(--headline-message-color);
+                    color: var(--headlines-color);
                 }
                 hr {
-                    border-bottom: var(--headline-separator-border-bottom);
+                    border-bottom: 2px solid var(--headlines-color);
                 }
             }
             .chat-content {
                 height: 100%;
             }
         }
-
     }
 
     .message {
@@ -30,7 +29,7 @@
     #controlbox {
         .controlbox-section {
             .controlbox-heading--headline {
-                color: var(--headlines-head-text-color);
+                color: var(--headlines-color);
             }
         }
     }
@@ -40,10 +39,10 @@
         &.converse-fullscreen {
             .chatbox.headlines {
                 .box-flyout {
-                    background-color: var(--headlines-head-text-color);
+                    background-color: var(--headlines-color);
                 }
                 .flyout {
-                    border-color: var(--headlines-head-text-color);
+                    border-color: var(--headlines-color);
                 }
             }
         }

@@ -26,26 +26,26 @@
 
         .form-control {
             color: var(--text-color);
-            background-color: var(--background);
+            background-color: var(--background-color);
             &:focus {
                 color: var(--text-color);
                 background-color: var(--focus-color);
             }
 
             &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-                color: var(--subdued-color);
+                color: var(--secondary-color);
             }
             &::-moz-placeholder { /* Firefox 19+ */
-                color: var(--subdued-color);
+                color: var(--secondary-color);
             }
             &:-ms-input-placeholder { /* IE 10+ */
-                color: var(--subdued-color);
+                color: var(--secondary-color);
             }
             &:-moz-placeholder { /* Firefox 18- */
-                color: var(--subdued-color);
+                color: var(--secondary-color);
             }
             &::placeholder {
-                color: var(--subdued-color);
+                color: var(--secondary-color);
             }
         }
 
@@ -66,7 +66,7 @@
 
         &#converse-register,
         &#converse-login {
-            background: var(--controlbox-pane-background-color);
+            background: var(--background-color);
             legend {
                 width: 100%;
                 text-align: center;
@@ -80,7 +80,7 @@
                 white-space: normal;
             }
             .save-submit {
-                color: var(--save-button-color);
+                color: var(--success-color);
             }
             .form-url {
                 display: block;
@@ -114,7 +114,7 @@
                 color: var(--text-color);
             }
             .text-muted {
-                color: var(--subdued-color) !important;
+                color: var(--secondary-color) !important;
                 font-size: 85%;
                 padding-top: 0.5em;
                 a {

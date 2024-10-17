@@ -80,7 +80,7 @@
         }
 
         .chat-title {
-            display: var(--heading-display);
+            display: block;
             font-family: var(--heading-font);
             color: var(--heading-color);
             display: block;
@@ -89,10 +89,10 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             &.groupchat {
-                padding-right: var(--chatroom-head-title-padding-right);
+                padding-right: 0;
             }
             a {
-                color: var(--chat-head-text-color);
+                color: var(--chat-color);
                 width: 100%;
             }
         }
@@ -128,8 +128,8 @@
             position: relative;
             width: 100%;
             cursor: pointer;
-            background-color: var(--chat-head-color);
-            color: var(--light-background-color);
+            background-color: var(--background-color);
+            color: var(--background-color);
             padding: 0.5em;
             font-size: 0.9em;
             text-align: center;
@@ -138,7 +138,7 @@
             margin-bottom: 0.25em;
         }
         .chat-content {
-            background-color: var(--chat-content-background-color);
+            background-color: var(--background-color);
             border: 0;
             color: var(--text-color);
             font-size: var(--message-font-size);
@@ -153,7 +153,7 @@
             .chat-content__help {
                 max-height: 100%;
                 converse-chat-help {
-                    border-top: 1px solid var(--chat-head-color);
+                    border-top: 1px solid var(--background-color);
                     display: block;
                     height: 100%;
                     overflow-y: auto;
@@ -163,9 +163,9 @@
                     float: right;
                     padding-right: 1em;
                     cursor: pointer;
-                    color: var(--chat-content-background-color);
+                    color: var(--background-color);
                     svg {
-                        fill: var(--chat-head-color);
+                        fill: var(--background-color);
                     }
                 }
             }
@@ -179,8 +179,8 @@
             .chat-content__notifications {
                 display: block;
                 white-space: pre;
-                background-color: var(--chat-content-background-color);
-                color: var(--subdued-color);
+                background-color: var(--background-color);
+                color: var(--secondary-color);
                 font-size: 90%;
                 font-style: italic;
                 line-height: var(--line-height-small);

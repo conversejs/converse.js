@@ -1,151 +1,74 @@
 &[data-converse-theme="classic"],
 &[data-bs-theme="classic"] {
-	$theme: 'classic' !default;
+    $theme: 'classic' !default;
 
-	// Theme-defined variables:
-	// Hex color values
-	--background: white;
-	--blue: #387592;
-	--comment: #a8aba1;
-	--dark-blue: #397491;
-	--dark-green: #1e9652;
-	--dark-red: #d24e2b;
-	--foreground: #666;
-	--gray: #818479;
-	--green: #3aa569;
-	--header-color: var(--foreground);
-	--light-blue: #578ea9;
-	--lighter-blue: #eff4f7;
-	--orange: #e7a151;
-	--redder-orange: #e77051;
-	--subdued-color: var(--comment);
+    // Hex color values
+    // ----------------
+    --blue: #387592;
+    --dark-blue: #397491;
+    --dark-green: #1e9652;
+    --dark-red: #d24e2b;
+    --gray: #818479;
+    --green: #3aa569;
+    --light-blue: #578ea9;
+    --lighter-blue: #eff4f7;
+    --orange: #e7a151;
+    --redder-orange: #e77051;
 
-	// Common variables
-	--badge-color: var(--background);
-	--brand-heading-color: var(--blue);
-	--button-hover-text-color: var(--background);
-	--button-text-color: var(--background);
-	--chat-background-color: var(--background);
-	--chat-color: var(--green);
-	--chat-content-background-color: var(--background);
-	--chat-correcting-color: var(--comment);
-	--chat-head-border-bottom: 0;
-	--chat-head-color-dark: var(--dark-green);
-	--chat-head-color-darker: #0e763b;
-	--chat-head-color: var(--green);
-	--chat-head-fg-color: var(--background);
-	--chat-head-text-color: var(--background);
-	--chat-info-color: var(--chatroom-head-bg-color);
-	--chat-msg-hover-color: var(--list-item-hover-color);
-	--chat-msg-quote-color: var(--subdued-color);
-	--chat-separator-border-bottom: 2px solid var(--chat-color);
-	--chat-status-away: var(--orange);
-	--chat-status-busy: var(--redder-orange);
-	--chat-status-online: var(--green);
-	--chat-textarea-background-color: var(--background);
-	--chat-textarea-color: var(--foreground);
-	--chat-textarea-disabled-bg-color: #eee;
-	--chat-textarea-height: 60px;
-	--chat-toolbar-btn-color: var(--green);
-	--chat-toolbar-btn-disabled-color: gray;
-	--chatbox-button-size: 14px;
-	--chatbox-message-input-border-top: 4px solid var(--chat-head-color);
-	--chatroom-badge-color: var(--chatroom-head-bg-color);
-	--chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
-	--chatroom-color: var(--redder-orange);
-	--chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
-	--chatroom-head-bg-color-dark: #d24e2b; // $red
-	--chatroom-head-bg-color: var(--redder-orange);
-	--chatroom-head-border-bottom: 0px;
-	--chatroom-head-button-color: var(--chatroom-head-bg-color);
-	--chatroom-head-color: var(--background);
-	--chatroom-head-description-display: block;
-	--chatroom-head-description-link-color: var(--background);
-	--chatroom-head-fg-color: var(--background);
-	--chatroom-head-title-font-weight: normal;
-	--chatroom-head-title-padding-right: 0px;
-	--chatroom-message-input-border-top: 4px solid var(--chatroom-head-bg-color);
-	--chatroom-separator-border-bottom: 2px solid var(--chatroom-head-bg-color);
-	--close-color: #585b51;
-	--close-color: var(--text-color);
-	--completion-dark-color: #d24e2b; // $dark-red
-	--completion-light-color: #ffb9a7; // $lightest-red
-	--completion-normal-color: var(--redder-orange);
-	--controlbox-head-color: var(--light-blue);
-	--controlbox-heading-color: inherit;
-	--controlbox-heading-font-weight: bold;
-	--controlbox-heading-top-margin: 0.75em;
-	--controlbox-pane-background-color: var(--background);
-	--controlbox-pane-bg-hover-color: #eff4f7;
-	--controlbox-text-color: var(--foreground);
-	--danger-color-dark: #a93415; // darker red
-	--danger-color: var(--redder-orange); // dark-red
-	--dark-link-color: #206485; // $dark-blue
-	--disabled-color-bg: lightgray;
-	--disabled-color: gray;
-	--error-color: var(--dark-red);
-	--focus-color: var(--dark-link-color);
-	--fullpage-chat-height: calc(var(--vh, 1vh) * 100);
-	--fullpage-chat-width: 100%;
-	--fullpage-chatbox-button-size: 16px;
-	--fullpage-emoji-picker-height: 300px;
-	--fullpage-max-chat-textarea-height: 15em;
-	--global-background-color: var(--dark-blue);
-	--groupchats-header-color-dark: var(--chatroom-head-bg-color-dark);
-	--groupchats-header-color: var(--chatroom-head-bg-color);
-	--heading-color: var(--background);
-	--heading-display: block;
-	--headline-message-color: #d2842b;
-	--headline-separator-border-bottom: 2px solid var(--headlines-color);
-	--headlines-color: var(--orange);
-	--headlines-head-bg-color: var(--headlines-color);
-	--headlines-head-fg-color: var(--background);
-	--headlines-head-text-color: var(--background);
-	--highlight-color-darker: #b0e8e2;
-	--highlight-color: #dcf9f6;
-	--icon-hover-color: var(--text-color);
-	--img-thumbnail-background-color: var(--background);
-	--img-thumbnail-border-color: #dee2e6;
-	--info-color: var(--dark-green);
-	--inverse-link-color: var(--background);
-	--light-background-color: #fcfdfd;
-	--link-color: var(--light-blue);
-	--link-hover-color: #345566;
-	--list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
-	--list-group-item-bg-color: var(--background);
-	--list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)
-	--list-item-action-hover-color: var(--inverse-link-color);
-	--list-item-hover-color: rgba(0, 0, 0, 0.035);
-	--list-item-link-color: inherit;
-	--list-item-link-hover-color: var(--dark-link-color);
-	--list-item-open-color: var(--controlbox-head-color);
-	--list-item-open-hover-color: var(--controlbox-head-color);
-	--list-toggle-color: var(--gray);
-	--list-toggle-hover-color: #585b51;
-	--message-author-color: var(--text-color);
-	--message-receipt-color: var(--green);
-	--message-text-color: #555;
-	--modal-background-color: var(--background);
-	--muc-color: var(--redder-orange);
-	--muc-toolbar-btn-color: var(--redder-orange);
-	--muc-toolbar-btn-disabled-color: gray;
-	--occupants-background-color: var(--background);
-	--occupants-border-bottom: 1px solid lightgrey;
-	--occupants-border-left: 0.2rem solid var(--panel-divider-color);
-	--overlayed-badge-color: var(--gray);
-	--panel-divider-color: #e7e7e7;
-	--primary-color-dark: var(--dark-blue);
-	--primary-color-light: var(--lighter-blue);
-	--primary-color: var(--light-blue);
-	--save-button-color: var(--green);
-	--secondary-color-dark: #585b51;
-	--secondary-color: var(--gray);
-	--separator-text-color: var(--message-text-color);
-	--text-color-invert: var(--background);
-	--text-color: var(--foreground);
-	--text-shadow-color: #fafafa;
-	--toolbar-btn-text-color: var(--background);
-	--unread-msgs-color: var(--orange);
-	--warning-color-dark: #d2842b;
-	--warning-color: var(--orange);
+    // Base variables
+    // --------------
+    --foreground-color: #666;
+    --background-color: #efefef;
+
+    // Common bootstrap variables
+    --primary-color: var(--blue) !important;
+    --secondary-color: var(--light-blue) !important;
+    --success-color: var(--green);
+    --danger-color: var(--dark-red);
+    --warning-color: var(--orange);
+    --info-color: var(--light-blue);
+
+    // Online status indicators
+    --chat-status-away: var(--orange);
+    --chat-status-busy: var(--red);
+    --chat-status-offline: gray;
+    --chat-status-online: var(--green);
+
+    --controlbox-color: var(--light-blue);
+    --disabled-color: gray;
+    --error-color: var(--dark-red);
+    --focus-color: #aaa;
+    --heading-color: var(--background-color);
+    --headlines-color: var(--orange);
+    --link-color: var(--dark-blue);
+
+    // The background when selecting text with your mouse
+    --selection-color: black;
+
+    // Used to indicate selected or open items in lists.
+    --highlight-color: var(--lighter-blue);
+    --highlight-color-hover: var(--lighter-blue);
+
+    // 1:1 Chat-related colors
+    --chat-color: var(--dark-green);
+    --chat-header-fg-color: var(--background-color);
+    --chat-header-bg-color: var(--chat-color);
+
+    // MUC-related colors
+    --muc-color: var(--redder-orange);
+    --muc-header-fg-color: var(--background-color);
+    --muc-header-bg-color: var(--muc-color);
+
+    // Derived colors
+    // --------------
+    --brand-heading-color: var(--blue);
+    --chat-color-hover: var(--chat-color);
+    --danger-color-hover: var(--danger-color);
+    --global-background-color: var(--dark-blue);
+    --link-color-hover: var(--link-color);
+    --muc-color-hover: var(--muc-color);
+    --primary-color-hover: var(--dark-blue);
+    --secondary-color-hover: #ddd;
+    --success-color-hover: var(--success);
+    --warning-color-hover: #d2842b;
 }

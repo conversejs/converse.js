@@ -12,12 +12,13 @@
             }
 
             .chat-message-form {
-                -moz-background-clip: padding;
-                -webkit-background-clip: padding-box;
+                border-bottom: 0;
+                border-left: 0;
+                border-top: 0.25em solid var(--chat-color);
+                border-right: 0.25em solid var(--chat-color);
                 border-bottom-radius: var(--chatbox-border-radius);
                 background-clip: padding-box;
-                background-color: var(--chat-textarea-background-color);
-                border: 0;
+                background-color: var(--background-color);
                 margin: 0;
                 padding: 0;
                 @media screen and (max-height: $mobile-landscape-height) {
@@ -35,12 +36,12 @@
 
                 .spoiler-hint {
                     width: 100%;
-                    color: var(--foreground);
-                    background-color: var(--background);
+                    color: var(--foreground-color);
+                    background-color: var(--background-color);
                 }
 
                 .chat-textarea, input {
-                    outline: 1px solid var(--chat-head-color);
+                    outline: 1px solid var(--background-color);
                     &:active, &:focus{
                         outline-width: 2px;
                     }
@@ -50,8 +51,8 @@
                 }
 
                 .chat-textarea {
-                    color: var(--chat-textarea-color);
-                    background-color: var(--chat-textarea-background-color);
+                    color: var(--foreground-color);
+                    background-color: var(--background-color);
                     border-top-left-radius: 0;
                     border-top-right-radius: 0;
                     border-bottom-radius: var(--chatbox-border-radius);

@@ -2,7 +2,7 @@
 
     .alert-info, .alert-danger {
         h3 {
-            color: var(--background);
+            color: var(--background-color);
             font-size: large;
         }
 
@@ -11,22 +11,22 @@
         }
 
         .close {
-            color: var(--background);
+            color: var(--background-color);
         }
     }
 
     .alert-info {
-        color: var(--background);
+        color: var(--background-color);
         background-color: var(--info-color);
         border-color: var(--info-dark);
     }
 
     .alert-danger {
         .disconnect-msg {
-            color: var(--background) !important;
+            color: var(--background-color) !important;
         }
 
-        color: var(--background);
+        color: var(--background-color);
         border-color: var(--danger-color-dark);
         background-color: var(--danger-color);
     }

@@ -15,7 +15,7 @@
         }
 
         .box-flyout {
-            background-color: var(--chatroom-head-bg-color);
+            background-color: var(--background-color);
             overflow-y: hidden;
             width: var(--chatroom-width);
 
@@ -43,7 +43,7 @@
             .chatroom-body {
                 flex-direction: row;
                 flex-flow: nowrap;
-                background-color: var(--background);
+                background-color: var(--background-color);
                 border-top: 0;
                 height: 100%;
                 width: 100%;
@@ -61,16 +61,16 @@
                 }
                 .chat-topic {
                     font-weight: bold;
-                    color: var(--chatroom-head-bg-color);
+                    color: var(--background-color);
                 }
                 .chat-info {
-                    color: var(--chat-info-color);
+                    color: var(--info-color);
                     line-height: normal;
                     &.badge {
-                        color: var(--chat-head-text-color);
+                        color: var(--muc-color);
                     }
                     &.chat-msg--retracted {
-                        color: var(--subdued-color);
+                        color: var(--secondary-color);
                     }
                 }
                 .chat-area {
@@ -80,18 +80,18 @@
                     justify-content: flex-end;
                     word-wrap: break-word;
                     .new-msgs-indicator {
-                        background-color: var(--chatroom-color);
+                        background-color: var(--muc-color);
                     }
                     .chat-content {
                         height: 100%;
                     }
                     .chat-content__help {
                         converse-chat-help {
-                            border-top: 1px solid var(--chatroom-color);
+                            border-top: 1px solid var(--muc-color);
                         }
                         .close-chat-help {
                             svg {
-                                fill: var(--chatroom-color);
+                                fill: var(--muc-color);
                             }
                         }
                     }

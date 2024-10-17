@@ -9,11 +9,11 @@ export default (el) => {
     const i18n_tooltip = __('Click to restore this chat');
     let close_color;
     if (el.type === 'chatroom') {
-        close_color = "var(--chatroom-head-color)";
+        close_color = "var(--muc-color)";
     } else if (el.type === 'headline') {
-        close_color = "var(--headlines-head-text-color)";
+        close_color = "var(--headlines-color)";
     } else {
-        close_color = "var(--chat-head-text-color)";
+        close_color = "var(--chat-color)";
     }
 
     return html`

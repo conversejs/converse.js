@@ -1,24 +1,23 @@
 .conversejs {
     converse-muc.chatroom {
         .chat-head-chatroom {
+            color: var(--muc-header-fg-color);
+            background-color: var(--muc-header-bg-color);
+            border-bottom: 0.15em solid var(--muc-color);
 
             converse-controlbox-navback {
                 .fa-arrow-left {
                     svg {
-                        fill: var(--chatroom-head-color);
+                        fill: var(--muc-header-fg-color);
                     }
                 }
             }
 
-            color: var(--chatroom-head-color);
-            background-color: var(--chatroom-head-bg-color);
-            border-bottom: var(--chatroom-head-border-bottom);
-
             .chat-head__desc {
-                color: var(--chatroom-head-color);
-                display: var(--chatroom-head-description-display);
+                color: var(--muc-header-fg-color);
+                display: block;
                 a {
-                    color: var(--chatroom-head-description-link-color);
+                    color: var(--link-color);
                 }
                 &:hover {
                     button {
@@ -30,7 +29,7 @@
             .chatbox-title {
                 .btn--transparent {
                     i {
-                        color: var(--chatroom-head-color);
+                        color: var(--muc-header-fg-color);
                     }
                 }
                 .chatbox-title__text--bookmarked {
@@ -41,9 +40,9 @@
             a, a:visited, a:hover, a:not([href]):not([tabindex]) {
                 &.chatbox-btn {
                     &.fa {
-                        color: var(--chatroom-head-color);
+                        color: var(--muc-header-fg-color);
                         &.button-on:before {
-                            color: var(--chatroom-head-fg-color);
+                            color: var(--muc-header-fg-color);
                         }
                     }
                 }
@@ -53,7 +52,7 @@
                 .dropdown-menu {
                     converse-icon {
                         svg {
-                            fill: var(--chatroom-color);
+                            fill: var(--muc-header-fg-color);
                         }
                     }
                 }
@@ -62,16 +61,16 @@
             .chatbox-btn {
                 converse-icon {
                     svg {
-                        fill: var(--chatroom-head-fg-color);
+                        fill: var(--muc-header-fg-color);
                     }
                 }
             }
             .chatbox-title__text {
-                color: var(--chatroom-head-color);
-                display: var(--heading-display);
-                font-weight: var(--chatroom-head-title-font-weight);
+                color: var(--muc-header-fg-color);
+                display: block;
+                font-weight: normal;
                 margin: auto 0;
-                padding-right: var(--chatroom-head-title-padding-right);
+                padding-right: 0;
                 white-space: nowrap;
                 .chatroom-jid {
                     font-size: var(--font-size-small);

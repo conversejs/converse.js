@@ -9,6 +9,18 @@ $mobile_portrait_length: 480px !default;
     --controlbox-width: 250px;
     --chatroom-width: 500px;
 
+    --chat-textarea-height: 60px;
+    --chat-separator-border-bottom: 2px solid var(--chat-color);
+    --chatbox-button-size: 14px;
+
+    --raised-el-shadow: 1px 1px 10px black;
+
+    --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
+    --fullpage-chat-width: 100%;
+    --fullpage-chatbox-button-size: 16px;
+    --fullpage-emoji-picker-height: 300px;
+    --fullpage-max-chat-textarea-height: 15em;
+
     --send-button-height: 27px;
     --send-button-margin: 3px;
 
@@ -48,6 +60,10 @@ $mobile_portrait_length: 480px !default;
     --overlayed-max-chat-textarea-height: 200px;
 
     --list-toggle-font-weight: normal;
+
+    --separator-text-color: var(--message-text-color);
+
+    --text-color: var(--foreground-color);
 }
 
 .conversejs {

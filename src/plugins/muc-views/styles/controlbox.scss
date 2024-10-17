@@ -15,9 +15,9 @@
         }
 
         .open-rooms-toggle, .open-rooms-toggle converse-icon {
-            color: var(--groupchats-header-color) !important;
+            color: var(--muc-color) !important;
             &:hover {
-                color: var(--chatroom-head-bg-color-dark) !important;
+                color: var(--muc-color-hover) !important;
             }
         }
 

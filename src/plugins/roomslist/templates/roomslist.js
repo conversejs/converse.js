@@ -34,7 +34,7 @@ function tplBookmark (room) {
 
             <converse-icon class="fa ${bm ? 'fa-bookmark' : 'fa-bookmark-empty'}"
                            size="1.2em"
-                           color="${ isCurrentlyOpen(room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
+                           color="${ isCurrentlyOpen(room) ? 'var(--foreground-color)' : '' }"></converse-icon>
         </a>`;
 }
 
@@ -86,7 +86,7 @@ function tplRoomItem (el, room) {
                 <converse-icon
                     class="fa fa-sign-out-alt"
                     size="1.2em"
-                    color="${ isCurrentlyOpen(room) ? 'var(--inverse-link-color)' : '' }"></converse-icon>
+                    color="${ isCurrentlyOpen(room) ? 'var(--foreground-color)' : '' }"></converse-icon>
             </a>
         </li>`;
 }
@@ -110,7 +110,7 @@ function tplRoomDomainGroup (el, domain, rooms) {
             <converse-icon
                 class="fa ${ is_collapsed ? 'fa-caret-right' : 'fa-caret-down' }"
                 size="1em"
-                color="var(--groupchats-header-color)"></converse-icon>
+                color="var(--muc-color)"></converse-icon>
             ${domain}
         </a>
         <ul class="items-list muc-domain-group-rooms ${ is_collapsed ? 'collapsed' : '' }" data-domain="${domain}">

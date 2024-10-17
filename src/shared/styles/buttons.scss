@@ -1,4 +1,6 @@
 .conversejs {
+    --button-text-color: var(--background-color);
+
     .btn {
         &.fa {
             color: var(--button-text-color) !important;
@@ -22,88 +24,88 @@
     }
 
     .btn-primary,
-	.btn-outline-primary {
-		--converse-btn-color: var(--button-text-color);
-		--converse-btn-bg: var(--primary);
-		--converse-btn-disabled-bg: var(--disabled-color);
-		--converse-btn-border-color: var(--primary);
-		--converse-btn-hover-bg: var(--primary);
-		--converse-btn-hover-border-color: var(--primary-color-dark);
-		--converse-btn-active-bg: var(--primary);
-		--converse-btn-active-border-color: var(--primary);
-		--converse-btn-disabled-color: var(--primary);
-		--converse-btn-disabled-border-color: var(--primary);
-	}
+    .btn-outline-primary {
+        --converse-btn-color: var(--button-text-color);
+        --converse-btn-bg: var(--primary-color);
+        --converse-btn-disabled-bg: var(--disabled-color);
+        --converse-btn-border-color: var(--primary-color);
+        --converse-btn-hover-bg: var(--primary-color);
+        --converse-btn-hover-border-color: var(--primary-color-hover);
+        --converse-btn-active-bg: var(--primary-color);
+        --converse-btn-active-border-color: var(--primary-color);
+        --converse-btn-disabled-color: var(--primary-color);
+        --converse-btn-disabled-border-color: var(--primary-color);
+    }
 
     .btn-secondary,
-	.btn-outline-secondary {
-		--converse-btn-color: var(--button-text-color);
-		--converse-btn-bg: var(--secondary);
-		--converse-btn-disabled-bg: var(--disabled-color);
-		--converse-btn-border-color: var(--secondary);
-		--converse-btn-hover-bg: var(--secondary);
-		--converse-btn-hover-border-color: var(--secondary-color-dark);
-		--converse-btn-active-bg: var(--secondary);
-		--converse-btn-active-border-color: var(--secondary);
-		--converse-btn-disabled-color: var(--secondary);
-		--converse-btn-disabled-border-color: var(--secondary);
-	}
+    .btn-outline-secondary {
+        --converse-btn-color: var(--button-text-color);
+        --converse-btn-bg: var(--secondary-color);
+        --converse-btn-disabled-bg: var(--disabled-color);
+        --converse-btn-border-color: var(--secondary-color);
+        --converse-btn-hover-bg: var(--secondary-color);
+        --converse-btn-hover-border-color: var(--secondary-color-hover);
+        --converse-btn-active-bg: var(--secondary-color);
+        --converse-btn-active-border-color: var(--secondary-color);
+        --converse-btn-disabled-color: var(--secondary-color);
+        --converse-btn-disabled-border-color: var(--secondary-color);
+    }
 
     .btn-success,
-	.btn-outline-success {
-		--converse-btn-color: var(--button-text-color);
-		--converse-btn-bg: var(--success);
-		--converse-btn-disabled-bg: var(--disabled-color);
-		--converse-btn-border-color: var(--success);
-		--converse-btn-hover-bg: var(--success-color-dark);
-		--converse-btn-hover-border-color: var(--success-color-dark);
-		--converse-btn-active-bg: var(--success);
-		--converse-btn-active-border-color: var(--success);
-		--converse-btn-disabled-color: var(--success);
-		--converse-btn-disabled-border-color: var(--success);
-	}
+    .btn-outline-success {
+        --converse-btn-color: var(--button-text-color);
+        --converse-btn-bg: var(--success-color);
+        --converse-btn-disabled-bg: var(--disabled-color);
+        --converse-btn-border-color: var(--success-color);
+        --converse-btn-hover-bg: var(--success-color-hover);
+        --converse-btn-hover-border-color: var(--success-color-hover);
+        --converse-btn-active-bg: var(--success-color);
+        --converse-btn-active-border-color: var(--success-color);
+        --converse-btn-disabled-color: var(--success-color);
+        --converse-btn-disabled-border-color: var(--success-color);
+    }
 
     .btn-warning,
-	.btn-outline-warning {
-		--converse-btn-color: var(--button-text-color);
-		--converse-btn-bg: var(--warning);
-		--converse-btn-disabled-bg: var(--disabled-color);
-		--converse-btn-border-color: var(--warning);
-		--converse-btn-hover-bg: var(--warning-color-dark);
-		--converse-btn-hover-border-color: var(--warning-color-dark);
-		--converse-btn-active-bg: var(--warning);
-		--converse-btn-active-border-color: var(--warning);
-		--converse-btn-disabled-color: var(--warning);
-		--converse-btn-disabled-border-color: var(--warning);
-	}
+    .btn-outline-warning {
+        --converse-btn-color: var(--button-text-color);
+        --converse-btn-bg: var(--warning-color);
+        --converse-btn-disabled-bg: var(--disabled-color);
+        --converse-btn-border-color: var(--warning-color);
+        --converse-btn-hover-bg: var(--warning-color-hover);
+        --converse-btn-hover-border-color: var(--warning-color-hover);
+        --converse-btn-active-bg: var(--warning-color);
+        --converse-btn-active-border-color: var(--warning-color);
+        --converse-btn-disabled-color: var(--warning-color);
+        --converse-btn-disabled-border-color: var(--warning-color);
+    }
 
     .btn-danger,
-	.btn-outline-danger {
-		--converse-btn-color: var(--button-text-color);
-		--converse-btn-bg: var(--danger);
-		--converse-btn-disabled-bg: var(--disabled-color);
-		--converse-btn-border-color: var(--danger);
-		--converse-btn-hover-bg: var(--danger-color-dark);
-		--converse-btn-hover-border-color: var(--danger-color-dark);
-		--converse-btn-active-bg: var(--danger);
-		--converse-btn-active-border-color: var(--danger);
-		--converse-btn-disabled-color: var(--danger);
-		--converse-btn-disabled-border-color: var(--danger);
-	}
+    .btn-outline-danger {
+        --converse-btn-color: var(--button-text-color);
+        --converse-btn-bg: var(--danger-color);
+        --converse-btn-disabled-bg: var(--disabled-color);
+        --converse-btn-border-color: var(--danger-color);
+        --converse-btn-hover-bg: var(--danger-color-hover);
+        --converse-btn-hover-border-color: var(--danger-color-hover);
+        --converse-btn-active-bg: var(--danger-color);
+        --converse-btn-active-border-color: var(--danger-color);
+        --converse-btn-disabled-color: var(--danger-color);
+        --converse-btn-disabled-border-color: var(--danger-color);
+    }
 
     .btn-info,
-	.btn-outline-info {
-		--converse-btn-color: var(--button-text-color);
-		--converse-btn-bg: var(--info);
-		--converse-btn-disabled-bg: var(--disabled-color);
-		--converse-btn-border-color: var(--info);
-		--converse-btn-hover-bg: var(--info-color-dark);
-		--converse-btn-hover-border-color: var(--info-color-dark);
-		--converse-btn-active-bg: var(--info);
-		--converse-btn-active-border-color: var(--info);
-		--converse-btn-disabled-color: var(--info);
-		--converse-btn-disabled-border-color: var(--info);
-	}
+    .btn-outline-info {
+        --converse-btn-color: var(--button-text-color);
+        --converse-btn-bg: var(--info-color);
+        --converse-btn-disabled-bg: var(--disabled-color);
+        --converse-btn-border-color: var(--info-color);
+        --converse-btn-hover-bg: var(--info-color-dark);
+        --converse-btn-hover-border-color: var(--info-color-dark);
+        --converse-btn-active-bg: var(--info-color);
+        --converse-btn-active-border-color: var(--info-color);
+        --converse-btn-disabled-color: var(--info-color);
+        --converse-btn-disabled-border-color: var(--info-color);
+    }
 
     .btn--transparent {
         background: transparent;

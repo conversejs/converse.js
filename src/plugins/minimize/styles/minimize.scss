@@ -7,12 +7,12 @@
 
             #minimized-chats {
                 min-width: var(--minimized-chats-width);
-                color: var(--chat-head-text-color);
+                color: var(--chat-color);
 
                 a.restore-chat {
                     cursor: pointer;
                     padding: 1px 0 1px 5px;
-                    color: var(--chat-head-text-color);
+                    color: var(--chat-color);
                     line-height: 15px;
                     display: block;
                     overflow: hidden;
@@ -24,7 +24,7 @@
                 }
 
                 a.restore-chat:visited {
-                    color: var(--chat-head-text-color);
+                    color: var(--chat-color);
                 }
 
                 .minimized-chats-flyout {
@@ -41,18 +41,18 @@
                         margin-bottom: 0.2em;
                         width: 100%;
                         flex-wrap: nowrap;
-                        background-color: var(--chat-head-color);
+                        background-color: var(--background-color);
                     }
                     .chat-head-chatroom {
-                        background-color: var(--chatroom-head-bg-color);
+                        background-color: var(--background-color);
                         a.restore-chat {
-                            color: var(--chatroom-head-color);
+                            color: var(--muc-color);
                         }
                     }
                     .chat-head-headline {
-                        background-color: var(--headlines-head-bg-color);
+                        background-color: var(--background-color);
                         a.restore-chat {
-                            color: var(--headlines-head-text-color);
+                            color: var(--headlines-color);
                         }
                     }
 

@@ -29,11 +29,11 @@
 
     #controlbox {
         order: -1;
-        color: var(--controlbox-text-color);
+        color: var(--foreground-color);
 
         .chat-status--avatar {
-            border: 1px solid var(--controlbox-pane-background-color);
-            background: var(--controlbox-pane-background-color);
+            border: 1px solid var(--background-color);
+            background: var(--background-color);
         }
 
         converse-brand-logo {
@@ -60,7 +60,7 @@
         }
 
         .box-flyout {
-            background-color: var(--controlbox-pane-background-color);
+            background-color: var(--background-color);
         }
 
         &.logged-out {
@@ -90,7 +90,7 @@
         }
 
         .conn-feedback {
-            color: var(--controlbox-head-color);
+            color: var(--controlbox-color);
             &.error {
                 color: var(--error-color);
             }
@@ -120,7 +120,7 @@
             .controlbox-heading {
                 font-family: var(--heading-font);
                 color: var(--controlbox-heading-color);
-                font-weight: var(--controlbox-heading-font-weight);
+                font-weight: bold;
                 padding: 0;
                 font-size: 1.1em;
                 line-height: 1.1em;
@@ -128,11 +128,11 @@
             }
 
             .controlbox-heading--groupchats {
-                color: var(--groupchats-header-color);
+                color: var(--muc-color);
             }
 
             .controlbox-heading--contacts {
-                color: var(--chat-head-color-dark);
+                color: var(--background-color);
             }
 
             .controlbox-heading--headline {
@@ -190,7 +190,7 @@
             .toggle-controlbox {
                 order: -2;
                 text-align: center;
-                background-color: var(--controlbox-head-color);
+                background-color: var(--controlbox-color);
                 float: right;
                 margin: 0 var(--overlayed-chat-gutter);
             }
@@ -221,7 +221,7 @@
         &.converse-fullscreen {
             #controlbox {
                 .flyout {
-                    border-right: 0.2rem solid var(--panel-divider-color);
+                    border-right: 0.2rem solid var(--controlbox-color);
                 }
             }
             .toggle-controlbox {

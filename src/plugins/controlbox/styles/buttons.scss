@@ -10,10 +10,12 @@
                 cursor: pointer;
                 padding: 0 0 0 1em;
                 font-size: 1em;
-                margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0;
+                margin: 0.75em 0 var(--inline-action-margin) 0;
                 text-align: center;
-                &.fa-vcard {
-                    margin-top: 1em;
+                converse-icon {
+                    svg {
+                        fill: var(--controlbox-color);
+                    }
                 }
             }
         }

@@ -3,12 +3,12 @@ converse-icon {
     padding: 0;
     margin: 0;
     svg {
-	fill: var(--subdued-color);
+	fill: var(--secondary-color);
     }
     &.clickable {
 	&:hover {
 	    svg {
-		fill: var(--icon-hover-color);
+		fill: var(--link-color);
 	    }
 	}
     }
@@ -18,7 +18,7 @@ a, .clickable {
     converse-icon {
 	&:hover {
 	    svg {
-		fill: var(--icon-hover-color);
+		fill: var(--link-color);
 	    }
 	}
     }

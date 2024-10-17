@@ -124,7 +124,7 @@ async function tplActionButtons (o) {
         <button class="dropdown-item ${b.button_class}" @click=${b.handler} type="button">
             <converse-icon
                 class="${b.icon_class}"
-                color="var(--inverse-link-color)"
+                color="var(--foreground-color)"
                 size="1em"
                 aria-hidden="true"
             ></converse-icon>&nbsp;${b.i18n_text}
@@ -155,13 +155,12 @@ export default (el, o) => {
     } else if (show === 'away') {
         [classes, color] =  ['fa fa-circle', 'chat-status-away'];
     } else {
-        [classes, color] = ['fa fa-circle', 'subdued-color'];
+        [classes, color] = ['fa fa-circle', 'chat-status-offline'];
     }
 
-   const num_unread = getUnreadMsgsDisplay(o);
-
+    const num_unread = getUnreadMsgsDisplay(o);
     return html`
-        <li class="occupant" id="${o.id}">
+        <li class="list-item occupant" id="${o.id}">
             <div class="row g-0">
                 <div class="col-auto">
                     <a @click=${(ev) => el.model.save({'sidebar_view': `occupant:${o.id}`})}>

@@ -41,7 +41,7 @@ export default (el) => {
                         html`<converse-icon
                                 class="fa fa-bookmark chatbox-title__text--bookmarked"
                                 size="1em"
-                                color="var(--chatroom-head-color)"
+                                color="var(--muc-color)"
                                 title="${i18n_bookmarked}">
                             </converse-icon>` : '' }
                 </div>

@@ -1,7 +1,7 @@
 .conversejs {
 
     converse-chat-toolbar.btn-toolbar {
-        background-color: var(--chat-background-color);
+        background-color: var(--background-color);
         box-sizing: border-box;
         width: 100%;
         justify-content: space-between;
@@ -19,17 +19,17 @@
         }
 
         .send-button {
-            color: var(--background);
+            color: var(--background-color);
             border-radius: 0;
         }
 
         .fa, .fa:hover,
         .far, .far:hover,
         .fas, .fas:hover {
-            color: var(--chat-head-color);
+            color: var(--background-color);
             font-size: var(--font-size-large);
             svg {
-                fill: var(--chat-head-color);
+                fill: var(--background-color);
             }
         }
         .unencrypted a,
@@ -40,41 +40,40 @@
 
     .chatbox {
         .send-button {
-            background-color: var(--chat-toolbar-btn-color);
+            background-color: var(--chat-color);
         }
     }
 
     .chatroom {
         .send-button {
-            background-color: var(--muc-toolbar-btn-color);
+            background-color: var(--muc-color);
         }
     }
 
 
     .chatbox {
         converse-chat-toolbar {
-            border-top: var(--chatbox-message-input-border-top);
-            color: var(--chat-toolbar-btn-color);
-            background-color: var(--chat-background-color);
+            color: var(--chat-color);
+            background-color: var(--background-color);
             .fas, .fas:hover,
             .far, .far:hover,
             .fa, .fa:hover {
-                color: var(--chat-toolbar-btn-color);
+                color: var(--chat-color);
                 svg, svg:hover {
-                    fill: var(--chat-toolbar-btn-color);
+                    fill: var(--chat-color);
                 }
             }
             button {
                 &:focus {
-                    outline-color: var(--chat-toolbar-btn-color) !important;
+                    outline-color: var(--chat-color) !important;
                 }
                 &:disabled .fa {
-                    color: var(--chat-toolbar-btn-disabled-color);
+                    color: var(--disabled-color);
                     &:hover {
-                        color: var(--chat-toolbar-btn-disabled-color);
+                        color: var(--disabled-color);
                     }
                     svg, svg:hover {
-                        fill: var(--chat-toolbar-btn-disabled-color);
+                        fill: var(--disabled-color);
                     }
                 }
             }
@@ -83,28 +82,27 @@
 
     .chatroom {
         converse-chat-toolbar {
-            border-top: var(--chatroom-message-input-border-top);
-            color: var(--muc-toolbar-btn-color);
+            color: var(--muc-color);
             .fas, .fas:hover,
             .far, .far:hover,
             .fa, .fa:hover {
-                color: var(--muc-toolbar-btn-color);
+                color: var(--muc-color);
                 font-size: var(--font-size-large);
                 svg {
-                    fill: var(--muc-toolbar-btn-color);
+                    fill: var(--muc-color);
                 }
             }
             button {
                 &:focus {
-                    outline-color: var(--muc-toolbar-btn-color) !important;
+                    outline-color: var(--muc-color) !important;
                 }
                 &:disabled .fa {
-                    color: var(--muc-toolbar-btn-disabled-color);
+                    color: var(--disabled-color);
                     &:hover {
-                        color: var(--muc-toolbar-btn-disabled-color);
+                        color: var(--disabled-color);
                     }
                     svg, svg:hover {
-                        fill: var(--muc-toolbar-btn-disabled-color);
+                        fill: var(--disabled-color);
                     }
                 }
             }

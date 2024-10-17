@@ -3,150 +3,71 @@
     $theme: 'dracula' !default;
 
     // Hex color values
-    --background: #282a36;
-    --comment: #6272a4;
-    --current-line: #44475a;
+    // ----------------
     --cyan: #8be9fd;
-    --foreground: #f8f8f2;
     --green: #50fa7b;
     --orange: #ffb86c;
     --pink: #ff79c6;
     --purple: #bd93f9;
     --red: #ff5555;
     --yellow: #f1fa8c;
+    --gray: #6272a4;
+    --darkgray: #212529;
 
-    // RGB color values, needed for bootstrap
-    --background-rgb: 40, 42, 54;
-    --comment-rgb: 98, 114, 164;
-    --current-line-rgb: 68, 71, 90;
-    --cyan-rgb: 139, 233, 253;
-    --foreground-rgb: 248, 248, 242;
-    --green-rgb: 80, 250, 123;
-    --orange-rgb: 255, 184, 108;
-    --pink-rgb: 255, 121, 198;
-    --purple-rgb: 189, 147, 249;
-    --red-rgb: 255, 85, 85;
-    --yellow-rgb: 241, 250, 140;
+    // Base variables
+    // --------------
+    --background-color: #282a36;
+    --foreground-color: #f8f8f2;
 
-    // Bootstrap variables
-    --converse-primary-rgb: var(--purple-rgb);
-    --converse-secondary-rgb: var(--cyan-rgb);
+    // Common bootstrap variables
+    --primary-color: var(--purple) !important;
+    --secondary-color: var(--pink) !important;
+    --success-color: var(--green);
+    --danger-color: var(--pink);
+    --warning-color: var(--orange);
+    --info-color: var(--yellow);
 
-    // Common variables
-    --badge-color: var(--background);
-    --brand-heading-color: var(--cyan);
-    --button-hover-text-color: var(--background);
-    --button-text-color: var(--background);
-    --chat-background-color: var(--background);
-    --chat-color: var(--green);
-    --chat-content-background-color: var(--background);
-    --chat-correcting-color: var(--comment);
-    --chat-head-border-bottom: 0.15em solid var(--chat-color);
-    --chat-head-color-dark: var(--chat-color);
-    --chat-head-color-darker: var(--chat-color);
-    --chat-head-color: var(--background);
-    --chat-head-fg-color: var(--chat-color);
-    --chat-head-text-color: var(--chat-color);
-    --chat-info-color: var(--orange);
-    --chat-msg-hover-color: var(--current-line);
-    --chat-msg-quote-color: var(--heading-color);
-    --chat-separator-border-bottom: 2px solid var(--chat-color);
+    // Online status indicators
     --chat-status-away: var(--orange);
     --chat-status-busy: var(--red);
+    --chat-status-offline: gray;
     --chat-status-online: var(--green);
-    --chat-textarea-background-color: var(--background);
-    --chat-textarea-color: var(--foreground);
-    --chat-textarea-disabled-bg-color: var(--disabled-color);
-    --chat-toolbar-btn-color: var(--chat-color);
-    --chat-toolbar-btn-color: var(--green);
-    --chatbox-message-input-border-top: 0.15em solid var(--chat-color);
-    --chatroom-correcting-color: var(--comment);
-    --chatroom-head-bg-color-dark: var(--muc-color);
-    --chatroom-head-bg-color: var(--background);
-    --chatroom-head-border-bottom: 0.15em solid var(--muc-color);
-    --chatroom-head-color: var(--muc-color);
-    --chatroom-head-description-link-color: var(--link-color);
-    --chatroom-head-fg-color: var(--muc-color);
-    --chatroom-message-input-border-top: 0.15em solid var(--muc-color);
-    --chatroom-separator-border-bottom: 0.15em solid var(--muc-color);
-    --close-color-hover: var(--purple);
-    --close-color: var(--foreground);
-    --completion-dark-color: var(--current-line);
-    --completion-light-color: var(--pink);
-    --completion-normal-color: var(--red);
-    --controlbox-head-color: var(--purple);
-    --controlbox-pane-background-color: var(--background);
-    --controlbox-pane-bg-hover-color: var(--list-item-hover-color);
-    --controlbox-text-color: var(--foreground);
-    --danger-color-dark: var(--pink);
-    --danger-color: var(--pink);
-    --dark-link-color: var(--cyan);
-    --disabled-color-bg: lightgray;
-    --disabled-color: var(--comment);
-    --error-color: var(--red);
+
+    --controlbox-color: var(--purple);
+    --disabled-color: var(--secondary-color);
     --error-color: var(--red);
     --focus-color: var(--pink);
-    --global-background-color: var(--background);
-    --gray-color: var(--current-line);
-    --groupchats-header-color-dark: var(--muc-color);
-    --groupchats-header-color: var(--muc-color);
-    --header-color: var(--pink);
     --heading-color: var(--purple);
-    --headline-message-color: var(--headlines-color);
-    --headline-separator-border-bottom: 2px solid var(--headlines-color);
     --headlines-color: var(--pink);
-    --headlines-head-bg-color: var(--background);
-    --headlines-head-border-bottom: 0.15em solid var(--headlines-color);
-    --headlines-head-fg-color: var(--headlines-color);
-    --headlines-head-text-color: var(--headlines-color);
-    --highlight-color-darker: var(--comment);
-    --highlight-color: var(--background);
-    --icon-hover-color: var(--cyan);
-    --img-thumbnail-background-color: var(--comment);
-    --img-thumbnail-border-color: black;
-    --info-color: var(--yellow);
-    --inverse-link-color: var(--foreground);
-    --light-background-color: var(--background);
     --link-color: var(--cyan);
-    --link-hover-color: var(--green);
-    --list-dot-circle-color: var(--orange);
-    --list-group-item-bg-color: var(--comment);
-    --list-item-action-color: var(--comment);
-    --list-item-action-hover-color: var(--cyan);
-    --list-item-hover-color: var(--current-line);
-    --list-item-link-color: var(--foreground);
-    --list-item-link-hover-color: var(--link-color);
-    --list-item-open-color: var(--current-line);
-    --list-item-open-hover-color: var(--current-line);
-    --list-toggle-color: var(--comment);
-    --list-toggle-hover-color: var(--comment);
-    --message-author-color: var(--purple);
-    --message-receipt-color: var(--green);
-    --message-text-color: var(--foreground);
-    --modal-background-color: var(--background);
-    --muc-color: var(--orange);
-    --muc-toolbar-btn-disabled-color: var(--disabled-color);
-    --occupants-background-color: var(--background);
-    --occupants-border-bottom: 0.15em solid var(--muc-color);
-    --occupants-border-left: 0.15em solid var(--muc-color);
-    --panel-divider-color: var(--comment);
-    --primary-color-dark: var(--purple);
-    --primary-color-light: var(--pink);
-    --primary-color: var(--purple);
-    --raised-el-shadow: 1px 1px 10px black;
-    --redder-orange: var(--muc-color);
-    --secondary-color-dark: var(--cyan);
-    --secondary-color: var(--cyan);
-    --separator-text-color: var(--message-text-color);
-    --subdued-color: var(--comment);
-    --text-color-invert: var(--background);
-    --text-color: var(--foreground);
-    --toolbar-btn-text-color: var(--background);
-    --unread-msgs-color: var(--yellow);
-    --warning-color-dark: var(--orange);
-    --warning-color: var(--orange);
 
-    .card {
-        --converse-card-border-color: var(--comment);
-    }
+    // The background when selecting text with your mouse
+    --selection-color: black;
+
+    // Used to indicate selected or open items in lists.
+    --highlight-color: var(--gray);
+    --highlight-color-hover: var(--darkgray);
+
+    // 1:1 Chat-related colors
+    --chat-color: var(--green);
+    --chat-header-fg-color: var(--chat-color);
+    --chat-header-bg-color: var(--background-color);
+
+    // MUC-related colors
+    --muc-color: var(--orange);
+    --muc-header-fg-color: var(--muc-color);
+    --muc-header-bg-color: var(--background-color);
+
+    // Derived colors
+    // --------------
+    --brand-heading-color: var(--cyan);
+    --chat-color-hover: var(--chat-color);
+    --danger-color-hover: var(--danger-color);
+    --global-background-color: var(--background-color);
+    --link-color-hover: var(--link-color);
+    --muc-color-hover: var(--muc-color);
+    --primary-color-hover: var(--purple);
+    --secondary-color-hover: var(--secondary-color);
+    --success-color-hover: var(--success);
+    --warning-color-hover: var(--orange);
 }

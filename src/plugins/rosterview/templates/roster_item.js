@@ -33,7 +33,7 @@ export default  (el) => {
     } else if (show === 'away') {
         [classes, color] =  ['fa fa-circle', 'chat-status-away'];
     } else {
-        [classes, color] = ['fa fa-circle', 'subdued-color'];
+        [classes, color] = ['fa fa-circle', 'comment'];
     }
    const desc_status = STATUSES[show];
    const num_unread = getUnreadMsgsDisplay(el.model);

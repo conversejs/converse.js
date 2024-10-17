@@ -8,8 +8,8 @@
         }
 
         .chat-status--avatar {
-            background: var(--occupants-background-color);
-            border: 2px solid var(--occupants-background-color);
+            background: var(--background-color);
+            border: 2px solid var(--background-color);
             font-size: 0.6rem;
             margin-top: 0;
             margin-left: -0.3em;
@@ -32,7 +32,7 @@
                 height: 100%;
                 flex-direction: row;
                 overflow: visible;
-                background-color: var(--occupants-background-color);
+                background-color: var(--background-color);
                 border-left: var(--occupants-border-left);
             }
 

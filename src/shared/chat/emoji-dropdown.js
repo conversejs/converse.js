@@ -46,7 +46,7 @@ export default class EmojiDropdown extends DropdownBase {
 
     render() {
         const is_groupchat = this.chatview.model.get('type') === CHATROOMS_TYPE;
-        const color = is_groupchat ? '--muc-toolbar-btn-color' : '--chat-toolbar-btn-color';
+        const color = is_groupchat ? '--muc-color' : '--chat-color';
 
         return html`
             <button class="btn dropdown-toggle dropdown-toggle--no-caret toggle-emojis"

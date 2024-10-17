@@ -31,7 +31,7 @@
                 left: 1em;
                 width: 0; height: 0;
                 padding: .4em;
-                background: var(--background);
+                background: var(--background-color);
                 border: inherit;
                 border-right: 0;
                 border-bottom: 0;
@@ -54,7 +54,7 @@
             z-index: 2;
 
             > li {
-                background: var(--background);
+                background: var(--background-color);
                 color: var(--text-color);
                 cursor: pointer;
                 display: flex;
@@ -81,7 +81,7 @@
                 width: 0;
                 height: 0;
                 padding: 0.4em;
-                background: var(--background);
+                background: var(--background-color);
                 border: inherit;
                 border-left: 0;
                 border-top: 0;

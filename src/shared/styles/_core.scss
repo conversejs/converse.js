@@ -115,7 +115,7 @@
     }
 
     ::placeholder {
-        color: var(--subdued-color);
+        color: var(--secondary-color);
     }
     ::selection {
         background-color: var(--highlight-color);
@@ -198,7 +198,7 @@
         &.fa,
         &.far,
         &.fas {
-            color: var(--subdued-color);
+            color: var(--secondary-color);
             &:hover {
                 color: var(--icon-hover-color);
             }
@@ -218,7 +218,7 @@
     .fa,
     .far,
     .fas {
-        color: var(--subdued-color);
+        color: var(--secondary-color);
     }
 
     q {
@@ -236,7 +236,7 @@
 
     .helptext {
         font-size: var(--font-size-tiny);
-        color: var(--comment);
+        color: var(--secondary-color);
     }
 
     .selected {
@@ -446,7 +446,7 @@
     }
 
     .form-help {
-        color: var(--subdued-color);
+        color: var(--secondary-color);
         font-size: 90%;
     }
 

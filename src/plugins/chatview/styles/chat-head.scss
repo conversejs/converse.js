@@ -11,7 +11,7 @@
 
             &.chat-head-chatbox {
                 background-color: var(--chat-head-color);
-                border-bottom: var(--chat-head-border-bottom);
+                border-bottom: 0.15em solid var(--chat-color);
             }
 
             .avatar {

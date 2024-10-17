@@ -5,7 +5,7 @@ import { until } from 'lit/directives/until.js';
 function tplSendButton() {
     const i18n_send_message = __('Send the message');
     return html`<button type="submit" class="btn send-button" data-action="sendMessage" title="${i18n_send_message}">
-        <converse-icon color="var(--toolbar-btn-text-color)" class="fa fa-paper-plane" size="1em"></converse-icon>
+        <converse-icon color="var(--background-color)" class="fa fa-paper-plane" size="1em"></converse-icon>
     </button>`;
 }
 

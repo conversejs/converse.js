@@ -2,12 +2,12 @@
     .chatbox {
         &.headlines {
             .chat-body {
-                background-color: var(--background);
+                background-color: var(--background-color);
                 .chat-message {
                     color: var(--headline-message-color);
                 }
                 hr {
-                    border-bottom: var(--headline-separator-border-bottom);
+                    border-bottom: 2px solid var(--headlines-color);
                 }
             }
             .chat-content {

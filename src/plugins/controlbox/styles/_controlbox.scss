@@ -29,11 +29,11 @@
 
     #controlbox {
         order: -1;
-        color: var(--controlbox-text-color);
+        color: var(--foreground-color);
 
         .chat-status--avatar {
-            border: 1px solid var(--controlbox-pane-background-color);
-            background: var(--controlbox-pane-background-color);
+            border: 1px solid var(--background-color);
+            background: var(--background-color);
         }
 
         converse-brand-logo {
@@ -60,7 +60,7 @@
         }
 
         .box-flyout {
-            background-color: var(--controlbox-pane-background-color);
+            background-color: var(--background-color);
         }
 
         &.logged-out {
@@ -120,7 +120,7 @@
             .controlbox-heading {
                 font-family: var(--heading-font);
                 color: var(--controlbox-heading-color);
-                font-weight: var(--controlbox-heading-font-weight);
+                font-weight: bold;
                 padding: 0;
                 font-size: 1.1em;
                 line-height: 1.1em;

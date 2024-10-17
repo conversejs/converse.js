@@ -155,7 +155,7 @@ export default (el, o) => {
     } else if (show === 'away') {
         [classes, color] =  ['fa fa-circle', 'chat-status-away'];
     } else {
-        [classes, color] = ['fa fa-circle', 'subdued-color'];
+        [classes, color] = ['fa fa-circle', 'comment'];
     }
 
    const num_unread = getUnreadMsgsDisplay(o);

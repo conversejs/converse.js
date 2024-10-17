@@ -12,11 +12,11 @@
 
             color: var(--chatroom-head-color);
             background-color: var(--chatroom-head-bg-color);
-            border-bottom: var(--chatroom-head-border-bottom);
+            border-bottom: 0.15em solid var(--muc-color);
 
             .chat-head__desc {
                 color: var(--chatroom-head-color);
-                display: var(--chatroom-head-description-display);
+                display: block;
                 a {
                     color: var(--chatroom-head-description-link-color);
                 }
@@ -53,7 +53,7 @@
                 .dropdown-menu {
                     converse-icon {
                         svg {
-                            fill: var(--chatroom-color);
+                            fill: var(--muc-color);
                         }
                     }
                 }
@@ -68,7 +68,7 @@
             }
             .chatbox-title__text {
                 color: var(--chatroom-head-color);
-                display: var(--heading-display);
+                display: block;
                 font-weight: var(--chatroom-head-title-font-weight);
                 margin: auto 0;
                 padding-right: var(--chatroom-head-title-padding-right);

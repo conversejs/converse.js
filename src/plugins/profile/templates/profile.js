@@ -19,7 +19,7 @@ export default (el) => {
     } else if (chat_status === 'away') {
         [classes, color] =  ['fa fa-circle chat-status', 'chat-status-away'];
     } else {
-        [classes, color] = ['fa fa-circle chat-status', 'subdued-color'];
+        [classes, color] = ['fa fa-circle chat-status', 'comment'];
     }
     return html`
         <div class="userinfo">

@@ -65,7 +65,7 @@
             .list-item-badge {
                 opacity: 1;
                 border-radius: 25%;
-                color: var(--badge-color);
+                color: var(--background-color);
                 font-size: var(--font-size-small);
                 line-height: var(--font-size-small);
             }
@@ -81,12 +81,12 @@
                     font-size: var(--font-size);
                 }
                 &.button-on {
-                    color: var(--list-item-link-color);
+                    color: var(--foreground-color);
                     &:hover {
                         color: var(--list-item-link-hover-color);
                     }
                 }
-                color: var(--subdued-color);
+                color: var(--secondary-color);
                 &:hover {
                     color: var(--list-toggle-hover-color);
                     opacity: 1;

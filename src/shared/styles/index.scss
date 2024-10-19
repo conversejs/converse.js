@@ -58,6 +58,7 @@ $prefix: 'converse-';
 @import "mixins";
 
 .conversejs, converse-bg {
+    @import "themes/nord";
     @import "themes/classic";
     @import "themes/dracula";
     @import "themes/cyberpunk";

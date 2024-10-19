@@ -2189,9 +2189,9 @@ theme
 -----
 
 * Default: ``default``
-* Valid options: ``default``, ``cyberpunk``, ``dracula``
+* Valid options: ``default``, ``cyberpunk``, ``dracula``, ``nord``
 
-Let's you set a color theme for Converse.
+Lets you set a color theme for Converse.
 
 colorize_username
 -------------------

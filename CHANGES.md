@@ -35,7 +35,7 @@
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 - New `loadEmojis` hook, to customize emojis at runtime.
 - Upgrade to Bootstrap 5
-- Add a new theme 'Cyberpunk' and remove the old 'Concord' theme.
+- Add new themes 'Cyberpunk' and 'Nord' and remove the old 'Concord' theme.
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 - MUC occupants badges: displays short labels, with full label as title.

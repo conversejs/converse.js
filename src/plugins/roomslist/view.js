@@ -54,8 +54,8 @@ export class RoomsList extends CustomElement {
     /** @param {Event} ev */
     async openRoom (ev) {
         ev.preventDefault();
+        const name = ev.target.textContent;
         const target = u.ancestor(/** @type {HTMLElement} */(ev.target), '.open-room');
-        const name = target.textContent;
         const jid = target.getAttribute('data-room-jid');
         const data = {
             'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid

@@ -20,6 +20,7 @@
 - #3362: Don't create empty nick element in bookmarks
 - #3476: better UI for form "fixed" fields
 - #3478: MUC participant status indicator misplaced 
+- #3529: Unbookmarked channels no longer change their name when clicked with an unread indicator (or text icon)
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users

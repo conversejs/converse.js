@@ -70,7 +70,7 @@ function tplRoomItem (el, room) {
                 <span>${ room.get('num_unread') ?
                             tplUnreadIndicator(room) :
                             (room.get('has_activity') ? tplActivityIndicator() : '') }
-                    ${room.getDisplayName()}</span>
+                    <span class="room-name">${room.getDisplayName()}</span></span>
             </a>
 
             ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }

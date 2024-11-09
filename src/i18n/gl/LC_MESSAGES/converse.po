@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-08-29 15:09+0000\n"
+"PO-Revision-Date: 2024-11-10 16:00+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.1-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -2133,7 +2133,7 @@ msgstr "Lamentámolo, algo fallou ao intentar gardar os datos do seu perfil."
 
 #: dist/converse-no-dependencies.js:114084
 msgid "About"
-msgstr "Acerca de"
+msgstr "Sobre"
 
 #: dist/converse-no-dependencies.js:114085
 msgid "Commands"
@@ -2368,7 +2368,7 @@ msgstr "Xa tes unha conta?"
 #: dist/converse-no-dependencies.js:121722
 #: dist/converse-no-dependencies.js:121785
 msgid "Log in here"
-msgstr "Conéctate aquí"
+msgstr "Accede aquí"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:121739

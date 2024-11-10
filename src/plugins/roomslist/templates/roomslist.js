@@ -59,6 +59,7 @@ function tplRoomItem (el, room) {
 
             <a class="list-item-link open-room available-room w-100"
                 data-room-jid="${room.get('jid')}"
+                data-room-name="${room.getDisplayName()}"
                 title="${__('Click to open this groupchat')}"
                 @click=${ev => el.openRoom(ev)}>
                 <converse-avatar
@@ -70,7 +71,7 @@ function tplRoomItem (el, room) {
                 <span>${ room.get('num_unread') ?
                             tplUnreadIndicator(room) :
                             (room.get('has_activity') ? tplActivityIndicator() : '') }
-                    <span class="room-name">${room.getDisplayName()}</span></span>
+                    ${room.getDisplayName()}</span>
             </a>
 
             ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2024-08-25 00:09+0000\n"
-"Last-Translator: Mako N <mako@pasero.net>\n"
+"PO-Revision-Date: 2024-11-10 16:00+0000\n"
+"Last-Translator: Meteor2 <ryumeteor175@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
 "Language: ja\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7.1-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -1706,9 +1706,9 @@ msgid "Loading configuration form"
 msgstr "設定フォームの読み込み"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "設定"
+msgstr "%1$s の設定"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -2525,7 +2525,7 @@ msgstr "グループチャット"
 
 #: dist/converse-no-dependencies.js:124313
 msgid "Query server"
-msgstr ""
+msgstr "クエリサーバー"
 
 #: dist/converse-no-dependencies.js:124314
 msgid "Add groupchat"

@@ -42,6 +42,7 @@
     "headless-dev": "webpack --config webpack/webpack.headless.js --mode=development",
     "nodeps": "webpack --config webpack/webpack.nodeps.js",
     "serve": "http-server -c-1",
+    "serve-tls": "http-server -S -C certs/chat.example.org.crt -K certs/chat.example.org.key",
     "devserver": "webpack serve --config webpack/webpack.serve.js",
     "watch": "webpack --watch --config webpack/webpack.build.js --mode=development",
     "types": "tsc -p ./src/headless/tsconfig.json && tsc",

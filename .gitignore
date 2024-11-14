@@ -1,6 +1,9 @@
 # Distribution directory
 dist
 
+# TLS certificates
+certs
+
 # conversejs/media repo checkout
 media
 

@@ -1,21 +1,22 @@
 # You can set these variables from the command line.
-BOOTSTRAP		= ./node_modules/
-BUILDDIR		= ./docs
-KARMA			?= ./node_modules/.bin/karma
-CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss
-HTTPSERVE_PORT	?= 8000
-INKSCAPE		?= inkscape
-INSTALL			?= install
-JSDOC			?=	./node_modules/.bin/jsdoc
-OXIPNG			?= oxipng
-PAPER		 	=
-RJS				?= ./node_modules/.bin/r.js
-NPX				?= ./node_modules/.bin/npx
-SASS			?= ./node_modules/.bin/sass
-SED				?= sed
-SPHINXBUILD	 	?= ./bin/sphinx-build
-SPHINXOPTS		=
-XGETTEXT		= xgettext
+BOOTSTRAP			= ./node_modules/
+BUILDDIR			= ./docs
+KARMA				?= ./node_modules/.bin/karma
+CLEANCSS			?= ./node_modules/clean-css-cli/bin/cleancss
+HTTPSERVE_PORT		?= 8008
+HTTPS_SERVE_PORT	?= 8443
+INKSCAPE			?= inkscape
+INSTALL				?= install
+JSDOC				?= ./node_modules/.bin/jsdoc
+OXIPNG				?= oxipng
+PAPER		 		=
+RJS					?= ./node_modules/.bin/r.js
+NPX					?= ./node_modules/.bin/npx
+SASS				?= ./node_modules/.bin/sass
+SED					?= sed
+SPHINXBUILD	 		?= ./bin/sphinx-build
+SPHINXOPTS			=
+XGETTEXT			= xgettext
 
 
 # Internal variables.
@@ -56,6 +57,7 @@ serve: node_modules dist
 .PHONY: serve_bg
 serve_bg: node_modules
 	npm run serve -- -p $(HTTPSERVE_PORT) -s &
+	npm run serve-tls -- -p $(HTTPS_SERVE_PORT) -s &
 
 certs:
 	mkdir certs

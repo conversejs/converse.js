@@ -1,146 +1,120 @@
 .conversejs {
-    converse-muc.chatroom {
+    converse-muc-occupants {
+        width: 100%;
 
-        converse-icon {
-            svg {
-                fill: var(--muc-color);
-            }
-        }
+        .occupants {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: visible;
+            overflow-x: auto;
 
-        .chat-status--avatar {
-            background: var(--background-color);
-            border: 2px solid var(--background-color);
-            font-size: 0.6rem;
-            margin-top: 0;
-            margin-left: -0.3em;
-            margin-bottom: -2em;
-            padding: 0.1em;
-
-            svg {
+            .occupants-header--title {
                 display: flex;
+                flex-direction: row;
+                padding: 0.5em;
+
+                .occupants-heading {
+                    padding-left: 0;
+                    margin-right: 0.5em;
+                }
+
+                .hide-occupants {
+                    align-self: flex-end;
+                    cursor: pointer;
+                    font-size: var(--font-size-small);
+                }
             }
-        }
 
-        .badge-groupchat {
-            background-color: var(--muc-color);
-        }
+            .fa-user-plus {
+                margin-right: 0.25em;
+            }
 
-        .box-flyout {
+            .suggestion-box{
+                ul {
+                    padding: 0;
+                    li {
+                        padding: 0.5em;
+                    }
+                }
+            }
+            .items-list {
+                padding: 0;
+                margin-bottom: 0.5em;
+                overflow-x: hidden;
+                overflow-y: auto;
+                list-style: none;
 
-            .occupants {
-                display: flex;
-                height: 100%;
-                width: 100%;
-                flex-direction: column;
-                justify-content: space-between;
-                overflow-y: visible;
-                overflow-x: auto;
-
-                .occupants-header--title {
-                    display: flex;
-                    flex-direction: row;
+                &.occupant-list {
                     padding: 0.5em;
-
-                    .occupants-heading {
-                        padding-left: 0;
+                    overflow-y: auto;
+                    flex-basis: 0;
+                    flex-grow: 1;
+                }
+                .list-item {
+                    height: auto;
+                    cursor: default;
+                    font-size: var(--font-size-small);
+                    padding: 0.25em 0.25em 0.25em 0;
+                    text-overflow: ellipsis;
+                    .fa {
                         margin-right: 0.5em;
                     }
-
-                    .hide-occupants {
-                        align-self: flex-end;
+                    &.feature {
+                        font-size: var(--font-size-tiny);
+                    }
+                    &.occupant {
                         cursor: pointer;
-                        font-size: var(--font-size-small);
-                    }
-                }
-
-                .fa-user-plus {
-                    margin-right: 0.25em;
-                }
-
-                .suggestion-box{
-                    ul {
-                        padding: 0;
-                        li {
-                            padding: 0.5em;
-                        }
-                    }
-                }
-                .items-list {
-                    padding: 0;
-                    margin-bottom: 0.5em;
-                    overflow-x: hidden;
-                    overflow-y: auto;
-                    list-style: none;
-
-                    &.occupant-list {
-                        padding: 0.5em;
-                        overflow-y: auto;
-                        flex-basis: 0;
-                        flex-grow: 1;
-                    }
-                    .list-item {
-                        height: auto;
-                        cursor: default;
-                        font-size: var(--font-size-small);
-                        padding: 0.25em 0.25em 0.25em 0;
-                        text-overflow: ellipsis;
-                        .fa {
+                        .msgs-indicator {
+                            margin-left: -3em;
                             margin-right: 0.5em;
+                            margin-top: -0.25em;
+                            position: absolute;
+                            font-size: xx-small;
                         }
-                        &.feature {
-                            font-size: var(--font-size-tiny);
-                        }
-                        &.occupant {
-                            cursor: pointer;
-                            .msgs-indicator {
-                                margin-left: -3em;
-                                margin-right: 0.5em;
-                                margin-top: -0.25em;
-                                position: absolute;
-                                font-size: xx-small;
-                            }
 
-                            .occupant-nick-badge {
-                                display: flex;
-                                justify-content: space-between;
-                                flex-wrap: nowrap;
-                                align-items: center;
-                                gap: 0.25rem;
+                        .occupant-nick-badge {
+                            display: flex;
+                            justify-content: space-between;
+                            flex-wrap: nowrap;
+                            align-items: center;
+                            gap: 0.25rem;
+                            overflow-x: hidden;
+
+                            .occupant-nick {
+                                flex-grow: 2;
                                 overflow-x: hidden;
+                                text-overflow: ellipsis;
+                            }
 
-                                .occupant-nick {
-                                    flex-grow: 2;
-                                    overflow-x: hidden;
-                                    text-overflow: ellipsis;
-                                }
+                            .occupant-badges {
+                                display: flex;
+                                justify-content: flex-end;
+                                flex-wrap: wrap;
+                                flex-direction: row;
+                                flex-shrink: 1;
+                                gap: 0.25rem;
 
-                                .occupant-badges {
-                                    display: flex;
-                                    justify-content: flex-end;
-                                    flex-wrap: wrap;
-                                    flex-direction: row;
-                                    flex-shrink: 1;
-                                    gap: 0.25rem;
-
-                                    span {
-                                        height: 1.6em;
-                                    }
-                                }
-
-                                .occupant-actions {
-                                    // We must specify the position, else there is a bug:
-                                    // clicking on an action would close the dropdown without triggering the action.
-                                    position: static;
+                                span {
+                                    height: 1.6em;
                                 }
                             }
 
-                            div.row.g-0{
-                                flex-wrap: nowrap;
-                                min-height: 1.5em;
+                            .occupant-actions {
+                                // We must specify the position, else there is a bug:
+                                // clicking on an action would close the dropdown without triggering the action.
+                                position: static;
                             }
-                            .badge {
-                                margin-bottom: 0.125rem;
-                            }
+                        }
+
+                        div.row.g-0{
+                            flex-wrap: nowrap;
+                            min-height: 1.5em;
+                        }
+                        .badge {
+                            margin-bottom: 0.125rem;
                         }
                     }
                 }

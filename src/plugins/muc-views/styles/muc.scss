@@ -5,13 +5,37 @@
 @import "./muc-forms.scss";
 
 .conversejs {
-    .chatroom {
+    converse-muc.chatroom {
         width: var(--chatroom-width);
         @media screen and (max-height: $mobile-landscape-height){
             width: var(--mobile-chat-width);
         }
         @media screen and (max-width: $mobile-portrait-length) {
             width: var(--mobile-chat-width);
+        }
+
+        converse-icon {
+            svg {
+                fill: var(--muc-color);
+            }
+        }
+
+        .chat-status--avatar {
+            background: var(--background-color);
+            border: 2px solid var(--background-color);
+            font-size: 0.6rem;
+            margin-top: 0;
+            margin-left: -0.3em;
+            margin-bottom: -2em;
+            padding: 0.1em;
+
+            svg {
+                display: flex;
+            }
+        }
+
+        .badge-groupchat {
+            background-color: var(--muc-color);
         }
 
         .box-flyout {

@@ -11,4 +11,5 @@
  * @license MIT
  */
 export function waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
+export { getOpenPromise };
 //# sourceMappingURL=promise.d.ts.map

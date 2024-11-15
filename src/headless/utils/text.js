@@ -22,13 +22,13 @@ export function firstCharToUpperCase(text) {
  * @param {string[]} candidates
  * @returns {string}
  */
-export function getLongestSubstring (string, candidates) {
+export function getLongestSubstring(string, candidates) {
     /**
      * @param {string} accumulator
      * @param {string} current_value
      * @returns {string}
      */
-    function reducer (accumulator, current_value) {
+    function reducer(accumulator, current_value) {
         if (string.startsWith(current_value)) {
             if (current_value.length > accumulator.length) {
                 return current_value;
@@ -40,4 +40,12 @@ export function getLongestSubstring (string, candidates) {
         }
     }
     return candidates.reduce(reducer, '');
+}
+
+/**
+ * @param {any} s
+ * @returns {boolean}
+ */
+export function isString(s) {
+    return typeof s === 'string' || s instanceof String;
 }

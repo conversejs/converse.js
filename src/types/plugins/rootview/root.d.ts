@@ -8,7 +8,7 @@
 export default class ConverseRoot extends CustomElement {
     render(): import("lit").TemplateResult<1>;
     initialize(): void;
-    setClasses(): void;
+    setThemeAttributes(): void;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=root.d.ts.map

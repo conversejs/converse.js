@@ -1,5 +1,23 @@
 export default class MUCOccupant extends CustomElement {
-    render(): import("lit").TemplateResult<1>;
+    static get properties(): {
+        muc_jid: {
+            type: StringConstructor;
+        };
+        occupant_id: {
+            type: StringConstructor;
+        };
+    };
+    muc_jid: any;
+    occupant_id: any;
+    initialize(): Promise<void>;
+    muc: any;
+    model: any;
+    render(): import("lit").TemplateResult<1> | "";
+    getVcard(): any;
+    addToContacts(): void;
+    toggleForm(ev: any): void;
+    show_role_form: any;
+    show_affiliation_form: any;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=occupant.d.ts.map

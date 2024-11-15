@@ -17,8 +17,6 @@ export function getRandomInt(max: any): number;
  */
 export function getUniqueId(suffix?: string): string;
 declare const _default: {
-    getLongestSubstring: typeof getLongestSubstring;
-    getOpenPromise: any;
     getRandomInt: typeof getRandomInt;
     getUniqueId: typeof getUniqueId;
     isEmptyMessage: typeof isEmptyMessage;
@@ -27,11 +25,9 @@ declare const _default: {
     prefixMentions: typeof prefixMentions;
     safeSave: typeof safeSave;
     shouldCreateMessage: typeof shouldCreateMessage;
-    toStanza: typeof toStanza;
     triggerEvent: typeof triggerEvent;
-    waitUntil: typeof waitUntil;
     isValidURL(text: string): boolean;
-    getURI(url: string | getOpenPromise): any;
+    getURI(url: string | promise.getOpenPromise): any;
     checkFileTypes(types: string[], url: string): boolean;
     filterQueryParamsFromURL(url: any): any;
     isURLWithImageExtension(url: any): boolean;
@@ -44,6 +40,9 @@ declare const _default: {
         media_urls?: MediaURLMetadata[];
     };
     getMediaURLs(arr: Array<MediaURLMetadata>, text: string, offset?: number): MediaURLData[];
+    firstCharToUpperCase(text: string): string;
+    getLongestSubstring(string: string, candidates: string[]): string;
+    isString(s: any): boolean;
     getDefaultStore(): "session" | "persistent";
     createStore(id: any, store: any): any;
     initStorage(model: any, id: any, type: any): void;
@@ -51,6 +50,7 @@ declare const _default: {
     isForbiddenError(stanza: Element): boolean;
     isServiceUnavailableError(stanza: Element): boolean;
     getAttributes(stanza: Element): object;
+    toStanza: typeof stanza.toStanza;
     isUniView(): boolean;
     isTestEnv(): boolean;
     getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
@@ -58,6 +58,8 @@ declare const _default: {
     shouldClearCache(_converse: ConversePrivateGlobal): boolean;
     tearDown(_converse: ConversePrivateGlobal): Promise<any>;
     clearSession(_converse: ConversePrivateGlobal): any;
+    waitUntil(func: Function, max_wait?: number, check_delay?: number): Promise<any>;
+    getOpenPromise: any;
     merge(dst: any, src: any): void;
     isError(obj: any): boolean;
     isFunction(val: any): boolean;
@@ -93,7 +95,6 @@ export type CommonUtils = Record<string, Function>;
  * The utils object
  */
 export type PluginUtils = Record<"muc" | "mam", CommonUtils>;
-declare function getLongestSubstring(string: any, candidates: any): any;
 /**
  * Call the callback once all the events have been triggered
  * @param { Array } events: An array of objects, with keys `object` and
@@ -103,7 +104,6 @@ declare function getLongestSubstring(string: any, candidates: any): any;
  */
 declare function onMultipleEvents(events: any[], callback: Function): void;
 declare function shouldCreateMessage(attrs: any): any;
-import { toStanza } from 'strophe.js';
 /**
  * @param {Element} el
  * @param {string} name
@@ -112,7 +112,7 @@ import { toStanza } from 'strophe.js';
  * @param {boolean} [cancelable]
  */
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
-import { waitUntil } from './promise.js';
 import * as url from './url.js';
+import * as stanza from './stanza.js';
 import * as session from './session.js';
 //# sourceMappingURL=index.d.ts.map

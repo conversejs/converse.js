@@ -19,4 +19,6 @@ export function isServiceUnavailableError(stanza: Element): boolean;
  * @returns {object}
  */
 export function getAttributes(stanza: Element): object;
+export { toStanza };
+import { toStanza } from 'strophe.js';
 //# sourceMappingURL=stanza.d.ts.map

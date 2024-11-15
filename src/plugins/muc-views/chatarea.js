@@ -1,6 +1,5 @@
 import { api, converse } from '@converse/headless';
 import { __ } from 'i18n';
-import Split from 'shared/split.js';
 import { CustomElement } from 'shared/components/element.js';
 import tplMUCChatarea from './templates/muc-chatarea.js';
 
@@ -35,19 +34,6 @@ export default class MUCChatArea extends CustomElement {
         return this.model ? tplMUCChatarea(this) : '';
     }
 
-    /**
-     * @param {Map<string, any>} changed
-     */
-    updated(changed) {
-        super.updated(changed);
-        if (!this.split) {
-            const sidebar_el = this.querySelector('converse-muc-sidebar');
-            if (sidebar_el) {
-                const chatarea_el = this.querySelector('.chat-area');
-                this.split = Split([chatarea_el, sidebar_el]);
-            }
-        }
-    }
 
     shouldShowSidebar () {
         return (

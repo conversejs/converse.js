@@ -72,7 +72,7 @@ export type ConfigurationSettings = {
     sid?: string;
     singleton?: boolean;
     strict_plugin_dependencies?: boolean;
-    view_mode?: ("overlayed" | "fullscreen" | "embedded");
+    view_mode?: ("fullscreen" | "embedded" | "overlayed");
     websocket_url?: string;
     whitelisted_plugins?: Array<string>;
 };

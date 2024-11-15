@@ -42,6 +42,7 @@
 - Fix: trying to use an emojis with an uppercase letter breaks the message field.
 - Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
+- Make `fullscreen` the default `view_mode`.
 
 ### Breaking changes:
 

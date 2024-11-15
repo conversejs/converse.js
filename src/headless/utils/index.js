@@ -3,20 +3,19 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
-import { toStanza } from 'strophe.js';
-import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import log, { LEVELS } from '../log.js';
-import { waitUntil } from './promise.js';
+import * as arraybuffer from './arraybuffer.js';
 import * as color from './color.js';
-import * as stanza from './stanza.js';
-import * as session from './session.js';
-import * as object from './object.js';
-import * as storage from './storage.js';
-import * as jid from './jid';
 import * as form from './form.js';
 import * as html from './html.js';
-import * as arraybuffer from './arraybuffer.js';
+import * as jid from './jid';
+import * as object from './object.js';
+import * as promise from './promise.js';
+import * as session from './session.js';
+import * as stanza from './stanza.js';
+import * as storage from './storage.js';
+import * as text from './text.js';
 import * as url from './url.js';
 
 /**
@@ -70,21 +69,6 @@ export function prefixMentions (message) {
             text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`
         });
     return text;
-}
-
-function getLongestSubstring (string, candidates) {
-    function reducer (accumulator, current_value) {
-        if (string.startsWith(current_value)) {
-            if (current_value.length > accumulator.length) {
-                return current_value;
-            } else {
-                return accumulator;
-            }
-        } else {
-            return accumulator;
-        }
-    }
-    return candidates.reduce(reducer, '');
 }
 
 function shouldCreateMessage (attrs) {
@@ -170,12 +154,12 @@ export default Object.assign({
     ...html,
     ...jid,
     ...object,
+    ...promise,
     ...session,
     ...stanza,
     ...storage,
+    ...text,
     ...url,
-    getLongestSubstring,
-    getOpenPromise,
     getRandomInt,
     getUniqueId,
     isEmptyMessage,
@@ -184,7 +168,5 @@ export default Object.assign({
     prefixMentions,
     safeSave,
     shouldCreateMessage,
-    toStanza,
     triggerEvent,
-    waitUntil, // TODO: remove. Only the API should be used
 }, u);

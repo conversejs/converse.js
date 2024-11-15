@@ -12,6 +12,31 @@
             font-family: var(--heading-font);
             color: var(--muc-color);
             padding-left: 0;
+            margin-right: 0.5em;
+        }
+    }
+
+    converse-chats {
+        &.converse-overlayed {
+            converse-muc-sidebar {
+                .sidebar-heading {
+                    padding: 0;
+                }
+            }
+        }
+        &.converse-fullscreen {
+            converse-muc-sidebar {
+                .sidebar-heading {
+                    font-size: var(--font-size-large);
+                }
+            }
+        }
+        &.converse-embedded {
+            converse-muc-sidebar {
+                .sidebar-heading {
+                    font-size: 120%;
+                }
+            }
         }
     }
 }

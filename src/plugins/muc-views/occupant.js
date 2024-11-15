@@ -23,16 +23,19 @@ export default class MUCOccupant extends CustomElement {
         }
     }
 
-    initialize() {
+    async initialize() {
         super.initialize()
+
         const { chatboxes } = _converse.state;
         this.muc = chatboxes.get(this.muc_jid);
-        this.muc.initialized.then(() => this.requestUpdate());
+        await this.muc.initialized;
+
         this.model = this.muc.occupants.get(this.occupant_id);
+        this.requestUpdate();
     }
 
     render () {
-        return tplMUCOccupant(this);
+        return this.muc ? tplMUCOccupant(this) : '';
     }
 
     getVcard () {

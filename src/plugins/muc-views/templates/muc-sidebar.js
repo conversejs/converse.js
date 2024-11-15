@@ -5,7 +5,7 @@ import { html } from 'lit';
  */
 export default (el) => {
     const model = el.model;
-    const sidebar_view = model.get('sidebar_view');
+    const sidebar_view = model.get('sidebar_view') || '';
     const occupant_id = sidebar_view.split('occupant:').pop();
     return html`
         <div class="dragresize-occupants-left">&nbsp;</div>

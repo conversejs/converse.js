@@ -27,9 +27,6 @@ converse-muc-destroyed {
     }
 }
 
-
-/* ******************* Overlay  styles *************************** */
-
 .conversejs {
     converse-chats {
         &.converse-overlayed {
@@ -53,23 +50,6 @@ converse-muc-destroyed {
                         margin-bottom: 1em;
                     }
                     .chatroom-body {
-                        .occupants {
-                            .occupants-heading {
-                                padding: 0;
-                            }
-                            .occupant-list {
-                                border-bottom: none;
-                            }
-                            ul {
-                                .occupant {
-                                    .occupant-nick-badge {
-                                        .occupant-badges {
-                                            display: none;
-                                        }
-                                    }
-                                }
-                            }
-                        }
                         .chat-area {
                             min-width: var(--overlayed-chat-width);
                         }
@@ -93,18 +73,6 @@ converse-muc-destroyed {
                                 }
                             }
                         }
-                        .occupants {
-                            .occupants-heading {
-                                font-size: var(--font-size-large);
-                            }
-                            ul {
-                                &.occupant-list {
-                                    li {
-                                        font-size: var(--font-size-small);
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
                 .room-invite {
@@ -122,9 +90,6 @@ converse-muc-destroyed {
                 margin: 0;
                 width: 100%;
                 .box-flyout {
-                    .occupants-heading {
-                        font-size: 120%;
-                    }
                     .chat-content {
                         .chat-message {
                             margin: 0.5em;
@@ -142,11 +107,6 @@ converse-muc-destroyed {
                         .muc-form-container {
                             height: 100%;
                             position: relative;
-                        }
-                    }
-                    .occupants {
-                        .occupant-list {
-                            padding-left: 0.3em;
                         }
                     }
                 }

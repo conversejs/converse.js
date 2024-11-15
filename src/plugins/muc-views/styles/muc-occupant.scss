@@ -1,8 +1,23 @@
 .conversejs {
     converse-muc-occupant {
+        width: 100%;
+
         .back-button {
-            font-size: 10px;
+            font-size: 0.75em;
             padding: 0.5em;
+        }
+
+        .occupant-details {
+            padding-left: 0.3em;
+            .row {
+                padding-left: 1em;
+            }
+            .occupant-details-nickname {
+                font-size: var(--font-size-huge);
+            }
+            .badge {
+                margin: 0.1em;
+            }
         }
     }
 }

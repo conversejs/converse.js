@@ -4,6 +4,7 @@ import '../bottom-panel.js';
 import '../sidebar.js';
 import 'shared/chat/chat-content.js';
 import 'shared/chat/help-messages.js';
+import 'shared/components/split-resize.js';
 
 const { CHATROOMS_TYPE } = constants;
 
@@ -43,6 +44,7 @@ export default (el) => {
             <converse-muc-bottom-panel jid="${el.jid}" class="bottom-panel"></converse-muc-bottom-panel>
         </div>
         ${el.model ? html`
+            <converse-split-resize></converse-split-resize>
             <converse-muc-sidebar
                 class="${el.shouldShowSidebar() ? sidebar_classes : 'col-xs-0 hidden' }"
                 jid=${el.jid}></converse-muc-sidebar>` : '' }`

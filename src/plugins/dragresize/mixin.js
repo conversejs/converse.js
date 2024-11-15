@@ -65,8 +65,10 @@ const DragResizableMixin = {
     setDimensions () {
         // Make sure the chat box has the right height and width.
         this.adjustToViewport();
-        this.setChatBoxHeight(this.model.get('height'));
         this.setChatBoxWidth(this.model.get('width'));
+        if (api.settings.get('view_mode') === 'overlayed') {
+            this.setChatBoxHeight(this.model.get('height'));
+        }
     },
 
     setChatBoxHeight (height) {

@@ -2,9 +2,13 @@
     converse-muc-occupant {
         width: 100%;
 
-        .back-button {
-            font-size: 0.75em;
-            padding: 0.5em;
+        .sidebar-heading {
+            padding-top: 0.4em;
+            .back-button {
+                font-size: 0.75em;
+                padding: 0.5em;
+                padding-top: 0.2em;
+            }
         }
 
         .occupant-details {

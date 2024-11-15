@@ -20,6 +20,10 @@
             }
         }
 
+        .gutter {
+            background-color: var(--muc-color);
+        }
+
         .chat-status--avatar {
             background: var(--background-color);
             border: 2px solid var(--background-color);

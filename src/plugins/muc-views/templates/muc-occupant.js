@@ -27,16 +27,14 @@ export default (el) => {
             .then(contact => !contact && not_me && can_see_real_jids)
             .then(add => add ? html`<li><button class="btn btn-primary" type="button" @click=${() => el.addToContacts()}>${i18n_add_to_contacts}</button></li>` : '');
 
-    return html`<span class="sidebar-heading">
+    return html`<div class="sidebar-heading">
             <button
                 type="button"
                 class="btn btn--transparent back-button"
-                @click=${() => el.muc.save({ 'sidebar_view': 'occupants' })}
-            >
+                @click=${() => el.muc.save({ 'sidebar_view': 'occupants' })}>
                 <converse-icon size="1em" class="fa fa-arrow-left"></converse-icon>
             </button>
-            ${i18n_participants}</span
-        >
+            ${i18n_participants}</div>
 
         ${el.model ? html`
             <div class="row">

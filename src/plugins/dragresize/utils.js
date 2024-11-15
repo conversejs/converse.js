@@ -95,6 +95,7 @@ export function onStartHorizontalResize(ev, trigger = true) {
     ev.preventDefault();
     const flyout = u.ancestor(ev.target, '.box-flyout');
     const style = window.getComputedStyle(flyout);
+
     const chatbox_el = flyout.parentElement;
     chatbox_el.width = parseInt(style.width.replace(/px$/, ''), 10);
     resizing.chatbox = chatbox_el;

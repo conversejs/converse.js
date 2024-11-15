@@ -45,6 +45,5 @@ export default (el) => {
         ${el.model ? html`
             <converse-muc-sidebar
                 class="${el.shouldShowSidebar() ? sidebar_classes : 'col-xs-0 hidden' }"
-                jid=${el.jid}
-                @mousedown=${(ev) => el.onMousedown(ev)}></converse-muc-sidebar>` : '' }`
+                jid=${el.jid}></converse-muc-sidebar>` : '' }`
 };

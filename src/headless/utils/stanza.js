@@ -1,6 +1,9 @@
 import sizzle from "sizzle";
 import { Strophe } from 'strophe.js';
 import { isElement } from './html.js';
+import { toStanza } from 'strophe.js';
+
+export { toStanza };
 
 /**
  * @param {Element} stanza

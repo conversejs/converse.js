@@ -16,11 +16,6 @@
                 flex-direction: row;
                 padding: 0.5em;
 
-                .occupants-heading {
-                    padding-left: 0;
-                    margin-right: 0.5em;
-                }
-
                 .hide-occupants {
                     align-self: flex-end;
                     cursor: pointer;
@@ -116,6 +111,51 @@
                         .badge {
                             margin-bottom: 0.125rem;
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    converse-chats{
+        &.converse-overlayed {
+            converse-muc-occupants {
+                .occupants {
+                    .occupant-list {
+                        border-bottom: none;
+                    }
+                    ul {
+                        .occupant {
+                            .occupant-nick-badge {
+                                .occupant-badges {
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.converse-embedded,
+        &.converse-fullscreen {
+            converse-muc-occupants {
+                .occupants {
+                    ul {
+                        &.occupant-list {
+                            li {
+                                font-size: var(--font-size-small);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.converse-embedded {
+            converse-muc-occupants {
+                .occupants {
+                    .occupant-list {
+                        padding-left: 0.3em;
                     }
                 }
             }

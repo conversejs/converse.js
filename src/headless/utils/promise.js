@@ -1,6 +1,8 @@
 import log from '../log.js';
 import { getOpenPromise } from '@converse/openpromise';
 
+export { getOpenPromise };
+
 /**
  * Clears the specified timeout and interval.
  * @method u#clearTimers

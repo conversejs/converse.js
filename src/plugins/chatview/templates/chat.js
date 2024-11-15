@@ -1,11 +1,11 @@
 import { html } from "lit";
-import { constants } from '@converse/headless';
+import { api, constants } from '@converse/headless';
 
 const { CHATROOMS_TYPE } = constants;
 
 export default (o) => html`
     <div class="flyout box-flyout">
-        <converse-dragresize></converse-dragresize>
+        ${ api.settings.get('view_mode') === 'overlayed' ? html`<converse-dragresize></converse-dragresize>` : '' }
         ${ o.model ? html`
             <converse-chat-heading jid="${o.jid}" class="chat-head chat-head-chatbox row g-0"></converse-chat-heading>
             <div class="chat-body">

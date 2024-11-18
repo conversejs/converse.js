@@ -868,7 +868,7 @@ describe("The Contacts Roster", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
             const icon_el = document.querySelector('converse-roster-contact converse-icon');
-            expect(icon_el.getAttribute('color')).toBe('var(--secondary-color)');
+            expect(icon_el.getAttribute('color')).toBe('var(--comment)');
 
             let pres = $pres({from: 'mercutio@montague.lit/resource'});
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
@@ -880,7 +880,7 @@ describe("The Contacts Roster", function () {
 
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'xa');
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
-            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--secondary-color)');
+            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--comment)');
 
             pres = $pres({from: 'mercutio@montague.lit/resource'}).c('show', 'dnd');
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
@@ -888,7 +888,7 @@ describe("The Contacts Roster", function () {
 
             pres = $pres({from: 'mercutio@montague.lit/resource', type: 'unavailable'});
             _converse.api.connection.get()._dataRecv(mock.createRequest(pres));
-            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--secondary-color)');
+            await u.waitUntil(() => icon_el.getAttribute('color') === 'var(--comment)');
         }));
 
         it("can be added to the roster and they will be sorted alphabetically",

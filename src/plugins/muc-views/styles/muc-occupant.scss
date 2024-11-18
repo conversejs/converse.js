@@ -3,7 +3,11 @@
         width: 100%;
 
         .sidebar-heading {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5em;
             padding-top: 0.4em;
+
             .back-button {
                 font-size: 0.75em;
                 padding: 0.5em;
@@ -13,11 +17,19 @@
 
         .occupant-details {
             padding-left: 0.3em;
+            li {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 0.5em;
+            }
             .row {
                 padding-left: 1em;
             }
             .occupant-details-nickname {
                 font-size: var(--font-size-huge);
+            }
+            .occupant-details-jid {
+                font-size: var(--font-size-small);
             }
             .badge {
                 margin: 0.1em;

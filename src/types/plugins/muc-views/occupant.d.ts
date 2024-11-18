@@ -13,9 +13,19 @@ export default class MUCOccupant extends CustomElement {
     muc: any;
     model: any;
     render(): import("lit").TemplateResult<1> | "";
+    /**
+     * @param {string} jid
+     */
+    openChat(jid: string): void;
+    closeSidebar(): void;
+    /** @param {MouseEvent} [ev] */
+    showOccupantModal(ev?: MouseEvent): void;
     getVcard(): any;
     addToContacts(): void;
-    toggleForm(ev: any): void;
+    /**
+     * @param {MouseEvent} ev
+     */
+    toggleForm(ev: MouseEvent): void;
     show_role_form: any;
     show_affiliation_form: any;
 }

@@ -158,20 +158,20 @@ export default (el) => {
 
     const btns = [
         html`<a class="dropdown-item show-bookmark-list-modal" role="button"
-                @click=${(ev) => api.modal.show('converse-bookmark-list-modal', { 'model': el.model }, ev)}
+                @click="${(ev) => api.modal.show('converse-bookmark-list-modal', { 'model': el.model }, ev)}"
                 data-toggle="modal">
                     <converse-icon class="fa fa-bookmark" size="1em"></converse-icon>
                     ${i18n_show_bookmarks}
         </a>`,
         html`<a class="dropdown-item show-list-muc-modal" role="button"
-                @click=${(ev) => api.modal.show('converse-muc-list-modal', { 'model': el.model }, ev)}
+                @click="${(ev) => api.modal.show('converse-muc-list-modal', { 'model': el.model }, ev)}"
                 data-toggle="modal"
                 data-target="#muc-list-modal">
                     <converse-icon class="fa fa-list-ul" size="1em"></converse-icon>
                     ${i18n_title_list_rooms}
         </a>`,
         html`<a class="dropdown-item show-add-muc-modal" role="button"
-                @click=${(ev) => api.modal.show('converse-add-muc-modal', { 'model': el.model }, ev)}
+                @click="${(ev) => api.modal.show('converse-add-muc-modal', { 'model': el.model }, ev)}"
                 data-toggle="modal"
                 data-target="#add-chatrooms-modal">
                     <converse-icon class="fa fa-plus" size="1em"></converse-icon>

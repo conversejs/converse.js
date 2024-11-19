@@ -74,7 +74,7 @@ describe("An incoming groupchat message", function () {
                 <reference xmlns="urn:xmpp:reference:0" begin="1" end="7" type="mention" uri="xmpp:gibson@montague.lit"/>
             </message>`.tree());
 
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text .mention').length === 4);
 
         message = sizzle('converse-chat-message:last .chat-msg__text', view).pop();
         expect(message.classList.length).toEqual(1);
@@ -114,14 +114,14 @@ describe("An incoming groupchat message", function () {
         const sent_stanzas = _converse.api.connection.get().sent_stanzas;
         const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
         expect(Strophe.serialize(msg))
-            .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
-                    `to="lounge@montague.lit" type="groupchat" `+
-                    `xmlns="jabber:client">`+
-                        `<body>hello ThUnD3r|Gr33n</body>`+
-                        `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                        `<reference begin="6" end="19" type="mention" uri="xmpp:lounge@montague.lit/ThUnD3r%7CGr33n" xmlns="urn:xmpp:reference:0"/>`+
-                        `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-                    `</message>`);
+            .toBe(`<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" `+
+                `to="lounge@montague.lit" type="groupchat" `+
+                `xmlns="jabber:client">`+
+                    `<body>hello ThUnD3r|Gr33n</body>`+
+                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                    `<reference begin="6" end="19" type="mention" uri="xmpp:lounge@montague.lit/ThUnD3r%7CGr33n" xmlns="urn:xmpp:reference:0"/>`+
+                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                `</message>`);
 
         const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(message.innerHTML.replace(/<!-.*?->/g, '')).toBe('hello <span class="mention" data-uri="xmpp:lounge@montague.lit/ThUnD3r%7CGr33n">ThUnD3r|Gr33n</span>');
@@ -331,8 +331,9 @@ describe("A sent groupchat message", function () {
         it("properly encodes the URIs in sent out references",
                 mock.initConverse([], {}, async function (_converse) {
 
+            const nick = 'tom';
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+            await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stx`<presence
@@ -359,7 +360,7 @@ describe("A sent groupchat message", function () {
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
             expect(Strophe.serialize(msg))
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
+                    .toBe(`<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
                         `xmlns="jabber:client">`+
                             `<body>hello Link Mauve</body>`+
@@ -372,6 +373,7 @@ describe("A sent groupchat message", function () {
         it("can get corrected and given new references",
                 mock.initConverse([], {}, async function (_converse) {
 
+            const nick = 'tom';
             const muc_jid = 'lounge@montague.lit';
 
             // Making the MUC non-anonymous so that real JIDs are included
@@ -426,16 +428,16 @@ describe("A sent groupchat message", function () {
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
             const msg = await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop());
             expect(Strophe.serialize(msg))
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
-                        `to="lounge@montague.lit" type="groupchat" `+
-                        `xmlns="jabber:client">`+
-                            `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
-                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                            `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-                        `</message>`);
+                .toBe(`<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" `+
+                    `to="lounge@montague.lit" type="groupchat" `+
+                    `xmlns="jabber:client">`+
+                        `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
+                        `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                        `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                        `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                        `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                    `</message>`);
 
             const action = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action'));
             action.style.opacity = 1;
@@ -453,24 +455,25 @@ describe("A sent groupchat message", function () {
 
             const correction = sent_stanzas.filter(s => s.nodeName.toLowerCase() === 'message').pop();
             expect(Strophe.serialize(correction))
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${correction.getAttribute("id")}" `+
-                        `to="lounge@montague.lit" type="groupchat" `+
-                        `xmlns="jabber:client">`+
-                            `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
-                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                            `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<replace id="${msg.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                            `<origin-id id="${correction.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-                        `</message>`);
+                .toBe(`<message from="${muc_jid}/${nick}" id="${correction.getAttribute("id")}" `+
+                    `to="lounge@montague.lit" type="groupchat" `+
+                    `xmlns="jabber:client">`+
+                        `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
+                        `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                        `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                        `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                        `<replace id="${msg.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
+                        `<origin-id id="${correction.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                    `</message>`);
         }));
 
         it("includes a XEP-0372 references to that person",
                 mock.initConverse([], {}, async function (_converse) {
 
+            const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
 
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
@@ -501,16 +504,16 @@ describe("A sent groupchat message", function () {
 
             const msg = _converse.api.connection.get().send.calls.all()[1].args[0];
             expect(Strophe.serialize(msg))
-                .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
-                        `to="lounge@montague.lit" type="groupchat" `+
-                        `xmlns="jabber:client">`+
-                            `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
-                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                            `<reference begin="6" end="10" type="mention" uri="xmpp:${muc_jid}/z3r0" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="11" end="17" type="mention" uri="xmpp:${muc_jid}/gibson" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="18" end="26" type="mention" uri="xmpp:${muc_jid}/mr.robot" xmlns="urn:xmpp:reference:0"/>`+
-                            `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-                        `</message>`);
+                .toBe(`<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" `+
+                    `to="lounge@montague.lit" type="groupchat" `+
+                    `xmlns="jabber:client">`+
+                        `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
+                        `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<reference begin="6" end="10" type="mention" uri="xmpp:${muc_jid}/z3r0" xmlns="urn:xmpp:reference:0"/>`+
+                        `<reference begin="11" end="17" type="mention" uri="xmpp:${muc_jid}/gibson" xmlns="urn:xmpp:reference:0"/>`+
+                        `<reference begin="18" end="26" type="mention" uri="xmpp:${muc_jid}/mr.robot" xmlns="urn:xmpp:reference:0"/>`+
+                        `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                    `</message>`);
         }));
     });
 

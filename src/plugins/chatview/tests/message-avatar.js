@@ -53,7 +53,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => el.textContent === 'W');
 
         // Change own nickname and see that it reflects
-        const own_jid = _converse.session.get('bare_jid');
+        const own_jid = _converse.session.get('jid');
         const { xmppstatus } = _converse.state;
 
         xmppstatus.vcard.set('fullname', 'Restless Romeo');

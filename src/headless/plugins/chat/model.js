@@ -180,19 +180,19 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         const text = attrs?.body;
         const body = text ? u.shortnamesToUnicode(text) : undefined;
         attrs = Object.assign({}, attrs, {
-            'from': _converse.session.get('bare_jid'),
-            'fullname': _converse.state.xmppstatus.get('fullname'),
-            'id': origin_id,
-            'jid': this.get('jid'),
-            'message': body,
-            'msgid': origin_id,
-            'nickname': this.get('nickname'),
-            'sender': 'me',
-            'time': (new Date()).toISOString(),
-            'type': this.get('message_type'),
             body,
+            from: _converse.session.get('jid'),
+            fullname: _converse.state.xmppstatus.get('fullname'),
+            id: origin_id,
             is_spoiler,
-            origin_id
+            jid: this.get('jid'),
+            message: body,
+            msgid: origin_id,
+            nick: this.get('nickname'),
+            origin_id,
+            sender: 'me',
+            time: (new Date()).toISOString(),
+            type: this.get('message_type'),
         }, u.getMediaURLsMetadata(text));
 
         /**

@@ -210,7 +210,6 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         handleReceipt(attrs: import("../plugins/chat/parsers").MessageAttributes): boolean;
         /**
          * Given a {@link Message} return the XML stanza that represents it.
-         * @private
          * @method ChatBox#createMessageStanza
          * @param { Message } message - The message object
          */

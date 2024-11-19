@@ -175,7 +175,7 @@ export default class EmojiPicker extends CustomElement {
     /**
      * @param {string} value
      */
-    insertIntoTextArea (value) {
+    selectEmoji (value) {
         const autocompleting = this.state.get('autocompleting');
         const ac_position = this.state.get('ac_position');
         this.state.set({'autocompleting': null, 'query': '', 'ac_position': null});
@@ -248,11 +248,11 @@ export default class EmojiPicker extends CustomElement {
         ev.stopPropagation();
         const target = /** @type {HTMLInputElement} */(ev.target);
         if (converse.emojis.shortnames.includes(target.value)) {
-            this.insertIntoTextArea(target.value);
+            this.selectEmoji(target.value);
         } else if (this.search_results.length === 1) {
-            this.insertIntoTextArea(this.search_results[0].sn);
+            this.selectEmoji(this.search_results[0].sn);
         } else if (this.navigator.selected && this.navigator.selected.matches('.insert-emoji')) {
-            this.insertIntoTextArea(this.navigator.selected.getAttribute('data-emoji'));
+            this.selectEmoji(this.navigator.selected.getAttribute('data-emoji'));
         } else if (this.navigator.selected && this.navigator.selected.matches('.emoji-category')) {
             this.chooseCategory(new MouseEvent('click', {relatedTarget: this.navigator.selected}));
         }

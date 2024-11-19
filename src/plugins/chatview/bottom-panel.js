@@ -14,6 +14,17 @@ import './styles/chat-bottom-panel.scss';
 
 export default class ChatBottomPanel extends CustomElement {
 
+    constructor () {
+        super();
+        this.model = null;
+    }
+
+    static get properties () {
+        return {
+            model: { type: Object }
+        }
+    }
+
     async connectedCallback () {
         super.connectedCallback();
         await this.initialize();
@@ -23,7 +34,6 @@ export default class ChatBottomPanel extends CustomElement {
     }
 
     async initialize () {
-        this.model = await api.chatboxes.get(this.getAttribute('jid'));
         await this.model.initialized;
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
@@ -65,10 +75,13 @@ export default class ChatBottomPanel extends CustomElement {
     }
 
     /**
-     * @param {HTMLTextAreaElement} input
-     * @param {string} value
+     * @typedef {Object} AutocompleteInPickerEvent
+     * @property {HTMLTextAreaElement} input
+     * @property {string} value
+     * @param {AutocompleteInPickerEvent} ev
      */
-    async autocompleteInPicker (input, value) {
+    async autocompleteInPicker (ev) {
+        const { input, value } = ev;
         await api.emojis.initialize();
         const emoji_picker = /** @type {EmojiPicker} */(this.querySelector('converse-emoji-picker'));
         if (emoji_picker) {

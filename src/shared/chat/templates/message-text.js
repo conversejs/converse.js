@@ -16,6 +16,8 @@ export default (el) => {
     const i18n_show = __('Show more');
     const is_groupchat_message = (el.model.get('type') === 'groupchat');
     const i18n_show_less = __('Show less');
+    const error_text = el.model.get('error_text') || el.model.get('error');
+    const i18n_error = __('Message delivery failed: "%1$s"', error_text);
 
     const tplSpoilerHint = html`
         <div class="chat-msg__spoiler-hint">
@@ -34,7 +36,7 @@ export default (el) => {
     return html`
         ${ el.model.get('is_spoiler') ? tplSpoilerHint : '' }
         ${ el.model.get('subject') ? html`<div class="chat-msg__subject">${el.model.get('subject')}</div>` : '' }
-        <span class="chat-msg__body--wrapper">
+        <span class="chat-msg__body--wrapper ${error_text ? 'error' : ''}">
             <converse-chat-message-body
                 class="chat-msg__text ${el.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                 .model="${el.model}"
@@ -45,6 +47,6 @@ export default (el) => {
             ${ (el.model.get('edited')) ? tplEditedIcon(el) : '' }
         </span>
         ${ show_oob ? html`<div class="chat-msg__media">${getOOBURLMarkup(el.model.get('oob_url'))}</div>` : '' }
-        <div class="chat-msg__error">${ el.model.get('error_text') || el.model.get('error') }</div>
+        ${ error_text ? html`<div class="chat-msg__error">${ i18n_error }</div>` : '' }
     `;
 }

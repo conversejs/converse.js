@@ -83,7 +83,7 @@ export default (el, o) => {
                     return html`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
                         class="${el.model.get('url_preview_transition')}"
-                        jid="${el.chatbox?.get('jid')}"
+                        jid="${el.model_with_messages?.get('jid')}"
                         description="${m['og:description'] || ''}"
                         title="${m['og:title'] || ''}"
                         image="${m['og:image'] || ''}"

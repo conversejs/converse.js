@@ -1,13 +1,16 @@
-import "./message";
-import { CustomElement } from 'shared/components/element.js';
-import { api } from "@converse/headless";
-import { getDayIndicator } from './utils.js';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { until } from 'lit/directives/until.js';
+import { api } from "@converse/headless";
+import { CustomElement } from 'shared/components/element.js';
+import { getDayIndicator } from './utils.js';
+import "./message";
 
 
 export default class MessageHistory extends CustomElement {
+    /**
+     * @typedef {import('@converse/headless/types/plugins/chat/message').default} Message
+     */
 
     constructor () {
         super();
@@ -31,6 +34,9 @@ export default class MessageHistory extends CustomElement {
         }
     }
 
+    /**
+     * @param {(Message)} model
+     */
     renderMessage (model) {
         if (model.get('dangling_retraction') || model.get('dangling_moderation') ||  model.get('is_only_key')) {
             return '';
@@ -41,8 +47,8 @@ export default class MessageHistory extends CustomElement {
             return until(template_promise, '');
         } else {
             const template = html`<converse-chat-message
-                jid="${this.model.get('jid')}"
-                mid="${model.get('id')}"></converse-chat-message>`
+                .model_with_messages=${this.model}
+                .model=${model}></converse-chat-message>`
             const day = getDayIndicator(model);
             return day ? [day, template] : template;
         }

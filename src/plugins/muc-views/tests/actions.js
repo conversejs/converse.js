@@ -37,8 +37,7 @@ describe("A Groupchat Message", function () {
                 xmlns="jabber:client">
                 <body>${firstMessageText}</body>
             </message>`);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
-        let firstAction = view.querySelector('.chat-msg__action-copy');
+        let firstAction = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-copy'));
         expect(firstAction).not.toBeNull();
         firstAction.click();
         expect(spyClipboard).toHaveBeenCalledOnceWith(firstMessageText);
@@ -136,9 +135,7 @@ describe("A Groupchat Message", function () {
                 <body>But soft, what light through yonder airlock breaks?</body>
             </message>`);
 
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
-        // Quoting should be available before losing permission to speak
-        expect(view.querySelector('.chat-msg__action-quote')).not.toBeNull();
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg .chat-msg__action-quote').length === 1);
 
         const presence = stx`
             <presence

@@ -80,12 +80,16 @@ export function onOccupantAvatarChanged (occupant) {
  * @param {InstanceType<ReturnType<ModelWithContact>>} model
  */
 export async function setVCardOnModel (model) {
+    if (model instanceof _converse.exports.MUCMessage) {
+        return setVCardOnMUCMessage(/** @type {MUCMessage} */(model));
+    }
+
     let jid;
     if (model instanceof _converse.exports.Message) {
         if (['error', 'info'].includes(model.get('type'))) {
             return;
         }
-        jid = model.get('from');
+        jid = Strophe.getBareJidFromJid(model.get('from'));
     } else {
         jid = model.get('jid');
     }

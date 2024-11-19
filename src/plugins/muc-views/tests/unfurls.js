@@ -431,7 +431,7 @@ describe("A Groupchat Message", function () {
         let msg = _converse.api.connection.get().send.calls.all()[1].args[0];
         expect(Strophe.serialize(msg))
         .toBe(
-            `<message from="${_converse.jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
+            `<message from="${muc_jid}/${nick}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
                 `<body>${unfurl_url}</body>`+
                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                 `<origin-id id="${msg.querySelector('origin-id')?.getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
@@ -479,7 +479,7 @@ describe("A Groupchat Message", function () {
         msg = getSentMessages().pop();
         expect(Strophe.serialize(msg))
         .toBe(
-            `<message from="${_converse.jid}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
+            `<message from="${muc_jid}/${nick}" id="${msg.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
                 `<body>never mind</body>`+
                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                 `<replace id="${msg.querySelector('replace')?.getAttribute('id')}" xmlns="urn:xmpp:message-correct:0"/>`+

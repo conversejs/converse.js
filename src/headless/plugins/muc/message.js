@@ -10,8 +10,8 @@ class MUCMessage extends Message {
      */
 
     async initialize () { // eslint-disable-line require-await
-        this.chatbox = this.collection?.chatbox;
         if (!this.checkValidity()) return;
+        this.chatbox = this.collection?.chatbox;
 
         if (this.get('file')) {
             this.on('change:put', () => this.uploadFile());

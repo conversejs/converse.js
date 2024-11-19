@@ -480,6 +480,8 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      */
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
+
+
         const attrs_or_error = await parseMUCMessage(stanza, this);
         if (u.isErrorObject(attrs_or_error)) {
             const { stanza, message } = /** @type {StanzaParseError} */(attrs_or_error);
@@ -488,18 +490,24 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         }
 
         const attrs = /** @type {MessageAttributes} */(attrs_or_error);
+
         if (!(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
 
-        const message = this.getMessageReferencedByError(attrs);
+        const nick = Strophe.getResourceFromJid(attrs.from);
+        const occupant = nick ? this.getOccupant(nick) : null;
+
+        const model = occupant ? occupant : this;
+
+        const message = model.getMessageReferencedByError(attrs);
         if (message) {
             const new_attrs = {
-                'error': attrs.error,
-                'error_condition': attrs.error_condition,
-                'error_text': attrs.error_text,
-                'error_type': attrs.error_type,
-                'editable': false
+                error: attrs.error,
+                error_condition: attrs.error_condition,
+                error_text: attrs.error_text,
+                error_type: attrs.error_type,
+                editable: false
             };
             if (attrs.msgid === message.get('retraction_id')) {
                 // The error message refers to a retraction
@@ -530,7 +538,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             }
             message.save(new_attrs);
         } else {
-            this.createMessage(attrs);
+            model.createMessage(attrs);
         }
     }
 
@@ -1068,15 +1076,15 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             is_spoiler,
             origin_id,
             references,
-            'id': origin_id,
-            'msgid': origin_id,
-            'from': `${this.get('jid')}/${this.get('nick')}`,
-            'fullname': this.get('nick'),
-            'message': body,
-            'nick': this.get('nick'),
-            'sender': 'me',
-            'type': 'groupchat',
-            'original_text': text,
+            id: origin_id,
+            msgid: origin_id,
+            from: `${this.get('jid')}/${this.get('nick')}`,
+            fullname: this.get('nick'),
+            message: body,
+            nick: this.get('nick'),
+            sender: 'me',
+            type: 'groupchat',
+            original_text: text,
         }, u.getMediaURLsMetadata(text));
 
         /**

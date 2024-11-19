@@ -12,7 +12,16 @@ export default class ChatBottomPanel extends CustomElement {
     viewUnreadMessages(ev: any): void;
     onDragOver(ev: any): void;
     clearMessages(ev: any): void;
-    autocompleteInPicker(input: any, value: any): Promise<void>;
+    /**
+     * @typedef {Object} AutocompleteInPickerEvent
+     * @property {HTMLTextAreaElement} input
+     * @property {string} value
+     * @param {AutocompleteInPickerEvent} ev
+     */
+    autocompleteInPicker(ev: {
+        input: HTMLTextAreaElement;
+        value: string;
+    }): Promise<void>;
 }
 export type EmojiPicker = import("shared/chat/emoji-picker.js").default;
 export type EmojiDropdown = import("shared/chat/emoji-dropdown.js").default;

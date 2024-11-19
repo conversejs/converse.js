@@ -1,9 +1,9 @@
 /**
  * @typedef {module:emoji-picker.EmojiPicker} EmojiPicker
  */
-import { CustomElement } from 'shared/components/element.js';
-import { converse, api } from '@converse/headless';
 import { html } from 'lit';
+import { converse, api, u } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
 import { tplAllEmojis, tplSearchResults } from './templates/emoji-picker.js';
 import { getTonedEmojis } from './utils.js';
 import { FILTER_CONTAINS } from 'shared/autocomplete/utils.js';
@@ -75,7 +75,7 @@ export default class EmojiPickerContent extends CustomElement {
             const category = current.target.getAttribute('data-category');
             if (category !== this.model.get('current_category')) {
                 /** @type {EmojiPicker} */(this.parentElement).preserve_scroll = true;
-                this.model.save({ 'current_category': category });
+                u.safeSave(this.model, { 'current_category': category });
             }
         }
     }
@@ -88,7 +88,7 @@ export default class EmojiPickerContent extends CustomElement {
         ev.stopPropagation();
         const target = /** @type {HTMLElement} */(ev.target);
         const emoji_el = target.nodeName === 'IMG' ? target.parentElement : target;
-        /** @type EmojiPicker */(this.parentElement).insertIntoTextArea(emoji_el.getAttribute('data-emoji'));
+        /** @type EmojiPicker */(this.parentElement).selectEmoji(emoji_el.getAttribute('data-emoji'));
     }
 
     /**

@@ -1,18 +1,15 @@
 export default class Message extends CustomElement {
     static get properties(): {
-        jid: {
-            type: StringConstructor;
+        model_with_messages: {
+            type: ObjectConstructor;
         };
-        mid: {
-            type: StringConstructor;
+        model: {
+            type: ObjectConstructor;
         };
     };
-    jid: any;
-    mid: any;
-    initialize(): Promise<void>;
-    setModels(): Promise<void>;
-    chatbox: any;
+    model_with_messages: any;
     model: any;
+    initialize(): Promise<void>;
     render(): import("lit").TemplateResult<1> | "";
     getProps(): any;
     renderRetraction(): import("lit").TemplateResult<1>;

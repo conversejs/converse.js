@@ -146,7 +146,10 @@ export default class MessageForm extends CustomElement {
                 if (value.startsWith(':')) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    this.model.trigger('emoji-picker-autocomplete', ev.target, value);
+                    this.model.trigger(
+                        'emoji-picker-autocomplete',
+                        { target: ev.target, value },
+                    );
                 }
             } else if (ev.keyCode === converse.keycodes.FORWARD_SLASH) {
                 // Forward slash is used to run commands. Nothing to do here.

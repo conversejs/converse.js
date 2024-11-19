@@ -12,13 +12,13 @@ export function webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HT
 /**
  * Returns the current word being written in the input element
  * @method u#getCurrentWord
- * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
+ * @param {HTMLInputElement|HTMLTextAreaElement} input - The HTMLElement in which text is being entered
  * @param {number} [index] - An optional rightmost boundary index. If given, the text
  *  value of the input element will only be considered up until this index.
  * @param {string|RegExp} [delineator] - An optional string delineator to
  *  differentiate between words.
  */
-export function getCurrentWord(input: HTMLInputElement, index?: number, delineator?: string | RegExp): string;
+export function getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
 /**
  * @param {string} s
  */

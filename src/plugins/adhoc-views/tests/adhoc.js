@@ -471,7 +471,7 @@ describe("Ad-hoc commands", function () {
 
 describe("Ad-hoc commands consisting of multiple steps", function () {
 
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     it("can be queried and executed via a modal", mock.initConverse([], {}, async (_converse) => {
         const { api } = _converse;

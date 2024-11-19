@@ -6,7 +6,7 @@ import ColorAwareModel from '../../shared/color.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
 import { AFFILIATIONS, ROLES } from './constants.js';
 import MUCMessages from './messages.js';
-import { isErrorObject } from '../../utils/index.js';
+import u, { isErrorObject } from '../../utils/index.js';
 import { shouldCreateGroupchatMessage } from './utils';
 
 /**
@@ -23,7 +23,7 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
     }
 
     async initialize() {
-        await super.initialize()
+        await super.initialize();
         await this.fetchMessages();
         this.on('change:nick', () => this.setColor());
         this.on('change:jid', () => this.setColor());
@@ -141,6 +141,45 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
 
     isSelf() {
         return this.get('states').includes('110');
+    }
+
+    /**
+     * @param {MessageAttributes} [attrs]
+     * @return {Promise<MessageAttributes>}
+     */
+    async getOutgoingMessageAttributes (attrs) {
+        const origin_id = u.getUniqueId();
+        const text = attrs?.body;
+        const body = text ? u.shortnamesToUnicode(text) : undefined;
+        const muc = this.collection.chatroom;
+        const own_occupant = muc.getOwnOccupant();
+        attrs = Object.assign({}, attrs, {
+            body,
+            from: own_occupant.get('from'),
+            fullname: _converse.state.xmppstatus.get('fullname'),
+            id: origin_id,
+            jid: this.get('jid'),
+            message: body,
+            msgid: origin_id,
+            nick: own_occupant.get('nickname'),
+            origin_id,
+            sender: 'me',
+            time: (new Date()).toISOString(),
+            to: this.get('from') ?? `${muc.get('jid')}/${this.get('nick')}`,
+            type: 'chat',
+        }, u.getMediaURLsMetadata(text));
+
+        /**
+         * *Hook* which allows plugins to update the attributes of an outgoing message.
+         * These attributes get set on the {@link Message} and persisted.
+         * @event _converse#getOutgoingMessageAttributes
+         * @param {MUCOccupant} chat
+         *      The chat from which this message will be sent.
+         * @param {MessageAttributes} attrs
+         *      The message attributes, from which the stanza will be created.
+         */
+        attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
+        return attrs;
     }
 }
 

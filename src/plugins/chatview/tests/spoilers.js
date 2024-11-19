@@ -126,7 +126,7 @@ describe("A spoiler message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await new Promise(resolve => api.listen.on('sendMessage', resolve));
 
         /* Test the XML stanza
          *
@@ -207,7 +207,7 @@ describe("A spoiler message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await new Promise(resolve => api.listen.on('sendMessage', resolve));
 
         const stanza = api.connection.get().send.calls.argsFor(0)[0];
         expect(Strophe.serialize(stanza)).toBe(

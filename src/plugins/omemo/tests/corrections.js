@@ -335,7 +335,7 @@ describe("An OMEMO encrypted MUC message", function() {
         const sent_stanza = _converse.api.connection.get().send.calls.all()[0].args[0];
 
         expect(Strophe.serialize(sent_stanza)).toBe(
-            `<message from="romeo@montague.lit/orchard" `+
+            `<message from="${muc_jid}/${nick}" `+
                      `id="${sent_stanza.getAttribute("id")}" `+
                      `to="lounge@montague.lit" `+
                      `type="groupchat" `+
@@ -389,7 +389,7 @@ describe("An OMEMO encrypted MUC message", function() {
         const msg = _converse.api.connection.get().sent_stanzas.pop();
 
         expect(Strophe.serialize(msg))
-            .toBe(`<message from="${_converse.jid}" id="${msg.getAttribute("id")}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
+            .toBe(`<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
                     `<body>${fallback_text}</body>`+
                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
                     `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+

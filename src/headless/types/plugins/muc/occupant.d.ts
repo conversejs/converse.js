@@ -234,6 +234,11 @@ declare class MUCOccupant extends MUCOccupant_base {
     isMember(): boolean;
     isModerator(): boolean;
     isSelf(): any;
+    /**
+     * @param {MessageAttributes} [attrs]
+     * @return {Promise<MessageAttributes>}
+     */
+    getOutgoingMessageAttributes(attrs?: any): Promise<any>;
 }
 import { Model } from '@converse/skeletor';
 import MUCMessages from './messages.js';

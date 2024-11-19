@@ -54,15 +54,17 @@ describe("XEP-0363: HTTP File Upload", function () {
                     const send_backup = XMLHttpRequest.prototype.send;
                     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
 
+                    const muc_jid = 'lounge@montague.lit';
+                    const nick = 'romeo';
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                     await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
-                    await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+                    await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
 
                     // Wait until MAM query has been sent out
                     const sent_stanzas = _converse.api.connection.get().sent_stanzas;
                     await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
 
-                    const view = _converse.chatboxviews.get('lounge@montague.lit');
+                    const view = _converse.chatboxviews.get(muc_jid);
                     const file = {
                         'type': 'image/jpeg',
                         'size': '23456' ,
@@ -124,7 +126,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     await u.waitUntil(() => sent_stanza, 1000);
                     expect(Strophe.serialize(sent_stanza)).toBe(
                         `<message `+
-                            `from="romeo@montague.lit/orchard" `+
+                            `from="${muc_jid}/${nick}" `+
                             `id="${sent_stanza.getAttribute("id")}" `+
                             `to="lounge@montague.lit" `+
                             `type="groupchat" `+

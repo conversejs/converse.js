@@ -11,7 +11,7 @@ export default (model) => html`
                 <div class="chat-content" aria-live="polite">
                     <converse-chat-content
                         class="chat-content__messages"
-                        jid="${model.get('jid')}"></converse-chat-content>
+                        .model=${model}></converse-chat-content>
                 </div>
             </div>` : '' }
     </div>

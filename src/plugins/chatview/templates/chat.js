@@ -23,7 +23,7 @@ export default (o) => html`
                                 chat_type="${CHATROOMS_TYPE}"
                             ></converse-chat-help></div>` : '' }
                 </div>
-                <converse-chat-bottom-panel jid="${o.jid}" class="bottom-panel"> </converse-chat-bottom-panel>
+                <converse-chat-bottom-panel .model="${o.model}" class="bottom-panel"> </converse-chat-bottom-panel>
             </div>
         ` : '' }
     </div>

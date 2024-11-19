@@ -40,6 +40,7 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
     async initialize () {
         super.initialize();
         if (!this.checkValidity()) return;
+        this.chatbox = this.collection?.chatbox;
 
         this.initialized = getOpenPromise();
         if (this.get('file')) {
@@ -142,10 +143,14 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
      * under one author heading.
      * A message is considered a followup of it's predecessor when it's a chat
      * message from the same author, within 10 minutes.
-     * @returns { boolean }
+     * @returns {boolean}
      */
     isFollowup () {
-        const messages = this.collection.models;
+        const messages = this.collection?.models;
+        if (!messages) {
+            // Happens during tests
+            return false;
+        }
         const idx = messages.indexOf(this);
         const prev_model = idx ? messages[idx-1] : null;
         if (prev_model === null) {

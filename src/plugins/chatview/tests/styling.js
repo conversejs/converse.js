@@ -217,7 +217,7 @@ describe("An incoming chat Message", function () {
         msg_text = `Here's a code block: \n\`\`\`\nInside the code-block, <code>hello</code> we don't enable *styling hints* like ~these~\n\`\`\``;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text .block').length);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             'Here\'s a code block: \n'+
@@ -228,7 +228,7 @@ describe("An incoming chat Message", function () {
         msg_text = "```\nignored\n(println \"Hello, world!\")\n```\nThis should show up as monospace, preformatted text ^";
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text .block').length === 2);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<div class="styling-directive">```</div>'+
@@ -264,7 +264,7 @@ describe("An incoming chat Message", function () {
         msg_text = `> https://conversejs.org\n> https://conversejs.org`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 1);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             '<blockquote>'+
@@ -275,7 +275,7 @@ describe("An incoming chat Message", function () {
         msg_text = `> This is quoted text\n>This is also quoted\nThis is not quoted`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 2);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             '<blockquote>This is quoted text\n\u200BThis is also quoted</blockquote>\nThis is not quoted');
@@ -283,7 +283,7 @@ describe("An incoming chat Message", function () {
         msg_text = `> This is *quoted* text\n>This is \`also _quoted_\`\nThis is not quoted`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 3);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             '<blockquote>This is <span class="styling-directive">*</span><b>quoted</b><span class="styling-directive">*</span> text\n\u200B'+
@@ -293,21 +293,21 @@ describe("An incoming chat Message", function () {
         msg_text = `> > This is doubly quoted text`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 5);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe("<blockquote><blockquote>This is doubly quoted text</blockquote></blockquote>");
 
         msg_text = `>> This is doubly quoted text`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 5);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 7);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe("<blockquote><blockquote>This is doubly quoted text</blockquote></blockquote>");
 
         msg_text = ">```\n>ignored\n> <span></span> (println \"Hello, world!\")\n>```\n> This should show up as monospace, preformatted text ^";
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 6);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 8);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             '<blockquote>'+
@@ -320,7 +320,7 @@ describe("An incoming chat Message", function () {
         msg_text = '> ```\n> (println "Hello, world!")\n\nThe entire blockquote is a preformatted text block, but this line is plaintext!';
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 7);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 9);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerHTML.replace(/<!-.*?->/g, '')).toBe(
             '<blockquote>```\n\u200B\u200B(println "Hello, world!")</blockquote>\n\n'+
@@ -329,7 +329,7 @@ describe("An incoming chat Message", function () {
         msg_text = '> Also, icons.js is loaded from /dist, instead of dist.\nhttps://conversejs.org/docs/html/configuration.html#assets-path'
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 8);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 10);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<blockquote>Also, icons.js is loaded from /dist, instead of dist.</blockquote>\n'+
@@ -338,7 +338,7 @@ describe("An incoming chat Message", function () {
         msg_text = '> Where is it located?\ngeo:37.786971,-122.399677';
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 9);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 11);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<blockquote>Where is it located?</blockquote>\n'+
@@ -348,7 +348,7 @@ describe("An incoming chat Message", function () {
         msg_text = '> What do you think of it?\n :poop:';
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 10);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 12);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<blockquote>What do you think of it?</blockquote>\n <span title=":poop:">💩</span>');
@@ -356,7 +356,7 @@ describe("An incoming chat Message", function () {
         msg_text = '> What do you think of it?\n~hello~';
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
-        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 11);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text blockquote').length === 13);
         msg_el = Array.from(view.querySelectorAll('converse-chat-message-body')).pop();
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '') ===
             '<blockquote>What do you think of it?</blockquote>\n<span class="styling-directive">~</span><del>hello</del><span class="styling-directive">~</span>');

@@ -17,7 +17,8 @@ export default (el) => {
     const affiliation = u.firstCharToUpperCase(el.model?.get('affiliation'));
     const hats = el.model?.get('hats')?.length ? el.model.get('hats').map(({ title }) => title) : [];
 
-    return html`<div class="sidebar-heading">
+    return html` <span class="sidebar-occupant">
+        <div class="sidebar-heading">
             <span
                 ><button
                     type="button"
@@ -61,23 +62,32 @@ export default (el) => {
                   </div>
               </div>`
             : ''}
-        <div class="row">
-            <div class="col">
-                <ul class="occupant-details">
-                    ${el.model
-                        ? html` ${nick ? html`<li class="occupant-details-nickname">${nick}</li>` : ''}
-                              <li class="occupant-details-jid">
-                                  ${jid ? html`<a @click="${() => el.openChat(jid)}">${jid}</a>` : ''}
-                              </li>
-                              <li>
-                                  <span class="badge text-bg-primary">${affiliation}</span>
-                                  <span class="badge text-bg-secondary">${role}</span>
-                                  ${hats.length
-                                      ? html`${hats.map((h) => html`<span class="badge text-bg-info">${h}</span>`)}`
-                                      : ''}
-                              </li>`
-                        : html`<li>${i18n_no_occupant}</li>`}
-                </ul>
-            </div>
-        </div>`;
+        <ul class="occupant-details">
+            ${el.model
+                ? html` ${nick ? html`<li class="occupant-details-nickname">${nick}</li>` : ''}
+                      <li class="occupant-details-jid">
+                          ${jid ? html`<a @click="${() => el.openChat(jid)}">${jid}</a>` : ''}
+                      </li>
+                      <li>
+                          <span class="badge text-bg-primary">${affiliation}</span>
+                          <span class="badge text-bg-secondary">${role}</span>
+                          ${hats.length
+                              ? html`${hats.map((h) => html`<span class="badge text-bg-info">${h}</span>`)}`
+                              : ''}
+                      </li>`
+                : html`<li>${i18n_no_occupant}</li>`}
+        </ul>
+
+        ${el.model
+            ? html`<div class="chat-body">
+                  <div class="chat-content chat-content-sendbutton" aria-live="polite">
+                      <converse-chat-content
+                          class="chat-content__messages"
+                          .model="${el.model}"
+                      ></converse-chat-content>
+                  </div>
+                  <converse-chat-bottom-panel .model=${el.model} class="bottom-panel"> </converse-chat-bottom-panel>
+              </div>`
+            : ''}
+    </span>`;
 };

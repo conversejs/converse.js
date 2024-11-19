@@ -863,14 +863,13 @@ export default function ModelWithMessages(BaseModel) {
 
         /**
          * Given a {@link Message} return the XML stanza that represents it.
-         * @private
          * @method ChatBox#createMessageStanza
          * @param { Message } message - The message object
          */
         async createMessageStanza(message) {
             const stanza = $msg({
-                'from': api.connection.get().jid,
-                'to': this.get('jid'),
+                'from': message.get('from') || api.connection.get().jid,
+                'to': message.get('to') || this.get('jid'),
                 'type': this.get('message_type'),
                 'id': (message.get('edited') && u.getUniqueId()) || message.get('msgid'),
             })

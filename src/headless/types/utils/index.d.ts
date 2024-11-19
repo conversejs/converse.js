@@ -76,7 +76,7 @@ declare const _default: {
     decodeHTMLEntities(str: string): string;
     getSelectValues(select: HTMLSelectElement): string[];
     webForm2xForm(field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement): Element;
-    getCurrentWord(input: HTMLInputElement, index?: number, delineator?: string | RegExp): string;
+    getCurrentWord(input: HTMLInputElement | HTMLTextAreaElement, index?: number, delineator?: string | RegExp): string;
     isMentionBoundary(s: string): boolean;
     replaceCurrentWord(input: HTMLInputElement, new_value: string): void;
     placeCaretAtEnd(textarea: HTMLTextAreaElement): void;

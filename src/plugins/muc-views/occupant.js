@@ -8,6 +8,7 @@ const { u } = converse.env;
 import './styles/muc-occupant.scss';
 
 export default class MUCOccupant extends CustomElement {
+
     constructor() {
         super();
         this.muc_jid = null;

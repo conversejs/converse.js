@@ -20,8 +20,9 @@ describe("The OMEMO module", function() {
             'muc_unmoderated',
             'muc_nonanonymous'
         ];
+        const nick = 'romeo';
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => mock.initializedOMEMO(_converse));
 
@@ -131,7 +132,7 @@ describe("The OMEMO module", function() {
         const sent_stanza = _converse.api.connection.get().send.calls.all()[0].args[0];
 
         expect(Strophe.serialize(sent_stanza)).toBe(
-            `<message from="romeo@montague.lit/orchard" `+
+            `<message from="${muc_jid}/${nick}" `+
                      `id="${sent_stanza.getAttribute("id")}" `+
                      `to="lounge@montague.lit" `+
                      `type="groupchat" `+

@@ -2,37 +2,62 @@
     converse-muc-occupant {
         width: 100%;
 
-        .sidebar-heading {
+        .sidebar-occupant {
             display: flex;
-            justify-content: space-between;
-            padding: 0.5em;
-            padding-top: 0.4em;
+            flex-direction: column;
+            height: 100%;
 
-            .back-button {
-                font-size: 0.75em;
-                padding: 0.5em;
-                padding-top: 0.2em;
-            }
-        }
-
-        .occupant-details {
-            padding-left: 0.3em;
-            li {
+            .sidebar-heading {
                 display: flex;
-                justify-content: center;
-                margin-bottom: 0.5em;
+                justify-content: space-between;
+                padding: 0.5em;
+                padding-top: 0.4em;
+
+                .back-button {
+                    font-size: 0.75em;
+                    padding: 0.5em;
+                    padding-top: 0.2em;
+                }
             }
-            .row {
-                padding-left: 1em;
+
+            .occupant-details {
+                padding-left: 0.3em;
+                padding-bottom: 1em;
+                border-bottom: 0.05em solid var(--secondary-color);
+                li {
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 0.5em;
+                }
+                .row {
+                    padding-left: 1em;
+                }
+                .occupant-details-nickname {
+                    font-size: var(--font-size-huge);
+                }
+                .occupant-details-jid {
+                    font-size: var(--font-size-small);
+                }
+                .badge {
+                    margin: 0.1em;
+                }
             }
-            .occupant-details-nickname {
-                font-size: var(--font-size-huge);
-            }
-            .occupant-details-jid {
-                font-size: var(--font-size-small);
-            }
-            .badge {
-                margin: 0.1em;
+
+            .bottom-panel {
+                .chat-message-form {
+                    border-right: none;
+                    border-top: 0.2em solid var(--secondary-color);
+                    .send-button {
+                        background-color: var(--secondary-color);
+                    }
+                    .toolbar-buttons {
+                        converse-icon {
+                            svg {
+                                fill: var(--secondary-color) !important;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

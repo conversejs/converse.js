@@ -324,6 +324,7 @@ export function getChatMarker (stanza) {
 
 /**
  * @param {Element} stanza
+ * @returns {boolean}
  */
 export function isHeadline (stanza) {
     return stanza.getAttribute('type') === 'headline';
@@ -331,6 +332,16 @@ export function isHeadline (stanza) {
 
 /**
  * @param {Element} stanza
+ * @returns {Promise<boolean>}
+ */
+export async function isMUCPrivateMessage (stanza) {
+    const bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
+    return !!(await api.rooms.get(bare_jid));
+}
+
+/**
+ * @param {Element} stanza
+ * @returns {boolean}
  */
 export function isServerMessage (stanza) {
     if (sizzle(`mentions[xmlns="${Strophe.NS.MENTIONS}"]`, stanza).pop()) {

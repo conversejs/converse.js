@@ -41,7 +41,7 @@ export default (el) => {
                             chat_type="${CHATROOMS_TYPE}"
                         ></converse-chat-help></div>` : '' }
             </div>
-            <converse-muc-bottom-panel jid="${el.jid}" class="bottom-panel"></converse-muc-bottom-panel>
+            <converse-muc-bottom-panel .model=${el.model} class="bottom-panel"></converse-muc-bottom-panel>
         </div>
         ${el.model ? html`
             <converse-split-resize></converse-split-resize>

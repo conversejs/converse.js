@@ -158,6 +158,7 @@ declare class Message extends Message_base {
     };
     file: any;
     initialize(): Promise<void>;
+    chatbox: any;
     initialized: any;
     setContact(): Promise<void>;
     /**
@@ -191,7 +192,7 @@ declare class Message extends Message_base {
      * under one author heading.
      * A message is considered a followup of it's predecessor when it's a chat
      * message from the same author, within 10 minutes.
-     * @returns { boolean }
+     * @returns {boolean}
      */
     isFollowup(): boolean;
     getDisplayName(): any;

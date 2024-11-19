@@ -11,7 +11,7 @@
     .message {
         .show-msg-author-modal {
             align-self: flex-start; // Don't expand height to that of largest sibling
-                                    // https://stackoverflow.com/questions/27575779/prevent-a-flex-items-height-from-expanding-to-match-other-flex-items/40156422#40156422
+            // https://stackoverflow.com/questions/27575779/prevent-a-flex-items-height-from-expanding-to-match-other-flex-items/40156422#40156422
             color: var(--link-color) !important;
         }
 
@@ -163,6 +163,38 @@
                 width: 100%;
                 overflow-wrap: break-word;
                 .chat-msg__body--wrapper {
+                    .chat-msg__text {
+                        color: var(--foreground-color);
+                        padding: 0;
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                        word-break: break-word;
+                        a {
+                            word-wrap: break-word;
+                            word-break: break-all;
+                            display: inline;
+                            &.chat-image__link {
+                                width: fit-content;
+                                display: block;
+                            }
+                        }
+                        img {
+                            &.emoji {
+                                height: 1.5em;
+                                width: 1.5em;
+                                margin: 0 0.05em 0 0.1em;
+                                vertical-align: -0.1em;
+                            }
+                        }
+                        .emojione {
+                            margin-bottom: -6px;
+                        }
+                    }
+                    &.error {
+                        .chat-msg__text {
+                            color: var(--disabled-color);
+                        }
+                    }
                     display: flex;
                 }
             }
@@ -175,34 +207,6 @@
             .chat-msg__subject {
                 font-weight: bold;
                 clear: right;
-            }
-
-            .chat-msg__text {
-                color: var(--foreground-color);
-                padding: 0;
-                white-space: pre-wrap;
-                word-wrap: break-word;
-                word-break: break-word;
-                a {
-                    word-wrap: break-word;
-                    word-break: break-all;
-                    display: inline;
-                    &.chat-image__link {
-                        width: fit-content;
-                        display: block;
-                    }
-                }
-                img {
-                    &.emoji {
-                        height: 1.5em;
-                        width: 1.5em;
-                        margin: 0 .05em 0 .1em;
-                        vertical-align: -0.1em;
-                    }
-                }
-                .emojione {
-                    margin-bottom: -6px;
-                }
             }
 
             .chat-msg__text--larger {
@@ -294,7 +298,6 @@
                 }
             }
 
-
             .chat-msg__receipt {
                 margin-left: 0.5em;
                 margin-right: 0.5em;
@@ -348,9 +351,8 @@
     }
 }
 
-
 @media screen and (max-width: 767px) {
-    converse-chats:not(.converse-embedded)  {
+    converse-chats:not(.converse-embedded) {
         .message {
             &.chat-msg {
                 .chat-msg__author {

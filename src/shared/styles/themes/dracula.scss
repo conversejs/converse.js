@@ -30,11 +30,11 @@
     // Online status indicators
     --chat-status-away: var(--orange);
     --chat-status-busy: var(--red);
-    --chat-status-offline: gray;
+    --chat-status-offline: var(--gray);
     --chat-status-online: var(--green);
 
     --controlbox-color: var(--purple);
-    --disabled-color: var(--secondary-color);
+    --disabled-color: var(--gray);
     --error-color: var(--red);
     --focus-color: var(--pink);
     --heading-color: var(--purple);

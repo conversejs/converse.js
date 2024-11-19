@@ -173,8 +173,9 @@ describe("A Groupchat Message", function () {
     it("can be sent as a correction by using the up arrow",
             mock.initConverse([], {}, async function (_converse) {
 
+        const nick = 'romeo'
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
         expect(textarea.value).toBe('');
@@ -219,8 +220,8 @@ describe("A Groupchat Message", function () {
 
         expect(_converse.api.connection.get().send).toHaveBeenCalled();
         const msg = _converse.api.connection.get().send.calls.all()[0].args[0];
-        expect(Strophe.serialize(msg))
-        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
+        expect(Strophe.serialize(msg)).toBe(
+            `<message from="${muc_jid}/${nick}" id="${msg.getAttribute("id")}" `+
                 `to="lounge@montague.lit" type="groupchat" `+
                 `xmlns="jabber:client">`+
                     `<body>But soft, what light through yonder window breaks?</body>`+

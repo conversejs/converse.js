@@ -52,7 +52,7 @@ export default class EmojiPicker extends CustomElement {
     /**
      * @param {string} value
      */
-    insertIntoTextArea(value: string): void;
+    selectEmoji(value: string): void;
     /**
      * @param {MouseEvent} ev
      */

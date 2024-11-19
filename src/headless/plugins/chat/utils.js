@@ -11,7 +11,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from "../../shared/api/public.js";
 import log from '../../log.js';
-import { isArchived, isHeadline, isServerMessage, } from '../../shared/parsers';
+import { isArchived, isHeadline, isMUCPrivateMessage, isServerMessage, } from '../../shared/parsers';
 import { parseMessage } from './parsers.js';
 import { shouldClearCache } from '../../utils/session.js';
 import { CONTROLBOX_TYPE, PRIVATE_CHAT_TYPE } from "../../shared/constants.js";
@@ -143,6 +143,10 @@ export async function handleMessageStanza (stanza) {
         const from = stanza.getAttribute('from');
         return log.info(`handleMessageStanza: Ignoring incoming server message from JID: ${from}`);
     }
+    if (await isMUCPrivateMessage(stanza)) {
+        return true;
+    }
+
     let attrs;
     try {
         attrs = await parseMessage(stanza);

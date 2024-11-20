@@ -72,7 +72,11 @@ function skintone_emoji (o, skintone, skintone_emoji) {
 }
 
 
-export function tplEmojiPicker (o) {
+/**
+ * @param {import('../emoji-picker').default} el
+ * @param {Object} o
+ */
+export function tplEmojiPicker (el, o) {
     const i18n_search = __('Search');
     const skintones = {
         "tone1": ":raised_hand_tone1:",
@@ -92,8 +96,7 @@ export function tplEmojiPicker (o) {
         </div>
         ${ o.render_emojis ?
             html`<converse-emoji-picker-content
-                .chatview=${o.chatview}
-                .model=${o.model}
+                .model=${el.state}
                 .search_results="${o.search_results}"
                 current_skintone="${o.current_skintone}"
                 query="${o.query}"></converse-emoji-picker-content>` : ''}

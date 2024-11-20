@@ -12,9 +12,9 @@ export default class EmojiDropdown extends DropdownBase {
 
     static get properties() {
         return {
-            chatview: { type: Object },
             icon_classes: { type: String },
-            items: { type: Array }
+            items: { type: Array },
+            model: { type: Object }
         };
     }
 
@@ -24,7 +24,8 @@ export default class EmojiDropdown extends DropdownBase {
 
         // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
         this.render_emojis = false;
-        this.chatview = null;
+        this.state = null;
+        this.model= null;
         this.addEventListener('shown.bs.dropdown', () => this.onShown());
     }
 
@@ -33,19 +34,19 @@ export default class EmojiDropdown extends DropdownBase {
             this.init_promise = (async () => {
                 await api.emojis.initialize()
                 const bare_jid = _converse.session.get('bare_jid');
-                const id = `converse.emoji-${bare_jid}-${this.chatview.model.get('jid')}`;
-                this.model = new EmojiPicker({ id });
-                initStorage(this.model, id);
-                await new Promise(resolve => this.model.fetch({'success': resolve, 'error': resolve}));
+                const id = `converse.emoji-${bare_jid}-${this.model.get('jid')}`;
+                this.state = new EmojiPicker({ id });
+                initStorage(this.state, id);
+                await new Promise(resolve => this.state.fetch({'success': resolve, 'error': resolve}));
                 // We never want still be in the autocompleting state upon page load
-                this.model.set({'autocompleting': null, 'ac_position': null});
+                this.state.set({'autocompleting': null, 'ac_position': null});
             })();
         }
         return this.init_promise;
     }
 
     render() {
-        const is_groupchat = this.chatview.model.get('type') === CHATROOMS_TYPE;
+        const is_groupchat = this.model.get('type') === CHATROOMS_TYPE;
         const color = is_groupchat ? '--muc-color' : '--chat-color';
 
         return html`
@@ -66,13 +67,13 @@ export default class EmojiDropdown extends DropdownBase {
                 <li>
                 ${until(this.initModel().then(() => html`
                     <converse-emoji-picker
-                            .chatview=${this.chatview}
-                            .model=${this.model}
-                            @emojiSelected=${() => this.dropdown.hide()}
-                            ?render_emojis=${this.render_emojis}
-                            current_category="${this.model.get('current_category') || ''}"
-                            current_skintone="${this.model.get('current_skintone') || ''}"
-                            query="${this.model.get('query') || ''}"
+                        .state=${this.state}
+                        .model=${this.model}
+                        @emojiSelected=${() => this.dropdown.hide()}
+                        ?render_emojis=${this.render_emojis}
+                        current_category="${this.state.get('current_category') || ''}"
+                        current_skintone="${this.state.get('current_skintone') || ''}"
+                        query="${this.state.get('query') || ''}"
                     ></converse-emoji-picker>`), '')}
                 </li>
             </ul>`;

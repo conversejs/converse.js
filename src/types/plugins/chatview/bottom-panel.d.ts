@@ -1,12 +1,15 @@
 export default class ChatBottomPanel extends CustomElement {
+    static get properties(): {
+        model: {
+            type: ObjectConstructor;
+        };
+    };
+    model: any;
     connectedCallback(): Promise<void>;
     initialize(): Promise<void>;
-    model: any;
     render(): import("lit").TemplateResult<1> | "";
     sendButtonClicked(ev: any): void;
     viewUnreadMessages(ev: any): void;
-    emitFocused(ev: any): void;
-    emitBlurred(ev: any): void;
     onDragOver(ev: any): void;
     clearMessages(ev: any): void;
     autocompleteInPicker(input: any, value: any): Promise<void>;

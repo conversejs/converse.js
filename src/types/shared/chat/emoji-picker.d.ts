@@ -1,8 +1,5 @@
 export default class EmojiPicker extends CustomElement {
     static get properties(): {
-        chatview: {
-            type: ObjectConstructor;
-        };
         current_category: {
             type: StringConstructor;
             reflect: boolean;
@@ -18,17 +15,22 @@ export default class EmojiPicker extends CustomElement {
             type: StringConstructor;
             reflect: boolean;
         };
+        state: {
+            type: ObjectConstructor;
+        };
         render_emojis: {
             type: BooleanConstructor;
         };
     };
-    firstUpdated(changed: any): void;
-    render_emojis: any;
-    chatview: any;
+    state: any;
     model: any;
     query: string;
+    render_emojis: any;
     _search_results: any[];
     debouncedFilter: import("lodash").DebouncedFunc<(input: HTMLInputElement) => any>;
+    initialize(): void;
+    dropdown: Element;
+    firstUpdated(changed: any): void;
     set search_results(value: any[]);
     get search_results(): any[];
     render(): import("lit").TemplateResult<1>;
@@ -42,10 +44,7 @@ export default class EmojiPicker extends CustomElement {
     registerEvents(): void;
     onGlobalKeyDown: (ev: any) => void;
     connectedCallback(): void;
-    /**
-     * @param {KeyboardEvent} ev
-     */
-    _onGlobalKeyDown(ev: KeyboardEvent): void;
+    onDropdownHide(): void;
     /**
      * @param {HTMLElement} el
      */
@@ -71,10 +70,6 @@ export default class EmojiPicker extends CustomElement {
      */
     onEnterPressed(ev: KeyboardEvent): void;
     /**
-     * @param {FocusEvent} ev
-     */
-    onSearchInputFocus(ev: FocusEvent): void;
-    /**
      * @param {string} shortname
      */
     getTonedShortname(shortname: string): string;
@@ -85,6 +80,7 @@ export default class EmojiPicker extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     enableArrowNavigation(ev: KeyboardEvent): void;
+    #private;
 }
 export type DOMNavigatorOptions = any;
 export type DOMNavigatorDirection = any;

@@ -13,7 +13,6 @@ const { sizzle } = converse.env;
 export default class EmojiPickerContent extends CustomElement {
     static get properties () {
         return {
-            'chatview': { type: Object },
             'search_results': { type: Array },
             'current_skintone': { type: String },
             'model': { type: Object },
@@ -32,10 +31,10 @@ export default class EmojiPickerContent extends CustomElement {
     render () {
         const props = {
             'current_skintone': this.current_skintone,
-            'insertEmoji': (ev) => this.insertEmoji(ev),
+            'insertEmoji': /** @param {MouseEvent} ev */(ev) => this.insertEmoji(ev),
             'query': this.query,
             'search_results': this.search_results,
-            'shouldBeHidden': (shortname) => this.shouldBeHidden(shortname),
+            'shouldBeHidden': /** @param {string} shortname */(shortname) => this.shouldBeHidden(shortname),
         };
         return html` <div class="emoji-picker__lists">${tplSearchResults(props)} ${tplAllEmojis(props)}</div> `;
     }
@@ -81,13 +80,20 @@ export default class EmojiPickerContent extends CustomElement {
         }
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     insertEmoji (ev) {
         ev.preventDefault();
         ev.stopPropagation();
-        const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-        /** @type EmojiPicker */(this.parentElement).insertIntoTextArea(target.getAttribute('data-emoji'));
+        const target = /** @type {HTMLElement} */(ev.target);
+        const emoji_el = target.nodeName === 'IMG' ? target.parentElement : target;
+        /** @type EmojiPicker */(this.parentElement).insertIntoTextArea(emoji_el.getAttribute('data-emoji'));
     }
 
+    /**
+     * @param {string} shortname
+     */
     shouldBeHidden (shortname) {
         // Helper method for the template which decides whether an
         // emoji should be hidden, based on which skin tone is

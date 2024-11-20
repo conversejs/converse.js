@@ -56,7 +56,7 @@ export function webForm2xForm (field) {
 /**
  * Returns the current word being written in the input element
  * @method u#getCurrentWord
- * @param {HTMLInputElement} input - The HTMLElement in which text is being entered
+ * @param {HTMLInputElement|HTMLTextAreaElement} input - The HTMLElement in which text is being entered
  * @param {number} [index] - An optional rightmost boundary index. If given, the text
  *  value of the input element will only be considered up until this index.
  * @param {string|RegExp} [delineator] - An optional string delineator to

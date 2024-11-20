@@ -28,9 +28,11 @@ export default class ChatBottomPanel extends CustomElement {
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
 
-        this.addEventListener('focusin', ev => this.emitFocused(ev));
-        this.addEventListener('focusout', ev => this.emitBlurred(ev));
         this.addEventListener('click', ev => this.sendButtonClicked(ev));
+        this.addEventListener(
+            'emojipickerblur',
+            () => /** @type {HTMLElement} */(this.querySelector('.chat-textarea')).focus()
+        );
     }
 
     render () {
@@ -53,16 +55,6 @@ export default class ChatBottomPanel extends CustomElement {
         this.model.ui.set({ 'scrolled': false });
     }
 
-    emitFocused (ev) {
-        const { chatboxviews } = _converse.state;
-        chatboxviews.get(this.getAttribute('jid'))?.emitFocused(ev);
-    }
-
-    emitBlurred (ev) {
-        const { chatboxviews } = _converse.state;
-        chatboxviews.get(this.getAttribute('jid'))?.emitBlurred(ev);
-    }
-
     onDragOver (ev) {
         ev.preventDefault();
     }
@@ -72,14 +64,18 @@ export default class ChatBottomPanel extends CustomElement {
         clearMessages(this.model);
     }
 
+    /**
+     * @param {HTMLTextAreaElement} input
+     * @param {string} value
+     */
     async autocompleteInPicker (input, value) {
         await api.emojis.initialize();
         const emoji_picker = /** @type {EmojiPicker} */(this.querySelector('converse-emoji-picker'));
         if (emoji_picker) {
-            emoji_picker.model.set({
-                'ac_position': input.selectionStart,
-                'autocompleting': value,
-                'query': value
+            emoji_picker.state.set({
+                ac_position: input.selectionStart,
+                autocompleting: value,
+                query: value
             });
             const emoji_dropdown = /** @type {EmojiDropdown} */(this.querySelector('converse-emoji-dropdown'));
             emoji_dropdown?.dropdown.show();

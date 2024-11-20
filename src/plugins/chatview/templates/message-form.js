@@ -43,6 +43,7 @@ export default (el) => {
                     autofocus
                     type="text"
                     enterkeyhint="send"
+                    .value=${ message_value || ''}
                     @drop=${ev => el.onDrop(ev)}
                     @input=${resetElementHeight}
                     @keydown=${ev => el.onKeyDown(ev)}
@@ -52,6 +53,6 @@ export default (el) => {
                     class="chat-textarea
                         ${ show_send_button ? 'chat-textarea-send-button' : '' }
                         ${ composing_spoiler ? 'spoiler' : '' }"
-                    placeholder="${label_message}">${ message_value || '' }</textarea>
+                    placeholder="${label_message}"></textarea>
         </form>`;
 }

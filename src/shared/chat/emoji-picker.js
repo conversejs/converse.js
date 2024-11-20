@@ -205,8 +205,8 @@ export default class EmojiPicker extends CustomElement {
     chooseCategory (ev) {
         ev.preventDefault && ev.preventDefault();
         ev.stopPropagation && ev.stopPropagation();
-        const target = /** @type {Element} */(ev.target);
-        const el = target.matches('li') ? ev.target : u.ancestor(target, 'li');
+        const target = /** @type {Element} */(ev.target ?? ev.relatedTarget);
+        const el = target.matches('li') ? target : u.ancestor(target, 'li');
         this.setCategoryForElement(el);
         this.navigator.select(el);
         !this.navigator.enabled && this.navigator.enable();

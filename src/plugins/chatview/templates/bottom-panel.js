@@ -7,6 +7,6 @@ export default (o) => {
     return html`
         ${ o.model.ui.get('scrolled') && o.model.get('num_unread') ?
             html`<div class="new-msgs-indicator" @click=${ev => o.viewUnreadMessages(ev)}>▼ ${ unread_msgs } ▼</div>` : '' }
-        <converse-message-form jid="${o.model.get('jid')}"></converse-message-form>
+        <converse-message-form .model=${o.model}></converse-message-form>
     `;
 }

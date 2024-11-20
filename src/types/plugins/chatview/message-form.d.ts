@@ -1,6 +1,11 @@
 export default class MessageForm extends CustomElement {
-    initialize(): Promise<void>;
+    static get properties(): {
+        model: {
+            type: ObjectConstructor;
+        };
+    };
     model: any;
+    initialize(): Promise<void>;
     handleEmojiSelection: ({ detail }: CustomEvent) => void;
     render(): import("lit").TemplateResult<1>;
     /**

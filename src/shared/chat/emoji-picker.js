@@ -22,33 +22,39 @@ export default class EmojiPicker extends CustomElement {
 
     static get properties () {
         return {
-            'chatview': { type: Object },
-            'current_category': { type: String, 'reflect': true },
-            'current_skintone': { type: String, 'reflect': true },
-            'model': { type: Object },
-            'query': { type: String, 'reflect': true },
+            current_category: { type: String, 'reflect': true },
+            current_skintone: { type: String, 'reflect': true },
+            model: { type: Object },
+            query: { type: String, 'reflect': true },
+            state: { type: Object },
             // This is an optimization, we lazily render the emoji picker, otherwise tests slow to a crawl.
-            'render_emojis': { type: Boolean },
+            render_emojis: { type: Boolean },
         }
-    }
-
-    firstUpdated (changed) {
-        super.firstUpdated(changed);
-        this.listenTo(this.model, 'change', o => this.onModelChanged(o.changed));
-        this.initArrowNavigation();
     }
 
     constructor () {
         super();
-        this.render_emojis = null;
-        this.chatview = null;
+        this.state = null;
         this.model = null;
         this.query = '';
+        this.render_emojis = null;
         this._search_results = [];
+
         this.debouncedFilter = debounce(
-            /** @param {HTMLInputElement} input */(input) => this.model.set({'query': input.value}),
+            /** @param {HTMLInputElement} input */(input) => this.state.set({'query': input.value}),
             250
         );
+    }
+
+    initialize() {
+        super.initialize();
+        this.dropdown = this.closest('converse-emoji-dropdown');
+    }
+
+    firstUpdated (changed) {
+        super.firstUpdated(changed);
+        this.listenTo(this.state, 'change', o => this.onModelChanged(o.changed));
+        this.initArrowNavigation();
     }
 
     get search_results () {
@@ -61,20 +67,17 @@ export default class EmojiPicker extends CustomElement {
     }
 
     render () {
-        return tplEmojiPicker({
-            'chatview': this.chatview,
-            'current_category': this.current_category,
-            'current_skintone': this.current_skintone,
-            'model': this.model,
-            'onCategoryPicked': ev => this.chooseCategory(ev),
-            'onSearchInputBlurred': ev => this.chatview.emitFocused(ev),
-            'onSearchInputFocus': ev => this.onSearchInputFocus(ev),
-            'onSearchInputKeyDown': ev => this.onSearchInputKeyDown(ev),
-            'onSkintonePicked': ev => this.chooseSkinTone(ev),
-            'query': this.query,
-            'search_results': this.search_results,
-            'render_emojis': this.render_emojis,
-            'sn2Emoji': /** @param {string} sn */(sn) => u.shortnamesToEmojis(this.getTonedShortname(sn))
+        return tplEmojiPicker(this, {
+            current_category: this.current_category,
+            current_skintone: this.current_skintone,
+            onCategoryPicked: ev => this.chooseCategory(ev),
+            onSearchInputFocus: () => this.disableArrowNavigation(),
+            onSearchInputKeyDown: ev => this.onSearchInputKeyDown(ev),
+            onSkintonePicked: ev => this.chooseSkinTone(ev),
+            query: this.query,
+            search_results: this.search_results,
+            render_emojis: this.render_emojis,
+            sn2Emoji: /** @param {string} sn */(sn) => u.shortnamesToEmojis(this.getTonedShortname(sn))
         });
     }
 
@@ -120,7 +123,8 @@ export default class EmojiPicker extends CustomElement {
     }
 
     registerEvents () {
-        this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
+        this.onGlobalKeyDown = ev => this.#onGlobalKeyDown(ev);
+        this.dropdown.addEventListener('hide.bs.dropdown', () => this.onDropdownHide());
         const body = document.querySelector('body');
         body.addEventListener('keydown', this.onGlobalKeyDown);
     }
@@ -140,20 +144,21 @@ export default class EmojiPicker extends CustomElement {
     /**
      * @param {KeyboardEvent} ev
      */
-    _onGlobalKeyDown (ev) {
-        if (!this.navigator) {
-            return;
-        }
+    #onGlobalKeyDown (ev) {
+        if (!this.navigator) return;
+
         if (ev.keyCode === KEYCODES.ENTER && u.isVisible(this)) {
             this.onEnterPressed(ev);
         } else if (ev.keyCode === KEYCODES.DOWN_ARROW &&
                 !this.navigator.enabled &&
                 u.isVisible(this)) {
             this.enableArrowNavigation(ev);
-        } else if (ev.keyCode === KEYCODES.ESCAPE) {
-            this.disableArrowNavigation();
-            setTimeout(() => this.chatview.querySelector('.chat-textarea').focus(), 50);
         }
+    }
+
+    onDropdownHide() {
+        this.disableArrowNavigation();
+        this.dispatchEvent(new CustomEvent('emojipickerblur', {bubbles: true}));
     }
 
     /**
@@ -163,7 +168,7 @@ export default class EmojiPicker extends CustomElement {
         const old_category = this.current_category;
         const category = el?.getAttribute('data-category') || old_category;
         if (old_category !== category) {
-            this.model.save({'current_category': category});
+            this.state.save({'current_category': category});
         }
     }
 
@@ -171,11 +176,11 @@ export default class EmojiPicker extends CustomElement {
      * @param {string} value
      */
     insertIntoTextArea (value) {
-        const autocompleting = this.model.get('autocompleting');
-        const ac_position = this.model.get('ac_position');
-        this.model.set({'autocompleting': null, 'query': '', 'ac_position': null});
+        const autocompleting = this.state.get('autocompleting');
+        const ac_position = this.state.get('ac_position');
+        this.state.set({'autocompleting': null, 'query': '', 'ac_position': null});
         this.disableArrowNavigation();
-        const jid = this.chatview.model.get('jid');
+        const jid = this.model.get('jid');
         const options = {
             'bubbles': true,
             'detail': { value, autocompleting, ac_position, jid }
@@ -193,9 +198,9 @@ export default class EmojiPicker extends CustomElement {
         const el = target.nodeName === 'IMG' ? target.parentElement : target;
         const skintone = el.getAttribute("data-skintone").trim();
         if (this.current_skintone === skintone) {
-            this.model.save({'current_skintone': ''});
+            this.state.save({'current_skintone': ''});
         } else {
-            this.model.save({'current_skintone': skintone});
+            this.state.save({'current_skintone': skintone});
         }
     }
 
@@ -221,7 +226,7 @@ export default class EmojiPicker extends CustomElement {
             if (target.value) {
                 ev.preventDefault();
                 const match = converse.emojis.shortnames.find(sn => FILTER_CONTAINS(sn, target.value));
-                match && this.model.set({'query': match});
+                match && this.state.set({'query': match});
             } else if (!this.navigator.enabled) {
                 this.enableArrowNavigation(ev);
             }
@@ -251,14 +256,6 @@ export default class EmojiPicker extends CustomElement {
         } else if (this.navigator.selected && this.navigator.selected.matches('.emoji-category')) {
             this.chooseCategory(new MouseEvent('click', {relatedTarget: this.navigator.selected}));
         }
-    }
-
-    /**
-     * @param {FocusEvent} ev
-     */
-    onSearchInputFocus (ev) {
-        this.chatview.emitBlurred(ev);
-        this.disableArrowNavigation();
     }
 
     /**

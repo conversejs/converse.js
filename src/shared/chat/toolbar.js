@@ -61,8 +61,9 @@ export class ChatToolbar extends CustomElement {
         const buttons = [];
 
         if (this.show_emoji_button) {
-            const chatview = _converse.state.chatboxviews.get(this.model.get('jid'));
-            buttons.push(html`<converse-emoji-dropdown .chatview=${chatview}></converse-emoji-dropdown>`);
+            buttons.push(
+                html`<converse-emoji-dropdown .model=${this.model}></converse-emoji-dropdown>`
+            );
         }
 
         if (this.show_call_button) {

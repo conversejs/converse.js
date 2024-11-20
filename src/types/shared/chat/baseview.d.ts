@@ -10,8 +10,6 @@ export default class BaseChatView extends CustomElement {
     close(ev: any): any;
     maybeFocus(): void;
     focus(): this;
-    emitBlurred(ev: any): void;
-    emitFocused(ev: any): void;
     getBottomPanel(): Element;
     getMessageForm(): Element;
     /**

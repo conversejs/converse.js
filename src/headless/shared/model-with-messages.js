@@ -48,7 +48,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         async initialize() {
-            await super.initialize();
+            super.initialize();
 
             this.initUI();
             this.initMessages();

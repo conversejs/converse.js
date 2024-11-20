@@ -10,7 +10,7 @@ const tplCanEdit = (o) => {
     return html` ${o.model.ui.get('scrolled') && o.model.get('num_unread')
             ? html`<div class="new-msgs-indicator" @click=${(ev) => o.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
             : ''}
-        <converse-muc-message-form jid=${o.model.get('jid')}></converse-muc-message-form>`;
+        <converse-muc-message-form .model=${o.model}></converse-muc-message-form>`;
 };
 
 export default (o) => {
@@ -27,7 +27,7 @@ export default (o) => {
     } else if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
         if (api.settings.get('muc_show_logs_before_join')) {
             return html`<span class="muc-bottom-panel muc-bottom-panel--nickname">
-                <converse-muc-nickname-form jid="${o.model.get('jid')}"></converse-muc-nickname-form>
+                <converse-muc-nickname-form .model=${o.model}></converse-muc-nickname-form>
             </span>`;
         }
     } else {

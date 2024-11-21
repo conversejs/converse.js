@@ -60,8 +60,8 @@ export class Connection extends Strophe.Connection {
         }
         const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
         const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
-        const bosh_methods = bosh_links.map(el => el.getAttribute('href'));
-        const ws_methods = ws_links.map(el => el.getAttribute('href'));
+        const bosh_methods = bosh_links.map(el => el.getAttribute('href')).filter(uri => uri.startsWith('https:'));
+        const ws_methods = ws_links.map(el => el.getAttribute('href')).filter(uri => uri.startsWith('wss:'));
         if (bosh_methods.length === 0 && ws_methods.length === 0) {
             log.warn("Neither BOSH nor WebSocket connection methods have been specified with XEP-0156.");
         } else {

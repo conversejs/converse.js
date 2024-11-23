@@ -22,7 +22,7 @@ const emoji_category = (o) => {
 const emoji_picker_header = (o) => {
     const cats = api.settings.get('emoji_categories');
     const transform = c => cats[c] ? emoji_category(Object.assign({'category': c, 'emoji': o.sn2Emoji(cats[c])}, o)) : '';
-    return html`<ul class="flex-wrap flex-md-nowrap">${ Object.keys(cats).map(transform) }</ul>`;
+    return html`<ul>${ Object.keys(cats).map(transform) }</ul>`;
 }
 
 const emoji_item = (o) => {

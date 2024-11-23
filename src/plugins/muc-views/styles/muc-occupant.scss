@@ -58,6 +58,11 @@
                         }
                     }
                 }
+                .emoji-picker__header {
+                    ul {
+                        flex-wrap: wrap;
+                    }
+                }
             }
         }
     }

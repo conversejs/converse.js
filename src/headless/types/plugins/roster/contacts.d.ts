@@ -47,13 +47,17 @@ declare class RosterContacts extends Collection {
      * registers the contact on the XMPP server.
      * Returns a promise which is resolved once the XMPP server has responded.
      * @method _converse.RosterContacts#addContactToRoster
-     * @param { String } jid - The Jabber ID of the user being added and subscribed to.
-     * @param { String } name - The name of that user
-     * @param { Array<String> } groups - Any roster groups the user might belong to
-     * @param { Object } attributes - Any additional attributes to be stored on the user's model.
+     * @param {String} jid - The Jabber ID of the user being added and subscribed to.
+     * @param {String} name - The name of that user
+     * @param {Array<String>} groups - Any roster groups the user might belong to
+     * @param {Object} attributes - Any additional attributes to be stored on the user's model.
      */
     addContactToRoster(jid: string, name: string, groups: Array<string>, attributes: any): Promise<any>;
-    subscribeBack(bare_jid: any, presence: any): Promise<void>;
+    /**
+     * @param {String} bare_jid
+     * @param {Element} presence
+     */
+    subscribeBack(bare_jid: string, presence: Element): Promise<void>;
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push

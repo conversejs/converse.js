@@ -1581,7 +1581,7 @@ describe("Groupchats", function () {
             modal.querySelector('input[type="submit"]').click();
 
             expect(view.model.directInvite).toHaveBeenCalled();
-            expect(Strophe.serialize(sent_stanza)).toBe(
+           expect(Strophe.serialize(sent_stanza)).toBe(
                 `<message from="romeo@montague.lit/orchard" `+
                         `id="${sent_stanza.getAttribute("id")}" `+
                         `to="balthasar@montague.lit" `+

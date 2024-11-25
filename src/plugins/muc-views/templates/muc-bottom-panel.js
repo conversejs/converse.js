@@ -8,17 +8,6 @@ import { html } from 'lit';
 /**
  * @param {import('../bottom-panel').default} el
  */
-const tpl_can_post = (el) => {
-    const unread_msgs = __('You have unread messages');
-    return html` ${el.model.ui.get('scrolled') && el.model.get('num_unread')
-            ? html`<div class="new-msgs-indicator" @click=${(ev) => el.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
-            : ''}
-        <converse-muc-message-form .model=${el.model}></converse-muc-message-form>`;
-};
-
-/**
- * @param {import('../bottom-panel').default} el
- */
 export default (el) => {
     const unread_msgs = __('You have unread messages');
     const conn_status = el.model.session.get('connection_status');
@@ -28,7 +17,7 @@ export default (el) => {
             ? html`<div class="new-msgs-indicator" @click=${(ev) => el.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
             : ''}
         ${el.model.canPostMessages()
-            ? tpl_can_post(el)
+            ? html`<converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
             : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`}`;
     } else if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
         if (api.settings.get('muc_show_logs_before_join')) {

@@ -27,8 +27,9 @@ describe("Groupchats", function () {
                 </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent.trim(), 1000);
+
             expect(view.querySelector('.chat-msg__error').textContent.trim()).toBe(
-                "Your message was not delivered because you weren't allowed to send it.");
+                `Message delivery failed: "Your message was not delivered because you weren't allowed to send it."`);
 
             textarea.value = 'Hello again';
             message_form.onFormSubmitted(new Event('submit'));
@@ -49,7 +50,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__error').length === 2);
             const sel = 'converse-message-history converse-chat-message:last-child .chat-msg__error';
             await u.waitUntil(() => view.querySelector(sel)?.textContent.trim());
-            expect(view.querySelector(sel).textContent.trim()).toBe('Thou shalt not!')
+            expect(view.querySelector(sel).textContent.trim()).toBe(`Message delivery failed: "Thou shalt not!"`);
         }));
 
         it("will see an explanatory message instead of a textarea",

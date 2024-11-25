@@ -118,10 +118,17 @@ export function throwErrorIfInvalidForward(stanza: Element): void;
 export function getChatMarker(stanza: Element): Element;
 /**
  * @param {Element} stanza
+ * @returns {boolean}
  */
 export function isHeadline(stanza: Element): boolean;
 /**
  * @param {Element} stanza
+ * @returns {Promise<boolean>}
+ */
+export function isMUCPrivateMessage(stanza: Element): Promise<boolean>;
+/**
+ * @param {Element} stanza
+ * @returns {boolean}
  */
 export function isServerMessage(stanza: Element): boolean;
 /**

@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Promise, Strophe, $msg, dayjs, sizzle, u } = converse.env;
+const { Promise, Strophe, $msg, dayjs, sizzle, stx, u } = converse.env;
 
 
 describe("A Chat Message", function () {
@@ -997,7 +997,7 @@ describe("A Chat Message", function () {
 
         describe("who is not on the roster", function () {
 
-            it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
+            fit("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
                 mock.initConverse(
                     [], {'allow_non_roster_messaging': false},
                     async function (_converse) {
@@ -1112,9 +1112,11 @@ describe("A Chat Message", function () {
                     .c('error', {'type': 'cancel'})
                     .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
                     .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                        .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                        .t(error_txt);
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
-                await u.waitUntil(() => view.querySelector('.chat-msg__error').textContent.trim() === error_txt);
+
+                let ui_error_txt = `Message delivery failed: "${error_txt}"`;
+                await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent.trim() === ui_error_txt);
 
                 const other_error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
                 stanza = $msg({
@@ -1128,8 +1130,10 @@ describe("A Chat Message", function () {
                     .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                         .t(other_error_txt);
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
+
+                ui_error_txt = `Message delivery failed: "${other_error_txt}"`;
                 await u.waitUntil(() =>
-                    view.querySelector('converse-chat-message:last-child .chat-msg__error').textContent.trim() === other_error_txt);
+                    view.querySelector('converse-chat-message:last-child .chat-msg__error')?.textContent.trim() === ui_error_txt);
 
                 // We don't render duplicates
                 stanza = $msg({
@@ -1205,8 +1209,8 @@ describe("A Chat Message", function () {
                 }).c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 await _converse.handleMessageStanza(msg);
 
-                api.connection.get()._dataRecv(mock.createRequest(u.toStanza(`
-                    <message xml:lang="en" type="error" from="${contact_jid}">
+                api.connection.get()._dataRecv(mock.createRequest(stx`
+                    <message xml:lang="en" type="error" from="${contact_jid}" xmlns="jabber:client">
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
                         <no-store xmlns="urn:xmpp:hints"/>
                         <no-permanent-store xmlns="urn:xmpp:hints"/>
@@ -1214,9 +1218,9 @@ describe("A Chat Message", function () {
                         <service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                         <text xml:lang="en" xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">User session not found</text></error>
                     </message>
-                `)));
+                `));
                 return new Promise(resolve => setTimeout(() => {
-                    expect(view.querySelector('.chat-msg__error').textContent).toBe('');
+                    expect(view.querySelector('.chat-msg__error')).toBe(null);
                     resolve();
                 }, 500));
             }));

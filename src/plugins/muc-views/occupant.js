@@ -2,6 +2,7 @@ import { Model } from '@converse/skeletor';
 import { _converse, api, converse } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import tplMUCOccupant from './templates/muc-occupant.js';
+import './occupant-bottom-panel.js';
 
 const { u } = converse.env;
 

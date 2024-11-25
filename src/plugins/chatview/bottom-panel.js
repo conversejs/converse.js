@@ -76,12 +76,12 @@ export default class ChatBottomPanel extends CustomElement {
 
     /**
      * @typedef {Object} AutocompleteInPickerEvent
-     * @property {HTMLTextAreaElement} input
+     * @property {HTMLTextAreaElement} target
      * @property {string} value
      * @param {AutocompleteInPickerEvent} ev
      */
     async autocompleteInPicker (ev) {
-        const { input, value } = ev;
+        const { target: input, value } = ev;
         await api.emojis.initialize();
         const emoji_picker = /** @type {EmojiPicker} */(this.querySelector('converse-emoji-picker'));
         if (emoji_picker) {

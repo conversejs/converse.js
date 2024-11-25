@@ -86,7 +86,8 @@ export default (el) => {
                           .model="${el.model}"
                       ></converse-chat-content>
                   </div>
-                  <converse-chat-bottom-panel .model=${el.model} class="bottom-panel"> </converse-chat-bottom-panel>
+                  <converse-occupant-bottom-panel .model=${el.model} .muc=${el.muc} class="bottom-panel">
+                  </converse-occupant-bottom-panel>
               </div>`
             : ''}
     </span>`;

@@ -159,10 +159,10 @@ class RosterContacts extends Collection {
      * registers the contact on the XMPP server.
      * Returns a promise which is resolved once the XMPP server has responded.
      * @method _converse.RosterContacts#addContactToRoster
-     * @param { String } jid - The Jabber ID of the user being added and subscribed to.
-     * @param { String } name - The name of that user
-     * @param { Array<String> } groups - Any roster groups the user might belong to
-     * @param { Object } attributes - Any additional attributes to be stored on the user's model.
+     * @param {String} jid - The Jabber ID of the user being added and subscribed to.
+     * @param {String} name - The name of that user
+     * @param {Array<String>} groups - Any roster groups the user might belong to
+     * @param {Object} attributes - Any additional attributes to be stored on the user's model.
      */
     async addContactToRoster (jid, name, groups, attributes) {
         await api.waitUntil('rosterContactsFetched');
@@ -191,6 +191,10 @@ class RosterContacts extends Collection {
         );
     }
 
+    /**
+     * @param {String} bare_jid
+     * @param {Element} presence
+     */
     async subscribeBack (bare_jid, presence) {
         const contact = this.get(bare_jid);
         const { RosterContact } = _converse.exports;

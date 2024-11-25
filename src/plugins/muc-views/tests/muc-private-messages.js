@@ -4,6 +4,30 @@ const { stx, u } = converse.env;
 describe('MUC Private Messages', () => {
     beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
+    it(
+        'cannot be sent when the intended recipient is not in the MUC',
+        mock.initConverse(['chatBoxesFetched'], { view_mode: 'fullscreen' }, async (_converse) => {
+            await mock.waitForRoster(_converse, 'current', 0);
+            const nick = 'romeo';
+            const muc_jid = 'coven@chat.shakespeare.lit';
+
+            const members = [
+                {
+                    nick: 'firstwitch',
+                    jid: 'witch@wiccarocks.lit',
+                    affiliation: 'member',
+                },
+            ];
+            await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], members);
+
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.model.occupants.length === 2);
+
+            const avatar_el = await u.waitUntil(() => view.querySelector('.occupant-list converse-avatar[name="firstwitch"]'));
+            avatar_el.click();
+        })
+    );
+
     describe('When receiving a MUC private message', () => {
         it(
             "doesn't appear in the main MUC chatarea",
@@ -113,7 +137,6 @@ describe('MUC Private Messages', () => {
                             <origin-id xmlns="urn:xmpp:sid:0" id="${sent_stanza.querySelector('origin-id')?.getAttribute('id')}"/>
                         </message>`);
 
-
                     const err_msg_text = 'Recipient not in room';
                     api.connection.get()._dataRecv(
                         mock.createRequest(stx`
@@ -130,8 +153,9 @@ describe('MUC Private Messages', () => {
                         </message>`)
                     );
 
-                    expect(await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent?.trim()))
-                        .toBe(`Message delivery failed: "${err_msg_text}"`);
+                    expect(await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent?.trim())).toBe(
+                        `Message delivery failed: "${err_msg_text}"`
+                    );
                 })
             );
         });

@@ -1,0 +1,12 @@
+.conversejs {
+    converse-occupant-bottom-panel {
+        .bottom-panel--muted {
+            padding: 1em;
+            padding-top: 0;
+            border-top: 0.2em solid var(--secondary-color);
+            .bottom-panel--muted__msg {
+                padding: 0.5em 0 !important;
+            }
+        }
+    }
+}

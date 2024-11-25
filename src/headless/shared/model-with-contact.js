@@ -48,15 +48,17 @@ export default function ModelWithContact(BaseModel) {
                 }
             }
 
-            this.listenTo(this.contact, 'change', (changed) => {
-                if (changed.nickname) {
-                    this.set('nickname', changed.nickname);
-                }
-                this.trigger('contact:change', changed);
-            });
+            if (this.contact) {
+                this.listenTo(this.contact, 'change', (changed) => {
+                    if (changed.nickname) {
+                        this.set('nickname', changed.nickname);
+                    }
+                    this.trigger('contact:change', changed);
+                });
 
-            this.rosterContactAdded.resolve();
-            this.trigger('contactAdded', this.contact);
+                this.rosterContactAdded.resolve();
+                this.trigger('contactAdded', this.contact);
+            }
         }
     }
 }

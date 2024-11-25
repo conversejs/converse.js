@@ -20,15 +20,7 @@ export default class MUCBottomPanel extends BottomPanel {
 
     render () {
         if (!this.model) return '';
-        const entered = this.model.isEntered();
-        const can_post = this.model.canPostMessages();
-        return tplMUCBottomPanel({
-            can_post,
-            entered,
-            'model': this.model,
-            'is_groupchat': true,
-            'viewUnreadMessages': ev => this.viewUnreadMessages(ev)
-        });
+        return tplMUCBottomPanel(this);
     }
 
     renderIfOwnOccupant (o) {

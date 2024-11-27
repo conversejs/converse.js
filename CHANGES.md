@@ -58,6 +58,7 @@
 - `api.modal.create` no longer takes a class, instead it takes the name of a custom DOM element.
 - `getAssignableRoles` and `getAssignableAffiliations` are no longer on the `_converse` object, but on the Occupant instance.
 - Removed the `chatBoxFocused` and `chatBoxBlurred` events.
+- Changed the signature of the `api.contacts.add` API method.
 
 ## 10.1.7 (2024-03-15)
 

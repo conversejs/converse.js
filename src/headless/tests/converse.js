@@ -193,23 +193,31 @@ describe("Converse", function() {
         it("has a method 'add' with which contacts can be added",
                 mock.initConverse(['rosterInitialized'], {}, async (_converse) => {
 
+            const { api } = _converse;
+
             await mock.waitForRoster(_converse, 'current', 0);
             try {
-                await _converse.api.contacts.add();
+                await api.contacts.add();
                 throw new Error('Call should have failed');
             } catch (e) {
-                expect(e.message).toBe('contacts.add: invalid jid');
-
+                expect(e.message).toBe('api.contacts.add: Valid JID required');
             }
             try {
-                await _converse.api.contacts.add("invalid jid");
+                await api.contacts.add({ jid: "invalid jid" });
                 throw new Error('Call should have failed');
             } catch (e) {
-                expect(e.message).toBe('contacts.add: invalid jid');
+                expect(e.message).toBe('api.contacts.add: Valid JID required');
             }
-            spyOn(_converse.roster, 'addAndSubscribe');
-            await _converse.api.contacts.add("newcontact@example.org");
-            expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
+
+            // Create a contact that doesn't get persisted to the
+            // roster, to avoid having to mock stanzas.
+            await api.contacts.add({ jid: "newcontact@example.org" }, false, false);
+            const contacts = await api.contacts.get()
+            expect(contacts.length).toBe(1);
+            expect(contacts[0].get('jid')).toBe("newcontact@example.org");
+            expect(contacts[0].get('subscription')).toBe("none");
+            expect(contacts[0].get('ask')).toBeUndefined();
+            expect(contacts[0].get('groups').length).toBe(0);
         }));
     });
 

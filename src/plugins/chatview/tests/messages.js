@@ -997,7 +997,7 @@ describe("A Chat Message", function () {
 
         describe("who is not on the roster", function () {
 
-            fit("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
+            it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
                 mock.initConverse(
                     [], {'allow_non_roster_messaging': false},
                     async function (_converse) {

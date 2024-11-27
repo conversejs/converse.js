@@ -39,7 +39,7 @@ class RosterContacts extends Collection {
     registerRosterHandler () {
         // Register a handler for roster IQ "set" stanzas, which update
         // roster contacts.
-        api.connection.get().addHandler((iq) => {
+        api.connection.get().addHandler(/** @param {Element} iq */(iq) => {
             _converse.state.roster.onRosterPush(iq);
             return true;
         }, Strophe.NS.ROSTER, 'iq', "set");
@@ -52,7 +52,7 @@ class RosterContacts extends Collection {
     registerRosterXHandler () {
         let t = 0;
         const connection = api.connection.get();
-        connection.addHandler((msg) => {
+        connection.addHandler(/** @param {Element} msg */(msg) => {
                 setTimeout(() => {
                     const { roster } = _converse.state;
                     api.connection.get().flush();
@@ -103,109 +103,112 @@ class RosterContacts extends Collection {
         }
     }
 
-    // eslint-disable-next-line class-methods-use-this
+    /**
+     * @param {Element} msg
+     */
     subscribeToSuggestedItems (msg) {
         const { xmppstatus } = _converse.state;
         Array.from(msg.querySelectorAll('item')).forEach((item) => {
             if (item.getAttribute('action') === 'add') {
-                _converse.state.roster.addAndSubscribe(
-                    item.getAttribute('jid'),
-                    xmppstatus.getNickname() || xmppstatus.getFullname()
+                _converse.state.roster.addContact(
+                    {
+                        jid: item.getAttribute('jid'),
+                        name: xmppstatus.getNickname() || xmppstatus.getFullname(),
+                    },
                 );
             }
         });
         return true;
     }
 
-    // eslint-disable-next-line class-methods-use-this
+    /**
+     * @param {string} jid
+     */
     isSelf (jid) {
         return u.isSameBareJID(jid, api.connection.get().jid);
     }
 
     /**
-     * Add a roster contact and then once we have confirmation from
-     * the XMPP server we subscribe to that contact's presence updates.
-     * @method _converse.RosterContacts#addAndSubscribe
-     * @param { String } jid - The Jabber ID of the user being added and subscribed to.
-     * @param { String } name - The name of that user
-     * @param { Array<String> } groups - Any roster groups the user might belong to
-     * @param { String } message - An optional message to explain the reason for the subscription request.
-     * @param { Object } attributes - Any additional attributes to be stored on the user's model.
-     */
-    async addAndSubscribe (jid, name, groups, message, attributes) {
-        const contact = await this.addContactToRoster(jid, name, groups, attributes);
-        if (contact instanceof _converse.exports.RosterContact) {
-            contact.subscribe(message);
-        }
-    }
-
-    /**
      * Send an IQ stanza to the XMPP server to add a new roster contact.
-     * @method _converse.RosterContacts#sendContactAddIQ
-     * @param { String } jid - The Jabber ID of the user being added
-     * @param { String } name - The name of that user
-     * @param { Array<String> } groups - Any roster groups the user might belong to
+     * @param {import('./types.ts').RosterContactAttributes} attributes
      */
-    // eslint-disable-next-line class-methods-use-this
-    sendContactAddIQ (jid, name, groups) {
-        name = name ? name : null;
+    sendContactAddIQ (attributes) {
+        const { jid, groups } = attributes;
+        const name = attributes.name ? attributes.name : null;
         const iq = $iq({ 'type': 'set' }).c('query', { 'xmlns': Strophe.NS.ROSTER }).c('item', { jid, name });
-        groups.forEach((g) => iq.c('group').t(g).up());
+        groups?.forEach((g) => iq.c('group').t(g).up());
         return api.sendIQ(iq);
     }
 
     /**
-     * Adds a RosterContact instance to _converse.roster and
-     * registers the contact on the XMPP server.
-     * Returns a promise which is resolved once the XMPP server has responded.
-     * @method _converse.RosterContacts#addContactToRoster
-     * @param {String} jid - The Jabber ID of the user being added and subscribed to.
-     * @param {String} name - The name of that user
-     * @param {Array<String>} groups - Any roster groups the user might belong to
-     * @param {Object} attributes - Any additional attributes to be stored on the user's model.
+     * Adds a {@link RosterContact} instance to {@link RosterContacts} and
+     * optionally (if subscribe=true) subscribe to the contact's presence
+     * updates which also adds the contact to the roster on the XMPP server.
+     * @param {import('./types.ts').RosterContactAttributes} attributes
+     * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.
+     * @param {boolean} [subscribe=true] - Whether we should subscribe to the contacts presence updates.
+     * @param {string} [message=''] - An optional message to include with the presence subscription
+     * @returns {Promise<RosterContact>}
      */
-    async addContactToRoster (jid, name, groups, attributes) {
+    async addContact (attributes, persist=true, subscribe=true, message='') {
+        const { jid, name } = attributes ?? {};
+        if (!jid || !u.isValidJID(jid)) throw new Error('Invalid JID provided to addContact');
+
         await api.waitUntil('rosterContactsFetched');
-        groups = groups || [];
-        try {
-            await this.sendContactAddIQ(jid, name, groups);
-        } catch (e) {
-            const { __ } = _converse;
-            log.error(e);
-            alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
-            return e;
+
+        if (persist) {
+            try {
+                await this.sendContactAddIQ(attributes);
+            } catch (e) {
+                log.error(e);
+                const { __ } = _converse;
+                alert(__('Sorry, an error occurred while trying to add %1$s as a contact.', name || jid));
+                throw e;
+            }
         }
-        return this.create(
-            Object.assign(
-                {
-                    'ask': undefined,
-                    'nickname': name,
-                    groups,
-                    jid,
-                    'requesting': false,
-                    'subscription': 'none',
+
+        const contact = await this.create({
+                ...{
+                    ask: undefined,
+                    nickname: name,
+                    groups: [],
+                    requesting: false,
+                    subscription: 'none',
                 },
-                attributes
-            ),
+                ...attributes,
+            },
             { 'sort': false }
         );
+
+        if (subscribe) contact.subscribe(message);
+
+        return contact;
     }
 
     /**
-     * @param {String} bare_jid
+     * @param {string} bare_jid
      * @param {Element} presence
+     * @param {string} [auth_msg=''] - Optional message to be included in the
+     *   authorization of the contacts subscription request.
+     * @param {string} [sub_msg=''] - Optional message to be included in our
+     *   reciprocal subscription request.
      */
-    async subscribeBack (bare_jid, presence) {
+    async subscribeBack (bare_jid, presence, auth_msg='', sub_msg='') {
         const contact = this.get(bare_jid);
         const { RosterContact } = _converse.exports;
         if (contact instanceof RosterContact) {
             contact.authorize().subscribe();
         } else {
             // Can happen when a subscription is retried or roster was deleted
-            const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
-            const contact = await this.addContactToRoster(bare_jid, nickname, [], { 'subscription': 'from' });
+            const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || undefined;
+            const contact = await this.addContact({
+                jid: bare_jid,
+                name: nickname,
+                groups: [],
+                subscription: 'from'
+            });
             if (contact instanceof RosterContact) {
-                contact.authorize().subscribe();
+                contact.authorize(auth_msg).subscribe(sub_msg);
             }
         }
     }
@@ -213,7 +216,6 @@ class RosterContacts extends Collection {
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-     * @method _converse.RosterContacts#onRosterPush
      * @param { Element } iq - The IQ stanza received from the XMPP server.
      */
     onRosterPush (iq) {
@@ -283,7 +285,7 @@ class RosterContacts extends Collection {
                 if (!this.data.get('version') && this.models.length) {
                     // We're getting the full roster, so remove all cached
                     // contacts that aren't included in it.
-                    const jids = items.map((item) => item.getAttribute('jid'));
+                    const jids = items.map(/** @param {Element} item */(item) => item.getAttribute('jid'));
                     this.forEach((m) => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
                 }
                 items.forEach((item) => this.updateContact(item));
@@ -336,6 +338,9 @@ class RosterContacts extends Collection {
         }
     }
 
+    /**
+     * @param {Element} presence
+     */
     createRequestingContact (presence) {
         const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
         const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
@@ -355,6 +360,9 @@ class RosterContacts extends Collection {
         api.trigger('contactRequest', this.create(user_data));
     }
 
+    /**
+     * @param {Element} presence
+     */
     handleIncomingSubscription (presence) {
         const jid = presence.getAttribute('from'),
             bare_jid = Strophe.getBareJidFromJid(jid),
@@ -383,7 +391,9 @@ class RosterContacts extends Collection {
         }
     }
 
-    // eslint-disable-next-line class-methods-use-this
+    /**
+     * @param {Element} presence
+     */
     handleOwnPresence (presence) {
         const jid = presence.getAttribute('from');
         const resource = Strophe.getResourceFromJid(jid);
@@ -422,6 +432,9 @@ class RosterContacts extends Collection {
         }
     }
 
+    /**
+     * @param {Element} presence
+     */
     presenceHandler (presence) {
         const presence_type = presence.getAttribute('type');
         if (presence_type === 'error') return true;

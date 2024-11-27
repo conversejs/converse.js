@@ -96,7 +96,6 @@ class RosterContact extends ColorAwareModel(Model) {
 
     /**
      * Send a presence subscription request to this roster contact
-     * @method RosterContacts#subscribe
      * @param {string} message - An optional message to explain the
      *      reason for the subscription request.
      */
@@ -111,7 +110,6 @@ class RosterContact extends ColorAwareModel(Model) {
      * the user SHOULD acknowledge receipt of that subscription
      * state notification by sending a presence stanza of type
      * "subscribe" to the contact
-     * @method RosterContacts#ackSubscribe
      */
     ackSubscribe () {
         api.send($pres({
@@ -136,7 +134,6 @@ class RosterContact extends ColorAwareModel(Model) {
 
     /**
      * Unauthorize this contact's presence subscription
-     * @method RosterContacts#unauthorize
      * @param {string} message - Optional message to send to the person being unauthorized
      */
     unauthorize (message) {
@@ -146,7 +143,6 @@ class RosterContact extends ColorAwareModel(Model) {
 
     /**
      * Authorize presence subscription
-     * @method RosterContacts#authorize
      * @param {string} message - Optional message to send to the person being authorized
      */
     authorize (message) {
@@ -160,7 +156,6 @@ class RosterContact extends ColorAwareModel(Model) {
 
     /**
      * Instruct the XMPP server to remove this contact from our roster
-     * @method RosterContacts#removeFromRoster
      * @returns {Promise}
      */
     removeFromRoster () {

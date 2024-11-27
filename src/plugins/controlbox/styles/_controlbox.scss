@@ -188,11 +188,12 @@
             flex-direction: row-reverse;
 
             .toggle-controlbox {
-                order: -2;
-                text-align: center;
                 background-color: var(--controlbox-color);
+                color: var(--button-text-color);
                 float: right;
                 margin: 0 var(--overlayed-chat-gutter);
+                order: -2;
+                text-align: center;
             }
 
             #controlbox {

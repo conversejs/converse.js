@@ -21,47 +21,42 @@ declare class RosterContacts extends Collection {
      * @returns {promise} Promise which resolves once the contacts have been fetched.
      */
     fetchRosterContacts(): Promise<any>;
-    subscribeToSuggestedItems(msg: any): boolean;
-    isSelf(jid: any): any;
     /**
-     * Add a roster contact and then once we have confirmation from
-     * the XMPP server we subscribe to that contact's presence updates.
-     * @method _converse.RosterContacts#addAndSubscribe
-     * @param { String } jid - The Jabber ID of the user being added and subscribed to.
-     * @param { String } name - The name of that user
-     * @param { Array<String> } groups - Any roster groups the user might belong to
-     * @param { String } message - An optional message to explain the reason for the subscription request.
-     * @param { Object } attributes - Any additional attributes to be stored on the user's model.
+     * @param {Element} msg
      */
-    addAndSubscribe(jid: string, name: string, groups: Array<string>, message: string, attributes: any): Promise<void>;
+    subscribeToSuggestedItems(msg: Element): boolean;
+    /**
+     * @param {string} jid
+     */
+    isSelf(jid: string): any;
     /**
      * Send an IQ stanza to the XMPP server to add a new roster contact.
-     * @method _converse.RosterContacts#sendContactAddIQ
-     * @param { String } jid - The Jabber ID of the user being added
-     * @param { String } name - The name of that user
-     * @param { Array<String> } groups - Any roster groups the user might belong to
+     * @param {import('./types').RosterContactAttributes} attributes
      */
-    sendContactAddIQ(jid: string, name: string, groups: Array<string>): any;
+    sendContactAddIQ(attributes: import("./types").RosterContactAttributes): any;
     /**
-     * Adds a RosterContact instance to _converse.roster and
-     * registers the contact on the XMPP server.
-     * Returns a promise which is resolved once the XMPP server has responded.
-     * @method _converse.RosterContacts#addContactToRoster
-     * @param {String} jid - The Jabber ID of the user being added and subscribed to.
-     * @param {String} name - The name of that user
-     * @param {Array<String>} groups - Any roster groups the user might belong to
-     * @param {Object} attributes - Any additional attributes to be stored on the user's model.
+     * Adds a {@link RosterContact} instance to {@link RosterContacts} and
+     * optionally (if subscribe=true) subscribe to the contact's presence
+     * updates which also adds the contact to the roster on the XMPP server.
+     * @param {import('./types').RosterContactAttributes} attributes
+     * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.
+     * @param {boolean} [subscribe=true] - Whether we should subscribe to the contacts presence updates.
+     * @param {string} [message=''] - An optional message to include with the presence subscription
+     * @returns {Promise<RosterContact>}
      */
-    addContactToRoster(jid: string, name: string, groups: Array<string>, attributes: any): Promise<any>;
+    addContact(attributes: import("./types").RosterContactAttributes, persist?: boolean, subscribe?: boolean, message?: string): Promise<RosterContact>;
     /**
-     * @param {String} bare_jid
+     * @param {string} bare_jid
      * @param {Element} presence
+     * @param {string} [auth_msg=''] - Optional message to be included in the
+     *   authorization of the contacts subscription request.
+     * @param {string} [sub_msg=''] - Optional message to be included in our
+     *   reciprocal subscription request.
      */
-    subscribeBack(bare_jid: string, presence: Element): Promise<void>;
+    subscribeBack(bare_jid: string, presence: Element, auth_msg?: string, sub_msg?: string): Promise<void>;
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-     * @method _converse.RosterContacts#onRosterPush
      * @param { Element } iq - The IQ stanza received from the XMPP server.
      */
     onRosterPush(iq: Element): void;
@@ -78,10 +73,22 @@ declare class RosterContacts extends Collection {
      * @param { Element } item
      */
     updateContact(item: Element): any;
-    createRequestingContact(presence: any): void;
-    handleIncomingSubscription(presence: any): void;
-    handleOwnPresence(presence: any): void;
-    presenceHandler(presence: any): true | void;
+    /**
+     * @param {Element} presence
+     */
+    createRequestingContact(presence: Element): void;
+    /**
+     * @param {Element} presence
+     */
+    handleIncomingSubscription(presence: Element): void;
+    /**
+     * @param {Element} presence
+     */
+    handleOwnPresence(presence: Element): void;
+    /**
+     * @param {Element} presence
+     */
+    presenceHandler(presence: Element): true | void;
 }
 import { Collection } from "@converse/skeletor";
 import RosterContact from './contact.js';

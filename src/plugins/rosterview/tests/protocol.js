@@ -52,7 +52,7 @@ describe("The Protocol", function () {
             const cbview = _converse.chatboxviews.get('controlbox');
 
             spyOn(_converse.roster, "addAndSubscribe").and.callThrough();
-            spyOn(_converse.roster, "addContactToRoster").and.callThrough();
+            spyOn(_converse.roster, "addContact").and.callThrough();
             spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
             spyOn(_converse.api.vcard, "get").and.callThrough();
 
@@ -76,7 +76,7 @@ describe("The Protocol", function () {
              * for the new roster item.
              */
             expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
-            expect(_converse.roster.addContactToRoster).toHaveBeenCalled();
+            expect(_converse.roster.addContact).toHaveBeenCalled();
 
             /* The request consists of sending an IQ
              * stanza of type='set' containing a <query/> element qualified by

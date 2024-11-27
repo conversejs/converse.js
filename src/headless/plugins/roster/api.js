@@ -1,3 +1,4 @@
+import { isValidJID } from '../../utils/jid.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
@@ -8,16 +9,17 @@ export default {
     /**
      * @namespace _converse.api.contacts
      * @memberOf _converse.api
+     *
+     * @typedef {import('./contact').default} RosterContact
      */
     contacts: {
         /**
          * This method is used to retrieve roster contacts.
          *
          * @method _converse.api.contacts.get
-         * @params {(string[]|string)} jid|jids The JID or JIDs of
-         *      the contacts to be returned.
+         * @param {(string[]|string)} jids The JID or JIDs of the contacts to be returned.
          * @returns {promise} Promise which resolves with the
-         *  _converse.RosterContact (or an array of them) representing the contact.
+         *  {@link RosterContact} (or an array of them) representing the contact.
          *
          * @example
          * // Fetch a single contact
@@ -45,32 +47,33 @@ export default {
         async get (jids) {
             await api.waitUntil('rosterContactsFetched');
             const { roster } = _converse.state;
-            const _getter = jid => roster.get(Strophe.getBareJidFromJid(jid));
+            const _getter = /** @param {string} jid */(jid) => roster.get(Strophe.getBareJidFromJid(jid));
             if (jids === undefined) {
                 jids = roster.pluck('jid');
             } else if (typeof jids === 'string') {
                 return _getter(jids);
             }
-            return jids.map(_getter);
+            return /** @type {string[]} */(jids).map(_getter);
         },
 
         /**
          * Add a contact.
-         *
-         * @method _converse.api.contacts.add
-         * @param { string } jid The JID of the contact to be added
-         * @param { string } [name] A custom name to show the user by in the roster
+         * @param {import('./types').RosterContactAttributes} attributes
+         * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.
+         * @param {boolean} [subscribe=true] - Whether we should subscribe to the contacts presence updates.
+         * @param {string} [message=''] - An optional message to include with the presence subscription
+         * @param {boolean} subscribe - Whether a presense subscription should
+         *      be sent out to the contact being added.
+         * @returns {Promise<RosterContact>}
          * @example
-         *     _converse.api.contacts.add('buddy@example.com')
-         * @example
-         *     _converse.api.contacts.add('buddy@example.com', 'Buddy')
+         *      api.contacts.add({ jid: 'buddy@example.com', groups: ['Buddies'] })
          */
-        async add (jid, name) {
+        async add (attributes, persist=true, subscribe=true, message='') {
+            if (!isValidJID(attributes?.jid)) throw new Error('api.contacts.add: Valid JID required');
+
             await api.waitUntil('rosterContactsFetched');
-            if (typeof jid !== 'string' || !jid.includes('@')) {
-                throw new TypeError('contacts.add: invalid jid');
-            }
-            return _converse.state.roster.addAndSubscribe(jid, name);
+            const { roster } = _converse.state;
+            return roster.addContact(attributes, persist, subscribe, message);
         }
     }
 }

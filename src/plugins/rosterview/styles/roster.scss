@@ -24,7 +24,7 @@
         padding: 0;
 
         svg {
-            fill: var(--chat-color);
+            fill: var(--chat-color) !important;
         }
 
         .roster-contacts {

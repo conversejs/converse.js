@@ -10,7 +10,7 @@ import { STATUSES } from '../constants.js';
 /**
  * @param {RosterContact} el
  */
-const tplRemoveLink = (el) => {
+export const tplRemoveLink = (el) => {
    const display_name = el.model.getDisplayName();
    const i18n_remove = __('Click to remove %1$s as a contact', display_name);
    return html`

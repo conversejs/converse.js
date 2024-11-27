@@ -15,7 +15,12 @@ export function isContactFiltered(contact: RosterContact, groupname: string): bo
  */
 export function shouldShowContact(contact: RosterContact, groupname: string, model: Model): boolean;
 export function shouldShowGroup(group: any, model: any): boolean;
-export function populateContactsMap(contacts_map: any, contact: any): any;
+/**
+ * @param {import('./types').ContactsMap} contacts_map
+ * @param {RosterContact} contact
+ * @returns {import('./types').ContactsMap}
+ */
+export function populateContactsMap(contacts_map: import("./types").ContactsMap, contact: RosterContact): import("./types").ContactsMap;
 export function contactsComparator(contact1: any, contact2: any): 0 | 1 | -1;
 export function groupsComparator(a: any, b: any): 0 | 1 | -1;
 export function getGroupsAutoCompleteList(): any[];

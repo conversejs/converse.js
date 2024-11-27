@@ -109,28 +109,33 @@ export function shouldShowGroup (group, model) {
     return true;
 }
 
+/**
+ * @param {import('./types').ContactsMap} contacts_map
+ * @param {RosterContact} contact
+ * @returns {import('./types').ContactsMap}
+ */
 export function populateContactsMap (contacts_map, contact) {
+    const { labels } = _converse;
+    let contact_groups;
     if (contact.get('requesting')) {
-        const name = /** @type {string} */(_converse.labels.HEADER_REQUESTING_CONTACTS);
-        contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
+        contact_groups = [labels.HEADER_REQUESTING_CONTACTS];
+    } else if (contact.get('ask') === 'subscribe') {
+        contact_groups = [labels.HEADER_PENDING_CONTACTS];
+    } else if (contact.get('subscription') === 'none') {
+        contact_groups = [labels.HEADER_UNSAVED_CONTACTS];
+    } else if (!api.settings.get('roster_groups')) {
+        contact_groups = [labels.HEADER_CURRENT_CONTACTS];
     } else {
-        let contact_groups;
-        if (api.settings.get('roster_groups')) {
-            contact_groups = contact.get('groups');
-            contact_groups = (contact_groups.length === 0) ? [_converse.labels.HEADER_UNGROUPED] : contact_groups;
-        } else {
-            if (contact.get('ask') === 'subscribe') {
-                contact_groups = [_converse.labels.HEADER_PENDING_CONTACTS];
-            } else {
-                contact_groups = [_converse.labels.HEADER_CURRENT_CONTACTS];
-            }
-        }
-        for (const name of contact_groups) {
-            contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
-        }
+        contact_groups = contact.get('groups');
+        contact_groups = (contact_groups.length === 0) ? [labels.HEADER_UNGROUPED] : contact_groups;
     }
+
+    for (const name of contact_groups) {
+        contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
+    }
+
     if (contact.get('num_unread')) {
-        const name = /** @type {string} */(_converse.labels.HEADER_UNREAD);
+        const name = /** @type {string} */(labels.HEADER_UNREAD);
         contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
     }
     return contacts_map;

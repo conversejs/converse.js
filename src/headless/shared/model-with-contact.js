@@ -38,17 +38,22 @@ export default function ModelWithContact(BaseModel) {
         async setModelContact(jid) {
             if (this.contact?.get('jid') === jid) return;
 
-            if (Strophe.getBareJidFromJid(jid) === _converse.session.get('bare_jid')) {
-                this.contact = _converse.state.xmppstatus;
+            const { session, state } = _converse;
+
+            let contact;
+            if (Strophe.getBareJidFromJid(jid) === session.get('bare_jid')) {
+                contact = state.xmppstatus;
             } else {
-                const contact = await api.contacts.get(jid);
-                if (contact) {
-                    this.contact = contact;
-                    this.set('nickname', contact.get('nickname'));
-                }
+                contact = await api.contacts.get(jid) || await api.contacts.add({
+                    jid,
+                    subscription: 'none',
+                }, false, false);
             }
 
-            if (this.contact) {
+            if (contact) {
+                this.contact = contact;
+                this.set('nickname', contact.get('nickname'));
+
                 this.listenTo(this.contact, 'change', (changed) => {
                     if (changed.nickname) {
                         this.set('nickname', changed.nickname);

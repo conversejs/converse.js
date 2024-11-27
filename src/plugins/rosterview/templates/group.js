@@ -8,6 +8,9 @@ import { toggleGroup } from '../utils.js';
 const { isUniView } = u;
 
 
+/**
+ * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+ */
 function renderContact (contact) {
     const jid = contact.get('jid');
     const extra_classes = [];

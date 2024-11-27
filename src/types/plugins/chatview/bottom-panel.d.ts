@@ -14,12 +14,12 @@ export default class ChatBottomPanel extends CustomElement {
     clearMessages(ev: any): void;
     /**
      * @typedef {Object} AutocompleteInPickerEvent
-     * @property {HTMLTextAreaElement} input
+     * @property {HTMLTextAreaElement} target
      * @property {string} value
      * @param {AutocompleteInPickerEvent} ev
      */
     autocompleteInPicker(ev: {
-        input: HTMLTextAreaElement;
+        target: HTMLTextAreaElement;
         value: string;
     }): Promise<void>;
 }

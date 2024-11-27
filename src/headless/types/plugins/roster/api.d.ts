@@ -4,10 +4,9 @@ declare namespace _default {
          * This method is used to retrieve roster contacts.
          *
          * @method _converse.api.contacts.get
-         * @params {(string[]|string)} jid|jids The JID or JIDs of
-         *      the contacts to be returned.
+         * @param {(string[]|string)} jids The JID or JIDs of the contacts to be returned.
          * @returns {promise} Promise which resolves with the
-         *  _converse.RosterContact (or an array of them) representing the contact.
+         *  {@link RosterContact} (or an array of them) representing the contact.
          *
          * @example
          * // Fetch a single contact
@@ -32,19 +31,20 @@ declare namespace _default {
          *     // ...
          * });
          */
-        function get(jids: any): Promise<any>;
+        function get(jids: (string[] | string)): Promise<any>;
         /**
          * Add a contact.
-         *
-         * @method _converse.api.contacts.add
-         * @param { string } jid The JID of the contact to be added
-         * @param { string } [name] A custom name to show the user by in the roster
+         * @param {import('./types').RosterContactAttributes} attributes
+         * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.
+         * @param {boolean} [subscribe=true] - Whether we should subscribe to the contacts presence updates.
+         * @param {string} [message=''] - An optional message to include with the presence subscription
+         * @param {boolean} subscribe - Whether a presense subscription should
+         *      be sent out to the contact being added.
+         * @returns {Promise<RosterContact>}
          * @example
-         *     _converse.api.contacts.add('buddy@example.com')
-         * @example
-         *     _converse.api.contacts.add('buddy@example.com', 'Buddy')
+         *      api.contacts.add({ jid: 'buddy@example.com', groups: ['Buddies'] })
          */
-        function add(jid: string, name?: string): Promise<any>;
+        function add(attributes: import("./types").RosterContactAttributes, persist?: boolean, subscribe?: boolean, message?: string): Promise<import("./contact").default>;
     }
 }
 export default _default;

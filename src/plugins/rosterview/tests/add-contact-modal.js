@@ -38,7 +38,7 @@ describe("The 'Add Contact' widget", function () {
         const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
         expect(Strophe.serialize(sent_stanza)).toEqual(
             `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit" name="Someone"/></query>`+
+                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit" name="Someone"><group></group></item></query>`+
             `</iq>`);
     }));
 
@@ -65,7 +65,7 @@ describe("The 'Add Contact' widget", function () {
         );
         expect(Strophe.serialize(sent_stanza)).toEqual(
             `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit"/></query>`+
+                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit"><group></group></item></query>`+
             `</iq>`
         );
     }));
@@ -177,7 +177,7 @@ describe("The 'Add Contact' widget", function () {
         const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
         expect(Strophe.serialize(sent_stanza)).toEqual(
         `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-            `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
+            `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"><group></group></item></query>`+
         `</iq>`);
     }));
 });

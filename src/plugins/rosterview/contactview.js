@@ -1,8 +1,10 @@
+import { Model } from '@converse/skeletor';
+import { _converse, api, log } from "@converse/headless";
+import { CustomElement } from 'shared/components/element.js';
 import tplRequestingContact from "./templates/requesting_contact.js";
 import tplRosterItem from "./templates/roster_item.js";
-import { CustomElement } from 'shared/components/element.js';
+import tplUnsavedContact from "./templates/unsaved_contact.js";
 import { __ } from 'i18n';
-import { _converse, api, log } from "@converse/headless";
 
 
 export default class RosterContact extends CustomElement {
@@ -28,27 +30,33 @@ export default class RosterContact extends CustomElement {
 
     render () {
         if (this.model.get('requesting') === true) {
-            const display_name = this.model.getDisplayName();
-            return tplRequestingContact(
-                Object.assign(this.model.toJSON(), {
-                    display_name,
-                    'openChat': ev => this.openChat(ev),
-                    'acceptRequest': ev => this.acceptRequest(ev),
-                    'declineRequest': ev => this.declineRequest(ev),
-                    'desc_accept': __("Click to accept the contact request from %1$s", display_name),
-                    'desc_decline': __("Click to decline the contact request from %1$s", display_name),
-                })
-            );
+            return tplRequestingContact(this);
+        } else if (this.model.get('subscription') === 'none') {
+            return tplUnsavedContact(this);
         } else {
             return tplRosterItem(this);
         }
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     openChat (ev) {
         ev?.preventDefault?.();
         this.model.openChat();
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
+    addContact(ev) {
+        ev?.preventDefault?.();
+        api.modal.show('converse-add-contact-modal', {'model': new Model()}, ev);
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
     async removeContact (ev) {
         ev?.preventDefault?.();
         if (!api.settings.get('allow_contact_removal')) { return; }
@@ -56,12 +64,19 @@ export default class RosterContact extends CustomElement {
         const result = await api.confirm(__("Are you sure you want to remove this contact?"));
         if (!result)  return;
 
+        const chat = await api.chats.get(this.model.get('jid'));
+        chat?.close();
+
         try {
-            this.model.removeFromRoster();
-            if (this.model.collection) {
-                // The model might have already been removed as
-                // result of a roster push.
+            if (this.model.get('subscription') === 'none') {
                 this.model.destroy();
+            } else {
+                this.model.removeFromRoster();
+                if (this.model.collection) {
+                    // The model might have already been removed as
+                    // result of a roster push.
+                    this.model.destroy();
+                }
             }
         } catch (e) {
             log.error(e);
@@ -71,21 +86,30 @@ export default class RosterContact extends CustomElement {
         }
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     async acceptRequest (ev) {
         ev?.preventDefault?.();
 
-        await _converse.state.roster.sendContactAddIQ(
-            this.model.get('jid'),
-            this.model.getFullname(),
-            []
-        );
+        await _converse.state.roster.sendContactAddIQ({
+            jid: this.model.get('jid'),
+            name: this.model.getFullname(),
+            groups: []
+        });
         this.model.authorize().subscribe();
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     async declineRequest (ev) {
         if (ev && ev.preventDefault) { ev.preventDefault(); }
         const result = await api.confirm(__("Are you sure you want to decline this contact request?"));
         if (result) {
+            const chat = await api.chats.get(this.model.get('jid'));
+            chat?.close();
+
             this.model.unauthorize().destroy();
         }
         return this;

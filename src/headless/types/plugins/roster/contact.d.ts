@@ -94,7 +94,6 @@ declare class RosterContact extends RosterContact_base {
     getFullname(): any;
     /**
      * Send a presence subscription request to this roster contact
-     * @method RosterContacts#subscribe
      * @param {string} message - An optional message to explain the
      *      reason for the subscription request.
      */
@@ -104,7 +103,6 @@ declare class RosterContact extends RosterContact_base {
      * the user SHOULD acknowledge receipt of that subscription
      * state notification by sending a presence stanza of type
      * "subscribe" to the contact
-     * @method RosterContacts#ackSubscribe
      */
     ackSubscribe(): void;
     /**
@@ -118,19 +116,16 @@ declare class RosterContact extends RosterContact_base {
     ackUnsubscribe(): void;
     /**
      * Unauthorize this contact's presence subscription
-     * @method RosterContacts#unauthorize
      * @param {string} message - Optional message to send to the person being unauthorized
      */
     unauthorize(message: string): this;
     /**
      * Authorize presence subscription
-     * @method RosterContacts#authorize
      * @param {string} message - Optional message to send to the person being authorized
      */
     authorize(message: string): this;
     /**
      * Instruct the XMPP server to remove this contact from our roster
-     * @method RosterContacts#removeFromRoster
      * @returns {Promise}
      */
     removeFromRoster(): Promise<any>;

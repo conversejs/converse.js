@@ -5,14 +5,16 @@ $prefix: 'converse-';
 
 .conversejs {
     .modal-header {
+        background-color: var(--primary-color);
+        border-bottom: none;
         &.alert-danger {
             background-color: var(--error-color);
+        }
+        .modal-title {
             color: var(--background-color);
-            border-bottom: none;
-
-            .close {
-                color: var(--background-color);
-            }
+        }
+        .close {
+            color: var(--background-color);
         }
     }
 

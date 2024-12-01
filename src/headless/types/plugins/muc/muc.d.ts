@@ -52,7 +52,7 @@ declare const MUC_base: {
             from: any;
             msgid: any;
         };
-        sendMarkerForMessage(msg: import("../chat/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
+        sendMarkerForMessage(msg: import("../chat/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../chat/message.js").default): void;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat/message.js").default): void;
@@ -266,12 +266,13 @@ declare class MUC extends MUC_base {
     clearOccupantsCache(): void;
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
-     * @param {MUCMessage} msg
+     * @async
+     * @param {Message} msg
      * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
-     * @param {Boolean} force - Whether a marker should be sent for the
+     * @param {boolean} [force=false] - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForMessage(msg: import("./message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
+    sendMarkerForMessage(msg: import("../chat/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
     /**
      * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
@@ -833,7 +834,7 @@ declare class MUC extends MUC_base {
      * @param {MUCMessage} message - The text message
      */
     incrementUnreadMsgsCounter(message: import("./message.js").default): void;
-    clearUnreadMsgCounter(): void;
+    clearUnreadMsgCounter(): Promise<void>;
 }
 import { Model } from '@converse/skeletor';
 import ChatBoxBase from '../../shared/chatbox';

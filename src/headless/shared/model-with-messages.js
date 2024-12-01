@@ -701,7 +701,7 @@ export default function ModelWithMessages(BaseModel) {
          * Given the passed in message object, send a XEP-0333 chat marker.
          * @param {Message} msg
          * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
-         * @param {Boolean} force - Whether a marker should be sent for the
+         * @param {boolean} [force=false] - Whether a marker should be sent for the
          *  message, even if it didn't include a `markable` element.
          */
         async sendMarkerForMessage(msg, type = 'displayed', force = false) {

@@ -21,7 +21,12 @@ export function shouldShowGroup(group: any, model: any): boolean;
  * @returns {import('./types').ContactsMap}
  */
 export function populateContactsMap(contacts_map: import("./types").ContactsMap, contact: RosterContact): import("./types").ContactsMap;
-export function contactsComparator(contact1: any, contact2: any): 0 | 1 | -1;
+/**
+ * @param {RosterContact} contact1
+ * @param {RosterContact} contact2
+ * @returns {(-1|0|1)}
+ */
+export function contactsComparator(contact1: RosterContact, contact2: RosterContact): (-1 | 0 | 1);
 export function groupsComparator(a: any, b: any): 0 | 1 | -1;
 export function getGroupsAutoCompleteList(): any[];
 export function getJIDsAutoCompleteList(): any[];

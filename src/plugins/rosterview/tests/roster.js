@@ -444,7 +444,7 @@ describe("The Contacts Roster", function () {
 
             const roster = rosterview.querySelector('.roster-contacts');
             await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 20, 900);
-            expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
+            expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(6);
 
             filter.value = "online";
             u.triggerEvent(filter, 'change');
@@ -479,7 +479,7 @@ describe("The Contacts Roster", function () {
             // Check that the groups appear alphabetically and that
             // requesting and pending contacts are last.
             const rosterview = document.querySelector('converse-roster');
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 6);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
             let group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
             expect(group_titles).toEqual([
                 "Contact requests",
@@ -488,13 +488,14 @@ describe("The Contacts Roster", function () {
                 "friends & acquaintences",
                 "ænemies",
                 "Ungrouped",
+                "Pending contacts",
             ]);
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = await _converse.api.contacts.get(contact_jid);
             contact.save({'num_unread': 5});
 
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 8);
             group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
 
             expect(group_titles).toEqual([
@@ -504,7 +505,8 @@ describe("The Contacts Roster", function () {
                 "Family",
                 "friends & acquaintences",
                 "ænemies",
-                "Ungrouped"
+                "Ungrouped",
+                "Pending contacts",
             ]);
             const contacts = sizzle('.roster-group[data-group="New messages"] li', rosterview);
             expect(contacts.length).toBe(1);
@@ -512,7 +514,7 @@ describe("The Contacts Roster", function () {
             expect(contacts[0].querySelector('.msgs-indicator').textContent).toBe("5");
 
             contact.save({'num_unread': 0});
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 6);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
             group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
             expect(group_titles).toEqual([
                 "Contact requests",
@@ -520,7 +522,8 @@ describe("The Contacts Roster", function () {
                 "Family",
                 "friends & acquaintences",
                 "ænemies",
-                "Ungrouped"
+                "Ungrouped",
+                "Pending contacts",
             ]);
         }));
 
@@ -534,7 +537,7 @@ describe("The Contacts Roster", function () {
             await mock.waitForRoster(_converse, 'all');
             await mock.createContacts(_converse, 'requesting');
             const rosterview = document.querySelector('converse-roster');
-            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 6);
+            await u.waitUntil(() => sizzle('.roster-group a.group-toggle', rosterview).length === 7);
             const group_titles = sizzle('.roster-group a.group-toggle', rosterview).map(o => o.textContent.trim());
             expect(group_titles).toEqual([
                 "Contact requests",
@@ -543,6 +546,7 @@ describe("The Contacts Roster", function () {
                 "friends & acquaintences",
                 "ænemies",
                 "Ungrouped",
+                "Pending contacts",
             ]);
             // Check that usernames appear alphabetically per group
             Object.keys(mock.groups).forEach(name  => {

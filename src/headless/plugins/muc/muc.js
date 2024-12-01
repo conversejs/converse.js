@@ -238,9 +238,10 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
 
     /**
      * Given the passed in MUC message, send a XEP-0333 chat marker.
-     * @param {MUCMessage} msg
+     * @async
+     * @param {Message} msg
      * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
-     * @param {Boolean} force - Whether a marker should be sent for the
+     * @param {boolean} [force=false] - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
     sendMarkerForMessage (msg, type = 'displayed', force = false) {
@@ -252,11 +253,12 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             const id = msg.get(key);
             if (!id) {
                 log.error(`Can't send marker for message without stanza ID: ${key}`);
-                return;
+                return Promise.resolve();
             }
             const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
             sendMarker(from_jid, id, type, msg.get('type'));
         }
+        return Promise.resolve();
     }
 
     /**
@@ -2788,9 +2790,9 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         this.save(settings);
     }
 
-    clearUnreadMsgCounter () {
+    async clearUnreadMsgCounter () {
         if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0 || this.get('has_activity')) {
-            this.sendMarkerForMessage(this.messages.last());
+            await this.sendMarkerForMessage(this.messages.last());
         }
         safeSave(this, {
             'has_activity': false,

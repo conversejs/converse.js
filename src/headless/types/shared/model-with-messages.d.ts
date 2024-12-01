@@ -177,10 +177,10 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * Given the passed in message object, send a XEP-0333 chat marker.
          * @param {Message} msg
          * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
-         * @param {Boolean} force - Whether a marker should be sent for the
+         * @param {boolean} [force=false] - Whether a marker should be sent for the
          *  message, even if it didn't include a `markable` element.
          */
-        sendMarkerForMessage(msg: import("../plugins/chat/message").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
+        sendMarkerForMessage(msg: import("../plugins/chat/message").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         /**
          * Given a newly received {@link Message} instance,
          * update the unread counter if necessary.

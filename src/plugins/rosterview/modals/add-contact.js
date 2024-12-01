@@ -40,7 +40,7 @@ export default class AddContactModal extends BaseModal {
     }
 
     afterSubmission (_form, jid, name, group) {
-        _converse.state.roster.addAndSubscribe({ jid, name, groups: Array.isArray(group) ? group : [group] });
+        _converse.state.roster.addContact({ jid, name, groups: Array.isArray(group) ? group : [group] });
         this.model.clear();
         this.modal.hide();
     }

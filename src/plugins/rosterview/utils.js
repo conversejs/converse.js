@@ -141,6 +141,11 @@ export function populateContactsMap (contacts_map, contact) {
     return contacts_map;
 }
 
+/**
+ * @param {RosterContact} contact1
+ * @param {RosterContact} contact2
+ * @returns {(-1|0|1)}
+ */
 export function contactsComparator (contact1, contact2) {
     const status1 = contact1.presence.get('show') || 'offline';
     const status2 = contact2.presence.get('show') || 'offline';

@@ -51,7 +51,6 @@ describe("The Protocol", function () {
             mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
 
-            spyOn(_converse.roster, "addAndSubscribe").and.callThrough();
             spyOn(_converse.roster, "addContact").and.callThrough();
             spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
             spyOn(_converse.api.vcard, "get").and.callThrough();
@@ -75,7 +74,6 @@ describe("The Protocol", function () {
              * subscription, the user's client SHOULD perform a "roster set"
              * for the new roster item.
              */
-            expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
             expect(_converse.roster.addContact).toHaveBeenCalled();
 
             /* The request consists of sending an IQ

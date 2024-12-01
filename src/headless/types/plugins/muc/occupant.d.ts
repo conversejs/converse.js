@@ -52,7 +52,7 @@ declare const MUCOccupant_base: {
             from: any;
             msgid: any;
         };
-        sendMarkerForMessage(msg: import("../chat").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
+        sendMarkerForMessage(msg: import("../chat").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../chat").Message): void;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat").Message): void;

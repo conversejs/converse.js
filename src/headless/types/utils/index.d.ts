@@ -63,10 +63,10 @@ declare const _default: {
     merge(dst: any, src: any): void;
     isError(obj: any): boolean;
     isFunction(val: any): boolean;
-    isValidJID(jid: any): boolean;
-    isValidMUCJID(jid: any): boolean;
-    isSameBareJID(jid1: any, jid2: any): boolean;
-    isSameDomain(jid1: any, jid2: any): boolean;
+    isValidJID(jid?: string | null): boolean;
+    isValidMUCJID(jid: string): boolean;
+    isSameBareJID(jid1: string, jid2: string): boolean;
+    isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
     isElement(el: unknown): boolean;
     isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;

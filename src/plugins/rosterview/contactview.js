@@ -68,7 +68,7 @@ export default class RosterContact extends CustomElement {
         chat?.close();
 
         try {
-            if (this.model.get('subscription') === 'none') {
+            if (this.model.get('subscription') === 'none' && this.model.get('ask') !== 'subscribe') {
                 this.model.destroy();
             } else {
                 this.model.removeFromRoster();

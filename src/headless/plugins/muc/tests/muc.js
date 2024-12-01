@@ -33,7 +33,7 @@ describe("Groupchats", function () {
 
         // Check that unread counters are cleared when chat becomes visible
         model.set('hidden', false);
-        expect(model.get('num_unread_general')).toBe(0);
+        await u.waitUntil(() => model.get('num_unread_general') === 0);
         expect(model.get('num_unread')).toBe(0);
     }));
 

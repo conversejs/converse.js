@@ -51,7 +51,7 @@ declare const ChatBoxBase_base: {
             from: any;
             msgid: any;
         };
-        sendMarkerForMessage(msg: import("../index.js").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): void;
+        sendMarkerForMessage(msg: import("../index.js").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../index.js").Message): void;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../index.js").Message): void;

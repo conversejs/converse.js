@@ -1,8 +1,7 @@
 /*global mock, converse */
-
-const Strophe = converse.env.Strophe;
-const u = converse.env.utils;
 // See: https://xmpp.org/rfcs/rfc3921.html
+
+const { Strophe, u, stx } = converse.env;
 
 
 describe("A XEP-0333 Chat Marker", function () {
@@ -41,14 +40,16 @@ describe("A XEP-0333 Chat Marker", function () {
         await mock.waitForRoster(_converse, 'current', 0);
         const contact_jid = 'someone@montague.lit';
         const msgid = u.getUniqueId();
-        const stanza = u.toStanza(`
-            <message from='${contact_jid}'
+        const stanza = stx`
+            <message
+                xmlns="jabber:client"
+                from='${contact_jid}'
                 id='${msgid}'
                 type="chat"
                 to='${_converse.jid}'>
               <body>My lord, dispatch; read o'er these articles.</body>
               <markable xmlns='urn:xmpp:chat-markers:0'/>
-            </message>`);
+            </message>`;
 
         const sent_stanzas = [];
         spyOn(_converse.api.connection.get(), 'send').and.callFake(s => sent_stanzas.push(s));

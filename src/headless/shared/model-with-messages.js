@@ -704,10 +704,19 @@ export default function ModelWithMessages(BaseModel) {
          * @param {Boolean} force - Whether a marker should be sent for the
          *  message, even if it didn't include a `markable` element.
          */
-        sendMarkerForMessage(msg, type = 'displayed', force = false) {
-            if (!msg || !api.settings.get('send_chat_markers').includes(type)) {
+        async sendMarkerForMessage(msg, type = 'displayed', force = false) {
+            if (!msg || msg?.get('type') === 'groupchat' || !api.settings.get('send_chat_markers').includes(type)) {
                 return;
             }
+
+            // Don't send chat markers to contacts that are not subscribed
+            // to our presence.
+            const contact = await api.contacts.get(this.get('jid'));
+            const subscription = contact?.get('subscription');
+            if (!contact || subscription === 'none' || subscription === 'to') {
+                return;
+            }
+
             if (msg?.get('is_markable') || force) {
                 const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
                 sendMarker(from_jid, msg.get('msgid'), type, msg.get('type'));

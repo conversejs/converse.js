@@ -85,9 +85,6 @@
                     a {
                         line-height: var(--line-height);
                     }
-                    .req-contact-name {
-                        padding: 0 0.2em 0 0;
-                    }
                 }
 
                 .open-chat {
@@ -134,7 +131,7 @@
                     display: inline-block;
                 }
                 .decline-xmpp-request {
-                    margin-left: 5px;
+                    margin-left: 1em;
                 }
                 &:hover {
                     background-color: var(--highlight-color-hover);

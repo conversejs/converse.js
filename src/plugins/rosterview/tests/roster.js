@@ -1222,7 +1222,7 @@ describe("The Contacts Roster", function () {
             }));
             await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Contact requests"] li`).length, 700);
             // Check that they are sorted alphabetically
-            const children = rosterview.querySelector(`ul[data-group="Contact requests"]`).querySelectorAll('.requesting-xmpp-contact span');
+            const children = rosterview.querySelectorAll(`ul[data-group="Contact requests"] .requesting-xmpp-contact .contact-name`);
             names = [];
             Array.from(children).forEach(addName);
             expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
@@ -1277,7 +1277,8 @@ describe("The Contacts Roster", function () {
             // actually not accepted/authorized because of
             // mock_connection.
             spyOn(_converse.roster, 'sendContactAddIQ').and.callFake(() => Promise.resolve());
-            const req_contact = sizzle(`.req-contact-name:contains("${contact.getDisplayName()}")`, rosterview).pop();
+
+            const req_contact = sizzle(`.contact-name:contains("${contact.getDisplayName()}")`, rosterview).pop();
             req_contact.parentElement.parentElement.querySelector('.accept-xmpp-request').click();
             expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
             await u.waitUntil(() => contact.authorize.calls.count());
@@ -1299,7 +1300,7 @@ describe("The Contacts Roster", function () {
             const contact = _converse.roster.get(jid);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
-            const req_contact = await u.waitUntil(() => sizzle(".req-contact-name:contains('"+name+"')", rosterview).pop());
+            const req_contact = await u.waitUntil(() => sizzle(".contact-name:contains('"+name+"')", rosterview).pop());
             req_contact.parentElement.parentElement.querySelector('.decline-xmpp-request').click();
             expect(_converse.api.confirm).toHaveBeenCalled();
             await u.waitUntil(() => contact.unauthorize.calls.count());
@@ -1408,11 +1409,9 @@ describe("The Contacts Roster", function () {
                 expect(child.getAttribute('title')).toContain(jid);
             }));
             await Promise.all(mock.req_names.map(async name => {
-                const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const el = await u.waitUntil(() => sizzle("li:contains('"+name+"')", rosterview).pop());
-                const child = el.firstElementChild.firstElementChild;
+                const child = el.querySelector('.contact-name');
                 expect(child.textContent.trim()).toBe(name);
-                expect(child.firstElementChild.getAttribute('title')).toContain(jid);
             }));
         }));
     });

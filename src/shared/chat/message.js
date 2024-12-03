@@ -1,4 +1,4 @@
-import { api, converse, log, constants } from  '@converse/headless';
+import { api, converse, constants } from  '@converse/headless';
 import './message-actions.js';
 import './message-body.js';
 import 'shared/components/dropdown.js';
@@ -15,9 +15,8 @@ import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { getHats } from './utils.js';
 
-const { Strophe, dayjs } = converse.env;
+const { Strophe } = converse.env;
 const { SUCCESS } = constants;
 
 
@@ -73,13 +72,6 @@ export default class Message extends CustomElement {
         }
     }
 
-    getProps () {
-        return Object.assign(
-            this.model.toJSON(),
-            this.getDerivedMessageProps()
-        );
-    }
-
     renderRetraction () {
         return tplRetraction(this);
     }
@@ -105,7 +97,7 @@ export default class Message extends CustomElement {
     }
 
     renderChatMessage () {
-        return tplMessage(this, this.getProps());
+        return tplMessage(this);
     }
 
     shouldShowAvatar () {
@@ -167,21 +159,6 @@ export default class Message extends CustomElement {
         }
         this.model.get('correcting') && extra_classes.push('correcting');
         return extra_classes.filter(c => c).join(" ");
-    }
-
-    getDerivedMessageProps () {
-        const format = api.settings.get('time_format');
-        return {
-            'pretty_time': dayjs(this.model.get('edited') || this.model.get('time')).format(format),
-            'has_mentions': this.hasMentions(),
-            'hats': getHats(this.model),
-            'is_first_unread': this.model_with_messages.get('first_unread_id') === this.model.get('id'),
-            'is_me_message': this.model.isMeCommand(),
-            'is_retracted': this.isRetracted(),
-            'username': this.model.getDisplayName(),
-            'should_show_avatar': this.shouldShowAvatar(),
-            'colorize_username': api.settings.get('colorize_username'),
-        }
     }
 
     getRetractionText () {

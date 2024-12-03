@@ -76,13 +76,17 @@ export default class MUCOccupants extends CustomElement {
         u.safeSave(this.model, { 'hidden_occupants': true });
     }
 
-    /** @param {MouseEvent} ev */
-    onOccupantClicked (ev) {
-        ev?.preventDefault?.();
-        const { chatboxviews } = _converse.state;
-        const view = chatboxviews.get(this.getAttribute('jid'));
-        const occ_el = /** @type {HTMLElement} */(ev.target);
-        view?.getMessageForm().insertIntoTextArea(`@${occ_el.textContent}`);
+    /**
+     * @param {MouseEvent} ev
+     * @param {import('@converse/headless/types/plugins/muc/occupant.js').default} occupant
+     */
+    onOccupantClicked (ev, occupant) {
+        ev.preventDefault();
+        if (this.model.getOwnOccupant() === occupant) {
+            api.modal.show('converse-profile-modal', {model: _converse.state.xmppstatus}, ev);
+        } else {
+            this.model.save({ 'sidebar_view': `occupant:${occupant.id}` })
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-import { api, converse, constants } from  '@converse/headless';
+import { api, converse, constants, _converse } from  '@converse/headless';
 import './message-actions.js';
 import './message-body.js';
 import 'shared/components/dropdown.js';
@@ -179,10 +179,10 @@ export default class Message extends CustomElement {
 
     showUserModal (ev) {
         if (this.model.get('sender') === 'me') {
-            api.modal.show('converse-profile-modal', {model: this.model}, ev);
+            api.modal.show('converse-profile-modal', { model: _converse.state.xmppstatus }, ev);
         } else if (this.model.get('type') === 'groupchat') {
             ev.preventDefault();
-            api.modal.show('converse-muc-occupant-modal', { 'model': this.model.getOccupant(), 'message': this.model }, ev);
+            api.modal.show('converse-muc-occupant-modal', { model: this.model.getOccupant(), message: this.model }, ev);
         } else {
             ev.preventDefault();
             api.modal.show('converse-user-details-modal', { model: this.model_with_messages }, ev);

@@ -15,19 +15,20 @@ const { dayjs } = converse.env;
 export default (el) => {
     const i18n_new_messages = __('New messages');
 
-    const sender = el.model.get('sender');
-    const msgid = el.model.get('msgid');
     const edited = el.model.get('edited');
+    const is_first_unread = el.model_with_messages.get('first_unread_id') === el.model.get('id');
+    const is_followup = el.model.isFollowup();
+    const is_me_message = el.model.isMeCommand();
+    const is_retracted = el.isRetracted();
+    const msgid = el.model.get('msgid');
+    const sender = el.model.get('sender');
     const time = el.model.get('time');
+
     const contact = el.model.occupant || el.model.contact;
     const author_style = getAuthorStyle(contact);
-    const is_me_message = el.model.isMeCommand();
-    const is_followup = el.model.isFollowup();
     const format = api.settings.get('time_format');
     const pretty_time = dayjs(edited || time).format(format);
     const hats = getHats(el.model);
-    const is_first_unread = el.model_with_messages.get('first_unread_id') === el.model.get('id');
-    const is_retracted = el.isRetracted();
     const username = el.model.getDisplayName();
     const should_show_avatar = el.shouldShowAvatar();
 

@@ -12,7 +12,9 @@
                 justify-content: space-between;
                 padding: 0.5em;
                 padding-top: 0.4em;
-
+                a, a:hover {
+                    color: var(--muc-color);
+                }
                 .back-button {
                     font-size: 0.75em;
                     padding: 0.5em;

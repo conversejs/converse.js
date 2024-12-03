@@ -13,14 +13,15 @@ declare class MUCMessage extends Message {
     /**
      * @param {MUCOccupant} [occupant]
      */
-    onOccupantAdded(occupant?: import("./occupant").default): void;
+    onOccupantAdded(occupant?: MUCOccupant): void;
     getOccupant(): any;
     /**
      * @param {MUCOccupant} [occupant]
      * @return {MUCOccupant}
      */
-    setOccupant(occupant?: import("./occupant").default): import("./occupant").default;
+    setOccupant(occupant?: MUCOccupant): MUCOccupant;
     occupant: any;
 }
 import Message from '../chat/message.js';
+import MUCOccupant from './occupant';
 //# sourceMappingURL=message.d.ts.map

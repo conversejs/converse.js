@@ -8,13 +8,14 @@ import { AFFILIATIONS, ROLES } from './constants.js';
 import MUCMessages from './messages.js';
 import u from '../../utils/index.js';
 import { shouldCreateGroupchatMessage } from './utils';
+import { sendChatState } from '../../shared/actions';
 
 /**
  * Represents a participant in a MUC
  */
 class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
     /**
-     * @typedef {import('../chat/types.ts').MessageAttributes} MessageAttributes
+     * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
      */
 
@@ -28,6 +29,7 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
         await this.fetchMessages();
         this.on('change:nick', () => this.setColor());
         this.on('change:jid', () => this.setColor());
+        this.on('change:chat_state', () => sendChatState(this.get('jid'), this.get('chat_state')));
     }
 
     defaults() {

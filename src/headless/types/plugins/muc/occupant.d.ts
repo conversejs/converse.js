@@ -17,13 +17,13 @@ declare const MUCOccupant_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(attrs_or_error: import("../chat/types.ts").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../chat").Message, attrs: import("../chat/types.ts").MessageAttributes): object;
-        updateMessage(message: import("../chat").Message, attrs: import("../chat/types.ts").MessageAttributes): void;
-        handleCorrection(attrs: import("../chat/types.ts").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../chat").Message | void>;
-        queueMessage(attrs: import("../chat/types.ts").MessageAttributes): any;
+        onMessage(attrs_or_error: import("../chat/types").MessageAttributes | Error): Promise<void>;
+        getUpdatedMessageAttributes(message: import("../chat").Message, attrs: import("../chat/types").MessageAttributes): object;
+        updateMessage(message: import("../chat").Message, attrs: import("../chat/types").MessageAttributes): void;
+        handleCorrection(attrs: import("../chat/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../chat").Message | void>;
+        queueMessage(attrs: import("../chat/types").MessageAttributes): any;
         msg_chain: any;
-        getOutgoingMessageAttributes(_attrs?: import("../chat/types.ts").MessageAttributes): Promise<import("../chat/types.ts").MessageAttributes>;
+        getOutgoingMessageAttributes(_attrs?: import("../chat/types").MessageAttributes): Promise<import("../chat/types").MessageAttributes>;
         sendMessage(attrs?: any): Promise<import("../chat").Message>;
         retractOwnMessage(message: import("../chat").Message): void;
         sendFiles(files: File[]): Promise<void>;
@@ -34,7 +34,7 @@ declare const MUCOccupant_base: {
         onMessageUploadChanged(message: import("../chat").Message): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
-        shouldShowErrorMessage(attrs: import("../chat/types.ts").MessageAttributes): Promise<boolean>;
+        shouldShowErrorMessage(attrs: import("../chat/types").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -57,8 +57,8 @@ declare const MUCOccupant_base: {
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat").Message): void;
         clearUnreadMsgCounter(): void;
-        handleRetraction(attrs: import("../chat/types.ts").MessageAttributes): Promise<boolean>;
-        handleReceipt(attrs: import("../chat/types.ts").MessageAttributes): boolean;
+        handleRetraction(attrs: import("../chat/types").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("../chat/types").MessageAttributes): boolean;
         createMessageStanza(message: import("../chat").Message): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
@@ -201,7 +201,7 @@ declare const MUCOccupant_base: {
  */
 declare class MUCOccupant extends MUCOccupant_base {
     /**
-     * @typedef {import('../chat/types.ts').MessageAttributes} MessageAttributes
+     * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
      */
     constructor(attributes: any, options: any);
@@ -221,7 +221,7 @@ declare class MUCOccupant extends MUCOccupant_base {
      * This method houldn't be called directly, instead {@link MUC#queueMessage} should be called.
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("../chat/types.ts").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("../chat/types").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
     /**
      * Return roles which may be assigned to this occupant
      * @returns {typeof ROLES} - An array of assignable roles

@@ -89,7 +89,6 @@ export default class BaseChatView extends CustomElement {
     onWindowStateChanged () {
         if (document.hidden) {
             this.model.setChatState(INACTIVE, { 'silent': true });
-            this.model.sendChatState();
         } else {
             if (!this.model.isHidden()) {
                 this.model.clearUnreadMsgCounter();

@@ -5,6 +5,7 @@ export default class ChatContent extends CustomElement {
         };
     };
     model: any;
+    connectedCallback(): void;
     initialize(): Promise<void>;
     render(): import("lit").TemplateResult<1> | "";
     scrollDown(): void;

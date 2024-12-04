@@ -26,6 +26,11 @@ export default class ChatContent extends CustomElement {
         this.removeEventListener('scroll', markScrolled);
     }
 
+    connectedCallback () {
+        super.connectedCallback();
+        this.addEventListener('scroll', markScrolled);
+    }
+
     async initialize () {
         await this.model.initialized;
         this.listenTo(this.model.messages, 'add', () => this.requestUpdate());
@@ -36,7 +41,6 @@ export default class ChatContent extends CustomElement {
         this.listenTo(this.model.notifications, 'change', () => this.requestUpdate());
         this.listenTo(this.model.ui, 'change', () => this.requestUpdate());
         this.listenTo(this.model.ui, 'change:scrolled', this.scrollDown);
-        this.addEventListener('scroll', markScrolled);
         this.requestUpdate();
     }
 

@@ -13,15 +13,14 @@ declare class MUCMessage extends Message {
     /**
      * @param {MUCOccupant} [occupant]
      */
-    onOccupantAdded(occupant?: MUCOccupant): void;
+    onOccupantAdded(occupant?: import("./occupant.js").default): void;
     getOccupant(): any;
     /**
-     * @param {MUCOccupant} [occupant]
+     * @param {import('plugins/vcard/utils.js').MUCOccupant} [occupant]
      * @return {MUCOccupant}
      */
-    setOccupant(occupant?: MUCOccupant): MUCOccupant;
+    setOccupant(occupant?: import("plugins/vcard/utils.js").MUCOccupant): import("./occupant.js").default;
     occupant: any;
 }
 import Message from '../chat/message.js';
-import MUCOccupant from './occupant';
 //# sourceMappingURL=message.d.ts.map

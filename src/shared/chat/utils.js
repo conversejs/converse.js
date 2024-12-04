@@ -1,7 +1,11 @@
 /**
- * @typedef {import('@converse/headless').Message} Message
- * @typedef {import('@converse/skeletor').Model} Model
+ * @typedef {import('../../plugins/chatview/chat.js').default} ChatView
  * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
+ * @typedef {import('../../plugins/muc-views/occupant').default} MUCOccupantView
+ * @typedef {import('@converse/headless').Message} Message
+ * @typedef {import('@converse/headless').MUCMessage} MUCMessage
+ * @typedef {import('@converse/skeletor').Model} Model
+ * @typedef {import('lit').TemplateResult} TemplateResult
  */
 import debounce from 'lodash-es/debounce';
 import { api, converse } from '@converse/headless';
@@ -92,44 +96,41 @@ export function onScrolledDown (model) {
  * We want to record when the user has scrolled away from
  * the bottom, so that we don't automatically scroll away
  * from what the user is reading when new messages are received.
- *
- * Don't call this method directly, instead, call `markScrolled`,
- * which debounces this method.
  */
-function _markScrolled (ev) {
-    const el = ev.target;
-    if (el.nodeName.toLowerCase() !== 'converse-chat-content') {
-        return;
-    }
-    let scrolled = true;
-    const is_at_bottom = Math.floor(el.scrollTop) === 0;
-    const is_at_top =
-        Math.ceil(el.clientHeight-el.scrollTop) >= (el.scrollHeight-Math.ceil(el.scrollHeight/20));
+export const markScrolled = debounce(
+    /** @param {Event} ev */
+    function _markScrolled(ev) {
+        let scrolled = true;
 
-    if (is_at_bottom) {
-        scrolled = false;
-        onScrolledDown(el.model);
-    } else if (is_at_top) {
-        /**
-         * Triggered once the chat's message area has been scrolled to the top
-         * @event _converse#chatBoxScrolledUp
-         * @property { _converse.ChatBoxView | MUCView } view
-         * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
-         */
-        api.trigger('chatBoxScrolledUp', el);
-    }
-    if (el.model.get('scolled') !== scrolled) {
-        el.model.ui.set({ scrolled });
-    }
-}
+        const el = /** @type {ChatView|MUCView|MUCOccupantView} */ (ev.target);
+        const is_at_bottom = Math.floor(el.scrollTop) === 0;
+        const is_at_top =
+            Math.ceil(el.clientHeight - el.scrollTop) >= el.scrollHeight - Math.ceil(el.scrollHeight / 20);
 
-export const markScrolled = debounce((ev) => _markScrolled(ev), 50);
-
+        if (is_at_bottom) {
+            scrolled = false;
+            onScrolledDown(el.model);
+        } else if (is_at_top) {
+            /**
+             * Triggered once the chat's message area has been scrolled to the top
+             * @event _converse#chatBoxScrolledUp
+             * @property { _converse.ChatBoxView | MUCView } view
+             * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
+             */
+            api.trigger('chatBoxScrolledUp', el);
+        }
+        if (el.model.get('scolled') !== scrolled) {
+            el.model.ui.set({ scrolled });
+        }
+    },
+    50
+);
 
 /**
  * Given a message object, returns a TemplateResult indicating a new day if
  * the passed in message is more than a day later than its predecessor.
  * @param {Message} message
+ * @returns {TemplateResult|undefined}
  */
 export function getDayIndicator (message) {
     const messages = message.collection?.models;
@@ -148,6 +149,9 @@ export function getDayIndicator (message) {
     }
 }
 
+/**
+ * @param {MUCMessage} message
+ */
 export function getHats (message) {
     if (message.get('type') === 'groupchat') {
         const allowed_hats = api.settings.get('muc_hats').filter(hat => hat).map((hat) => (hat.toLowerCase()));

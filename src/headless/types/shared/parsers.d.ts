@@ -9,11 +9,9 @@
 export function getStanzaIDs(stanza: Element, original_stanza: Element): any;
 /**
  * @param {Element} stanza
+ * @returns {import('./types').EncryptionAttrs}
  */
-export function getEncryptionAttributes(stanza: Element): {
-    is_encrypted: boolean;
-    encryption_namespace: string;
-};
+export function getEncryptionAttributes(stanza: Element): import("./types").EncryptionAttrs;
 /**
  * @param {Element} stanza - The message stanza
  * @param {Element} original_stanza - The original stanza, that contains the

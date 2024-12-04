@@ -33,44 +33,15 @@ declare namespace modal_api {
         function removeAll(): void;
     }
     /**
-     * @typedef Field
-     * @property { String } Field.label - The form label for the input field.
-     * @property { String } Field.name - The name for the input field.
-     * @property { String } [Field.challenge] - A challenge value that must be provided by the user.
-     * @property { String } [Field.placeholder] - The placeholder for the input field.
-     * @property { Boolean} [Field.required] - Whether the field is required or not
-     */
-    /**
      * Show a confirm modal to the user.
      * @method _converse.api.confirm
-     * @param { String } title - The header text for the confirmation dialog
-     * @param { (Array<String>|String) } messages - The text to show to the user
-     * @param { Array<Field> } fields - An object representing a fields presented to the user.
-     * @returns { Promise<Array|false> } A promise which resolves with an array of
+     * @param {String} title - The header text for the confirmation dialog
+     * @param {(Array<String>|String)} messages - The text to show to the user
+     * @param {Array<import('./types.ts').Field>} fields - An object representing a field presented to the user.
+     * @returns {Promise<Array|false>} A promise which resolves with an array of
      *  filled in fields or `false` if the confirm dialog was closed or canceled.
      */
-    function confirm(title: string, messages?: (Array<string> | string), fields?: Array<{
-        /**
-         * - The form label for the input field.
-         */
-        label: string;
-        /**
-         * - The name for the input field.
-         */
-        name: string;
-        /**
-         * - A challenge value that must be provided by the user.
-         */
-        challenge?: string;
-        /**
-         * - The placeholder for the input field.
-         */
-        placeholder?: string;
-        /**
-         * - Whether the field is required or not
-         */
-        required?: boolean;
-    }>): Promise<any[] | false>;
+    function confirm(title: string, messages?: (Array<string> | string), fields?: Array<import("./types.ts").Field>): Promise<any[] | false>;
     /**
      * Show a prompt modal to the user.
      * @method _converse.api.prompt

@@ -17,13 +17,13 @@ declare const ChatBox_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(_promise: Promise<import("./parsers").MessageAttributes>): Promise<void>;
-        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./parsers").MessageAttributes): object;
-        updateMessage(message: import("./message.js").default, attrs: import("./parsers").MessageAttributes): void;
-        handleCorrection(attrs: import("./parsers").MessageAttributes | import("../muc/parsers.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
-        queueMessage(attrs: Promise<import("./parsers").MessageAttributes>): any;
+        onMessage(attrs_or_error: import("./types.ts").MessageAttributes | Error): Promise<void>;
+        getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types.ts").MessageAttributes): object;
+        updateMessage(message: import("./message.js").default, attrs: import("./types.ts").MessageAttributes): void;
+        handleCorrection(attrs: import("./types.ts").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
+        queueMessage(attrs: import("./types.ts").MessageAttributes): any;
         msg_chain: any;
-        getOutgoingMessageAttributes(_attrs?: import("./parsers").MessageAttributes): Promise<import("./parsers").MessageAttributes>;
+        getOutgoingMessageAttributes(_attrs?: import("./types.ts").MessageAttributes): Promise<import("./types.ts").MessageAttributes>;
         sendMessage(attrs?: any): Promise<import("./message.js").default>;
         retractOwnMessage(message: import("./message.js").default): void;
         sendFiles(files: File[]): Promise<void>;
@@ -34,7 +34,7 @@ declare const ChatBox_base: {
         onMessageUploadChanged(message: import("./message.js").default): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
-        shouldShowErrorMessage(attrs: import("./parsers").MessageAttributes): Promise<boolean>;
+        shouldShowErrorMessage(attrs: import("./types.ts").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -57,8 +57,8 @@ declare const ChatBox_base: {
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("./message.js").default): void;
         clearUnreadMsgCounter(): void;
-        handleRetraction(attrs: import("./parsers").MessageAttributes): Promise<boolean>;
-        handleReceipt(attrs: import("./parsers").MessageAttributes): boolean;
+        handleRetraction(attrs: import("./types.ts").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("./types.ts").MessageAttributes): boolean;
         createMessageStanza(message: import("./message.js").default): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
@@ -273,7 +273,7 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
-     * @typedef {import('./parsers').MessageAttributes} MessageAttributes
+     * @typedef {import('./types.ts').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
      */
     defaults(): {
@@ -289,9 +289,9 @@ declare class ChatBox extends ChatBox_base {
     initialized: any;
     presence: any;
     /**
-     * @param {Promise<MessageAttributes|StanzaParseError>} attrs_promise
+     * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_promise: Promise<import("./parsers").MessageAttributes | import("../../shared/parsers").StanzaParseError>): Promise<void>;
+    onMessage(attrs_or_error: import("./types.ts").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
     onPresenceChanged(item: any): void;
     close(): Promise<void>;
     /**
@@ -306,12 +306,12 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @param {MessageAttributes} attrs
      */
-    handleChatMarker(attrs: import("./parsers").MessageAttributes): boolean;
+    handleChatMarker(attrs: import("./types.ts").MessageAttributes): boolean;
     /**
      * @param {MessageAttributes} [attrs]
      * @return {Promise<MessageAttributes>}
      */
-    getOutgoingMessageAttributes(attrs?: import("./parsers").MessageAttributes): Promise<import("./parsers").MessageAttributes>;
+    getOutgoingMessageAttributes(attrs?: import("./types.ts").MessageAttributes): Promise<import("./types.ts").MessageAttributes>;
     canPostMessages(): boolean;
 }
 import ChatBoxBase from '../../shared/chatbox.js';

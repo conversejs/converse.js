@@ -17,13 +17,13 @@ declare const MUCOccupant_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(_promise: Promise<import("../chat/parsers").MessageAttributes>): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../chat").Message, attrs: import("../chat/parsers").MessageAttributes): object;
-        updateMessage(message: import("../chat").Message, attrs: import("../chat/parsers").MessageAttributes): void;
-        handleCorrection(attrs: import("../chat/parsers").MessageAttributes | import("./parsers").MUCMessageAttributes): Promise<import("../chat").Message | void>;
-        queueMessage(attrs: Promise<import("../chat/parsers").MessageAttributes>): any;
+        onMessage(attrs_or_error: import("../chat/types.ts").MessageAttributes | Error): Promise<void>;
+        getUpdatedMessageAttributes(message: import("../chat").Message, attrs: import("../chat/types.ts").MessageAttributes): object;
+        updateMessage(message: import("../chat").Message, attrs: import("../chat/types.ts").MessageAttributes): void;
+        handleCorrection(attrs: import("../chat/types.ts").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../chat").Message | void>;
+        queueMessage(attrs: import("../chat/types.ts").MessageAttributes): any;
         msg_chain: any;
-        getOutgoingMessageAttributes(_attrs?: import("../chat/parsers").MessageAttributes): Promise<import("../chat/parsers").MessageAttributes>;
+        getOutgoingMessageAttributes(_attrs?: import("../chat/types.ts").MessageAttributes): Promise<import("../chat/types.ts").MessageAttributes>;
         sendMessage(attrs?: any): Promise<import("../chat").Message>;
         retractOwnMessage(message: import("../chat").Message): void;
         sendFiles(files: File[]): Promise<void>;
@@ -34,7 +34,7 @@ declare const MUCOccupant_base: {
         onMessageUploadChanged(message: import("../chat").Message): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
-        shouldShowErrorMessage(attrs: import("../chat/parsers").MessageAttributes): Promise<boolean>;
+        shouldShowErrorMessage(attrs: import("../chat/types.ts").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -57,8 +57,8 @@ declare const MUCOccupant_base: {
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat").Message): void;
         clearUnreadMsgCounter(): void;
-        handleRetraction(attrs: import("../chat/parsers").MessageAttributes): Promise<boolean>;
-        handleReceipt(attrs: import("../chat/parsers").MessageAttributes): boolean;
+        handleRetraction(attrs: import("../chat/types.ts").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("../chat/types.ts").MessageAttributes): boolean;
         createMessageStanza(message: import("../chat").Message): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
@@ -201,7 +201,8 @@ declare const MUCOccupant_base: {
  */
 declare class MUCOccupant extends MUCOccupant_base {
     /**
-     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+     * @typedef {import('../chat/types.ts').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
      */
     constructor(attributes: any, options: any);
     vcard: any;
@@ -218,9 +219,9 @@ declare class MUCOccupant extends MUCOccupant_base {
     /**
      * Handler for all MUC private messages sent to this occupant.
      * This method houldn't be called directly, instead {@link MUC#queueMessage} should be called.
-     * @param {Promise<MessageAttributes>} promise
+     * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(promise: Promise<any>): Promise<void>;
+    onMessage(attrs_or_error: import("../chat/types.ts").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
     /**
      * Return roles which may be assigned to this occupant
      * @returns {typeof ROLES} - An array of assignable roles
@@ -234,11 +235,6 @@ declare class MUCOccupant extends MUCOccupant_base {
     isMember(): boolean;
     isModerator(): boolean;
     isSelf(): any;
-    /**
-     * @param {MessageAttributes} [attrs]
-     * @return {Promise<MessageAttributes>}
-     */
-    getOutgoingMessageAttributes(attrs?: any): Promise<any>;
 }
 import { Model } from '@converse/skeletor';
 import MUCMessages from './messages.js';

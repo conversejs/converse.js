@@ -81,22 +81,14 @@ const modal_api = {
             modals_map = {};
         }
     },
-    /**
-     * @typedef Field
-     * @property { String } Field.label - The form label for the input field.
-     * @property { String } Field.name - The name for the input field.
-     * @property { String } [Field.challenge] - A challenge value that must be provided by the user.
-     * @property { String } [Field.placeholder] - The placeholder for the input field.
-     * @property { Boolean} [Field.required] - Whether the field is required or not
-     */
 
     /**
      * Show a confirm modal to the user.
      * @method _converse.api.confirm
-     * @param { String } title - The header text for the confirmation dialog
-     * @param { (Array<String>|String) } messages - The text to show to the user
-     * @param { Array<Field> } fields - An object representing a fields presented to the user.
-     * @returns { Promise<Array|false> } A promise which resolves with an array of
+     * @param {String} title - The header text for the confirmation dialog
+     * @param {(Array<String>|String)} messages - The text to show to the user
+     * @param {Array<import('./types.ts').Field>} fields - An object representing a field presented to the user.
+     * @returns {Promise<Array|false>} A promise which resolves with an array of
      *  filled in fields or `false` if the confirm dialog was closed or canceled.
      */
     async confirm (title, messages=[], fields=[]) {

@@ -38,20 +38,20 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         fetchMessages(): any;
         afterMessagesFetched(): void;
         /**
-         * @param {Promise<MessageAttributes>} _promise
+         * @param {MessageAttributes|Error} attrs_or_error
          */
-        onMessage(_promise: Promise<import("../plugins/chat/parsers").MessageAttributes>): Promise<void>;
+        onMessage(attrs_or_error: import("../plugins/chat/types.ts").MessageAttributes | Error): Promise<void>;
         /**
          * @param {Message} message
          * @param {MessageAttributes} attrs
          * @returns {object}
          */
-        getUpdatedMessageAttributes(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/parsers").MessageAttributes): object;
+        getUpdatedMessageAttributes(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/types.ts").MessageAttributes): object;
         /**
          * @param {Message} message
          * @param {MessageAttributes} attrs
          */
-        updateMessage(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/parsers").MessageAttributes): void;
+        updateMessage(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/types.ts").MessageAttributes): void;
         /**
          * Determines whether the given attributes of an incoming message
          * represent a XEP-0308 correction and, if so, handles it appropriately.
@@ -60,18 +60,18 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @returns {Promise<Message|void>} Returns the corrected
          *  message or `undefined` if not applicable.
          */
-        handleCorrection(attrs: import("../plugins/chat/parsers").MessageAttributes | import("../plugins/muc/parsers").MUCMessageAttributes): Promise<import("../plugins/chat/message").default | void>;
+        handleCorrection(attrs: import("../plugins/chat/types.ts").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("../plugins/chat/message").default | void>;
         /**
          * Queue an incoming `chat` message stanza for processing.
-         * @param {Promise<MessageAttributes>} attrs - A promise which resolves to the message attributes
+         * @param {MessageAttributes} attrs - A promise which resolves to the message attributes
          */
-        queueMessage(attrs: Promise<import("../plugins/chat/parsers").MessageAttributes>): any;
+        queueMessage(attrs: import("../plugins/chat/types.ts").MessageAttributes): any;
         msg_chain: any;
         /**
          * @param {MessageAttributes} [_attrs]
          * @return {Promise<MessageAttributes>}
          */
-        getOutgoingMessageAttributes(_attrs?: import("../plugins/chat/parsers").MessageAttributes): Promise<import("../plugins/chat/parsers").MessageAttributes>;
+        getOutgoingMessageAttributes(_attrs?: import("../plugins/chat/types.ts").MessageAttributes): Promise<import("../plugins/chat/types.ts").MessageAttributes>;
         /**
          * Responsible for sending off a text message inside an ongoing chat conversation.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
@@ -125,7 +125,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {MessageAttributes} attrs
          * @returns {Promise<boolean>}
          */
-        shouldShowErrorMessage(attrs: import("../plugins/chat/parsers").MessageAttributes): Promise<boolean>;
+        shouldShowErrorMessage(attrs: import("../plugins/chat/types.ts").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -203,11 +203,11 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @returns {Promise<Boolean>} Returns `true` or `false` depending on
          *  whether a message was retracted or not.
          */
-        handleRetraction(attrs: import("../plugins/chat/parsers").MessageAttributes): Promise<boolean>;
+        handleRetraction(attrs: import("../plugins/chat/types.ts").MessageAttributes): Promise<boolean>;
         /**
          * @param {MessageAttributes} attrs
          */
-        handleReceipt(attrs: import("../plugins/chat/parsers").MessageAttributes): boolean;
+        handleReceipt(attrs: import("../plugins/chat/types.ts").MessageAttributes): boolean;
         /**
          * Given a {@link Message} return the XML stanza that represents it.
          * @method ChatBox#createMessageStanza

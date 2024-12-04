@@ -7,3 +7,14 @@ import { Model } from '@converse/skeletor';
 type Constructor<T = {}> = new (...args: any[]) => T;
 
 export type ModelExtender = Constructor<Model>;
+
+type EncryptionPayloadAttrs = {
+    prekey?: boolean;
+    device_id: string;
+};
+
+export type EncryptionAttrs = {
+    encrypted?: EncryptionPayloadAttrs; //  XEP-0384 encryption payload attributes
+    is_encrypted: boolean;
+    encryption_namespace: string;
+};

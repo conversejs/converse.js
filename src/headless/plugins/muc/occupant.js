@@ -6,7 +6,7 @@ import ColorAwareModel from '../../shared/color.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
 import { AFFILIATIONS, ROLES } from './constants.js';
 import MUCMessages from './messages.js';
-import u, { isErrorObject } from '../../utils/index.js';
+import u from '../../utils/index.js';
 import { shouldCreateGroupchatMessage } from './utils';
 
 /**
@@ -14,7 +14,8 @@ import { shouldCreateGroupchatMessage } from './utils';
  */
 class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
     /**
-     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
+     * @typedef {import('../chat/types.ts').MessageAttributes} MessageAttributes
+     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
      */
 
     constructor(attributes, options) {
@@ -64,13 +65,17 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
     /**
      * Handler for all MUC private messages sent to this occupant.
      * This method houldn't be called directly, instead {@link MUC#queueMessage} should be called.
-     * @param {Promise<MessageAttributes>} promise
+     * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    async onMessage(promise) {
-        const attrs = await promise;
-        if (isErrorObject(attrs)) {
-            return log.error(attrs.message);
-        } else if (attrs.type === 'error') {
+    async onMessage(attrs_or_error) {
+        if (u.isErrorObject(attrs_or_error)) {
+            const { stanza, message } = /** @type {StanzaParseError} */(attrs_or_error);
+            if (stanza) log.error(stanza);
+            return log.error(message);
+        }
+
+        const attrs = /** @type {MessageAttributes} */(attrs_or_error);
+        if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
 

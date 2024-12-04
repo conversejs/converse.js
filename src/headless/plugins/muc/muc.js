@@ -48,8 +48,8 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * @typedef {import('./occupant.js').default} MUCOccupant
      * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
      * @typedef {import('./parsers').MemberListItem} MemberListItem
-     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
-     * @typedef {import('./parsers').MUCMessageAttributes} MUCMessageAttributes
+     * @typedef {import('../chat/types.ts').MessageAttributes} MessageAttributes
+     * @typedef {import('./types.ts').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
      * @typedef {import('strophe.js').Builder} Builder
      * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
@@ -482,7 +482,6 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      */
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
-
 
         const attrs_or_error = await parseMUCMessage(stanza, this);
         if (u.isErrorObject(attrs_or_error)) {
@@ -2243,7 +2242,6 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         return false;
     }
 
-
     /**
      * @param {MessageAttributes} attrs
      * @returns {boolean}
@@ -2273,7 +2271,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
     /**
      * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
      * messages for them.
-     * @param {MessageAttributes} attrs
+     * @param {MUCMessageAttributes} attrs
      * @returns {boolean}
      */
     handleMEPNotification (attrs) {
@@ -2309,13 +2307,15 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * Handler for all MUC messages sent to this groupchat. This method
      * shouldn't be called directly, instead {@link MUC#queueMessage}
      * should be called.
-     * @param {Promise<MessageAttributes>} promise - A promise which resolves to the message attributes.
+     * @param {MUCMessageAttributes|StanzaParseError} attrs_or_error - A promise which resolves to the message attributes.
      */
-    async onMessage (promise) {
-        const attrs = await promise;
-        if (isErrorObject(attrs)) {
-            return log.error(attrs.message);
-        } else if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
+    async onMessage (attrs_or_error) {
+        if (isErrorObject(attrs_or_error)) {
+            return log.error(/** @type {Error} */(attrs_or_error).message);
+        }
+
+        const attrs = /** @type {MUCMessageAttributes} */(attrs_or_error);
+        if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
 

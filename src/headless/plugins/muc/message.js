@@ -2,11 +2,12 @@ import { Strophe } from 'strophe.js';
 import Message from '../chat/message.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import MUCOccupant from './occupant';
 
 
 class MUCMessage extends Message {
-
+    /**
+     * @typedef {import('plugins/vcard/utils.js').MUCOccupant} MUCOccupant
+     */
     async initialize () { // eslint-disable-line require-await
         if (!this.checkValidity()) return;
         this.chatbox = this.collection?.chatbox;
@@ -84,7 +85,7 @@ class MUCMessage extends Message {
     }
 
     /**
-     * @param {MUCOccupant} [occupant]
+     * @param {import('plugins/vcard/utils.js').MUCOccupant} [occupant]
      * @return {MUCOccupant}
      */
     setOccupant (occupant) {
@@ -95,13 +96,13 @@ class MUCMessage extends Message {
         if (occupant) {
             this.occupant = occupant;
 
-        } else if (this.get('type') === 'chat' && this.get('sender') === 'them' && this.chatbox instanceof MUCOccupant) {
+        } else if (this.get('type') === 'chat' && this.get('sender') === 'them') {
             this.occupant = this.chatbox;
 
         } else {
             if (this.occupant) return;
 
-            const occupants = this.chatbox instanceof MUCOccupant ? this.chatbox.collection : this.chatbox.occupants;
+            const occupants = (this.get('type') === 'chat') ? this.chatbox.collection : this.chatbox.occupants;
             const nick = Strophe.getResourceFromJid(this.get('from'));
             const occupant_id = this.get('occupant_id');
             this.occupant = nick || occupant_id ? occupants.findOccupant({ nick, occupant_id }) : null;

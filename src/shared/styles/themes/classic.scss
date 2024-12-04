@@ -20,13 +20,14 @@
     --foreground-color: #666;
     --background-color: #efefef;
 
-    // Common bootstrap variables
+    // Bootstrap variables
     --primary-color: var(--blue) !important;
     --secondary-color: var(--light-blue) !important;
     --success-color: var(--green);
     --danger-color: var(--dark-red);
     --warning-color: var(--orange);
     --info-color: var(--light-blue);
+    --converse-highlight-color: var(--dark-red);
 
     // Online status indicators
     --chat-status-away: var(--orange);

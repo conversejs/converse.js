@@ -19,35 +19,32 @@
     --frost-3:       #81a1c1;
     --frost-4:       #5e81ac;
 
-    // Hex color values
-    // ----------------
-    --cyan:         #88c0d0;
     --green:        #a3be8c;
-    --indigo:       #5e81ac;
+    --dark-green:   #5f8341;
     --orange:       #d08770;
     --purple:       #b48ead;
     --red:          #bf616a;
-    --teal:         #8fbcbb;
     --yellow:       #ebcb8b;
 
     // Base variables
     // --------------
-    --background-color: #eceff4;
-    --foreground-color: var(--polar-night-3);
+    --background-color: var(--snow-storm-2);
+    --foreground-color: var(--polar-night-2);
 
-    // Common bootstrap variables
-    --primary-color: var(--indigo) !important;
+    // Bootstrap variables
+    --primary-color: var(--frost-1) !important;
     --secondary-color: var(--frost-3) !important;
     --success-color: var(--green);
     --danger-color: var(--red);
     --warning-color: var(--orange);
     --info-color: var(--purple);
+    --converse-highlight-color: var(--red);
 
     // Online status indicators
     --chat-status-away: var(--orange);
     --chat-status-busy: var(--red);
     --chat-status-offline: gray;
-    --chat-status-online: var(--green);
+    --chat-status-online: var(--dark-green);
 
     --controlbox-color: var(--purple);
     --disabled-color: var(--secondary-color);
@@ -55,19 +52,19 @@
     --focus-color: var(--secondary-color);
     --heading-color: var(--purple);
     --headlines-color: var(--yellow);
-    --link-color: var(--cyan);
+    --link-color: var(--frost-4);
 
     // The background when selecting text with your mouse
-    --selection-color: var(--teal);
+    --selection-color: var(--frost-1);
 
     // Used to indicate selected or open items in lists.
     --highlight-color: var(--snow-storm-2);
     --highlight-color-hover: var(--snow-storm-1);
 
     // 1:1 Chat-related colors
-    --chat-color: var(--green);
+    --chat-color: var(--dark-green);
     --chat-header-fg-color: var(--background-color);
-    --chat-header-bg-color: var(--chat-color);
+    --chat-header-bg-color: var(--green);
 
     // MUC-related colors
     --muc-color: var(--orange);
@@ -76,7 +73,7 @@
 
     // Derived colors
     // --------------
-    --brand-heading-color: var(--cyan);
+    --brand-heading-color: var(--frost-4);
     --chat-color-hover: var(--chat-color);
     --danger-color-hover: var(--danger-color);
     --global-background-color: var(--background-color);

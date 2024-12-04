@@ -23,13 +23,14 @@
     --background-color: #1a0933;
     --foreground-color: var(--white);
 
-    // Common bootstrap variables
+    // Bootstrap variables
     --primary-color: var(--purple) !important;
     --secondary-color: var(--indigo) !important;
     --success-color: var(--green);
     --danger-color: var(--red);
     --warning-color: var(--orange);
     --info-color: var(--yellow);
+    --converse-highlight-color: var(--yellow);
 
     // Online status indicators
     --chat-status-away: var(--orange);

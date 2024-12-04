@@ -62,6 +62,16 @@
                 padding: 1em;
                 position: relative;
                 text-overflow: ellipsis;
+
+                &:hover {
+                    mark {
+                        background-color: unset;
+                        color: var(--converse-highlight-color);
+                    }
+                }
+                mark {
+                    padding: 0;
+                }
             }
         }
         .suggestion-box__results--below {

@@ -1,7 +1,7 @@
 /**
  * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
- * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
- * @typedef {module:plugin-muc-parsers.MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('@converse/headless/plugins/chat/types.ts').MessageAttributes} MessageAttributes
+ * @typedef {import('@converse/headless/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
 import { html } from 'lit';

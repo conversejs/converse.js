@@ -21,7 +21,7 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
     /**
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
-     * @typedef {import('./parsers').MessageAttributes} MessageAttributes
+     * @typedef {import('./types.ts').MessageAttributes} MessageAttributes
      * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
      */
 
@@ -68,10 +68,9 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
 
 
     /**
-     * @param {Promise<MessageAttributes|StanzaParseError>} attrs_promise
+     * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    async onMessage (attrs_promise) {
-        const attrs_or_error = await attrs_promise;
+    async onMessage (attrs_or_error) {
         if (u.isErrorObject(attrs_or_error)) {
             const { stanza, message } = /** @type {StanzaParseError} */(attrs_or_error);
             if (stanza) log.error(stanza);

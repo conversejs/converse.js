@@ -1,6 +1,7 @@
 /**
  * @module:plugin-muc-parsers
  * @typedef {import('../muc/muc.js').default} MUC
+ * @typedef {import('./types.ts').MUCMessageAttributes} MUCMessageAttributes
  */
 import dayjs from 'dayjs';
 import _converse from '../../shared/_converse.js';
@@ -29,21 +30,6 @@ import {
 
 const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;
-
-/**
- * @typedef {Object} ExtraMUCAttributes
- * @property {Array<Object>} activities - A list of objects representing XEP-0316 MEP notification data
- * @property {String} from_muc - The JID of the MUC from which this message was sent
- * @property {String} from_real_jid - The real JID of the sender, if available
- * @property {String} moderated - The type of XEP-0425 moderation (if any) that was applied
- * @property {String} moderated_by - The JID of the user that moderated this message
- * @property {String} moderated_id - The  XEP-0359 Stanza ID of the message that this one moderates
- * @property {String} moderation_reason - The reason provided why this message moderates another
- * @property {String} occupant_id - The XEP-0421 occupant ID
- *
- * The object which {@link parseMUCMessage} returns
- * @typedef {import('../chat/parsers').MessageAttributes & ExtraMUCAttributes} MUCMessageAttributes
- */
 
 /**
  * Parses a message stanza for XEP-0316 MEP notification data

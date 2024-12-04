@@ -63,6 +63,7 @@ export function getStanzaIDs (stanza, original_stanza) {
 
 /**
  * @param {Element} stanza
+ * @returns {import('./types').EncryptionAttrs}
  */
 export function getEncryptionAttributes (stanza) {
     const eme_tag = sizzle(`encryption[xmlns="${Strophe.NS.EME}"]`, stanza).pop();

@@ -17,13 +17,13 @@ declare const MUC_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(_promise: Promise<import("../chat/parsers").MessageAttributes>): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../chat/message.js").default, attrs: import("../chat/parsers").MessageAttributes): object;
-        updateMessage(message: import("../chat/message.js").default, attrs: import("../chat/parsers").MessageAttributes): void;
-        handleCorrection(attrs: import("../chat/parsers").MessageAttributes | import("./parsers.js").MUCMessageAttributes): Promise<import("../chat/message.js").default | void>;
-        queueMessage(attrs: Promise<import("../chat/parsers").MessageAttributes>): any;
+        onMessage(attrs_or_error: import("../chat/types.ts").MessageAttributes | Error): Promise<void>;
+        getUpdatedMessageAttributes(message: import("../chat/message.js").default, attrs: import("../chat/types.ts").MessageAttributes): object;
+        updateMessage(message: import("../chat/message.js").default, attrs: import("../chat/types.ts").MessageAttributes): void;
+        handleCorrection(attrs: import("../chat/types.ts").MessageAttributes | import("./types.ts").MUCMessageAttributes): Promise<import("../chat/message.js").default | void>;
+        queueMessage(attrs: import("../chat/types.ts").MessageAttributes): any;
         msg_chain: any;
-        getOutgoingMessageAttributes(_attrs?: import("../chat/parsers").MessageAttributes): Promise<import("../chat/parsers").MessageAttributes>;
+        getOutgoingMessageAttributes(_attrs?: import("../chat/types.ts").MessageAttributes): Promise<import("../chat/types.ts").MessageAttributes>;
         sendMessage(attrs?: any): Promise<import("../chat/message.js").default>;
         retractOwnMessage(message: import("../chat/message.js").default): void;
         sendFiles(files: File[]): Promise<void>;
@@ -34,7 +34,7 @@ declare const MUC_base: {
         onMessageUploadChanged(message: import("../chat/message.js").default): Promise<void>;
         onScrolledChanged(): void;
         pruneHistoryWhenScrolledDown(): void;
-        shouldShowErrorMessage(attrs: import("../chat/parsers").MessageAttributes): Promise<boolean>;
+        shouldShowErrorMessage(attrs: import("../chat/types.ts").MessageAttributes): Promise<boolean>;
         clearMessages(): Promise<void>;
         editEarlierMessage(): void;
         editLaterMessage(): any;
@@ -57,8 +57,8 @@ declare const MUC_base: {
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat/message.js").default): void;
         clearUnreadMsgCounter(): void;
-        handleRetraction(attrs: import("../chat/parsers").MessageAttributes): Promise<boolean>;
-        handleReceipt(attrs: import("../chat/parsers").MessageAttributes): boolean;
+        handleRetraction(attrs: import("../chat/types.ts").MessageAttributes): Promise<boolean>;
+        handleReceipt(attrs: import("../chat/types.ts").MessageAttributes): boolean;
         createMessageStanza(message: import("../chat/message.js").default): Promise<any>;
         pruneHistory(): void;
         debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
@@ -207,8 +207,8 @@ declare class MUC extends MUC_base {
      * @typedef {import('./occupant.js').default} MUCOccupant
      * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
      * @typedef {import('./parsers').MemberListItem} MemberListItem
-     * @typedef {module:plugin-chat-parsers.MessageAttributes} MessageAttributes
-     * @typedef {import('./parsers').MUCMessageAttributes} MUCMessageAttributes
+     * @typedef {import('../chat/types.ts').MessageAttributes} MessageAttributes
+     * @typedef {import('./types.ts').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
      * @typedef {import('strophe.js').Builder} Builder
      * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
@@ -430,7 +430,7 @@ declare class MUC extends MUC_base {
     /**
      * @param {MessageAttributes} [attrs] - A map of attributes to be saved on the message
      */
-    getOutgoingMessageAttributes(attrs?: any): Promise<any>;
+    getOutgoingMessageAttributes(attrs?: import("../chat/types.ts").MessageAttributes): Promise<import("../chat/types.ts").MessageAttributes>;
     /**
      * Utility method to construct the JID for the current user as occupant of the groupchat.
      * @returns {string} - The groupchat JID with the user's nickname added at the end.
@@ -664,7 +664,7 @@ declare class MUC extends MUC_base {
      * @param {MUCMessageAttributes} attrs
      * @return {object}
      */
-    getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./parsers.js").MUCMessageAttributes): object;
+    getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types.ts").MUCMessageAttributes): object;
     /**
      * Send a MUC-0410 MUC Self-Ping stanza to room to determine
      * whether we're still joined.
@@ -727,19 +727,19 @@ declare class MUC extends MUC_base {
      * @param {MessageAttributes} attrs
      * @returns {boolean}
      */
-    handleMUCPrivateMessage(attrs: any): boolean;
+    handleMUCPrivateMessage(attrs: import("../chat/types.ts").MessageAttributes): boolean;
     /**
      * @param {MessageAttributes} attrs
      * @returns {boolean}
      */
-    handleMetadataFastening(attrs: any): boolean;
+    handleMetadataFastening(attrs: import("../chat/types.ts").MessageAttributes): boolean;
     /**
      * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
      * messages for them.
-     * @param {MessageAttributes} attrs
+     * @param {MUCMessageAttributes} attrs
      * @returns {boolean}
      */
-    handleMEPNotification(attrs: any): boolean;
+    handleMEPNotification(attrs: import("./types.ts").MUCMessageAttributes): boolean;
     /**
      * Returns an already cached message (if it exists) based on the
      * passed in attributes map.
@@ -752,9 +752,9 @@ declare class MUC extends MUC_base {
      * Handler for all MUC messages sent to this groupchat. This method
      * shouldn't be called directly, instead {@link MUC#queueMessage}
      * should be called.
-     * @param {Promise<MessageAttributes>} promise - A promise which resolves to the message attributes.
+     * @param {MUCMessageAttributes|StanzaParseError} attrs_or_error - A promise which resolves to the message attributes.
      */
-    onMessage(promise: Promise<any>): Promise<void>;
+    onMessage(attrs_or_error: import("./types.ts").MUCMessageAttributes | import("../../shared/parsers.js").StanzaParseError): Promise<void>;
     /**
      * @param {Element} pres
      */

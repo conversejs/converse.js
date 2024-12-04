@@ -35,7 +35,7 @@ export default function ModelWithMessages(BaseModel) {
      * @typedef {import('../plugins/chat/model').default} ChatBox
      * @typedef {import('../plugins/muc/muc').default} MUC
      * @typedef {import('../plugins/muc/message').default} MUCMessage
-     * @typedef {import('../plugins/chat/parsers').MessageAttributes} MessageAttributes
+     * @typedef {import('../plugins/chat/types.ts').MessageAttributes} MessageAttributes
      * @typedef {import('../plugins/muc/parsers').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {import('strophe.js').Builder} Builder
      */
@@ -155,9 +155,9 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {Promise<MessageAttributes>} _promise
+         * @param {MessageAttributes|Error} attrs_or_error
          */
-        async onMessage(_promise) {
+        async onMessage(attrs_or_error) {
             throw new NotImplementedError('onMessage is not implemented');
         }
 
@@ -248,7 +248,7 @@ export default function ModelWithMessages(BaseModel) {
 
         /**
          * Queue an incoming `chat` message stanza for processing.
-         * @param {Promise<MessageAttributes>} attrs - A promise which resolves to the message attributes
+         * @param {MessageAttributes} attrs - A promise which resolves to the message attributes
          */
         queueMessage(attrs) {
             this.msg_chain = (this.msg_chain || this.messages.fetched)

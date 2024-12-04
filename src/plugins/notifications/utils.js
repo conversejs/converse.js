@@ -1,5 +1,5 @@
 /**
- * @typedef {module:headless-plugins-muc-muc.MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('@converse/headless/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {module:headless-plugins-muc-muc.MUCMessageData} MUCMessageData
  * @typedef {module:headless-plugins-chat-utils.MessageData} MessageData
  * @typedef {import('@converse/headless').RosterContact} RosterContact
@@ -201,8 +201,7 @@ function showChatStateNotification (contact) {
 
 /**
  * Shows an HTML5 Notification with the passed in message
- * @private
- * @param { MessageData|MUCMessageData } data
+ * @param {MessageData|MUCMessageData} data
  */
 function showMessageNotification (data) {
     const { attrs } = data;

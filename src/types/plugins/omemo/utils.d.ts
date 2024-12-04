@@ -56,8 +56,8 @@ export namespace omemo {
     export { formatFingerprint };
 }
 export type WindowWithLibsignal = any;
-export type MessageAttributes = any;
-export type MUCMessageAttributes = any;
+export type MessageAttributes = import("@converse/headless/plugins/chat/types.ts").MessageAttributes;
+export type MUCMessageAttributes = import("@converse/headless/plugins/muc/types").MUCMessageAttributes;
 export type ChatBox = import("@converse/headless").ChatBox;
 import { IQError } from 'shared/errors.js';
 import { UserFacingError } from 'shared/errors.js';

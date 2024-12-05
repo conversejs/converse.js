@@ -108,7 +108,7 @@ export function getShortnameReferences (text) {
     }
     const references = [...text.matchAll(converse.emojis.shortnames_regex)].filter(ref => ref[0].length > 0);
     return references.map(ref => {
-        const cp = converse.emojis.by_sn[ref[0].toLowerCase()].cp;
+        const cp = converse.emojis.by_sn[ref[0]].cp;
         return {
             cp,
             'begin': ref.index,
@@ -190,7 +190,7 @@ export function isOnlyEmojis (text) {
     }
     const emojis = words.filter(text => {
         const refs = getCodePointReferences(u.shortnamesToUnicode(text));
-        return refs.length === 1 && (text.toLowerCase() === refs[0]['shortname'] || text === refs[0]['emoji']);
+        return refs.length === 1 && (text === refs[0]['shortname'] || text === refs[0]['emoji']);
     });
     return emojis.length === words.length;
 }

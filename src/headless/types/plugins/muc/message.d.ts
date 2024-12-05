@@ -13,13 +13,13 @@ declare class MUCMessage extends Message {
     /**
      * @param {MUCOccupant} [occupant]
      */
-    onOccupantAdded(occupant?: import("./occupant.js").default): void;
+    onOccupantAdded(occupant?: import("./occupant").default): void;
     getOccupant(): any;
     /**
-     * @param {import('plugins/vcard/utils.js').MUCOccupant} [occupant]
+     * @param {MUCOccupant} [occupant]
      * @return {MUCOccupant}
      */
-    setOccupant(occupant?: import("plugins/vcard/utils.js").MUCOccupant): import("./occupant.js").default;
+    setOccupant(occupant?: import("./occupant").default): import("./occupant").default;
     occupant: any;
 }
 import Message from '../chat/message.js';

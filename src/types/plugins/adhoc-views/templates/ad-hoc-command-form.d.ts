@@ -2,5 +2,5 @@ declare function _default(el: AdHocCommands, command: AdHocCommandUIProps): impo
 export default _default;
 export type TemplateResult = import("lit").TemplateResult;
 export type AdHocCommands = import("../adhoc-commands").default;
-export type AdHocCommandUIProps = import("../adhoc-commands").AdHocCommandUIProps;
+export type AdHocCommandUIProps = import("../types").AdHocCommandUIProps;
 //# sourceMappingURL=ad-hoc-command-form.d.ts.map

@@ -6,7 +6,7 @@ import api from '../../shared/api/index.js';
 
 class MUCMessage extends Message {
     /**
-     * @typedef {import('plugins/vcard/utils.js').MUCOccupant} MUCOccupant
+     * @typedef {import('./occupant').default} MUCOccupant
      */
     async initialize () { // eslint-disable-line require-await
         if (!this.checkValidity()) return;
@@ -85,7 +85,7 @@ class MUCMessage extends Message {
     }
 
     /**
-     * @param {import('plugins/vcard/utils.js').MUCOccupant} [occupant]
+     * @param {MUCOccupant} [occupant]
      * @return {MUCOccupant}
      */
     setOccupant (occupant) {

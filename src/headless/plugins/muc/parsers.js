@@ -1,7 +1,7 @@
 /**
  * @module:plugin-muc-parsers
  * @typedef {import('../muc/muc.js').default} MUC
- * @typedef {import('./types.ts').MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
  */
 import dayjs from 'dayjs';
 import _converse from '../../shared/_converse.js';
@@ -250,15 +250,8 @@ export async function parseMUCMessage (stanza, chatbox) {
  * Given an IQ stanza with a member list, create an array of objects containing
  * known member data (e.g. jid, nick, role, affiliation).
  *
- * @typedef {Object} MemberListItem
- * Either the JID or the nickname (or both) will be available.
- * @property {string} affiliation
- * @property {string} [role]
- * @property {string} [jid]
- * @property {string} [nick]
- *
  * @param {Element} iq
- * @returns {MemberListItem[]}
+ * @returns {import('./types').MemberListItem[]}
  */
 export function parseMemberListIQ (iq) {
     return sizzle(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`, iq).map(
@@ -289,30 +282,11 @@ export function parseMemberListIQ (iq) {
 
 /**
  * Parses a passed in MUC presence stanza and returns an object of attributes.
- * @method parseMUCPresence
  * @param {Element} stanza - The presence stanza
  * @param {MUC} chatbox
- * @returns {MUCPresenceAttributes}
+ * @returns {import('./types').MUCPresenceAttributes}
  */
 export function parseMUCPresence (stanza, chatbox) {
-    /**
-     * Object representing a XEP-0371 Hat
-     * @typedef {Object} MUCHat
-     * @property {string} title
-     * @property {string} uri
-     *
-     * The object which {@link parseMUCPresence} returns
-     * @typedef {Object} MUCPresenceAttributes
-     * @property {string} show
-     * @property {Array<MUCHat>} hats - An array of XEP-0317 hats
-     * @property {Array<string>} states
-     * @property {String} from - The sender JID (${muc_jid}/${nick})
-     * @property {String} nick - The nickname of the sender
-     * @property {String} occupant_id - The XEP-0421 occupant ID
-     * @property {String} type - The type of presence
-     * @property {String} [jid]
-     * @property {boolean} [is_me]
-     */
     const from = stanza.getAttribute('from');
     const type = stanza.getAttribute('type');
     const data = {

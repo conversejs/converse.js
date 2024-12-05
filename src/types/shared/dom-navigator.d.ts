@@ -1,21 +1,4 @@
 export default DOMNavigator;
-export type DOMNavigatorDirection = {
-    down: string;
-    end: string;
-    home: string;
-    left: string;
-    right: string;
-    up: string;
-};
-/**
- * @typedef {Object} DOMNavigatorDirection
- * @property {string} down
- * @property {string} end
- * @property {string} home
- * @property {string} left
- * @property {string} right
- * @property {string} up
- */
 /**
  * Adds the ability to navigate the DOM with the arrow keys
  * @class DOMNavigator
@@ -23,9 +6,9 @@ export type DOMNavigatorDirection = {
 declare class DOMNavigator {
     /**
      * Directions.
-     * @returns {DOMNavigatorDirection}
+     * @returns {import('./types').DOMNavigatorDirection}
      */
-    static get DIRECTION(): DOMNavigatorDirection;
+    static get DIRECTION(): import("./types").DOMNavigatorDirection;
     /**
      * The default options for the DOM navigator.
      * @returns {{
@@ -61,147 +44,16 @@ declare class DOMNavigator {
     };
     static getClosestElement(els: any, getDistance: any): any;
     /**
-     * @typedef {Object} DOMNavigatorOptions
-     * @property {Function} DOMNavigatorOptions.getSelector
-     * @property {string[]} [DOMNavigatorOptions.end]
-     * @property {string[]} [DOMNavigatorOptions.home]
-     * @property {number[]} [DOMNavigatorOptions.down] - The keycode for navigating down
-     * @property {number[]} [DOMNavigatorOptions.left] - The keycode for navigating left
-     * @property {number[]} [DOMNavigatorOptions.right] - The keycode for navigating right
-     * @property {number[]} [DOMNavigatorOptions.up] - The keycode for navigating up
-     * @property {String} [DOMNavigatorOptions.selector]
-     * @property {String} [DOMNavigatorOptions.selected] - The class that should be added
-     *  to the currently selected DOM element
-     * @property {String} [DOMNavigatorOptions.jump_to_picked] - A selector, which if
-     *  matched by the next element being navigated to, based on the direction
-     *  given by `jump_to_picked_direction`, will cause navigation
-     *  to jump to the element that matches the `jump_to_picked_selector`.
-     *  For example, this is useful when navigating to tabs. You want to
-     *  immediately navigate to the currently active tab instead of just
-     *  navigating to the first tab.
-     * @property {String} [DOMNavigatorOptions.jump_to_picked_selector=picked] - The selector
-     *  indicating the currently picked element to jump to.
-     * @property {String} [DOMNavigatorOptions.jump_to_picked_direction] - The direction for
-     *  which jumping to the picked element should be enabled.
-     * @property {Function} [DOMNavigatorOptions.onSelected] - The callback function which
-     *  should be called when en element gets selected.
-     * @property {HTMLElement} [DOMNavigatorOptions.scroll_container]
-     */
-    /**
      * Create a new DOM Navigator.
      * @param {HTMLElement} container The container of the element to navigate.
-     * @param {DOMNavigatorOptions} options The options to configure the DOM navigator.
+     * @param {import('./types').DOMNavigatorOptions} options The options to configure the DOM navigator.
      */
-    constructor(container: HTMLElement, options: {
-        getSelector: Function;
-        end?: string[];
-        home?: string[];
-        /**
-         * - The keycode for navigating down
-         */
-        down?: number[];
-        /**
-         * - The keycode for navigating left
-         */
-        left?: number[];
-        /**
-         * - The keycode for navigating right
-         */
-        right?: number[];
-        /**
-         * - The keycode for navigating up
-         */
-        up?: number[];
-        selector?: string;
-        /**
-         * - The class that should be added
-         * to the currently selected DOM element
-         */
-        selected?: string;
-        /**
-         * - A selector, which if
-         * matched by the next element being navigated to, based on the direction
-         * given by `jump_to_picked_direction`, will cause navigation
-         * to jump to the element that matches the `jump_to_picked_selector`.
-         * For example, this is useful when navigating to tabs. You want to
-         * immediately navigate to the currently active tab instead of just
-         * navigating to the first tab.
-         */
-        jump_to_picked?: string;
-        /**
-         * - The selector
-         * indicating the currently picked element to jump to.
-         */
-        jump_to_picked_selector?: string;
-        /**
-         * - The direction for
-         * which jumping to the picked element should be enabled.
-         */
-        jump_to_picked_direction?: string;
-        /**
-         * - The callback function which
-         * should be called when en element gets selected.
-         */
-        onSelected?: Function;
-        scroll_container?: HTMLElement;
-    });
+    constructor(container: HTMLElement, options: import("./types").DOMNavigatorOptions);
     doc: Document;
     container: HTMLElement;
     scroll_container: HTMLElement;
-    /** @type {DOMNavigatorOptions} */
-    options: {
-        getSelector: Function;
-        end?: string[];
-        home?: string[];
-        /**
-         * - The keycode for navigating down
-         */
-        down?: number[];
-        /**
-         * - The keycode for navigating left
-         */
-        left?: number[];
-        /**
-         * - The keycode for navigating right
-         */
-        right?: number[];
-        /**
-         * - The keycode for navigating up
-         */
-        up?: number[];
-        selector?: string;
-        /**
-         * - The class that should be added
-         * to the currently selected DOM element
-         */
-        selected?: string;
-        /**
-         * - A selector, which if
-         * matched by the next element being navigated to, based on the direction
-         * given by `jump_to_picked_direction`, will cause navigation
-         * to jump to the element that matches the `jump_to_picked_selector`.
-         * For example, this is useful when navigating to tabs. You want to
-         * immediately navigate to the currently active tab instead of just
-         * navigating to the first tab.
-         */
-        jump_to_picked?: string;
-        /**
-         * - The selector
-         * indicating the currently picked element to jump to.
-         */
-        jump_to_picked_selector?: string;
-        /**
-         * - The direction for
-         * which jumping to the picked element should be enabled.
-         */
-        jump_to_picked_direction?: string;
-        /**
-         * - The callback function which
-         * should be called when en element gets selected.
-         */
-        onSelected?: Function;
-        scroll_container?: HTMLElement;
-    };
+    /** @type {import('./types').DOMNavigatorOptions} */
+    options: import("./types").DOMNavigatorOptions;
     /**
      * Initialize the navigator.
      */

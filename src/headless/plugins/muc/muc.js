@@ -47,9 +47,9 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * @typedef {import('./message.js').default} MUCMessage
      * @typedef {import('./occupant.js').default} MUCOccupant
      * @typedef {import('./affiliations/utils.js').NonOutcastAffiliation} NonOutcastAffiliation
-     * @typedef {import('./parsers').MemberListItem} MemberListItem
-     * @typedef {import('../chat/types.ts').MessageAttributes} MessageAttributes
-     * @typedef {import('./types.ts').MUCMessageAttributes} MUCMessageAttributes
+     * @typedef {import('./types').MemberListItem} MemberListItem
+     * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
+     * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
      * @typedef {import('strophe.js').Builder} Builder
      * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError

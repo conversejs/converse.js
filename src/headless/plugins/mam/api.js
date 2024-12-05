@@ -1,6 +1,3 @@
-/**
- * @typedef {module:converse-rsm.RSMQueryParameters} RSMQueryParameters
- */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
@@ -30,32 +27,15 @@ export default {
      */
     archive: {
          /**
-          * @typedef {RSMQueryParameters} MAMFilterParameters
-          * Filter parmeters which can be used to filter a MAM XEP-0313 archive
-          * @property String} [end] - A date string in ISO-8601 format, before which messages should be returned. Implies backward paging.
-          * @property {String} [start] - A date string in ISO-8601 format, after which messages should be returned. Implies forward paging.
-          * @property {String} [with] - A JID against which to match messages, according to either their `to` or `from` attributes.
-          *     An item in a MUC archive matches if the publisher of the item matches the JID.
-          *     If `with` is omitted, all messages that match the rest of the query will be returned, regardless of to/from
-          *     addresses of each message.
-          */
-
-         /**
-          * The options that can be passed in to the {@link _converse.api.archive.query } method
-          * @typedef {MAMFilterParameters} ArchiveQueryOptions
-          * @property {boolean} [groupchat=false] - Whether the MAM archive is for a groupchat.
-          */
-
-         /**
           * Query for archived messages.
           *
           * The options parameter can also be an instance of
           * RSM to enable easy querying between results pages.
           *
           * @method _converse.api.archive.query
-          * @param {ArchiveQueryOptions} options - An object containing query parameters
+          * @param {import('./types').ArchiveQueryOptions} options - An object containing query parameters
           * @throws {Error} An error is thrown if the XMPP server responds with an error.
-          * @returns {Promise<MAMQueryResult>} A promise which resolves to a {@link MAMQueryResult} object.
+          * @returns {Promise<import('./types').MAMQueryResult>}
           *
           * @example
           * // Requesting all archived messages
@@ -299,16 +279,6 @@ export default {
             if (set) {
                 rsm = new RSM({...options, 'xml': set});
             }
-            /**
-             * @typedef {Object} MAMQueryResult
-             * @property {Array} messages
-             * @property {RSM} [rsm] - An instance of {@link RSM}.
-             *  You can call `next()` or `previous()` on this instance,
-             *  to get the RSM query parameters for the next or previous
-             *  page in the result set.
-             * @property {boolean} [complete]
-             * @property {Error} [error]
-             */
             return { messages, rsm, complete };
         }
     }

@@ -15,10 +15,10 @@ declare class MUCOccupants extends Collection {
     get model(): typeof MUCOccupant;
     fetchMembers(): Promise<void>;
     /**
-     * @typedef { Object} OccupantData
-     * @property { String } [jid]
-     * @property { String } [nick]
-     * @property { String } [occupant_id] - The XEP-0421 unique occupant id
+     * @typedef {Object} OccupantData
+     * @property {String} [jid]
+     * @property {String} [nick]
+     * @property {String} [occupant_id] - The XEP-0421 unique occupant id
      */
     /**
      * Try to find an existing occupant based on the provided

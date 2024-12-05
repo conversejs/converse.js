@@ -67,11 +67,11 @@ export function slideIn(el: HTMLElement, duration?: number): Promise<any>;
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
- * @param {XFormField} xfield - the field to convert
+ * @param {import('@converse/headless/shared/types').XFormField} xfield - the field to convert
  * @param {Object} options
  * @returns {TemplateResult}
  */
-export function xFormField2TemplateResult(xfield: XFormField, options?: any): TemplateResult;
+export function xFormField2TemplateResult(xfield: import("@converse/headless/shared/types").XFormField, options?: any): TemplateResult;
 /**
  * @param {HTMLElement} el
  * @param {boolean} include_margin
@@ -79,6 +79,5 @@ export function xFormField2TemplateResult(xfield: XFormField, options?: any): Te
 export function getOuterWidth(el: HTMLElement, include_margin?: boolean): number;
 export default u;
 export type TemplateResult = import("lit").TemplateResult;
-export type XFormField = import("@converse/headless/types/shared/parsers").XFormField;
 import { u } from '@converse/headless';
 //# sourceMappingURL=html.d.ts.map

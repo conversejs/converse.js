@@ -1,7 +1,3 @@
-/**
- * @typedef {import('./utils').AdHocCommand} AdHocCommand
- * @typedef {import('./utils').AdHocCommandResult} AdHocCommandResult
- */
 import log from '../../log.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -10,11 +6,12 @@ import { parseCommandResult, parseForCommands } from './utils.js';
 
 const { Strophe, $iq, u, stx } = converse.env;
 
-/**
- * @typedef {'execute'| 'cancel' |'prev'|'next'|'complete'} AdHocCommandAction
- */
 
 export default {
+    /**
+     * @typedef {import('./types').AdHocCommandResult} AdHocCommandResult
+     */
+
     /**
      * The XEP-0050 Ad-Hoc Commands API
      *
@@ -64,7 +61,7 @@ export default {
          * @method api.adhoc.runCommand
          * @param {String} jid
          * @param {String} sessionid
-         * @param {AdHocCommandAction} action
+         * @param {import('./types').AdHocCommandAction} action
          * @param {String} node
          * @param {Array<{ [k:string]: string }>} inputs
          */

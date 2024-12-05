@@ -3,7 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the DOM/HTML utilities module.
  * @typedef {import('lit').TemplateResult} TemplateResult
- * @typedef {import('@converse/headless/types/shared/parsers').XFormField} XFormField
  */
 import { render } from 'lit';
 import { Builder, Stanza } from 'strophe.js';
@@ -461,7 +460,7 @@ function isVisible (el) {
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
- * @param {XFormField} xfield - the field to convert
+ * @param {import('@converse/headless/shared/types').XFormField} xfield - the field to convert
  * @param {Object} options
  * @returns {TemplateResult}
  */

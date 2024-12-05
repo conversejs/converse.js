@@ -15,66 +15,18 @@ export function parseMUCMessage(stanza: Element, chatbox: MUC): Promise<MUCMessa
  * Given an IQ stanza with a member list, create an array of objects containing
  * known member data (e.g. jid, nick, role, affiliation).
  *
- * @typedef {Object} MemberListItem
- * Either the JID or the nickname (or both) will be available.
- * @property {string} affiliation
- * @property {string} [role]
- * @property {string} [jid]
- * @property {string} [nick]
- *
  * @param {Element} iq
- * @returns {MemberListItem[]}
+ * @returns {import('./types').MemberListItem[]}
  */
-export function parseMemberListIQ(iq: Element): MemberListItem[];
+export function parseMemberListIQ(iq: Element): import("./types").MemberListItem[];
 /**
  * Parses a passed in MUC presence stanza and returns an object of attributes.
- * @method parseMUCPresence
  * @param {Element} stanza - The presence stanza
  * @param {MUC} chatbox
- * @returns {MUCPresenceAttributes}
+ * @returns {import('./types').MUCPresenceAttributes}
  */
-export function parseMUCPresence(stanza: Element, chatbox: MUC): {
-    show: string;
-    /**
-     * - An array of XEP-0317 hats
-     */
-    hats: Array<{
-        title: string;
-        /**
-         * The object which {@link parseMUCPresence} returns
-         */
-        uri: string;
-    }>;
-    states: Array<string>;
-    /**
-     * - The sender JID (${muc_jid}/${nick})
-     */
-    from: string;
-    /**
-     * - The nickname of the sender
-     */
-    nick: string;
-    /**
-     * - The XEP-0421 occupant ID
-     */
-    occupant_id: string;
-    /**
-     * - The type of presence
-     */
-    type: string;
-    jid?: string;
-    is_me?: boolean;
-};
-/**
- * Either the JID or the nickname (or both) will be available.
- */
-export type MemberListItem = {
-    affiliation: string;
-    role?: string;
-    jid?: string;
-    nick?: string;
-};
+export function parseMUCPresence(stanza: Element, chatbox: MUC): import("./types").MUCPresenceAttributes;
 export type MUC = import("../muc/muc.js").default;
-export type MUCMessageAttributes = import("./types.ts").MUCMessageAttributes;
+export type MUCMessageAttributes = import("./types").MUCMessageAttributes;
 import { StanzaParseError } from '../../shared/parsers';
 //# sourceMappingURL=parsers.d.ts.map

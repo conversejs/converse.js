@@ -139,27 +139,9 @@ export async function handleMAMResult(model, result, query, options, should_page
 }
 
 /**
- * @typedef {Object} MAMOptions
- * A map of MAM related options that may be passed to fetchArchivedMessages
- * @param {number} [options.max] - The maximum number of items to return.
- *  Defaults to "archived_messages_page_size"
- * @param {string} [options.after] - The XEP-0359 stanza ID of a message
- *  after which messages should be returned. Implies forward paging.
- * @param {string} [options.before] - The XEP-0359 stanza ID of a message
- *  before which messages should be returned. Implies backward paging.
- * @param {string} [options.end] - A date string in ISO-8601 format,
- *  before which messages should be returned. Implies backward paging.
- * @param {string} [options.start] - A date string in ISO-8601 format,
- *  after which messages should be returned. Implies forward paging.
- * @param {string} [options.with] - The JID of the entity with
- *  which messages were exchanged.
- * @param {boolean} [options.groupchat] - True if archive in groupchat.
- */
-
-/**
  * Fetch XEP-0313 archived messages based on the passed in criteria.
  * @param {ChatBox|MUC} model
- * @param {MAMOptions} [options]
+ * @param {import('./types').MAMOptions} [options]
  * @param {('forwards'|'backwards'|null)} [should_page=null] - Determines whether
  *  this function should recursively page through the entire result set if a limited
  *  number of results were returned.
@@ -205,7 +187,7 @@ export async function fetchArchivedMessages(model, options = {}, should_page = n
 /**
  * Create a placeholder message which is used to indicate gaps in the history.
  * @param {ChatBox|MUC} model
- * @param {MAMOptions} options
+ * @param {import('./types').MAMOptions} options
  * @param {object} result - The RSM result object
  */
 async function createPlaceholder(model, options, result) {

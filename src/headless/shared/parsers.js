@@ -209,19 +209,9 @@ export function getErrorAttributes (stanza) {
 }
 
 /**
- * @typedef {Object} Reference
- * An object representing XEP-0372 reference data
- * @property {number} begin
- * @property {number} end
- * @property {string} type
- * @property {String} value
- * @property {String} uri
- */
-
-/**
  * Given a message stanza, find and return any XEP-0372 references
  * @param {Element} stanza - The message stanza
- * @returns {Reference[]}
+ * @returns {import('./types').XEP372Reference[]}
  */
 export function getReferences (stanza) {
     return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
@@ -370,58 +360,10 @@ export function isArchived (original_stanza) {
 }
 
 /**
- * @typedef {Object} XFormReportedField
- * @property {string} var
- * @property {string} label
- *
- * @typedef {Object} XFormResultItemField
- * @property {string} var
- * @property {string} value
- *
- * @typedef {Object} XFormOption
- * @property {string} value
- * @property {string} label
- * @property {boolean} selected
- * @property {boolean} required
- *
- * @typedef {Object} XFormCaptchaURI
- * @property {string} type
- * @property {string} data
- *
- * @typedef {'list-single'|'list-multi'} XFormListTypes
- * @typedef {'jid-single'|'jid-multi'} XFormJIDTypes
- * @typedef {'text-multi'|'text-private'|'text-single'} XFormTextTypes
- * @typedef {'date'|'datetime'} XFormDateTypes
- * @typedef {XFormListTypes|XFormJIDTypes|XFormTextTypes|XFormDateTypes|'fixed'|'boolean'|'url'|'hidden'} XFormFieldTypes
- *
- * @typedef {Object} XFormField
- * @property {string} var
- * @property {string} label
- * @property {XFormFieldTypes} [type]
- * @property {string} [text]
- * @property {string} [value]
- * @property {boolean} [required]
- * @property {boolean} [checked]
- * @property {XFormOption[]} [options]
- * @property {XFormCaptchaURI} [uri]
- * @property {boolean} readonly
- *
- * @typedef {'result'|'form'} XFormResponseType
- *
- * @typedef {Object} XForm
- * @property {XFormResponseType} type
- * @property {string} [title]
- * @property {string} [instructions]
- * @property {XFormReportedField[]} [reported]
- * @property {XFormResultItemField[][]} [items]
- * @property {XFormField[]} [fields]
- */
-
-/**
  * @param {Element} field
  * @param {boolean} readonly
  * @param {Element} stanza
- * @return {XFormField}
+ * @return {import('./types').XFormField}
  */
 function parseXFormField(field, readonly, stanza) {
     const v = field.getAttribute('var');
@@ -539,7 +481,7 @@ export function getInputType(field) {
 
 /**
 * @param {Element} stanza
-* @returns {XForm}
+* @returns {import('./types').XForm}
 */
 export function parseXForm(stanza) {
     const xs = sizzle(`x[xmlns="${Strophe.NS.XFORM}"]`, stanza);
@@ -551,7 +493,7 @@ export function parseXForm(stanza) {
     }
 
     const x = xs[0];
-    const type = /** @type {XFormResponseType} */ (x.getAttribute('type'));
+    const type = /** @type {import('./types').XFormResponseType} */ (x.getAttribute('type'));
     const result = {
         type,
         title: x.querySelector('title')?.textContent,
@@ -562,12 +504,12 @@ export function parseXForm(stanza) {
         if (reported) {
             const reported_fields = reported ? Array.from(reported.querySelectorAll(':scope > field')) : [];
             const items = Array.from(x.querySelectorAll(':scope > item'));
-            return /** @type {XForm} */({
+            return /** @type {import('./types').XForm} */({
                 ...result,
-                reported: /** @type {XFormReportedField[]} */ (reported_fields.map(getAttributes)),
+                reported: /** @type {import('./types').XFormReportedField[]} */ (reported_fields.map(getAttributes)),
                 items: items.map((item) => {
                     return Array.from(item.querySelectorAll('field')).map((field) => {
-                        return /** @type {XFormResultItemField} */ ({
+                        return /** @type {import('./types').XFormResultItemField} */ ({
                             ...getAttributes(field),
                             value: field.querySelector('value')?.textContent ?? '',
                         });

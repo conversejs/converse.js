@@ -56,23 +56,13 @@ function absoluteOffsetLeft(el) {
 }
 
 /**
- * @typedef {Object} DOMNavigatorDirection
- * @property {string} down
- * @property {string} end
- * @property {string} home
- * @property {string} left
- * @property {string} right
- * @property {string} up
- */
-
-/**
  * Adds the ability to navigate the DOM with the arrow keys
  * @class DOMNavigator
  */
 class DOMNavigator {
     /**
      * Directions.
-     * @returns {DOMNavigatorDirection}
+     * @returns {import('./types').DOMNavigatorDirection}
      */
     static get DIRECTION () {
         return ({
@@ -141,44 +131,16 @@ class DOMNavigator {
     }
 
     /**
-     * @typedef {Object} DOMNavigatorOptions
-     * @property {Function} DOMNavigatorOptions.getSelector
-     * @property {string[]} [DOMNavigatorOptions.end]
-     * @property {string[]} [DOMNavigatorOptions.home]
-     * @property {number[]} [DOMNavigatorOptions.down] - The keycode for navigating down
-     * @property {number[]} [DOMNavigatorOptions.left] - The keycode for navigating left
-     * @property {number[]} [DOMNavigatorOptions.right] - The keycode for navigating right
-     * @property {number[]} [DOMNavigatorOptions.up] - The keycode for navigating up
-     * @property {String} [DOMNavigatorOptions.selector]
-     * @property {String} [DOMNavigatorOptions.selected] - The class that should be added
-     *  to the currently selected DOM element
-     * @property {String} [DOMNavigatorOptions.jump_to_picked] - A selector, which if
-     *  matched by the next element being navigated to, based on the direction
-     *  given by `jump_to_picked_direction`, will cause navigation
-     *  to jump to the element that matches the `jump_to_picked_selector`.
-     *  For example, this is useful when navigating to tabs. You want to
-     *  immediately navigate to the currently active tab instead of just
-     *  navigating to the first tab.
-     * @property {String} [DOMNavigatorOptions.jump_to_picked_selector=picked] - The selector
-     *  indicating the currently picked element to jump to.
-     * @property {String} [DOMNavigatorOptions.jump_to_picked_direction] - The direction for
-     *  which jumping to the picked element should be enabled.
-     * @property {Function} [DOMNavigatorOptions.onSelected] - The callback function which
-     *  should be called when en element gets selected.
-     * @property {HTMLElement} [DOMNavigatorOptions.scroll_container]
-     */
-
-    /**
      * Create a new DOM Navigator.
      * @param {HTMLElement} container The container of the element to navigate.
-     * @param {DOMNavigatorOptions} options The options to configure the DOM navigator.
+     * @param {import('./types').DOMNavigatorOptions} options The options to configure the DOM navigator.
      */
     constructor (container, options) {
         this.doc = window.document;
         this.container = container;
         this.scroll_container = options.scroll_container || container;
 
-        /** @type {DOMNavigatorOptions} */
+        /** @type {import('./types').DOMNavigatorOptions} */
         this.options = Object.assign({}, DOMNavigator.DEFAULTS, options);
 
         this.init();

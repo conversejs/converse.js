@@ -67,20 +67,11 @@ export function getErrorAttributes(stanza: Element): {
     error_condition?: undefined;
 };
 /**
- * @typedef {Object} Reference
- * An object representing XEP-0372 reference data
- * @property {number} begin
- * @property {number} end
- * @property {string} type
- * @property {String} value
- * @property {String} uri
- */
-/**
  * Given a message stanza, find and return any XEP-0372 references
  * @param {Element} stanza - The message stanza
- * @returns {Reference[]}
+ * @returns {import('./types').XEP372Reference[]}
  */
-export function getReferences(stanza: Element): Reference[];
+export function getReferences(stanza: Element): import("./types").XEP372Reference[];
 /**
  * @param {Element} stanza
  */
@@ -142,9 +133,9 @@ export function isArchived(original_stanza: Element): boolean;
 export function getInputType(field: Element): any;
 /**
 * @param {Element} stanza
-* @returns {XForm}
+* @returns {import('./types').XForm}
 */
-export function parseXForm(stanza: Element): XForm;
+export function parseXForm(stanza: Element): import("./types").XForm;
 export class StanzaParseError extends Error {
     /**
      * @param {string} message
@@ -153,58 +144,4 @@ export class StanzaParseError extends Error {
     constructor(message: string, stanza: Element);
     stanza: Element;
 }
-/**
- * An object representing XEP-0372 reference data
- */
-export type Reference = {
-    begin: number;
-    end: number;
-    type: string;
-    value: string;
-    uri: string;
-};
-export type XFormReportedField = {
-    var: string;
-    label: string;
-};
-export type XFormResultItemField = {
-    var: string;
-    value: string;
-};
-export type XFormOption = {
-    value: string;
-    label: string;
-    selected: boolean;
-    required: boolean;
-};
-export type XFormCaptchaURI = {
-    type: string;
-    data: string;
-};
-export type XFormListTypes = "list-single" | "list-multi";
-export type XFormJIDTypes = "jid-single" | "jid-multi";
-export type XFormTextTypes = "text-multi" | "text-private" | "text-single";
-export type XFormDateTypes = "date" | "datetime";
-export type XFormFieldTypes = XFormListTypes | XFormJIDTypes | XFormTextTypes | XFormDateTypes | "fixed" | "boolean" | "url" | "hidden";
-export type XFormField = {
-    var: string;
-    label: string;
-    type?: XFormFieldTypes;
-    text?: string;
-    value?: string;
-    required?: boolean;
-    checked?: boolean;
-    options?: XFormOption[];
-    uri?: XFormCaptchaURI;
-    readonly: boolean;
-};
-export type XFormResponseType = "result" | "form";
-export type XForm = {
-    type: XFormResponseType;
-    title?: string;
-    instructions?: string;
-    reported?: XFormReportedField[];
-    items?: XFormResultItemField[][];
-    fields?: XFormField[];
-};
 //# sourceMappingURL=parsers.d.ts.map

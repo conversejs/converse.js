@@ -12,3 +12,33 @@ type ExtraMUCAttributes = {
 };
 
 export type MUCMessageAttributes = MessageAttributes & ExtraMUCAttributes;
+
+/**
+ * Either the JID or the nickname (or both) will be available.
+ */
+export type MemberListItem = {
+    affiliation: string;
+    role?: string;
+    jid?: string;
+    nick?: string;
+};
+
+/**
+ * Object representing a XEP-0371 Hat
+ */
+export type MUCHat = {
+    title: string;
+    uri: string;
+};
+
+export type MUCPresenceAttributes = {
+    show: string;
+    hats: Array<MUCHat>; // An array of XEP-0317 hats
+    states: Array<string>;
+    from: string; // The sender JID (${muc_jid}/${nick})
+    nick: string; // The nickname of the sender
+    occupant_id: string; // The XEP-0421 occupant ID
+    type: string; // The type of presence
+    jid?: string;
+    is_me?: boolean;
+};

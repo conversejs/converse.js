@@ -126,10 +126,10 @@ class MUCOccupants extends Collection {
     }
 
     /**
-     * @typedef { Object} OccupantData
-     * @property { String } [jid]
-     * @property { String } [nick]
-     * @property { String } [occupant_id] - The XEP-0421 unique occupant id
+     * @typedef {Object} OccupantData
+     * @property {String} [jid]
+     * @property {String} [nick]
+     * @property {String} [occupant_id] - The XEP-0421 unique occupant id
      */
     /**
      * Try to find an existing occupant based on the provided

@@ -1,14 +1,8 @@
-/**
- * @typedef {Object} UIProps
- * @property {string} instructions
- * @property {string} jid
- * @property {string} [alert]
- * @property {'danger'|'primary'} [alert_type]
- * @property {'cancel'|'complete'|'execute'|'next'|'prev'} name
- *
- * @typedef {AdHocCommand & AdHocCommandResult & UIProps} AdHocCommandUIProps
- */
 export default class AdHocCommands extends CustomElement {
+    /**
+     * @typedef {import('@converse/headless/types/plugins/adhoc/types').AdHocCommandAction} AdHocCommandAction
+     * @typedef {import('./types').AdHocCommandUIProps} AdHocCommandUIProps
+     */
     static get properties(): {
         alert: {
             type: StringConstructor;
@@ -32,7 +26,7 @@ export default class AdHocCommands extends CustomElement {
     view: string;
     fetching: boolean;
     showform: string;
-    commands: AdHocCommandUIProps[];
+    commands: import("./types").AdHocCommandUIProps[];
     render(): import("lit").TemplateResult<1>;
     /**
      * @param {SubmitEvent} ev
@@ -51,28 +45,17 @@ export default class AdHocCommands extends CustomElement {
     /**
      * @param {AdHocCommandUIProps} cmd
      */
-    clearCommand(cmd: AdHocCommandUIProps): void;
+    clearCommand(cmd: import("./types").AdHocCommandUIProps): void;
     /**
      * @param {HTMLFormElement} form
      * @param {AdHocCommandAction} action
      */
-    runCommand(form: HTMLFormElement, action: AdHocCommandAction): Promise<void>;
+    runCommand(form: HTMLFormElement, action: import("@converse/headless/types/plugins/adhoc/types").AdHocCommandAction): Promise<void>;
     note: any;
     /**
      * @param {MouseEvent} ev
      */
     cancel(ev: MouseEvent): Promise<void>;
 }
-export type AdHocCommand = import("@converse/headless/types/plugins/adhoc/utils").AdHocCommand;
-export type AdHocCommandResult = import("@converse/headless/types/plugins/adhoc/utils").AdHocCommandResult;
-export type AdHocCommandAction = import("@converse/headless/types/plugins/adhoc/api").AdHocCommandAction;
-export type UIProps = {
-    instructions: string;
-    jid: string;
-    alert?: string;
-    alert_type?: "danger" | "primary";
-    name: "cancel" | "complete" | "execute" | "next" | "prev";
-};
-export type AdHocCommandUIProps = AdHocCommand & AdHocCommandResult & UIProps;
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=adhoc-commands.d.ts.map

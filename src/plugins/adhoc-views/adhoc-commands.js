@@ -1,8 +1,3 @@
-/**
- * @typedef {import('@converse/headless/types/plugins/adhoc/utils').AdHocCommand} AdHocCommand
- * @typedef {import('@converse/headless/types/plugins/adhoc/utils').AdHocCommandResult} AdHocCommandResult
- * @typedef {import('@converse/headless/types/plugins/adhoc/api').AdHocCommandAction} AdHocCommandAction
- */
 import { api, converse, log } from '@converse/headless';
 import 'shared/autocomplete/index.js';
 import tplAdhoc from './templates/ad-hoc.js';
@@ -12,18 +7,13 @@ import { getNameAndValue } from 'utils/html.js';
 
 const { Strophe, sizzle } = converse.env;
 
-/**
- * @typedef {Object} UIProps
- * @property {string} instructions
- * @property {string} jid
- * @property {string} [alert]
- * @property {'danger'|'primary'} [alert_type]
- * @property {'cancel'|'complete'|'execute'|'next'|'prev'} name
- *
- * @typedef {AdHocCommand & AdHocCommandResult & UIProps} AdHocCommandUIProps
- */
 
 export default class AdHocCommands extends CustomElement {
+   /**
+    * @typedef {import('@converse/headless/types/plugins/adhoc/types').AdHocCommandAction} AdHocCommandAction
+    * @typedef {import('./types').AdHocCommandUIProps} AdHocCommandUIProps
+    */
+
     static get properties() {
         return {
             alert: { type: String },

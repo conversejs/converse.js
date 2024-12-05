@@ -1,7 +1,7 @@
 /**
  * @typedef {import('lit').TemplateResult} TemplateResult
  * @typedef {import('../adhoc-commands').default} AdHocCommands
- * @typedef {import('../adhoc-commands').AdHocCommandUIProps} AdHocCommandUIProps
+ * @typedef {import('../types').AdHocCommandUIProps} AdHocCommandUIProps
  */
 import { html } from 'lit';
 import { __ } from 'i18n';

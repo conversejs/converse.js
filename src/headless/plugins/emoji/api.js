@@ -86,7 +86,9 @@ const emojis = {
                     .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
                     .sort((a, b) => b.length - a.length)
                     .join('|');
-            converse.emojis.shortnames_regex = new RegExp(getShortNames(), 'gi');
+            // Shortnames are matched case-sensitively, because `by_sn` is keyed on the exact
+            // shortname and may legitimately contain both `:abc:` and `:ABC:` as distinct emoji.
+            converse.emojis.shortnames_regex = new RegExp(getShortNames(), 'g');
             converse.emojis.initialized_promise.resolve();
         }
         return converse.emojis.initialized_promise;

@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2024-12-05 12:48+0000\n"
-"Last-Translator: 大王叫我来巡山 <hamburger2048@users.noreply.hosted.weblate."
-"org>\n"
+"PO-Revision-Date: 2024-12-06 13:00+0000\n"
+"Last-Translator: Sketch6580 <Sketch6580@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -1306,7 +1305,7 @@ msgid ""
 msgstr ""
 "为了提高性能，我们在此浏览器中缓存您的数据。如果这是一台公用计算机，或者您希"
 "望在登出时删除您的数据，请取消勾选。如果您在关闭浏览器前没有手动登出帐号，可"
-"能不会删除所有缓存数据。请注意，使用不受信任的设备时，OMEMO 加密不可用。"
+"能不会删除所有缓存数据。请注意，使用未受信任的设备时，OMEMO 加密不可用。"
 
 #: dist/converse-no-dependencies.js:99219
 msgid "This is a trusted device"
@@ -1620,7 +1619,7 @@ msgstr "成功"
 
 #: dist/converse-no-dependencies.js:108791
 msgid "The user has been invited to join this groupchat"
-msgstr "此用户已被邀请加入此群聊"
+msgstr "已邀请该用户加入此群聊"
 
 #: dist/converse-no-dependencies.js:110838
 msgid "Change user's affiliation to admin"
@@ -2285,11 +2284,11 @@ msgstr "抱歉，找不到可以向其发送 OMEMO 加密消息的设备。"
 
 #: dist/converse-no-dependencies.js:122283
 msgid "Trusted"
-msgstr "已信任"
+msgstr "已受信任"
 
 #: dist/converse-no-dependencies.js:122284
 msgid "Untrusted"
-msgstr "不信任"
+msgstr "未受信任"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:122292
@@ -2653,7 +2652,7 @@ msgstr "单击以移除联系人 %1$s"
 #: dist/converse-no-dependencies.js:131818
 #, javascript-format
 msgid "Click to add %1$s to your roster"
-msgstr "单击添加 %1$s 到你的转盘"
+msgstr "单击将 %1$s 添加到您的联系人列表"
 
 #: dist/converse-no-dependencies.js:132411
 msgid "Are you sure you want to decline this contact request?"

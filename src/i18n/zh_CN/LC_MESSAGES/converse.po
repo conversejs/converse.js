@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2024-08-16 09:09+0000\n"
+"PO-Revision-Date: 2024-12-05 12:48+0000\n"
 "Last-Translator: 大王叫我来巡山 <hamburger2048@users.noreply.hosted.weblate."
 "org>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"conversejs/translations/zh_Hans/>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: dist/converse-no-dependencies.js:20585
 #: dist/converse-no-dependencies.js:20639
@@ -580,7 +580,7 @@ msgid "An error occurred while querying for archived messages."
 msgstr "查询存档消息时出错。"
 
 #: dist/converse-no-dependencies.js:59189
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr "抱歉，尝试添加 %1$s 为联系人时出错。"
 
@@ -589,9 +589,8 @@ msgid "This client does not allow presence subscriptions"
 msgstr "此客户端不允许在线状态订阅"
 
 #: dist/converse-no-dependencies.js:61407
-#, fuzzy
 msgid "Unsaved contacts"
-msgstr "待处理的联系人"
+msgstr "未保存的联系人"
 
 #: dist/converse-no-dependencies.js:61408
 msgid "My contacts"
@@ -1083,7 +1082,7 @@ msgstr "图片： "
 
 #: dist/converse-no-dependencies.js:89377
 msgid "Menu"
-msgstr ""
+msgstr "菜单"
 
 #: dist/converse-no-dependencies.js:89581
 msgid "Older versions"
@@ -1167,9 +1166,9 @@ msgid "Show less"
 msgstr "显示更少"
 
 #: dist/converse-no-dependencies.js:91578
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Message delivery failed: \"%1$s\""
-msgstr "给出的原因是：“%1$s”。"
+msgstr "消息传递失败了：“%1$s”"
 
 #: dist/converse-no-dependencies.js:92282
 msgid "A moderator"
@@ -1590,33 +1589,29 @@ msgid "Invite someone to join this groupchat"
 msgstr "邀请某人加入此群聊"
 
 #: dist/converse-no-dependencies.js:108211
-#, fuzzy
 msgid "No participant data found"
-msgstr "显示参与者"
+msgstr "未找到参与者数据"
 
 #: dist/converse-no-dependencies.js:108213
-#, fuzzy
 msgid "Show details"
-msgstr "显示更少"
+msgstr "显示详情"
 
 #: dist/converse-no-dependencies.js:108263
 msgid ""
 "This user is not currently in this groupchat and can't receive messages."
-msgstr ""
+msgstr "此用户当前不再此群聊中无法接收消息。"
 
 #: dist/converse-no-dependencies.js:108264
-#, fuzzy
 msgid "Invite this user to join this groupchat"
-msgstr "邀请某人加入此群聊"
+msgstr "邀请此用户加入此群聊"
 
 #: dist/converse-no-dependencies.js:108265
 msgid "Open a one-on-one chat with this user"
-msgstr ""
+msgstr "开启和此用户的一对一聊天"
 
 #: dist/converse-no-dependencies.js:108266
-#, fuzzy
 msgid "Open Chat"
-msgstr "已开启的聊天室"
+msgstr "打开聊天"
 
 #: dist/converse-no-dependencies.js:108791
 #: dist/converse-no-dependencies.js:118282
@@ -1624,9 +1619,8 @@ msgid "Success"
 msgstr "成功"
 
 #: dist/converse-no-dependencies.js:108791
-#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr "%1$s已被禁止参加此群聊"
+msgstr "此用户已被邀请加入此群聊"
 
 #: dist/converse-no-dependencies.js:110838
 msgid "Change user's affiliation to admin"
@@ -2016,7 +2010,6 @@ msgid "Minimize this groupchat"
 msgstr "最小化此群聊"
 
 #: dist/converse-no-dependencies.js:115820
-#, fuzzy
 msgid "hidden"
 msgstr "已隐藏"
 
@@ -2612,14 +2605,14 @@ msgid "Re-sync contacts"
 msgstr "重新同步联系人"
 
 #: dist/converse-no-dependencies.js:131726
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
-msgstr "单击接受来自 %1$s 的联系人请求"
+msgstr "单击接受来自 %1$s 的联系人请求（XMPP 地址：%2$s）"
 
 #: dist/converse-no-dependencies.js:131727
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
-msgstr "单击拒绝来自 %1$s 的联系人请求"
+msgstr "单击拒绝来自 %1$s 的联系人请求（XMPP 地址：%2$s）"
 
 #: dist/converse-no-dependencies.js:131728
 #: dist/converse-no-dependencies.js:131792
@@ -2658,9 +2651,9 @@ msgid "Click to remove %1$s as a contact"
 msgstr "单击以移除联系人 %1$s"
 
 #: dist/converse-no-dependencies.js:131818
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to add %1$s to your roster"
-msgstr "单击可在您的消息中提及 %1$s。"
+msgstr "单击添加 %1$s 到你的转盘"
 
 #: dist/converse-no-dependencies.js:132411
 msgid "Are you sure you want to decline this contact request?"

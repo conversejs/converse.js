@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-15 07:56+0200\n"
-"PO-Revision-Date: 2023-04-21 06:49+0000\n"
+"PO-Revision-Date: 2024-12-05 07:01+0000\n"
 "Last-Translator: \"Mr. EddX\" <mreddx@chatrix.one>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: dist/converse-no-dependencies.js:20535
 #: dist/converse-no-dependencies.js:20589
@@ -159,11 +159,10 @@ msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "Качването на файлове не се поддържа от Вашия сървър."
 
 #: dist/converse-no-dependencies.js:35368
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
-msgstr ""
-"Размерът на файла, %1$s, надвишава максималния разрешен от сървъра - %2$s."
+msgstr "Размерът на файла, %1$s, надвишава максималния разрешен от сървъра."
 
 #: dist/converse-no-dependencies.js:35368
 #, javascript-format
@@ -718,9 +717,8 @@ msgid "Affiliation changed"
 msgstr "Принадлежността е променена"
 
 #: dist/converse-no-dependencies.js:76399
-#, fuzzy
 msgid "role changed"
-msgstr "Ролята е променена"
+msgstr "ролята е променена"
 
 #: dist/converse-no-dependencies.js:76490
 msgid ""
@@ -1116,11 +1114,11 @@ msgstr "Премахни"
 
 #: dist/converse-no-dependencies.js:82321
 msgid "Copy"
-msgstr ""
+msgstr "Копирай"
 
 #: dist/converse-no-dependencies.js:82331
 msgid "Quote"
-msgstr ""
+msgstr "Цитирай"
 
 #: dist/converse-no-dependencies.js:82546
 msgid "Image: "
@@ -1208,7 +1206,6 @@ msgid "Show less"
 msgstr "Покажи по-малко"
 
 #: dist/converse-no-dependencies.js:90349
-#, fuzzy
 msgid "A moderator"
 msgstr "Модератор"
 
@@ -1525,9 +1522,8 @@ msgid "Visitor"
 msgstr "Посетител"
 
 #: dist/converse-no-dependencies.js:104727
-#, fuzzy
 msgid "Filter by name"
-msgstr "Филтриране по име на група"
+msgstr "Филтрирай по име"
 
 #: dist/converse-no-dependencies.js:104728
 #: dist/converse-no-dependencies.js:125957
@@ -1587,23 +1583,21 @@ msgstr "Участници"
 
 #: dist/converse-no-dependencies.js:104806
 msgid "Hide"
-msgstr ""
+msgstr "Скрий"
 
 #: dist/converse-no-dependencies.js:104807
 #: dist/converse-no-dependencies.js:126022
-#, fuzzy
 msgid "Show filter"
-msgstr "Покажи по-малко"
+msgstr "Покажи филтър"
 
 #: dist/converse-no-dependencies.js:104808
 #: dist/converse-no-dependencies.js:126023
 msgid "Hide filter"
-msgstr ""
+msgstr "Скрий филтър"
 
 #: dist/converse-no-dependencies.js:104810
-#, fuzzy
 msgid "Invite someone"
-msgstr "Поканване"
+msgstr "Поканете някокго"
 
 #: dist/converse-no-dependencies.js:104811
 msgid "Invite someone to join this groupchat"
@@ -1734,27 +1728,26 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Дадената причина е: „%1$s“."
 
 #: dist/converse-no-dependencies.js:106726
-#, fuzzy
 msgid "Click to set a new picture"
-msgstr "Натисне за възстановяване на този разговор"
+msgstr "Кликнете за нова снимка"
 
 #: dist/converse-no-dependencies.js:106851
 msgid "Loading configuration form"
 msgstr "Зареждане на форма за конфигурация"
 
 #: dist/converse-no-dependencies.js:107867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Configure %1$s"
-msgstr "Конфигуриране"
+msgstr "Конфигуриране %1$s"
 
 #: dist/converse-no-dependencies.js:107987
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "Възникна грешка, при опит за изпращане на формата за конфигурация."
 
 #: dist/converse-no-dependencies.js:108000
-#, fuzzy
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
-msgstr "Възникна грешка при опит за запазване на данните от Вашия профил."
+msgstr ""
+"Съжалявам, но възникна грешка при опита за запазване на снимка на групов чат."
 
 #: dist/converse-no-dependencies.js:108000
 #: dist/converse-no-dependencies.js:113970
@@ -1906,9 +1899,8 @@ msgid "This groupchat will disappear once the last person leaves"
 msgstr "Този групов чат ще изчезне, щом последният участник го напусне"
 
 #: dist/converse-no-dependencies.js:108249
-#, fuzzy
 msgid "Groupchat info"
-msgstr "Намерени са групови чатове"
+msgstr "Информация за групов чат"
 
 #: dist/converse-no-dependencies.js:108618
 msgid "Hide the groupchat topic"
@@ -1964,14 +1956,12 @@ msgid "Hide participants"
 msgstr "Скриване на участниците"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Show the groupchat participants"
-msgstr "Покажи участниците"
+msgstr "Покажи участниците в груповия чат"
 
 #: dist/converse-no-dependencies.js:109291
-#, fuzzy
 msgid "Hide the groupchat participants"
-msgstr "Скрий темата на груповия чат"
+msgstr "Скрий участниците в груповия чат"
 
 #: dist/converse-no-dependencies.js:109302
 msgid "Moderate"
@@ -2124,9 +2114,8 @@ msgid "Timeout error"
 msgstr "Грешка: Времето изтече"
 
 #: dist/converse-no-dependencies.js:113388
-#, fuzzy
 msgid "Your server does not support password reset"
-msgstr "Вашият сървър не поддържа директна смяна на паролата"
+msgstr "Вашият сървър не поддържа повторно задаване на парола"
 
 #: dist/converse-no-dependencies.js:113395
 msgid ""
@@ -2140,9 +2129,8 @@ msgid "Timeout error while trying to set your password"
 msgstr "Грешка: Времето изтече, при опит да зададете парола"
 
 #: dist/converse-no-dependencies.js:113416
-#, fuzzy
 msgid "Your server does not allow password reset"
-msgstr "Вашият сървър не позволява директно възстановяване на паролата"
+msgstr "Вашият сървър не позволява повторно задаване на парола"
 
 #: dist/converse-no-dependencies.js:113418
 #: dist/converse-no-dependencies.js:113420
@@ -2567,9 +2555,8 @@ msgid "Leave this groupchat"
 msgstr "Напускане на този групов чат"
 
 #: dist/converse-no-dependencies.js:124258
-#, fuzzy
 msgid "Click to hide these rooms"
-msgstr "Натиснете за скриване на тези познати"
+msgstr "Кликнете за да скриете тези стаи"
 
 #: dist/converse-no-dependencies.js:124311
 msgid "Click to toggle the list of open groupchats"
@@ -2581,12 +2568,11 @@ msgstr "Групови чатове"
 
 #: dist/converse-no-dependencies.js:124313
 msgid "Query server"
-msgstr ""
+msgstr "Запитване към сървър"
 
 #: dist/converse-no-dependencies.js:124314
-#, fuzzy
 msgid "Add groupchat"
-msgstr "Добави нов групов чат"
+msgstr "Добави групов чат"
 
 #: dist/converse-no-dependencies.js:124883
 #, javascript-format
@@ -2634,7 +2620,7 @@ msgstr "Непрочетено"
 
 #: dist/converse-no-dependencies.js:125960
 msgid "Available"
-msgstr ""
+msgstr "Наличен"
 
 #. *
 #. * @param {RosterView} el
@@ -2653,9 +2639,8 @@ msgid "Add a contact"
 msgstr "Добавяне на познат"
 
 #: dist/converse-no-dependencies.js:126037
-#, fuzzy
 msgid "Re-sync contacts"
-msgstr "Повторно синхронизиране на контактите"
+msgstr "Повторна синхронизация на контакти"
 
 #: dist/converse-no-dependencies.js:126648
 msgid "This contact is busy"

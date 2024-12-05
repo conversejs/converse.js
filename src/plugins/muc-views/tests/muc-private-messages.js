@@ -93,6 +93,56 @@ describe('MUC Private Messages', () => {
 
     describe('When sending a MUC private message', () => {
         it(
+            'sends out the correct stanza',
+            mock.initConverse(['chatBoxesFetched'], { view_mode: 'fullscreen' }, async (_converse) => {
+                const { api } = _converse;
+                const nick = 'romeo';
+                const muc_jid = 'coven@chat.shakespeare.lit';
+                await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(stx`
+                            <presence
+                                from="${muc_jid}/firstwitch"
+                                id="${u.getUniqueId()}"
+                                to="${_converse.jid}"
+                                xmlns="jabber:client">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="owner" role="moderator"/>
+                            </x>
+                            </presence>`)
+                );
+                await u.waitUntil(() => view.querySelectorAll('.occupant-list converse-avatar').length === 2);
+
+                // Open the occupant view in the sidebar
+                view.querySelector('.occupant-list converse-avatar[name="firstwitch"]').click();
+
+                const textarea = await u.waitUntil(() => view.querySelector('converse-muc-occupant textarea'));
+                textarea.value = 'hello';
+
+                const button = view.querySelector('converse-muc-occupant .send-button');
+                button.click();
+
+                await u.waitUntil(
+                    () => api.connection.get().sent_stanzas.filter((s) => s.nodeName === 'message').length
+                );
+
+                const sent_stanza = api.connection.get().sent_stanzas.pop();
+                expect(sent_stanza).toEqualStanza(stx`
+                        <message from="${muc_jid}/${nick}"
+                                to="${muc_jid}/firstwitch"
+                                id="${sent_stanza.getAttribute('id')}"
+                                xmlns="jabber:client">
+                            <body>hello</body>
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                            <request xmlns="urn:xmpp:receipts"/>
+                            <origin-id xmlns="urn:xmpp:sid:0" id="${sent_stanza.querySelector('origin-id')?.getAttribute('id')}"/>
+                        </message>`);
+            })
+        );
+
+        it(
             'correctly shows the senders avatar',
             mock.initConverse(['chatBoxesFetched'], { view_mode: 'fullscreen' }, async (_converse) => {
                 const { api } = _converse;
@@ -124,18 +174,6 @@ describe('MUC Private Messages', () => {
                 await u.waitUntil(
                     () => api.connection.get().sent_stanzas.filter((s) => s.nodeName === 'message').length
                 );
-
-                const sent_stanza = api.connection.get().sent_stanzas.pop();
-                expect(sent_stanza).toEqualStanza(stx`
-                        <message from="${muc_jid}/${nick}"
-                                to="${muc_jid}/firstwitch"
-                                id="${sent_stanza.getAttribute('id')}"
-                                xmlns="jabber:client">
-                            <body>hello world</body>
-                            <active xmlns="http://jabber.org/protocol/chatstates"/>
-                            <request xmlns="urn:xmpp:receipts"/>
-                            <origin-id xmlns="urn:xmpp:sid:0" id="${sent_stanza.querySelector('origin-id')?.getAttribute('id')}"/>
-                        </message>`);
 
                 const avatar = view.querySelector('converse-muc-occupant converse-chat-message converse-avatar');
                 expect(avatar).toBeDefined();

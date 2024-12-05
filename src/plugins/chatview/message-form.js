@@ -192,7 +192,6 @@ export default class MessageForm extends CustomElement {
     async onFormSubmitted (ev) {
         ev?.preventDefault?.();
         const { chatboxviews } = _converse.state;
-
         const textarea = /** @type {HTMLTextAreaElement} */(this.querySelector('.chat-textarea'));
         const message_text = textarea.value.trim();
         if (

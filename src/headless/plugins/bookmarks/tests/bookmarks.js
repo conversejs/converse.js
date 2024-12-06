@@ -1,4 +1,5 @@
 /* global mock, converse */
+const { Strophe, sizzle, stx, u } = converse.env;
 
 describe("A chat room", function () {
 
@@ -34,6 +35,8 @@ describe("A chat room", function () {
 
 describe("A bookmark", function () {
 
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("can be created and sends out a stanza", mock.initConverse(
             ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
 
@@ -42,7 +45,6 @@ describe("A bookmark", function () {
 
         const jid = _converse.session.get('jid');
         const muc1_jid = 'theplay@conference.shakespeare.lit';
-        const { Strophe, sizzle, u } = converse.env;
         const { bookmarks } = _converse.state;
 
         bookmarks.createBookmark({
@@ -56,27 +58,37 @@ describe("A bookmark", function () {
         let sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('item[id="current"]', s).length).pop());
 
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
-                    '<publish node="storage:bookmarks">'+
-                        '<item id="current">'+
-                            '<storage xmlns="storage:bookmarks">'+
-                                `<conference autojoin="true" jid="${muc1_jid}" name="Hamlet"/>`+
-                            '</storage>'+
-                        '</item>'+
-                    '</publish>'+
-                    '<publish-options>'+
-                        '<x type="submit" xmlns="jabber:x:data">'+
-                            '<field type="hidden" var="FORM_TYPE">'+
-                                '<value>http://jabber.org/protocol/pubsub#publish-options</value>'+
-                            '</field>'+
-                            '<field var="pubsub#persist_items"><value>true</value></field>'+
-                            '<field var="pubsub#access_model"><value>whitelist</value></field>'+
-                        '</x>'+
-                    '</publish-options>'+
-                '</pubsub>'+
-            '</iq>');
+        expect(sent_stanza).toEqualStanza(stx`
+            <iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <publish node="storage:bookmarks">
+                        <item id="current">
+                            <storage xmlns="storage:bookmarks">
+                                <conference autojoin="true" jid="${muc1_jid}" name="Hamlet"/>
+                            </storage>
+                        </item>
+                    </publish>
+                    <publish-options>
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field type="hidden" var="FORM_TYPE">
+                                <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                            </field>
+                            <field var='pubsub#persist_items'>
+                                <value>true</value>
+                            </field>
+                            <field var='pubsub#max_items'>
+                                <value>max</value>
+                            </field>
+                            <field var='pubsub#send_last_published_item'>
+                                <value>never</value>
+                            </field>
+                            <field var='pubsub#access_model'>
+                                <value>whitelist</value>
+                            </field>
+                        </x>
+                    </publish-options>
+                </pubsub>
+            </iq>`);
 
 
         const muc2_jid = 'balcony@conference.shakespeare.lit';
@@ -90,29 +102,39 @@ describe("A bookmark", function () {
         sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('item[id="current"] conference[name="Balcony"]', s).length).pop());
 
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
-                    '<publish node="storage:bookmarks">'+
-                        '<item id="current">'+
-                            '<storage xmlns="storage:bookmarks">'+
-                                `<conference autojoin="true" jid="${muc2_jid}" name="Balcony">`+
-                                    '<nick>romeo</nick>'+
-                                '</conference>'+
-                                `<conference autojoin="true" jid="${muc1_jid}" name="Hamlet"/>`+
-                            '</storage>'+
-                        '</item>'+
-                    '</publish>'+
-                    '<publish-options>'+
-                        '<x type="submit" xmlns="jabber:x:data">'+
-                            '<field type="hidden" var="FORM_TYPE">'+
-                                '<value>http://jabber.org/protocol/pubsub#publish-options</value>'+
-                            '</field>'+
-                            '<field var="pubsub#persist_items"><value>true</value></field>'+
-                            '<field var="pubsub#access_model"><value>whitelist</value></field>'+
-                        '</x>'+
-                    '</publish-options>'+
-                '</pubsub>'+
-            '</iq>');
+        expect(sent_stanza).toEqualStanza(stx`
+            <iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <publish node="storage:bookmarks">
+                        <item id="current">
+                            <storage xmlns="storage:bookmarks">
+                                <conference autojoin="true" jid="${muc2_jid}" name="Balcony">
+                                    <nick>romeo</nick>
+                                </conference>
+                                <conference autojoin="true" jid="${muc1_jid}" name="Hamlet"/>
+                            </storage>
+                        </item>
+                    </publish>
+                    <publish-options>
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field type="hidden" var="FORM_TYPE">
+                                <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                            </field>
+                            <field var='pubsub#persist_items'>
+                                <value>true</value>
+                            </field>
+                            <field var='pubsub#max_items'>
+                                <value>max</value>
+                            </field>
+                            <field var='pubsub#send_last_published_item'>
+                                <value>never</value>
+                            </field>
+                            <field var='pubsub#access_model'>
+                                <value>whitelist</value>
+                            </field>
+                        </x>
+                    </publish-options>
+                </pubsub>
+            </iq>`);
     }));
 });

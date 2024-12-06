@@ -12,9 +12,23 @@ declare class Bookmarks extends Collection {
     openBookmarkedRoom(bookmark: Bookmark): Promise<Bookmark>;
     fetchBookmarks(): any;
     createBookmark(options: any): void;
-    sendBookmarkStanza(): any;
-    onBookmarkError(iq: any, options: any): void;
-    fetchBookmarksFromServer(deferred: any): void;
+    /**
+     * @typedef {import('strophe.js').Stanza} Stanza
+     * @returns {Promise<Stanza>}
+     */
+    getPubSubPublishNode(): Promise<import("strophe.js").Stanza>;
+    sendBookmarkStanza(): Promise<any>;
+    /**
+     * @param {Element} iq
+     * @param {{jid: string}} options
+     */
+    onBookmarkError(iq: Element, options: {
+        jid: string;
+    }): void;
+    /**
+     * @param {Promise} deferred
+     */
+    fetchBookmarksFromServer(deferred: Promise<any>): Promise<void>;
     /**
      * @param {Bookmark} bookmark
      */
@@ -26,11 +40,19 @@ declare class Bookmarks extends Collection {
     /**
      * @param {Element} stanza
      */
-    createBookmarksFromStanza(stanza: Element): void;
-    onBookmarksReceived(deferred: any, iq: any): any;
-    onBookmarksReceivedError(deferred: any, iq: any): any;
+    createBookmarksFromStanza(stanza: Element): Promise<void>;
+    /**
+     * @param {Object} deferred
+     * @param {Element} iq
+     */
+    onBookmarksReceived(deferred: any, iq: Element): Promise<any>;
+    /**
+     * @param {Object} deferred
+     * @param {Element} iq
+     */
+    onBookmarksReceivedError(deferred: any, iq: Element): any;
     getUnopenedBookmarks(): Promise<any>;
 }
-import { Collection } from "@converse/skeletor";
+import { Collection } from '@converse/skeletor';
 import Bookmark from './model.js';
 //# sourceMappingURL=collection.d.ts.map

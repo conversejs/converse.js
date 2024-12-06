@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2024-11-10 16:00+0000\n"
+"PO-Revision-Date: 2024-12-06 13:00+0000\n"
 "Last-Translator: \"josé m.\" <correoxm@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: dist/converse-no-dependencies.js:20585
 #: dist/converse-no-dependencies.js:20639
@@ -594,7 +594,7 @@ msgid "An error occurred while querying for archived messages."
 msgstr "Algo fallou mentras se obtiñan as mensaxes arquivadas."
 
 #: dist/converse-no-dependencies.js:59189
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, an error occurred while trying to add %1$s as a contact."
 msgstr "Lamentámolo, algo fallou ao intentar engadir a %1$s como contacto."
 
@@ -603,9 +603,8 @@ msgid "This client does not allow presence subscriptions"
 msgstr "Este cliente non permite suscricións de presencia"
 
 #: dist/converse-no-dependencies.js:61407
-#, fuzzy
 msgid "Unsaved contacts"
-msgstr "Contactos pendentes"
+msgstr "Contactos sen gardar"
 
 #: dist/converse-no-dependencies.js:61408
 msgid "My contacts"
@@ -1117,7 +1116,7 @@ msgstr "Imaxe: "
 
 #: dist/converse-no-dependencies.js:89377
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
 #: dist/converse-no-dependencies.js:89581
 msgid "Older versions"
@@ -1201,9 +1200,9 @@ msgid "Show less"
 msgstr "Mostrar menos"
 
 #: dist/converse-no-dependencies.js:91578
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Message delivery failed: \"%1$s\""
-msgstr "A mensaxe do servidor é: \"%1$s\""
+msgstr "Fallou a entrega da mensaxe: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:92282
 msgid "A moderator"
@@ -1627,33 +1626,31 @@ msgid "Invite someone to join this groupchat"
 msgstr "Convida a alguén a unirse a conversa en grupo"
 
 #: dist/converse-no-dependencies.js:108211
-#, fuzzy
 msgid "No participant data found"
-msgstr "Mostrar participantes"
+msgstr "Non se atopan datos da participante"
 
 #: dist/converse-no-dependencies.js:108213
-#, fuzzy
 msgid "Show details"
-msgstr "Mostrar menos"
+msgstr "Mostrar detalles"
 
 #: dist/converse-no-dependencies.js:108263
 msgid ""
 "This user is not currently in this groupchat and can't receive messages."
 msgstr ""
+"Esta usuaria non está actualmente na parola en grupo e non pode recibir "
+"mensaxes."
 
 #: dist/converse-no-dependencies.js:108264
-#, fuzzy
 msgid "Invite this user to join this groupchat"
-msgstr "Convida a alguén a unirse a conversa en grupo"
+msgstr "Convida a esta usuaria para que se una á conversa do grupo"
 
 #: dist/converse-no-dependencies.js:108265
 msgid "Open a one-on-one chat with this user"
-msgstr ""
+msgstr "Abrir unha conversa persoal con esta usuaria"
 
 #: dist/converse-no-dependencies.js:108266
-#, fuzzy
 msgid "Open Chat"
-msgstr "Abrir conversas en grupo"
+msgstr "Abrir Conversa"
 
 #: dist/converse-no-dependencies.js:108791
 #: dist/converse-no-dependencies.js:118282
@@ -1661,9 +1658,8 @@ msgid "Success"
 msgstr "Éxito"
 
 #: dist/converse-no-dependencies.js:108791
-#, fuzzy
 msgid "The user has been invited to join this groupchat"
-msgstr "%1$s foi excluído de esta conversa en grupo"
+msgstr "Convidouse á usuaria a unirse á conversa en grupo"
 
 #: dist/converse-no-dependencies.js:110838
 msgid "Change user's affiliation to admin"
@@ -2057,9 +2053,8 @@ msgid "Minimize this groupchat"
 msgstr "Minimizar esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:115820
-#, fuzzy
 msgid "hidden"
-msgstr "Oculto"
+msgstr "oculto"
 
 #. *
 #. * @param {import('../minimized-chat').default} el
@@ -2680,14 +2675,16 @@ msgid "Re-sync contacts"
 msgstr "Sincronizar contactos"
 
 #: dist/converse-no-dependencies.js:131726
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
-msgstr "Pulse para aceptar a solicitude de contacto de %1$s"
+msgstr ""
+"Preme para aceptar a solicitude do contacto desde %1$s (enderezo XMPP: %2$s)"
 
 #: dist/converse-no-dependencies.js:131727
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
-msgstr "Pulse para rexeitar a solicitude de contacto de %1$s"
+msgstr ""
+"Prema para rexeitar a solicitude do contacto desde %1$s (enderezo XMPP: %2$s)"
 
 #: dist/converse-no-dependencies.js:131728
 #: dist/converse-no-dependencies.js:131792
@@ -2726,9 +2723,9 @@ msgid "Click to remove %1$s as a contact"
 msgstr "Pulse para eliminar %1$s como contacto"
 
 #: dist/converse-no-dependencies.js:131818
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to add %1$s to your roster"
-msgstr "Pulse para mencionar a %1$s na súa mensaxe."
+msgstr "Preme para engadir a %1$s aos teus contactos"
 
 #: dist/converse-no-dependencies.js:132411
 msgid "Are you sure you want to decline this contact request?"

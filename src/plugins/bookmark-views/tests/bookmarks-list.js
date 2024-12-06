@@ -1,8 +1,10 @@
 /* global mock, converse */
 
-const { Strophe, u, sizzle, $iq } = converse.env;
+const { Strophe, u, sizzle } = converse.env;
 
 describe("The bookmarks list modal", function () {
+
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     it("shows a list of bookmarks", mock.initConverse(
             ['chatBoxesFetched'], {},
@@ -24,43 +26,39 @@ describe("The bookmarks list modal", function () {
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
 
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-            '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
-                '<items node="storage:bookmarks"/>'+
-            '</pubsub>'+
-            '</iq>'
+        expect(sent_stanza).toEqualStanza(
+            stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="storage:bookmarks"/>
+                </pubsub>
+            </iq>`
         );
 
-        const stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
-            .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                .c('items', {'node': 'storage:bookmarks'})
-                    .c('item', {'id': 'current'})
-                        .c('storage', {'xmlns': 'storage:bookmarks'})
-                            .c('conference', {
-                                'name': 'The Play&apos;s the Thing',
-                                'autojoin': 'false',
-                                'jid': 'theplay@conference.shakespeare.lit'
-                            }).c('nick').t('JC').up().up()
-                            .c('conference', {
-                                'name': '1st Bookmark',
-                                'autojoin': 'false',
-                                'jid': 'first@conference.shakespeare.lit'
-                            }).c('nick').t('JC').up().up()
-                            .c('conference', {
-                                'autojoin': 'false',
-                                'jid': 'noname@conference.shakespeare.lit'
-                            }).c('nick').t('JC').up().up()
-                            .c('conference', {
-                                'name': 'Bookmark with a very very long name that will be shortened',
-                                'autojoin': 'false',
-                                'jid': 'longname@conference.shakespeare.lit'
-                            }).c('nick').t('JC').up().up()
-                            .c('conference', {
-                                'name': 'Another room',
-                                'autojoin': 'false',
-                                'jid': 'another@conference.shakespeare.lit'
-                            }).c('nick').t('JC').up().up();
+        const stanza = stx`<iq to="${_converse.api.connection.get().jid}" type="result" id="${sent_stanza.getAttribute('id')}" xmlns="jabber:client">
+            <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                <items node="storage:bookmarks">
+                    <item id="current">
+                        <storage xmlns="storage:bookmarks">
+                            <conference name="The Play&apos;s the Thing" autojoin="false" jid="theplay@conference.shakespeare.lit">
+                                <nick>JC</nick>
+                            </conference>
+                            <conference name="1st Bookmark" autojoin="false" jid="first@conference.shakespeare.lit">
+                                <nick>JC</nick>
+                            </conference>
+                            <conference autojoin="false" jid="noname@conference.shakespeare.lit">
+                                <nick>JC</nick>
+                            </conference>
+                            <conference name="Bookmark with a very very long name that will be shortened" autojoin="false" jid="longname@conference.shakespeare.lit">
+                                <nick>JC</nick>
+                            </conference>
+                            <conference name="Another room" autojoin="false" jid="another@conference.shakespeare.lit">
+                                <nick>JC</nick>
+                            </conference>
+                        </storage>
+                    </item>
+                </items>
+            </pubsub>
+        </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const modal = _converse.api.modal.get('converse-bookmark-list-modal');
@@ -104,21 +102,22 @@ describe("The bookmarks list modal", function () {
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
-        const stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
-            .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                .c('items', {'node': 'storage:bookmarks'})
-                    .c('item', {'id': 'current'})
-                        .c('storage', {'xmlns': 'storage:bookmarks'})
-                            .c('conference', {
-                                'name': 'The Play&apos;s the Thing',
-                                'autojoin': 'false',
-                                'jid': 'theplay@conference.shakespeare.lit'
-                            }).c('nick').t('JC').up().up()
-                            .c('conference', {
-                                'name': '1st Bookmark',
-                                'autojoin': 'false',
-                                'jid': 'first@conference.shakespeare.lit'
-                            }).c('nick').t('JC');
+        const stanza = stx`<iq to="${_converse.api.connection.get().jid}" type="result" id="${sent_stanza.getAttribute('id')}" xmlns="jabber:client">
+            <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                <items node="storage:bookmarks">
+                    <item id="current">
+                        <storage xmlns="storage:bookmarks">
+                            <conference name="The Play&apos;s the Thing" autojoin="false" jid="theplay@conference.shakespeare.lit">
+                                <nick>JC</nick>
+                            </conference>
+                            <conference name="1st Bookmark" autojoin="false" jid="first@conference.shakespeare.lit">
+                                <nick>JC</nick>
+                            </conference>
+                        </storage>
+                    </item>
+                </items>
+            </pubsub>
+        </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const modal = api.modal.get('converse-bookmark-list-modal');

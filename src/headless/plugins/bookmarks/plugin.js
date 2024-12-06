@@ -13,6 +13,7 @@ import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './u
 const { Strophe } = converse.env;
 
 Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
+Strophe.addNamespace('BOOKMARKS2', 'urn:xmpp:bookmarks:1');
 
 
 converse.plugins.add('converse-bookmarks', {
@@ -33,6 +34,9 @@ converse.plugins.add('converse-bookmarks', {
                 return bookmark?.get('name') || getDisplayName.apply(this, arguments);
             },
 
+            /**
+             * @param {string} nick
+             */
             getAndPersistNickname (nick) {
                 nick = nick || getNicknameFromBookmark(this.get('jid'));
                 return this.__super__.getAndPersistNickname.call(this, nick);
@@ -75,7 +79,9 @@ converse.plugins.add('converse-bookmarks', {
         api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
             const bare_jid = _converse.session.get('bare_jid');
-            api.connection.get().addHandler(handleBookmarksPush, null, 'message', 'headline', null, bare_jid);
+            const connection = api.connection.get();
+            connection.addHandler(handleBookmarksPush, Strophe.NS.BOOKMARKS, 'message', 'headline', null, bare_jid);
+            connection.addHandler(handleBookmarksPush, Strophe.NS.BOOKMARKS2, 'message', 'headline', null, bare_jid);
             await Promise.all([api.waitUntil('chatBoxesFetched')]);
             initBookmarks();
         });

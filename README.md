@@ -7,7 +7,6 @@
 
 [![XMPP Chat](https://conference.conversejs.org/muc_badge/discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
 [![CI Tests](https://github.com/conversejs/converse.js/actions/workflows/karma-tests.yml/badge.svg)](https://github.com/conversejs/converse.js/actions/workflows/karma-tests.yml)
-[![Bountysource bounties](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
 [Converse](https://conversejs.org) is a web based [XMPP/Jabber](https://xmpp.org) chat client.

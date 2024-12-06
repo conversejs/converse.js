@@ -2,7 +2,7 @@
  * @module converse-pubsub
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
- * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ * @typedef {import('strophe.js').Builder} Strophe.Builder
  */
 import "./disco/index.js";
 import _converse from '../shared/_converse.js';
@@ -30,27 +30,27 @@ converse.plugins.add('converse-pubsub', {
              * @namespace _converse.api.pubsub
              * @memberOf _converse.api
              */
-            'pubsub': {
+            pubsub: {
                 /**
                  * Publshes an item to a PubSub node
                  *
                  * @method _converse.api.pubsub.publish
-                 * @param { string } jid The JID of the pubsub service where the node resides.
-                 * @param { string } node The node being published to
+                 * @param {string} jid The JID of the pubsub service where the node resides.
+                 * @param {string} node The node being published to
                  * @param {Strophe.Builder} item The Strophe.Builder representation of the XML element being published
-                 * @param { object } options An object representing the publisher options
+                 * @param {object} options An object representing the publisher options
                  *      (see https://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
-                 * @param { boolean } strict_options Indicates whether the publisher
+                 * @param {boolean} strict_options Indicates whether the publisher
                  *      options are a strict requirement or not. If they're NOT
                  *      strict, then Converse will publish to the node even if
-                 *      the publish options precondication cannot be met.
+                 *      the publish options precondition cannot be met.
                  */
-                async 'publish' (jid, node, item, options, strict_options=true) {
+                async publish (jid, node, item, options, strict_options=true) {
                     const bare_jid = _converse.session.get('bare_jid');
                     const stanza = $iq({
-                        'from': bare_jid,
-                        'type': 'set',
-                        'to': jid
+                        from: bare_jid,
+                        type: 'set',
+                        to: jid
                     }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('publish', {'node': node})
                             .cnode(item.tree()).up().up();

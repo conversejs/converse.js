@@ -1,5 +1,4 @@
 /*global mock, converse */
-
 const { Strophe, u, $msg } = converse.env;
 
 describe("A MUC message", function () {

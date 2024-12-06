@@ -26,7 +26,7 @@ const { getURI, isAudioURL, isImageURL, isVideoURL, isValidURL } = u;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 
-const EMPTY_TEXT_REGEX = /\s*\n\s*/
+const EMPTY_TEXT_REGEX = /\s*\n\s*/;
 
 /**
  * @param {Element|Builder|Stanza} el

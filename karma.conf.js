@@ -25,6 +25,7 @@ module.exports = function(config) {
       { pattern: "src/shared/tests/mock.js", type: 'module' },
 
       { pattern: "src/headless/plugins/bookmarks/tests/bookmarks.js", type: 'module' },
+      { pattern: "src/headless/plugins/bookmarks/tests/deprecated.js", type: 'module' },
       { pattern: "src/headless/plugins/caps/tests/caps.js", type: 'module' },
       { pattern: "src/headless/plugins/chat/tests/api.js", type: 'module' },
       { pattern: "src/headless/plugins/disco/tests/disco.js", type: 'module' },
@@ -46,6 +47,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/adhoc-views/tests/adhoc.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks-list.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
+      { pattern: "src/plugins/bookmark-views/tests/deprecated.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/actions.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },

@@ -43,6 +43,7 @@ class MUCBookmarkForm extends CustomElement {
             autojoin: /** @type {HTMLInputElement} */ (form.querySelector('input[name="autojoin"]'))?.checked || false,
             name: /** @type {HTMLInputElement} */ (form.querySelector('input[name=name]'))?.value,
             nick: /** @type {HTMLInputElement} */ (form.querySelector('input[name=nick]'))?.value,
+            password: /** @type {HTMLInputElement} */ (form.querySelector('input[name=password]'))?.value,
         });
         this.closeBookmarkForm(ev);
     }

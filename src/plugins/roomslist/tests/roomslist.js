@@ -5,6 +5,8 @@ const { $msg, u, Strophe, $iq, sizzle } = converse.env;
 
 describe("A list of open groupchats", function () {
 
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("is shown in controlbox", mock.initConverse(
             ['chatBoxesFetched'],
             { allow_bookmarks: false // Makes testing easier, otherwise we
@@ -99,21 +101,16 @@ describe("A list of open groupchats", function () {
             {'view_mode': 'fullscreen'},
             async function (_converse) {
 
-        const { Strophe, $iq, $pres, sizzle } = converse.env;
+        const { Strophe, sizzle } = converse.env;
         const u = converse.env.utils;
 
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-        let stanza = $pres({
-                to: 'romeo@montague.lit/orchard',
-                from: 'lounge@montague.lit/newguy'
-            })
-            .c('x', {xmlns: Strophe.NS.MUC_USER})
-            .c('item', {
-                'affiliation': 'none',
-                'jid': 'newguy@montague.lit/_converse.js-290929789',
-                'role': 'participant'
-            }).tree();
+        let stanza = stx`<presence to="romeo@montague.lit/orchard" from="lounge@montague.lit/newguy" xmlns="jabber:client">
+                <x xmlns="${Strophe.NS.MUC_USER}">
+                    <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
+                </x>
+            </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         spyOn(_converse.exports.Bookmarks.prototype, 'fetchBookmarks').and.callThrough();
@@ -126,22 +123,24 @@ describe("A list of open groupchats", function () {
 
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-            '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
-                '<items node="storage:bookmarks"/>'+
-            '</pubsub>'+
-            '</iq>');
+        expect(sent_stanza).toEqualStanza(
+            stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="storage:bookmarks"/>
+                </pubsub>
+            </iq>`);
 
-        stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
-            .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                .c('items', {'node': 'storage:bookmarks'})
-                    .c('item', {'id': 'current'})
-                        .c('storage', {'xmlns': 'storage:bookmarks'})
-                            .c('conference', {
-                                'name': 'Bookmarked Lounge',
-                                'jid': 'lounge@montague.lit'
-                            });
+        stanza = stx`<iq to="${_converse.api.connection.get().jid}" type="result" id="${sent_stanza.getAttribute('id')}" xmlns="jabber:client">
+            <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                <items node="storage:bookmarks">
+                    <item id="current">
+                        <storage xmlns="storage:bookmarks">
+                            <conference name="Bookmarked Lounge" jid="lounge@montague.lit"/>
+                        </storage>
+                    </item>
+                </items>
+            </pubsub>
+        </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await _converse.api.waitUntil('roomsListInitialized');

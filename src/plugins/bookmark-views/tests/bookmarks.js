@@ -1,20 +1,22 @@
 /* global mock, converse */
-
-const { Strophe, sizzle } = converse.env;
+const { Strophe, sizzle, stx, u } = converse.env;
 
 
 describe("A chat room", function () {
 
-    it("can be bookmarked", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
+    it("can be bookmarked", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
-            ['http://jabber.org/protocol/pubsub#publish-options']
+            [
+                'http://jabber.org/protocol/pubsub#publish-options',
+                'urn:xmpp:bookmarks:1#compat'
+            ]
         );
 
-        const { u, $iq } = converse.env;
         const nick = 'JC';
         const muc_jid = 'theplay@conference.shakespeare.lit';
         await mock.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
@@ -34,85 +36,59 @@ describe("A chat room", function () {
         const modal = _converse.api.modal.get('converse-bookmark-form-modal');
         await u.waitUntil(() => u.isVisible(modal), 1000);
 
-        /* Client uploads data:
-         * --------------------
-         *  <iq from='juliet@capulet.lit/balcony' type='set' id='pip1'>
-         *      <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-         *          <publish node='storage:bookmarks'>
-         *              <item id='current'>
-         *                  <storage xmlns='storage:bookmarks'>
-         *                      <conference name='The Play&apos;s the Thing'
-         *                                  autojoin='true'
-         *                                  jid='theplay@conference.shakespeare.lit'>
-         *                          <nick>JC</nick>
-         *                      </conference>
-         *                  </storage>
-         *              </item>
-         *          </publish>
-         *          <publish-options>
-         *              <x xmlns='jabber:x:data' type='submit'>
-         *                  <field var='FORM_TYPE' type='hidden'>
-         *                      <value>http://jabber.org/protocol/pubsub#publish-options</value>
-         *                  </field>
-         *                  <field var='pubsub#persist_items'>
-         *                      <value>true</value>
-         *                  </field>
-         *                  <field var='pubsub#access_model'>
-         *                      <value>whitelist</value>
-         *                  </field>
-         *              </x>
-         *          </publish-options>
-         *      </pubsub>
-         *  </iq>
-         */
         expect(view.model.get('bookmarked')).toBeFalsy();
         const form = await u.waitUntil(() => modal.querySelector('.chatroom-form'));
-        form.querySelector('input[name="name"]').value = 'Play&apos;s the Thing';
+        form.querySelector('input[name="name"]').value = "Play's the Thing";
         form.querySelector('input[name="autojoin"]').checked = 'checked';
         form.querySelector('input[name="nick"]').value = 'JC';
+        form.querySelector('input[name="password"]').value = 'secret';
 
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         modal.querySelector('converse-muc-bookmark-form .btn-primary').click();
 
         const sent_stanza = await u.waitUntil(
-            () => IQ_stanzas.filter(s => sizzle('iq publish[node="storage:bookmarks"]', s).length).pop());
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
-                    `<publish node="storage:bookmarks">`+
-                        `<item id="current">`+
-                            `<storage xmlns="storage:bookmarks">`+
-                                `<conference autojoin="true" jid="theplay@conference.shakespeare.lit" name="Play&amp;apos;s the Thing">`+
-                                    `<nick>JC</nick>`+
-                                `</conference>`+
-                            `</storage>`+
-                        `</item>`+
-                    `</publish>`+
-                    `<publish-options>`+
-                        `<x type="submit" xmlns="jabber:x:data">`+
-                            `<field type="hidden" var="FORM_TYPE">`+
-                                `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
-                            `</field>`+
-                            `<field var="pubsub#persist_items">`+
-                                `<value>true</value>`+
-                            `</field>`+
-                            `<field var="pubsub#access_model">`+
-                                `<value>whitelist</value>`+
-                            `</field>`+
-                        `</x>`+
-                    `</publish-options>`+
-                `</pubsub>`+
-            `</iq>`
+            () => IQ_stanzas.filter(s => sizzle('iq publish[node="urn:xmpp:bookmarks:1"]', s).length).pop());
+        expect(sent_stanza).toEqualStanza(
+            stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <publish node="urn:xmpp:bookmarks:1">
+                        <item id="${view.model.get('jid')}">
+                            <conference xmlns="urn:xmpp:bookmarks:1" autojoin="true" name="Play's the Thing">
+                                <nick>JC</nick>
+                                <password>secret</password>
+                            </conference>
+                        </item>
+                    </publish>
+                    <publish-options>
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field type="hidden" var="FORM_TYPE">
+                                <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                            </field>
+                            <field var='pubsub#persist_items'>
+                                <value>true</value>
+                            </field>
+                            <field var='pubsub#max_items'>
+                                <value>max</value>
+                            </field>
+                            <field var='pubsub#send_last_published_item'>
+                                <value>never</value>
+                            </field>
+                            <field var='pubsub#access_model'>
+                                <value>whitelist</value>
+                            </field>
+                        </x>
+                    </publish-options>
+                </pubsub>
+            </iq>`
         );
         /* Server acknowledges successful storage
-         *
          * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
          */
-        const stanza = $iq({
-            'to':_converse.api.connection.get().jid,
-            'type':'result',
-            'id': sent_stanza.getAttribute('id')
-        });
+        const stanza = stx`<iq
+            xmlns="jabber:client"
+            to="${_converse.api.connection.get().jid}"
+            type="result"
+            id="${sent_stanza.getAttribute('id')}"/>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.get('bookmarked'));
         expect(view.model.get('bookmarked')).toBeTruthy();
@@ -197,7 +173,10 @@ describe("A chat room", function () {
             mock.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
-                ['http://jabber.org/protocol/pubsub#publish-options']
+                [
+                    'http://jabber.org/protocol/pubsub#publish-options',
+                    'urn:xmpp:bookmarks:1#compat'
+                ]
             );
 
             const nick = 'romeo';
@@ -223,9 +202,10 @@ describe("A chat room", function () {
         }));
 
         it("can be unbookmarked", mock.initConverse([], {}, async function (_converse) {
-            const { u, Strophe } = converse.env;
+            const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
+
             const nick = 'romeo';
             const muc_jid = 'theplay@conference.shakespeare.lit';
             await _converse.api.rooms.open(muc_jid);
@@ -274,29 +254,31 @@ describe("A chat room", function () {
             // conferences to bookmark (since we removed the one and
             // only bookmark).
             const sent_stanza = _converse.api.connection.get().IQ_stanzas.pop();
-            expect(Strophe.serialize(sent_stanza)).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
-                        `<publish node="storage:bookmarks">`+
-                            `<item id="current">`+
-                                `<storage xmlns="storage:bookmarks"/>`+
-                            `</item>`+
-                        `</publish>`+
-                        `<publish-options>`+
-                            `<x type="submit" xmlns="jabber:x:data">`+
-                                `<field type="hidden" var="FORM_TYPE">`+
-                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
-                                `</field>`+
-                                `<field var="pubsub#persist_items">`+
-                                    `<value>true</value>`+
-                                `</field>`+
-                                `<field var="pubsub#access_model">`+
-                                    `<value>whitelist</value>`+
-                                `</field>`+
-                            `</x>`+
-                        `</publish-options>`+
-                    `</pubsub>`+
-                `</iq>`
+            expect(sent_stanza).toEqualStanza(
+                stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                        <publish node="urn:xmpp:bookmarks:1"/>
+                        <publish-options>
+                            <x type="submit" xmlns="jabber:x:data">
+                                <field type="hidden" var="FORM_TYPE">
+                                    <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                                </field>
+                                <field var='pubsub#persist_items'>
+                                    <value>true</value>
+                                </field>
+                                <field var='pubsub#max_items'>
+                                    <value>max</value>
+                                </field>
+                                <field var='pubsub#send_last_published_item'>
+                                    <value>never</value>
+                                </field>
+                                <field var='pubsub#access_model'>
+                                    <value>whitelist</value>
+                                </field>
+                            </x>
+                        </publish-options>
+                    </pubsub>
+                </iq>`
             );
         }));
     });
@@ -304,174 +286,216 @@ describe("A chat room", function () {
 
 describe("Bookmarks", function () {
 
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("can be pushed from the XMPP server", mock.initConverse(
             ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
 
-        const { $msg, u } = converse.env;
+        const { u } = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilBookmarksReturned(_converse);
 
-        /* The stored data is automatically pushed to all of the user's
-         * connected resources.
-         *
-         * Publisher receives event notification
-         * -------------------------------------
-         * <message from='juliet@capulet.lit'
-         *         to='juliet@capulet.lit/balcony'
-         *         type='headline'
-         *         id='rnfoo1'>
-         * <event xmlns='http://jabber.org/protocol/pubsub#event'>
-         *     <items node='storage:bookmarks'>
-         *     <item id='current'>
-         *         <storage xmlns='storage:bookmarks'>
-         *         <conference name='The Play&apos;s the Thing'
-         *                     autojoin='true'
-         *                     jid='theplay@conference.shakespeare.lit'>
-         *             <nick>JC</nick>
-         *         </conference>
-         *         </storage>
-         *     </item>
-         *     </items>
-         * </event>
-         * </message>
-         */
-        let stanza = $msg({
-            'from': 'romeo@montague.lit',
-            'to': _converse.jid,
-            'type': 'headline',
-            'id': u.getUniqueId()
-        }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
-            .c('items', {'node': 'storage:bookmarks'})
-                .c('item', {'id': 'current'})
-                    .c('storage', {'xmlns': 'storage:bookmarks'})
-                        .c('conference', {
-                            'name': 'The Play&apos;s the Thing',
-                            'autojoin': 'true',
-                            'jid':'theplay@conference.shakespeare.lit'
-                        }).c('nick').t('JC').up().up()
-                        .c('conference', {
-                            'name': 'Another bookmark',
-                            'autojoin': 'false',
-                            'jid':'another@conference.shakespeare.lit'
-                        }).c('nick').t('JC');
+        // The stored data is automatically pushed to all of the user's connected resources.
+        // Publisher receives event notification
+        let stanza = stx`<message from="romeo@montague.lit"
+                            to="${_converse.jid}"
+                            type="headline"
+                            id="${u.getUniqueId()}"
+                            xmlns="jabber:client">
+            <event xmlns='http://jabber.org/protocol/pubsub#event'>
+                <items node='urn:xmpp:bookmarks:1'>
+                    <item id="theplay@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1"
+                                name="The Play's the Thing"
+                                autojoin="true" >
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                    <item id="another@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1"
+                                name="Another bookmark"
+                                autojoin="false">
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                </items>
+            </event>
+        </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const { bookmarks } = _converse.state;
         await u.waitUntil(() => bookmarks.length);
         expect(bookmarks.length).toBe(2);
-        expect(bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', 'The Play&apos;s the Thing']);
+        expect(bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', "The Play's the Thing"]);
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
 
-        stanza = $msg({
-            'from': 'romeo@montague.lit',
-            'to': _converse.jid,
-            'type': 'headline',
-            'id': u.getUniqueId()
-        }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
-            .c('items', {'node': 'storage:bookmarks'})
-                .c('item', {'id': 'current'})
-                    .c('storage', {'xmlns': 'storage:bookmarks'})
-                        .c('conference', {
-                            'name': 'The Play&apos;s the Thing',
-                            'autojoin': 'true',
-                            'jid':'theplay@conference.shakespeare.lit'
-                        }).c('nick').t('JC').up().up()
-                        .c('conference', {
-                            'name': 'Second bookmark',
-                            'autojoin': 'false',
-                            'jid':'another@conference.shakespeare.lit'
-                        }).c('nick').t('JC').up().up()
-                        .c('conference', {
-                            'name': 'Yet another bookmark',
-                            'autojoin': 'false',
-                            'jid':'yab@conference.shakespeare.lit'
-                        }).c('nick').t('JC');
+        stanza = stx`<message from="romeo@montague.lit"
+                        to="${_converse.jid}"
+                        type="headline"
+                        id="${u.getUniqueId()}"
+                        xmlns="jabber:client">
+            <event xmlns="http://jabber.org/protocol/pubsub#event">
+                <items node="urn:xmpp:bookmarks:1">
+                    <item id="theplay@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1" name="The Play's the Thing" autojoin="true">
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                    <item id="another@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1" name="Second bookmark" autojoin="false">
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                    <item id="yab@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1" name="Yet another bookmark" autojoin="false">
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                </items>
+            </event>
+        </message>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => bookmarks.length === 3);
         expect(bookmarks.map(b => b.get('name'))).toEqual(
-            ['Second bookmark', 'The Play&apos;s the Thing', 'Yet another bookmark']
+            ['Second bookmark', "The Play's the Thing", 'Yet another bookmark']
         );
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
         expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
     }));
 
-
     it("can be retrieved from the XMPP server", mock.initConverse(
             ['chatBoxesFetched'], {},
             async function (_converse) {
 
-        const { Strophe, sizzle, u, $iq } = converse.env;
+        const { sizzle, u } = converse.env;
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
-            ['http://jabber.org/protocol/pubsub#publish-options']
+            [
+                'http://jabber.org/protocol/pubsub#publish-options',
+                'urn:xmpp:bookmarks:1#compat'
+            ]
         );
-        /* Client requests all items
-         * -------------------------
-         *
-         *  <iq from='juliet@capulet.lit/randomID' type='get' id='retrieve1'>
-         *  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-         *      <items node='storage:bookmarks'/>
-         *  </pubsub>
-         *  </iq>
-         */
+
+        // Client requests all items
         const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
         const sent_stanza = await u.waitUntil(
-            () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
+            () => IQ_stanzas.filter(s => sizzle('items[node="urn:xmpp:bookmarks:1"]', s).length).pop());
 
-        expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-            '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
-                '<items node="storage:bookmarks"/>'+
-            '</pubsub>'+
-            '</iq>');
+        expect(sent_stanza).toEqualStanza(
+            stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <items node="urn:xmpp:bookmarks:1"/>
+                </pubsub>
+            </iq>`
+        );
 
-        /*
-         * Server returns all items
-         * ------------------------
-         * <iq type='result'
-         *     to='juliet@capulet.lit/randomID'
-         *     id='retrieve1'>
-         * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-         *     <items node='storage:bookmarks'>
-         *     <item id='current'>
-         *         <storage xmlns='storage:bookmarks'>
-         *         <conference name='The Play&apos;s the Thing'
-         *                     autojoin='true'
-         *                     jid='theplay@conference.shakespeare.lit'>
-         *             <nick>JC</nick>
-         *         </conference>
-         *         </storage>
-         *     </item>
-         *     </items>
-         * </pubsub>
-         * </iq>
-         */
         expect(_converse.bookmarks.models.length).toBe(0);
-
         spyOn(_converse.bookmarks, 'onBookmarksReceived').and.callThrough();
-        const stanza = $iq({'to': _converse.api.connection.get().jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
-            .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                .c('items', {'node': 'storage:bookmarks'})
-                    .c('item', {'id': 'current'})
-                        .c('storage', {'xmlns': 'storage:bookmarks'})
-                            .c('conference', {
-                                'name': 'The Play&apos;s the Thing',
-                                'autojoin': 'true',
-                                'jid': 'theplay@conference.shakespeare.lit'
-                            }).c('nick').t('JC').up().up()
-                            .c('conference', {
-                                'name': 'Another room',
-                                'autojoin': 'false',
-                                'jid': 'another@conference.shakespeare.lit'
-                            }); // Purposefully exclude the <nick> element to test #1043
+
+        // Server returns all items
+        // Purposefully exclude the <nick> element to test #1043
+        const stanza = stx`
+            <iq xmlns="jabber:server"
+                type="result"
+                to="${_converse.jid}"
+                id="${sent_stanza.getAttribute('id')}">
+            <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                <items node="urn:xmpp:bookmarks:1">
+                <item id="theplay@conference.shakespeare.lit">
+                    <conference xmlns="urn:xmpp:bookmarks:1"
+                                name="The Play's the Thing"
+                                autojoin="true">
+                    <nick>JC</nick>
+                    </conference>
+                </item>
+                <item id="orchard@conference.shakespeare.lit">
+                    <conference xmlns="urn:xmpp:bookmarks:1"
+                                name="The Orchard"
+                                autojoin="1">
+                        <extensions>
+                            <state xmlns="http://myclient.example/bookmark/state" minimized="true"/>
+                        </extensions>
+                    </conference>
+                </item>
+                </items>
+            </pubsub>
+            </iq>`;
+
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count());
         await _converse.api.waitUntil('bookmarksInitialized');
-        expect(_converse.bookmarks.models.length).toBe(2);
-        expect(_converse.bookmarks.get('theplay@conference.shakespeare.lit').get('autojoin')).toBe(true);
-        expect(_converse.bookmarks.get('another@conference.shakespeare.lit').get('autojoin')).toBe(false);
+        const { bookmarks } = _converse.state;
+        expect(bookmarks.models.length).toBe(2);
+
+        const theplay = bookmarks.get('theplay@conference.shakespeare.lit');
+        expect(theplay.get('autojoin')).toBe(true);
+
+        const orchard = bookmarks.get('orchard@conference.shakespeare.lit');
+        expect(orchard.get('autojoin')).toBe(true);
+        expect(orchard.get('extensions').length).toBe(1);
+        expect(orchard.get('extensions')[0]).toBe('<state xmlns="http://myclient.example/bookmark/state" minimized="true"/>');
+    }));
+
+    it("can have a password which will be used to enter", mock.initConverse(
+            ['chatBoxesFetched'], {},
+            async function (_converse) {
+
+        const autojoin_muc = "theplay@conference.shakespeare.lit";
+        await mock.waitForRoster(_converse, 'current', 0);
+        await mock.waitUntilBookmarksReturned(_converse, [
+            {
+                jid: autojoin_muc,
+                name: "The Play's the Thing",
+                autojoin: true,
+                nick: 'JC',
+                password: 'secret',
+            }, {
+                jid: "orchard@conference.shakespeare.lit",
+                name: "The Orchard",
+            }
+        ]);
+
+        await _converse.api.waitUntil('bookmarksInitialized');
+        const { bookmarks } = _converse.state;
+        expect(bookmarks.models.length).toBe(2);
+
+        const theplay = bookmarks.get(autojoin_muc);
+        expect(theplay.get('autojoin')).toBe(true);
+        expect(theplay.get('name')).toBe("The Play's the Thing");
+        expect(theplay.get('nick')).toBe('JC');
+        expect(theplay.get('password')).toBe('secret');
+
+        expect(bookmarks.get('orchard@conference.shakespeare.lit').get('autojoin')).toBe(false);
+
+        await u.waitUntil(() => _converse.state.chatboxes.get(autojoin_muc));
+        const features = [
+            'http://jabber.org/protocol/muc',
+            'jabber:iq:register',
+            'muc_passwordprotected',
+        ];
+        await mock.getRoomFeatures(_converse, autojoin_muc, features);
+
+        const { sent_stanzas } = _converse.api.connection.get();
+        const sent_stanza = await u.waitUntil(
+            () => sent_stanzas.filter(s => s.getAttribute('to') === `${autojoin_muc}/JC`).pop());
+
+        expect(sent_stanza).toEqualStanza(stx`
+            <presence
+                xmlns="jabber:client"
+                from="${_converse.jid}"
+                id="${sent_stanza.getAttribute('id')}"
+                to="${autojoin_muc}/JC">
+            <x xmlns="http://jabber.org/protocol/muc">
+                <history/>
+                <password>secret</password>
+            </x>
+            <c xmlns="http://jabber.org/protocol/caps"
+               hash="sha-1"
+               node="https://conversejs.org"
+               ver="TfHz9vOOfqIG0Z9lW5CuPaWGnrQ="/>
+            </presence>`);
     }));
 });

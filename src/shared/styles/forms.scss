@@ -29,7 +29,7 @@
             background-color: var(--background-color);
             &:focus {
                 color: var(--text-color);
-                background-color: var(--focus-color);
+                background-color: var(--background-color);
             }
 
             &::-webkit-input-placeholder { /* Chrome/Opera/Safari */

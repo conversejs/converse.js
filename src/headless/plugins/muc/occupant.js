@@ -101,7 +101,7 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
      * @returns {string}
      */
     getDisplayName() {
-        return this.get('nick') || this.get('jid');
+        return this.get('nick') || this.get('jid') || '';
     }
 
     /**

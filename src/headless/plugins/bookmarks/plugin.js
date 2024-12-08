@@ -13,6 +13,7 @@ import { initBookmarks, getNicknameFromBookmark, handleBookmarksPush } from './u
 const { Strophe } = converse.env;
 
 Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
+Strophe.addNamespace('BOOKMARKS2', 'urn:xmpp:bookmarks:1');
 
 
 converse.plugins.add('converse-bookmarks', {
@@ -33,6 +34,9 @@ converse.plugins.add('converse-bookmarks', {
                 return bookmark?.get('name') || getDisplayName.apply(this, arguments);
             },
 
+            /**
+             * @param {string} nick
+             */
             getAndPersistNickname (nick) {
                 nick = nick || getNicknameFromBookmark(this.get('jid'));
                 return this.__super__.getAndPersistNickname.call(this, nick);

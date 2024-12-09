@@ -6,7 +6,7 @@ fdescribe("A chat room", function () {
 
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    fit("can be bookmarked", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
+    it("can be bookmarked", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -171,7 +171,10 @@ fdescribe("A chat room", function () {
             mock.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
-                ['http://jabber.org/protocol/pubsub#publish-options']
+                [
+                    'http://jabber.org/protocol/pubsub#publish-options',
+                    'urn:xmpp:bookmarks:1#compat'
+                ]
             );
 
             const nick = 'romeo';
@@ -200,6 +203,7 @@ fdescribe("A chat room", function () {
             const { u } = converse.env;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
+
             const nick = 'romeo';
             const muc_jid = 'theplay@conference.shakespeare.lit';
             await _converse.api.rooms.open(muc_jid);
@@ -251,9 +255,7 @@ fdescribe("A chat room", function () {
             expect(sent_stanza).toEqualStanza(
                 stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                     <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                        <publish node="urn:xmpp:bookmarks:1">
-                            <item id="current"><storage xmlns="urn:xmpp:bookmarks:1"/></item>
-                        </publish>
+                        <publish node="urn:xmpp:bookmarks:1"/>
                         <publish-options>
                             <x type="submit" xmlns="jabber:x:data">
                                 <field type="hidden" var="FORM_TYPE">
@@ -294,18 +296,26 @@ describe("Bookmarks", function () {
         /* The stored data is automatically pushed to all of the user's connected resources.
          * Publisher receives event notification
          */
-        let stanza = stx`<message from='romeo@montague.lit' to='${_converse.jid}' type='headline' id='${u.getUniqueId()}' xmlns="jabber:client">
+        let stanza = stx`<message from="romeo@montague.lit"
+                                  to="${_converse.jid}"
+                                  type="headline"
+                                  id="${u.getUniqueId()}"
+                                  xmlns="jabber:client">
             <event xmlns='http://jabber.org/protocol/pubsub#event'>
                 <items node='urn:xmpp:bookmarks:1'>
-                    <item id='current'>
-                        <storage xmlns='urn:xmpp:bookmarks:1'>
-                            <conference name="The Play's the Thing" autojoin="true" jid="theplay@conference.shakespeare.lit">
-                                <nick>JC</nick>
-                            </conference>
-                            <conference name="Another bookmark" autojoin="false" jid="another@conference.shakespeare.lit">
-                                <nick>JC</nick>
-                            </conference>
-                        </storage>
+                    <item id="theplay@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1"
+                                name="The Play's the Thing"
+                                autojoin="true" >
+							<nick>JC</nick>
+						</conference>
+					</item>
+                    <item id="another@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1"
+                                name="Another bookmark"
+                                autojoin="false">
+							<nick>JC</nick>
+						</conference>
                     </item>
                 </items>
             </event>

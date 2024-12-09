@@ -1,10 +1,7 @@
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import converse from '../../shared/api/public.js';
 import log from '../../log.js';
 import Bookmarks from './collection.js';
-
-const { Strophe, sizzle } = converse.env;
 
 export async function initBookmarks() {
     if (!api.settings.get('allow_bookmarks')) {
@@ -32,10 +29,9 @@ export function getNicknameFromBookmark(jid) {
  * @returns {true}
  */
 export function handleBookmarksPush(message) {
-    if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"] items[node="${Strophe.NS.BOOKMARKS}"]`, message).length) {
-        api.waitUntil('bookmarksInitialized')
-            .then(() => _converse.state.bookmarks.createBookmarksFromStanza(message))
-            .catch(/** @param {Error} e */(e) => log.fatal(e));
-    }
+    debugger;
+    api.waitUntil('bookmarksInitialized')
+        .then(() => _converse.state.bookmarks.createBookmarksFromStanza(message))
+        .catch(/** @param {Error} e */(e) => log.fatal(e));
     return true;
 }

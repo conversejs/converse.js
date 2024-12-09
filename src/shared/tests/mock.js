@@ -108,15 +108,23 @@ function closeControlBox () {
     u.isVisible(view) && view.querySelector(".controlbox-heading__btn.close")?.click();
 }
 
-async function waitUntilBookmarksReturned (_converse, bookmarks=[]) {
+async function waitUntilBookmarksReturned (
+    _converse,
+    bookmarks=[],
+    features=[
+        'http://jabber.org/protocol/pubsub#publish-options',
+        'urn:xmpp:bookmarks:1#compat'
+    ],
+    node='urn:xmpp:bookmarks:1'
+) {
     await waitUntilDiscoConfirmed(
         _converse, _converse.bare_jid,
         [{'category': 'pubsub', 'type': 'pep'}],
-        ['http://jabber.org/protocol/pubsub#publish-options']
+        features,
     );
     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
     const sent_stanza = await u.waitUntil(
-        () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop()
+        () => IQ_stanzas.filter(s => sizzle(`items[node="${node}"]`, s).length).pop()
     );
     const stanza = $iq({
         'to': _converse.api.connection.get().jid,

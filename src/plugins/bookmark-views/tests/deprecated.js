@@ -11,7 +11,8 @@ describe("A chat room", function () {
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
-            ['http://jabber.org/protocol/pubsub#publish-options']
+            ['http://jabber.org/protocol/pubsub#publish-options'],
+            'storage:bookmarks',
         );
 
         const nick = 'JC';
@@ -258,7 +259,8 @@ describe("Bookmarks", function () {
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
-            ['http://jabber.org/protocol/pubsub#publish-options']
+            ['http://jabber.org/protocol/pubsub#publish-options'],
+            'storage:bookmarks',
         );
 
         // Client requests all items
@@ -314,7 +316,8 @@ describe("The bookmarks list modal", function () {
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
-            ['http://jabber.org/protocol/pubsub#publish-options']
+            ['http://jabber.org/protocol/pubsub#publish-options'],
+            'storage:bookmarks',
         );
         mock.openControlBox(_converse);
 
@@ -392,7 +395,8 @@ describe("The bookmarks list modal", function () {
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
-            ['http://jabber.org/protocol/pubsub#publish-options']
+            ['http://jabber.org/protocol/pubsub#publish-options'],
+            'storage:bookmarks',
         );
         mock.openControlBox(_converse);
 

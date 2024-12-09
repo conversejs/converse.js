@@ -79,7 +79,9 @@ converse.plugins.add('converse-bookmarks', {
         api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
             const bare_jid = _converse.session.get('bare_jid');
-            api.connection.get().addHandler(handleBookmarksPush, null, 'message', 'headline', null, bare_jid);
+            const connection = api.connection.get();
+            connection.addHandler(handleBookmarksPush, Strophe.NS.BOOKMARKS, 'message', 'headline', null, bare_jid);
+            connection.addHandler(handleBookmarksPush, Strophe.NS.BOOKMARKS2, 'message', 'headline', null, bare_jid);
             await Promise.all([api.waitUntil('chatBoxesFetched')]);
             initBookmarks();
         });

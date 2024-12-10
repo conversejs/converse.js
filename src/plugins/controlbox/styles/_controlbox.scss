@@ -46,10 +46,6 @@
             display: block;
         }
 
-        converse-user-profile {
-            padding: 0.5em 1em;
-        }
-
         .brand-name-wrapper {
             font-size: 200%;
             padding-inline-end: 0.5em;
@@ -141,6 +137,7 @@
         }
 
         .controlbox-padded {
+            padding: 0 0.5em;
             align-items: center;
             line-height: normal;
         }
@@ -152,7 +149,7 @@
             left: 0;
             overflow-x: hidden;
             overflow-y: auto;
-            padding: 0.5em;
+            padding: 0;
             text-align: start;
 
             .add-converse-contact {

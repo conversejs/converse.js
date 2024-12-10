@@ -8,15 +8,15 @@
         i {
             &.fa, &.far, &.fas {
                 color: var(--button-text-color);
-                margin-right: 0.5em;
+                margin-inline-end: 0.5em;
                 &.only-icon {
-                    margin-right: 0;
+                    margin-inline-end: 0;
                 }
             }
         }
         converse-icon {
             display: inline-block;
-            margin-right: 0;
+            margin-inline-end: 0;
             svg {
                 color: var(--button-text-color);
             }

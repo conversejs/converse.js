@@ -1,13 +1,13 @@
 converse-muc-details-modal {
     .features-list {
-        margin-left: 1em;
+        margin-inline-start: 1em;
     }
 
     .room-info {
         converse-avatar {
             display: block;
             margin-bottom: 0.5em;
-            margin-right: 1em;
+            margin-inline-end: 1em;
             float: left;
         }
         strong {
@@ -21,12 +21,12 @@ converse-muc-details-modal {
             padding-top: 0;
             .feature {
                 width: 100%;
-                margin-right: 0.5em;
-                padding-right: 0;
+                margin-inline-end: 0.5em;
+                padding-inline-end: 0;
                 font-size: 1em;
                 cursor: help;
                 converse-icon {
-                    margin-right: 0.5em;
+                    margin-inline-end: 0.5em;
                 }
             }
         }

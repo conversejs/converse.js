@@ -2,6 +2,7 @@
 
 ## 11.0.0 (Unreleased)
 
+- #122: Set horizontal layout direction based on the language
 - #698: Add support for MUC private messages
 - #1057: Removed the `mobile` view mode. Instead of setting `view_mode` to `mobile`, set it to `fullscreen`.
 - #1174: Show MUC avatars in the rooms list
@@ -59,6 +60,10 @@
 - `getAssignableRoles` and `getAssignableAffiliations` are no longer on the `_converse` object, but on the Occupant instance.
 - Removed the `chatBoxFocused` and `chatBoxBlurred` events.
 - Changed the signature of the `api.contacts.add` API method.
+- The deprecated API method `api.settings.update` has been removed. Use
+  `api.settings.extend` instead.
+- New config option [rtl_langs](https://conversejs.org/docs/html/configuration.html#rtl-langs) for specifying languages for which
+  Converse's UI should be shown in right-to-left order.
 
 ## 10.1.7 (2024-03-15)
 

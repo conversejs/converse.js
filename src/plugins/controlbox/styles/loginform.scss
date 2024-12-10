@@ -27,9 +27,16 @@
     converse-chats {
         &.converse-overlayed {
             #controlbox {
+                converse-login-form {
+                    fieldset {
+                        margin-bottom: 0.5em;
+                    }
+                }
+
                 .login-trusted {
                     white-space: nowrap;
                     font-size: 90%;
+                    margin: 1em 0;
                 }
 
                 #converse-login-panel {
@@ -61,21 +68,18 @@
                 }
 
                 #converse-register, #converse-login {
+                    margin: auto;
                     @include make-col-ready();
                     @include make-col(8);
-                    @include make-col-offset(2);
 
                     @include media-breakpoint-up(sm) {
                         @include make-col(8);
-                        @include make-col-offset(2);
                     }
                     @include media-breakpoint-up(md) {
                         @include make-col(8);
-                        @include make-col-offset(2);
                     }
                     @include media-breakpoint-up(lg) {
                         @include make-col(6);
-                        @include make-col-offset(3);
                     }
                     .title, .instructions {
                         margin: 1em 0;

@@ -11,7 +11,7 @@
         .open-contacts-toggle {
             white-space: nowrap;
             converse-icon {
-                margin-left: 0.25em;
+                margin-inline-start: 0.25em;
                 padding-bottom: 0.1em;
             }
         }
@@ -19,6 +19,7 @@
     }
 
     #converse-roster {
+        text-align: start;
         width: 100%;
         margin: 0;
         padding: 0;
@@ -91,6 +92,7 @@
                     margin: 0;
                     padding: 0;
                     converse-icon.chat-status {
+                        position: relative;
                         border: 2px solid var(--background-color);
                         svg {
                             display: flex;
@@ -115,7 +117,7 @@
                             max-width: 60%;
                         }
                         &.contact-name--offline {
-                            margin-left: 0.25em;
+                            margin-inline-start: 0.25em;
                         }
                     }
                 }
@@ -131,7 +133,7 @@
                     display: inline-block;
                 }
                 .decline-xmpp-request {
-                    margin-left: 1em;
+                    margin-inline-start: 1em;
                 }
                 &:hover {
                     background-color: var(--highlight-color-hover);

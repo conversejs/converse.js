@@ -1,4 +1,4 @@
 export namespace Strophe {
-    type Builder = any;
+    type Builder = import("strophe.js").Builder;
 }
 //# sourceMappingURL=pubsub.d.ts.map

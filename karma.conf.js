@@ -46,6 +46,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/adhoc-views/tests/adhoc.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks-list.js", type: 'module' },
       { pattern: "src/plugins/bookmark-views/tests/bookmarks.js", type: 'module' },
+      { pattern: "src/plugins/bookmark-views/tests/deprecated.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/actions.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/chatbox.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/corrections.js", type: 'module' },

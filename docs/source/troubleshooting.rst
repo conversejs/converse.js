@@ -147,9 +147,9 @@ Use the Web Auth API
 ********************
 
 Converse supports the `Web Authentication API <https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API>`_
-which let's it use the secure credential management of the browser to get the
-uesr credentials to automatically log the user in. This however requires that
-the user saves his or her username and password in the browser. Often the user
+which uses the secure credential management of the browser to get the
+uesr credentials to automatically log the user in. This requires
+the user to save his or her username and password in the browser. Often the user
 is automatically asked by the browser whether he/she wants to store the
 credentials. If that doesn't happen, the user has to do so manually, usually by
 clicking the key icon in the address bar. This works well on most modern browsers,

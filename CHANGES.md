@@ -1,6 +1,6 @@
 # Changelog
 
-## 10.1.8 (Unreleased)
+## 10.1.8 (2024-12-17)
 
 - #3553 Cannot create a groupchat via the modal
 - Update to the latest Strophe version to fix a security vulnerability with the

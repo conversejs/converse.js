@@ -31,14 +31,14 @@ is enabled in the browser's developer console, otherwise not all logs from
 Converse might be visible.
 
 In Chrome and other browsers, contents of the developer console can be saved to
-a file for later study by right clicking within the developer consolve
+a file for later study by right clicking within the developer console.
 
 What is logged at the debug loglevel?
 -------------------------------------
 
 `Strope.js <http://strophe.im/>`_, the underlying XMPP library which Converse
-uses, quetly swallows non-critical errors so that messaging activities can generally continue 
-in cases where non-critical errors have occured. This is a useful feature and provides 
+uses, quietly swallows non-critical errors so that messaging activities can generally continue 
+in cases where non-critical errors have occurred. This is a useful feature and provides 
 a better user experience and more stability in the client, but debugging is more challenging 
 because the app doesn't obviously crash when something goes wrong somewhere.
 
@@ -70,7 +70,7 @@ Chrome <https://developer.chrome.com/devtools/docs/cpu-profiling>`_ to find
 bottlenecks in the code.
 
 However, with large rosters (more than 1000 contacts), rendering in
-Converse is known to slow down considerbly. It may become intolerably slow
+Converse is known to slow down considerably. It may become intolerably slow
 in these cases.
 
 One simple trick to improve performance is to set ``show_only_online_users: true``.
@@ -157,11 +157,11 @@ What can users do to stay logged in?
 Outsource credential management to something else
 *************************************************
 
-The issues mentioned above are mostly associated with intergrations where users log in
+The issues mentioned above are mostly associated with integrations where users log in
 manually. They do not pertain to integrations where Converse automatically fetches user 
 credentials from the backend via the :ref:`credentials_url` setting.
 
-Use BOSH instead of websocket
+Use BOSH instead of Websocket
 *****************************
 
 `BOSH <https://xmpp.org/extensions/xep-0206.html>`_ can be thought of

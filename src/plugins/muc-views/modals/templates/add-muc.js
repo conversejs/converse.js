@@ -1,11 +1,11 @@
 import DOMPurify from 'dompurify';
-import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { getAutoCompleteList } from '../../search.js';
+import { __ } from 'i18n';
 
-const nickname_input = (el) => {
+const nickname_input = () => {
     const i18n_nickname = __('Nickname');
     const i18n_required_field = __('This field is required');
     return html`
@@ -23,6 +23,9 @@ const nickname_input = (el) => {
     `;
 };
 
+/**
+ * @param {import('../add-muc.js').default} el
+ */
 export default (el) => {
     const i18n_join = __('Join');
     const muc_domain = el.model.get('muc_domain') || api.settings.get('muc_domain');
@@ -61,13 +64,13 @@ export default (el) => {
                       ${unsafeHTML(DOMPurify.sanitize(muc_roomid_policy_hint, { 'ALLOWED_TAGS': ['b', 'br', 'em'] }))}
                   </div>`
                 : ''}
-            ${!api.settings.get('locked_muc_nickname') ? nickname_input(el) : ''}
+            ${!api.settings.get('locked_muc_nickname') ? nickname_input() : ''}
             <input
                 type="submit"
                 class="btn btn-primary"
                 name="join"
                 value="${i18n_join || ''}"
-                ?disabled=${muc_roomid_policy_error_msg}
+                ?disabled="${muc_roomid_policy_error_msg}"
             />
         </form>
     `;

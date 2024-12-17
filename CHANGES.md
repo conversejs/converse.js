@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.8 (Unreleased)
+
+- #3553 Cannot create a groupchat via the modal
+
 ## 10.1.7 (2024-03-15)
 
 - Update to Strophe 2.0.0. Fixes login issue with newer versions of Ejabberd

@@ -48,6 +48,7 @@ export default (model) => {
     const i18n_semi_anon_help = __('Only moderators can see your XMPP address');
     const i18n_temporary = __('Temporary');
     const i18n_temporary_help = __('This groupchat will disappear once the last person leaves');
+
     return html`
         <div class="room-info">
             <p class="room-info"><strong>${i18n_name}</strong>: ${o.name}</p>

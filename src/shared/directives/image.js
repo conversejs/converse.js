@@ -22,7 +22,7 @@ class ImageDirective extends AsyncDirective {
                 src="${src}"
                 @click=${onClick}
                 @error=${() => this.onError(src, href, onLoad, onClick)}
-                @load=${onLoad}/></a>`;
+                @load="${onLoad}"/></a>`;
     }
 
     onError (src, href, onLoad, onClick) {

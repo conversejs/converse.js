@@ -1618,7 +1618,7 @@ describe("Groupchats", function () {
         }));
 
         it("updates the shown features when the groupchat configuration has changed",
-                mock.initConverse([], {'view_mode': 'fullscreen'}, async function (_converse) {
+                mock.initConverse([], {'view_mode': 'overlayed'}, async function (_converse) {
 
             let features = [
                 'http://jabber.org/protocol/muc',
@@ -1640,7 +1640,8 @@ describe("Groupchats", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
 
             let features_list = modal.querySelector('.features-list');
-            let features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
+            let features_shown = Array.from(features_list.children).map((e) => e.textContent);
+            expect(features_shown.length).toBe(5);
 
             expect(features_shown.join(' ')).toBe(
                 'Password protected - This groupchat requires a password before entry '+
@@ -1798,7 +1799,9 @@ describe("Groupchats", function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
 
             features_list = modal.querySelector('.features-list');
-            features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
+            features_shown = Array.from(features_list.children).map((e) => e.textContent);
+            expect(features_shown.length).toBe(6);
+
             expect(features_shown.join(' ')).toBe(
                 'Password protected - This groupchat requires a password before entry '+
                 'Hidden - This groupchat is not publicly searchable '+

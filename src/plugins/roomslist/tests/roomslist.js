@@ -267,12 +267,15 @@ describe("A groupchat shown in the groupchats list", function () {
 
         expect(els[3].textContent).toBe("Online users: 1")
         const features_list = modal.querySelector('.features-list');
-        expect(features_list.textContent.replace(/(\n|\s{2,})/g, '')).toBe(
-            'Password protected - This groupchat requires a password before entry'+
-            'Hidden - This groupchat is not publicly searchable'+
-            'Open - Anyone can join this groupchat'+
-            'Temporary - This groupchat will disappear once the last person leaves'+
-            'Not anonymous - All other groupchat participants can see your XMPP address'+
+        let features_shown = Array.from(features_list.children).map((e) => e.textContent);
+        expect(features_shown.length).toBe(6);
+
+        expect(features_shown.join(' ')).toBe(
+            'Password protected - This groupchat requires a password before entry '+
+            'Hidden - This groupchat is not publicly searchable '+
+            'Open - Anyone can join this groupchat '+
+            'Temporary - This groupchat will disappear once the last person leaves '+
+            'Not anonymous - All other groupchat participants can see your XMPP address '+
             'Not moderated - Participants entering this groupchat can write right away'
         );
         presence = $pres({

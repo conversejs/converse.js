@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
-import { __ } from 'i18n';
 import { api } from '@converse/headless/core.js';
 import { html } from "lit";
+import { __ } from 'i18n';
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { getAutoCompleteList } from "../../search.js";
 
@@ -51,7 +51,7 @@ export default (el) => {
             </div>
             ${ muc_roomid_policy_hint ?  html`<div class="form-group">${unsafeHTML(DOMPurify.sanitize(muc_roomid_policy_hint, {'ALLOWED_TAGS': ['b', 'br', 'em']}))}</div>` : '' }
             ${ !api.settings.get('locked_muc_nickname') ? nickname_input(el) : '' }
-            <input type="submit" class="btn btn-primary" name="join" value="${i18n_join || ''}" ?disabled=${muc_roomid_policy_error_msg}/>
+            <input type="submit" class="btn btn-primary" name="join" value="${i18n_join || ''}" ?disabled="${muc_roomid_policy_error_msg}" />
         </form>
     `;
 }

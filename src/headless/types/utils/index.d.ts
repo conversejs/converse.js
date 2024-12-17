@@ -50,7 +50,7 @@ declare const _default: {
     isForbiddenError(stanza: Element): boolean;
     isServiceUnavailableError(stanza: Element): boolean;
     getAttributes(stanza: Element): object;
-    toStanza: typeof stanza.toStanza;
+    toStanza: typeof import("strophe.js").Stanza.toElement;
     isUniView(): boolean;
     isTestEnv(): boolean;
     getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
@@ -113,6 +113,5 @@ declare function shouldCreateMessage(attrs: any): any;
  */
 declare function triggerEvent(el: Element, name: string, type?: string, bubbles?: boolean, cancelable?: boolean): void;
 import * as url from './url.js';
-import * as stanza from './stanza.js';
 import * as session from './session.js';
 //# sourceMappingURL=index.d.ts.map

@@ -1978,7 +1978,7 @@ describe("Groupchats", function () {
                         xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/disco#info">
                         <identity category="conference" name="New room name" type="text"/>
-                        ${features.map(f => stx`<feature var="${f}"/>`).join('')}
+                        ${features.map(f => stx`<feature var="${f}"/>`)}
                         <x xmlns="jabber:x:data" type="result">
                             <field var="FORM_TYPE" type="hidden">
                                 <value>http://jabber.org/protocol/muc#roominfo</value>

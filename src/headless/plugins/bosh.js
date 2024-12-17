@@ -3,12 +3,11 @@
  * @license Mozilla Public License (MPLv2)
  * @description Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
  */
-import 'strophe.js/src/bosh';
-import log from "../log.js";
 import { BOSH_WAIT } from '@converse/headless/shared/constants.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, api, converse } from "../core.js";
 import { setUserJID, } from '@converse/headless/utils/init.js';
+import { _converse, api, converse } from "../core.js";
+import log from "../log.js";
 
 const { Strophe } = converse.env;
 

@@ -3,6 +3,10 @@
 ## 10.1.8 (Unreleased)
 
 - #3553 Cannot create a groupchat via the modal
+- Update to the latest Strophe version to fix a security vulnerability with the
+  `stx` tagged template literal.
+  Converse itself is not vulnerable, since it only uses `stx` in tests, but it
+  was also exported, so downstream projects might have relied on it.
 
 ## 10.1.7 (2024-03-15)
 

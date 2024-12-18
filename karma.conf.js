@@ -131,7 +131,8 @@ module.exports = function(config) {
     ],
 
     proxies: {
-      "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/"
+      "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/",
+      "/images/logo/": "/base/dist/images/logo/"
     },
 
     client: {

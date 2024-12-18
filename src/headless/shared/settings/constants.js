@@ -86,6 +86,7 @@ export const DEFAULT_SETTINGS = {
         'ro',
         'ru',
         'sv',
+        'ta',
         'th',
         'tr',
         'ug',

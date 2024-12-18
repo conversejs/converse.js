@@ -79,7 +79,7 @@ export default {
                     <command sessionid="${sessionid}" node="${node}" action="${action}" xmlns="${Strophe.NS.ADHOC}">
                         ${ !['cancel', 'prev'].includes(action) ? stx`
                             <x xmlns="${Strophe.NS.XFORM}" type="submit">
-                                ${ inputs.reduce((out, { name, value }) => out + `<field var="${name}"><value>${value}</value></field>`, '') }
+                                ${ inputs.map(({ name, value }) => stx`<field var="${name}"><value>${value}</value></field>`) }
                             </x>` : '' }
                     </command>
                 </iq>`;

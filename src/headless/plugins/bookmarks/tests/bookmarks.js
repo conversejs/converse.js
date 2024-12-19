@@ -14,7 +14,7 @@ describe("A chat room", function () {
             const jid = 'theplay@conference.shakespeare.lit';
             const { bookmarks } = _converse.state;
             const model = bookmarks.create({
-                'jid': jid,
+                jid,
                 'autojoin': false,
                 'name':  'The Play',
                 'nick': ''
@@ -22,7 +22,7 @@ describe("A chat room", function () {
             expect(_converse.api.rooms.create).not.toHaveBeenCalled();
             bookmarks.remove(model);
             bookmarks.create({
-                'jid': jid,
+                jid,
                 'autojoin': true,
                 'name':  'Hamlet',
                 'nick': ''
@@ -43,7 +43,7 @@ describe("A bookmark", function () {
         await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilBookmarksReturned(_converse);
 
-        const jid = _converse.session.get('jid');
+        const bare_jid = _converse.session.get('bare_jid');
         const muc1_jid = 'theplay@conference.shakespeare.lit';
         const { bookmarks } = _converse.state;
 
@@ -59,7 +59,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('publish[node="urn:xmpp:bookmarks:1"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="urn:xmpp:bookmarks:1">
                         <item id="${muc1_jid}">
@@ -101,7 +101,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('publish[node="urn:xmpp:bookmarks:1"] conference[name="Balcony"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="urn:xmpp:bookmarks:1">
                         <item id="${muc2_jid}">
@@ -152,7 +152,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('publish[node="urn:xmpp:bookmarks:1"] conference[name="Garden"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq xmlns="jabber:client" type="set" from="${jid}" id="${sent_stanza.getAttribute('id')}">
+            <iq xmlns="jabber:client" type="set" from="${bare_jid}" id="${sent_stanza.getAttribute('id')}">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="urn:xmpp:bookmarks:1">
                         <item id="${muc2_jid}">

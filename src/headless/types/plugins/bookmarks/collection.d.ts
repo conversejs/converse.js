@@ -16,10 +16,14 @@ declare class Bookmarks extends Collection {
      */
     createBookmark(attrs: import("./types").BookmarkAttrs): void;
     /**
-     * @returns {Promise<Stanza>}
+     * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
+     * @returns {Stanza|Stanza[]}
      */
-    createPublishNode(): Promise<Stanza>;
-    sendBookmarkStanza(): Promise<any>;
+    getPublishedItems(node: "urn:xmpp:bookmarks:1" | "storage:bookmarks"): Stanza | Stanza[];
+    /**
+     * @returns {Promise<void|Element>}
+     */
+    sendBookmarkStanza(): Promise<void | Element>;
     /**
      * @param {Element} iq
      * @param {import('./types').BookmarkAttrs} attrs

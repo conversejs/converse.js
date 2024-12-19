@@ -45,7 +45,7 @@ describe("A chat room", function () {
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('iq publish[node="storage:bookmarks"]', s).length).pop());
         expect(sent_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            stx`<iq from="romeo@montague.lit" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="storage:bookmarks">
                         <item id="current">
@@ -153,7 +153,7 @@ describe("A chat room", function () {
             // only bookmark).
             const sent_stanza = _converse.api.connection.get().IQ_stanzas.pop();
             expect(sent_stanza).toEqualStanza(
-                stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                stx`<iq from="romeo@montague.lit" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                     <pubsub xmlns="http://jabber.org/protocol/pubsub">
                         <publish node="storage:bookmarks">
                             <item id="current"><storage xmlns="storage:bookmarks"/></item>

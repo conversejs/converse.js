@@ -182,7 +182,7 @@ class OMEMOStore extends Model {
                 .t(prekey.pubKey)
                 .up()
         );
-        const options = { 'pubsub#access_model': 'open' };
+        const options = { access_model: 'open' };
         return api.pubsub.publish(null, node, item, options, false);
     }
 

@@ -1,9 +1,9 @@
 /**
  * @typedef {import('../muc/muc.js').default} MUC
  */
+import { Stanza } from 'strophe.js';
 import { Collection } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
-import '../../plugins/muc/index.js';
 import Bookmark from './model.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -11,7 +11,7 @@ import converse from '../../shared/api/public.js';
 import log from '../../log.js';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
-import { Stanza } from 'strophe.js';
+import '../../plugins/muc/index.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 
@@ -96,69 +96,59 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @returns {Promise<Stanza>}
+     * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
+     * @returns {Stanza|Stanza[]}
      */
-    async createPublishNode() {
-        const bare_jid = _converse.session.get('bare_jid');
-        if (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid)) {
-            return stx`
-                <publish node="${Strophe.NS.BOOKMARKS2}">
-                    ${this.map(
-                        /** @param {MUC} model */ (model) => {
-                            const extensions = model.get('extensions') ?? [];
-                            return stx`<item id="${model.get('jid')}">
-                            <conference xmlns="${Strophe.NS.BOOKMARKS2}"
-                                        name="${model.get('name')}"
-                                        autojoin="${model.get('autojoin')}">
-                                    ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
-                                    ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
-                                ${
-                                    extensions.length
-                                        ? stx`<extensions>${extensions.map((e) => Stanza.unsafeXML(e))}</extensions>`
-                                        : ''
-                                };
-                                </conference>
-                            </item>`;
-                        }
-                    )}
-                </publish>`;
+    getPublishedItems(node) {
+        if (node === Strophe.NS.BOOKMARKS2) {
+            return this.map(
+                /** @param {MUC} model */ (model) => {
+                    const extensions = model.get('extensions') ?? [];
+                    return stx`<item id="${model.get('jid')}">
+                    <conference xmlns="${Strophe.NS.BOOKMARKS2}"
+                                name="${model.get('name')}"
+                                autojoin="${model.get('autojoin')}">
+                            ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
+                            ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
+                        ${
+                            extensions.length
+                                ? stx`<extensions>${extensions.map((e) => Stanza.unsafeXML(e))}</extensions>`
+                                : ''
+                        };
+                        </conference>
+                    </item>`;
+                }
+            );
         } else {
-            return stx`
-                <publish node="${Strophe.NS.BOOKMARKS}">
-                    <item id="current">
-                        <storage xmlns="${Strophe.NS.BOOKMARKS}">
-                        ${this.map(
-                            /** @param {MUC} model */ (model) =>
-                                stx`<conference name="${model.get('name')}" autojoin="${model.get('autojoin')}"
-                                jid="${model.get('jid')}">
-                                ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
-                                ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
-                            </conference>`
-                        )}
-                        </storage>
-                    </item>
-                </publish>`;
+            return stx`<item id="current">
+                <storage xmlns="${Strophe.NS.BOOKMARKS}">
+                ${this.map(
+                    /** @param {MUC} model */ (model) =>
+                        stx`<conference name="${model.get('name')}" autojoin="${model.get('autojoin')}"
+                        jid="${model.get('jid')}">
+                        ${model.get('nick') ? stx`<nick>${model.get('nick')}</nick>` : ''}
+                        ${model.get('password') ? stx`<password>${model.get('password')}</password>` : ''}
+                    </conference>`
+                )}
+                </storage>
+            </item>`;
         }
     }
 
+    /**
+     * @returns {Promise<void|Element>}
+     */
     async sendBookmarkStanza() {
-        return api.sendIQ(stx`
-            <iq type="set" from="${api.connection.get().jid}" xmlns="jabber:client">
-                <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                    ${await this.createPublishNode()}
-                    <publish-options>
-                        <x xmlns="${Strophe.NS.XFORM}" type="submit">
-                            <field var='FORM_TYPE' type='hidden'>
-                                <value>${Strophe.NS.PUBSUB}#publish-options</value>
-                            </field>
-                            <field var='pubsub#persist_items'><value>true</value></field>
-                            <field var='pubsub#max_items'><value>max</value></field>
-                            <field var='pubsub#send_last_published_item'><value>never</value></field>
-                            <field var='pubsub#access_model'><value>whitelist</value></field>
-                        </x>
-                    </publish-options>
-                </pubsub>
-            </iq>`);
+        const bare_jid = _converse.session.get('bare_jid');
+        const node = (await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid))
+            ? Strophe.NS.BOOKMARKS2
+            : Strophe.NS.BOOKMARKS;
+        return api.pubsub.publish(null, node, this.getPublishedItems(node), {
+            persist_items: true,
+            max_items: 'max',
+            send_last_published_item: 'never',
+            access_model: 'whitelist',
+        });
     }
 
     /**

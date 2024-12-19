@@ -1,9 +1,9 @@
 /**
  * @typedef {import('../muc/muc.js').default} MUC
  */
+import { Stanza } from 'strophe.js';
 import { Collection } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
-import '../../plugins/muc/index.js';
 import Bookmark from './model.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -11,7 +11,7 @@ import converse from '../../shared/api/public.js';
 import log from '../../log.js';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
-import { Stanza } from 'strophe.js';
+import '../../plugins/muc/index.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 

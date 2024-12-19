@@ -15,7 +15,7 @@ describe("A bookmark", function () {
             'storage:bookmarks'
         );
 
-        const jid = _converse.session.get('jid');
+        const bare_jid = _converse.session.get('bare_jid');
         const muc1_jid = 'theplay@conference.shakespeare.lit';
         const { bookmarks } = _converse.state;
 
@@ -31,7 +31,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('item[id="current"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="storage:bookmarks">
                         <item id="current">
@@ -75,7 +75,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('item[id="current"] conference[name="Balcony"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="storage:bookmarks">
                         <item id="current">

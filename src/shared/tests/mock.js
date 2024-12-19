@@ -108,31 +108,68 @@ function closeControlBox () {
     u.isVisible(view) && view.querySelector(".controlbox-heading__btn.close")?.click();
 }
 
-async function waitUntilBookmarksReturned (_converse, bookmarks=[]) {
+async function waitUntilBookmarksReturned (
+    _converse,
+    bookmarks=[],
+    features=[
+        'http://jabber.org/protocol/pubsub#publish-options',
+        'urn:xmpp:bookmarks:1#compat'
+   ],
+    node='urn:xmpp:bookmarks:1'
+) {
     await waitUntilDiscoConfirmed(
         _converse, _converse.bare_jid,
         [{'category': 'pubsub', 'type': 'pep'}],
-        ['http://jabber.org/protocol/pubsub#publish-options']
+        features,
     );
     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
     const sent_stanza = await u.waitUntil(
-        () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop()
+        () => IQ_stanzas.filter(s => sizzle(`items[node="${node}"]`, s).length).pop()
     );
-    const stanza = $iq({
-        'to': _converse.api.connection.get().jid,
-        'type':'result',
-        'id':sent_stanza.getAttribute('id')
-    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-        .c('items', {'node': 'storage:bookmarks'})
-            .c('item', {'id': 'current'})
-                .c('storage', {'xmlns': 'storage:bookmarks'});
-    bookmarks.forEach(bookmark => {
-        stanza.c('conference', {
-            'name': bookmark.name,
-            'autojoin': bookmark.autojoin,
-            'jid': bookmark.jid
-        }).c('nick').t(bookmark.nick).up().up()
-    });
+
+    let stanza;
+    if (node === 'storage:bookmarks') {
+        stanza = stx`
+            <iq to="${_converse.api.connection.get().jid}"
+                type="result"
+                id="${sent_stanza.getAttribute('id')}"
+                xmlns="jabber:client">
+            <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                <items node="storage:bookmarks">
+                    <item id="current">
+                        <storage xmlns="storage:bookmarks">
+                        </storage>
+                    </item>
+                    ${bookmarks.map((b) => stx`
+                        <conference name="${b.name}" autojoin="${b.autojoin}" jid="${b.jid}">
+                            ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
+                        </conference>`)}
+                </items>
+            </pubsub>
+            </iq>`;
+    } else {
+        stanza = stx`
+            <iq type="result"
+                to="${_converse.jid}"
+                id="${sent_stanza.getAttribute('id')}"
+                xmlns="jabber:client">
+            <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                <items node="urn:xmpp:bookmarks:1">
+                ${bookmarks.map((b) => stx`
+                    <item id="${b.jid}">
+                        <conference xmlns="urn:xmpp:bookmarks:1"
+                                    name="${b.name}"
+                                    autojoin="${b.autojoin ?? false}">
+                            ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
+                            ${b.password ? stx`<password>${b.password}</password>` : ''}
+                        </conference>
+                    </item>`)
+                };
+                </items>
+            </pubsub>
+            </iq>`;
+    }
+
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
     await _converse.api.waitUntil('bookmarksInitialized');
 }

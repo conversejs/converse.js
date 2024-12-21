@@ -400,7 +400,7 @@ export async function attemptNonPreboundSession (credentials, automatic) {
             if (credentials) return connect(credentials);
         }
 
-        if (!isTestEnv()) log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
+        if (!isTestEnv()) log.debug("attemptNonPreboundSession: Couldn't find credentials to log in with");
 
     } else if (
         [ANONYMOUS, EXTERNAL].includes(api.settings.get("authentication")) &&

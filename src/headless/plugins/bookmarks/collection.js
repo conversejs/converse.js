@@ -78,8 +78,8 @@ class Bookmarks extends Collection {
         const deferred = getOpenPromise();
         if (window.sessionStorage.getItem(this.fetched_flag)) {
             this.fetch({
-                'success': () => deferred.resolve(),
-                'error': () => deferred.resolve(),
+                success: () => deferred.resolve(),
+                error: () => deferred.resolve(),
             });
         } else {
             this.fetchBookmarksFromServer(deferred);

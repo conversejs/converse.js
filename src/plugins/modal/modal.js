@@ -1,6 +1,3 @@
-/**
- * @typedef {import('lit-html').TemplateResult} TemplateResult
- */
 import { html } from 'lit';
 import { getOpenPromise } from '@converse/openpromise';
 import { Modal } from "bootstrap";
@@ -12,6 +9,9 @@ import tplModal from './templates/modal.js';
 import './styles/_modal.scss';
 
 class BaseModal extends ElementView {
+    /**
+     * @typedef {import('lit').TemplateResult} TemplateResult
+     */
 
     /**
      * @param {Object} options

@@ -1,6 +1,8 @@
 export default BaseModal;
-export type TemplateResult = import("lit-html").TemplateResult;
 declare class BaseModal extends ElementView {
+    /**
+     * @typedef {import('lit').TemplateResult} TemplateResult
+     */
     /**
      * @param {Object} options
      */
@@ -11,16 +13,16 @@ declare class BaseModal extends ElementView {
     /**
      * @returns {TemplateResult|string}
      */
-    renderModal(): TemplateResult | string;
+    renderModal(): import("lit").TemplateResult<1 | 2> | string;
     /**
      * @returns {TemplateResult|string}
      */
-    renderModalFooter(): TemplateResult | string;
+    renderModalFooter(): import("lit").TemplateResult<1 | 2> | string;
     toHTML(): import("lit").TemplateResult<1>;
     /**
      * @returns {string|TemplateResult}
      */
-    getModalTitle(): string | TemplateResult;
+    getModalTitle(): string | import("lit").TemplateResult<1 | 2>;
     /**
      * @param {Event} [ev]
      */

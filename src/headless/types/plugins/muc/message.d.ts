@@ -1,5 +1,6 @@
 export default MUCMessage;
 declare class MUCMessage extends Message {
+    get occupants(): any;
     /**
      * Determines whether this messsage may be moderated,
      * based on configuration settings and server support.

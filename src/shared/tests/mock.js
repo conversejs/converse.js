@@ -784,40 +784,44 @@ function bundleFetched (_converse, jid, device_id) {
     ).pop();
 }
 
-async function initializedOMEMO (_converse) {
-    await waitUntilDiscoConfirmed(
-        _converse, _converse.bare_jid,
-        [{'category': 'pubsub', 'type': 'pep'}],
-        ['http://jabber.org/protocol/pubsub#publish-options']
-    );
-    let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
+async function initializedOMEMO(
+    _converse,
+    identities = [{ 'category': 'pubsub', 'type': 'pep' }],
+    features = ['http://jabber.org/protocol/pubsub#publish-options']
+) {
+    await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, identities, features);
+    let iq_stanza = await deviceListFetched(_converse, _converse.bare_jid);
     let stanza = $iq({
         'from': _converse.bare_jid,
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
         'type': 'result',
-    }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-        .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-            .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                    .c('device', {'id': '482886413b977930064a5888b92134fe'});
+    })
+        .c('pubsub', { 'xmlns': 'http://jabber.org/protocol/pubsub' })
+        .c('items', { 'node': 'eu.siacs.conversations.axolotl.devicelist' })
+        .c('item', { 'xmlns': 'http://jabber.org/protocol/pubsub' }) // TODO: must have an id attribute
+        .c('list', { 'xmlns': 'eu.siacs.conversations.axolotl' })
+        .c('device', { 'id': '482886413b977930064a5888b92134fe' });
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
-    iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse))
+
+    iq_stanza = await u.waitUntil(() => ownDeviceHasBeenPublished(_converse));
 
     stanza = $iq({
         'from': _converse.bare_jid,
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
-        'type': 'result'});
+        'type': 'result',
+    });
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
 
-    iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse))
+    iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
 
     stanza = $iq({
         'from': _converse.bare_jid,
         'id': iq_stanza.getAttribute('id'),
         'to': _converse.bare_jid,
-        'type': 'result'});
+        'type': 'result',
+    });
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
     await _converse.api.waitUntil('OMEMOInitialized');
 }

@@ -743,7 +743,7 @@ async function checkOMEMOSupported (chatbox) {
     } else if (chatbox.get('type') === PRIVATE_CHAT_TYPE) {
         supported = await contactHasOMEMOSupport(chatbox.get('jid'));
     }
-    chatbox.set('omemo_supported', supported);
+    chatbox.set('omemo_supported', !!supported);
     if (supported && api.settings.get('omemo_default')) {
         chatbox.set('omemo_active', true);
     }

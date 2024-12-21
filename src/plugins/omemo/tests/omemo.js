@@ -249,11 +249,17 @@ describe("The OMEMO module", function() {
     it("will create a new device based on a received carbon message",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        await mock.initializedOMEMO(
+            _converse,
+            [{'category': 'pubsub', 'type': 'pep'}],
+            [
+                Strophe.NS.SID,
+                'http://jabber.org/protocol/pubsub#publish-options'
+            ]
+        );
 
-        await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await u.waitUntil(() => mock.initializedOMEMO(_converse));
         await mock.openChatBoxFor(_converse, contact_jid);
 
         let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
@@ -1101,7 +1107,6 @@ describe("The OMEMO module", function() {
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
-
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],

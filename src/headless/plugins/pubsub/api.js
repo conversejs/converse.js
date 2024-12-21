@@ -37,26 +37,16 @@ export default {
         async publish(jid, node, item, options, strict_options = true) {
             const bare_jid = _converse.session.get('bare_jid');
             const entity_jid = jid || bare_jid;
-            const supports_publish_options = await api.disco.supports(
-                Strophe.NS.PUBSUB + '#publish-options',
-                entity_jid
-            );
-            if (!supports_publish_options) {
-                log.warn(
-                    `api.pubsub.publish: ${entity_jid} does not support #publish-options, ` +
-                        `so we didn't set them even though they were provided.`
-                );
-            }
 
             const stanza = stx`
                 <iq xmlns="jabber:client"
-                        from="${bare_jid}"
-                        type="set"
-                        ${entity_jid !== bare_jid ? `to="${entity_jid}"` : ''}>
+                    from="${bare_jid}"
+                    type="set"
+                    ${entity_jid !== bare_jid ? `to="${entity_jid}"` : ''}>
                 <pubsub xmlns="${Strophe.NS.PUBSUB}">
                     <publish node="${node}">${item}</publish>
                     ${
-                        options && supports_publish_options
+                        options
                             ? stx`<publish-options>
                     <x xmlns="${Strophe.NS.XFORM}" type="submit">
                         <field var="FORM_TYPE" type="hidden">
@@ -68,6 +58,39 @@ export default {
                     }
                 </pubsub>
                 </iq>`;
+
+            if (entity_jid === bare_jid) {
+                // This is PEP, check for support
+                const supports_pep =
+                    (await api.disco.getIdentity('pubsub', 'pep', bare_jid)) ||
+                    (await api.disco.getIdentity('pubsub', 'pep', Strophe.getDomainFromJid(bare_jid)));
+
+                if (!supports_pep) {
+                    log.warn(`api.pubsub.publish: Not publishing via PEP because it's not supported!`);
+                    log.warn(stanza);
+                    return;
+                }
+            }
+
+            // Check for #publish-options support.
+            // XEP-0223 says we need to check the server for support,
+            // but Prosody returns it on the bare jid.
+            const supports_publish_options =
+                (await api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', entity_jid)) ||
+                (await api.disco.supports(
+                    Strophe.NS.PUBSUB + '#publish-options',
+                    Strophe.getDomainFromJid(entity_jid)
+                ));
+
+            if (!supports_publish_options) {
+                if (strict_options) {
+                    log.warn(`api.pubsub.publish: #publish-options not supported, refusing to publish item.`);
+                    log.warn(stanza);
+                    return;
+                } else {
+                    log.warn(`api.pubsub.publish: #publish-options not supported, publishing anyway.`);
+                }
+            }
 
             try {
                 await api.sendIQ(stanza);

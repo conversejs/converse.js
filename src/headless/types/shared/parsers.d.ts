@@ -132,9 +132,9 @@ export function isArchived(original_stanza: Element): boolean;
  */
 export function getInputType(field: Element): any;
 /**
-* @param {Element} stanza
-* @returns {import('./types').XForm}
-*/
+ * @param {Element} stanza
+ * @returns {import('./types').XForm}
+ */
 export function parseXForm(stanza: Element): import("./types").XForm;
 export class StanzaParseError extends Error {
     /**

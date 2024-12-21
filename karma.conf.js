@@ -37,6 +37,7 @@ module.exports = function(config) {
       { pattern: "src/headless/plugins/muc/tests/pruning.js", type: 'module' },
       { pattern: "src/headless/plugins/muc/tests/registration.js", type: 'module' },
       { pattern: "src/headless/plugins/ping/tests/ping.js", type: 'module' },
+      { pattern: "src/headless/plugins/pubsub/tests/config.js", type: 'module' },
       { pattern: "src/headless/plugins/roster/tests/presence.js", type: 'module' },
       { pattern: "src/headless/plugins/smacks/tests/smacks.js", type: 'module' },
       { pattern: "src/headless/plugins/status/tests/status.js", type: 'module' },

@@ -480,9 +480,9 @@ export function getInputType(field) {
 }
 
 /**
-* @param {Element} stanza
-* @returns {import('./types').XForm}
-*/
+ * @param {Element} stanza
+ * @returns {import('./types').XForm}
+ */
 export function parseXForm(stanza) {
     const xs = sizzle(`x[xmlns="${Strophe.NS.XFORM}"]`, stanza);
     if (xs.length > 1) {

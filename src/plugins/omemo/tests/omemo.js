@@ -442,7 +442,7 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => _converse.state.omemo_store);
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse), 1000);
         expect(iq_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">
+            stx`<iq to="${_converse.bare_jid}" from="${_converse.bare_jid}" id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="eu.siacs.conversations.axolotl.bundles:123456789">
                         <item>
@@ -643,7 +643,8 @@ describe("The OMEMO module", function() {
         // Check that our own device is added again, but that removed
         // devices are not added.
         expect(iq_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit"
+            stx`<iq from="${_converse.bare_jid}"
+                    to="${_converse.bare_jid}"
                     id="${iq_stanza.getAttribute(`id`)}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="eu.siacs.conversations.axolotl.devicelist">
@@ -886,7 +887,8 @@ describe("The OMEMO module", function() {
 
         iq_stanza = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
         expect(iq_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit"
+            stx`<iq from="${_converse.bare_jid}"
+                    to="${_converse.bare_jid}"
                     id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="eu.siacs.conversations.axolotl.bundles:123456789">
@@ -975,7 +977,8 @@ describe("The OMEMO module", function() {
         // Check that own device was published
         iq_stanza = await u.waitUntil(() => mock.ownDeviceHasBeenPublished(_converse));
         expect(iq_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit"
+            stx`<iq from="${_converse.bare_jid}"
+                    to="${_converse.bare_jid}"
                     id="${iq_stanza.getAttribute(`id`)}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="eu.siacs.conversations.axolotl.devicelist">
@@ -1007,7 +1010,7 @@ describe("The OMEMO module", function() {
         _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
         const iq_el = await u.waitUntil(() => mock.bundleHasBeenPublished(_converse));
-        expect(iq_el.getAttributeNames().sort().join()).toBe(["from", "id", "type", "xmlns"].sort().join());
+        expect(iq_el.getAttributeNames().sort().join()).toBe(["to", "from", "id", "type", "xmlns"].sort().join());
         expect(iq_el.querySelector('prekeys').childNodes.length).toBe(100);
 
         const signed_prekeys = iq_el.querySelectorAll('signedPreKeyPublic');

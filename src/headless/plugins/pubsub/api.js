@@ -6,6 +6,7 @@ import converse from '../../shared/api/public.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '../../log.js';
+import { parseStanzaForPubSubConfig } from './parsers.js';
 
 const { Strophe, stx } = converse.env;
 
@@ -13,20 +14,88 @@ export default {
     /**
      * @typedef {import('strophe.js').Builder} Builder
      * @typedef {import('strophe.js').Stanza} Stanza
+     * @typedef {import('./types').PubSubConfigOptions} PubSubConfigOptions
      *
      * The "pubsub" namespace groups methods relevant to PubSub
      * @namespace _converse.api.pubsub
      * @memberOf _converse.api
      */
     pubsub: {
+        config: {
+            /**
+             * Fetches the configuration for a PubSub node
+             * @method _converse.api.pubsub.configure
+             * @param {string} jid - The JID of the pubsub service where the node resides
+             * @param {string} node - The node to configure
+             * @returns {Promise<import('./types').PubSubConfigOptions>}
+             */
+            async get(jid, node) {
+                const bare_jid = _converse.session.get('bare_jid');
+                const full_jid = _converse.session.get('jid');
+                const entity_jid = jid || bare_jid;
+
+                const stanza = stx`
+                    <iq xmlns="jabber:client"
+                        from="${full_jid}"
+                        type="get"
+                        to="${entity_jid}">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}"><configure node="${node}"/></pubsub>
+                    </iq>`;
+
+                let response;
+                try {
+                    response = await api.sendIQ(stanza);
+                } catch (error) {
+                    throw error;
+                }
+                return parseStanzaForPubSubConfig(response);
+            },
+
+            /**
+             * Configures a PubSub node
+             * @method _converse.api.pubsub.configure
+             * @param {string} jid The JID of the pubsub service where the node resides
+             * @param {string} node The node to configure
+             * @param {PubSubConfigOptions} config The configuration options
+             * @returns {Promise<void|Element>}
+             */
+            async set(jid, node, config) {
+                const bare_jid = _converse.session.get('bare_jid');
+                const entity_jid = jid || bare_jid;
+
+                const stanza = stx`
+                    <iq xmlns="jabber:client"
+                        from="${bare_jid}"
+                        type="set"
+                        to="${entity_jid}">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                        <configure node="${node}">
+                            <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                                <field var="FORM_TYPE" type="hidden">
+                                    <value>${Strophe.NS.PUBSUB}#nodeconfig</value>
+                                </field>
+                                ${Object.entries(config).map(([k, v]) => stx`<field var="${k}"><value>${v}</value></field>`)}
+                            </x>
+                        </configure>
+                    </pubsub>
+                    </iq>`;
+
+                try {
+                    const response = await api.sendIQ(stanza);
+                    return response;
+                } catch (error) {
+                    throw error;
+                }
+            },
+        },
+
         /**
          * Publshes an item to a PubSub node
-         *
          * @method _converse.api.pubsub.publish
          * @param {string} jid The JID of the pubsub service where the node resides.
          * @param {string} node The node being published to
          * @param {Builder|Stanza|(Builder|Stanza)[]} item The XML element(s) being published
-         * @param {import('./types').PubSubConfigOptions} options The publisher options
+         * @param {PubSubConfigOptions} options The publisher options
          *      (see https://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
          * @param {boolean} strict_options Indicates whether the publisher
          *      options are a strict requirement or not. If they're NOT
@@ -42,7 +111,7 @@ export default {
                 <iq xmlns="jabber:client"
                     from="${bare_jid}"
                     type="set"
-                    ${entity_jid !== bare_jid ? `to="${entity_jid}"` : ''}>
+                    to="${entity_jid}">
                 <pubsub xmlns="${Strophe.NS.PUBSUB}">
                     <publish node="${node}">${item}</publish>
                     ${
@@ -73,14 +142,15 @@ export default {
             }
 
             // Check for #publish-options support.
-            // XEP-0223 says we need to check the server for support,
-            // but Prosody returns it on the bare jid.
             const supports_publish_options =
                 (await api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', entity_jid)) ||
-                (await api.disco.supports(
-                    Strophe.NS.PUBSUB + '#publish-options',
-                    Strophe.getDomainFromJid(entity_jid)
-                ));
+                (entity_jid === bare_jid &&
+                    // XEP-0223 says we need to check the server for support
+                    // (although Prosody returns it on the bare jid)
+                    (await api.disco.supports(
+                        Strophe.NS.PUBSUB + '#publish-options',
+                        Strophe.getDomainFromJid(entity_jid)
+                    )));
 
             if (!supports_publish_options) {
                 if (strict_options) {

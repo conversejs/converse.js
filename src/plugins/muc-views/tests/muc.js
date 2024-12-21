@@ -556,7 +556,7 @@ describe("Groupchats", function () {
             const room_creation_promise = await _converse.api.rooms.open(muc_jid, {nick});
             await mock.getRoomFeatures(_converse, muc_jid);
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-            await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
+            await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length));
 
             const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
             await _converse.api.waitUntil('chatRoomViewInitialized');

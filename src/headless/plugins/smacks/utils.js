@@ -5,8 +5,7 @@ import log from '../../log.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { isTestEnv } from '../../utils/session.js';
 
-const { Strophe } = converse.env;
-const u = converse.env.utils;
+const { Strophe, u, stx } = converse.env;
 
 function isStreamManagementSupported () {
     if (api.connection.isType('bosh') && !isTestEnv()) {
@@ -51,7 +50,7 @@ function handleAck (el) {
 function sendAck () {
     if (_converse.session.get('smacks_enabled')) {
         const h = _converse.session.get('num_stanzas_handled');
-        const stanza = u.toStanza(`<a xmlns="${Strophe.NS.SM}" h="${h}"/>`);
+        const stanza = stx`<a xmlns="${Strophe.NS.SM}" h="${h}"/>`;
         api.send(stanza);
     }
     return true;
@@ -155,7 +154,7 @@ function resendUnackedStanzas () {
     // service worker or handling IQ[type="result"] stanzas
     // differently, more like push stanzas, so that they don't need
     // explicit handlers.
-    stanzas.forEach(s => api.send(s));
+    stanzas.forEach((s) => api.send(u.toStanza(s)));
 }
 
 /**
@@ -180,7 +179,7 @@ async function sendResumeStanza () {
 
     const previous_id = _converse.session.get('smacks_stream_id');
     const h = _converse.session.get('num_stanzas_handled');
-    const stanza = u.toStanza(`<resume xmlns="${Strophe.NS.SM}" h="${h}" previd="${previous_id}"/>`);
+    const stanza = stx`<resume xmlns="${Strophe.NS.SM}" h="${h}" previd="${previous_id}"/>`;
     api.send(stanza);
     connection.flush();
     await promise;
@@ -197,7 +196,7 @@ export async function sendEnableStanza () {
         connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
         const resume = api.connection.isType('websocket') || isTestEnv();
-        const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);
+        const stanza = stx`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`;
         api.send(stanza);
         connection.flush();
         await promise;
@@ -246,7 +245,7 @@ export function onStanzaSent (stanza) {
             const num = _converse.session.get('num_stanzas_since_last_ack') + 1;
             if (num % max_unacked === 0) {
                 // Request confirmation of sent stanzas
-                api.send(u.toStanza(`<r xmlns="${Strophe.NS.SM}"/>`));
+                api.send(stx`<r xmlns="${Strophe.NS.SM}"/>`);
             }
             _converse.session.save({ 'num_stanzas_since_last_ack': num });
         }

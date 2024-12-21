@@ -1,17 +1,16 @@
-/**
- * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
- */
 import _converse from '../_converse.js';
 import log from '../../log.js';
-import { Strophe, toStanza } from 'strophe.js';
+import { Strophe } from 'strophe.js';
 import { TimeoutError } from '../errors.js';
 
 export default {
     /**
+     * @typedef {import('strophe.js').Builder} Builder
+     *
      * Allows you to send XML stanzas.
      * @method _converse.api.send
-     * @param {Element|Strophe.Builder} stanza
-     * @return {void}
+     * @param {Element|Builder} stanza
+     * @returns {void}
      * @example
      * const msg = converse.env.$msg({
      *     'from': 'juliet@example.com/balcony',
@@ -20,31 +19,26 @@ export default {
      * });
      * _converse.api.send(msg);
      */
-    send (stanza) {
+    send(stanza) {
         const { api } = _converse;
         if (!api.connection.connected()) {
             log.warn("Not sending stanza because we're not connected!");
             log.warn(Strophe.serialize(stanza));
             return;
         }
-        if (typeof stanza === 'string') {
-            stanza = toStanza(stanza);
-        } else if (stanza?.tree) {
-            stanza = stanza.tree();
-        }
-
-        if (stanza.tagName === 'iq') {
-            return api.sendIQ(stanza);
+        const el = stanza instanceof Element ? stanza : stanza.tree();
+        if (el.tagName === 'iq') {
+            return api.sendIQ(el);
         } else {
-            api.connection.get().send(stanza);
-            api.trigger('send', stanza);
+            api.connection.get().send(el);
+            api.trigger('send', el);
         }
     },
 
     /**
      * Send an IQ stanza
      * @method _converse.api.sendIQ
-     * @param {Element|Strophe.Builder} stanza
+     * @param {Element|Builder} stanza
      * @param {number} [timeout] - The default timeout value is taken from
      *  the `stanza_timeout` configuration setting.
      * @param {boolean} [reject=true] - Whether an error IQ should cause the promise
@@ -54,9 +48,8 @@ export default {
      *  If the IQ stanza being sent is of type `result` or `error`, there's
      *  nothing to wait for, so an already resolved promise is returned.
      */
-    sendIQ (stanza, timeout, reject=true) {
+    sendIQ(stanza, timeout, reject = true) {
         const { api } = _converse;
-
         if (!api.connection.connected()) {
             throw new Error("Not sending IQ stanza because we're not connected!");
         }
@@ -64,26 +57,26 @@ export default {
         const connection = api.connection.get();
 
         let promise;
-        stanza = stanza.tree?.() ?? stanza;
-        if (['get', 'set'].includes(stanza.getAttribute('type'))) {
+        const el = stanza instanceof Element ? stanza : stanza.tree();
+        if (['get', 'set'].includes(el.getAttribute('type'))) {
             timeout = timeout || api.settings.get('stanza_timeout');
             if (reject) {
-                promise = new Promise((resolve, reject) => connection.sendIQ(stanza, resolve, reject, timeout));
+                promise = new Promise((resolve, reject) => connection.sendIQ(el, resolve, reject, timeout));
                 promise.catch((e) => {
                     if (e === null) {
                         throw new TimeoutError(
-                            `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(stanza)}`
+                            `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(el)}`
                         );
                     }
                 });
             } else {
-                promise = new Promise((resolve) => connection.sendIQ(stanza, resolve, resolve, timeout));
+                promise = new Promise((resolve) => connection.sendIQ(el, resolve, resolve, timeout));
             }
         } else {
-            connection.sendIQ(stanza);
+            connection.sendIQ(el);
             promise = Promise.resolve();
         }
-        api.trigger('send', stanza);
+        api.trigger('send', el);
         return promise;
-    }
-}
+    },
+};

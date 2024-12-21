@@ -59,7 +59,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('publish[node="urn:xmpp:bookmarks:1"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="urn:xmpp:bookmarks:1">
                         <item id="${muc1_jid}">
@@ -101,7 +101,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('publish[node="urn:xmpp:bookmarks:1"] conference[name="Balcony"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="urn:xmpp:bookmarks:1">
                         <item id="${muc2_jid}">
@@ -152,7 +152,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('publish[node="urn:xmpp:bookmarks:1"] conference[name="Garden"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq xmlns="jabber:client" type="set" from="${bare_jid}" id="${sent_stanza.getAttribute('id')}">
+            <iq xmlns="jabber:client" type="set" from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="urn:xmpp:bookmarks:1">
                         <item id="${muc2_jid}">

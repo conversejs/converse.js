@@ -31,7 +31,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('item[id="current"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="storage:bookmarks">
                         <item id="current">
@@ -75,7 +75,7 @@ describe("A bookmark", function () {
             () => IQ_stanzas.filter(s => sizzle('item[id="current"] conference[name="Balcony"]', s).length).pop());
 
         expect(sent_stanza).toEqualStanza(stx`
-            <iq from="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+            <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
                     <publish node="storage:bookmarks">
                         <item id="current">

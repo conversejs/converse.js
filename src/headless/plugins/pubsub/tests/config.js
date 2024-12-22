@@ -192,7 +192,7 @@ describe('The pubsub API', function () {
                 let first_error_thrown = false;
                 promise
                     .catch((e) => {
-                        expect(e instanceof errors.NotImplementedError).toBe(true);
+                        expect(e instanceof errors.FeatureNotImplementedError).toBe(true);
                         first_error_thrown = true;
                     })
                     .finally(() => {
@@ -464,6 +464,158 @@ describe('The pubsub API', function () {
                         expect(first_error_thrown).toBe(true);
                     });
                 _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+            })
+        );
+    });
+
+    describe('publishing to a node', function () {
+        it(
+            "will try to manually configure the node if publish-options aren't supported",
+            mock.initConverse([], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+
+                const pubsub_jid = 'pubsub.shakespeare.lit';
+
+                const { api } = _converse;
+                const sent_stanzas = api.connection.get().sent_stanzas;
+                const own_jid = _converse.session.get('jid');
+
+                const node = 'princely_musings';
+                const promise = api.pubsub.publish(pubsub_jid, node, stx`<item></item>`, { access_model: 'whitelist' });
+
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    pubsub_jid,
+                    [{ 'category': 'pubsub', 'type': 'pep' }],
+                    ['http://jabber.org/protocol/pubsub#publish-options']
+                );
+
+                let sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop()
+                );
+                expect(sent_stanza).toEqualStanza(stx`
+                    <iq type="set"
+                            from="${_converse.bare_jid}"
+                            to="${pubsub_jid}"
+                            xmlns="jabber:client"
+                            id="${sent_stanza.getAttribute('id')}">
+                        <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                            <publish node="princely_musings"><item/></publish>
+                            <publish-options>
+                                <x xmlns="jabber:x:data" type="submit">
+                                    <field var="FORM_TYPE" type="hidden">
+                                        <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                                    </field>
+                                    <field var="pubsub#access_model"><value>whitelist</value></field>
+                                </x>
+                            </publish-options>
+                        </pubsub>
+                    </iq>`);
+
+                let response = stx`<iq type='error'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}">
+                    <error type='modify'>
+                        <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                        <precondition-not-met xmlns='http://jabber.org/protocol/pubsub#errors'/>
+                    </error>
+                </iq>`;
+                _converse.api.connection.get()._dataRecv(mock.createRequest(response));
+
+                sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub configure')).pop()
+                );
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(stx`
+                    <iq type='result'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}">
+                    <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
+                        <configure node='${node}'>
+                        <x xmlns='jabber:x:data' type='form'>
+                            <field var='pubsub#access_model' type='list-single' label='Specify the subscriber model'>
+                                <option><value>authorize</value></option>
+                                <option><value>open</value></option>
+                                <option><value>presence</value></option>
+                                <option><value>roster</value></option>
+                                <option><value>whitelist</value></option>
+                                <value>open</value>
+                            </field>
+                        </x>
+                        </configure>
+                    </pubsub>
+                </iq>`)
+                );
+
+                sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas
+                        .filter((iq) => iq.getAttribute('type') === 'set' && iq.querySelector('pubsub configure'))
+                        .pop()
+                );
+
+                expect(sent_stanza).toEqualStanza(stx`<iq xmlns="jabber:client"
+                    from="${_converse.bare_jid}"
+                    to="${pubsub_jid}"
+                    type="set"
+                    id="${sent_stanza.getAttribute('id')}">
+                        <pubsub xmlns="http://jabber.org/protocol/pubsub#owner">
+                            <configure node="princely_musings">
+                            <x xmlns="jabber:x:data" type="submit">
+                                <field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/pubsub#nodeconfig</value></field>
+                                <field var="access_model"><value>whitelist</value></field>
+                            </x>
+                            </configure>
+                        </pubsub>
+                    </iq>`);
+
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(stx`
+                    <iq type='result'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}"></iq>`)
+                );
+
+                // Clear old stanzas
+                while (sent_stanzas.length) sent_stanzas.pop();
+
+                sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas.filter((iq) => iq.querySelector('pubsub publish')).pop()
+                );
+                expect(sent_stanza).toEqualStanza(stx`
+                    <iq type="set"
+                            from="${_converse.bare_jid}"
+                            to="${pubsub_jid}"
+                            xmlns="jabber:client"
+                            id="${sent_stanza.getAttribute('id')}">
+                        <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                            <publish node="princely_musings"><item/></publish>
+                            <publish-options>
+                                <x xmlns="jabber:x:data" type="submit">
+                                    <field var="FORM_TYPE" type="hidden">
+                                        <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                                    </field>
+                                    <field var="pubsub#access_model"><value>whitelist</value></field>
+                                </x>
+                            </publish-options>
+                        </pubsub>
+                    </iq>`);
+
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(stx`
+                    <iq type='result'
+                        xmlns="jabber:client"
+                        from='${pubsub_jid}'
+                        to='${own_jid}'
+                        id="${sent_stanza.getAttribute('id')}"></iq>`)
+                );
+
+                await promise;
             })
         );
     });

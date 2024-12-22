@@ -16,7 +16,7 @@ import { sendChatState } from '../../shared/actions';
 class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
     /**
      * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
 
     constructor(attributes, options) {

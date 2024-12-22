@@ -28,5 +28,5 @@ export function parseMemberListIQ(iq: Element): import("./types").MemberListItem
 export function parseMUCPresence(stanza: Element, chatbox: MUC): import("./types").MUCPresenceAttributes;
 export type MUC = import("../muc/muc.js").default;
 export type MUCMessageAttributes = import("./types").MUCMessageAttributes;
-import { StanzaParseError } from '../../shared/parsers';
+import { StanzaParseError } from '../../shared/errors.js';
 //# sourceMappingURL=parsers.d.ts.map

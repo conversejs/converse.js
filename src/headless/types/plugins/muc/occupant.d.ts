@@ -202,7 +202,7 @@ declare const MUCOccupant_base: {
 declare class MUCOccupant extends MUCOccupant_base {
     /**
      * @typedef {import('../chat/types').MessageAttributes} MessageAttributes
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     constructor(attributes: any, options: any);
     vcard: any;
@@ -221,7 +221,7 @@ declare class MUCOccupant extends MUCOccupant_base {
      * This method houldn't be called directly, instead {@link MUC#queueMessage} should be called.
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("../chat/types").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("../chat/types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
     /**
      * Return roles which may be assigned to this occupant
      * @returns {typeof ROLES} - An array of assignable roles

@@ -4,5 +4,5 @@
  * @returns {Promise<import('./types.ts').MessageAttributes|StanzaParseError>}
  */
 export function parseMessage(stanza: Element): Promise<import("./types.ts").MessageAttributes | StanzaParseError>;
-import { StanzaParseError } from '../../shared/parsers';
+import { StanzaParseError } from '../../shared/errors.js';
 //# sourceMappingURL=parsers.d.ts.map

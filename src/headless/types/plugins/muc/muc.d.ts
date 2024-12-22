@@ -211,7 +211,7 @@ declare class MUC extends MUC_base {
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
      * @typedef {import('strophe.js').Builder} Builder
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     defaults(): {
         bookmarked: boolean;
@@ -754,7 +754,7 @@ declare class MUC extends MUC_base {
      * should be called.
      * @param {MUCMessageAttributes|StanzaParseError} attrs_or_error - A promise which resolves to the message attributes.
      */
-    onMessage(attrs_or_error: import("./types").MUCMessageAttributes | import("../../shared/parsers.js").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("./types").MUCMessageAttributes | import("../../shared/errors.js").StanzaParseError): Promise<void>;
     /**
      * @param {Element} pres
      */

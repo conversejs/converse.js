@@ -11,20 +11,35 @@ import { decodeHTMLEntities } from '../utils/html.js';
 import { getAttributes } from '../utils/stanza.js';
 import { rejectMessage } from './actions.js';
 import { XFORM_TYPE_MAP,  XFORM_VALIDATE_TYPE_MAP } from './constants.js';
+import * as errors from './errors.js';
 
 
 const { NS } = Strophe;
 
-export class StanzaParseError extends Error {
-    /**
-     * @param {string} message
-     * @param {Element} stanza
-     */
-    constructor (message, stanza) {
-        super(message);
-        this.name = 'StanzaParseError';
-        this.stanza = stanza;
+
+/**
+ * @param {Element} stanza
+ * @returns {errors.StanzaError|null}
+ */
+export function parseErrorStanza(stanza) {
+    const error = stanza.querySelector('error');
+    if (!error) return null;
+
+    const e = sizzle(`[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
+    const nodeName = e?.nodeName;
+
+    if (nodeName === 'feature-not-implemented') {
+        return new errors.NotImplementedError(stanza);
+    } else if (nodeName === 'forbidden') {
+        return new errors.ForbiddenError(stanza);
+    } else if (nodeName === 'bad-request') {
+        return new errors.BadRequestError(stanza);
+    } else if (nodeName === 'not-allowed') {
+        return new errors.NotAllowedError(stanza);
+    } else if (nodeName === 'item-not-found') {
+        return new errors.ItemNotFoundError(stanza);
     }
+    return new errors.StanzaError(stanza);
 }
 
 /**
@@ -292,7 +307,7 @@ export function throwErrorIfInvalidForward (stanza) {
     if (bare_forward) {
         rejectMessage(stanza, 'Forwarded messages not part of an encapsulating protocol are not supported');
         const from_jid = stanza.getAttribute('from');
-        throw new StanzaParseError(`Ignoring unencapsulated forwarded message from ${from_jid}`, stanza);
+        throw new errors.StanzaParseError(stanza, `Ignoring unencapsulated forwarded message from ${from_jid}`);
     }
 }
 

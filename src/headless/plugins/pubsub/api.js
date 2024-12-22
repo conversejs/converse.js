@@ -6,9 +6,10 @@ import converse from '../../shared/api/public.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '../../log.js';
+import { parseErrorStanza } from '../../shared/parsers.js';
 import { parseStanzaForPubSubConfig } from './parsers.js';
 
-const { Strophe, stx } = converse.env;
+const { Strophe, stx, u } = converse.env;
 
 export default {
     /**
@@ -30,6 +31,8 @@ export default {
              * @returns {Promise<import('./types').PubSubConfigOptions>}
              */
             async get(jid, node) {
+                if (!node) throw new Error('api.pubsub.config.get: Node value required');
+
                 const bare_jid = _converse.session.get('bare_jid');
                 const full_jid = _converse.session.get('jid');
                 const entity_jid = jid || bare_jid;
@@ -46,6 +49,9 @@ export default {
                 try {
                     response = await api.sendIQ(stanza);
                 } catch (error) {
+                    if (u.isErrorStanza(error)) {
+                        throw parseErrorStanza(error);
+                    }
                     throw error;
                 }
                 return parseStanzaForPubSubConfig(response);

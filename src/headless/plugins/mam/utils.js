@@ -14,6 +14,7 @@ import { parseMessage } from '../../plugins/chat/parsers.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { TimeoutError } from '../../shared/errors.js';
 import MAMPlaceholderMessage from './placeholder.js';
+import { parseErrorStanza } from '../../shared/parsers.js';
 
 const { NS } = Strophe;
 const u = converse.env.utils;
@@ -22,7 +23,8 @@ const u = converse.env.utils;
  * @param {Element} iq
  */
 export function onMAMError(iq) {
-    if (iq?.querySelectorAll('feature-not-implemented').length) {
+    const err = parseErrorStanza(iq);
+    if (err?.name === 'feature-not-implemented') {
         log.warn(`Message Archive Management (XEP-0313) not supported by ${iq.getAttribute('from')}`);
     } else {
         log.error(`Error while trying to set archiving preferences for ${iq.getAttribute('from')}.`);

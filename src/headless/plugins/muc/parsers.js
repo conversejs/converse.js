@@ -7,8 +7,8 @@ import dayjs from 'dayjs';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import { StanzaParseError } from '../../shared/errors.js';
 import {
-    StanzaParseError,
     getChatMarker,
     getChatState,
     getCorrectionAttributes,
@@ -161,8 +161,8 @@ export async function parseMUCMessage (stanza, chatbox) {
 
     if (sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length) {
         return new StanzaParseError(
+            stanza,
             `Invalid Stanza: Forged MAM groupchat message from ${stanza.getAttribute('from')}`,
-            stanza
         );
     }
     const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
@@ -219,16 +219,16 @@ export async function parseMUCMessage (stanza, chatbox) {
 
     if (attrs.is_archived && original_stanza.getAttribute('from') !== attrs.from_muc) {
         return new StanzaParseError(
+            stanza,
             `Invalid Stanza: Forged MAM message from ${original_stanza.getAttribute('from')}`,
-            stanza
         );
     } else if (attrs.is_archived && original_stanza.getAttribute('from') !== chatbox.get('jid')) {
         return new StanzaParseError(
+            stanza,
             `Invalid Stanza: Forged MAM groupchat message from ${stanza.getAttribute('from')}`,
-            stanza
         );
     } else if (attrs.is_carbon) {
-        return new StanzaParseError('Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied', stanza);
+        return new StanzaParseError(stanza, 'Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied');
     }
 
     // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.

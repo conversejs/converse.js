@@ -1,4 +1,9 @@
 /**
+ * @param {Element} stanza
+ * @returns {errors.StanzaError|null}
+ */
+export function parseErrorStanza(stanza: Element): errors.StanzaError | null;
+/**
  * Extract the XEP-0359 stanza IDs from the passed in stanza
  * and return a map containing them.
  * @param {Element} stanza - The message stanza
@@ -136,12 +141,5 @@ export function getInputType(field: Element): any;
  * @returns {import('./types').XForm}
  */
 export function parseXForm(stanza: Element): import("./types").XForm;
-export class StanzaParseError extends Error {
-    /**
-     * @param {string} message
-     * @param {Element} stanza
-     */
-    constructor(message: string, stanza: Element);
-    stanza: Element;
-}
+import * as errors from './errors.js';
 //# sourceMappingURL=parsers.d.ts.map

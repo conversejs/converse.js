@@ -22,7 +22,7 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
      * @typedef {import('./types').MessageAttributes} MessageAttributes
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
 
     defaults () {

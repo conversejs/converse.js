@@ -9,7 +9,7 @@ import log from '../../log.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
 import { parseStanzaForPubSubConfig } from './parsers.js';
 
-const { Strophe, stx, u } = converse.env;
+const { Strophe, stx } = converse.env;
 
 export default {
     /**
@@ -49,10 +49,7 @@ export default {
                 try {
                     response = await api.sendIQ(stanza);
                 } catch (error) {
-                    if (u.isErrorStanza(error)) {
-                        throw parseErrorStanza(error);
-                    }
-                    throw error;
+                    throw await parseErrorStanza(error);
                 }
                 return parseStanzaForPubSubConfig(response);
             },
@@ -72,7 +69,7 @@ export default {
                 const entity_jid = jid || bare_jid;
                 const new_config = {
                     ...(await api.pubsub.config.get(entity_jid, node)),
-                    ...config
+                    ...config,
                 };
 
                 const stanza = stx`
@@ -95,10 +92,7 @@ export default {
                 try {
                     await api.sendIQ(stanza);
                 } catch (error) {
-                    if (u.isErrorStanza(error)) {
-                        throw parseErrorStanza(error);
-                    }
-                    throw error;
+                    throw await parseErrorStanza(error);
                 }
                 return new_config;
             },
@@ -119,6 +113,9 @@ export default {
          * @returns {Promise<void|Element>}
          */
         async publish(jid, node, item, options, strict_options = true) {
+            if (!node) throw new Error('api.pubsub.config.publish: node value required');
+            if (!item) throw new Error('api.pubsub.config.publish: item value required');
+
             const bare_jid = _converse.session.get('bare_jid');
             const entity_jid = jid || bare_jid;
 
@@ -167,30 +164,35 @@ export default {
                         Strophe.getDomainFromJid(entity_jid)
                     )));
 
-            if (!supports_publish_options) {
-                if (strict_options) {
-                    log.warn(`api.pubsub.publish: #publish-options not supported, refusing to publish item.`);
-                    log.warn(stanza);
-                    return;
-                } else {
-                    log.warn(`api.pubsub.publish: #publish-options not supported, publishing anyway.`);
-                }
+            if (!supports_publish_options && strict_options) {
+                log.warn(`api.pubsub.publish: #publish-options not supported, refusing to publish item.`);
+                log.warn(stanza);
+                return;
             }
 
             try {
                 await api.sendIQ(stanza);
             } catch (iq) {
+                const e = await parseErrorStanza(iq);
                 if (
-                    iq instanceof Element &&
-                    !strict_options &&
-                    iq.querySelector(`precondition-not-met[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`)
+                    e.name === 'conflict' &&
+                    /** @type {import('shared/errors').StanzaError} */(e).extra[Strophe.NS.PUBSUB_ERROR] === 'precondition-not-met'
                 ) {
-                    // The publish-options precondition couldn't be
-                    // met. We re-publish but without publish-options.
-                    const el = stanza.tree();
-                    el.querySelector('publish-options').outerHTML = '';
-                    log.warn(`api.pubsub.publish: Republishing without publish options. ${el.outerHTML}`);
-                    await api.sendIQ(el);
+                    // Manually configure the node if we can't set it via publish-options
+                    await api.pubsub.config.set(entity_jid, node, options);
+                    try {
+                        await api.sendIQ(stanza);
+                    } catch (e) {
+                        log.error(e);
+                        if (!strict_options) {
+                            // The publish-options precondition couldn't be met.
+                            // We re-publish but without publish-options.
+                            const el = stanza.tree();
+                            el.querySelector('publish-options').outerHTML = '';
+                            log.warn(`api.pubsub.publish: #publish-options precondition-not-met, publishing anyway.`);
+                            await api.sendIQ(el);
+                        }
+                    }
                 } else {
                     throw iq;
                 }

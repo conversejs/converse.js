@@ -274,7 +274,7 @@ declare class ChatBox extends ChatBox_base {
      * @typedef {import('./message.js').default} Message
      * @typedef {import('../muc/muc.js').default} MUC
      * @typedef {import('./types').MessageAttributes} MessageAttributes
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
     defaults(): {
         bookmarked: boolean;
@@ -291,7 +291,7 @@ declare class ChatBox extends ChatBox_base {
     /**
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
-    onMessage(attrs_or_error: import("./types").MessageAttributes | import("../../shared/parsers").StanzaParseError): Promise<void>;
+    onMessage(attrs_or_error: import("./types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
     onPresenceChanged(item: any): void;
     close(): Promise<void>;
     /**

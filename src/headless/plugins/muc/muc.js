@@ -24,7 +24,7 @@ import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js';
 import { TimeoutError } from '../../shared/errors.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList } from './affiliations/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
-import { isArchived } from '../../shared/parsers.js';
+import { isArchived, parseErrorStanza } from '../../shared/parsers.js';
 import { getUniqueId, isErrorObject, safeSave } from '../../utils/index.js';
 import { isUniView } from '../../utils/session.js';
 import { parseMUCMessage, parseMUCPresence } from './parsers.js';
@@ -52,7 +52,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {module:shared.converse.UserMessage} UserMessage
      * @typedef {import('strophe.js').Builder} Builder
-     * @typedef {import('../../shared/parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
 
     defaults () {
@@ -1716,12 +1716,15 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
                             .c('value').t(nick)
             );
         } catch (e) {
-            if (sizzle(`service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
-                err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
-            } else if (sizzle(`bad-request[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
-                err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
+            if (u.isErrorStanza(e)) {
+                const err = parseErrorStanza(e);
+                if (err?.name === 'service-unavailable') {
+                    err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
+                } else if (err?.name === 'bad-request') {
+                    err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
+                }
+                log.error(err_msg);
             }
-            log.error(err_msg);
             log.error(e);
             return err_msg;
         }

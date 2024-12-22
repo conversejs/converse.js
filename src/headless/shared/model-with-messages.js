@@ -11,7 +11,7 @@ import converse from './api/public.js';
 import api from './api/index.js';
 import { isNewMessage } from '../plugins/chat/utils.js';
 import _converse from './_converse.js';
-import { NotImplementedError } from './errors.js';
+import { MethodNotImplementedError } from './errors.js';
 import { sendMarker, sendReceiptStanza, sendRetractionMessage } from './actions.js';
 import {parseMessage} from '../plugins/chat/parsers';
 
@@ -30,7 +30,7 @@ const { Strophe, $msg, u } = converse.env;
  */
 export default function ModelWithMessages(BaseModel) {
     /**
-     * @typedef {import('./parsers').StanzaParseError} StanzaParseError
+     * @typedef {import('./errors').StanzaParseError} StanzaParseError
      * @typedef {import('../plugins/chat/message').default} Message
      * @typedef {import('../plugins/chat/model').default} ChatBox
      * @typedef {import('../plugins/muc/muc').default} MUC
@@ -158,7 +158,7 @@ export default function ModelWithMessages(BaseModel) {
          * @param {MessageAttributes|Error} attrs_or_error
          */
         async onMessage(attrs_or_error) {
-            throw new NotImplementedError('onMessage is not implemented');
+            throw new MethodNotImplementedError('onMessage is not implemented');
         }
 
         /**
@@ -262,7 +262,7 @@ export default function ModelWithMessages(BaseModel) {
          * @return {Promise<MessageAttributes>}
          */
         async getOutgoingMessageAttributes(_attrs) {
-            throw new NotImplementedError('getOutgoingMessageAttributes is not implemented');
+            throw new MethodNotImplementedError('getOutgoingMessageAttributes is not implemented');
         }
 
         /**

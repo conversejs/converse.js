@@ -31,4 +31,6 @@ export class NotAllowedError extends StanzaError {
 }
 export class ItemNotFoundError extends StanzaError {
 }
+export class NotAcceptableError extends StanzaError {
+}
 //# sourceMappingURL=errors.d.ts.map

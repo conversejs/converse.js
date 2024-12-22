@@ -15,9 +15,9 @@ declare namespace _default {
              * @param {string} jid The JID of the pubsub service where the node resides
              * @param {string} node The node to configure
              * @param {PubSubConfigOptions} config The configuration options
-             * @returns {Promise<void|Element>}
+             * @returns {Promise<import('./types').PubSubConfigOptions>}
              */
-            function set(jid: string, node: string, config: import("./types").PubSubConfigOptions): Promise<void | Element>;
+            function set(jid: string, node: string, config: import("./types").PubSubConfigOptions): Promise<import("./types").PubSubConfigOptions>;
         }
         /**
          * Publshes an item to a PubSub node

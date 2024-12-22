@@ -38,6 +38,8 @@ export function parseErrorStanza(stanza) {
         return new errors.NotAllowedError(stanza);
     } else if (nodeName === 'item-not-found') {
         return new errors.ItemNotFoundError(stanza);
+    } else if (nodeName === 'not-acceptable') {
+        return new errors.NotAcceptableError(stanza);
     }
     return new errors.StanzaError(stanza);
 }

@@ -42,3 +42,4 @@ export class ForbiddenError extends StanzaError {}
 export class BadRequestError extends StanzaError {}
 export class NotAllowedError extends StanzaError {}
 export class ItemNotFoundError extends StanzaError {}
+export class NotAcceptableError extends StanzaError {}

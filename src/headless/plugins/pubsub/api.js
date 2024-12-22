@@ -63,35 +63,44 @@ export default {
              * @param {string} jid The JID of the pubsub service where the node resides
              * @param {string} node The node to configure
              * @param {PubSubConfigOptions} config The configuration options
-             * @returns {Promise<void|Element>}
+             * @returns {Promise<import('./types').PubSubConfigOptions>}
              */
             async set(jid, node, config) {
+                if (!node) throw new Error('api.pubsub.config.set: Node value required');
+
                 const bare_jid = _converse.session.get('bare_jid');
                 const entity_jid = jid || bare_jid;
+                const new_config = {
+                    ...(await api.pubsub.config.get(entity_jid, node)),
+                    ...config
+                };
 
                 const stanza = stx`
                     <iq xmlns="jabber:client"
                         from="${bare_jid}"
                         type="set"
                         to="${entity_jid}">
-                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}#owner">
                         <configure node="${node}">
                             <x xmlns="${Strophe.NS.XFORM}" type="submit">
                                 <field var="FORM_TYPE" type="hidden">
                                     <value>${Strophe.NS.PUBSUB}#nodeconfig</value>
                                 </field>
-                                ${Object.entries(config).map(([k, v]) => stx`<field var="${k}"><value>${v}</value></field>`)}
+                                ${Object.entries(new_config).map(([k, v]) => stx`<field var="${k}"><value>${v}</value></field>`)}
                             </x>
                         </configure>
                     </pubsub>
                     </iq>`;
 
                 try {
-                    const response = await api.sendIQ(stanza);
-                    return response;
+                    await api.sendIQ(stanza);
                 } catch (error) {
+                    if (u.isErrorStanza(error)) {
+                        throw parseErrorStanza(error);
+                    }
                     throw error;
                 }
+                return new_config;
             },
         },
 

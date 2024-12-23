@@ -1,7 +1,7 @@
 /**
  * @param {Element} iq
  */
-export function onMAMError(iq: Element): void;
+export function onMAMError(iq: Element): Promise<void>;
 /**
  * Handle returned IQ stanza containing Message Archive
  * Management (XEP-0313) preferences.

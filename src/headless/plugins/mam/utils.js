@@ -22,8 +22,8 @@ const u = converse.env.utils;
 /**
  * @param {Element} iq
  */
-export function onMAMError(iq) {
-    const err = parseErrorStanza(iq);
+export async function onMAMError(iq) {
+    const err = await parseErrorStanza(iq);
     if (err?.name === 'feature-not-implemented') {
         log.warn(`Message Archive Management (XEP-0313) not supported by ${iq.getAttribute('from')}`);
     } else {

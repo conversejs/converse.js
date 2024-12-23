@@ -1717,7 +1717,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             );
         } catch (e) {
             if (u.isErrorStanza(e)) {
-                const err = parseErrorStanza(e);
+                const err = await parseErrorStanza(e);
                 if (err?.name === 'service-unavailable') {
                     err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
                 } else if (err?.name === 'bad-request') {

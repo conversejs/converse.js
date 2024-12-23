@@ -87,3 +87,32 @@ export type XEP372Reference = {
     value: string;
     uri: string;
 };
+
+export type ErrorExtra = Record<string, string>;
+
+// https://datatracker.ietf.org/doc/html/rfc6120#section-8.3
+export type ErrorName =
+    | 'bad-request'
+    | 'conflict'
+    | 'feature-not-implemented'
+    | 'forbidden'
+    | 'gone'
+    | 'internal-server-error'
+    | 'item-not-found'
+    | 'jid-malformed'
+    | 'not-acceptable'
+    | 'not-allowed'
+    | 'not-authorized'
+    | 'payment-required'
+    | 'recipient-unavailable'
+    | 'redirect'
+    | 'registration-required'
+    | 'remote-server-not-found'
+    | 'remote-server-timeout'
+    | 'resource-constraint'
+    | 'service-unavailable'
+    | 'subscription-required'
+    | 'undefined-condition'
+    | 'unexpected-request';
+
+export type ErrorType = 'auth' | 'cancel' | 'continue' | 'modify' | 'wait';

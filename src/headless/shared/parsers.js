@@ -16,32 +16,75 @@ import * as errors from './errors.js';
 
 const { NS } = Strophe;
 
-
 /**
- * @param {Element} stanza
- * @returns {errors.StanzaError|null}
+ * @param {Element|Error} stanza - The stanza to be parsed. As a convenience,
+ * an Error element can be passed in as well, so that this function can be
+ * called in a catch block without first checking if a stanza or Error
+ * element was received.
+ * @returns {Promise<Error|errors.StanzaError|null>}
  */
-export function parseErrorStanza(stanza) {
+export async function parseErrorStanza(stanza) {
+    if (stanza instanceof Error) return stanza;
+    if (stanza.getAttribute('type') !== 'error') return null;
+
     const error = stanza.querySelector('error');
     if (!error) return null;
 
     const e = sizzle(`[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
-    const nodeName = e?.nodeName;
+    const name = e?.nodeName;
 
-    if (nodeName === 'feature-not-implemented') {
-        return new errors.NotImplementedError(stanza);
-    } else if (nodeName === 'forbidden') {
-        return new errors.ForbiddenError(stanza);
-    } else if (nodeName === 'bad-request') {
-        return new errors.BadRequestError(stanza);
-    } else if (nodeName === 'not-allowed') {
-        return new errors.NotAllowedError(stanza);
-    } else if (nodeName === 'item-not-found') {
-        return new errors.ItemNotFoundError(stanza);
-    } else if (nodeName === 'not-acceptable') {
-        return new errors.NotAcceptableError(stanza);
+    /**
+     * *Hook* which allows plugins to add application-specific error parsing
+     * @event _converse#parseErrorStanza
+     */
+    const extra = await api.hook('parseErrorStanza', stanza, {});
+
+    if (name === 'bad-request') {
+        return new errors.BadRequestError(name, error, extra);
+    } else if (name === 'conflict') {
+        return new errors.ConflictError(name, error, extra);
+    } else if (name === 'feature-not-implemented') {
+        return new errors.FeatureNotImplementedError(name, error, extra);
+    } else if (name === 'forbidden') {
+        return new errors.ForbiddenError(name, error, extra);
+    } else if (name === 'gone') {
+        return new errors.GoneError(name, error, extra);
+    } else if (name === 'internal-server-error') {
+        return new errors.InternalServerError(name, error, extra);
+    } else if (name === 'item-not-found') {
+        return new errors.ItemNotFoundError(name, error, extra);
+    } else if (name === 'jid-malformed') {
+        return new errors.JIDMalformedError(name, error, extra);
+    } else if (name === 'not-acceptable') {
+        return new errors.NotAcceptableError(name, error, extra);
+    } else if (name === 'not-allowed') {
+        return new errors.NotAllowedError(name, error, extra);
+    } else if (name === 'not-authorized') {
+        return new errors.NotAuthorizedError(name, error, extra);
+    } else if (name === 'payment-required') {
+        return new errors.PaymentRequiredError(name, error, extra);
+    } else if (name === 'recipient-unavailable') {
+        return new errors.RecipientUnavailableError(name, error, extra);
+    } else if (name === 'redirect') {
+        return new errors.RedirectError(name, error, extra);
+    } else if (name === 'registration-required') {
+        return new errors.RegistrationRequiredError(name, error, extra);
+    } else if (name === 'remote-server-not-found') {
+        return new errors.RemoteServerNotFoundError(name, error, extra);
+    } else if (name === 'remote-server-timeout') {
+        return new errors.RemoteServerTimeoutError(name, error, extra);
+    } else if (name === 'resource-constraint') {
+        return new errors.ResourceConstraintError(name, error, extra);
+    } else if (name === 'service-unavailable') {
+        return new errors.ServiceUnavailableError(name, error, extra);
+    } else if (name === 'subscription-required') {
+        return new errors.SubscriptionRequiredError(name, error, extra);
+    } else if (name === 'undefined-condition') {
+        return new errors.UndefinedConditionError(name, error, extra);
+    } else if (name === 'unexpected-request') {
+        return new errors.UnexpectedRequestError(name, error, extra);
     }
-    return new errors.StanzaError(stanza);
+    return new errors.StanzaError('unknown', error);
 }
 
 /**

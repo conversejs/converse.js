@@ -1716,17 +1716,15 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
                             .c('value').t(nick)
             );
         } catch (e) {
-            if (u.isErrorStanza(e)) {
-                const err = await parseErrorStanza(e);
-                if (err?.name === 'service-unavailable') {
-                    err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
-                } else if (err?.name === 'bad-request') {
-                    err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
-                }
-                log.error(err_msg);
+            const err = await parseErrorStanza(e);
+            if (err?.name === 'service-unavailable') {
+                log.error("Can't register your nickname in this groupchat, it doesn't support registration.");
+            } else if (err?.name === 'bad-request') {
+                log.error("Can't register your nickname in this groupchat, invalid data form supplied.");
+            } else {
+                log.error(e);
             }
-            log.error(e);
-            return err_msg;
+            throw err;
         }
     }
 

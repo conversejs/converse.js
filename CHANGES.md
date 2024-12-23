@@ -2,6 +2,7 @@
 
 ## 11.0.0 (Unreleased)
 
+### Github Issues
 - #122: Set horizontal layout direction based on the language
 - #698: Add support for MUC private messages
 - #1057: Removed the `mobile` view mode. Instead of setting `view_mode` to `mobile`, set it to `fullscreen`.
@@ -24,6 +25,8 @@
 - #3476: better UI for form "fixed" fields
 - #3478: MUC participant status indicator misplaced 
 - #3529: Unbookmarked channels no longer change their name when clicked with an unread indicator (or text icon)
+
+### Bugfixes
 - Fix: MUC occupant list does not sort itself on nicknames or roles changes
 - Fix: refresh the MUC sidebar when participants collection is sorted
 - Fix: room information not correctly refreshed when modifications are made by other users
@@ -33,22 +36,28 @@
 - Fix: unhandled exception in disconnect function when controlbox is not shown by UI
 - Fix: "Click to mention..." title was misplaced in MUC occupant list.
 - Fix: removing the "add to contact" button in occupant modal in singleton mode (as there is no roster).
+- Fix: trying to use emojis with an uppercase letter breaks the message field.
+- Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
+
+### Changes
+- Upgrade to Bootstrap 5
 - Add an occupants filter to the MUC sidebar
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.
 - Enable [reuse_scram_keys](https://conversejs.org/docs/html/configuration.html#reuse-scram-keys) by default.
 - New `loadEmojis` hook, to customize emojis at runtime.
-- Upgrade to Bootstrap 5
 - Add new themes 'Cyberpunk' and 'Nord' and remove the old 'Concord' theme.
 - Improved accessibility.
 - New "getOccupantActionButtons" hook, so that plugins can add actions on MUC occupants.
 - MUC occupants badges: displays short labels, with full label as title.
-- Fix: trying to use emojis with an uppercase letter breaks the message field.
-- Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 - New config option [stanza_timeout](https://conversejs.org/docs/html/configuration.html#show-background)
+
+### Default config changes
 - Make `fullscreen` the default `view_mode`.
+- Set `auto_register_muc_nickname` default to `'unregister'` so that your
+  nickname is automatically registered with a MUC upon entering and
+  unregistered upon explicitly leaving the MUC (by closing it).
 
 ### Breaking changes:
-
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.
 - The connection is no longer available on the `_converse` object. Instead, use `api.connection.get()`.
 - Add a new `exports` attribute on the `_converse` object which is meant for

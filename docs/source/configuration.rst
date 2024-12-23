@@ -452,7 +452,7 @@ or `electron <http://electron.atom.io/>`_.
 auto_register_muc_nickname
 --------------------------
 
-* Default: ``false``
+* Default: ``unregister``
 * Allowed values: ``false``, ``true``, ``'unregister'``
 
 If truthy, Converse will automatically register a user's nickname upon entering

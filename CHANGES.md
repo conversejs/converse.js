@@ -15,6 +15,7 @@
 - #2716: Fix issue with chat display when opening via URL
 - #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
+- #3100: fixed width `.box-flyout` breaks responsive design in embedded, mobile viewport mode.
 - #3155: Some ad-hoc commands not working
 - #3155: Some adhoc commands aren't working
 - #3299: Registration fails when a password contains an &

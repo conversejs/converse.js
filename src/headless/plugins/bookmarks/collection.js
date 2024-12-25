@@ -13,9 +13,13 @@ import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
 import '../../plugins/muc/index.js';
 
-const { Strophe, sizzle, stx } = converse.env;
+const { Strophe, stx } = converse.env;
 
 class Bookmarks extends Collection {
+    get idAttribute() {
+        return 'jid';
+    }
+
     async initialize() {
         this.on('add', (bm) =>
             this.openBookmarkedRoom(bm)
@@ -90,9 +94,28 @@ class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      */
-    createBookmark(attrs) {
-        this.create(attrs);
-        this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq, attrs));
+    setBookmark(attrs, create=true) {
+        if (!attrs.jid) return log.warn('No JID provided for setBookmark');
+
+        let send_stanza = false;
+
+        const existing = this.get(attrs.jid);
+        if (existing) {
+            // Check if any attrs changed
+            const has_changed = Object.keys(attrs).reduce((result, k) => {
+                return result || (attrs[k] ?? '') !== (existing.attributes[k] ?? '');
+            }, false);
+            if (has_changed) {
+                existing.save(attrs);
+                send_stanza = true;
+            }
+        } else if (create) {
+            this.create(attrs);
+            send_stanza = true;
+        }
+        if (send_stanza) {
+            this.sendBookmarkStanza().catch((iq) => this.onBookmarkError(iq, attrs));
+        }
     }
 
     /**

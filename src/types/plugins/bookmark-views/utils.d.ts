@@ -1,5 +1,13 @@
-export function getHeadingButtons(view: any, buttons: any): any;
-export function removeBookmarkViaEvent(ev: any): Promise<void>;
-export function addBookmarkViaEvent(ev: any): void;
-export function openRoomViaEvent(ev: any): void;
+/**
+ * @param {Event} ev
+ */
+export function removeBookmarkViaEvent(ev: Event): Promise<void>;
+/**
+ * @param {Event} ev
+ */
+export function addBookmarkViaEvent(ev: Event): void;
+/**
+ * @param {Event} ev
+ */
+export function openRoomViaEvent(ev: Event): void;
 //# sourceMappingURL=utils.d.ts.map

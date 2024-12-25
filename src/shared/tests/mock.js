@@ -209,7 +209,7 @@ function openChatRoom (_converse, room, server) {
     return _converse.api.rooms.open(`${room}@${server}`);
 }
 
-async function getRoomFeatures (_converse, muc_jid, features=[]) {
+async function getRoomFeatures (_converse, muc_jid, features=[], settings={}) {
     const room = Strophe.getNodeFromJid(muc_jid);
     muc_jid = muc_jid.toLowerCase();
     const stanzas = _converse.api.connection.get().IQ_stanzas;
@@ -226,7 +226,7 @@ async function getRoomFeatures (_converse, muc_jid, features=[]) {
     }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
         .c('identity', {
             'category': 'conference',
-            'name': room[0].toUpperCase() + room.slice(1),
+            'name': settings.name ?? `${room[0].toUpperCase()}${room.slice(1)}`,
             'type': 'text'
         }).up();
 
@@ -373,7 +373,7 @@ async function openAndEnterChatRoom (
     const { api } = _converse;
     muc_jid = muc_jid.toLowerCase();
     const room_creation_promise = api.rooms.open(muc_jid, settings, force_open);
-    await getRoomFeatures(_converse, muc_jid, features);
+    await getRoomFeatures(_converse, muc_jid, features, settings);
     await waitForReservedNick(_converse, muc_jid, nick);
     // The user has just entered the room (because join was called)
     // and receives their own presence from the server.

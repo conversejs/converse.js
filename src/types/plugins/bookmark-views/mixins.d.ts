@@ -1,4 +1,4 @@
-export namespace bookmarkableChatRoomView {
+export namespace BookmarkableChatRoomView {
     /**
      * Set whether the groupchat is bookmarked or not.
      * @private

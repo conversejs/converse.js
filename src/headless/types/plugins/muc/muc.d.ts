@@ -390,7 +390,7 @@ declare class MUC extends MUC_base {
     sendDestroyIQ(reason?: string, new_jid?: string): any;
     /**
      * Leave the groupchat.
-     * @param { string } [exit_msg] - Message to indicate your reason for leaving
+     * @param {string} [exit_msg] - Message to indicate your reason for leaving
      */
     leave(exit_msg?: string): Promise<void>;
     /**

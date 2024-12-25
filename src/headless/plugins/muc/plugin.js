@@ -83,22 +83,22 @@ converse.plugins.add('converse-muc', {
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
         api.settings.extend({
-            'allow_muc_invitations': true,
-            'auto_join_on_invite': false,
-            'auto_join_rooms': [],
-            'auto_register_muc_nickname': false,
-            'colorize_username': false,
-            'hide_muc_participants': false,
-            'locked_muc_domain': false,
-            'modtools_disable_assign': false,
-            'muc_clear_messages_on_leave': true,
-            'muc_domain': undefined,
-            'muc_fetch_members': true,
-            'muc_history_max_stanzas': undefined,
-            'muc_instant_rooms': true,
-            'muc_nickname_from_jid': false,
-            'muc_send_probes': false,
-            'muc_show_info_messages': [
+            allow_muc_invitations: true,
+            auto_join_on_invite: false,
+            auto_join_rooms: [],
+            auto_register_muc_nickname: false,
+            colorize_username: false,
+            hide_muc_participants: false,
+            locked_muc_domain: false,
+            modtools_disable_assign: false,
+            muc_clear_messages_on_leave: true,
+            muc_domain: undefined,
+            muc_fetch_members: true,
+            muc_history_max_stanzas: undefined,
+            muc_instant_rooms: true,
+            muc_nickname_from_jid: false,
+            muc_send_probes: false,
+            muc_show_info_messages: [
                 ...converse.MUC.INFO_CODES.visibility_changes,
                 ...converse.MUC.INFO_CODES.self,
                 ...converse.MUC.INFO_CODES.non_privacy_changes,
@@ -109,8 +109,8 @@ converse.plugins.add('converse-muc', {
                 ...converse.MUC.INFO_CODES.join_leave_events,
                 ...converse.MUC.INFO_CODES.role_changes,
             ],
-            'muc_show_logs_before_join': false,
-            'muc_subscribe_to_rai': false,
+            muc_show_logs_before_join: false,
+            muc_subscribe_to_rai: false,
         });
         api.promises.add(['roomsAutoJoined']);
 
@@ -210,7 +210,6 @@ converse.plugins.add('converse-muc', {
         Object.assign(_converse, exports); // XXX DEPRECATED
 
         /** @type {module:shared-api.APIEndpoint} */(api.chatboxes.registry).add(CHATROOMS_TYPE, MUC);
-
 
         if (api.settings.get('allow_muc_invitations')) {
             api.listen.on('connected', registerDirectInvitationHandler);

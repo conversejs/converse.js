@@ -56,6 +56,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      */
 
     defaults () {
+        /** @type {import('./types').DefaultMUCAttributes} */
         return {
             'bookmarked': false,
             'chat_state': undefined,
@@ -922,17 +923,25 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
 
     /**
      * Leave the groupchat.
-     * @param { string } [exit_msg] - Message to indicate your reason for leaving
+     * @param {string} [exit_msg] - Message to indicate your reason for leaving
      */
     async leave (exit_msg) {
+        /**
+         * Triggered when the user leaves a MUC
+         * @event _converse#leaveRoom
+         * @type {MUC}
+         * @example _converse.api.listen.on('leaveRoom', model => { ... });
+         */
+        api.trigger('leaveRoom', this);
+
         api.connection.connected() && api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg);
 
         // Delete the features model
         if (this.features) {
             await new Promise(resolve =>
                 this.features.destroy({
-                    'success': resolve,
-                    'error': (_, e) => { log.error(e); resolve(); }
+                    success: resolve,
+                    error: (_, e) => { log.error(e); resolve(); }
                 })
             );
         }
@@ -940,8 +949,8 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         const disco_entity = _converse.state.disco_entities?.get(this.get('jid'));
         if (disco_entity) {
             await new Promise(resolve => disco_entity.destroy({
-                'success': resolve,
-                'error': (_, e) => { log.error(e); resolve(); }
+                success: resolve,
+                error: (_, e) => { log.error(e); resolve(); }
             }));
         }
         safeSave(this.session, { 'connection_status': ROOMSTATUS.DISCONNECTED });
@@ -1132,10 +1141,8 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         }
         api.send(
             $msg({ 'to': this.get('jid'), 'type': 'groupchat' })
-                .c(chat_state, { 'xmlns': Strophe.NS.CHATSTATES })
-                .up()
-                .c('no-store', { 'xmlns': Strophe.NS.HINTS })
-                .up()
+                .c(chat_state, { 'xmlns': Strophe.NS.CHATSTATES }).up()
+                .c('no-store', { 'xmlns': Strophe.NS.HINTS }).up()
                 .c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS })
         );
     }

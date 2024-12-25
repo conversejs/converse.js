@@ -1,4 +1,25 @@
+import { CHAT_STATES } from '../../shared/constants';
 import { MessageAttributes } from '../chat/types';
+export type DefaultMUCAttributes = {
+    bookmarked: boolean;
+    chat_state: typeof CHAT_STATES;
+    has_activity: boolean;
+    hidden: boolean;
+    hidden_occupants: boolean;
+    message_type: 'groupchat';
+    name: string;
+    num_unread: number;
+    num_unread_general: number;
+    roomconfig: Object;
+    time_opened: number;
+    time_sent: string;
+    type: 'chatroom';
+};
+export type MUCAttributes = DefaultMUCAttributes & {
+    jid: string;
+    nick: string;
+    password: string;
+};
 type ExtraMUCAttributes = {
     activities: Array<Object>;
     from_muc: string;

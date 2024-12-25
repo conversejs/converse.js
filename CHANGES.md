@@ -12,6 +12,7 @@
 - #1195: Add actions to quote and copy messages
 - #1349: XEP-0392 Consistent Color Generation
 - #2586: Add support for XEP-0402 Bookmarks
+- #2623: Merge MUC join and bookmark, leave and unset autojoin 
 - #2716: Fix issue with chat display when opening via URL
 - #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups

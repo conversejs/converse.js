@@ -61,6 +61,41 @@ converse.plugins.add('converse-bookmarks', {
         Object.assign(_converse, exports); // TODO: DEPRECATED
         Object.assign(_converse.exports, exports);
 
+        api.listen.on(
+            'enteredNewRoom',
+            /** @param {import('../muc/muc').default} muc */
+            ({ attributes }) => {
+                const { bookmarks } = _converse.state;
+                if (!bookmarks) return;
+
+                const { jid, nick, password, name } = /** @type {import("../muc/types").MUCAttributes} */(attributes);
+
+                bookmarks.setBookmark({
+                    jid,
+                    autojoin: true,
+                    nick,
+                    ...(password ? { password } : {}),
+                    ...(name ? { name } : {}),
+                });
+            }
+        );
+
+        api.listen.on(
+            'leaveRoom',
+            /** @param {import('../muc/muc').default} muc */
+            ({ attributes }) => {
+                const { bookmarks } = _converse.state;
+                if (!bookmarks) return;
+
+                const { jid } = /** @type {import("../muc/types").MUCAttributes} */(attributes);
+
+                bookmarks.setBookmark({
+                    jid,
+                    autojoin: false,
+                }, false);
+            }
+        );
+
         api.listen.on('addClientFeatures', () => {
             if (api.settings.get('allow_bookmarks')) {
                 api.disco.own.features.add(Strophe.NS.BOOKMARKS + '+notify')

@@ -3,6 +3,7 @@ export type MUC = import("../muc/muc.js").default;
 declare class Bookmarks extends Collection {
     static checkBookmarksSupport(): Promise<any>;
     constructor();
+    get idAttribute(): string;
     initialize(): Promise<void>;
     fetched_flag: string;
     model: typeof Bookmark;
@@ -14,7 +15,7 @@ declare class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      */
-    createBookmark(attrs: import("./types").BookmarkAttrs): void;
+    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean): void;
     /**
      * @param {'urn:xmpp:bookmarks:1'|'storage:bookmarks'} node
      * @returns {Stanza|Stanza[]}

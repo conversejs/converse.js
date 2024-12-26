@@ -1,6 +1,5 @@
 /*global mock, converse, _ */
 
-const $iq = converse.env.$iq;
 const $pres = converse.env.$pres;
 const Strophe = converse.env.Strophe;
 const sizzle = converse.env.sizzle;
@@ -28,6 +27,8 @@ const checkHeaderToggling = async function (group) {
 
 describe("The Contacts Roster", function () {
 
+    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("verifies the origin of roster pushes", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
         // See: https://gultsch.de/gajim_roster_push_and_message_interception.html
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -36,27 +37,27 @@ describe("The Contacts Roster", function () {
         expect(_converse.roster.at(0).get('jid')).toBe(contact_jid);
 
         spyOn(converse.env.log, 'warn');
-        let roster_push = u.toStanza(`
-            <iq type="set" to="${_converse.jid}" from="eve@siacs.eu">
+        let roster_push = stx`
+            <iq type="set" to="${_converse.jid}" from="eve@siacs.eu" xmlns="jabber:client">
                 <query xmlns='jabber:iq:roster'>
                     <item subscription="remove" jid="${contact_jid}"/>
                 </query>
-            </iq>`);
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
         expect(converse.env.log.warn.calls.count()).toBe(1);
         expect(converse.env.log.warn).toHaveBeenCalledWith(
-            `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`
+            `Ignoring roster illegitimate roster push message from eve@siacs.eu`
         );
-        roster_push = u.toStanza(`
-            <iq type="set" to="${_converse.jid}" from="eve@siacs.eu">
+        roster_push = stx`
+            <iq type="set" to="${_converse.jid}" from="eve@siacs.eu" xmlns="jabber:client">
                 <query xmlns='jabber:iq:roster'>
                     <item subscription="both" jid="eve@siacs.eu" name="${mock.cur_names[0]}" />
                 </query>
-            </iq>`);
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
         expect(converse.env.log.warn.calls.count()).toBe(2);
         expect(converse.env.log.warn).toHaveBeenCalledWith(
-            `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`
+            `Ignoring roster illegitimate roster push message from eve@siacs.eu`
         );
         expect(_converse.roster.models.length).toBe(1);
         expect(_converse.roster.at(0).get('jid')).toBe(contact_jid);
@@ -67,18 +68,17 @@ describe("The Contacts Roster", function () {
         const stanza = await u.waitUntil(
             () => IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
 
-        expect(Strophe.serialize(stanza)).toBe(
-            `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"/>`+
-            `</iq>`);
-        const result = $iq({
-            'to': _converse.api.connection.get().jid,
-            'type': 'result',
-            'id': stanza.getAttribute('id')
-        }).c('query', {
-            'xmlns': 'jabber:iq:roster'
-        }).c('item', {'jid': 'nurse@example.com'}).up()
-          .c('item', {'jid': 'romeo@example.com'})
+        expect(stanza).toEqualStanza(
+            stx`<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster"/>
+            </iq>`);
+        const result = stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster">
+                    <item jid="nurse@example.com"/>
+                    <item jid="romeo@example.com"/>
+                </query>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(result));
         await u.waitUntil(() => _converse.promises['rosterContactsFetched'].isResolved === true);
     }));
@@ -93,15 +93,13 @@ describe("The Contacts Roster", function () {
             `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                 `<query xmlns="jabber:iq:roster"/>`+
             `</iq>`);
-        let result = $iq({
-            'to': _converse.api.connection.get().jid,
-            'type': 'result',
-            'id': stanza.getAttribute('id')
-        }).c('query', {
-            'xmlns': 'jabber:iq:roster',
-            'ver': 'ver7'
-        }).c('item', {'jid': 'nurse@example.com'}).up()
-          .c('item', {'jid': 'romeo@example.com'})
+        let result = stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster" ver="ver7">
+                    <item jid="nurse@example.com"/>
+                    <item jid="romeo@example.com"/>
+                </query>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
         await u.waitUntil(() => _converse.roster.models.length > 1);
@@ -115,18 +113,17 @@ describe("The Contacts Roster", function () {
                 `<query ver="ver7" xmlns="jabber:iq:roster"/>`+
             `</iq>`);
 
-        result = $iq({
-            'to': _converse.api.connection.get().jid,
-            'type': 'result',
-            'id': stanza.getAttribute('id')
-        });
+        result = stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
-        const roster_push = $iq({
-            'to': _converse.api.connection.get().jid,
-            'type': 'set',
-        }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
-            .c('item', {'jid': 'romeo@example.com', 'subscription': 'remove'});
+        const roster_push = stx`
+            <iq type="set" to="${_converse.api.connection.get().jid}" xmlns="jabber:client">
+                <query xmlns='jabber:iq:roster' ver='ver34'>
+                    <item jid='romeo@example.com' subscription='remove'/>
+                </query>
+            </iq>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
         expect(_converse.roster.data.get('version')).toBe('ver34');
         expect(_converse.roster.models.length).toBe(1);
@@ -138,27 +135,21 @@ describe("The Contacts Roster", function () {
 
         const sent_IQs = _converse.api.connection.get().IQ_stanzas;
         const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
-        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
-            to: _converse.api.connection.get().jid,
-            type: 'result',
-            id: stanza.getAttribute('id')
-        }).c('query', {
-            xmlns: 'jabber:iq:roster',
-        }).c('item', {
-            jid: 'juliet@example.net',
-            name: 'Juliet',
-            subscription:'both'
-        }).c('group').t('Friends').up().up()
-        .c('item', {
-            jid: 'mercutio@example.net',
-            name: 'Mercutio',
-            subscription: 'from'
-        }).c('group').t('Friends').up().up()
-        .c('item', {
-            jid: 'lord.capulet@example.net',
-            name: 'Lord Capulet',
-            subscription:'none'
-        }).c('group').t('Acquaintences')));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster">
+                    <item jid="juliet@example.net" name="Juliet" subscription="both">
+                        <group>Friends</group>
+                    </item>
+                    <item jid="mercutio@example.net" name="Mercutio" subscription="from">
+                        <group>Friends</group>
+                    </item>
+                    <item jid="lord.capulet@example.net" name="Lord Capulet" subscription="none">
+                        <group>Acquaintences</group>
+                    </item>
+                </query>
+            </iq>
+        `));
 
         while (sent_IQs.length) sent_IQs.pop();
 
@@ -174,22 +165,18 @@ describe("The Contacts Roster", function () {
         let stanza = await u.waitUntil(
             () => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
-            to: _converse.api.connection.get().jid,
-            type: 'result',
-            id: stanza.getAttribute('id')
-        }).c('query', {
-            xmlns: 'jabber:iq:roster',
-        }).c('item', {
-            jid: 'juliet@example.net',
-            name: 'Juliet',
-            subscription:'both'
-        }).c('group').t('Friends').up().up()
-        .c('item', {
-            jid: 'mercutio@example.net',
-            name: 'Mercutio',
-            subscription:'from'
-        }).c('group').t('Friends')));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster">
+                    <item jid="juliet@example.net" name="Juliet" subscription="both">
+                        <group>Friends</group>
+                    </item>
+                    <item jid="mercutio@example.net" name="Mercutio" subscription="from">
+                        <group>Friends</group>
+                    </item>
+                </query>
+            </iq>
+        `));
 
         while (sent_IQs.length) sent_IQs.pop();
 
@@ -209,22 +196,18 @@ describe("The Contacts Roster", function () {
             () => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
         );
 
-        _converse.api.connection.get()._dataRecv(mock.createRequest($iq({
-            to: _converse.api.connection.get().jid,
-            type: 'result',
-            id: stanza.getAttribute('id')
-        }).c('query', {
-            xmlns: 'jabber:iq:roster',
-        }).c('item', {
-            jid: 'juliet@example.net',
-            name: 'Juliet',
-            subscription:'both'
-        }).c('group').t('Friends').up().up()
-        .c('item', {
-            jid: 'lord.capulet@example.net',
-            name: 'Lord Capulet',
-            subscription:'from'
-        }).c('group').t('Acquaintences')));
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+            <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                <query xmlns="jabber:iq:roster">
+                    <item jid="juliet@example.net" name="Juliet" subscription="both">
+                        <group>Friends</group>
+                    </item>
+                    <item jid="lord.capulet@example.net" name="Lord Capulet" subscription="from">
+                        <group>Acquaintences</group>
+                    </item>
+                </query>
+            </iq>
+        `));
 
         await u.waitUntil(() => _converse.roster.pluck('jid').includes('lord.capulet@example.net'));
         expect(_converse.roster.pluck('jid')).toEqual(['juliet@example.net', 'lord.capulet@example.net']);
@@ -772,7 +755,7 @@ describe("The Contacts Roster", function () {
                 `</iq>`);
 
             const iq = iq_stanzas.at(-1);
-            const stanza = u.toStanza(`<iq id="${iq.getAttribute('id')}" to="romeo@montague.lit/orchard" type="result"/>`);
+            const stanza = stx`<iq id="${iq.getAttribute('id')}" to="romeo@montague.lit/orchard" type="result" xmlns="jabber:client"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
         }));
@@ -968,7 +951,7 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'removeFromRoster').and.callThrough();
-            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((iq, callback) => callback?.());
+            spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((_iq, callback) => callback?.());
             expect(u.isVisible(rosterview.querySelector('.roster-group'))).toBe(true);
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
             expect(_converse.api.confirm).toHaveBeenCalled();
@@ -1317,22 +1300,17 @@ describe("The Contacts Roster", function () {
             const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
             // Taken from the spec
             // https://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
-            const result = $iq({
-                to: _converse.api.connection.get().jid,
-                type: 'result',
-                id: stanza.getAttribute('id')
-            }).c('query', {
-                xmlns: 'jabber:iq:roster',
-            }).c('item', {
-                jid: 'juliet@example.net',
-                name: 'Juliet',
-                subscription:'both'
-            }).c('group').t('Friends').up().up()
-            .c('item', {
-                jid: 'mercutio@example.org',
-                name: 'Mercutio',
-                subscription:'from'
-            }).c('group').t('Friends').up().up()
+            const result = stx`
+                <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:roster">
+                        <item jid="juliet@example.net" name="Juliet" subscription="both">
+                            <group>Friends</group>
+                        </item>
+                        <item jid="mercutio@example.org" name="Mercutio" subscription="from">
+                            <group>Friends</group>
+                        </item>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(result));
 
             const pres = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
@@ -1343,15 +1321,14 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => sizzle('a:contains("Contact requests")', rosterview).length, 700);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();
 
-            const roster_push = $iq({
-                'to': _converse.api.connection.get().jid,
-                'type': 'set',
-            }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
-                .c('item', {
-                    jid: 'benvolio@example.org',
-                    name: 'Benvolio',
-                    subscription:'both'
-                }).c('group').t('Friends');
+            const roster_push = stx`
+                <iq type="set" to="${_converse.api.connection.get().jid}" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:roster" ver="ver34">
+                        <item jid="benvolio@example.org" name="Benvolio" subscription="both">
+                            <group>Friends</group>
+                        </item>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(roster_push));
             expect(_converse.roster.data.get('version')).toBe('ver34');
             expect(_converse.roster.models.length).toBe(4);

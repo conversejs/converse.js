@@ -33,7 +33,7 @@
  * @property {Array<String>} [whitelisted_plugins]
  */
 export const DEFAULT_SETTINGS = {
-    allow_non_roster_messaging: false,
+    allow_non_roster_messaging: true,
     allow_url_history_change: true,
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".

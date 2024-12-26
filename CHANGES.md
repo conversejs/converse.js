@@ -60,6 +60,7 @@
 - Set `auto_register_muc_nickname` default to `'unregister'` so that your
   nickname is automatically registered with a MUC upon entering and
   unregistered upon explicitly leaving the MUC (by closing it).
+- The `allow_non_roster_messaging` setting now defaults to `true`.
 
 ### Breaking changes:
 - Remove the old `_converse.BootstrapModal` in favor of `_converse.BaseModal` which is a web component.

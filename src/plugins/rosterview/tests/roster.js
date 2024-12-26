@@ -510,7 +510,6 @@ describe("The Contacts Roster", function () {
             ]);
         }));
 
-
         it("can be used to organize existing contacts",
             mock.initConverse(
                 [], {'roster_groups': true},
@@ -1333,6 +1332,78 @@ describe("The Contacts Roster", function () {
             expect(_converse.roster.data.get('version')).toBe('ver34');
             expect(_converse.roster.models.length).toBe(4);
             expect(_converse.roster.pluck('jid').includes('data@enterprise')).toBeTruthy();
+        }));
+    });
+
+    describe("An unsaved Contact", function () {
+
+        it("is shown upon receiving a message",
+            mock.initConverse(
+                [], {},
+                async function (_converse) {
+
+            const { api } = _converse;
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.waitForRoster(_converse, "current", 0);
+            await mock.openControlBox(_converse);
+
+            const msg = stx`
+                <message xmlns='jabber:client'
+                        id='${api.connection.get().getUniqueId()}'
+                        to='${_converse.bare_jid}'
+                        from='${sender_jid}'
+                        type='chat'>
+                    <body>Hello</body>
+                </message>`;
+            await _converse.handleMessageStanza(msg);
+
+            const rosterview = document.querySelector('converse-roster');
+            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length);
+            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length).toBe(1);
+            const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
+            expect(el.textContent).toBe('Mercutio');
+        }));
+
+        it("is shown upon receiving a message to a previously removed contact",
+            mock.initConverse(
+                [], {},
+                async function (_converse) {
+
+            const { api } = _converse;
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.waitForRoster(_converse, "current", 1);
+            await mock.openControlBox(_converse);
+
+            let msg = stx`
+                <message xmlns='jabber:client'
+                        id='${api.connection.get().getUniqueId()}'
+                        to='${_converse.bare_jid}'
+                        from='${sender_jid}'
+                        type='chat'>
+                    <body>Hello</body>
+                </message>`;
+            await _converse.handleMessageStanza(msg);
+
+            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
+
+            const rosterview = document.querySelector('converse-roster');
+            rosterview.querySelector(`.remove-xmpp-contact`).click();
+            expect(_converse.api.confirm).toHaveBeenCalled();
+
+            msg = stx`
+                <message xmlns='jabber:client'
+                        id='${api.connection.get().getUniqueId()}'
+                        to='${_converse.bare_jid}'
+                        from='${sender_jid}'
+                        type='chat'>
+                    <body>Why did you remove me?</body>
+                </message>`;
+            await _converse.handleMessageStanza(msg);
+
+            await u.waitUntil(() => rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length);
+            expect(rosterview.querySelectorAll(`ul[data-group="Unsaved contacts"] li`).length).toBe(1);
+            const el = rosterview.querySelector(`ul[data-group="Unsaved contacts"] li .contact-name`);
+            expect(el.textContent).toBe('Mercutio');
         }));
     });
 

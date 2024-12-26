@@ -26,8 +26,8 @@ class Bookmarks extends Collection {
                 .then((bm) => this.markRoomAsBookmarked(bm))
                 .catch((e) => log.fatal(e))
         );
-
-        this.on('remove', this.markRoomAsUnbookmarked, this);
+        this.on('remove', this.leaveRoom, this);
+        this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on('remove', this.sendBookmarkStanza, this);
 
         const { session } = _converse;
@@ -218,16 +218,26 @@ class Bookmarks extends Collection {
     /**
      * @param {Bookmark} bookmark
      */
-    markRoomAsUnbookmarked(bookmark) {
-        const { chatboxes } = _converse.state;
-        const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.save('bookmarked', false);
+    onAutoJoinChanged(bookmark) {
+        if (bookmark.get('autojoin')) {
+            this.openBookmarkedRoom(bookmark);
+        } else {
+            this.leaveRoom(bookmark);
+        }
+    }
+
+    /**
+     * @param {Bookmark} bookmark
+     */
+    async leaveRoom(bookmark) {
+        const groupchat = await api.rooms.get(bookmark.get('jid'));
+        groupchat?.close();
     }
 
     /**
      * @param {Element} stanza
      */
-    async createBookmarksFromStanza(stanza) {
+    async setBookmarksFromStanza(stanza) {
         const bookmarks = await parseStanzaForBookmarks(stanza);
         bookmarks.forEach(
             /** @param {import('./types.js').BookmarkAttrs} attrs */
@@ -243,7 +253,7 @@ class Bookmarks extends Collection {
      * @param {Element} iq
      */
     async onBookmarksReceived(deferred, iq) {
-        await this.createBookmarksFromStanza(iq);
+        await this.setBookmarksFromStanza(iq);
         window.sessionStorage.setItem(this.fetched_flag, 'true');
         if (deferred !== undefined) {
             return deferred.resolve();

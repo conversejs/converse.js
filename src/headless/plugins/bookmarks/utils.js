@@ -30,7 +30,7 @@ export function getNicknameFromBookmark(jid) {
  */
 export function handleBookmarksPush(message) {
     api.waitUntil('bookmarksInitialized')
-        .then(() => _converse.state.bookmarks.createBookmarksFromStanza(message))
+        .then(() => _converse.state.bookmarks.setBookmarksFromStanza(message))
         .catch(/** @param {Error} e */(e) => log.fatal(e));
     return true;
 }

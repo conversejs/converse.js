@@ -21,6 +21,7 @@
     // Base variables
     // --------------
     --background-color: #1a0933;
+    --background-color-lighter: #2C174C;
     --foreground-color: var(--white);
 
     // Bootstrap variables
@@ -51,7 +52,7 @@
 
     // Used to indicate selected or open items in lists.
     --highlight-color: var(--purple);
-    --highlight-color-hover: var(--indigo);
+    --highlight-color-hover: var(--background-color-lighter);
 
     // 1:1 Chat-related colors
     --chat-color: var(--green);

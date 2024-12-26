@@ -18,7 +18,7 @@ export default (bm) => {
                 data-bookmark-name="${bm.getDisplayName()}"
                 title="${info_remove_bookmark}"
                 @click=${removeBookmarkViaEvent}>
-            <converse-icon class="fa fa-bookmark" size="1em"></converse-icon>
+            <converse-icon class="fa fa-times" size="1em"></converse-icon>
             </a>
         </div>
     `;

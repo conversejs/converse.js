@@ -13,4 +13,14 @@ converse-bookmarks {
     .list-item-link {
         padding: 0 1em;
     }
+    .available-chatroom {
+        &:hover {
+            .list-item-action {
+                opacity: 1 !important;
+                converse-icon svg {
+                    fill: var(--muc-color);
+                }
+            }
+        }
+    }
 }

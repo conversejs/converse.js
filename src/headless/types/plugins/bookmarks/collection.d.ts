@@ -41,11 +41,15 @@ declare class Bookmarks extends Collection {
     /**
      * @param {Bookmark} bookmark
      */
-    markRoomAsUnbookmarked(bookmark: Bookmark): void;
+    onAutoJoinChanged(bookmark: Bookmark): void;
+    /**
+     * @param {Bookmark} bookmark
+     */
+    leaveRoom(bookmark: Bookmark): Promise<void>;
     /**
      * @param {Element} stanza
      */
-    createBookmarksFromStanza(stanza: Element): Promise<void>;
+    setBookmarksFromStanza(stanza: Element): Promise<void>;
     /**
      * @param {Object} deferred
      * @param {Element} iq

@@ -143,6 +143,41 @@ describe("Bookmarks", function () {
         );
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
         expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
+
+        // Check that MUC is left when autojoin is set to false
+        stanza = stx`<message from="romeo@montague.lit"
+                        to="${_converse.jid}"
+                        type="headline"
+                        id="${u.getUniqueId()}"
+                        xmlns="jabber:client">
+            <event xmlns="http://jabber.org/protocol/pubsub#event">
+                <items node="urn:xmpp:bookmarks:1">
+                    <item id="theplay@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1" name="The Play's the Thing" autojoin="false">
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                    <item id="another@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1" name="Second bookmark" autojoin="false">
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                    <item id="yab@conference.shakespeare.lit">
+                        <conference xmlns="urn:xmpp:bookmarks:1" name="Yet another bookmark" autojoin="false">
+                            <nick>JC</nick>
+                        </conference>
+                    </item>
+                </items>
+            </event>
+        </message>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+
+        await u.waitUntil(() => bookmarks.filter((b) => !b.get('autojoin')).length === 3);
+        expect(bookmarks.map(b => b.get('name'))).toEqual(
+            ['Second bookmark', "The Play's the Thing", 'Yet another bookmark']
+        );
+        expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).toBeUndefined();
+        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(1);
     }));
 
     it("can be retrieved from the XMPP server", mock.initConverse(

@@ -88,10 +88,11 @@ describe("A bookmark", function () {
         it("will cause a MUC to be opened and joined automatically upon login", mock.initConverse(
                 [], {}, async function (_converse) {
 
-            const { api } = _converse;
+            const { api, state } = _converse;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
             spyOn(_converse.api.rooms, 'create').and.callThrough();
+
             const { bookmarks } = _converse.state;
 
             let jid = 'theplay@conference.shakespeare.lit';
@@ -115,6 +116,7 @@ describe("A bookmark", function () {
 
             api.settings.set('muc_respect_autojoin', true);
             bookmarks.remove(model);
+
             bookmarks.create({
                 jid,
                 autojoin: true,
@@ -122,7 +124,10 @@ describe("A bookmark", function () {
                 nick: ''
             });
             expect(_converse.api.rooms.create).toHaveBeenCalled();
+            await u.waitUntil(() => state.chatboxes.length === 2);
 
+            bookmarks.remove(model);
+            await u.waitUntil(() => state.chatboxes.length === 1);
         }));
 
         it("has autojoin set to false upon leaving", mock.initConverse([], {}, async function (_converse) {

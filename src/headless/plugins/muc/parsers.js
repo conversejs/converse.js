@@ -27,6 +27,7 @@ import {
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
 } from '../../shared/parsers';
+import { ACTION_INFO_CODES, NEW_NICK_CODES, STATUS_CODE_STANZAS } from './constants.js';
 
 const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;
@@ -112,6 +113,32 @@ function getModerationAttributes (stanza) {
         }
     }
     return {};
+}
+
+/**
+ * @param {Element} stanza
+ * @param {'presence'|'message'} type
+ * @returns {{codes: Array<import('./types').MUCStatusCode>, is_self: boolean}}
+ */
+function getStatusCodes(stanza, type) {
+    /**
+     * @typedef {import('./types').MUCStatusCode} MUCStatusCode
+     */
+    const codes = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] status`, stanza)
+        .map(/** @param {Element} s */ (s) => s.getAttribute('code'))
+        .filter(
+            /** @param {MUCStatusCode} c */
+            (c) => STATUS_CODE_STANZAS[c]?.includes(type));
+
+    if (type === 'presence' && codes.includes('333') && codes.includes('307')) {
+        // See: https://github.com/xsf/xeps/pull/969/files#diff-ac5113766e59219806793c1f7d967f1bR4966
+        codes.splice(codes.indexOf('307'), 1);
+    }
+
+    return {
+        codes,
+        is_self: codes.includes('110')
+    };
 }
 
 /**
@@ -206,6 +233,7 @@ export async function parseMUCMessage (stanza, chatbox) {
         getRetractionAttributes(stanza, original_stanza),
         getModerationAttributes(stanza),
         getEncryptionAttributes(stanza),
+        getStatusCodes(stanza, 'message'),
     ));
 
     attrs.from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza) ||
@@ -281,52 +309,64 @@ export function parseMemberListIQ (iq) {
 }
 
 /**
+ * @param {Element} stanza - The presence stanza
+ * @param {string} nick
+ * @returns {import('./types').MUCPresenceItemAttributes}
+ */
+function parsePresenceUserItem(stanza, nick) {
+    /**
+     * @typedef {import('./types').MUCAffiliation} MUCAffiliation
+     * @typedef {import('./types').MUCRole} MUCRole
+     */
+    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
+    if (item) {
+        const actor = item.querySelector('actor');
+        return {
+            affiliation: /** @type {MUCAffiliation} */ (item.getAttribute('affiliation')),
+            role: /** @type {MUCRole} */ (item.getAttribute('role')),
+            jid: item.getAttribute('jid'),
+            nick: item.getAttribute('nick') || nick,
+            ...(actor
+                ? {
+                      actor: {
+                          nick: actor?.getAttribute('nick') ?? null,
+                          jid: actor?.getAttribute('jid') ?? null,
+                      },
+                  }
+                : {}),
+            reason: item.querySelector('reason')?.textContent ?? null,
+        };
+    }
+}
+
+/**
  * Parses a passed in MUC presence stanza and returns an object of attributes.
  * @param {Element} stanza - The presence stanza
  * @param {MUC} chatbox
  * @returns {import('./types').MUCPresenceAttributes}
  */
 export function parseMUCPresence (stanza, chatbox) {
+    /**
+     * @typedef {import('./types').MUCPresenceAttributes} MUCPresenceAttributes
+     */
     const from = stanza.getAttribute('from');
     const type = stanza.getAttribute('type');
-    const data = {
-        'is_me': !!stanza.querySelector("status[code='110']"),
-        'from': from,
-        'occupant_id': getOccupantID(stanza, chatbox),
-        'nick': Strophe.getResourceFromJid(from),
-        'type': type,
-        'states': [],
-        'hats': [],
-        'show': type !== 'unavailable' ? 'online' : 'offline'
-    };
-
-    Array.from(stanza.children).forEach(child => {
-        if (child.matches('status')) {
-            data.status = child.textContent || null;
-        } else if (child.matches('show')) {
-            data.show = child.textContent || 'online';
-        } else if (child.matches('x') && child.getAttribute('xmlns') === Strophe.NS.MUC_USER) {
-            Array.from(child.children).forEach(item => {
-                if (item.nodeName === 'item') {
-                    data.affiliation = item.getAttribute('affiliation');
-                    data.role = item.getAttribute('role');
-                    data.jid = item.getAttribute('jid');
-                    data.nick = item.getAttribute('nick') || data.nick;
-                } else if (item.nodeName == 'status' && item.getAttribute('code')) {
-                    data.states.push(item.getAttribute('code'));
-                }
-            });
-        } else if (child.matches('x') && child.getAttribute('xmlns') === Strophe.NS.VCARDUPDATE) {
-            data.image_hash = child.querySelector('photo')?.textContent;
-        } else if (child.matches('hats') && child.getAttribute('xmlns') === Strophe.NS.MUC_HATS) {
-            data['hats'] = Array.from(child.children).map(
-                c =>
-                    c.matches('hat') && {
-                        'title': c.getAttribute('title'),
-                        'uri': c.getAttribute('uri')
-                    }
-            );
-        }
+    const nick = Strophe.getResourceFromJid(from);
+    const attrs = /** @type {MUCPresenceAttributes} */({
+        from,
+        is_me: !!stanza.querySelector("status[code='110']"),
+        nick,
+        occupant_id: getOccupantID(stanza, chatbox),
+        type,
+        status: stanza.querySelector(':scope > status')?.textContent ?? undefined,
+        show: stanza.querySelector(':scope > show')?.textContent ?? (type !== 'unavailable' ? 'online' : 'offline'),
+        image_hash: sizzle(`:scope > x[xmlns="${Strophe.NS.VCARDUPDATE}"] photo`, stanza).pop()?.textContent,
+        hats: sizzle(`:scope x[xmlns="${Strophe.NS.MUC_HATS}"] hat`, stanza).map(/** @param {Element} h */(h) => ({
+            title: h.getAttribute('title'),
+            uri: h.getAttribute('uri')
+        })),
+        ...getStatusCodes(stanza, 'presence'),
+        ...parsePresenceUserItem(stanza, nick),
     });
-    return data;
+    return attrs;
 }

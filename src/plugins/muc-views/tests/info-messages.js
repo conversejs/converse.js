@@ -1,5 +1,4 @@
 /*global mock, converse */
-
 const { u, stx } = converse.env;
 
 describe("an info message", function () {
@@ -52,18 +51,16 @@ describe("an info message", function () {
                     <status code="110"/>
                 </x>
             </presence>`;
-        // XXX: We wait for createInfoMessages to complete, if we don't
-        // we still get two info messages due to messages
-        // created from presences not being queued and run
-        // sequentially (i.e. by waiting for promises to resolve)
-        // like we do with message stanzas.
-        spyOn(view.model, 'createInfoMessages').and.callThrough();
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
-        await u.waitUntil(() => view.model.createInfoMessages.calls.count());
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
-        await u.waitUntil(() => view.model.createInfoMessages.calls.count() === 2);
-        expect(view.querySelectorAll('.chat-info').length).toBe(1);
+
+        const promise = u.getOpenPromise();
+        setTimeout(() => {
+            expect(view.querySelectorAll('.chat-info').length).toBe(1);
+            promise.resolve();
+        }, 250);
+        return promise;
     }));
 });

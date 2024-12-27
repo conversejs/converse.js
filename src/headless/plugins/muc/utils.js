@@ -159,7 +159,7 @@ export function getDefaultMUCNickname () {
 /**
  * Determines info message visibility based on
  * muc_show_info_messages configuration setting
- * @param {*} code
+ * @param {import('./types').MUCStatusCode} code
  * @memberOf _converse
  */
 export function isInfoVisible (code) {

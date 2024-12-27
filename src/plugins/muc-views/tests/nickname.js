@@ -149,7 +149,7 @@ describe("A MUC", function () {
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length);
 
         expect(sizzle('div.chat-info:last').pop().textContent.trim()).toBe(
-            __(_converse.muc.new_nickname_messages["303"], "newnick")
+            __(_converse.labels.muc.STATUS_CODE_MESSAGES["303"], "newnick")
         );
         expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
@@ -174,7 +174,7 @@ describe("A MUC", function () {
         expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
         expect(view.querySelectorAll('div.chat-info').length).toBe(1);
         expect(sizzle('div.chat-info', view)[0].textContent.trim()).toBe(
-            __(_converse.muc.new_nickname_messages["303"], "newnick")
+            __(_converse.labels.muc.STATUS_CODE_MESSAGES["303"], "newnick")
         );
         occupants = view.querySelector('.occupant-list');
         await u.waitUntil(() => sizzle('.occupant-nick:first', occupants).pop().textContent.trim() === "newnick");

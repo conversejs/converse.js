@@ -28,10 +28,10 @@ export function getDefaultMUCNickname(): any;
 /**
  * Determines info message visibility based on
  * muc_show_info_messages configuration setting
- * @param {*} code
+ * @param {import('./types').MUCStatusCode} code
  * @memberOf _converse
  */
-export function isInfoVisible(code: any): boolean;
+export function isInfoVisible(code: import("./types").MUCStatusCode): boolean;
 /**
  * Automatically join groupchats, based on the
  * "auto_join_rooms" configuration setting, which is an array

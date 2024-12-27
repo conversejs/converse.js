@@ -125,61 +125,33 @@ converse.plugins.add('converse-muc', {
         Object.assign(api, muc_api);
         Object.assign(api.rooms, affiliations_api);
 
-        /* https://xmpp.org/extensions/xep-0045.html
-         * ----------------------------------------
-         * 100 message      Entering a groupchat         Inform user that any occupant is allowed to see the user's full JID
-         * 101 message (out of band)                     Affiliation change  Inform user that his or her affiliation changed while not in the groupchat
-         * 102 message      Configuration change         Inform occupants that groupchat now shows unavailable members
-         * 103 message      Configuration change         Inform occupants that groupchat now does not show unavailable members
-         * 104 message      Configuration change         Inform occupants that a non-privacy-related groupchat configuration change has occurred
-         * 110 presence     Any groupchat presence       Inform user that presence refers to one of its own groupchat occupants
-         * 170 message or initial presence               Configuration change    Inform occupants that groupchat logging is now enabled
-         * 171 message      Configuration change         Inform occupants that groupchat logging is now disabled
-         * 172 message      Configuration change         Inform occupants that the groupchat is now non-anonymous
-         * 173 message      Configuration change         Inform occupants that the groupchat is now semi-anonymous
-         * 174 message      Configuration change         Inform occupants that the groupchat is now fully-anonymous
-         * 201 presence     Entering a groupchat         Inform user that a new groupchat has been created
-         * 210 presence     Entering a groupchat         Inform user that the service has assigned or modified the occupant's roomnick
-         * 301 presence     Removal from groupchat       Inform user that he or she has been banned from the groupchat
-         * 303 presence     Exiting a groupchat          Inform all occupants of new groupchat nickname
-         * 307 presence     Removal from groupchat       Inform user that he or she has been kicked from the groupchat
-         * 321 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of an affiliation change
-         * 322 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because the groupchat has been changed to members-only and the user is not a member
-         * 332 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of a system shutdown
+        /**
+         * https://xmpp.org/extensions/xep-0045.html
+         * -----------------------------------------
          */
-        const MUC_FEEDBACK_MESSAGES = {
-            info_messages: {
-                100: __('This groupchat is not anonymous'),
-                102: __('This groupchat now shows unavailable members'),
-                103: __('This groupchat does not show unavailable members'),
-                104: __('The groupchat configuration has changed'),
-                170: __('Groupchat logging is now enabled'),
-                171: __('Groupchat logging is now disabled'),
-                172: __('This groupchat is now no longer anonymous'),
-                173: __('This groupchat is now semi-anonymous'),
-                174: __('This groupchat is now fully-anonymous'),
-                201: __('A new groupchat has been created'),
-            },
-
-            new_nickname_messages: {
-                // XXX: Note the triple underscore function and not double underscore.
-                210: ___('Your nickname has been automatically set to %1$s'),
-                303: ___('Your nickname has been changed to %1$s'),
-            },
-
-            disconnect_messages: {
-                301: __('You have been banned from this groupchat'),
-                333: __('You have exited this groupchat due to a technical problem'),
-                307: __('You have been kicked from this groupchat'),
-                321: __('You have been removed from this groupchat because of an affiliation change'),
-                322: __(
-                    "You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"
-                ),
-                332: __('You have been removed from this groupchat because the service hosting it is being shut down'),
-            },
+        const STATUS_CODE_MESSAGES = {
+            '100': __('This groupchat is not anonymous'),
+            '102': __('This groupchat now shows unavailable members'),
+            '103': __('This groupchat does not show unavailable members'),
+            '104': __('The groupchat configuration has changed'),
+            '170': __('Groupchat logging is now enabled'),
+            '171': __('Groupchat logging is now disabled'),
+            '172': __('This groupchat is now no longer anonymous'),
+            '173': __('This groupchat is now semi-anonymous'),
+            '174': __('This groupchat is now fully-anonymous'),
+            '201': __('A new groupchat has been created'),
+            // XXX: Note the triple underscore function and not double underscore.
+            '210': ___('Your nickname has been automatically set to %1$s'),
+            '301': __('You have been banned from this groupchat'),
+            // XXX: Note the triple underscore function and not double underscore.
+            '303': ___('Your nickname has been changed to %1$s'),
+            '307': __('You have been kicked from this groupchat'),
+            '321': __('You have been removed from this groupchat because of an affiliation change'),
+            '322': __("You have been removed from this groupchat because it has changed to members-only and you're not a member"),
+            '332': __('You have been removed from this groupchat because the service hosting it is being shut down'),
+            '333': __('You have exited this groupchat due to a technical problem'),
         };
-
-        const labels = { muc: MUC_FEEDBACK_MESSAGES };
+        const labels = { muc: { STATUS_CODE_MESSAGES }};
         Object.assign(_converse.labels, labels);
         Object.assign(_converse, labels); // XXX DEPRECATED
 

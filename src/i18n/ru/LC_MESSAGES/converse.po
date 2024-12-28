@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2024-12-27 23:00+0000\n"
-"Last-Translator: lotigara <lotigara@yandex.ru>\n"
+"PO-Revision-Date: 2024-12-28 21:02+0000\n"
+"Last-Translator: solokot <solokot@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -945,7 +945,7 @@ msgid ""
 "developer console for details"
 msgstr ""
 "К сожалению, при попытке выполнить команду произошла ошибка. Подробнее см. в "
-"консоли разработчика"
+"консоли разработчика."
 
 #: dist/converse-no-dependencies.js:80845
 msgid "Executing"
@@ -962,7 +962,7 @@ msgid ""
 "console for details"
 msgstr ""
 "При попытке отменить команду произошла ошибка. Подробнее см. в консоли "
-"разработчика"
+"разработчика."
 
 #: dist/converse-no-dependencies.js:80905
 msgid "Error: unexpected result"
@@ -1392,7 +1392,7 @@ msgstr "Создать учётную запись"
 
 #: dist/converse-no-dependencies.js:99235
 msgid "Don't have a chat account?"
-msgstr "Не имеете учётную запись для чата?"
+msgstr "Нет учётной записи для чата?"
 
 #: dist/converse-no-dependencies.js:99244
 msgid "Log in"
@@ -2439,7 +2439,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:126581
 #: dist/converse-no-dependencies.js:126644
 msgid "Already have a chat account?"
-msgstr "Уже имеете учётную запись чата?"
+msgstr "Уже есть учётная запись чата?"
 
 #: dist/converse-no-dependencies.js:126582
 #: dist/converse-no-dependencies.js:126645

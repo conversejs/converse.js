@@ -530,7 +530,7 @@ declare class MUC extends MUC_base {
     getOwnOccupant(): import("./occupant.js").default;
     /**
      * Send a presence stanza to update the user's nickname in this MUC.
-     * @param { String } nick
+     * @param {String} nick
      */
     setNickname(nick: string): Promise<void>;
     /**

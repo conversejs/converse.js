@@ -91,17 +91,18 @@ export function setAffiliation (affiliation, muc_jids, members) {
 
 /**
  * Send an IQ stanza specifying an affiliation change.
- * @param {AFFILIATIONS[number]} affiliation: affiliation (could also be stored on the member object).
- * @param {string} muc_jid: The JID of the MUC in which the affiliation should be set.
- * @param {object} member: Map containing the member's jid and optionally a reason and affiliation.
+ * @param {AFFILIATIONS[number]} affiliation - Affiliation (could also be stored on the member object).
+ * @param {string} muc_jid - The JID of the MUC in which the affiliation should be set.
+ * @param {object} member - Map containing the member's jid and optionally a reason and affiliation.
  */
 function sendAffiliationIQ (affiliation, muc_jid, member) {
+    affiliation = member.affiliation || affiliation;
     const iq = $iq({ to: muc_jid, type: 'set' })
         .c('query', { xmlns: Strophe.NS.MUC_ADMIN })
         .c('item', {
-            'affiliation': member.affiliation || affiliation,
-            'nick': member.nick,
-            'jid': member.jid
+            affiliation,
+            ...(affiliation === 'outcast' ? {} : {nick: member.nick }),
+            jid: member.jid
         });
     if (member.reason !== undefined) {
         iq.c('reason', member.reason);

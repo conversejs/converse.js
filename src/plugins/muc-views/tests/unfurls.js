@@ -402,7 +402,8 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.querySelector('converse-message-unfurl .chat-image') !== null);
     }));
 
-    it("will not render an unfurl that has been removed in a subsequent correction", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+    it("will not render an unfurl that has been removed in a subsequent correction",
+            mock.initConverse(['chatBoxesFetched'], { auto_register_muc_nickname: false }, async function (_converse) {
         const nick = 'romeo';
         const muc_jid = 'lounge@muc.montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, nick);

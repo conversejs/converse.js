@@ -1687,10 +1687,9 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         let iq, err_msg;
         try {
             iq = await api.sendIQ(
-                $iq({
-                    'to': jid,
-                    'type': 'get',
-                }).c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
+                stx`<iq to="${jid}" type="get" xmlns="jabber:client">
+                    <query xmlns="${Strophe.NS.MUC_REGISTER}"/>
+                </iq>`
             );
         } catch (e) {
             if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
@@ -1707,15 +1706,18 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         }
         try {
             await api.sendIQ(
-                $iq({
-                    'to': jid,
-                    'type': 'set'
-                }).c('query', { 'xmlns': Strophe.NS.MUC_REGISTER })
-                    .c('x', { 'xmlns': Strophe.NS.XFORM, 'type': 'submit' })
-                        .c('field', { 'var': 'FORM_TYPE' })
-                            .c('value').t('http://jabber.org/protocol/muc#register').up().up()
-                        .c('field', { 'var': 'muc#register_roomnick' })
-                            .c('value').t(nick)
+                stx`<iq to="${jid}" type="set" xmlns="jabber:client">
+                    <query xmlns="${Strophe.NS.MUC_REGISTER}">
+                        <x xmlns="${Strophe.NS.XFORM}" type="submit">
+                            <field var="FORM_TYPE">
+                                <value>http://jabber.org/protocol/muc#register</value>
+                            </field>
+                            <field var="muc#register_roomnick">
+                                <value>${nick}</value>
+                            </field>
+                        </x>
+                    </query>
+                </iq>`
             );
         } catch (e) {
             const err = await parseErrorStanza(e);

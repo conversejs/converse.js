@@ -73,7 +73,6 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     from: string;
     hats: Array<MUCHat>;
     image_hash?: string;
-    is_me?: boolean;
     is_self: boolean;
     nick: string;
     occupant_id: string;

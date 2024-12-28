@@ -27,7 +27,7 @@ import {
     isValidReceiptRequest,
     throwErrorIfInvalidForward,
 } from '../../shared/parsers';
-import { ACTION_INFO_CODES, NEW_NICK_CODES, STATUS_CODE_STANZAS } from './constants.js';
+import { STATUS_CODE_STANZAS } from './constants.js';
 
 const { Strophe, sizzle, u } = converse.env;
 const { NS } = Strophe;
@@ -71,7 +71,7 @@ export function getMEPActivities (stanza) {
  * @returns {Object}
  */
 function getJIDFromMUCUserData (stanza) {
-    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
+    const item = sizzle(`message > x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
     return item?.getAttribute('jid');
 }
 
@@ -124,7 +124,7 @@ function getStatusCodes(stanza, type) {
     /**
      * @typedef {import('./types').MUCStatusCode} MUCStatusCode
      */
-    const codes = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] status`, stanza)
+    const codes = sizzle(`${type} > x[xmlns="${Strophe.NS.MUC_USER}"] status`, stanza)
         .map(/** @param {Element} s */ (s) => s.getAttribute('code'))
         .filter(
             /** @param {MUCStatusCode} c */
@@ -175,42 +175,62 @@ function getSender (attrs, chatbox) {
 
 /**
  * Parses a passed in message stanza and returns an object of attributes.
- * @param {Element} stanza - The message stanza
+ * @param {Element} original_stanza - The message stanza
  * @param {MUC} chatbox
  * @returns {Promise<MUCMessageAttributes|StanzaParseError>}
  */
-export async function parseMUCMessage (stanza, chatbox) {
-    throwErrorIfInvalidForward(stanza);
+export async function parseMUCMessage (original_stanza, chatbox) {
+    throwErrorIfInvalidForward(original_stanza);
 
-    const selector = `[xmlns="${NS.MAM}"] > forwarded[xmlns="${NS.FORWARD}"] > message`;
-    const original_stanza = stanza;
-    stanza = sizzle(selector, stanza).pop() || stanza;
+    const forwarded_stanza = sizzle(
+        `result[xmlns="${NS.MAM}"] > forwarded[xmlns="${NS.FORWARD}"] > message`,
+        original_stanza
+    ).pop();
 
+    const stanza = forwarded_stanza || original_stanza;
     if (sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length) {
         return new StanzaParseError(
             stanza,
             `Invalid Stanza: Forged MAM groupchat message from ${stanza.getAttribute('from')}`,
         );
     }
-    const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+
+    let delay;
+    let body;
+
+    if (forwarded_stanza) {
+        if (sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, forwarded_stanza).length) {
+            return new StanzaParseError(
+                original_stanza,
+                `Invalid Stanza: Forged MAM groupchat message from ${original_stanza.getAttribute('from')}`,
+            );
+        }
+        delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, forwarded_stanza.parentElement).pop();
+        body = forwarded_stanza.querySelector(':scope > body')?.textContent?.trim();
+    } else {
+        delay = sizzle(`message > delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+        body = original_stanza.querySelector(':scope > body')?.textContent?.trim();
+    }
+
+
     const from = stanza.getAttribute('from');
     const marker = getChatMarker(stanza);
 
     let attrs = /** @type {MUCMessageAttributes} */(Object.assign(
         {
             from,
+            body,
             'activities': getMEPActivities(stanza),
-            'body': stanza.querySelector(':scope > body')?.textContent?.trim(),
             'chat_state': getChatState(stanza),
             'from_muc': Strophe.getBareJidFromJid(from),
             'is_archived': isArchived(original_stanza),
             'is_carbon': isCarbon(original_stanza),
             'is_delayed': !!delay,
-            'is_forwarded': !!stanza.querySelector('forwarded'),
+            'is_forwarded': !!sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length,
             'is_headline': isHeadline(stanza),
-            'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
+            'is_markable': !!sizzle(`message > markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
             'is_marker': !!marker,
-            'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
+            'is_unstyled': !!sizzle(`message > unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
             'marker_id': marker && marker.getAttribute('id'),
             'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
             'nick': Strophe.unescapeNode(Strophe.getResourceFromJid(from)),
@@ -218,8 +238,8 @@ export async function parseMUCMessage (stanza, chatbox) {
             'receipt_id': getReceiptId(stanza),
             'received': new Date().toISOString(),
             'references': getReferences(stanza),
-            'subject': stanza.querySelector('subject')?.textContent,
-            'thread': stanza.querySelector('thread')?.textContent,
+            'subject': stanza.querySelector(':scope > subject')?.textContent,
+            'thread': stanza.querySelector(':scope > thread')?.textContent,
             'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString(),
             'to': stanza.getAttribute('to'),
             'type': stanza.getAttribute('type')
@@ -247,16 +267,16 @@ export async function parseMUCMessage (stanza, chatbox) {
 
     if (attrs.is_archived && original_stanza.getAttribute('from') !== attrs.from_muc) {
         return new StanzaParseError(
-            stanza,
+            original_stanza,
             `Invalid Stanza: Forged MAM message from ${original_stanza.getAttribute('from')}`,
         );
     } else if (attrs.is_archived && original_stanza.getAttribute('from') !== chatbox.get('jid')) {
         return new StanzaParseError(
-            stanza,
+            original_stanza,
             `Invalid Stanza: Forged MAM groupchat message from ${stanza.getAttribute('from')}`,
         );
     } else if (attrs.is_carbon) {
-        return new StanzaParseError(stanza, 'Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied');
+        return new StanzaParseError(original_stanza, 'Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied');
     }
 
     // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
@@ -266,7 +286,7 @@ export async function parseMUCMessage (stanza, chatbox) {
      * *Hook* which allows plugins to add additional parsing
      * @event _converse#parseMUCMessage
      */
-    attrs = await api.hook('parseMUCMessage', stanza, attrs);
+    attrs = await api.hook('parseMUCMessage', original_stanza, attrs);
 
     // We call this after the hook, to allow plugins to decrypt encrypted
     // messages, since we need to parse the message text to determine whether
@@ -318,7 +338,7 @@ function parsePresenceUserItem(stanza, nick) {
      * @typedef {import('./types').MUCAffiliation} MUCAffiliation
      * @typedef {import('./types').MUCRole} MUCRole
      */
-    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
+    const item = sizzle(`presence > x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
     if (item) {
         const actor = item.querySelector('actor');
         return {
@@ -354,14 +374,13 @@ export function parseMUCPresence (stanza, chatbox) {
     const nick = Strophe.getResourceFromJid(from);
     const attrs = /** @type {MUCPresenceAttributes} */({
         from,
-        is_me: !!stanza.querySelector("status[code='110']"),
         nick,
         occupant_id: getOccupantID(stanza, chatbox),
         type,
         status: stanza.querySelector(':scope > status')?.textContent ?? undefined,
         show: stanza.querySelector(':scope > show')?.textContent ?? (type !== 'unavailable' ? 'online' : 'offline'),
-        image_hash: sizzle(`:scope > x[xmlns="${Strophe.NS.VCARDUPDATE}"] photo`, stanza).pop()?.textContent,
-        hats: sizzle(`:scope x[xmlns="${Strophe.NS.MUC_HATS}"] hat`, stanza).map(/** @param {Element} h */(h) => ({
+        image_hash: sizzle(`presence > x[xmlns="${Strophe.NS.VCARDUPDATE}"] photo`, stanza).pop()?.textContent,
+        hats: sizzle(`presence > hats[xmlns="${Strophe.NS.MUC_HATS}"] hat`, stanza).map(/** @param {Element} h */(h) => ({
             title: h.getAttribute('title'),
             uri: h.getAttribute('uri')
         })),

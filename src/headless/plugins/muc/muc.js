@@ -1808,7 +1808,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             resource: Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource,
         };
 
-        if (attrs.is_me) {
+        if (attrs.is_self) {
             let modified = false;
             if (attrs.codes.includes(converse.MUC_NICK_CHANGED_CODE)) {
                 modified = true;

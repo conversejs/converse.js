@@ -4,11 +4,16 @@ const { Strophe, sizzle, u, stx } = converse.env;
 
 describe("A MUC", function () {
 
-    it("allows you to change your nickname via a modal",
-            mock.initConverse([], {'view_mode': 'fullscreen'}, async function (_converse) {
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-        const muc_jid = 'lounge@montague.lit';
+    it("allows you to change your nickname via a modal",
+        mock.initConverse(
+            [],
+            { view_mode: 'fullscreen', auto_register_muc_nickname: true },
+            async function (_converse) {
+
         const nick = 'romeo';
+        const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
 
         expect(model.get('nick')).toBe(nick);
@@ -58,6 +63,11 @@ describe("A MUC", function () {
 
         expect(model.get('nick')).toBe(newnick);
 
+        // clear sent stanzas
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+        while (IQ_stanzas.length) IQ_stanzas.pop();
+
+        // Check that the new nickname gets registered with the MUC
         _converse.api.connection.get()._dataRecv(mock.createRequest(
             stx`
             <presence
@@ -76,6 +86,51 @@ describe("A MUC", function () {
 
         await u.waitUntil(() => model.occupants.at(0).get('nick') === newnick);
         expect(model.occupants.length).toBe(1);
+
+        let stanza = await u.waitUntil(() => IQ_stanzas.find(
+            iq => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length));
+
+        expect(stanza).toEqualStanza(
+            stx`<iq to="lounge@montague.lit"
+                    type="get"
+                    xmlns="jabber:client"
+                    id="${stanza.getAttribute('id')}"><query xmlns="jabber:iq:register"/></iq>`);
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<iq from="${muc_jid}"
+                id="${stanza.getAttribute('id')}"
+                to="${_converse.session.get('jid')}"
+                xmlns="jabber:client"
+                type="result">
+            <query xmlns='jabber:iq:register'>
+                <x xmlns='jabber:x:data' type='form'>
+                <field
+                    type='hidden'
+                    var='FORM_TYPE'>
+                    <value>http://jabber.org/protocol/muc#register</value>
+                </field>
+                <field
+                    label='Desired Nickname'
+                    type='text-single'
+                    var='muc#register_roomnick'>
+                    <required/>
+                </field>
+                </x>
+            </query>
+            </iq>`));
+
+        stanza = await u.waitUntil(() => IQ_stanzas.find(
+            iq => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.MUC_REGISTER}"]`, iq).length));
+
+        expect(stanza).toEqualStanza(
+            stx`<iq xmlns="jabber:client" to="${muc_jid}" type="set" id="${stanza.getAttribute('id')}">
+                <query xmlns="jabber:iq:register">
+                <x xmlns="jabber:x:data" type="submit">
+                    <field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>
+                    <field var="muc#register_roomnick"><value>loverboy</value></field>
+                </x>
+                </query>
+            </iq>`);
     }));
 
     it("informs users if their nicknames have been changed.",

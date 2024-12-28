@@ -469,7 +469,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("includes a XEP-0372 references to that person",
-                mock.initConverse([], {}, async function (_converse) {
+                mock.initConverse([], { auto_register_muc_nickname: false }, async function (_converse) {
 
             const nick = 'romeo';
             const muc_jid = 'lounge@montague.lit';

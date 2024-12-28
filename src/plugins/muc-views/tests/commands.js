@@ -3,6 +3,8 @@
 const { Strophe, Promise, sizzle, stx, u }  = converse.env;
 
 describe("Groupchats", function () {
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     describe("Each chat groupchat can take special commands", function () {
 
         it("takes /help to show the available commands",
@@ -142,8 +144,9 @@ describe("Groupchats", function () {
                 mock.initConverse([], {}, async function (_converse) {
 
             let iq_stanza;
-            await mock.openAndEnterChatRoom(_converse, 'lounge@muc.montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@muc.montague.lit');
+            const nick = 'romeo';
+            const muc_jid = 'lounge@muc.montague.lit';
+            const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
 
             /* We don't show join/leave messages for existing occupants. We
              * know about them because we receive their presences before we
@@ -159,8 +162,10 @@ describe("Groupchats", function () {
                     </x>
                 </presence>`
             ));
-            expect(view.model.occupants.length).toBe(2);
 
+            expect(muc.occupants.length).toBe(2);
+
+            const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
             let sent_stanza;
             spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => {
@@ -188,14 +193,17 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await u.waitUntil(() => Strophe.serialize(sent_stanza) ===
-                `<iq id="${sent_stanza.getAttribute('id')}" to="lounge@muc.montague.lit" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                        `<item affiliation="member" jid="marc@montague.lit">`+
-                            `<reason>Welcome to the club!</reason>`+
-                        `</item>`+
-                    `</query>`+
-                `</iq>`);
+
+            await u.waitUntil(() => sent_stanza.querySelector('item[affiliation="member"]'));
+
+            expect(sent_stanza).toEqualStanza(
+                stx`<iq id="${sent_stanza.getAttribute('id')}" to="lounge@muc.montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item affiliation="member" nick="marc" jid="marc@montague.lit">
+                            <reason>Welcome to the club!</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
             let result = stx`<iq xmlns="jabber:client"
                     type="result"
@@ -413,14 +421,14 @@ describe("Groupchats", function () {
 
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
             // Check that the member list now gets updated
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                        `<item affiliation="owner" jid="annoyingguy@montague.lit">`+
-                            `<reason>You&apos;re responsible</reason>`+
-                        `</item>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(
+                stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item affiliation="owner" nick="annoyingGuy" jid="annoyingguy@montague.lit">
+                            <reason>You&apos;re responsible</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stx`<presence
@@ -487,14 +495,14 @@ describe("Groupchats", function () {
 
             await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
             // Check that the member list now gets updated
-            expect(Strophe.serialize(sent_IQ)).toBe(
-                `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                        `<item affiliation="outcast" jid="annoyingguy@montague.lit">`+
-                            `<reason>You&apos;re annoying</reason>`+
-                        `</item>`+
-                    `</query>`+
-                `</iq>`);
+            expect(sent_IQ).toEqualStanza(
+                stx`<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">
+                    <query xmlns="http://jabber.org/protocol/muc#admin">
+                        <item affiliation="outcast" jid="annoyingguy@montague.lit">
+                            <reason>You&apos;re annoying</reason>
+                        </item>
+                    </query>
+                </iq>`);
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(
                 stx`<presence

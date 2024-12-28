@@ -86,7 +86,7 @@ converse.plugins.add('converse-muc', {
             allow_muc_invitations: true,
             auto_join_on_invite: false,
             auto_join_rooms: [],
-            auto_register_muc_nickname: false,
+            auto_register_muc_nickname: true,
             colorize_username: false,
             hide_muc_participants: false,
             locked_muc_domain: false,

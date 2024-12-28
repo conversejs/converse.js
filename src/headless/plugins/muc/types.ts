@@ -105,7 +105,6 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     from: string; // The sender JID (${muc_jid}/${nick})
     hats: Array<MUCHat>; // An array of XEP-0317 hats
     image_hash?: string;
-    is_me?: boolean;
     is_self: boolean;
     nick: string; // The nickname of the sender
     occupant_id: string; // The XEP-0421 occupant ID

@@ -37,7 +37,7 @@ import ChatBoxBase from '../../shared/chatbox';
 import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
 import MUCSession from './session';
 
-const { u } = converse.env;
+const { u, stx } = converse.env;
 
 /**
  * Represents a groupchat conversation.
@@ -1503,34 +1503,15 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
 
     /**
      * Send a presence stanza to update the user's nickname in this MUC.
-     * @param { String } nick
+     * @param {String} nick
      */
     async setNickname (nick) {
-        if (
-            api.settings.get('auto_register_muc_nickname') &&
-            (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
-        ) {
-            const old_nick = this.get('nick');
-            this.set({ nick });
-            try {
-                await this.registerNickname();
-            } catch (e) {
-                const { __ } = _converse;
-                log.error(e);
-                const message = __("Error: couldn't register new nickname in members only room");
-                this.createMessage({ message, 'type': 'error', 'is_ephemeral': true });
-                this.set({ 'nick': old_nick });
-                return;
-            }
-        }
         const jid = Strophe.getBareJidFromJid(this.get('jid'));
         api.send(
-            $pres({
-                'from': api.connection.get().jid,
-                'to': `${jid}/${nick}`,
-                'id': getUniqueId()
-            }).tree()
-        )
+            stx`<presence xmlns="jabber:client"
+                    id="${getUniqueId()}"
+                    from="${api.connection.get().jid}"
+                    to="${jid}/${nick}"></presence>`);
     }
 
     /**
@@ -2709,11 +2690,24 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
         }
 
         const attrs = parseMUCPresence(stanza, this);
-        attrs.codes.forEach((code) => {
+        attrs.codes.forEach(async (code) => {
             this.createInfoMessageFromPresence(code, attrs);
 
             if (attrs.is_self && NEW_NICK_CODES.includes(code)) {
                 this.save('nick', attrs.nick);
+
+                if (
+                    code === '303' &&
+                    api.settings.get('auto_register_muc_nickname') &&
+                    (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
+                ) {
+                    try {
+                        await this.registerNickname();
+                    } catch (e) {
+                        log.error(e);
+                        log.error("Error: could not register new nickname");
+                    }
+                }
             }
         });
 

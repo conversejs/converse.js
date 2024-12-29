@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2020-09-24 09:02+0200\n"
-"Last-Translator: Ezra Zebra <ezra.zebra@protonmail.com>\n"
+"PO-Revision-Date: 2024-12-30 17:00+0000\n"
+"Last-Translator: Tom Brand <tom9358@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 "domain: converse\n"
 "lang: nl\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -46,11 +46,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:29253
 msgid "People"
-msgstr ""
+msgstr "Personen"
 
 #: dist/converse-no-dependencies.js:29254
 msgid "Activities"
-msgstr ""
+msgstr "Activiteiten"
 
 #: dist/converse-no-dependencies.js:29255
 msgid "Travel"
@@ -58,27 +58,27 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:29256
 msgid "Objects"
-msgstr ""
+msgstr "Objecten"
 
 #: dist/converse-no-dependencies.js:29257
 msgid "Animals and nature"
-msgstr ""
+msgstr "Dieren en natuur"
 
 #: dist/converse-no-dependencies.js:29258
 msgid "Food and drink"
-msgstr ""
+msgstr "Eten en drinken"
 
 #: dist/converse-no-dependencies.js:29259
 msgid "Symbols"
-msgstr ""
+msgstr "Symbolen"
 
 #: dist/converse-no-dependencies.js:29260
 msgid "Flags"
-msgstr ""
+msgstr "Vlaggen"
 
 #: dist/converse-no-dependencies.js:29261
 msgid "Stickers"
-msgstr ""
+msgstr "Stickers"
 
 #: dist/converse-no-dependencies.js:31144
 msgid "Undecryptable OMEMO message"
@@ -108,12 +108,12 @@ msgstr "Sorry, kon het bestand niet uploaden."
 #: dist/converse-no-dependencies.js:33372
 #, javascript-format
 msgid "Error: timeout while fetching %1s list for MUC %2s"
-msgstr ""
+msgstr "Fout: time-out tijdens het ophalen van de %1s lijst voor MUC %2s"
 
 #: dist/converse-no-dependencies.js:33381
 #, javascript-format
 msgid "Error: not allowed to fetch %1s list for MUC %2s"
-msgstr ""
+msgstr "Fout: niet toegestaan om %1s lijst voor MUC %2s op te halen"
 
 #: dist/converse-no-dependencies.js:35431
 #: dist/converse-no-dependencies.js:41803
@@ -608,17 +608,19 @@ msgstr "Sorry, er ging iets mis bij het opslaan van je bladwijzer."
 
 #: dist/converse-no-dependencies.js:49449
 msgid "Timeout Error"
-msgstr ""
+msgstr "Timeout-fout"
 
 #: dist/converse-no-dependencies.js:49449
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"De server heeft je bladwijzers niet binnen de toegestane tijd opgeleverd. Je "
+"kunt de pagina herladen om ze opnieuw op te vragen."
 
 #: dist/converse-no-dependencies.js:52357
 msgid "A timeout occurred"
-msgstr ""
+msgstr "Er is een time-out opgetreden"
 
 #: dist/converse-no-dependencies.js:55458
 #, fuzzy
@@ -675,7 +677,7 @@ msgstr "Sluiten"
 
 #: dist/converse-no-dependencies.js:72676
 msgid "OK"
-msgstr ""
+msgstr "Oké"
 
 #: dist/converse-no-dependencies.js:72676
 #: dist/converse-no-dependencies.js:75646
@@ -691,19 +693,19 @@ msgstr "Bestand ‘%1$s’ downloaden"
 
 #: dist/converse-no-dependencies.js:75615
 msgid "Execute"
-msgstr ""
+msgstr "Uitvoeren"
 
 #: dist/converse-no-dependencies.js:75616
 msgid "Previous"
-msgstr ""
+msgstr "Vorige"
 
 #: dist/converse-no-dependencies.js:75617
 msgid "Next"
-msgstr ""
+msgstr "Volgende"
 
 #: dist/converse-no-dependencies.js:75618
 msgid "Complete"
-msgstr ""
+msgstr "Klaar"
 
 #: dist/converse-no-dependencies.js:78177
 #, fuzzy
@@ -765,6 +767,9 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Moderatoren zijn gebruikers met extra rechten die rollen van andere "
+"gebruikers kunnen aanpassen (behalve die met administrator- of "
+"eigenaarsstatus)."
 
 #: dist/converse-no-dependencies.js:78397
 msgid "The default role, implies that you can read and write messages."
@@ -774,6 +779,8 @@ msgstr ""
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Bezoekers kunnen geen berichten schrijven in een gemodereerde chat voor "
+"meerdere gebruikers."
 
 #: dist/converse-no-dependencies.js:78404
 msgid ""
@@ -799,11 +806,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:78435
 msgid "No users with that role found."
-msgstr ""
+msgstr "Geen gebruikers met die rol gevonden."
 
 #: dist/converse-no-dependencies.js:78436
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "Typ hier om de zoekresultaten te filteren"
 
 #: dist/converse-no-dependencies.js:78438
 #, fuzzy
@@ -817,6 +824,11 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Rollen worden aan gebruikers toegewezen om ze bepaalde functies toe te "
+"kennen of te ontzeggen in een chat voor meerdere gebruikers. Ze worden "
+"expliciet of impliciet toegewezen als onderdeel van een lidmaatschap. Een "
+"rol die niet uit een lidmaatschap voortkomt, geldt alleen voor de duur van "
+"de sessie van de gebruiker."
 
 #: dist/converse-no-dependencies.js:78440
 msgid ""
@@ -874,7 +886,7 @@ msgstr "Weet je zeker dat je het gesprek ‘%1$s’ wil verlaten?"
 #: dist/converse-no-dependencies.js:104200
 #: dist/converse-no-dependencies.js:104747
 msgid "Reason"
-msgstr ""
+msgstr "Reden"
 
 #: dist/converse-no-dependencies.js:79801
 msgid "Optional XMPP address for a new groupchat that replaces this one"
@@ -891,7 +903,7 @@ msgstr "gebruiker@voorbeeld.be"
 #: dist/converse-no-dependencies.js:84720
 #: dist/converse-no-dependencies.js:114244
 msgid "Confirm"
-msgstr ""
+msgstr "Bevestigen"
 
 #: dist/converse-no-dependencies.js:79990
 msgid ""

@@ -34,7 +34,7 @@ export default {
         }
         const promise = _converse.promises[name];
         if (promise !== undefined) {
-            promise.resolve();
+            promise.resolve(arguments[1]);
         }
     },
 

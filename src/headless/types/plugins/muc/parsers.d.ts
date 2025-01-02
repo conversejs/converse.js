@@ -23,9 +23,9 @@ export function parseMemberListIQ(iq: Element): import("./types").MemberListItem
  * Parses a passed in MUC presence stanza and returns an object of attributes.
  * @param {Element} stanza - The presence stanza
  * @param {MUC} chatbox
- * @returns {import('./types').MUCPresenceAttributes}
+ * @returns {Promise<import('./types').MUCPresenceAttributes>}
  */
-export function parseMUCPresence(stanza: Element, chatbox: MUC): import("./types").MUCPresenceAttributes;
+export function parseMUCPresence(stanza: Element, chatbox: MUC): Promise<import("./types").MUCPresenceAttributes>;
 export type MUC = import("../muc/muc.js").default;
 export type MUCMessageAttributes = import("./types").MUCMessageAttributes;
 import { StanzaParseError } from '../../shared/errors.js';

@@ -4,5 +4,5 @@ export type BookmarkAttrs = {
     autojoin?: boolean;
     nick?: string;
     password?: string;
-    extensions?: string[];
+    extensions: string[];
 }

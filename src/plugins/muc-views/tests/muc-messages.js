@@ -154,7 +154,7 @@ describe("A Groupchat Message", function () {
             mock.initConverse([], {}, async function (_converse) {
 
         const muc_jid = 'lounge@montague.lit';
-        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);
         let msg = stx`
             <message xmlns="jabber:client"
@@ -251,10 +251,14 @@ describe("A Groupchat Message", function () {
                 </x>
             </presence>`;
         _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+        await u.waitUntil(() => model.occupants.length === 2);
+
         await u.waitUntil(() => view.model.messages.last().occupant);
-        expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
-        expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
-        expect(view.model.messages.last().occupant.get('jid')).toBe('some1@montague.lit');
+        const last_msg = view.model.messages.last();
+        expect(last_msg.get('message')).toBe('Message from someone not in the MUC right now');
+        expect(last_msg.occupant.get('nick')).toBe('some1');
+
+        await u.waitUntil(() => last_msg.occupant.get('jid') === 'some1@montague.lit');
 
         presence = stx`
             <presence to="romeo@montague.lit/orchard"

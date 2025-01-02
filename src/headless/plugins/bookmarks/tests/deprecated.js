@@ -5,12 +5,12 @@ describe("A chat room", function () {
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
     it("is automatically bookmarked when opened", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
-        const { bare_jid } = _converse;
         await mock.waitForRoster(_converse, 'current', 0);
-        await mock.waitUntilDiscoConfirmed(
-            _converse, bare_jid,
-            [{'category': 'pubsub', 'type': 'pep'}],
-            [ 'http://jabber.org/protocol/pubsub#publish-options' ]
+        await mock.waitUntilBookmarksReturned(
+            _converse,
+            [],
+            ['http://jabber.org/protocol/pubsub#publish-options'],
+            'storage:bookmarks'
         );
 
         const nick = 'JC';

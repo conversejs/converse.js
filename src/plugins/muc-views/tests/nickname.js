@@ -38,8 +38,15 @@ describe("A MUC", function () {
 
         const { sent_stanzas } = _converse.api.connection.get();
         const sent_stanza = sent_stanzas.pop()
-        expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
-            `<presence from="${_converse.jid}" id="${sent_stanza.getAttribute('id')}" to="${muc_jid}/${newnick}" xmlns="jabber:client"/>`);
+        expect(sent_stanza).toEqualStanza(
+            stx`<presence from="${_converse.jid}"
+                id="${sent_stanza.getAttribute('id')}"
+                to="${muc_jid}/${newnick}"
+                xmlns="jabber:client"/>`);
+
+        // clear sent stanzas
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+        while (IQ_stanzas.length) IQ_stanzas.pop();
 
         // Two presence stanzas are received from the MUC service
         _converse.api.connection.get()._dataRecv(mock.createRequest(
@@ -61,11 +68,7 @@ describe("A MUC", function () {
             </presence>`
         ));
 
-        expect(model.get('nick')).toBe(newnick);
-
-        // clear sent stanzas
-        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-        while (IQ_stanzas.length) IQ_stanzas.pop();
+        await u.waitUntil(() => model.get('nick') === newnick);
 
         // Check that the new nickname gets registered with the MUC
         _converse.api.connection.get()._dataRecv(mock.createRequest(

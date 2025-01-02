@@ -74,6 +74,7 @@ export type MUCPresenceAttributes = MUCPresenceItemAttributes & {
     hats: Array<MUCHat>;
     image_hash?: string;
     is_self: boolean;
+    muc_jid: string;
     nick: string;
     occupant_id: string;
     show: string;

@@ -11,8 +11,9 @@ describe("Groupchats", function () {
                 mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},
                 async function (_converse) {
 
+            const nick = 'romeo';
             const muc_jid = 'coven@chat.shakespeare.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            await mock.openAndEnterChatRoom(_converse, muc_jid, nick);
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let stanza = await u.waitUntil(() => IQ_stanzas.find(

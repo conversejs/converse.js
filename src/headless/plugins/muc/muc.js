@@ -2686,12 +2686,12 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * Handles incoming presence stanzas coming from the MUC
      * @param {Element} stanza
      */
-    onPresence (stanza) {
+    async onPresence (stanza) {
         if (stanza.getAttribute('type') === 'error') {
             return this.onErrorPresence(stanza);
         }
 
-        const attrs = parseMUCPresence(stanza, this);
+        const attrs = await parseMUCPresence(stanza, this);
         attrs.codes.forEach(async (code) => {
             this.createInfoMessageFromPresence(code, attrs);
 

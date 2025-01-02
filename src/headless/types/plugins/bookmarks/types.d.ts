@@ -4,6 +4,6 @@ export type BookmarkAttrs = {
     autojoin?: boolean;
     nick?: string;
     password?: string;
-    extensions?: string[];
+    extensions: string[];
 };
 //# sourceMappingURL=types.d.ts.map

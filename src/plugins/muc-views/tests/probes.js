@@ -39,7 +39,7 @@ describe("Groupchats", function () {
                 </presence>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
-            expect(occupant.get('affiliation')).toBe('member');
+            await u.waitUntil(() => occupant.get('affiliation') === 'member');
             expect(occupant.get('role')).toBe('participant');
 
             // Check that unavailable but affiliated occupants don't get destroyed
@@ -70,7 +70,7 @@ describe("Groupchats", function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
 
             expect(view.model.occupants.length).toBe(3);
-            expect(occupant.get('affiliation')).toBe('member');
+            await u.waitUntil(() => occupant.get('affiliation') === 'member');
             expect(occupant.get('role')).toBe('participant');
         }));
     });

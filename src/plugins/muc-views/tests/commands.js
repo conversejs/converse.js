@@ -162,8 +162,7 @@ describe("Groupchats", function () {
                     </x>
                 </presence>`
             ));
-
-            expect(muc.occupants.length).toBe(2);
+            await u.waitUntil(() => muc.occupants.length === 2);
 
             const view = _converse.chatboxviews.get(muc_jid);
             const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
@@ -194,7 +193,7 @@ describe("Groupchats", function () {
                 keyCode: 13
             });
 
-            await u.waitUntil(() => sent_stanza.querySelector('item[affiliation="member"]'));
+            await u.waitUntil(() => sent_stanza?.querySelector('item[affiliation="member"]'));
 
             expect(sent_stanza).toEqualStanza(
                 stx`<iq id="${sent_stanza.getAttribute('id')}" to="lounge@muc.montague.lit" type="set" xmlns="jabber:client">

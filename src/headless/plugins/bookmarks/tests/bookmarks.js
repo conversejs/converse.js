@@ -1,21 +1,14 @@
 /* global mock, converse */
 const { Strophe, sizzle, stx, u } = converse.env;
 
-describe("A chat room", function () {
+
+describe("A bookmark", function () {
 
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
-    it("is automatically bookmarked when opened", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
-        const { bare_jid } = _converse;
+    it("is automatically created when a MUC is entered", mock.initConverse(['chatBoxesFetched'], {}, async (_converse) => {
         await mock.waitForRoster(_converse, 'current', 0);
-        await mock.waitUntilDiscoConfirmed(
-            _converse, bare_jid,
-            [{'category': 'pubsub', 'type': 'pep'}],
-            [
-                'http://jabber.org/protocol/pubsub#publish-options',
-                'urn:xmpp:bookmarks:1#compat'
-            ]
-        );
+        await mock.waitUntilBookmarksReturned(_converse);
 
         const nick = 'JC';
         const muc_jid = 'theplay@conference.shakespeare.lit';
@@ -64,9 +57,6 @@ describe("A chat room", function () {
             </iq>`
         );
 
-        /* Server acknowledges successful storage
-         * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
-         */
         const stanza = stx`<iq
             xmlns="jabber:client"
             to="${_converse.api.connection.get().jid}"
@@ -76,12 +66,111 @@ describe("A chat room", function () {
 
         expect(muc.get('bookmarked')).toBeTruthy();
     }));
-});
 
+    it("will be updated when a user changes their nickname in a MUC", mock.initConverse(
+        [], {}, async function (_converse) {
 
-describe("A bookmark", function () {
+        await mock.waitForRoster(_converse, 'current', 0);
+        await mock.waitUntilBookmarksReturned(_converse);
 
-    beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+        const nick = 'JC';
+        const muc_jid = 'theplay@conference.shakespeare.lit';
+        const settings = { name: "Play's the thing", password: 'secret' };
+        const muc = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], [], true, settings);
+
+        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+        let sent_stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(s => sizzle('iq publish[node="urn:xmpp:bookmarks:1"]', s).length).pop());
+
+        const stanza = stx`<iq
+            xmlns="jabber:client"
+            to="${_converse.api.connection.get().jid}"
+            type="result"
+            id="${sent_stanza.getAttribute('id')}"/>`;
+        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+
+        const newnick = 'BAP';
+        muc.setNickname(newnick);
+
+        const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+        while (sent_IQs.length) { sent_IQs.pop(); }
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<presence
+                    xmlns="jabber:server"
+                    from='${muc_jid}/${nick}'
+                    id='DC352437-C019-40EC-B590-AF29E879AF98'
+                    to='${_converse.jid}'
+                    type='unavailable'>
+                <x xmlns='http://jabber.org/protocol/muc#user'>
+                    <item affiliation='member'
+                        jid='${_converse.jid}'
+                        nick='${newnick}'
+                        role='participant'/>
+                    <status code='303'/>
+                    <status code='110'/>
+                </x>
+            </presence>`
+        ));
+
+        await u.waitUntil(() => muc.get('nick') === newnick);
+
+        _converse.api.connection.get()._dataRecv(mock.createRequest(
+            stx`<presence
+                    xmlns="jabber:server"
+                    from='${muc_jid}/${newnick}'
+                    id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
+                    to='${_converse.jid}'>
+                <x xmlns='http://jabber.org/protocol/muc#user'>
+                    <item affiliation='member'
+                        jid='${_converse.jid}'
+                        role='participant'/>
+                    <status code='110'/>
+                </x>
+            </presence>`
+        ));
+
+        sent_stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(s => sizzle('iq publish[node="urn:xmpp:bookmarks:1"]', s).length).pop());
+
+        expect(sent_stanza).toEqualStanza(
+            stx`<iq from="${_converse.bare_jid}"
+                    to="${_converse.bare_jid}"
+                    id="${sent_stanza.getAttribute('id')}"
+                    type="set"
+                    xmlns="jabber:client">
+                <pubsub xmlns="http://jabber.org/protocol/pubsub">
+                    <publish node="urn:xmpp:bookmarks:1">
+                        <item id="${muc_jid}">
+                            <conference xmlns="urn:xmpp:bookmarks:1" name="${settings.name}" autojoin="true">
+                                <nick>${newnick}</nick>
+                                <password>${settings.password}</password>
+                            </conference>
+                        </item>
+                    </publish>
+                    <publish-options>
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field type="hidden" var="FORM_TYPE">
+                                <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                            </field>
+                            <field var='pubsub#persist_items'>
+                                <value>true</value>
+                            </field>
+                            <field var='pubsub#max_items'>
+                                <value>max</value>
+                            </field>
+                            <field var='pubsub#send_last_published_item'>
+                                <value>never</value>
+                            </field>
+                            <field var='pubsub#access_model'>
+                                <value>whitelist</value>
+                            </field>
+                        </x>
+                    </publish-options>
+                </pubsub>
+            </iq>`
+        );
+    }));
 
     describe("when autojoin is set", function () {
 
@@ -203,8 +292,9 @@ describe("A bookmark", function () {
         const bare_jid = _converse.session.get('bare_jid');
         const muc1_jid = 'theplay@conference.shakespeare.lit';
         const { bookmarks } = _converse.state;
+        const { api } = _converse;
 
-        bookmarks.setBookmark({
+        await api.bookmarks.set({
             jid: muc1_jid,
             autojoin: true,
             name:  'Hamlet',
@@ -247,7 +337,7 @@ describe("A bookmark", function () {
 
 
         const muc2_jid = 'balcony@conference.shakespeare.lit';
-        bookmarks.setBookmark({
+        await api.bookmarks.set({
             jid: muc2_jid,
             autojoin: true,
             name:  'Balcony',
@@ -293,7 +383,7 @@ describe("A bookmark", function () {
             </iq>`);
 
         const muc3_jid = 'garden@conference.shakespeare.lit';
-        bookmarks.setBookmark({
+        await api.bookmarks.set({
             jid: muc3_jid,
             autojoin: false,
             name:  'Garden',

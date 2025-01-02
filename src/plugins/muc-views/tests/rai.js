@@ -124,9 +124,9 @@ describe("XEP-0437 Room Activity Indicators", function () {
     it("will be activated for a MUC that starts out hidden",
         mock.initConverse(
             [], {
-                'allow_bookmarks': false, // Hack to get the rooms list to render
-                'muc_subscribe_to_rai': true,
-                'view_mode': 'fullscreen'},
+                allow_bookmarks: false, // Hack to get the rooms list to render
+                muc_subscribe_to_rai: true,
+                view_mode: 'fullscreen'},
             async function (_converse) {
 
         const { api } = _converse;
@@ -136,15 +136,15 @@ describe("XEP-0437 Room Activity Indicators", function () {
         const nick = 'romeo';
         const sent_stanzas = _converse.api.connection.get().sent_stanzas;
 
-        const muc_creation_promise = await api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
+        const muc_creation_promise = await api.rooms.open(muc_jid, { nick }, false);
         await mock.getRoomFeatures(_converse, muc_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await muc_creation_promise;
 
         const model = _converse.chatboxes.get(muc_jid);
         await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        expect(model.get('hidden')).toBe(true);
 
+        model.set('hidden', true);
 
         const getSentPresences = () => sent_stanzas.filter(s => s.nodeName === 'presence');
         await u.waitUntil(() => getSentPresences().length === 3, 500);

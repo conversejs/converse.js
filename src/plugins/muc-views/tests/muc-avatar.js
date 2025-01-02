@@ -39,7 +39,7 @@ describe('Groupchats', () => {
                     // have to mock stanza traffic.
                 },
                 async function (_converse) {
-                    const { Strophe, u } = converse.env;
+                    const { u } = converse.env;
                     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
                     const muc_jid = 'coven@chat.shakespeare.lit';
                     await mock.waitForRoster(_converse, 'current', 0);
@@ -144,6 +144,7 @@ describe('Groupchats', () => {
                             </x>
                         </presence>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(presence));
+                    await u.waitUntil(() => view.model.occupants.length === 2);
 
                     els = modal.querySelectorAll('p.room-info');
                     expect(els[3].textContent).toBe('Online users: 2');

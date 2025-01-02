@@ -820,7 +820,7 @@ declare class MUC extends MUC_base {
      * Handles incoming presence stanzas coming from the MUC
      * @param {Element} stanza
      */
-    onPresence(stanza: Element): void;
+    onPresence(stanza: Element): Promise<void>;
     /**
      * Handles a received presence relating to the current user.
      *

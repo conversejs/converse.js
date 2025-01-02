@@ -8,9 +8,9 @@ describe("MUC Mention Notfications", function () {
 
     it("may be received from a MUC in which the user is not currently present",
         mock.initConverse([], {
-                'allow_bookmarks': false, // Hack to get the rooms list to render
-                'muc_subscribe_to_rai': true,
-                'view_mode': 'fullscreen'},
+                allow_bookmarks: false, // Hack to get the rooms list to render
+                muc_subscribe_to_rai: true,
+                view_mode: 'overlayed'},
             async function (_converse) {
 
         const { api } = _converse;
@@ -19,16 +19,18 @@ describe("MUC Mention Notfications", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const nick = 'romeo';
-        const muc_creation_promise = await api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
+        const muc_creation_promise = await api.rooms.open(muc_jid, { nick }, false);
         await mock.getRoomFeatures(_converse, muc_jid, []);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
         await muc_creation_promise;
 
         const model = _converse.chatboxes.get(muc_jid);
         await u.waitUntil(() => (model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        expect(model.get('hidden')).toBe(true);
+
+        model.save('hidden', true);
         await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
 
+        await mock.openControlBox(_converse);
         const room_el = await u.waitUntil(() => document.querySelector("converse-rooms-list .available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 

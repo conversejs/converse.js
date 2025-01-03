@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-05 09:03+0200\n"
-"PO-Revision-Date: 2024-12-30 17:00+0000\n"
+"PO-Revision-Date: 2025-01-04 10:02+0000\n"
 "Last-Translator: Tom Brand <tom9358@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl/>\n"
@@ -160,25 +160,21 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36377
 #: dist/converse-no-dependencies.js:39453
 msgid "You're not allowed to retract your message."
-msgstr ""
+msgstr "Je mag je bericht niet intrekken."
 
 #: dist/converse-no-dependencies.js:36379
 #: dist/converse-no-dependencies.js:39457
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Sorry, er ging iets mis bij het verversen"
+msgstr "Sorry, er is een fout opgetreden bij het intrekken van je bericht."
 
 #: dist/converse-no-dependencies.js:36384
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr ""
-"Je hebt geen toestemming om berichten te verzenden in deze gespreksruimte"
+msgstr "Je hebt geen toestemming om een bericht te verzenden."
 
 #: dist/converse-no-dependencies.js:36386
 #: dist/converse-no-dependencies.js:39466
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Er trad een fout op bij het verwijderen van de apparaten."
+msgstr "Sorry, er trad een fout op bij het verzenden van je bericht."
 
 #: dist/converse-no-dependencies.js:39455
 #, fuzzy
@@ -215,10 +211,8 @@ msgstr "Sorry, er ging iets mis bij het opslaan van je profielgegevens."
 
 #: dist/converse-no-dependencies.js:40573
 #: dist/converse-no-dependencies.js:112893
-#, fuzzy
 msgid "Check your browser's developer console for details."
-msgstr ""
-"Je kan de ontwikkelaarsconsole van je browser nakijken voor foutenuitvoer."
+msgstr "Details zijn te vinden in de ontwikkelaarsconsole van je browser."
 
 #: dist/converse-no-dependencies.js:40592
 #: dist/converse-no-dependencies.js:40610
@@ -250,7 +244,7 @@ msgstr "Geen toestemming: je hebt niet de benodigde rol om dit te doen."
 
 #: dist/converse-no-dependencies.js:40799
 msgid "Error: couldn't register new nickname in members only room"
-msgstr ""
+msgstr "Fout: kon nieuwe bijnaam niet registreren in ruimte alleen voor leden"
 
 #: dist/converse-no-dependencies.js:41101
 msgid "You're not allowed to register yourself in this groupchat."
@@ -325,7 +319,7 @@ msgid "%1$s and %2$s"
 msgstr "%1$s zegt"
 
 #: dist/converse-no-dependencies.js:41830
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are typing"
 msgstr "%1$s is aan het typen"
 
@@ -513,14 +507,12 @@ msgid "The groupchat configuration has changed"
 msgstr "De configuratie van het groepsgesprek is gewijzigd"
 
 #: dist/converse-no-dependencies.js:48687
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "loggen van groepsgesprek is nu ingeschakeld"
+msgstr "Logboeken van groepsgesprekken zijn nu ingeschakeld"
 
 #: dist/converse-no-dependencies.js:48688
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "loggen van groepsgesprek is nu uitgeschakeld"
+msgstr "Logboeken van groepsgesprekken zijn nu uitgeschakeld"
 
 #: dist/converse-no-dependencies.js:48689
 msgid "This groupchat is now no longer anonymous"
@@ -554,10 +546,8 @@ msgid "You have been banned from this groupchat"
 msgstr "Je bent verbannen uit dit groepsgesprek"
 
 #: dist/converse-no-dependencies.js:48701
-#, fuzzy
 msgid "You have exited this groupchat due to a technical problem"
-msgstr ""
-"Je bent uit dit groepsgesprek verwijderd wegens een wijziging in lidmaatschap"
+msgstr "Je hebt dit groepsgesprek verlaten vanwege een technisch probleem"
 
 #: dist/converse-no-dependencies.js:48702
 msgid "You have been kicked from this groupchat"

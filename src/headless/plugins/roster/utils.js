@@ -123,7 +123,7 @@ export async function onClearSession () {
 
 /**
  * Roster specific event handler for the presencesInitialized event
- * @param { Boolean } reconnecting
+ * @param {Boolean} reconnecting
  */
 export function onPresencesInitialized (reconnecting) {
     if (reconnecting) {

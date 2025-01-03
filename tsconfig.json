@@ -9,7 +9,7 @@
       "src/website.js"
   ],
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2022",
     "module": "esnext",
 
     "types": [

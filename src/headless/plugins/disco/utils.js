@@ -7,6 +7,9 @@ import { createStore } from '../../utils/storage.js';
 const { Strophe, $iq } = converse.env;
 
 
+/**
+ * @param {Element} stanza
+ */
 function onDiscoInfoRequest (stanza) {
     const node = stanza.getElementsByTagName('query')[0].getAttribute('node');
     const attrs = {xmlns: Strophe.NS.DISCO_INFO};

@@ -70,7 +70,7 @@ class DiscoEntity extends Model {
      */
     async getFeature (feature) {
         await this.waitUntilFeaturesDiscovered;
-        if (this.features.findWhere({ 'var': feature })) {
+        if (this.features.findWhere({ var: feature })) {
             return this;
         }
     }

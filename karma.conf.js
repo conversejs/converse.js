@@ -24,6 +24,7 @@ module.exports = function(config) {
       },
       { pattern: "src/shared/tests/mock.js", type: 'module' },
 
+      { pattern: "src/headless/plugins/blocklist/tests/blocklist.js", type: 'module' },
       { pattern: "src/headless/plugins/bookmarks/tests/bookmarks.js", type: 'module' },
       { pattern: "src/headless/plugins/bookmarks/tests/deprecated.js", type: 'module' },
       { pattern: "src/headless/plugins/caps/tests/caps.js", type: 'module' },

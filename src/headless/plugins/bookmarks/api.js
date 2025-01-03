@@ -4,8 +4,7 @@ import promise_api from '../../shared/api/promise.js';
 const { waitUntil } = promise_api;
 
 /**
- * Groups methods relevant to XEP-0402 MUC bookmarks.
- *
+ * Groups methods relevant to XEP-0402 (and XEP-0048) MUC bookmarks.
  * @namespace api.bookmarks
  * @memberOf api
  */

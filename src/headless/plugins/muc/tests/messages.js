@@ -96,8 +96,12 @@ describe("A MUC message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const impersonated_jid = `${muc_jid}/alice`;
-        const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}'>
+        const received_stanza = stx`
+            <message to='${_converse.jid}'
+                    xmlns="jabber:client"
+                    from='${muc_jid}/mallory'
+                    type='groupchat'
+                    id='${_converse.api.connection.get().getUniqueId()}'>
                 <forwarded xmlns='urn:xmpp:forward:0'>
                     <delay xmlns='urn:xmpp:delay' stamp='2019-07-10T23:08:25Z'/>
                     <message from='${impersonated_jid}'
@@ -108,8 +112,7 @@ describe("A MUC message", function () {
                         <body>Yet I should kill thee with much cherishing.</body>
                     </message>
                 </forwarded>
-            </message>
-        `);
+            </message>`;
         spyOn(converse.env.log, 'error').and.callThrough();
         _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
         await u.waitUntil(() => converse.env.log.error.calls.count() === 1);

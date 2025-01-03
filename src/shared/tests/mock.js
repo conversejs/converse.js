@@ -38,7 +38,6 @@ function initConverse (promise_names=[], settings=null, func) {
         }
         document.title = "Converse Tests";
 
-
         await _initConverse(settings);
         await Promise.all((promise_names || []).map(_converse.api.waitUntil));
 
@@ -57,17 +56,19 @@ function initConverse (promise_names=[], settings=null, func) {
 
 async function waitUntilDiscoConfirmed (_converse, entity_jid, identities, features=[], items=[], type='info') {
     const sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`;
-    const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.filter(iq => sizzle(sel, iq).length).pop());
-    const stanza = $iq({
-        'type': 'result',
-        'from': entity_jid,
-        'to': 'romeo@montague.lit/orchard',
-        'id': iq.getAttribute('id'),
-    }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
-
-    identities?.forEach(identity => stanza.c('identity', {'category': identity.category, 'type': identity.type}).up());
-    features?.forEach(feature => stanza.c('feature', {'var': feature}).up());
-    items?.forEach(item => stanza.c('item', {'jid': item}).up());
+    const iq = await u.waitUntil(() => _converse.api.connection.get().IQ_stanzas.find(iq => sizzle(sel, iq).length));
+    const stanza = stx`
+            <iq type="result"
+                from="${entity_jid}"
+                to="${_converse.session.get('jid')}"
+                id="${iq.getAttribute('id')}"
+                xmlns="jabber:client">
+            <query xmlns="http://jabber.org/protocol/disco#${type}">
+                ${identities?.map(identity => stx`<identity category="${identity.category}" type="${identity.type}"></identity>`)}
+                ${features?.map(feature => stx`<feature var="${feature}"></feature>`)}
+                ${items?.map(item => stx`<item jid="${item}"></item>`)}
+            </query>
+            </iq>`;
     _converse.api.connection.get()._dataRecv(createRequest(stanza));
 }
 

@@ -112,6 +112,7 @@ Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
 export const CORE_PLUGINS = [
     'converse-adhoc',
     'converse-bookmarks',
+    'converse-blocklist',
     'converse-bosh',
     'converse-caps',
     'converse-chat',

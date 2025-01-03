@@ -43,7 +43,8 @@
 - Fix: trying to use emojis with an uppercase letter breaks the message field.
 - Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 
-### Changes
+### Changes and features
+- Add support for XEP-0191 Blocking Command
 - Upgrade to Bootstrap 5
 - Add an occupants filter to the MUC sidebar
 - Change contacts filter to rename the anachronistic `Online` state to `Available`.

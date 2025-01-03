@@ -11,10 +11,11 @@ describe("XEP-0198 Stream Management", function () {
     it("gets enabled with an <enable> stanza and resumed with a <resume> stanza",
         mock.initConverse(
             ['chatBoxesInitialized'],
-            { 'auto_login': false,
-              'enable_smacks': true,
-              'show_controlbox_by_default': true,
-              'smacks_max_unacked_stanzas': 2
+            {   auto_login: false,
+                enable_smacks: true,
+                show_controlbox_by_default: true,
+                smacks_max_unacked_stanzas: 2,
+                blacklisted_plugins: ['converse-blocklist']
             },
             async function (_converse) {
 

@@ -1,5 +1,7 @@
 /*global mock, converse */
 
+const { u, $iq, stx } = converse.env;
+
 describe("Service Discovery", function () {
 
     describe("Whenever a server is queried for its features", function () {
@@ -9,7 +11,6 @@ describe("Service Discovery", function () {
                 ['discoInitialized'], {},
                 async function (_converse) {
 
-            const { u, $iq } = converse.env;
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const IQ_ids =  _converse.api.connection.get().IQ_ids;
             await u.waitUntil(function () {
@@ -17,63 +18,27 @@ describe("Service Discovery", function () {
                     return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                 }).length > 0;
             });
-            /* <iq type='result'
-             *      from='plays.shakespeare.lit'
-             *      to='romeo@montague.net/orchard'
-             *      id='info1'>
-             *  <query xmlns='http://jabber.org/protocol/disco#info'>
-             *      <identity
-             *          category='server'
-             *          type='im'/>
-             *      <identity
-             *          category='conference'
-             *          type='text'
-             *          name='Play-Specific Chatrooms'/>
-             *      <identity
-             *          category='directory'
-             *          type='chatroom'
-             *          name='Play-Specific Chatrooms'/>
-             *      <feature var='http://jabber.org/protocol/disco#info'/>
-             *      <feature var='http://jabber.org/protocol/disco#items'/>
-             *      <feature var='http://jabber.org/protocol/muc'/>
-             *      <feature var='jabber:iq:register'/>
-             *      <feature var='jabber:iq:search'/>
-             *      <feature var='jabber:iq:time'/>
-             *      <feature var='jabber:iq:version'/>
-             *  </query>
-             *  </iq>
-             */
             let stanza = IQ_stanzas.find(function (iq) {
                 return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
             });
             const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-            stanza = $iq({
-                'type': 'result',
-                'from': 'montague.lit',
-                'to': 'romeo@montague.lit/orchard',
-                'id': info_IQ_id
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
-                .c('identity', {
-                    'category': 'server',
-                    'type': 'im'}).up()
-                .c('identity', {
-                    'category': 'conference',
-                    'type': 'text',
-                    'name': 'Play-Specific Chatrooms'}).up()
-                .c('identity', {
-                    'category': 'directory',
-                    'type': 'chatroom',
-                    'name': 'Play-Specific Chatrooms'}).up()
-                .c('feature', {
-                    'var': 'http://jabber.org/protocol/disco#info'}).up()
-                .c('feature', {
-                    'var': 'http://jabber.org/protocol/disco#items'}).up()
-                .c('feature', {
-                    'var': 'jabber:iq:register'}).up()
-                .c('feature', {
-                    'var': 'jabber:iq:time'}).up()
-                .c('feature', {
-                    'var': 'jabber:iq:version'});
+            stanza = stx`
+                <iq xmlns="jabber:client"
+                    type='result'
+                    from='montague.lit'
+                    to='romeo@montague.lit/orchard'
+                    id='${info_IQ_id}'>
+                    <query xmlns='http://jabber.org/protocol/disco#info'>
+                        <identity category='server' type='im'/>
+                        <identity category='conference' type='text' name='Play-Specific Chatrooms'/>
+                        <identity category='directory' type='chatroom' name='Play-Specific Chatrooms'/>
+                        <feature var='http://jabber.org/protocol/disco#info'/>
+                        <feature var='http://jabber.org/protocol/disco#items'/>
+                        <feature var='jabber:iq:register'/>
+                        <feature var='jabber:iq:time'/>
+                        <feature var='jabber:iq:version'/>
+                    </query>
+                </iq>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             await u.waitUntil(function () {
@@ -111,35 +76,22 @@ describe("Service Discovery", function () {
             stanza = IQ_stanzas.find(iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]'));
 
             const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-            stanza = $iq({
-                'type': 'result',
-                'from': 'montague.lit',
-                'to': 'romeo@montague.lit/orchard',
-                'id': items_IQ_id
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
-                .c('item', {
-                    'jid': 'people.shakespeare.lit',
-                    'name': 'Directory of Characters'}).up()
-                .c('item', {
-                    'jid': 'plays.shakespeare.lit',
-                    'name': 'Play-Specific Chatrooms'}).up()
-                .c('item', {
-                    'jid': 'words.shakespeare.lit',
-                    'name': 'Gateway to Marlowe IM'}).up()
-                .c('item', {
-                    'jid': 'montague.lit',
-                    'node': 'books',
-                    'name': 'Books by and about Shakespeare'}).up()
-                .c('item', {
-                    'node': 'montague.lit',
-                    'name': 'Wear your literary taste with pride'}).up()
-                .c('item', {
-                    'jid': 'montague.lit',
-                    'node': 'music',
-                    'name': 'Music from the time of Shakespeare'
-                });
 
-            _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
+            _converse.api.connection.get()._dataRecv(mock.createRequest(stx`
+                <iq xmlns="jabber:client"
+                    type='result'
+                    from='montague.lit'
+                    to='romeo@montague.lit/orchard'
+                    id='${items_IQ_id}'>
+                    <query xmlns='http://jabber.org/protocol/disco#items'>
+                        <item jid='people.shakespeare.lit' name='Directory of Characters'/>
+                        <item jid='plays.shakespeare.lit' name='Play-Specific Chatrooms'/>
+                        <item jid='words.shakespeare.lit' name='Gateway to Marlowe IM'/>
+                        <item jid='montague.lit' node='books' name='Books by and about Shakespeare'/>
+                        <item node='montague.lit' name='Wear your literary taste with pride'/>
+                        <item jid='montague.lit' node='music' name='Music from the time of Shakespeare'/>
+                    </query>
+                </iq>`));
 
             const entities = await _converse.api.disco.entities.get()
             expect(entities.length).toBe(5); // We have an extra entity, which is the user's JID

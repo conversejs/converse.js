@@ -5,7 +5,7 @@ export function unregisterPresenceHandler(): void;
 export function onClearSession(): Promise<void>;
 /**
  * Roster specific event handler for the presencesInitialized event
- * @param { Boolean } reconnecting
+ * @param {Boolean} reconnecting
  */
 export function onPresencesInitialized(reconnecting: boolean): void;
 /**

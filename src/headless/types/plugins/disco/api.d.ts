@@ -194,11 +194,6 @@ declare namespace _default {
          */
         export function refresh(jid: string): Promise<any>;
         /**
-         * @deprecated Use {@link api.disco.refresh} instead.
-         * @method api.disco.refreshFeatures
-         */
-        export function refreshFeatures(jid: any): any;
-        /**
          * Return all the features associated with a disco entity
          *
          * @method api.disco.getFeatures

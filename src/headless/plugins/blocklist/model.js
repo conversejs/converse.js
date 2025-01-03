@@ -3,7 +3,7 @@ import converse from '../../shared/api/public.js';
 
 const { Strophe } = converse.env;
 
-class Bookmark extends Model {
+class BlockedEntity extends Model {
     get idAttribute () {
         return 'jid';
     }
@@ -13,4 +13,4 @@ class Bookmark extends Model {
     }
 }
 
-export default Bookmark;
+export default BlockedEntity;

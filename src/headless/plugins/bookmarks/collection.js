@@ -38,7 +38,7 @@ class Bookmarks extends Collection {
         await this.fetchBookmarks();
 
         /**
-         * Triggered once the _converse.Bookmarks collection
+         * Triggered once the {@link Bookmarks} collection
          * has been created and cached bookmarks have been fetched.
          * @event _converse#bookmarksInitialized
          * @type {Bookmarks}

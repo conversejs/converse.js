@@ -383,14 +383,6 @@ export default {
         },
 
         /**
-         * @deprecated Use {@link api.disco.refresh} instead.
-         * @method api.disco.refreshFeatures
-         */
-        refreshFeatures (jid) {
-            return api.refresh(jid);
-        },
-
-        /**
          * Return all the features associated with a disco entity
          *
          * @method api.disco.getFeatures

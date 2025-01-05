@@ -39,7 +39,7 @@ describe("A Groupchat Message", function () {
                     <body>hello world</body>
                 </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(error));
-            const ui_error_txt = `Message delivery failed: "${err_msg_text}"`;
+            const ui_error_txt = `Message delivery failed.\n${err_msg_text}`;
             expect(await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent?.trim())).toBe(ui_error_txt);
             expect(view.model.messages.length).toBe(1);
             const message = view.model.messages.at(0);

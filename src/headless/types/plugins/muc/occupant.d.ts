@@ -54,6 +54,7 @@ declare const MUCOccupant_base: {
         };
         sendMarkerForMessage(msg: import("../chat").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../chat").Message): void;
+        getErrorAttributesForMessage(message: import("../chat").Message, attrs: import("../chat/types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat").Message): void;
         clearUnreadMsgCounter(): void;

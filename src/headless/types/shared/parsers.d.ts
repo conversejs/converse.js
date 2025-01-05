@@ -68,11 +68,16 @@ export function getErrorAttributes(stanza: Element): {
     error_text: string;
     error_type: string;
     error_condition: string;
+    errors: {
+        name: string;
+        xmlns: string;
+    }[];
 } | {
     is_error?: undefined;
     error_text?: undefined;
     error_type?: undefined;
     error_condition?: undefined;
+    errors?: undefined;
 };
 /**
  * Given a message stanza, find and return any XEP-0372 references

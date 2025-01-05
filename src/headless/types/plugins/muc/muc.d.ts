@@ -54,6 +54,7 @@ declare const MUC_base: {
         };
         sendMarkerForMessage(msg: import("../chat/message.js").default, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../chat/message.js").default): void;
+        getErrorAttributesForMessage(message: import("../chat/message.js").default, attrs: import("../chat/types").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../chat/message.js").default): void;
         clearUnreadMsgCounter(): void;

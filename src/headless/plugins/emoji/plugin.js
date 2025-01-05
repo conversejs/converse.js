@@ -12,8 +12,8 @@ import emojis from './api.js';
 import { isOnlyEmojis } from './utils.js';
 
 converse.emojis = {
-    'initialized': false,
-    'initialized_promise': getOpenPromise(),
+    initialized: false,
+    initialized_promise: getOpenPromise(),
 };
 
 converse.plugins.add('converse-emoji', {

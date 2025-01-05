@@ -259,10 +259,11 @@ export function getErrorAttributes (stanza) {
         const error = stanza.querySelector('error');
         const text = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
         return {
-            'is_error': true,
-            'error_text': text?.textContent,
-            'error_type': error.getAttribute('type'),
-            'error_condition': error.firstElementChild.nodeName
+            is_error: true,
+            error_text: text?.textContent,
+            error_type: error.getAttribute('type'),
+            error_condition: error.firstElementChild.nodeName,
+            errors: Array.from(error.children).map((e) => ({ name: e.nodeName, xmlns: e.getAttribute('xmlns') })),
         };
     }
     return {};

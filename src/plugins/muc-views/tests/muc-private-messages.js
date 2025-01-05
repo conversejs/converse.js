@@ -234,7 +234,7 @@ describe('MUC Private Messages', () => {
                     );
 
                     expect(await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent?.trim())).toBe(
-                        `Message delivery failed: "${err_msg_text}"`
+                        `Message delivery failed.\n${err_msg_text}`
                     );
                 })
             );

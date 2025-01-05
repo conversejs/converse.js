@@ -17,7 +17,7 @@ export default (el) => {
     const is_groupchat_message = (el.model.get('type') === 'groupchat');
     const i18n_show_less = __('Show less');
     const error_text = el.model.get('error_text') || el.model.get('error');
-    const i18n_error = __('Message delivery failed: "%1$s"', error_text);
+    const i18n_error = `${__('Message delivery failed.')}\n${error_text}`;
 
     const tplSpoilerHint = html`
         <div class="chat-msg__spoiler-hint">

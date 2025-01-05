@@ -1115,7 +1115,7 @@ describe("A Chat Message", function () {
                         .t(error_txt);
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-                let ui_error_txt = `Message delivery failed: "${error_txt}"`;
+                let ui_error_txt = `Message delivery failed.\n${error_txt}`;
                 await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent.trim() === ui_error_txt);
 
                 const other_error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
@@ -1131,7 +1131,7 @@ describe("A Chat Message", function () {
                         .t(other_error_txt);
                 api.connection.get()._dataRecv(mock.createRequest(stanza));
 
-                ui_error_txt = `Message delivery failed: "${other_error_txt}"`;
+                ui_error_txt = `Message delivery failed.\n${other_error_txt}`;
                 await u.waitUntil(() =>
                     view.querySelector('converse-chat-message:last-child .chat-msg__error')?.textContent.trim() === ui_error_txt);
 

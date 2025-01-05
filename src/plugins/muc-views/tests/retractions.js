@@ -712,7 +712,7 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('editable')).toBe(false);
 
             const errmsg = view.querySelector('.chat-msg__error');
-            expect(errmsg.textContent.trim()).toBe(`Message delivery failed: "You're not allowed to retract your message."`);
+            expect(errmsg.textContent.trim()).toBe(`Message delivery failed.\nYou're not allowed to retract your message.`);
         }));
 
         it("can be retracted by its author, causing a timeout error in response",
@@ -744,7 +744,7 @@ describe("Message Retractions", function () {
             const error_messages = view.querySelectorAll('.chat-msg__error');
             expect(error_messages.length).toBe(1);
             expect(error_messages[0].textContent.trim()).toBe(
-                'Message delivery failed: "A timeout happened while while trying to retract your message."');
+                'Message delivery failed.\nA timeout happened while while trying to retract your message.');
         }));
 
 

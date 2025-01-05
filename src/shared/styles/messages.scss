@@ -217,6 +217,7 @@
 
             .chat-msg__error {
                 color: var(--error-color);
+                white-space: pre-wrap;
             }
 
             .chat-msg__media {

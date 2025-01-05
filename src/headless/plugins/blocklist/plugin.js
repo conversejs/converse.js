@@ -25,6 +25,21 @@ converse.plugins.add('converse-blocklist', {
 
         api.promises.add(['blocklistInitialized']);
 
+        api.listen.on(
+            'getErrorAttributesForMessage',
+            /**
+             * @param {import('plugins/chat/types').MessageAttributes} attrs
+             * @param {import('plugins/chat/types').MessageErrorAttributes} new_attrs
+             */
+            (attrs, new_attrs) => {
+                if (attrs.errors.find((e) => e.name === 'blocked' && e.xmlns === `${Strophe.NS.BLOCKING}:errors`)) {
+                    const { __ } = _converse;
+                    new_attrs.error = __('You are blocked from sending messages.');
+                }
+                return new_attrs;
+            }
+        );
+
         api.listen.on('connected', () => {
             const connection = api.connection.get();
             connection.addHandler(

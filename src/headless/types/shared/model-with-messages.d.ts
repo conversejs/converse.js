@@ -188,6 +188,11 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          */
         handleUnreadMessage(message: import("../plugins/chat/message").default): void;
         /**
+         * @param {Message} message
+         * @param {MessageAttributes} attrs
+         */
+        getErrorAttributesForMessage(message: import("../plugins/chat/message").default, attrs: import("../plugins/chat/types.ts").MessageAttributes): Promise<any>;
+        /**
          * @param {Element} stanza
          */
         handleErrorMessageStanza(stanza: Element): Promise<void>;

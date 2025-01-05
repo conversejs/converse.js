@@ -53,6 +53,7 @@ declare const ChatBoxBase_base: {
         };
         sendMarkerForMessage(msg: import("../index.js").Message, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
         handleUnreadMessage(message: import("../index.js").Message): void;
+        getErrorAttributesForMessage(message: import("../index.js").Message, attrs: import("../plugins/chat/types.js").MessageAttributes): Promise<any>;
         handleErrorMessageStanza(stanza: Element): Promise<void>;
         incrementUnreadMsgsCounter(message: import("../index.js").Message): void;
         clearUnreadMsgCounter(): void;

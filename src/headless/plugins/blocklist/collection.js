@@ -25,6 +25,8 @@ class Blocklist extends Collection {
         this.fetched_flag = `${cache_key}-fetched`;
         initStorage(this, cache_key);
 
+        this.on('add', this.rejectContactRequest);
+
         await this.fetchBlocklist();
 
         /**
@@ -35,6 +37,19 @@ class Blocklist extends Collection {
          * @example _converse.api.listen.on('blocklistInitialized', (blocklist) => { ... });
          */
         api.trigger('blocklistInitialized', this);
+    }
+
+    /**
+     * @param {BlockedEntity} item
+     */
+    async rejectContactRequest(item) {
+        const roster = await api.waitUntil('rosterContactsFetched');
+        const contact = roster.get(item.get('jid'));
+        if (contact?.get('requesting')) {
+            const chat = await api.chats.get(contact.get('jid'));
+            chat?.close();
+            contact.unauthorize().destroy();
+        }
     }
 
     fetchBlocklist() {

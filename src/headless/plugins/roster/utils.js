@@ -45,7 +45,7 @@ function initRoster () {
      * @example _converse.api.listen.on('rosterInitialized', () => { ... });
      * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
      */
-    api.trigger('rosterInitialized');
+    api.trigger('rosterInitialized', roster);
 }
 
 
@@ -64,7 +64,7 @@ async function populateRoster (ignore_cache=false) {
     const roster = /** @type {RosterContacts} */(_converse.state.roster);
     try {
         await roster.fetchRosterContacts();
-        api.trigger('rosterContactsFetched');
+        api.trigger('rosterContactsFetched', roster);
     } catch (reason) {
         log.error(reason);
     } finally {

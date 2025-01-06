@@ -5,6 +5,10 @@ declare class Blocklist extends Collection {
     model: typeof BlockedEntity;
     initialize(): Promise<void>;
     fetched_flag: string;
+    /**
+     * @param {BlockedEntity} item
+     */
+    rejectContactRequest(item: BlockedEntity): Promise<void>;
     fetchBlocklist(): any;
     /**
      * @param {Object} deferred

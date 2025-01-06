@@ -3,11 +3,11 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { _converse, api, converse, RosterFilter } from "@converse/headless";
+import RosterContactView from './contactview.js';
+import { highlightRosterItem } from './utils.js';
 import "../modal";
 import "./modals/add-contact.js";
 import './rosterview.js';
-import RosterContactView from './contactview.js';
-import { highlightRosterItem } from './utils.js';
 
 import 'shared/styles/status.scss';
 import './styles/roster.scss';
@@ -15,7 +15,7 @@ import './styles/roster.scss';
 
 converse.plugins.add('converse-rosterview', {
 
-    dependencies: ["converse-roster", "converse-modal", "converse-chatboxviews"],
+    dependencies: ["converse-roster", "converse-modal", "converse-chatboxviews", "converse-blocklist"],
 
     initialize () {
         api.settings.extend({

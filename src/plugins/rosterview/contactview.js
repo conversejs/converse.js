@@ -1,10 +1,12 @@
 import { Model } from '@converse/skeletor';
-import { _converse, api, log } from "@converse/headless";
+import { _converse, converse, api, log } from "@converse/headless";
 import { CustomElement } from 'shared/components/element.js';
 import tplRequestingContact from "./templates/requesting_contact.js";
 import tplRosterItem from "./templates/roster_item.js";
 import tplUnsavedContact from "./templates/unsaved_contact.js";
 import { __ } from 'i18n';
+
+const { Strophe } = converse.env;
 
 
 export default class RosterContact extends CustomElement {
@@ -105,12 +107,33 @@ export default class RosterContact extends CustomElement {
      */
     async declineRequest (ev) {
         if (ev && ev.preventDefault) { ev.preventDefault(); }
-        const result = await api.confirm(__("Are you sure you want to decline this contact request?"));
+
+        const domain = _converse.session.get('domain');
+        const blocking_supported = await api.disco.supports(Strophe.NS.BLOCKING, domain);
+
+        const result = await api.confirm(
+            __('Decline contact request'),
+            [__('Are you sure you want to decline this contact request?')],
+            blocking_supported ? [{
+                label: __('Block this user from sending you further messages'),
+                name: 'block',
+                type: 'checkbox'
+            }] : []
+        );
+
         if (result) {
             const chat = await api.chats.get(this.model.get('jid'));
             chat?.close();
+            this.model.unauthorize();
 
-            this.model.unauthorize().destroy();
+            if (blocking_supported && Array.isArray(result)) {
+                const should_block = result.find((i) => i.name === 'block')?.value === 'on';
+                if (should_block) {
+                    api.blocklist.add(this.model.get('jid'));
+                }
+            }
+
+            this.model.destroy();
         }
         return this;
     }

@@ -87,7 +87,7 @@ const modal_api = {
      * @method _converse.api.confirm
      * @param {String} title - The header text for the confirmation dialog
      * @param {(Array<String>|String)} messages - The text to show to the user
-     * @param {Array<import('./types.ts').Field>} fields - An object representing a field presented to the user.
+     * @param {Array<import('./types').Field>} fields - An object representing a field presented to the user.
      * @returns {Promise<Array|false>} A promise which resolves with an array of
      *  filled in fields or `false` if the confirm dialog was closed or canceled.
      */

@@ -1213,6 +1213,13 @@ describe("The Contacts Roster", function () {
         it("do not have a header if there aren't any", mock.initConverse([], {}, async function (_converse) {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, "current", 0);
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                _converse.domain,
+                [{ 'category': 'server', 'type': 'IM' }],
+                ['urn:xmpp:blocking']
+            );
+
             const name = mock.req_names[0];
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             _converse.roster.create({
@@ -1227,7 +1234,8 @@ describe("The Contacts Roster", function () {
             expect(u.isVisible(rosterview.querySelector(`ul[data-group="Contact requests"]`))).toEqual(true);
             expect(sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li')).length).toBe(1);
             sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li .decline-xmpp-request'))[0].click();
-            expect(_converse.api.confirm).toHaveBeenCalled();
+
+            await u.waitUntil(() => _converse.api.confirm.calls.count);
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Contact requests"]`) === null);
         }));
 
@@ -1272,6 +1280,12 @@ describe("The Contacts Roster", function () {
                 [], {},
                 async function (_converse) {
 
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                _converse.domain,
+                [{ 'category': 'server', 'type': 'IM' }],
+                ['urn:xmpp:blocking']
+            );
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.createContacts(_converse, 'requesting');
             await mock.openControlBox(_converse);
@@ -1284,7 +1298,7 @@ describe("The Contacts Roster", function () {
             spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
             const req_contact = await u.waitUntil(() => sizzle(".contact-name:contains('"+name+"')", rosterview).pop());
             req_contact.parentElement.parentElement.querySelector('.decline-xmpp-request').click();
-            expect(_converse.api.confirm).toHaveBeenCalled();
+            await u.waitUntil(() => _converse.api.confirm.calls.count);
             await u.waitUntil(() => contact.unauthorize.calls.count());
             // There should now be one less contact
             expect(_converse.roster.length).toEqual(mock.req_names.length-1);

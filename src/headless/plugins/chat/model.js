@@ -98,6 +98,9 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         }
     }
 
+    /**
+     * @param {import('../roster/presence').default} item
+     */
     onPresenceChanged (item) {
         const { __ } = _converse;
         const show = item.get('show');
@@ -112,7 +115,7 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         } else if (show === 'online') {
             text = __('%1$s is online', fullname);
         }
-        text && this.createMessage({ 'message': text, 'type': 'info' });
+        text && this.createMessage({ message: text, type: 'info', is_ephemeral: true });
     }
 
     async close () {

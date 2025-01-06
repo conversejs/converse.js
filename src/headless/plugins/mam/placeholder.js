@@ -5,8 +5,8 @@ export default class MAMPlaceholderMessage extends Model {
 
     defaults () { // eslint-disable-line class-methods-use-this
         return {
-            'msgid': getUniqueId(),
-            'is_ephemeral': false
+            msgid: getUniqueId(),
+            is_ephemeral: false
         };
     }
 }

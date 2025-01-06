@@ -292,7 +292,10 @@ declare class ChatBox extends ChatBox_base {
      * @param {MessageAttributes|StanzaParseError} attrs_or_error
      */
     onMessage(attrs_or_error: import("./types").MessageAttributes | import("../../shared/errors").StanzaParseError): Promise<void>;
-    onPresenceChanged(item: any): void;
+    /**
+     * @param {import('../roster/presence').default} item
+     */
+    onPresenceChanged(item: import("../roster/presence").default): void;
     close(): Promise<void>;
     /**
      * @returns {string}

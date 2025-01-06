@@ -1,24 +1,12 @@
-/**
- * @typedef { Object } HeadingButtonAttributes
- * An object representing a chat heading button
- * @property { Boolean } standalone
- *  True if shown on its own, false if it must be in the dropdown menu.
- * @property { Function } handler
- *  A handler function to be called when the button is clicked.
- * @property { String } a_class - HTML classes to show on the button
- * @property { String } i18n_text - The user-visiible name of the button
- * @property { String } i18n_title - The tooltip text for this button
- * @property { String } icon_class - What kind of CSS class to use for the icon
- * @property { String } name - The internal name of the button
- */
-
 import 'shared/modals/user-details.js';
 import tplChatboxHead from './templates/chat-head.js';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
-import { _converse, api } from "@converse/headless";
+import { _converse, api, converse } from "@converse/headless";
 
 import './styles/chat-head.scss';
+
+const { Strophe } = converse.env;
 
 
 export default class ChatHeading extends CustomElement {
@@ -51,9 +39,9 @@ export default class ChatHeading extends CustomElement {
 
     render () {
         return tplChatboxHead(Object.assign(this.model.toJSON(), {
-            'heading_buttons_promise': this.getHeadingButtons(),
-            'model': this.model,
-            'showUserDetailsModal': ev => this.showUserDetailsModal(ev),
+            heading_buttons_promise: this.getHeadingButtons(),
+            model: this.model,
+            showUserDetailsModal: ev => this.showUserDetailsModal(ev),
         }));
     }
 
@@ -69,26 +57,70 @@ export default class ChatHeading extends CustomElement {
 
     /**
      * Returns a list of objects which represent buttons for the chat's header.
-     * @async
      * @emits _converse#getHeadingButtons
      */
-    getHeadingButtons () {
+    async getHeadingButtons () {
         const buttons = [
-            /** @type {HeadingButtonAttributes} */
+            /** @type {import('./types').HeadingButtonAttributes} */
             {
                 'a_class': 'show-user-details-modal',
-                'handler': ev => this.showUserDetailsModal(ev),
+                'handler': /** @param {Event} ev */(ev) => this.showUserDetailsModal(ev),
                 'i18n_text': __('Details'),
                 'i18n_title': __('See more information about this person'),
                 'icon_class': 'fa-id-card',
                 'name': 'details',
                 'standalone': api.settings.get('view_mode') === 'overlayed'
-            }
+            },
         ];
+
+        if (await api.disco.supports(Strophe.NS.BLOCKING, _converse.session.get('domain'))) {
+            const blocklist = await api.blocklist.get();
+            if (blocklist.get(this.model.get('jid'))) {
+                buttons.push({
+                    'a_class': 'unblock-user',
+                    'handler': /** @param {Event} ev */ async (ev) => {
+                        ev.preventDefault();
+                        const result = await api.confirm(
+                            __('Unblock user'),
+                            [__('Are you sure you want to unblock this user?')]
+                        );
+                        if (result) {
+                            api.blocklist.remove(this.model.get('jid'));
+                        }
+                    },
+                    'i18n_text': __('Unblock this user'),
+                    'i18n_title': __('Allow this user to send you messages'),
+                    'icon_class': 'fa-check',
+                    'name': 'unblock',
+                    'standalone': false
+                });
+            } else {
+                buttons.push({
+                    'a_class': 'block-user',
+                    'handler': /** @param {Event} ev */ async (ev) => {
+                        ev.preventDefault();
+                        const result = await api.confirm(
+                            __('Block user'),
+                            [__('Are you sure you want to block this user?')]
+                        );
+                        if (result) {
+                            api.blocklist.add(this.model.get('jid'));
+                            this.model.close();
+                        }
+                    },
+                    'i18n_text': __('Block this user'),
+                    'i18n_title': __('Prevent this user from sending you any further messages'),
+                    'icon_class': 'fa-trash',
+                    'name': 'block',
+                    'standalone': false
+                });
+            }
+        }
+
         if (!api.settings.get('singleton')) {
             buttons.push({
                 'a_class': 'close-chatbox-button',
-                'handler': ev => this.close(ev),
+                'handler': /** @param {Event} ev */(ev) => this.close(ev),
                 'i18n_text': __('Close'),
                 'i18n_title': __('Close and end this conversation'),
                 'icon_class': 'fa-times',
@@ -108,7 +140,7 @@ export default class ChatHeading extends CustomElement {
              * @event _converse#getHeadingButtons
              * @param { HTMLElement } el
              *      The `converse-chat` (or `converse-muc`) DOM element that represents the chat
-             * @param { Array.<HeadingButtonAttributes> }
+             * @param { Array.<import('./types').HeadingButtonAttributes> }
              *      An array of the existing buttons. New buttons may be added,
              *      and existing ones removed or modified.
              * @example

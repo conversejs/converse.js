@@ -109,6 +109,33 @@ function closeControlBox () {
     u.isVisible(view) && view.querySelector(".controlbox-heading__btn.close")?.click();
 }
 
+async function waitUntilBlocklistInitialized (_converse, blocklist=[]) {
+    window.sessionStorage.removeItem('converse.blocklist-romeo@montague.lit-fetched');
+
+    const { api } = _converse;
+    await mock.waitUntilDiscoConfirmed(
+        _converse,
+        _converse.domain,
+        [{ 'category': 'server', 'type': 'IM' }],
+        ['urn:xmpp:blocking']
+    );
+    const connection = api.connection.get();
+    const IQ_stanzas = connection.IQ_stanzas;
+    const sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
+
+    connection._dataRecv(mock.createRequest(stx`
+            <iq xmlns="jabber:client"
+                to="${connection.jid}"
+                type="result"
+                id="${sent_stanza.getAttribute('id')}">
+            <blocklist xmlns='urn:xmpp:blocking'>
+                ${blocklist.map((jid) => stx`<item jid='${jid}'/>`)}
+            </blocklist>
+        </iq>`));
+
+    return await api.waitUntil('blocklistInitialized');
+}
+
 async function waitUntilBookmarksReturned (
     _converse,
     bookmarks=[],
@@ -865,6 +892,7 @@ Object.assign(mock, {
     view_mode,
     waitForReservedNick,
     waitForRoster,
+    waitUntilBlocklistInitialized,
     waitUntilBookmarksReturned,
     waitUntilDiscoConfirmed
 });

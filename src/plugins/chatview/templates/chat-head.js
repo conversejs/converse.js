@@ -17,7 +17,6 @@ export default (el) => {
 
     const i18n_profile = __("The User's Profile Image");
     const display_name = el.model.getDisplayName();
-    debugger;
     const avatar = html`<span title="${i18n_profile}">
         <converse-avatar
             .model=${el.model.contact || el.model}

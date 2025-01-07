@@ -57,6 +57,18 @@ export default {
         },
 
         /**
+         * Remove a contact from the roster
+         * @param {string} jid
+         * @param {boolean} [unsubscribe] - Whether we should unsubscribe
+         * from the contact's presence updates.
+         */
+        async remove (jid, unsubscribe) {
+            await api.waitUntil('rosterContactsFetched');
+            const contact = await api.contacts.get(jid);
+            contact.remove(unsubscribe);
+        },
+
+        /**
          * Add a contact.
          * @param {import('./types').RosterContactAttributes} attributes
          * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.

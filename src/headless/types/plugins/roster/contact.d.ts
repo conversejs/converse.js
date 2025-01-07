@@ -116,19 +116,25 @@ declare class RosterContact extends RosterContact_base {
     ackUnsubscribe(): void;
     /**
      * Unauthorize this contact's presence subscription
-     * @param {string} message - Optional message to send to the person being unauthorized
+     * @param {string} [message] - Optional message to send to the person being unauthorized
      */
-    unauthorize(message: string): this;
+    unauthorize(message?: string): this;
     /**
      * Authorize presence subscription
      * @param {string} message - Optional message to send to the person being authorized
      */
     authorize(message: string): this;
     /**
+     * Remove this contact from the roster
+     * @param {boolean} unauthorize - Whether to also unauthorize the
+     */
+    remove(unauthorize: boolean): void;
+    /**
      * Instruct the XMPP server to remove this contact from our roster
+     * @async
      * @returns {Promise}
      */
-    removeFromRoster(): Promise<any>;
+    sendRosterRemoveStanza(): Promise<any>;
 }
 import { Model } from '@converse/skeletor';
 //# sourceMappingURL=contact.d.ts.map

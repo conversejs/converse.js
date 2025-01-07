@@ -1,4 +1,7 @@
-export function removeContact(contact: any): void;
+/**
+ * @param {RosterContact} contact
+ */
+export function removeContact(contact: RosterContact): Promise<void>;
 export function highlightRosterItem(chatbox: any): void;
 export function toggleGroup(ev: any, name: any): void;
 /**

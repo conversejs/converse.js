@@ -101,7 +101,9 @@ export default class ChatHeading extends CustomElement {
                             [__('Are you sure you want to block this user?')]
                         );
                         if (result) {
-                            api.blocklist.add(this.model.get('jid'));
+                            const jid = this.model.get('jid');
+                            api.blocklist.add(jid);
+                            api.contacts.remove(jid, true);
                             this.model.close();
                         }
                     },

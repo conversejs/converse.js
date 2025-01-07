@@ -68,18 +68,10 @@ export default class RosterContact extends CustomElement {
 
         const chat = await api.chats.get(this.model.get('jid'));
         chat?.close();
-
         try {
-            if (this.model.get('subscription') === 'none' && this.model.get('ask') !== 'subscribe') {
-                this.model.destroy();
-            } else {
-                this.model.removeFromRoster();
-                if (this.model.collection) {
-                    // The model might have already been removed as
-                    // result of a roster push.
-                    this.model.destroy();
-                }
-            }
+            // TODO: ask user whether they want to unauthorize the contact's
+            // presence request as well.
+            this.model.remove();
         } catch (e) {
             log.error(e);
             api.alert('error', __('Error'),

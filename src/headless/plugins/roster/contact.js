@@ -128,13 +128,13 @@ class RosterContact extends ColorAwareModel(Model) {
      */
     ackUnsubscribe () {
         api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
-        this.removeFromRoster();
+        this.sendRosterRemoveStanza();
         this.destroy();
     }
 
     /**
      * Unauthorize this contact's presence subscription
-     * @param {string} message - Optional message to send to the person being unauthorized
+     * @param {string} [message] - Optional message to send to the person being unauthorized
      */
     unauthorize (message) {
         rejectPresenceSubscription(this.get('jid'), message);
@@ -154,11 +154,40 @@ class RosterContact extends ColorAwareModel(Model) {
         return this;
     }
 
+
+    /**
+     * Remove this contact from the roster
+     * @param {boolean} unauthorize - Whether to also unauthorize the
+     */
+    remove (unauthorize) {
+        const subscription = this.get('subscription');
+        if (subscription === 'none' && this.get('ask') !== 'subscribe') {
+            this.destroy();
+            return;
+        }
+
+        if (unauthorize) {
+            if (subscription === 'from') {
+                this.unauthorize();
+            } else if (subscription === 'both') {
+                this.unauthorize();
+            }
+        }
+
+        this.sendRosterRemoveStanza();
+        if (this.collection) {
+            // The model might have already been removed as
+            // result of a roster push.
+            this.destroy();
+        }
+    }
+
     /**
      * Instruct the XMPP server to remove this contact from our roster
+     * @async
      * @returns {Promise}
      */
-    removeFromRoster () {
+    sendRosterRemoveStanza () {
         const iq = $iq({type: 'set'})
             .c('query', {xmlns: Strophe.NS.ROSTER})
             .c('item', {jid: this.get('jid'), subscription: "remove"});

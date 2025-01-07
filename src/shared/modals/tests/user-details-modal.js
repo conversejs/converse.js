@@ -21,7 +21,7 @@ describe("The User Details Modal", function () {
         await u.waitUntil(() => u.isVisible(modal), 1000);
         spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
 
-        spyOn(view.model.contact, 'removeFromRoster').and.callFake(callback => callback());
+        spyOn(view.model.contact, 'sendRosterRemoveStanza').and.callFake(callback => callback());
         let remove_contact_button = modal.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
         remove_contact_button.click();
@@ -48,7 +48,7 @@ describe("The User Details Modal", function () {
         await u.waitUntil(() => u.isVisible(modal), 2000);
         spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
 
-        spyOn(view.model.contact, 'removeFromRoster').and.callFake((callback, errback) => errback());
+        spyOn(view.model.contact, 'sendRosterRemoveStanza').and.callFake((callback, errback) => errback());
         let remove_contact_button = modal.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
         remove_contact_button.click();

@@ -33,6 +33,13 @@ declare namespace _default {
          */
         function get(jids: (string[] | string)): Promise<any>;
         /**
+         * Remove a contact from the roster
+         * @param {string} jid
+         * @param {boolean} [unsubscribe] - Whether we should unsubscribe
+         * from the contact's presence updates.
+         */
+        function remove(jid: string, unsubscribe?: boolean): Promise<void>;
+        /**
          * Add a contact.
          * @param {import('./types').RosterContactAttributes} attributes
          * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.

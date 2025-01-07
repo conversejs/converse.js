@@ -700,7 +700,7 @@ describe("The Contacts Roster", function () {
             const contact = _converse.roster.get(jid);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
             spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
-            spyOn(contact, 'removeFromRoster').and.callThrough();
+            spyOn(contact, 'sendRosterRemoveStanza').and.callThrough();
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle(`.pending-xmpp-contact .contact-name:contains("${name}")`, rosterview).length, 500);
             let sent_IQ;
@@ -711,7 +711,7 @@ describe("The Contacts Roster", function () {
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
             await u.waitUntil(() => !sizzle(`.pending-xmpp-contact .contact-name:contains("${name}")`, rosterview).length, 500);
             expect(_converse.api.confirm).toHaveBeenCalled();
-            expect(contact.removeFromRoster).toHaveBeenCalled();
+            expect(contact.sendRosterRemoveStanza).toHaveBeenCalled();
             expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
@@ -913,7 +913,7 @@ describe("The Contacts Roster", function () {
             const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
-            spyOn(contact, 'removeFromRoster').and.callThrough();
+            spyOn(contact, 'sendRosterRemoveStanza').and.callThrough();
 
             let sent_IQ;
             spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((iq, callback) => {
@@ -928,7 +928,7 @@ describe("The Contacts Roster", function () {
                 `<iq type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster"><item jid="mercutio@montague.lit" subscription="remove"/></query>`+
                 `</iq>`);
-            expect(contact.removeFromRoster).toHaveBeenCalled();
+            expect(contact.sendRosterRemoveStanza).toHaveBeenCalled();
             await u.waitUntil(() => sizzle(".open-chat:contains('"+name+"')", rosterview).length === 0);
         }));
 
@@ -949,13 +949,13 @@ describe("The Contacts Roster", function () {
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => sizzle('.roster-group', rosterview).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
             spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
-            spyOn(contact, 'removeFromRoster').and.callThrough();
+            spyOn(contact, 'sendRosterRemoveStanza').and.callThrough();
             spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((_iq, callback) => callback?.());
             expect(u.isVisible(rosterview.querySelector('.roster-group'))).toBe(true);
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
             expect(_converse.api.confirm).toHaveBeenCalled();
             await u.waitUntil(() => _converse.api.connection.get().sendIQ.calls.count());
-            expect(contact.removeFromRoster).toHaveBeenCalled();
+            expect(contact.sendRosterRemoveStanza).toHaveBeenCalled();
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length === 0);
         }));
 

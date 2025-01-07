@@ -9,17 +9,21 @@ import { _converse, api, converse, log, constants } from "@converse/headless";
 const { Strophe } = converse.env;
 const { STATUS_WEIGHTS } = constants;
 
-export function removeContact (contact) {
-    contact.removeFromRoster(
-        () => contact.destroy(),
-        (e) => {
-            e && log.error(e);
-            api.alert('error', __('Error'), [
-                __('Sorry, there was an error while trying to remove %1$s as a contact.',
-                contact.getDisplayName())
-            ]);
-        }
-    );
+/**
+ * @param {RosterContact} contact
+ */
+export async function removeContact (contact) {
+    try {
+        await contact.sendRosterRemoveStanza();
+    } catch (e) {
+        log.error(e);
+        api.alert('error', __('Error'), [
+            __('Sorry, there was an error while trying to remove %1$s as a contact.',
+            contact.getDisplayName())
+        ]);
+    } finally {
+        contact.destroy();
+    }
 }
 
 export function highlightRosterItem (chatbox) {

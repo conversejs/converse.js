@@ -1,0 +1,6 @@
+ # Add files and directories to ignore by Aider
+ node_modules/
+ dist/
+ build/
+ *.log
+ *.tmp

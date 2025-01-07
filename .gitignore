@@ -67,3 +67,4 @@ node_modules
 # Builds
 .sv?
 /vendor/
+.aider*

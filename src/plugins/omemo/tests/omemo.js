@@ -1109,6 +1109,7 @@ describe("The OMEMO module", function() {
     it("shows OMEMO device fingerprints in the user details modal",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
+        await mock.waitUntilBlocklistInitialized(_converse);
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,

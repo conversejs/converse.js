@@ -191,6 +191,7 @@ describe("Chatboxes", function () {
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
+            await mock.waitUntilBlocklistInitialized(_converse);
             await mock.openControlBox(_converse);
             const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const rosterview = document.querySelector('converse-roster');

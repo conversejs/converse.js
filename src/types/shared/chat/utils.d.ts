@@ -2,12 +2,20 @@
  * @param {Model} model
  */
 export function getUnreadMsgsDisplay(model: Model): any;
-export function getHeadingDropdownItem(promise_or_data: any): Promise<import("lit").TemplateResult<1> | "">;
-export function getHeadingStandaloneButton(promise_or_data: any): Promise<import("lit").TemplateResult<1>>;
 /**
- * @param {Promise<Array<object>>} promise
+ * @param {Promise<HeadingButtonAttributes>|HeadingButtonAttributes} promise_or_data
+ * @returns {Promise<TemplateResult|''>}
  */
-export function getStandaloneButtons(promise: Promise<Array<object>>): Promise<import("lit/directive.js").DirectiveResult<typeof import("lit/directives/until.js").UntilDirective>[]>;
+export function getHeadingDropdownItem(promise_or_data: Promise<HeadingButtonAttributes> | HeadingButtonAttributes): Promise<TemplateResult | "">;
+/**
+ * @param {Promise<HeadingButtonAttributes>|HeadingButtonAttributes} promise_or_data
+ * @returns {Promise<TemplateResult>}
+ */
+export function getHeadingStandaloneButton(promise_or_data: Promise<HeadingButtonAttributes> | HeadingButtonAttributes): Promise<TemplateResult>;
+/**
+ * @param {Promise<Array<HeadingButtonAttributes>>} promise
+ */
+export function getStandaloneButtons(promise: Promise<Array<HeadingButtonAttributes>>): Promise<import("lit/directive.js").DirectiveResult<typeof import("lit/directives/until.js").UntilDirective>[]>;
 /**
  * @param {Promise<Array<object>>} promise
  */
@@ -34,7 +42,11 @@ export function getTonedEmojis(): any;
  * @param {EmojiMarkupOptions} options
  */
 export function getEmojiMarkup(data: object, options?: EmojiMarkupOptions): any;
-export function addEmojisMarkup(text: any, options: any): any[];
+/**
+ * @param {string} text
+ * @param {object} options
+ */
+export function addEmojisMarkup(text: string, options: object): string[];
 /**
  * Returns an emoji represented by the passed in shortname.
  * Scans the passed in text for shortnames and replaces them with
@@ -48,14 +60,14 @@ export function addEmojisMarkup(text: any, options: any): any[];
  *
  * @namespace u
  * @method u.shortnamesToEmojis
- * @param { String } str - String containg the shortname(s)
- * @param { Object } options
- * @param { Boolean } options.unicode_only - Whether emojis are rendered as
+ * @param {String} str - String containg the shortname(s)
+ * @param {Object} options
+ * @param {Boolean} options.unicode_only - Whether emojis are rendered as
  *  unicode codepoints. If so, the returned result will be an array
  *  with containing one string, because the emojis themselves will
  *  also be strings. If set to false, emojis will be represented by
  *  lit TemplateResult objects.
- * @param { Boolean } options.add_title_wrapper - Whether unicode
+ * @param {Boolean} options.add_title_wrapper - Whether unicode
  *  codepoints should be wrapped with a `<span>` element with a
  *  title, so that the shortname is shown upon hovering with the
  *  mouse.
@@ -77,6 +89,7 @@ export type EmojiMarkupOptions = {
     unicode_only?: boolean;
     add_title_wrapper?: boolean;
 };
+export type HeadingButtonAttributes = import("plugins/chatview/types").HeadingButtonAttributes;
 export type ChatView = import("../../plugins/chatview/chat.js").default;
 export type MUCView = import("../../plugins/muc-views/muc.js").default;
 export type MUCOccupantView = import("../../plugins/muc-views/occupant").default;

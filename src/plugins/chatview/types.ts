@@ -1,6 +1,6 @@
 export type HeadingButtonAttributes = {
     standalone: boolean; // True if shown on its own, false if it must be in the dropdown menu.
-    handler: () => void; // A handler function to be called when the button is clicked.
+    handler: (ev: Event) => void; // A handler function to be called when the button is clicked.
     a_class: string; // HTML classes to show on the button
     i18n_text: string; // The user-visible name of the button
     i18n_title: string; // The tooltip text for this button

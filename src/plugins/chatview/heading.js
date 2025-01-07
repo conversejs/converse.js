@@ -38,11 +38,7 @@ export default class ChatHeading extends CustomElement {
     }
 
     render () {
-        return tplChatboxHead(Object.assign(this.model.toJSON(), {
-            heading_buttons_promise: this.getHeadingButtons(),
-            model: this.model,
-            showUserDetailsModal: ev => this.showUserDetailsModal(ev),
-        }));
+        return tplChatboxHead(this);
     }
 
     showUserDetailsModal (ev) {
@@ -58,18 +54,19 @@ export default class ChatHeading extends CustomElement {
     /**
      * Returns a list of objects which represent buttons for the chat's header.
      * @emits _converse#getHeadingButtons
+     * @returns {Promise<Array.<import('./types').HeadingButtonAttributes>>}
      */
     async getHeadingButtons () {
         const buttons = [
             /** @type {import('./types').HeadingButtonAttributes} */
             {
-                'a_class': 'show-user-details-modal',
-                'handler': /** @param {Event} ev */(ev) => this.showUserDetailsModal(ev),
-                'i18n_text': __('Details'),
-                'i18n_title': __('See more information about this person'),
-                'icon_class': 'fa-id-card',
-                'name': 'details',
-                'standalone': api.settings.get('view_mode') === 'overlayed'
+                a_class: 'show-user-details-modal',
+                handler: /** @param {Event} ev */(ev) => this.showUserDetailsModal(ev),
+                i18n_text: __('Details'),
+                i18n_title: __('See more information about this person'),
+                icon_class: 'fa-id-card',
+                name: 'details',
+                standalone: api.settings.get('view_mode') === 'overlayed'
             },
         ];
 
@@ -77,8 +74,8 @@ export default class ChatHeading extends CustomElement {
             const blocklist = await api.blocklist.get();
             if (blocklist.get(this.model.get('jid'))) {
                 buttons.push({
-                    'a_class': 'unblock-user',
-                    'handler': /** @param {Event} ev */ async (ev) => {
+                    a_class: 'unblock-user',
+                    handler: /** @param {Event} ev */ async (ev) => {
                         ev.preventDefault();
                         const result = await api.confirm(
                             __('Unblock user'),
@@ -88,16 +85,16 @@ export default class ChatHeading extends CustomElement {
                             api.blocklist.remove(this.model.get('jid'));
                         }
                     },
-                    'i18n_text': __('Unblock this user'),
-                    'i18n_title': __('Allow this user to send you messages'),
-                    'icon_class': 'fa-check',
-                    'name': 'unblock',
-                    'standalone': false
+                    i18n_text: __('Unblock this user'),
+                    i18n_title: __('Allow this user to send you messages'),
+                    icon_class: 'fa-check',
+                    name: 'unblock',
+                    standalone: false
                 });
             } else {
                 buttons.push({
-                    'a_class': 'block-user',
-                    'handler': /** @param {Event} ev */ async (ev) => {
+                    a_class: 'block-user',
+                    handler: /** @param {Event} ev */ async (ev) => {
                         ev.preventDefault();
                         const result = await api.confirm(
                             __('Block user'),
@@ -108,24 +105,24 @@ export default class ChatHeading extends CustomElement {
                             this.model.close();
                         }
                     },
-                    'i18n_text': __('Block this user'),
-                    'i18n_title': __('Prevent this user from sending you any further messages'),
-                    'icon_class': 'fa-trash',
-                    'name': 'block',
-                    'standalone': false
+                    i18n_text: __('Block this user'),
+                    i18n_title: __('Prevent this user from sending you any further messages'),
+                    icon_class: 'fa-trash',
+                    name: 'block',
+                    standalone: false
                 });
             }
         }
 
         if (!api.settings.get('singleton')) {
             buttons.push({
-                'a_class': 'close-chatbox-button',
-                'handler': /** @param {Event} ev */(ev) => this.close(ev),
-                'i18n_text': __('Close'),
-                'i18n_title': __('Close and end this conversation'),
-                'icon_class': 'fa-times',
-                'name': 'close',
-                'standalone': api.settings.get('view_mode') === 'overlayed'
+                a_class: 'close-chatbox-button',
+                handler: /** @param {Event} ev */(ev) => this.close(ev),
+                i18n_text: __('Close'),
+                i18n_title: __('Close and end this conversation'),
+                icon_class: 'fa-times',
+                name: 'close',
+                standalone: api.settings.get('view_mode') === 'overlayed'
             });
         }
         const { chatboxviews } = _converse.state;

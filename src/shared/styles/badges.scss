@@ -30,11 +30,11 @@
     }
 
     .badge-secondary {
-        background-color: var(--secondary-color-color);
-        border-color: var(--secondary-color-color);
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
         &:hover {
-            background-color: var(--secondary-color-color-dark);
-            border-color: var(--secondary-color-color-dark);
+            background-color: var(--secondary-color-dark);
+            border-color: var(--secondary-color-dark);
         }
     }
 }

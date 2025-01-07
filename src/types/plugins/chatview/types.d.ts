@@ -1,6 +1,6 @@
 export type HeadingButtonAttributes = {
     standalone: boolean;
-    handler: () => void;
+    handler: (ev: Event) => void;
     a_class: string;
     i18n_text: string;
     i18n_title: string;

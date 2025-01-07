@@ -1,4 +1,5 @@
 /**
+ * @typedef {import('plugins/chatview/types').HeadingButtonAttributes} HeadingButtonAttributes
  * @typedef {import('../../plugins/chatview/chat.js').default} ChatView
  * @typedef {import('../../plugins/muc-views/muc.js').default} MUCView
  * @typedef {import('../../plugins/muc-views/occupant').default} MUCOccupantView
@@ -24,6 +25,10 @@ export function getUnreadMsgsDisplay (model) {
     return num_unread < 100 ? num_unread : '99+';
 }
 
+/**
+ * @param {Promise<HeadingButtonAttributes>|HeadingButtonAttributes} promise_or_data
+ * @returns {Promise<TemplateResult|''>}
+ */
 export async function getHeadingDropdownItem (promise_or_data) {
     const data = await promise_or_data;
     return data
@@ -41,6 +46,10 @@ export async function getHeadingDropdownItem (promise_or_data) {
         : '';
 }
 
+/**
+ * @param {Promise<HeadingButtonAttributes>|HeadingButtonAttributes} promise_or_data
+ * @returns {Promise<TemplateResult>}
+ */
 export async function getHeadingStandaloneButton (promise_or_data) {
     const data = await promise_or_data;
     return html`
@@ -56,7 +65,7 @@ export async function getHeadingStandaloneButton (promise_or_data) {
 }
 
 /**
- * @param {Promise<Array<object>>} promise
+ * @param {Promise<Array<HeadingButtonAttributes>>} promise
  */
 export async function getStandaloneButtons (promise) {
     const btns = await promise;
@@ -172,6 +181,11 @@ export function getHats (message) {
     return [];
 }
 
+/**
+ * @template {any} T
+ * @param {Array<T>} arr
+ * @returns {Array<T>} A new array containing only unique elements from the input array.
+ */
 function unique (arr) {
     return [...new Set(arr)];
 }
@@ -229,6 +243,10 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
     }
 }
 
+/**
+ * @param {string} text
+ * @param {object} options
+ */
 export function addEmojisMarkup (text, options) {
     let list = [text];
     [...getShortnameReferences(text), ...getCodePointReferences(text)]
@@ -258,14 +276,14 @@ export function addEmojisMarkup (text, options) {
  *
  * @namespace u
  * @method u.shortnamesToEmojis
- * @param { String } str - String containg the shortname(s)
- * @param { Object } options
- * @param { Boolean } options.unicode_only - Whether emojis are rendered as
+ * @param {String} str - String containg the shortname(s)
+ * @param {Object} options
+ * @param {Boolean} options.unicode_only - Whether emojis are rendered as
  *  unicode codepoints. If so, the returned result will be an array
  *  with containing one string, because the emojis themselves will
  *  also be strings. If set to false, emojis will be represented by
  *  lit TemplateResult objects.
- * @param { Boolean } options.add_title_wrapper - Whether unicode
+ * @param {Boolean} options.add_title_wrapper - Whether unicode
  *  codepoints should be wrapped with a `<span>` element with a
  *  title, so that the shortname is shown upon hovering with the
  *  mouse.

@@ -9,7 +9,7 @@ const { Strophe, $build, $iq, sizzle } = converse.env;
  * @memberOf _converse
  */
 class DeviceList extends Model {
-    get idAttribute () { // eslint-disable-line class-methods-use-this
+    get idAttribute () {
         return 'jid';
     }
 

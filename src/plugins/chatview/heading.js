@@ -70,7 +70,8 @@ export default class ChatHeading extends CustomElement {
             },
         ];
 
-        if (await api.disco.supports(Strophe.NS.BLOCKING, _converse.session.get('domain'))) {
+        const domain = _converse.session.get('domain');
+        if (domain && await api.disco.supports(Strophe.NS.BLOCKING, domain)) {
             const blocklist = await api.blocklist.get();
             if (blocklist.get(this.model.get('jid'))) {
                 buttons.push({

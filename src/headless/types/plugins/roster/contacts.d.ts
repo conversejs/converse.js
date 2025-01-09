@@ -4,6 +4,10 @@ declare class RosterContacts extends Collection {
     model: typeof RosterContact;
     data: any;
     state: Model;
+    /**
+     * @param {import('../../shared/chatbox').default} model
+     */
+    onChatBoxClosed(model: import("../../shared/chatbox").default): void;
     onConnected(): void;
     /**
      * Register a handler for roster IQ "set" stanzas, which update

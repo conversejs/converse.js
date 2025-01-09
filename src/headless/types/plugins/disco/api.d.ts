@@ -119,13 +119,13 @@ declare namespace _default {
                 name: string;
             }, options?: {
                 ignore_cache?: boolean;
-            }): false | import("@converse/skeletor").Model | import("@converse/skeletor/src/types/collection.js").Attributes | (Promise<any> & {
+            }): false | import("@converse/skeletor").Model | (Promise<any> & {
                 isResolved: boolean;
                 isPending: boolean;
                 isRejected: boolean;
                 resolve: Function;
                 reject: Function;
-            });
+            }) | import("@converse/skeletor/src/types/collection.js").Attributes;
         }
         export namespace features_1 {
             /**

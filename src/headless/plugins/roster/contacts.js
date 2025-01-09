@@ -124,10 +124,11 @@ class RosterContacts extends Collection {
         const { xmppstatus } = _converse.state;
         Array.from(msg.querySelectorAll('item')).forEach((item) => {
             if (item.getAttribute('action') === 'add') {
-                _converse.state.roster.addContact(
+                this.addContact(
                     {
                         jid: item.getAttribute('jid'),
                         name: xmppstatus.getNickname() || xmppstatus.getFullname(),
+                        subscription: 'to',
                     },
                 );
             }
@@ -144,7 +145,7 @@ class RosterContacts extends Collection {
 
     /**
      * Send an IQ stanza to the XMPP server to add a new roster contact.
-     * @param {import('./types.ts').RosterContactAttributes} attributes
+     * @param {import('./types').RosterContactAttributes} attributes
      */
     sendContactAddIQ (attributes) {
         const { jid, groups } = attributes;
@@ -158,7 +159,7 @@ class RosterContacts extends Collection {
      * Adds a {@link RosterContact} instance to {@link RosterContacts} and
      * optionally (if subscribe=true) subscribe to the contact's presence
      * updates which also adds the contact to the roster on the XMPP server.
-     * @param {import('./types.ts').RosterContactAttributes} attributes
+     * @param {import('./types').RosterContactAttributes} attributes
      * @param {boolean} [persist=true] - Whether the contact should be persisted to the user's roster.
      * @param {boolean} [subscribe=true] - Whether we should subscribe to the contacts presence updates.
      * @param {string} [message=''] - An optional message to include with the presence subscription
@@ -187,7 +188,7 @@ class RosterContacts extends Collection {
                     nickname: name,
                     groups: [],
                     requesting: false,
-                    subscription: 'none',
+                    subscription: subscribe ? 'to' : 'none',
                 },
                 ...attributes,
             },
@@ -356,14 +357,14 @@ class RosterContacts extends Collection {
      * @param {Element} presence
      */
     createRequestingContact (presence) {
-        const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
+        const jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
         const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
         const user_data = {
-            'jid': bare_jid,
-            'subscription': 'none',
-            'ask': null,
-            'requesting': true,
-            'nickname': nickname,
+            jid,
+            subscription: 'none',
+            ask: null,
+            requesting: true,
+            nickname: nickname,
         };
         /**
          * Triggered when someone has requested to subscribe to your presence (i.e. to be your contact).

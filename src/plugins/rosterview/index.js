@@ -7,6 +7,7 @@ import RosterContactView from './contactview.js';
 import { highlightRosterItem } from './utils.js';
 import "../modal";
 import "./modals/add-contact.js";
+import "./modals/new-chat.js";
 import './rosterview.js';
 
 import 'shared/styles/status.scss';

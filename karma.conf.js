@@ -126,6 +126,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/roomslist/tests/grouplists.js", type: 'module' },
       { pattern: "src/plugins/rootview/tests/root.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/add-contact-modal.js", type: 'module' },
+      { pattern: "src/plugins/rosterview/tests/new-chat-modal.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/presence.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/protocol.js", type: 'module' },
       { pattern: "src/plugins/rosterview/tests/roster.js", type: 'module' },

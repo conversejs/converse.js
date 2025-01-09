@@ -10,12 +10,16 @@
 - #1057: Removed the `mobile` view mode. Instead of setting `view_mode` to `mobile`, set it to `fullscreen`.
 - #1174: Show MUC avatars in the rooms list
 - #1195: Add actions to quote and copy messages
+- #1303: Display non-contacts who sent us a message somehow in fullscreen 
 - #1349: XEP-0392 Consistent Color Generation
+- #2383: Add modal to start chats with JIDs not in the roster
 - #2586: Add support for XEP-0402 Bookmarks
 - #2623: Merge MUC join and bookmark, leave and unset autojoin 
 - #2716: Fix issue with chat display when opening via URL
 - #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
+- #3038: Message to self from other client is ignored
+- #3038: Support showing yourself in the MUC sidebar. Adds new config option `muc_show_self`.
 - #3100: fixed width `.box-flyout` breaks responsive design in embedded, mobile viewport mode.
 - #3155: Some ad-hoc commands not working
 - #3155: Some adhoc commands aren't working

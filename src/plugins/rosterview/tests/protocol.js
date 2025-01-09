@@ -2,7 +2,7 @@
 
 // See: https://xmpp.org/rfcs/rfc3921.html
 
-const { Strophe, stx } = converse.env;
+const { u, $iq, $pres, sizzle, Strophe, stx } = converse.env;
 
 describe("The Protocol", function () {
 
@@ -40,7 +40,6 @@ describe("The Protocol", function () {
         it("Subscribe to contact, contact accepts and subscribes back",
                 mock.initConverse([], { roster_groups: false }, async function (_converse) {
 
-            const { u, $iq, $pres, sizzle, Strophe } = converse.env;
             let stanza;
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
@@ -51,7 +50,6 @@ describe("The Protocol", function () {
             mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
 
-            spyOn(_converse.roster, "addContact").and.callThrough();
             spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
             spyOn(_converse.api.vcard, "get").and.callThrough();
 
@@ -74,7 +72,6 @@ describe("The Protocol", function () {
              * subscription, the user's client SHOULD perform a "roster set"
              * for the new roster item.
              */
-            expect(_converse.roster.addContact).toHaveBeenCalled();
 
             /* The request consists of sending an IQ
              * stanza of type='set' containing a <query/> element qualified by
@@ -100,14 +97,14 @@ describe("The Protocol", function () {
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const roster_set_stanza = IQ_stanzas.filter(s => sizzle('query[xmlns="jabber:iq:roster"]', s)).pop();
 
-            expect(Strophe.serialize(roster_set_stanza)).toBe(
-                `<iq id="${roster_set_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="jabber:iq:roster">`+
-                        `<item jid="contact@example.org" name="Chris Contact">`+
-                            `<group>My Buddies</group>`+
-                        `</item>`+
-                    `</query>`+
-                `</iq>`
+            expect(roster_set_stanza).toEqualStanza(
+                stx`<iq id="${roster_set_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
+                    <query xmlns="jabber:iq:roster">
+                        <item jid="contact@example.org" name="Chris Contact">
+                            <group>My Buddies</group>
+                        </item>
+                    </query>
+                </iq>`
             );
 
             const sent_stanzas = [];

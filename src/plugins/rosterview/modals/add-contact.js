@@ -49,10 +49,10 @@ export default class AddContactModal extends BaseModal {
      */
     async afterSubmission (_form, jid, name, group) {
         try {
-            await api.roster.add({ jid, name, groups: Array.isArray(group) ? group : [group] });
+            await api.contacts.add({ jid, name, groups: Array.isArray(group) ? group : [group] });
         } catch (e) {
             log.error(e);
-            this.model.set('error', __('Sorry, something went wrong while adding the contact'));
+            this.model.set('error', __('Sorry, something went wrong'));
             return;
         }
         this.model.clear();

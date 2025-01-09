@@ -22,7 +22,7 @@ export default (el) => {
 
     return html`
         <div class="modal-body">
-            <span class="modal-alert"></span>
+            ${error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : ''}
             <form class="converse-form add-xmpp-contact" @submit=${ev => el.addContactFromForm(ev)}>
                 <div class="add-xmpp-contact__jid mb-3">
                     <label class="form-label clearfix" for="jid">${i18n_xmpp_address}:</label>
@@ -67,7 +67,6 @@ export default (el) => {
                         .list=${getGroupsAutoCompleteList()}
                         name="group"></converse-autocomplete>
                 </div>
-                ${error ? html`<div><div style="display: block" class="invalid-feedback">${error}</div></div>` : ''}
                 <button type="submit" class="btn btn-primary">${i18n_add}</button>
             </form>
         </div>`;

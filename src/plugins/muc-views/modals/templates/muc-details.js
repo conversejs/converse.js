@@ -11,7 +11,7 @@ const subject = (model) => {
     const i18n_topic = __('Topic');
     const i18n_topic_author = __('Topic author');
     return html`
-        <p class="room-info"><strong>${i18n_topic}</strong>: <converse-rich-text text=${subject.text} render_styling></converse-rich-text></p>
+        <p class="room-info"><strong>${i18n_topic}</strong>: <converse-texture text=${subject.text} render_styling></converse-texture></p>
         <p class="room-info"><strong>${i18n_topic_author}</strong>: ${subject && subject.author}</p>
     `;
 }
@@ -66,9 +66,9 @@ export default (model) => {
                 height="72" width="72"></converse-avatar>
 
             <p class="room-info"><strong>${i18n_name}</strong>: ${model.get('name')}</p>
-            <p class="room-info"><strong>${i18n_address}</strong>: <converse-rich-text text="xmpp:${model.get('jid')}?join"></converse-rich-text></p>
+            <p class="room-info"><strong>${i18n_address}</strong>: <converse-texture text="xmpp:${model.get('jid')}?join"></converse-texture></p>
             <br/>
-            <p class="room-info"><strong>${i18n_desc}</strong>: <converse-rich-text text="${config.description}" render_styling></converse-rich-text></p>
+            <p class="room-info"><strong>${i18n_desc}</strong>: <converse-texture text="${config.description}" render_styling></converse-texture></p>
             ${ (model.get('subject')) ? subject(model) : '' }
             <p class="room-info"><strong>${i18n_online_users}</strong>: ${num_occupants}</p>
             <p class="room-info"><strong>${i18n_features}</strong>:

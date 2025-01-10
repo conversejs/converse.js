@@ -1,10 +1,10 @@
-import 'shared/components/dropdown.js';
-import 'shared/components/rich-text.js';
+import { html } from "lit";
+import { until } from 'lit/directives/until.js';
 import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless";
 import { getStandaloneButtons, getDropdownButtons } from 'shared/chat/utils.js';
-import { html } from "lit";
-import { until } from 'lit/directives/until.js';
+import 'shared/components/dropdown.js';
+import 'shared/texture/component.js';
 
 /** @param {import('../heading').default} el} */
 export default (el) => {
@@ -52,7 +52,7 @@ export default (el) => {
             </div>
         </div>
         ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">
-            <converse-rich-text text=${subject} render_styling></converse-rich-text>
+            <converse-texture text=${subject} render_styling></converse-texture>
           </p>` : '' }
     `;
 }

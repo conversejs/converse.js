@@ -1,8 +1,8 @@
+import { api } from "@converse/headless";
 import 'shared/registry.js';
 import 'shared/modals/image.js';
-import renderRichText from 'shared/directives/rich-text.js';
 import { CustomElement } from 'shared/components/element.js';
-import { api } from "@converse/headless";
+import renderTexture from 'shared/texture/directive.js';
 
 import './styles/message-body.scss';
 
@@ -65,7 +65,7 @@ export default class MessageBody extends CustomElement {
             options.embed_videos = false;
             options.show_images = false;
         }
-        return renderRichText(this.text, offset, options, callback);
+        return renderTexture(this.text, offset, options, callback);
     }
 }
 

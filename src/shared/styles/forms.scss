@@ -31,19 +31,6 @@
                 color: var(--text-color);
                 background-color: var(--background-color);
             }
-
-            &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-                color: var(--secondary-color);
-            }
-            &::-moz-placeholder { /* Firefox 19+ */
-                color: var(--secondary-color);
-            }
-            &:-ms-input-placeholder { /* IE 10+ */
-                color: var(--secondary-color);
-            }
-            &:-moz-placeholder { /* Firefox 18- */
-                color: var(--secondary-color);
-            }
             &::placeholder {
                 color: var(--secondary-color);
             }
@@ -55,12 +42,11 @@
 
         .btn-group {
             .clear-input {
-                margin-top: 0.5em;
-                margin-bottom : 0.5em;
-                position: absolute;
-                right: 0.2em;
                 cursor: pointer;
                 font-size: var(--font-size);
+                margin-top: 0.4em;
+                position: absolute;
+                right: 0.2em;
             }
         }
 

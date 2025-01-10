@@ -46,21 +46,28 @@
 
             converse-roster-contact {
                 width: 100%;
+                margin: 0;
+                padding: 0;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 display: flex;
                 justify-content: space-between;
 
-                .list-item-action {
-                    line-height: 2em;
-                }
-
-                &:hover {
+                .contact-actions {
                     .list-item-action {
-                        opacity: 1;
+                        line-height: 2em;
+                    }
+                    &:hover {
+                        .list-item-action {
+                            opacity: 1;
+                        }
+                    }
+                    converse-icon {
+                        padding-top: 0.5em;
                     }
                 }
+
             }
 
             .group-toggle {
@@ -77,11 +84,12 @@
                 }
             }
 
-            .current-xmpp-contact {
-                margin: 0.25em 0;
-            }
-
             .list-item {
+
+                .list-item-link {
+                    margin: 0;
+                }
+
                 &.requesting-xmpp-contact {
                     a {
                         line-height: var(--line-height);
@@ -89,8 +97,6 @@
                 }
 
                 .open-chat {
-                    margin: 0;
-                    padding: 0;
                     converse-icon.chat-status {
                         position: relative;
                         border: 2px solid var(--background-color);
@@ -108,8 +114,6 @@
                     }
 
                     .contact-name {
-                        padding: 0;
-                        margin: 0;
                         max-width: 85%;
                         float: none;
                         height: 100%;

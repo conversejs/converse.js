@@ -21,6 +21,7 @@
 - #3038: Message to self from other client is ignored
 - #3038: Support showing yourself in the MUC sidebar. Adds new config option `muc_show_self`.
 - #3100: fixed width `.box-flyout` breaks responsive design in embedded, mobile viewport mode.
+- #3038: Support showing yourself in the MUC sidebar. Adds new config option `muc_show_self`.
 - #3155: Some ad-hoc commands not working
 - #3155: Some adhoc commands aren't working
 - #3299: Registration fails when a password contains an &

@@ -1,8 +1,5 @@
 /*global mock, converse */
-
-const Strophe = converse.env.Strophe;
-const $iq = converse.env.$iq;
-const u = converse.env.utils;
+const { stx, Strophe, $iq, u } = converse.env;
 
 describe("XEP-0363: HTTP File Upload", function () {
 
@@ -15,59 +12,37 @@ describe("XEP-0363: HTTP File Upload", function () {
             let selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
             let stanza = await u.waitUntil(() => IQ_stanzas.find(iq => iq.querySelector(selector)), 1000);
 
-            /* <iq type='result'
-             *      from='plays.shakespeare.lit'
-             *      to='romeo@montague.net/orchard'
-             *      id='info1'>
-             *  <query xmlns='http://jabber.org/protocol/disco#info'>
-             *      <identity
-             *          category='server'
-             *          type='im'/>
-             *      <feature var='http://jabber.org/protocol/disco#info'/>
-             *      <feature var='http://jabber.org/protocol/disco#items'/>
-             *  </query>
-             *  </iq>
-             */
-            stanza = $iq({
-                'type': 'result',
-                'from': 'montague.lit',
-                'to': 'romeo@montague.lit/orchard',
-                'id': stanza.getAttribute('id'),
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
-                .c('identity', {
-                    'category': 'server',
-                    'type': 'im'}).up()
-                .c('feature', {
-                    'var': 'http://jabber.org/protocol/disco#info'}).up()
-                .c('feature', {
-                    'var': 'http://jabber.org/protocol/disco#items'});
+            stanza = stx`
+                <iq type='result'
+                    from='montague.lit'
+                    to='romeo@montague.lit/orchard'
+                    xmlns="jabber:client"
+                    id='${stanza.getAttribute('id')}'>
+                    <query xmlns='http://jabber.org/protocol/disco#info'>
+                        <identity category='server' type='im'/>
+                        <feature var='http://jabber.org/protocol/disco#info'/>
+                        <feature var='http://jabber.org/protocol/disco#items'/>
+                    </query>
+                </iq>`;
             api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             // Converse.js sees that the entity has a disco#items feature,
             // so it will make a query for it.
             selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]';
             await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).length, 1000);
-            /* <iq from='montague.tld'
-             *      id='step_01'
-             *      to='romeo@montague.tld/garden'
-             *      type='result'>
-             *  <query xmlns='http://jabber.org/protocol/disco#items'>
-             *      <item jid='upload.montague.tld' name='HTTP File Upload' />
-             *      <item jid='conference.montague.tld' name='Chatroom Service' />
-             *  </query>
-             *  </iq>
-             */
+
             selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]';
             stanza = IQ_stanzas.find(iq => iq.querySelector(selector), 500);
-            stanza = $iq({
-                'type': 'result',
-                'from': 'montague.lit',
-                'to': 'romeo@montague.lit/orchard',
-                'id': stanza.getAttribute('id'),
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
-                .c('item', {
-                    'jid': 'upload.montague.lit',
-                    'name': 'HTTP File Upload'});
+            stanza = stx`
+                <iq type='result'
+                    from='montague.lit'
+                    xmlns="jabber:client"
+                    to='romeo@montague.lit/orchard'
+                    id='${stanza.getAttribute('id')}'>
+                    <query xmlns='http://jabber.org/protocol/disco#items'>
+                        <item jid='upload.montague.lit' name='HTTP File Upload'/>
+                    </query>
+                </iq>`;
 
             api.connection.get()._dataRecv(mock.createRequest(stanza));
 
@@ -95,35 +70,25 @@ describe("XEP-0363: HTTP File Upload", function () {
                 `</iq>`);
 
             // Upload service responds and reports a maximum file size of 5MiB
-            /* <iq from='upload.montague.tld'
-             *     id='step_02'
-             *     to='romeo@montague.tld/garden'
-             *     type='result'>
-             * <query xmlns='http://jabber.org/protocol/disco#info'>
-             *     <identity category='store'
-             *             type='file'
-             *             name='HTTP File Upload' />
-             *     <feature var='urn:xmpp:http:upload:0' />
-             *     <x type='result' xmlns='jabber:x:data'>
-             *     <field var='FORM_TYPE' type='hidden'>
-             *         <value>urn:xmpp:http:upload:0</value>
-             *     </field>
-             *     <field var='max-file-size'>
-             *         <value>5242880</value>
-             *     </field>
-             *     </x>
-             * </query>
-             * </iq>
-             */
-            stanza = $iq({'type': 'result', 'to': 'romeo@montague.lit/orchard', 'id': stanza.getAttribute('id'), 'from': 'upload.montague.lit'})
-                .c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
-                    .c('identity', {'category':'store', 'type':'file', 'name':'HTTP File Upload'}).up()
-                    .c('feature', {'var':'urn:xmpp:http:upload:0'}).up()
-                    .c('x', {'type':'result', 'xmlns':'jabber:x:data'})
-                        .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                            .c('value').t('urn:xmpp:http:upload:0').up().up()
-                        .c('field', {'var':'max-file-size'})
-                            .c('value').t('5242880');
+            stanza = stx`
+                <iq type='result'
+                    xmlns="jabber:client"
+                    to='romeo@montague.lit/orchard'
+                    id='${stanza.getAttribute('id')}'
+                    from='upload.montague.lit'>
+                    <query xmlns='http://jabber.org/protocol/disco#info'>
+                        <identity category='store' type='file' name='HTTP File Upload'/>
+                        <feature var='urn:xmpp:http:upload:0'/>
+                        <x type='result' xmlns='jabber:x:data'>
+                            <field var='FORM_TYPE' type='hidden'>
+                                <value>urn:xmpp:http:upload:0</value>
+                            </field>
+                            <field var='max-file-size'>
+                                <value>5242880</value>
+                            </field>
+                        </x>
+                    </query>
+                </iq>`;
             api.connection.get()._dataRecv(mock.createRequest(stanza));
 
             entities = await _converse.api.disco.entities.get();
@@ -228,10 +193,11 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                     const message = base_url+"/logo/conversejs-filled.svg";
 
-                    const stanza = u.toStanza(`
+                    const stanza = stx`
                         <iq from="upload.montague.tld"
                             id="${iq.getAttribute("id")}"
                             to="romeo@montague.lit/orchard"
+                            xmlns="jabber:client"
                             type="result">
                         <slot xmlns="urn:xmpp:http:upload:0">
                             <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg">
@@ -240,7 +206,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                             </put>
                             <get url="${message}" />
                         </slot>
-                        </iq>`);
+                        </iq>`;
 
                     spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async function () {
                         const message = view.model.messages.at(0);
@@ -300,19 +266,18 @@ describe("XEP-0363: HTTP File Upload", function () {
                         iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'));
 
                     const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-                    stanza = $iq({
-                        'type': 'result',
-                        'from': 'montague.lit',
-                        'to': 'romeo@montague.lit/orchard',
-                        'id': info_IQ_id
-                    }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
-                        .c('identity', {
-                            'category': 'server',
-                            'type': 'im'}).up()
-                        .c('feature', {
-                            'var': 'http://jabber.org/protocol/disco#info'}).up()
-                        .c('feature', {
-                            'var': 'http://jabber.org/protocol/disco#items'});
+                    stanza = stx`
+                        <iq type='result'
+                            xmlns="jabber:client"
+                            from='montague.lit'
+                            to='romeo@montague.lit/orchard'
+                            id='${info_IQ_id}'>
+                            <query xmlns='http://jabber.org/protocol/disco#info'>
+                                <identity category='server' type='im'/>
+                                <feature var='http://jabber.org/protocol/disco#info'/>
+                                <feature var='http://jabber.org/protocol/disco#items'/>
+                            </query>
+                        </iq>`;
                     api.connection.get()._dataRecv(mock.createRequest(stanza));
 
                     await u.waitUntil(function () {
@@ -327,15 +292,16 @@ describe("XEP-0363: HTTP File Upload", function () {
                         return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                     });
                     const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-                    stanza = $iq({
-                        'type': 'result',
-                        'from': 'montague.lit',
-                        'to': 'romeo@montague.lit/orchard',
-                        'id': items_IQ_id
-                    }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
-                        .c('item', {
-                            'jid': 'upload.montague.lit',
-                            'name': 'HTTP File Upload'});
+                    stanza = stx`
+                        <iq type='result'
+                            xmlns="jabber:client"
+                            from='montague.lit'
+                            to='romeo@montague.lit/orchard'
+                            id='${items_IQ_id}'>
+                            <query xmlns='http://jabber.org/protocol/disco#items'>
+                                <item jid='upload.montague.lit' name='HTTP File Upload'/>
+                            </query>
+                        </iq>`;
 
                     api.connection.get()._dataRecv(mock.createRequest(stanza));
 
@@ -362,15 +328,25 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</iq>`);
 
                     // Upload service responds and reports a maximum file size of 5MiB
-                    stanza = $iq({'type': 'result', 'to': 'romeo@montague.lit/orchard', 'id': IQ_id, 'from': 'upload.montague.lit'})
-                        .c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
-                            .c('identity', {'category':'store', 'type':'file', 'name':'HTTP File Upload'}).up()
-                            .c('feature', {'var':'urn:xmpp:http:upload:0'}).up()
-                            .c('x', {'type':'result', 'xmlns':'jabber:x:data'})
-                                .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                                    .c('value').t('urn:xmpp:http:upload:0').up().up()
-                                .c('field', {'var':'max-file-size'})
-                                    .c('value').t('5242880');
+                    stanza = stx`
+                        <iq type='result'
+                                xmlns="jabber:client"
+                                to='romeo@montague.lit/orchard'
+                                id='${IQ_id}'
+                                from='upload.montague.lit'>
+                            <query xmlns='http://jabber.org/protocol/disco#info'>
+                                <identity category='store' type='file' name='HTTP File Upload'/>
+                                <feature var='urn:xmpp:http:upload:0'/>
+                                <x type='result' xmlns='jabber:x:data'>
+                                    <field var='FORM_TYPE' type='hidden'>
+                                        <value>urn:xmpp:http:upload:0</value>
+                                    </field>
+                                    <field var='max-file-size'>
+                                        <value>5242880</value>
+                                    </field>
+                                </x>
+                            </query>
+                        </iq>`;
                     api.connection.get()._dataRecv(mock.createRequest(stanza));
                     entities = await _converse.api.disco.entities.get();
                     const entity = await api.disco.entities.get('upload.montague.lit');
@@ -439,10 +415,11 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 const base_url = 'https://conversejs.org';
                 const message = base_url+"/logo/conversejs-filled.svg";
-                const stanza = u.toStanza(`
+                const stanza = stx`
                     <iq from="upload.montague.tld"
                         id="${iq.getAttribute("id")}"
                         to="romeo@montague.lit/orchard"
+                        xmlns="jabber:client"
                         type="result">
                     <slot xmlns="urn:xmpp:http:upload:0">
                         <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg">
@@ -451,7 +428,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         </put>
                         <get url="${message}" />
                     </slot>
-                    </iq>`);
+                    </iq>`;
 
                 const promise = u.getOpenPromise();
 

@@ -133,7 +133,7 @@ describe("A Chatbox", function () {
     it("can be trimmed to conserve space",
             mock.initConverse(
                 [],
-                { no_trimming: false },
+                { no_trimming: false, show_self_in_roster: false },
                 async function (_converse) {
 
         await mock.waitForRoster(_converse, 'current');

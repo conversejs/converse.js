@@ -72,7 +72,7 @@ describe("Chatboxes", function () {
 
 
         it("is created when you click on a roster item", mock.initConverse(
-                ['chatBoxesFetched'], {}, async function (_converse) {
+                ['chatBoxesFetched'], { show_self_in_roster: false }, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);

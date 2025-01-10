@@ -59,25 +59,15 @@ class RosterContact extends ColorAwareModel(Model) {
         this.presence = presences.findWhere(jid) || presences.create({ jid });
     }
 
-    openChat () {
-        api.chats.open(this.get('jid'), this.attributes, true);
+    getStatus () {
+        return this.presence.get('show') || 'offline';
     }
 
-    /**
-     * Return a string of tab-separated values that are to be used when
-     * matching against filter text.
-     *
-     * The goal is to be able to filter against the VCard fullname,
-     * roster nickname and JID.
-     * @returns {string} Lower-cased, tab-separated values
-     */
-    getFilterCriteria () {
-        const nick = this.get('nickname');
-        const jid = this.get('jid');
-        let criteria = this.getDisplayName();
-        criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
-        criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
-        return criteria.toLowerCase();
+    openChat () {
+        // XXX: Doubtful whether it's necessary to pass in the contact
+        // attributes hers. If so, we should perhaps look them up inside the
+        // `open` API method.
+        api.chats.open(this.get('jid'), this.attributes, true);
     }
 
     getDisplayName () {
@@ -153,7 +143,6 @@ class RosterContact extends ColorAwareModel(Model) {
         api.send(pres);
         return this;
     }
-
 
     /**
      * Remove this contact from the roster

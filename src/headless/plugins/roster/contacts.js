@@ -280,14 +280,16 @@ class RosterContacts extends Collection {
     /**
      * Fetch the roster from the XMPP server
      * @emits _converse#roster
+     * @param {boolean} [full=false] - Whether to fetch the full roster or just the changes.
      * @returns {promise}
      */
-    async fetchFromServer () {
+    async fetchFromServer (full=false) {
         const stanza = $iq({
             'type': 'get',
             'id': u.getUniqueId('roster'),
         }).c('query', { xmlns: Strophe.NS.ROSTER });
-        if (this.rosterVersioningSupported()) {
+
+        if (this.rosterVersioningSupported() && !full) {
             stanza.attrs({ 'ver': this.data.get('version') });
         }
 

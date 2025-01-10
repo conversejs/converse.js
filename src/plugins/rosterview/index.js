@@ -34,8 +34,8 @@ converse.plugins.add('converse-rosterview', {
 
         /* -------- Event Handlers ----------- */
         api.listen.on('chatBoxesInitialized', () => {
-            _converse.state.chatboxes.on('destroy', c => highlightRosterItem(c));
-            _converse.state.chatboxes.on('change:hidden', c => highlightRosterItem(c));
+            _converse.state.chatboxes.on('destroy', c => highlightRosterItem(c.get('jid')));
+            _converse.state.chatboxes.on('change:hidden', c => highlightRosterItem(c.get('jid')));
         });
     }
 });

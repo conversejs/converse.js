@@ -181,18 +181,10 @@ export function getHats (message) {
     return [];
 }
 
-/**
- * @template {any} T
- * @param {Array<T>} arr
- * @returns {Array<T>} A new array containing only unique elements from the input array.
- */
-function unique (arr) {
-    return [...new Set(arr)];
-}
 
 export function getTonedEmojis () {
     if (!converse.emojis.toned) {
-        converse.emojis.toned = unique(
+        converse.emojis.toned = u.unique(
             Object.values(converse.emojis.json.people)
                 .filter(person => person.sn.includes('_tone'))
                 .map(person => person.sn.replace(/_tone[1-5]/, ''))

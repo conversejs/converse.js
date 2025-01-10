@@ -22,7 +22,12 @@ export default (el) => {
     const i18n_toggle_contacts = __('Click to toggle contacts');
     const i18n_title_add_contact = __('Add a contact');
     const i18n_title_new_chat = __('Start a new chat');
-    const roster = _converse.state.roster || [];
+    const { state } = _converse;
+    const roster = [
+        ...(state.roster || []),
+        ...api.settings.get('show_self_in_roster') ? [state.xmppstatus] : []
+    ];
+
     const contacts_map = roster.reduce((acc, contact) => populateContactsMap(acc, contact), {});
     const groupnames = Object.keys(contacts_map).filter((contact) => shouldShowGroup(contact, el.model));
     const is_closed = el.model.get('toggle_state') === CLOSED;
@@ -96,7 +101,7 @@ export default (el) => {
             <span class="w-100 controlbox-heading controlbox-heading--contacts">
                 <a class="list-toggle open-contacts-toggle" title="${i18n_toggle_contacts}"
                     role="heading" aria-level="3"
-                    @click=${el.toggleRoster}>
+                    @click="${el.toggleRoster}">
                     ${i18n_heading_contacts}
 
                     ${ roster.length ? html`<converse-icon

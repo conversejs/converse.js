@@ -477,6 +477,17 @@ describe("An XEP-0393 styled message ", function () {
         mock.initConverse(['chatBoxesFetched'], {},
             async function (_converse) {
 
+        const originalFetch = window.fetch;
+        spyOn(window, 'fetch').and.callFake(async (...args) => {
+            if (args[1].method === 'HEAD') {
+                return new Response('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' }
+                });
+            }
+            return await originalFetch(...args);
+        });
+
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current', 1);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -521,6 +532,17 @@ describe("An XEP-0393 styled message ", function () {
 
     it("can be sent as a correction by using the up arrow",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+        const originalFetch = window.fetch;
+        spyOn(window, 'fetch').and.callFake(async (...args) => {
+            if (args[1].method === 'HEAD') {
+                return new Response('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' }
+                });
+            }
+            return await originalFetch(...args);
+        });
 
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);

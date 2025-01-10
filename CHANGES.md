@@ -4,6 +4,7 @@
 
 ### Github Issues
 - #122: Set horizontal layout direction based on the language
+- #317: Add the ability to render audio streams. New config option [show_self_in_roster](https://conversejs.org/docs/html/configuration.html#show-self-in-roster)
 - #698: Add support for MUC private messages
 - #1021: Message from non-roster contacts don't appear in fullscreen view_mode
 - #1038: Support setting node config manually
@@ -19,9 +20,8 @@
 - #2980: Allow setting an avatar for MUCs
 - #3033: Add the `muc_grouped_by_domain` option to display MUCs on the same domain in collapsible groups
 - #3038: Message to self from other client is ignored
-- #3038: Support showing yourself in the MUC sidebar. Adds new config option `muc_show_self`.
+- #3038: Support showing yourself in the left sidebar. Adds new config option `[show_self_in_roster](https://conversejs.org/docs/html/configuration.html#show-self-in-roster)`.
 - #3100: fixed width `.box-flyout` breaks responsive design in embedded, mobile viewport mode.
-- #3038: Support showing yourself in the MUC sidebar. Adds new config option `muc_show_self`.
 - #3155: Some ad-hoc commands not working
 - #3155: Some adhoc commands aren't working
 - #3299: Registration fails when a password contains an &

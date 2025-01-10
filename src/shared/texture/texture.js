@@ -13,6 +13,7 @@ import {
     collapseLineBreaks,
     containsDirectives,
     getDirectiveAndLength,
+    getHeaders,
     isQuoteDirective,
     isString,
     tplMention,
@@ -130,14 +131,14 @@ export class Texture extends String {
      *
      * @typedef {module:headless-shared-parsers.MediaURLData} MediaURLData
      */
-    addHyperlinks(text, local_offset) {
+    async addHyperlinks(text, local_offset) {
         const full_offset = local_offset + this.offset;
         const urls_meta = this.media_urls || getMediaURLsMetadata(text, local_offset).media_urls || [];
         const media_urls = /** @type {MediaURLData[]} */ (getMediaURLs(urls_meta, text, full_offset));
 
-        media_urls
+        await Promise.all(media_urls
             .filter((o) => !o.is_encrypted)
-            .forEach((url_obj) => {
+            .map(async (url_obj) => {
                 const url_text = url_obj.url;
                 const filtered_url = filterQueryParamsFromURL(url_text);
                 let template;
@@ -145,21 +146,27 @@ export class Texture extends String {
                     template = tplGif(filtered_url, this.hide_media_urls);
                 } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
                     template = tplImage({
-                        'src': filtered_url,
+                        src: filtered_url,
                         // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
-                        'href': this.hide_media_urls ? null : filtered_url,
-                        'onClick': this.onImgClick,
-                        'onLoad': this.onImgLoad,
+                        href: this.hide_media_urls ? null : filtered_url,
+                        onClick: this.onImgClick,
+                        onLoad: this.onImgLoad,
                     });
                 } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, 'video')) {
                     template = tplVideo(filtered_url, this.hide_media_urls);
                 } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
                     template = tplAudio(filtered_url, this.hide_media_urls);
                 } else {
-                    template = getHyperlinkTemplate(filtered_url);
+                    if (this.shouldRenderMedia(url_text, 'audio') && api.settings.get('fetch_url_headers')) {
+                        const headers = await getHeaders(url_text);
+                        if (headers.get('content-type')?.startsWith('audio')) {
+                            template = tplAudio(filtered_url, this.hide_media_urls, headers.get('Icy-Name'));
+                        }
+                    }
                 }
+                template = template || getHyperlinkTemplate(filtered_url);
                 this.addTemplateResult(url_obj.start + local_offset, url_obj.end + local_offset, template);
-            });
+            }));
     }
 
     /**
@@ -279,16 +286,16 @@ export class Texture extends String {
     /**
      * Look for plaintext (i.e. non-templated) sections of this Texture
      * instance and add references via the passed in function.
-     * @param { Function } func
+     * @param {Function} func
      */
-    addAnnotations(func) {
+    async addAnnotations(func) {
         const payload = this.marshall();
         let idx = 0; // The text index of the element in the payload
         for (const text of payload) {
             if (!text) {
                 continue;
             } else if (isString(text)) {
-                func.call(this, text, idx);
+                await func.call(this, text, idx);
                 idx += text.length;
             } else {
                 idx = text.end;
@@ -312,12 +319,12 @@ export class Texture extends String {
         await api.trigger('beforeMessageBodyTransformed', this, { 'Synchronous': true });
 
         this.render_styling && this.addStyling();
-        this.addAnnotations(this.addMentions);
-        this.addAnnotations(this.addHyperlinks);
-        this.addAnnotations(this.addMapURLs);
+        await this.addAnnotations(this.addMentions);
+        await this.addAnnotations(this.addHyperlinks);
+        await this.addAnnotations(this.addMapURLs);
 
         await api.emojis.initialize();
-        this.addAnnotations(this.addEmojis);
+        await this.addAnnotations(this.addEmojis);
 
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text

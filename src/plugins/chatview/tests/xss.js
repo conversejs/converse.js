@@ -115,7 +115,10 @@ describe("XSS", function () {
             expect(window.alert).not.toHaveBeenCalled();
         }));
 
-        it("will have properly escaped URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+        it("will have properly escaped URLs", mock.initConverse(
+                ['chatBoxesFetched'],
+                { render_media: false },
+                async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -173,7 +176,7 @@ describe("XSS", function () {
         }));
 
         it("will avoid malformed and unsafe urls urls from rendering as anchors",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+                mock.initConverse(['chatBoxesFetched'], { render_media: false }, async function (_converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);

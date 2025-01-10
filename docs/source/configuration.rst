@@ -917,6 +917,14 @@ support is turned on or not.
 Recommended to set to ``true`` if a websocket connection is used.
 Please see the :ref:`websocket-url` configuration setting.
 
+fetch_url_headers
+-----------------
+
+* Default: ``true``
+
+If set to ``false``, then Converse won't fetch the headers of URLs to determine
+whether they link to media that can be embedded (e.g. streaming audio).
+
 filter_by_resource
 ------------------
 

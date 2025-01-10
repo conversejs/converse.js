@@ -547,9 +547,19 @@ describe("A Chat Message", function () {
     }));
 
     it("will remove url query parameters from hyperlinks as set",
-            mock.initConverse(['chatBoxesFetched'], {'filter_url_query_params': ['utm_medium', 'utm_content', 's']},
+            mock.initConverse(['chatBoxesFetched'], { filter_url_query_params: ['utm_medium', 'utm_content', 's']},
             async function (_converse) {
 
+        const originalFetch = window.fetch;
+        spyOn(window, 'fetch').and.callFake(async (...args) => {
+            if (args[1].method === 'HEAD') {
+                return new Response('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' }
+                });
+            }
+            return await originalFetch(...args);
+        });
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -575,7 +585,16 @@ describe("A Chat Message", function () {
     }));
 
     it("properly renders URLs", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
+        const originalFetch = window.fetch;
+        spyOn(window, 'fetch').and.callFake(async (...args) => {
+            if (args[1].method === 'HEAD') {
+                return new Response('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' }
+                });
+            }
+            return await originalFetch(...args);
+        });
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';

@@ -52,7 +52,7 @@ export default (el) => {
             </div>
         </div>
         ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">
-            <converse-texture text=${subject} render_styling></converse-texture>
+            <converse-texture text=${subject} render_styling embed_audio></converse-texture>
           </p>` : '' }
     `;
 }

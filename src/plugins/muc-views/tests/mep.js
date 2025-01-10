@@ -37,7 +37,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
 
         // Check that duplicates aren't created
@@ -76,7 +76,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         _converse.api.connection.get()._dataRecv(mock.createRequest(message));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 2);
-        expect(view.querySelector('converse-chat-message:last-child .chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('converse-chat-message:last-child .chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('converse-chat-message:last-child .reason').textContent.trim()).toBe(reason);
 
         // Check that duplicates aren't created
@@ -129,7 +129,7 @@ describe("A XEP-0316 MEP notification", function () {
 
         const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1, 1000);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
     }));
 
@@ -165,8 +165,8 @@ describe("A XEP-0316 MEP notification", function () {
 
         const view = await u.waitUntil(() => _converse.chatboxviews.get(muc_jid));
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1, 1000);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
-        expect(view.querySelector('.reason converse-rich-text').innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.reason converse-texture').innerHTML.replace(/<!-.*?->/g, '').trim()).toBe(
             'Check out <a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>');
     }));
 
@@ -205,7 +205,7 @@ describe("A XEP-0316 MEP notification", function () {
         ));
 
         await u.waitUntil(() => view.querySelectorAll('.chat-info').length === 1);
-        expect(view.querySelector('.chat-info__message converse-rich-text').textContent.trim()).toBe(msg);
+        expect(view.querySelector('.chat-info__message converse-texture').textContent.trim()).toBe(msg);
         expect(view.querySelector('.reason').textContent.trim()).toBe(reason);
         expect(view.querySelectorAll('converse-message-actions converse-dropdown .chat-msg__action').length).toBeGreaterThanOrEqual(1);
         const action = view.querySelector('converse-message-actions converse-dropdown .chat-msg__action');

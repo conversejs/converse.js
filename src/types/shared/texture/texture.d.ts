@@ -1,10 +1,17 @@
 /**
- * @class RichText
+ * @param {string} d
+ * @param {string} text
+ * @param {number} offset
+ * @param {object} options
+ */
+export function getDirectiveTemplate(d: string, text: string, offset: number, options: object): any;
+/**
+ * @class Texture
  * A String subclass that is used to render rich text (i.e. text that contains
  * hyperlinks, images, mentions, styling etc.).
  *
  * The "rich" parts of the text is represented by lit TemplateResult
- * objects which are added via the {@link RichText.addTemplateResult}
+ * objects which are added via the {@link Texture.addTemplateResult}
  * method and saved as metadata.
  *
  * By default Converse adds TemplateResults to support emojis, hyperlinks,
@@ -12,17 +19,17 @@
  *
  * 3rd party plugins can listen for the `beforeMessageBodyTransformed`
  * and/or `afterMessageBodyTransformed` events and then call
- * `addTemplateResult` on the RichText instance in order to add their own
+ * `addTemplateResult` on the Texture instance in order to add their own
  * rich features.
  */
-export class RichText extends String {
+export class Texture extends String {
     /**
-     * Create a new {@link RichText} instance.
+     * Create a new {@link Texture} instance.
      * @param {string} text - The text to be annotated
      * @param {number} offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
-     *  RichText instances can be nested when templates call directives
-     *  which create new RichText instances (as happens with XEP-393 styling directives).
+     *  Texture instances can be nested when templates call directives
+     *  which create new Texture instances (as happens with XEP-393 styling directives).
      * @param {Object} [options]
      * @param {string} [options.nick] - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
      * @param {boolean} [options.render_styling] - Whether XEP-0393 message styling should be applied to the message
@@ -46,6 +53,8 @@ export class RichText extends String {
      * @param {Function} [options.onImgClick] - Callback for when an inline rendered image has been clicked
      * @param {Function} [options.onImgLoad] - Callback for when an inline rendered image has been loaded
      * @param {boolean} [options.hide_media_urls] - Callback for when an inline rendered image has been loaded
+     *
+     * @typedef {module:headless-shared-parsers.MediaURLMetadata} MediaURLMetadata
      */
     constructor(text: string, offset?: number, options?: {
         nick?: string;
@@ -53,7 +62,7 @@ export class RichText extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: MediaURLMetadata[];
+        media_urls?: any[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -74,7 +83,7 @@ export class RichText extends String {
         embed_audio?: boolean;
         embed_videos?: boolean;
         mentions?: any[];
-        media_urls?: MediaURLMetadata[];
+        media_urls?: any[];
         show_images?: boolean;
         show_me_message?: boolean;
         onImgClick?: Function;
@@ -86,19 +95,25 @@ export class RichText extends String {
     render_styling: boolean;
     show_images: boolean;
     hide_media_urls: boolean;
-    shouldRenderMedia(url_text: any, type: any): any;
+    /**
+     * @param {string} url - The URL to be checked
+     * @param {'audio'|'image'|'video'} type - The type of media
+     */
+    shouldRenderMedia(url: string, type: "audio" | "image" | "video"): any;
     /**
      * Look for `http` URIs and return templates that render them as URL links
      * @param {string} text
      * @param {number} local_offset - The index of the passed in text relative to
-     *  the start of this RichText instance (which is not necessarily the same as the
+     *  the start of this Texture instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
+     *
+     * @typedef {module:headless-shared-parsers.MediaURLData} MediaURLData
      */
     addHyperlinks(text: string, local_offset: number): void;
     /**
      * Look for `geo` URIs and return templates that render them as URL links
-     * @param { String } text
-     * @param { number } offset - The index of the passed in text relative to
+     * @param {String} text
+     * @param {number} offset - The index of the passed in text relative to
      *  the start of the message body text.
      */
     addMapURLs(text: string, offset: number): void;
@@ -112,9 +127,9 @@ export class RichText extends String {
     /**
      * Look for mentions included as XEP-0372 references and add templates for
      * rendering them.
-     * @param { String } text
-     * @param { number } local_offset - The index of the passed in text relative to
-     *  the start of this RichText instance (which is not necessarily the same as the
+     * @param {String} text
+     * @param {number} local_offset - The index of the passed in text relative to
+     *  the start of this Texture instance (which is not necessarily the same as the
      *  offset from the start of the original message stanza's body text).
      */
     addMentions(text: string, local_offset: number): void;
@@ -124,7 +139,7 @@ export class RichText extends String {
     addStyling(): void;
     trimMeMessage(): void;
     /**
-     * Look for plaintext (i.e. non-templated) sections of this RichText
+     * Look for plaintext (i.e. non-templated) sections of this Texture
      * instance and add references via the passed in function.
      * @param { Function } func
      */
@@ -140,22 +155,20 @@ export class RichText extends String {
      * This method can be used to add new template results to this message's
      * text.
      *
-     * @method RichText.addTemplateResult
-     * @param { Number } begin - The starting index of the plain message text
+     * @method Texture.addTemplateResult
+     * @param {Number} begin - The starting index of the plain message text
      * which is being replaced with markup.
-     * @param { Number } end - The ending index of the plain message text
+     * @param {Number} end - The ending index of the plain message text
      * which is being replaced with markup.
-     * @param { Object } template - The lit TemplateResult instance
+     * @param {Object} template - The lit TemplateResult instance
      */
     addTemplateResult(begin: number, end: number, template: any): void;
     isMeCommand(): boolean;
     /**
      * Take the annotations and return an array of text and TemplateResult
      * instances to be rendered to the DOM.
-     * @method RichText#marshall
+     * @method Texture#marshall
      */
     marshall(): any[];
 }
-export type MediaURLMetadata = any;
-export type MediaURLData = any;
-//# sourceMappingURL=rich-text.d.ts.map
+//# sourceMappingURL=texture.d.ts.map

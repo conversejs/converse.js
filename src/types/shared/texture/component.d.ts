@@ -1,8 +1,8 @@
 /**
- * The RichText custom element allows you to parse transform text into rich DOM elements.
- * @example <converse-rich-text text="*_hello_ world!*"></converse-rich-text>
+ * The Texture custom element allows you to parse transform text into rich DOM elements.
+ * @example <converse-texture text="*_hello_ world!*"></converse-texture>
  */
-export default class RichText extends CustomElement {
+export default class Texture extends LitElement {
     static get properties(): {
         embed_audio: {
             type: BooleanConstructor;
@@ -41,6 +41,7 @@ export default class RichText extends CustomElement {
             type: StringConstructor;
         };
     };
+    createRenderRoot(): this;
     nick: any;
     onImgClick: any;
     onImgLoad: any;
@@ -54,13 +55,13 @@ export default class RichText extends CustomElement {
     show_image_urls: boolean;
     show_images: boolean;
     show_me_message: boolean;
-    render(): import("lit/directive").DirectiveResult<{
-        new (_partInfo: import("lit/directive").PartInfo): {
-            render(text: any, offset: any, options: any, callback: any): import("lit").TemplateResult<1>;
+    render(): import("lit/directive.js").DirectiveResult<{
+        new (_partInfo: import("lit/directive.js").PartInfo): {
+            render(text: string, offset: number, options: object, callback?: Function): import("lit").TemplateResult<1>;
             readonly _$isConnected: boolean;
             update(_part: import("lit").Part, props: Array<unknown>): unknown;
         };
     }>;
 }
-import { CustomElement } from 'shared/components/element.js';
-//# sourceMappingURL=rich-text.d.ts.map
+import { LitElement } from 'lit';
+//# sourceMappingURL=component.d.ts.map

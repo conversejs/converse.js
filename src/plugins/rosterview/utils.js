@@ -4,7 +4,7 @@
  * @typedef {import('@converse/headless').RosterContacts} RosterContacts
  */
 import { __ } from 'i18n';
-import { _converse, api, converse, log, constants } from "@converse/headless";
+import { _converse, api, converse, log, constants, u, XMPPStatus } from "@converse/headless";
 
 const { Strophe } = converse.env;
 const { STATUS_WEIGHTS } = constants;
@@ -26,10 +26,17 @@ export async function removeContact (contact) {
     }
 }
 
-export function highlightRosterItem (chatbox) {
-    _converse.state.roster?.get(chatbox.get('jid'))?.trigger('highlight');
+/**
+ * @param {string} jid
+ */
+export function highlightRosterItem (jid) {
+    _converse.state.roster?.get(jid)?.trigger('highlight');
 }
 
+/**
+ * @param {Event} ev
+ * @param {string} name
+ */
 export function toggleGroup (ev, name) {
     ev?.preventDefault?.();
     const { roster } = _converse.state;
@@ -42,7 +49,25 @@ export function toggleGroup (ev, name) {
 }
 
 /**
- * @param {RosterContact} contact
+ * Return a string of tab-separated values that are to be used when
+ * matching against filter text.
+ *
+ * The goal is to be able to filter against the VCard fullname,
+ * roster nickname and JID.
+ * @param {RosterContact|XMPPStatus} contact
+ * @returns {string} Lower-cased, tab-separated values
+ */
+function getFilterCriteria(contact) {
+    const nick = contact instanceof XMPPStatus ? contact.getNickname() : contact.get('nickname');
+    const jid = contact.get('jid');
+    let criteria = contact.getDisplayName();
+    criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
+    criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
+    return criteria.toLowerCase();
+}
+
+/**
+ * @param {RosterContact|XMPPStatus} contact
  * @param {string} groupname
  * @returns {boolean}
  */
@@ -65,12 +90,12 @@ export function isContactFiltered (contact, groupname) {
         } else if (q === 'unread_messages') {
             return contact.get('num_unread') === 0;
         } else if (q === 'online') {
-            return ["offline", "unavailable", "dnd", "away", "xa"].includes(contact.presence.get('show'));
+            return ["offline", "unavailable", "dnd", "away", "xa"].includes(contact.getStatus());
         } else {
-            return !contact.presence.get('show').includes(q);
+            return !contact.getStatus().includes(q);
         }
     } else if (type === 'items')  {
-        return !contact.getFilterCriteria().includes(q);
+        return !getFilterCriteria(contact).includes(q);
     }
 }
 
@@ -83,7 +108,7 @@ export function isContactFiltered (contact, groupname) {
 export function shouldShowContact (contact, groupname, model) {
     if (!model.get('filter_visible')) return true;
 
-    const chat_status = contact.presence.get('show');
+    const chat_status = contact.getStatus();
     if (api.settings.get('hide_offline_users') && chat_status === 'offline') {
         // If pending or requesting, show
         if ((contact.get('ask') === 'subscribe') ||
@@ -96,6 +121,10 @@ export function shouldShowContact (contact, groupname, model) {
     return !isContactFiltered(contact, groupname);
 }
 
+/**
+ * @param {string} group
+ * @param {Model} model
+ */
 export function shouldShowGroup (group, model) {
     if (!model.get('filter_visible')) return true;
 
@@ -114,27 +143,32 @@ export function shouldShowGroup (group, model) {
 }
 
 /**
+ * Populates a contacts map with the given contact, categorizing it into appropriate groups.
  * @param {import('./types').ContactsMap} contacts_map
  * @param {RosterContact} contact
  * @returns {import('./types').ContactsMap}
  */
 export function populateContactsMap (contacts_map, contact) {
     const { labels } = _converse;
-    let contact_groups;
+
+    const contact_groups = /** @type {string[]} */(u.unique(contact.get('groups') ?? []));
+
     if (contact.get('requesting')) {
-        contact_groups = [labels.HEADER_REQUESTING_CONTACTS];
+        contact_groups.push(/** @type {string} */(labels.HEADER_REQUESTING_CONTACTS));
     } else if (contact.get('ask') === 'subscribe') {
-        contact_groups = [labels.HEADER_PENDING_CONTACTS];
+        contact_groups.push(/** @type {string} */(labels.HEADER_PENDING_CONTACTS));
     } else if (contact.get('subscription') === 'none') {
-        contact_groups = [labels.HEADER_UNSAVED_CONTACTS];
+        contact_groups.push(/** @type {string} */(labels.HEADER_UNSAVED_CONTACTS));
     } else if (!api.settings.get('roster_groups')) {
-        contact_groups = [labels.HEADER_CURRENT_CONTACTS];
-    } else {
-        contact_groups = contact.get('groups');
-        contact_groups = (contact_groups.length === 0) ? [labels.HEADER_UNGROUPED] : contact_groups;
+        contact_groups.push(/** @type {string} */(labels.HEADER_CURRENT_CONTACTS));
+    } else if (!contact_groups.length) {
+        contact_groups.push(/** @type {string} */(labels.HEADER_UNGROUPED));
     }
 
     for (const name of contact_groups) {
+        if (contacts_map[name]?.includes(contact)) {
+            continue;
+        }
         contacts_map[name] ? contacts_map[name].push(contact) : (contacts_map[name] = [contact]);
     }
 
@@ -146,13 +180,13 @@ export function populateContactsMap (contacts_map, contact) {
 }
 
 /**
- * @param {RosterContact} contact1
- * @param {RosterContact} contact2
+ * @param {RosterContact|XMPPStatus} contact1
+ * @param {RosterContact|XMPPStatus} contact2
  * @returns {(-1|0|1)}
  */
 export function contactsComparator (contact1, contact2) {
-    const status1 = contact1.presence.get('show') || 'offline';
-    const status2 = contact2.presence.get('show') || 'offline';
+    const status1 = contact1.getStatus();
+    const status2 = contact2.getStatus();
     if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
         const name1 = (contact1.getDisplayName()).toLowerCase();
         const name2 = (contact2.getDisplayName()).toLowerCase();
@@ -162,6 +196,10 @@ export function contactsComparator (contact1, contact2) {
     }
 }
 
+/**
+ * @param {string} a
+ * @param {string} b
+ */
 export function groupsComparator (a, b) {
     const HEADER_WEIGHTS = {};
     const {

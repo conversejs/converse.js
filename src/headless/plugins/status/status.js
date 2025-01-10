@@ -18,6 +18,10 @@ export default class XMPPStatus extends ColorAwareModel(Model) {
         return { "status":  api.settings.get("default_state") }
     }
 
+    getStatus () {
+        return this.get('status');
+    }
+
     /**
      * @param {string} attr
      */

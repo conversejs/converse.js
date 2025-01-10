@@ -74,6 +74,7 @@ export default class XMPPStatus extends XMPPStatus_base {
     defaults(): {
         status: any;
     };
+    getStatus(): any;
     /**
      * @param {string|Object} key
      * @param {string|Object} [val]

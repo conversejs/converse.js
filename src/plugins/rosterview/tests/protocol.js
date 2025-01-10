@@ -4,7 +4,7 @@
 
 const { u, $iq, $pres, sizzle, Strophe, stx } = converse.env;
 
-describe("The Protocol", function () {
+describe("Presence subscriptions", function () {
 
     beforeEach(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
 
@@ -38,7 +38,7 @@ describe("The Protocol", function () {
          * stanza of type "result".
          */
         it("Subscribe to contact, contact accepts and subscribes back",
-                mock.initConverse([], { roster_groups: false }, async function (_converse) {
+                mock.initConverse([], { show_self_in_roster: false, roster_groups: false }, async function (_converse) {
 
             let stanza;
             await mock.waitForRoster(_converse, 'current', 0);

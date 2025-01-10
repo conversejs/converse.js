@@ -34,7 +34,7 @@ describe("The Controlbox", function () {
     describe("The \"Contacts\" section", function () {
 
         it("can be used to add contact and it checks for case-sensivity",
-                mock.initConverse([], {}, async function (_converse) {
+                mock.initConverse([], { show_self_in_roster: false }, async function (_converse) {
 
             spyOn(_converse.api, "trigger").and.callThrough();
             await mock.waitForRoster(_converse, 'all', 0);

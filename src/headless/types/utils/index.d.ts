@@ -88,6 +88,7 @@ declare const _default: {
     arrayBufferToBase64(ab: any): string;
     base64ToArrayBuffer(b64: any): ArrayBufferLike;
     hexToArrayBuffer(hex: any): ArrayBufferLike;
+    unique<T extends unknown>(arr: Array<T>): Array<T>;
 } & CommonUtils & PluginUtils;
 export default _default;
 export type CommonUtils = Record<string, Function>;

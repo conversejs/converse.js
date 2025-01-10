@@ -1,14 +1,11 @@
-/**
- * @typedef {import('../contactview').default} RosterContact
- */
 import { __ } from 'i18n';
-import { api } from "@converse/headless";
+import { _converse, api } from "@converse/headless";
 import { html } from "lit";
 import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
 import { STATUSES } from '../constants.js';
 
 /**
- * @param {RosterContact} el
+ * @param {import('../contactview').default} el
  */
 export const tplRemoveLink = (el) => {
    const display_name = el.model.getDisplayName();
@@ -21,10 +18,11 @@ export const tplRemoveLink = (el) => {
 }
 
 /**
- * @param {RosterContact} el
+ * @param {import('../contactview').default} el
  */
 export default  (el) => {
-   const show = el.model.presence.get('show') || 'offline';
+   const bare_jid = _converse.session.get('bare_jid');
+   const show = el.model.getStatus() || 'offline';
     let classes, color;
     if (show === 'online') {
         [classes, color] = ['fa fa-circle', 'chat-status-online'];
@@ -35,11 +33,16 @@ export default  (el) => {
     } else {
         [classes, color] = ['fa fa-circle', 'comment'];
     }
+
+   const is_self = bare_jid === el.model.get('jid');
    const desc_status = STATUSES[show];
    const num_unread = getUnreadMsgsDisplay(el.model);
    const display_name = el.model.getDisplayName();
    const jid = el.model.get('jid');
-   const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
+   const i18n_chat = is_self ?
+      __('Click to chat with yourself') :
+      __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
+
    return html`
       <a class="list-item-link cbox-list-item open-chat ${ num_unread ? 'unread-msgs' : '' }"
          title="${i18n_chat}"
@@ -60,7 +63,9 @@ export default  (el) => {
             class="${classes} chat-status chat-status--avatar"></converse-icon>
       </span>
       ${ num_unread ? html`<span class="msgs-indicator badge">${ num_unread }</span>` : '' }
-      <span class="contact-name contact-name--${show} ${ num_unread ? 'unread-msgs' : ''}">${display_name}</span>
+   <span class="contact-name contact-name--${show} ${ num_unread ? 'unread-msgs' : ''}">${display_name + (is_self ? ` ${__('(me)')}` : '')}</span>
    </a>
-   ${ api.settings.get('allow_contact_removal') ? tplRemoveLink(el) : '' }`;
+   <span class="contact-actions">
+      ${ api.settings.get('allow_contact_removal') && !is_self ? tplRemoveLink(el) : '' }
+   </span>`;
 }

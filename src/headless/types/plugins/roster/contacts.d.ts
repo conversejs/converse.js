@@ -68,9 +68,10 @@ declare class RosterContacts extends Collection {
     /**
      * Fetch the roster from the XMPP server
      * @emits _converse#roster
+     * @param {boolean} [full=false] - Whether to fetch the full roster or just the changes.
      * @returns {promise}
      */
-    fetchFromServer(): Promise<any>;
+    fetchFromServer(full?: boolean): Promise<any>;
     /**
      * Update or create RosterContact models based on the given `item` XML
      * node received in the resulting IQ stanza from the server.

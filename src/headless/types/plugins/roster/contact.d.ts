@@ -80,16 +80,8 @@ declare class RosterContact extends RosterContact_base {
     initialized: any;
     setPresence(): void;
     presence: any;
+    getStatus(): any;
     openChat(): void;
-    /**
-     * Return a string of tab-separated values that are to be used when
-     * matching against filter text.
-     *
-     * The goal is to be able to filter against the VCard fullname,
-     * roster nickname and JID.
-     * @returns {string} Lower-cased, tab-separated values
-     */
-    getFilterCriteria(): string;
     getDisplayName(): any;
     getFullname(): any;
     /**

@@ -757,20 +757,20 @@ async function _initConverse (settings) {
 
     _converse = await converse.initialize(Object.assign({
         animate: false,
-        disable_effects: true,
         auto_subscribe: false,
         bosh_service_url: 'montague.lit/http-bind',
+        disable_effects: true,
         discover_connection_methods: false,
         enable_smacks: false,
+        fetch_url_headers: false,
         i18n: 'en',
         loglevel: window.location.pathname === '/debug.html' ? 'debug' : 'error',
         no_trimming: true,
         persistent_store: 'localStorage',
         play_sounds: false,
-        use_emojione: false,
         theme,
+        use_emojione: false,
         view_mode,
-        no_trimming: true,
     }, settings || {}));
 
     window._converse = _converse;

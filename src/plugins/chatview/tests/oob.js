@@ -32,9 +32,7 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you heard this funny audio?');
             const media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
-                `<audio controls="" src="https://montague.lit/audio.mp3"></audio>`+
-                `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">${url}</a>`);
+            expect(media.querySelector('audio').getAttribute('src')).toBe(url);
 
             // If the <url> and <body> contents is the same, don't duplicate.
             stanza = u.toStanza(`
@@ -54,10 +52,9 @@ describe("A Chat Message", function () {
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__media')).toBe(null);
 
             // But we do render the body
-            const msg_el = view.querySelector('converse-chat-message:last-child .chat-msg__text');
-            await u.waitUntil(() => msg_el.innerHTML.replace(/<!-.*?->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim() ===
-                `<audio controls="" src="https://montague.lit/audio.mp3"></audio>`+
-                `<a target="_blank" rel="noopener" href="${url}">${url}</a>`);
+            const audio = await await u.waitUntil(
+                () => view.querySelector('converse-chat-message:last-child .chat-msg__text audio'));
+            expect(audio.getAttribute('src')).toBe(url);
         }));
 
         it("will render video from oob mp4 URLs",

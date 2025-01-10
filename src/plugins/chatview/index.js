@@ -33,6 +33,7 @@ converse.plugins.add('converse-chatview', {
          * loaded by converse.js's plugin machinery.
          */
         api.settings.extend({
+            'fetch_url_headers': true,
             'allowed_audio_domains': null,
             'allowed_image_domains': null,
             'allowed_video_domains': null,

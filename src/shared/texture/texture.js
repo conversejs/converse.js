@@ -153,7 +153,7 @@ export class Texture extends String {
         } else {
             if (this.shouldRenderMedia(url_text, 'audio') && api.settings.get('fetch_url_headers')) {
                 const headers = await getHeaders(url_text);
-                if (headers.get('content-type')?.startsWith('audio')) {
+                if (headers?.get('content-type')?.startsWith('audio')) {
                     template = tplAudio(filtered_url, this.hide_media_urls, headers.get('Icy-Name'));
                 }
             }

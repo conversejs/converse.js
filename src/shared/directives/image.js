@@ -7,25 +7,46 @@ import { getHyperlinkTemplate } from 'utils/html.js';
 const { URI } = converse.env;
 const { isURLWithImageExtension } = u;
 
-
 class ImageDirective extends AsyncDirective {
-
-    render (src, href, onLoad, onClick) {
-        return href ?
-            html`<a href="${href}" class="chat-image__link" target="_blank" rel="noopener">${ this.renderImage(src, href, onLoad, onClick) }</a>` :
-            this.renderImage(src, href, onLoad, onClick);
+    /**
+     * @param {string} src - The source URL of the image.
+     * @param {string} [href] - The optional hyperlink for the image.
+     * @param {Function} [onLoad] - Callback function to be called once the image has loaded.
+     * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
+     * @returns {import('lit').TemplateResult}
+     */
+    render(src, href, onLoad, onClick) {
+        return href
+            ? html`<a href="${href}" class="chat-image__link" target="_blank" rel="noopener"
+                  >${this.renderImage(src, href, onLoad, onClick)}</a
+              >`
+            : this.renderImage(src, href, onLoad, onClick);
     }
 
-    renderImage (src, href, onLoad, onClick) {
+    /**
+     * @param {string} src - The source URL of the image.
+     * @param {string} [href] - The optional hyperlink for the image.
+     * @param {Function} [onLoad] - Callback function to be called once the image has loaded.
+     * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
+     * @returns {import('lit').TemplateResult}
+     */
+    renderImage(src, href, onLoad, onClick) {
         return html`<img class="chat-image img-thumbnail"
-                loading="lazy"
-                src="${src}"
-                @click=${onClick}
-                @error=${() => this.onError(src, href, onLoad, onClick)}
-                @load="${onLoad}"/></a>`;
+                    loading="lazy"
+                    src="${src}"
+                    @click=${onClick}
+                    @error=${() => this.onError(src, href, onLoad, onClick)}
+                    @load="${onLoad}"/></a>`;
     }
 
-    onError (src, href, onLoad, onClick) {
+    /**
+     * Handles errors that occur during image loading.
+     * @param {string} src - The source URL of the image that failed to load.
+     * @param {string} [href] - The optional hyperlink for the image.
+     * @param {Function} [onLoad] - Callback function to be called once the image has loaded.
+     * @param {Function} [onClick] - Callback function to be called once the image has been clicked.
+     */
+    onError(src, href, onLoad, onClick) {
         if (isURLWithImageExtension(src)) {
             href && this.setValue(getHyperlinkTemplate(href));
         } else {

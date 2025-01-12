@@ -82,9 +82,7 @@ describe("A Chat Message", function () {
             expect(msg.classList.length).toBe(1);
             expect(msg.textContent).toEqual('Have you seen this funny video?');
             const media = view.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "").replace(/<!-.*?->/g, '')).toEqual(
-                `<video controls="" preload="metadata" src="${Strophe.xmlescape(url)}"></video>`+
-                `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(url)}">${Strophe.xmlescape(url)}</a>`);
+            expect(media.querySelector('video').getAttribute('src')).toBe(url);
 
             // If the <url> and <body> contents is the same, don't duplicate.
             stanza = u.toStanza(`

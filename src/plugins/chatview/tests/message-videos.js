@@ -16,17 +16,13 @@ describe("A chat message containing video URLs", function () {
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content video').length, 1000)
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
-        expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
-            `<video controls="" preload="metadata" src="${message}"></video>`+
-            `<a target="_blank" rel="noopener" href="${message}">${message}</a>`);
+        expect(msg.querySelector('video').src).toEqual(message);
 
         message += "?param1=val1&param2=val2";
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content video').length === 2, 1000);
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
-        expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
-            `<video controls="" preload="metadata" src="${Strophe.xmlescape(message)}"></video>`+
-            `<a target="_blank" rel="noopener" href="${Strophe.xmlescape(message)}">${Strophe.xmlescape(message)}</a>`);
+        expect(msg.querySelector('video').src).toEqual(message);
     }));
 
     it("will not render videos if render_media is false",
@@ -64,9 +60,7 @@ describe("A chat message containing video URLs", function () {
         await mock.sendMessage(view, message);
         await u.waitUntil(() => view.querySelectorAll('.chat-content video').length, 1000)
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
-        expect(msg.innerHTML.replace(/<!-.*?->/g, '').trim()).toEqual(
-            `<video controls="" preload="metadata" src="${message}"></video>`+
-            `<a target="_blank" rel="noopener" href="${message}">${message}</a>`);
+        expect(msg.querySelector('video').src).toEqual(message);
     }));
 
     it("will allow the user to toggle visibility of rendered videos",

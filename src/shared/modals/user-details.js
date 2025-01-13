@@ -1,11 +1,11 @@
 /**
  * @typedef {import('@converse/headless').ChatBox} ChatBox
  */
-import BaseModal from "plugins/modal/modal.js";
-import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";
-import { __ } from 'i18n';
 import { api, converse, log } from "@converse/headless";
 import { removeContact } from 'plugins/rosterview/utils.js';
+import BaseModal from "plugins/modal/modal.js";
+import { __ } from 'i18n';
+import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";
 
 const u = converse.env.utils;
 

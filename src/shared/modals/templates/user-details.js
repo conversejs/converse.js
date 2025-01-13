@@ -4,6 +4,9 @@ import { api } from "@converse/headless";
 import { html } from 'lit';
 import { modal_close_button } from "plugins/modal/templates/buttons.js";
 
+/**
+ * @param {import('../user-details').default} el
+ */
 const remove_button = (el) => {
     const i18n_remove_contact = __('Remove as contact');
     return html`
@@ -17,6 +20,9 @@ const remove_button = (el) => {
     `;
 }
 
+/**
+ * @param {import('../user-details').default} el
+ */
 export const tplFooter = (el) => {
     const is_roster_contact = el.model.contact !== undefined;
     const i18n_refresh = __('Refresh');
@@ -36,6 +42,9 @@ export const tplFooter = (el) => {
 }
 
 
+/**
+ * @param {import('../user-details').default} el
+ */
 export const tplUserDetailsModal = (el) => {
     const vcard = el.model?.vcard;
     const vcard_json = vcard ? vcard.toJSON() : {};

@@ -32,6 +32,8 @@ import {
     setEncryptedFileURL,
 } from './utils.js';
 
+import  './styles/omemo.scss';
+
 const { Strophe } = converse.env;
 const { shouldClearCache } = u;
 

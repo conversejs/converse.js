@@ -26,7 +26,13 @@
     --danger-color: var(--pink);
     --warning-color: var(--orange);
     --info-color: var(--yellow);
-    --converse-highlight-color: var(--yellow);
+    --converse-highlight-color: var(--yellow) !important;
+    .list-group-item {
+        --converse-list-group-color: var(--foreground-color);
+        &.active {
+            --converse-list-group-active-color: var(--background-color) !important;
+        }
+    }
 
     // Online status indicators
     --chat-status-away: var(--orange);

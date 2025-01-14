@@ -35,14 +35,15 @@
         --converse-btn-disabled-color: var(--primary-color);
         --converse-btn-hover-bg: var(--primary-color);
         --converse-btn-hover-border-color: var(--primary-color-hover);
+        --converse-btn-hover-color: var(--background-color);
     }
     .btn-primary {
         --converse-btn-color: var(--button-text-color);
         --converse-btn-bg: var(--primary-color);
     }
     .btn-outline-primary {
-        --converse-btn-color: var(--primary-color);
         --converse-btn-bg: var(--background);
+        --converse-btn-color: var(--primary-color);
     }
 
     .btn-secondary,
@@ -55,6 +56,7 @@
         --converse-btn-disabled-color: var(--secondary-color);
         --converse-btn-hover-bg: var(--secondary-color);
         --converse-btn-hover-border-color: var(--secondary-color-hover);
+        --converse-btn-hover-color: var(--background-color);
     }
     .btn-secondary {
         --converse-btn-color: var(--button-text-color);
@@ -115,6 +117,7 @@
         --converse-btn-disabled-color: var(--danger-color);
         --converse-btn-hover-bg: var(--danger-color-hover);
         --converse-btn-hover-border-color: var(--danger-color-hover);
+        --converse-btn-hover-color: var(--background-color);
     }
     .btn-danger {
         --converse-btn-color: var(--button-text-color);
@@ -134,6 +137,7 @@
         --converse-btn-disabled-border-color: var(--info-color);
         --converse-btn-disabled-color: var(--info-color);
         --converse-btn-hover-bg: var(--info-color-dark);
+        --converse-btn-hover-border-color: var(--danger-color-hover);
         --converse-btn-hover-border-color: var(--info-color-dark);
     }
     .btn-info {

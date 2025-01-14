@@ -13,7 +13,7 @@ function tplUnblockButton(el) {
     const i18n_block = __('Remove from blocklist');
     return html`
         <button type="button" @click="${(ev) => el.unblockContact(ev)}" class="btn btn-danger">
-            <converse-icon class="fas fa-times" color="var(--foreground-color)" size="1em"></converse-icon
+            <converse-icon class="fas fa-times" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_block}
         </button>
     `;
@@ -26,7 +26,7 @@ function tplBlockButton(el) {
     const i18n_block = __('Add to blocklist');
     return html`
         <button type="button" @click="${(ev) => el.blockContact(ev)}" class="btn btn-danger">
-            <converse-icon class="fas fa-times" color="var(--foreground-color)" size="1em"></converse-icon
+            <converse-icon class="fas fa-times" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_block}
         </button>
     `;
@@ -39,7 +39,7 @@ function tplRemoveButton(el) {
     const i18n_remove_contact = __('Remove as contact');
     return html`
         <button type="button" @click="${(ev) => el.removeContact(ev)}" class="btn btn-danger remove-contact">
-            <converse-icon class="fas fa-trash-alt" color="var(--foreground-color)" size="1em"></converse-icon
+            <converse-icon class="fas fa-trash-alt" color="var(--background-color)" size="1em"></converse-icon
             >&nbsp;${i18n_remove_contact}
         </button>
     `;

@@ -1,11 +1,8 @@
-/**
- * @typedef {import('@converse/headless').ChatBox} ChatBox
- */
 import { api, converse, log } from "@converse/headless";
-import { removeContact } from 'plugins/rosterview/utils.js';
+import { blockContact, removeContact, unblockContact } from 'plugins/rosterview/utils.js';
 import BaseModal from "plugins/modal/modal.js";
 import { __ } from 'i18n';
-import { tplUserDetailsModal, tplFooter } from "./templates/user-details.js";
+import { tplUserDetailsModal } from "./templates/user-details.js";
 
 const u = converse.env.utils;
 
@@ -20,7 +17,7 @@ export default class UserDetailsModal extends BaseModal {
         /**
          * Triggered once the UserDetailsModal has been initialized
          * @event _converse#userDetailsModalInitialized
-         * @type {ChatBox}
+         * @type {import('@converse/headless').ChatBox}
          * @example _converse.api.listen.on('userDetailsModalInitialized', (chatbox) => { ... });
          */
         api.trigger('userDetailsModalInitialized', this.model);
@@ -28,10 +25,6 @@ export default class UserDetailsModal extends BaseModal {
 
     renderModal () {
         return tplUserDetailsModal(this);
-    }
-
-    renderModalFooter () {
-        return tplFooter(this);
     }
 
     getModalTitle () {
@@ -62,14 +55,31 @@ export default class UserDetailsModal extends BaseModal {
         u.removeClass('fa-spin', refresh_icon);
     }
 
+    /**
+     * @param {MouseEvent} ev
+     */
     async removeContact (ev) {
         ev?.preventDefault?.();
-        if (!api.settings.get('allow_contact_removal')) { return; }
-        const result = await api.confirm(__("Are you sure you want to remove this contact?"));
-        if (result) {
-            setTimeout(() => removeContact(this.model.contact), 1);
-            this.modal.hide();
-        }
+        setTimeout(() => removeContact(this.model.contact), 1);
+        this.modal.hide();
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async blockContact(ev) {
+        ev?.preventDefault?.();
+        setTimeout(() => blockContact(this.model.contact), 1);
+        this.modal.hide();
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    async unblockContact(ev) {
+        ev?.preventDefault?.();
+        setTimeout(() => unblockContact(this.model.contact), 1);
+        this.modal.hide();
     }
 }
 

@@ -22,6 +22,10 @@ export default class RosterContact extends CustomElement {
     /**
      * @param {MouseEvent} ev
      */
+    blockContact(ev: MouseEvent): Promise<void>;
+    /**
+     * @param {MouseEvent} ev
+     */
     acceptRequest(ev: MouseEvent): Promise<void>;
     /**
      * @param {MouseEvent} ev

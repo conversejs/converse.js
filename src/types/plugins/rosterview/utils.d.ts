@@ -1,7 +1,19 @@
 /**
  * @param {RosterContact} contact
+ * @param {boolean} [unsubscribe]
+ * @returns {Promise<boolean>}
  */
-export function removeContact(contact: RosterContact): Promise<void>;
+export function removeContact(contact: RosterContact, unsubscribe?: boolean): Promise<boolean>;
+/**
+ * @param {RosterContact} contact
+ * @returns {Promise<boolean>}
+ */
+export function blockContact(contact: RosterContact): Promise<boolean>;
+/**
+ * @param {RosterContact} contact
+ * @returns {Promise<boolean>}
+ */
+export function unblockContact(contact: RosterContact): Promise<boolean>;
 /**
  * @param {string} jid
  */
@@ -59,5 +71,5 @@ export function getNamesAutoCompleteList(query: string): Promise<{
 export type Model = import("@converse/skeletor").Model;
 export type RosterContact = import("@converse/headless").RosterContact;
 export type RosterContacts = import("@converse/headless").RosterContacts;
-import { XMPPStatus } from "@converse/headless";
+import { XMPPStatus } from '@converse/headless';
 //# sourceMappingURL=utils.d.ts.map

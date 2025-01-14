@@ -118,9 +118,9 @@ declare class RosterContact extends RosterContact_base {
     authorize(message: string): this;
     /**
      * Remove this contact from the roster
-     * @param {boolean} unauthorize - Whether to also unauthorize the
+     * @param {boolean} [unauthorize] - Whether to also unauthorize the
      */
-    remove(unauthorize: boolean): void;
+    remove(unauthorize?: boolean): Promise<void>;
     /**
      * Instruct the XMPP server to remove this contact from our roster
      * @async

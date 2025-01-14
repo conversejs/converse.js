@@ -2,7 +2,6 @@ export default class UserDetailsModal extends BaseModal {
     renderModal(): import("lit").TemplateResult<1>;
     getModalTitle(): any;
     registerContactEventHandlers(): void;
-    refreshContact(ev: any): Promise<void>;
     /**
      * @param {MouseEvent} ev
      */

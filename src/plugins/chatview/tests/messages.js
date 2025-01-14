@@ -972,6 +972,7 @@ describe("A Chat Message", function () {
                     async function (_converse) {
 
                 const { api } = _converse;
+                await mock.waitUntilBlocklistInitialized(_converse);
                 await mock.waitForRoster(_converse, 'current', 0);
                 spyOn(_converse.api, "trigger").and.callThrough();
 
@@ -1017,7 +1018,6 @@ describe("A Chat Message", function () {
             }));
         });
 
-
         describe("who is not on the roster", function () {
 
             it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
@@ -1025,6 +1025,7 @@ describe("A Chat Message", function () {
                     [], {'allow_non_roster_messaging': false},
                     async function (_converse) {
 
+                await mock.waitUntilBlocklistInitialized(_converse);
                 await mock.waitForRoster(_converse, 'current', 0);
 
                 const { api } = _converse;
@@ -1049,6 +1050,7 @@ describe("A Chat Message", function () {
                 expect(view).not.toBeDefined();
 
                 api.settings.set('allow_non_roster_messaging', true);
+                        debugger;
                 await _converse.handleMessageStanza(msg);
                 view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);

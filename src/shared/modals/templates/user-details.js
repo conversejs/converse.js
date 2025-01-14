@@ -71,7 +71,6 @@ export function tplUserDetailsModal(el) {
         }
     );
 
-    const i18n_refresh = __('Refetch data');
     const i18n_address = __('XMPP Address');
     const i18n_email = __('Email');
     const i18n_full_name = __('Full Name');
@@ -88,7 +87,7 @@ export function tplUserDetailsModal(el) {
     };
 
     return html`
-        <div class="modal-body">
+        <span>
             ${o.image ? html`<div class="mb-4">${avatar(Object.assign(o, avatar_data))}</div>` : ''}
             ${o.fullname ? html`<p><label>${i18n_full_name}:</label> ${o.fullname}</p>` : ''}
             <p><label>${i18n_address}:</label> <a href="xmpp:${o.jid}">${o.jid}</a></p>
@@ -103,11 +102,6 @@ export function tplUserDetailsModal(el) {
 
             <hr />
             <div>
-                <button type="button" class="btn btn-info refresh-contact" @click=${(ev) => el.refreshContact(ev)}>
-                    <converse-icon class="fa fa-refresh" color="var(--foreground-color)" size="1em"></converse-icon
-                    >&nbsp;${i18n_refresh}
-                </button>
-
                 ${allow_contact_removal && is_roster_contact ? tplRemoveButton(el) : ''}
                 ${until(
                     blocking_supported.then(() => tplBlockButton(el)),
@@ -116,6 +110,6 @@ export function tplUserDetailsModal(el) {
             </div>
 
             <converse-omemo-fingerprints jid=${o.jid}></converse-omemo-fingerprints>
-        </div>
+        </span>
     `;
 }

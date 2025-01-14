@@ -8,33 +8,32 @@ import api from './api/index.js';
  * @param {T} BaseModel
  */
 export default function ModelWithContact(BaseModel) {
-
     return class ModelWithContact extends BaseModel {
         /**
-        * @typedef {import('../plugins/vcard/vcard').default} VCard
-        * @typedef {import('../plugins/roster/contact').default} RosterContact
-        * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
-        */
+         * @typedef {import('../plugins/vcard/vcard').default} VCard
+         * @typedef {import('../plugins/roster/contact').default} RosterContact
+         * @typedef {import('./_converse.js').XMPPStatus} XMPPStatus
+         */
 
         initialize() {
             super.initialize();
             this.rosterContactAdded = getOpenPromise();
             /**
-            * @public
-            * @type {RosterContact|XMPPStatus}
-            */
+             * @public
+             * @type {RosterContact|XMPPStatus}
+             */
             this.contact = null;
 
             /**
-            * @public
-            * @type {VCard}
-            */
+             * @public
+             * @type {VCard}
+             */
             this.vcard = null;
         }
 
         /**
-        * @param {string} jid
-        */
+         * @param {string} jid
+         */
         async setModelContact(jid) {
             if (this.contact?.get('jid') === jid) return;
 
@@ -44,10 +43,10 @@ export default function ModelWithContact(BaseModel) {
             if (Strophe.getBareJidFromJid(jid) === session.get('bare_jid')) {
                 contact = state.xmppstatus;
             } else {
-                contact = await api.contacts.get(jid) || await api.contacts.add({
-                    jid,
-                    subscription: 'none',
-                }, false, false);
+                contact = await api.contacts.get(jid);
+                if (!contact && !(await api.blocklist.get()).get(jid)) {
+                    await api.contacts.add({ jid, subscription: 'none' }, false, false);
+                }
             }
 
             if (contact) {
@@ -65,5 +64,5 @@ export default function ModelWithContact(BaseModel) {
                 this.trigger('contactAdded', this.contact);
             }
         }
-    }
+    };
 }

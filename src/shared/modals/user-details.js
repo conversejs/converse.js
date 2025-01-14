@@ -4,6 +4,8 @@ import BaseModal from "plugins/modal/modal.js";
 import { __ } from 'i18n';
 import { tplUserDetailsModal } from "./templates/user-details.js";
 
+import './styles/user-details.scss';
+
 
 export default class UserDetailsModal extends BaseModal {
 

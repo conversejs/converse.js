@@ -1,9 +1,9 @@
 /**
  * @param {RosterContact} contact
- * @param {boolean} [unsubscribe]
+ * @param {boolean} [unauthorize]
  * @returns {Promise<boolean>}
  */
-export function removeContact(contact: RosterContact, unsubscribe?: boolean): Promise<boolean>;
+export function removeContact(contact: RosterContact, unauthorize?: boolean): Promise<boolean>;
 /**
  * @param {RosterContact} contact
  * @returns {Promise<boolean>}

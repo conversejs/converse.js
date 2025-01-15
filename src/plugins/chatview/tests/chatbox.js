@@ -102,6 +102,7 @@ describe("Chatboxes", function () {
                 async function (_converse) {
 
             const { api } = _converse;
+            await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, 'current', 0);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const stanza = u.toStanza(`

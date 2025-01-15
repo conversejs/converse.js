@@ -11,10 +11,10 @@ const { STATUS_WEIGHTS } = constants;
 
 /**
  * @param {RosterContact} contact
- * @param {boolean} [unsubscribe]
+ * @param {boolean} [unauthorize]
  * @returns {Promise<boolean>}
  */
-export async function removeContact(contact, unsubscribe = false) {
+export async function removeContact(contact, unauthorize = false) {
     if (!api.settings.get('allow_contact_removal')) return;
 
     const result = await api.confirm(__('Are you sure you want to remove this contact?'));
@@ -23,7 +23,7 @@ export async function removeContact(contact, unsubscribe = false) {
     const chat = await api.chats.get(contact.get('jid'));
     chat?.close();
     try {
-        contact.remove(unsubscribe);
+        await contact.remove(unauthorize);
     } catch (e) {
         log.error(e);
         api.alert('error', __('Error'), [
@@ -47,8 +47,10 @@ export async function blockContact(contact) {
     (await api.chats.get(contact.get('jid')))?.close();
 
     try {
-        contact.remove(true);
-        await api.blocklist.add(contact.get('jid'));
+        await Promise.all([
+            api.blocklist.add(contact.get('jid')),
+            contact.remove(true)
+        ]);
     } catch (e) {
         log.error(e);
         api.alert('error', __('Error'), [

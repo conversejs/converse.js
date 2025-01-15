@@ -1050,7 +1050,6 @@ describe("A Chat Message", function () {
                 expect(view).not.toBeDefined();
 
                 api.settings.set('allow_non_roster_messaging', true);
-                        debugger;
                 await _converse.handleMessageStanza(msg);
                 view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);

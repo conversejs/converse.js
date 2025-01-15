@@ -146,25 +146,23 @@ class RosterContact extends ColorAwareModel(Model) {
 
     /**
      * Remove this contact from the roster
+     * @async
      * @param {boolean} [unauthorize] - Whether to also unauthorize the
+     * @returns {Promise<Error|Element>}
      */
-    async remove (unauthorize) {
+    remove (unauthorize) {
         const subscription = this.get('subscription');
         if (subscription === 'none' && this.get('ask') !== 'subscribe') {
             this.destroy();
             return;
         }
-
-        try {
-            if (unauthorize && ['from', 'both'].includes(subscription)) {
-                this.unauthorize();
-            }
-            await this.sendRosterRemoveStanza();
-        } finally {
-            // The model might have already been removed as
-            // result of a roster push.
-            if (this.collection) this.destroy();
+        if (unauthorize && ['from', 'both'].includes(subscription)) {
+            this.unauthorize();
         }
+        const promise = this.sendRosterRemoveStanza();
+        if (this.collection) this.destroy();
+
+        return promise;
     }
 
     /**

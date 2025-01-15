@@ -157,11 +157,16 @@ class ChatBox extends ModelWithMessages(ModelWithContact(ColorAwareModel(ChatBox
         if (to_bare_jid !== _converse.session.get('bare_jid')) {
             return false;
         }
+
         if (attrs.is_markable) {
-            if (this.contact && !attrs.is_archived && !attrs.is_carbon) {
+            if (this.contact &&
+                    !['none', 'to'].includes(this.contact.get('subscription')) &&
+                    !attrs.is_archived &&
+                    !attrs.is_carbon) {
                 sendMarker(attrs.from, attrs.msgid, 'received');
             }
             return false;
+
         } else if (attrs.marker_id) {
             const message = this.messages.findWhere({'msgid': attrs.marker_id});
             const field_name = `marker_${attrs.marker}`;

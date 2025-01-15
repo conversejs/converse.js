@@ -212,8 +212,8 @@ export function onRosterContactsFetched () {
 /**
  * Reject or cancel another user's subscription to our presence updates.
  * @function rejectPresenceSubscription
- * @param { String } jid - The Jabber ID of the user whose subscription is being canceled
- * @param { String } message - An optional message to the user
+ * @param {String} jid - The Jabber ID of the user whose subscription is being canceled
+ * @param {String} message - An optional message to the user
  */
 export function rejectPresenceSubscription (jid, message) {
     const pres = $pres({to: jid, type: "unsubscribed"});

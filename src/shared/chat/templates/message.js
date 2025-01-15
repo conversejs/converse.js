@@ -1,11 +1,11 @@
-import 'shared/avatar/avatar.js';
-import 'shared/chat/unfurl.js';
-import { __ } from 'i18n';
 import { html } from 'lit';
 import { api, converse } from '@converse/headless';
 import { shouldRenderMediaFromURL } from '../../../utils/url.js';
 import { getAuthorStyle } from '../../../utils/color.js';
 import { getHats } from '../utils.js';
+import { __ } from 'i18n';
+import 'shared/avatar/avatar.js';
+import 'shared/chat/unfurl.js';
 
 const { dayjs } = converse.env;
 

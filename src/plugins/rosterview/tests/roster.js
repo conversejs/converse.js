@@ -763,17 +763,33 @@ describe("The Contacts Roster", function () {
         }));
 
         it("can be removed by the user",
-                mock.initConverse([], {'roster_groups': false}, async function (_converse) {
+                mock.initConverse(
+                    [],
+                    {'roster_groups': false},
+                    async function (_converse) {
 
+            spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
             await mock.openControlBox(_converse);
-            await mock.waitForRoster(_converse, 'all');
+            await mock.waitForRoster(_converse, 'pending');
             await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
             await u.waitUntil(() => _converse.roster.at(0).vcard.get('fullname'))
             const rosterview = document.querySelector('converse-roster');
-            spyOn(_converse.api, 'confirm').and.returnValue(Promise.resolve(true));
+
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+
             for (let i=0; i<mock.pend_names.length; i++) {
                 const name = mock.pend_names[i];
-                sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, rosterview).pop().click();
+                const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const el = rosterview.querySelector(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`);
+                el.click();
+                const stanza = await u.waitUntil(() => sent_IQs.find(iq => iq.querySelector('iq item[subscription="remove"]')));
+                expect(stanza).toEqualStanza(
+                    stx`<iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">
+                        <query xmlns="jabber:iq:roster"><item jid="${jid}" subscription="remove"/></query>
+                    </iq>`);
+                _converse.api.connection.get()._dataRecv(mock.createRequest(
+                    stx`<iq id="${stanza.getAttribute('id')}" type="result" xmlns="jabber:client"></iq>`));
+                while (sent_IQs.length) sent_IQs.pop();
             }
             await u.waitUntil(() => rosterview.querySelector(`ul[data-group="Pending contacts"]`) === null);
         }));
@@ -1361,10 +1377,11 @@ describe("The Contacts Roster", function () {
                 async function (_converse) {
 
             const { api } = _converse;
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, "current", 0);
             await mock.openControlBox(_converse);
 
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = stx`
                 <message xmlns='jabber:client'
                         id='${api.connection.get().getUniqueId()}'
@@ -1388,10 +1405,11 @@ describe("The Contacts Roster", function () {
                 async function (_converse) {
 
             const { api } = _converse;
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.waitUntilBlocklistInitialized(_converse);
             await mock.waitForRoster(_converse, "current", 1);
             await mock.openControlBox(_converse);
 
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             let msg = stx`
                 <message xmlns='jabber:client'
                         id='${api.connection.get().getUniqueId()}'

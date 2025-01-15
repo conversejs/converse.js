@@ -11,7 +11,7 @@ export const tplRemoveLink = (el) => {
    const display_name = el.model.getDisplayName();
    const i18n_remove = __('Click to remove %1$s as a contact', display_name);
    return html`
-      <a class="list-item-action remove-xmpp-contact" @click=${el.removeContact} title="${i18n_remove}" href="#">
+      <a class="list-item-action remove-xmpp-contact" @click="${el.removeContact}" title="${i18n_remove}" href="#">
          <converse-icon class="fa fa-trash-alt" size="1.5em"></converse-icon>
       </a>
    `;

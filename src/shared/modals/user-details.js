@@ -45,7 +45,7 @@ export default class UserDetailsModal extends BaseModal {
         this.listenTo(this.model.contact.vcard, 'change', this.render);
         this.model.contact.on('destroy', () => {
             delete this.model.contact;
-            this.render();
+            this.close();
         });
 
         // Refresh the vcard

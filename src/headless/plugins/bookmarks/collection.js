@@ -179,10 +179,8 @@ class Bookmarks extends Collection {
      * @param {import('./types').BookmarkAttrs} attrs
      */
     onBookmarkError(iq, attrs) {
-        const { __ } = _converse;
         log.error('Error while trying to add bookmark');
         log.error(iq);
-        api.alert('error', __('Error'), [__('Sorry, something went wrong while trying to save your bookmark.')]);
         this.get(attrs.jid)?.destroy();
     }
 

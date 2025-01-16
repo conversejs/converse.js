@@ -15,10 +15,10 @@ declare namespace _default {
                  * Lets you add new identities for this client (i.e. instance of Converse)
                  * @method api.disco.own.identities.add
                  *
-                 * @param { String } category - server, client, gateway, directory, etc.
-                 * @param { String } type - phone, pc, web, etc.
-                 * @param { String } name - "Converse"
-                 * @param { String } lang - en, el, de, etc.
+                 * @param {String} category - server, client, gateway, directory, etc.
+                 * @param {String} type - phone, pc, web, etc.
+                 * @param {String} name - "Converse"
+                 * @param {String} lang - en, el, de, etc.
                  *
                  * @example _converse.api.disco.own.identities.clear();
                  */
@@ -63,8 +63,8 @@ declare namespace _default {
          * Query for information about an XMPP entity
          *
          * @method api.disco.info
-         * @param { string } jid The Jabber ID of the entity to query
-         * @param { string } [node] A specific node identifier associated with the JID
+         * @param {string} jid The Jabber ID of the entity to query
+         * @param {string} [node] A specific node identifier associated with the JID
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
         export function info(jid: string, node?: string): Promise<any>;
@@ -72,8 +72,8 @@ declare namespace _default {
          * Query for items associated with an XMPP entity
          *
          * @method api.disco.items
-         * @param { string } jid The Jabber ID of the entity to query for items
-         * @param { string } [node] A specific node identifier associated with the JID
+         * @param {string} jid The Jabber ID of the entity to query for items
+         * @param {string} [node] A specific node identifier associated with the JID
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
         export function items(jid: string, node?: string): Promise<any>;
@@ -82,8 +82,8 @@ declare namespace _default {
              * Get the corresponding `DiscoEntity` instance.
              *
              * @method api.disco.entities.get
-             * @param { string } jid The Jabber ID of the entity
-             * @param { boolean } [create] Whether the entity should be created if it doesn't exist.
+             * @param {string} jid The Jabber ID of the entity
+             * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
              * @example _converse.api.disco.entities.get(jid);
              */
             function get(jid: string, create?: boolean): Promise<any>;
@@ -91,7 +91,7 @@ declare namespace _default {
              * Return any disco items advertised on this entity
              *
              * @method api.disco.entities.items
-             * @param { string } jid - The Jabber ID of the entity for which we want to fetch items
+             * @param {string} jid - The Jabber ID of the entity for which we want to fetch items
              * @example api.disco.entities.items(jid);
              */
             function items(jid: string): any;
@@ -104,12 +104,12 @@ declare namespace _default {
              * `ignore_cache: true` in the options parameter.
              *
              * @method api.disco.entities.create
-             * @param { object } data
-             * @param { string } data.jid - The Jabber ID of the entity
-             * @param { string } data.parent_jid - The Jabber ID of the parent entity
-             * @param { string } data.name
-             * @param { object } [options] - Additional options
-             * @param { boolean } [options.ignore_cache]
+             * @param {object} data
+             * @param {string} data.jid - The Jabber ID of the entity
+             * @param {string} data.parent_jid - The Jabber ID of the parent entity
+             * @param {string} data.name
+             * @param {object} [options] - Additional options
+             * @param {boolean} [options.ignore_cache]
              *     If true, fetch all features from the XMPP server instead of restoring them from cache
              * @example _converse.api.disco.entities.create({ jid }, {'ignore_cache': true});
              */
@@ -132,49 +132,50 @@ declare namespace _default {
              * Return a given feature of a disco entity
              *
              * @method api.disco.features.get
-             * @param { string } feature The feature that might be
+             * @param {string} feature The feature that might be
              *     supported. In the XML stanza, this is the `var`
              *     attribute of the `<feature>` element. For
              *     example: `http://jabber.org/protocol/muc`
-             * @param { string } jid The JID of the entity
+             * @param {string} jid The JID of the entity
              *     (and its associated items) which should be queried
-             * @returns {promise} A promise which resolves with a list containing
+             * @returns {Promise<import('@converse/skeletor').Model|import('@converse/skeletor').Model[]>}
+             *     A promise which resolves with a list containing
              *     _converse.Entity instances representing the entity
              *     itself or those items associated with the entity if
              *     they support the given feature.
              * @example
              * api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
              */
-            function get(feature: string, jid: string): Promise<any>;
+            function get(feature: string, jid: string): Promise<import("@converse/skeletor").Model | import("@converse/skeletor").Model[]>;
             /**
              * Returns true if an entity with the given JID, or if one of its
              * associated items, supports a given feature.
              *
              * @method api.disco.features.has
-             * @param { string } feature The feature that might be
+             * @param {string} feature The feature that might be
              *     supported. In the XML stanza, this is the `var`
              *     attribute of the `<feature>` element. For
              *     example: `http://jabber.org/protocol/muc`
-             * @param { string } jid The JID of the entity
+             * @param {string} jid The JID of the entity
              *     (and its associated items) which should be queried
-             * @returns {Promise} A promise which resolves with a boolean
+             * @returns {Promise<boolean>} A promise which resolves with a boolean
              * @example
              *      api.disco.features.has(Strophe.NS.MAM, _converse.bare_jid);
              */
-            function has(feature: string, jid: string): Promise<any>;
+            function has(feature: string, jid: string): Promise<boolean>;
         }
         export { features_1 as features };
         /**
          * Used to determine whether an entity supports a given feature.
          *
          * @method api.disco.supports
-         * @param { string } feature The feature that might be
+         * @param {string} feature The feature that might be
          *     supported. In the XML stanza, this is the `var`
          *     attribute of the `<feature>` element. For
          *     example: `http://jabber.org/protocol/muc`
-         * @param { string } jid The JID of the entity
+         * @param {string} jid The JID of the entity
          *     (and its associated items) which should be queried
-         * @returns {promise} A promise which resolves with `true` or `false`.
+         * @returns {Promise<boolean>|boolean} A promise which resolves with `true` or `false`.
          * @example
          * if (await api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)) {
          *     // The feature is supported
@@ -182,13 +183,13 @@ declare namespace _default {
          *     // The feature is not supported
          * }
          */
-        export function supports(feature: string, jid: string): Promise<any>;
+        export function supports(feature: string, jid: string): Promise<boolean> | boolean;
         /**
          * Refresh the features, fields and identities associated with a
          * disco entity by refetching them from the server
          * @method api.disco.refresh
-         * @param { string } jid The JID of the entity whose features are refreshed.
-         * @returns {promise} A promise which resolves once the features have been refreshed
+         * @param {string} jid The JID of the entity whose features are refreshed.
+         * @returns {Promise} A promise which resolves once the features have been refreshed
          * @example
          * await api.disco.refresh('room@conference.example.org');
          */

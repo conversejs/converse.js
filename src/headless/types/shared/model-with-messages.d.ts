@@ -38,9 +38,9 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         fetchMessages(): any;
         afterMessagesFetched(): void;
         /**
-         * @param {MessageAttributes|Error} attrs_or_error
+         * @param {MessageAttributes|Error} _attrs_or_error
          */
-        onMessage(attrs_or_error: import("../plugins/chat/types.ts").MessageAttributes | Error): Promise<void>;
+        onMessage(_attrs_or_error: import("../plugins/chat/types.ts").MessageAttributes | Error): Promise<void>;
         /**
          * @param {Message} message
          * @param {MessageAttributes} attrs
@@ -216,7 +216,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         /**
          * Given a {@link Message} return the XML stanza that represents it.
          * @method ChatBox#createMessageStanza
-         * @param { Message } message - The message object
+         * @param {Message} message - The message object
          */
         createMessageStanza(message: import("../plugins/chat/message").default): Promise<any>;
         /**

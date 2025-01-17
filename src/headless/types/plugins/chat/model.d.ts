@@ -17,7 +17,7 @@ declare const ChatBox_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(attrs_or_error: import("./types").MessageAttributes | Error): Promise<void>;
+        onMessage(_attrs_or_error: import("./types").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types").MessageAttributes): object;
         updateMessage(message: import("./message.js").default, attrs: import("./types").MessageAttributes): void;
         handleCorrection(attrs: import("./types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;

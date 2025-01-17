@@ -39,6 +39,7 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
             states: [],
             hidden: true,
             num_unread: 0,
+            message_type: 'chat',
         };
     }
 

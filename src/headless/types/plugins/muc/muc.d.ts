@@ -17,7 +17,7 @@ declare const MUC_base: {
         messages: any;
         fetchMessages(): any;
         afterMessagesFetched(): void;
-        onMessage(attrs_or_error: import("../chat/types").MessageAttributes | Error): Promise<void>;
+        onMessage(_attrs_or_error: import("../chat/types").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("../chat/message.js").default, attrs: import("../chat/types").MessageAttributes): object;
         updateMessage(message: import("../chat/message.js").default, attrs: import("../chat/types").MessageAttributes): void;
         handleCorrection(attrs: import("../chat/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../chat/message.js").default | void>;

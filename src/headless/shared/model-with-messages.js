@@ -15,7 +15,7 @@ import { MethodNotImplementedError } from './errors.js';
 import { sendMarker, sendReceiptStanza, sendRetractionMessage } from './actions.js';
 import { parseMessage } from '../plugins/chat/parsers';
 
-const { Strophe, $msg, u } = converse.env;
+const { Strophe, stx, u } = converse.env;
 
 /**
  * Adds a messages collection to a model and various methods related to sending
@@ -155,9 +155,9 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {MessageAttributes|Error} attrs_or_error
+         * @param {MessageAttributes|Error} _attrs_or_error
          */
-        async onMessage(attrs_or_error) {
+        async onMessage(_attrs_or_error) {
             throw new MethodNotImplementedError('onMessage is not implemented');
         }
 
@@ -889,64 +889,48 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Given a {@link Message} return the XML stanza that represents it.
          * @method ChatBox#createMessageStanza
-         * @param { Message } message - The message object
+         * @param {Message} message - The message object
          */
         async createMessageStanza(message) {
-            const stanza = $msg({
-                'from': message.get('from') || api.connection.get().jid,
-                'to': message.get('to') || this.get('jid'),
-                'type': this.get('message_type'),
-                'id': (message.get('edited') && u.getUniqueId()) || message.get('msgid'),
-            })
-                .c('body')
-                .t(message.get('body'))
-                .up()
-                .c(constants.ACTIVE, { 'xmlns': Strophe.NS.CHATSTATES })
-                .root();
+            const {
+                body,
+                edited,
+                is_encrypted,
+                is_spoiler,
+                msgid,
+                oob_url,
+                origin_id,
+                references,
+                spoiler_hint,
+                type,
+            } = message.attributes;
 
-            if (message.get('type') === 'chat') {
-                stanza.c('request', { 'xmlns': Strophe.NS.RECEIPTS }).root();
-            }
-
-            if (!message.get('is_encrypted')) {
-                if (message.get('is_spoiler')) {
-                    if (message.get('spoiler_hint')) {
-                        stanza.c('spoiler', { 'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).root();
-                    } else {
-                        stanza.c('spoiler', { 'xmlns': Strophe.NS.SPOILER }).root();
+            const stanza = stx`
+                <message xmlns="jabber:client"
+                        from="${message.get('from') || api.connection.get().jid}"
+                        to="${message.get('to') || this.get('jid')}"
+                        type="${this.get('message_type')}"
+                        id="${(edited && u.getUniqueId()) || msgid}">
+                    ${body ? stx`<body>${body}</body>` : ''}
+                    <active xmlns="${Strophe.NS.CHATSTATES}"/>
+                    ${type === 'chat' ? stx`<request xmlns="${Strophe.NS.RECEIPTS}"></request>` : ''}
+                    ${!is_encrypted && oob_url ? stx`<x xmlns="${Strophe.NS.OUTOFBAND}"><url>${oob_url}</url></x>` : ''}
+                    ${!is_encrypted && is_spoiler ? stx`<spoiler xmlns="${Strophe.NS.SPOILER}">${spoiler_hint ?? ''}</spoiler>` : ''}
+                    ${
+                        !is_encrypted
+                            ? references?.map(
+                                  (ref) => stx`<reference xmlns="${Strophe.NS.REFERENCE}"
+                                                begin="${ref.begin}"
+                                                end="${ref.end}"
+                                                type="${ref.type}"
+                                                uri="${ref.uri}"></reference>`
+                              )
+                            : ''
                     }
-                }
-                (message.get('references') || []).forEach((reference) => {
-                    const attrs = {
-                        'xmlns': Strophe.NS.REFERENCE,
-                        'begin': reference.begin,
-                        'end': reference.end,
-                        'type': reference.type,
-                    };
-                    if (reference.uri) {
-                        attrs.uri = reference.uri;
-                    }
-                    stanza.c('reference', attrs).root();
-                });
+                    ${edited ? stx`<replace xmlns="${Strophe.NS.MESSAGE_CORRECT}" id="${msgid}"></replace>` : ''}
+                    ${origin_id ? stx`<origin-id xmlns="${Strophe.NS.SID}" id="${origin_id}"></origin-id>` : ''}
+                </message>`;
 
-                if (message.get('oob_url')) {
-                    stanza.c('x', { 'xmlns': Strophe.NS.OUTOFBAND }).c('url').t(message.get('oob_url')).root();
-                }
-            }
-
-            if (message.get('edited')) {
-                stanza
-                    .c('replace', {
-                        'xmlns': Strophe.NS.MESSAGE_CORRECT,
-                        'id': message.get('msgid'),
-                    })
-                    .root();
-            }
-
-            if (message.get('origin_id')) {
-                stanza.c('origin-id', { 'xmlns': Strophe.NS.SID, 'id': message.get('origin_id') }).root();
-            }
-            stanza.root();
             /**
              * *Hook* which allows plugins to update an outgoing message stanza
              * @event _converse#createMessageStanza

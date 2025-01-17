@@ -130,15 +130,16 @@ describe('MUC Private Messages', () => {
 
                 const sent_stanza = api.connection.get().sent_stanzas.pop();
                 expect(sent_stanza).toEqualStanza(stx`
-                        <message from="${muc_jid}/${nick}"
-                                to="${muc_jid}/firstwitch"
-                                id="${sent_stanza.getAttribute('id')}"
-                                xmlns="jabber:client">
-                            <body>hello</body>
-                            <active xmlns="http://jabber.org/protocol/chatstates"/>
-                            <request xmlns="urn:xmpp:receipts"/>
-                            <origin-id xmlns="urn:xmpp:sid:0" id="${sent_stanza.querySelector('origin-id')?.getAttribute('id')}"/>
-                        </message>`);
+                    <message from="${muc_jid}/${nick}"
+                            type="chat"
+                            to="${muc_jid}/firstwitch"
+                            id="${sent_stanza.getAttribute('id')}"
+                            xmlns="jabber:client">
+                        <body>hello</body>
+                        <active xmlns="http://jabber.org/protocol/chatstates"/>
+                        <request xmlns="urn:xmpp:receipts"/>
+                        <origin-id xmlns="urn:xmpp:sid:0" id="${sent_stanza.querySelector('origin-id')?.getAttribute('id')}"/>
+                    </message>`);
             })
         );
 

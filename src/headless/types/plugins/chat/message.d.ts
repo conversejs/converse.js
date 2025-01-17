@@ -157,6 +157,8 @@ declare class Message extends Message_base {
         is_ephemeral: boolean;
     };
     file: any;
+    /** @type {import('./types').MessageAttributes} */
+    attributes: import("./types").MessageAttributes;
     initialize(): Promise<void>;
     chatbox: any;
     initialized: any;
@@ -204,7 +206,10 @@ declare class Message extends Message_base {
      * @method _converse.Message#sendSlotRequestStanza
      */
     private sendSlotRequestStanza;
-    getUploadRequestMetadata(stanza: any): {
+    /**
+     * @param {Element} stanza
+     */
+    getUploadRequestMetadata(stanza: Element): {
         headers: {
             name: string;
             value: string;

@@ -1,5 +1,6 @@
 /* global mock, converse */
 
+const { Strophe, sizzle, $msg, u, stx } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 const settings = {
@@ -11,6 +12,7 @@ const settings = {
 
 describe("A spoiler message", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
     beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
     afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
@@ -20,26 +22,13 @@ describe("A spoiler message", function () {
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-
-        /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
-         *      <body>And at the end of the story, both of them die! It is so tragic!</body>
-         *      <spoiler xmlns='urn:xmpp:spoiler:0'>Love story end</spoiler>
-         *  </message>
-         */
         const spoiler_hint = "Love story end"
         const spoiler = "And at the end of the story, both of them die! It is so tragic!";
-        const $msg = converse.env.$msg;
-        const u = converse.env.utils;
-        const msg = $msg({
-                'xmlns': 'jabber:client',
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'
-            }).c('body').t(spoiler).up()
-                .c('spoiler', {
-                    'xmlns': 'urn:xmpp:spoiler:0',
-                }).t(spoiler_hint)
-            .tree();
+        const msg = stx`
+            <message xmlns="jabber:client" to="${_converse.bare_jid}" from="${sender_jid}" type="chat">
+                <body>${spoiler}</body>
+                <spoiler xmlns="urn:xmpp:spoiler:0">${spoiler_hint}</spoiler>
+            </message>`;
         api.connection.get()._dataRecv(mock.createRequest(msg));
         await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
         const view = _converse.chatboxviews.get(sender_jid);
@@ -58,23 +47,12 @@ describe("A spoiler message", function () {
         const { api } = _converse;
         await mock.waitForRoster(_converse, 'current');
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
-         *      <body>And at the end of the story, both of them die! It is so tragic!</body>
-         *      <spoiler xmlns='urn:xmpp:spoiler:0'>Love story end</spoiler>
-         *  </message>
-         */
-        const $msg = converse.env.$msg;
-        const u = converse.env.utils;
         const spoiler = "And at the end of the story, both of them die! It is so tragic!";
-        const msg = $msg({
-                'xmlns': 'jabber:client',
-                'to': _converse.bare_jid,
-                'from': sender_jid,
-                'type': 'chat'
-            }).c('body').t(spoiler).up()
-                .c('spoiler', {
-                    'xmlns': 'urn:xmpp:spoiler:0',
-                }).tree();
+        const msg = stx`
+            <message xmlns="jabber:client" to="${_converse.bare_jid}" from="${sender_jid}" type="chat">
+                <body>${spoiler}</body>
+                <spoiler xmlns="urn:xmpp:spoiler:0"></spoiler>
+            </message>`;
         api.connection.get()._dataRecv(mock.createRequest(msg));
         await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
         const view = _converse.chatboxviews.get(sender_jid);
@@ -97,17 +75,11 @@ describe("A spoiler message", function () {
         mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-        const { $pres, Strophe} = converse.env;
-        const u = converse.env.utils;
-
         // XXX: We need to send a presence from the contact, so that we
         // have a resource, that resource is then queried to see
         // whether Strophe.NS.SPOILER is supported, in which case
         // the spoiler button will appear.
-        const presence = $pres({
-            'from': contact_jid+'/phone',
-            'to': 'romeo@montague.lit'
-        });
+        const presence = stx`<presence xmlns="jabber:client" from="${contact_jid}/phone" to="romeo@montague.lit"/>`;
         api.connection.get()._dataRecv(mock.createRequest(presence));
         await mock.openChatBoxFor(_converse, contact_jid);
         await mock.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
@@ -128,21 +100,9 @@ describe("A spoiler message", function () {
         });
         await new Promise(resolve => api.listen.on('sendMessage', resolve));
 
-        /* Test the XML stanza
-         *
-         * <message from="romeo@montague.lit/orchard"
-         *          to="max.frankfurter@montague.lit"
-         *          type="chat"
-         *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
-         *          xmlns="jabber:client">
-         *    <body>This is the spoiler</body>
-         *    <active xmlns="http://jabber.org/protocol/chatstates"/>
-         *    <spoiler xmlns="urn:xmpp:spoiler:0"/>
-         * </message>"
-         */
         const stanza = api.connection.get().send.calls.argsFor(0)[0];
-        const spoiler_el = await u.waitUntil(() => stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]'));
-        expect(spoiler_el.textContent).toBe('');
+        const spoiler_el = sizzle('spoiler[xmlns="urn:xmpp:spoiler:0"]', stanza).pop();
+        expect(spoiler_el.textContent).toBe('')
 
         const spoiler = 'This is the spoiler';
         const body_el = stanza.querySelector('body');
@@ -174,17 +134,11 @@ describe("A spoiler message", function () {
         mock.openControlBox(_converse);
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-        const { $pres, Strophe} = converse.env;
-        const u = converse.env.utils;
-
         // XXX: We need to send a presence from the contact, so that we
         // have a resource, that resource is then queried to see
         // whether Strophe.NS.SPOILER is supported, in which case
         // the spoiler button will appear.
-        const presence = $pres({
-            'from': contact_jid+'/phone',
-            'to': 'romeo@montague.lit'
-        });
+        const presence = stx`<presence xmlns="jabber:client" from="${contact_jid}/phone" to="romeo@montague.lit"/>`;
         api.connection.get()._dataRecv(mock.createRequest(presence));
         await mock.openChatBoxFor(_converse, contact_jid);
         await mock.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
@@ -210,21 +164,22 @@ describe("A spoiler message", function () {
         await new Promise(resolve => api.listen.on('sendMessage', resolve));
 
         const stanza = api.connection.get().send.calls.argsFor(0)[0];
-        expect(Strophe.serialize(stanza)).toBe(
-            `<message from="romeo@montague.lit/orchard" ` +
-                    `id="${stanza.getAttribute('id')}" `+
-                    `to="mercutio@montague.lit" `+
-                    `type="chat" `+
-                    `xmlns="jabber:client">`+
-                `<body>This is the spoiler</body>`+
-                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                `<request xmlns="urn:xmpp:receipts"/>`+
-                `<spoiler xmlns="urn:xmpp:spoiler:0">This is the hint</spoiler>`+
-                `<origin-id id="${stanza.querySelector('origin-id').getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
-            `</message>`
+        expect(stanza).toEqualStanza(
+            stx`<message from="romeo@montague.lit/orchard"
+                    id="${stanza.getAttribute('id')}"
+                    to="mercutio@montague.lit"
+                    type="chat"
+                    xmlns="jabber:client">
+                <body>This is the spoiler</body>
+                <active xmlns="http://jabber.org/protocol/chatstates"/>
+                <request xmlns="urn:xmpp:receipts"/>
+                <spoiler xmlns="urn:xmpp:spoiler:0">This is the hint</spoiler>
+                <origin-id id="${stanza.querySelector('origin-id').getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>
+            </message>`
         );
 
-        await u.waitUntil(() => stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]')?.textContent === 'This is the hint');
+        const spoiler_el = sizzle('spoiler[xmlns="urn:xmpp:spoiler:0"]', stanza).pop();
+        expect(spoiler_el?.textContent).toBe('This is the hint');
 
         const spoiler = 'This is the spoiler'
         const body_el = stanza.querySelector('body');

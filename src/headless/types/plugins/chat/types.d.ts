@@ -1,4 +1,10 @@
 import { EncryptionAttrs } from "../../shared/types";
+export type Reference = {
+    begin: number;
+    end: number;
+    type: string;
+    uri: string;
+};
 export type MessageErrorAttributes = {
     is_error: boolean;
     error: string;
@@ -42,7 +48,7 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     plaintext: string;
     receipt_id: string;
     received: string;
-    references: Array<Object>;
+    references: Array<Reference>;
     replace_id: string;
     retracted: string;
     retracted_id: string;

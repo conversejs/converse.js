@@ -4,6 +4,8 @@ const { Strophe, sizzle, u, stx } = converse.env;
 
 describe("Ad-hoc commands", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("can be queried for via a modal", mock.initConverse([], {}, async (_converse) => {
         const { api } = _converse;
         const entity_jid = 'muc.montague.lit';

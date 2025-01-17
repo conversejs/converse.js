@@ -35,6 +35,9 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
     constructor (models, options) {
         super(models, options);
         this.file = null;
+
+        /** @type {import('./types').MessageAttributes} */
+        this.attributes;
     }
 
     async initialize () {
@@ -209,6 +212,9 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
         return api.sendIQ(iq);
     }
 
+    /**
+     * @param {Element} stanza
+     */
     getUploadRequestMetadata (stanza) { // eslint-disable-line class-methods-use-this
         const headers = sizzle(`slot[xmlns="${Strophe.NS.HTTPUPLOAD}"] put header`, stanza);
         // https://xmpp.org/extensions/xep-0363.html#request

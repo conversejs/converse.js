@@ -128,8 +128,8 @@ describe("A MUC message", function () {
 
         const muc_jid = 'lounge@montague.lit';
         const model = await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-        const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}' >
+        const received_stanza = stx`
+            <message xmlns="jabber:client" to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.api.connection.get().getUniqueId()}' >
                 <reply xmlns='urn:xmpp:reply:0' id='${_converse.api.connection.get().getUniqueId()}' to='${_converse.jid}'/>
                 <fallback xmlns='urn:xmpp:feature-fallback:0' for='urn:xmpp:reply:0'>
                     <body start='0' end='10'/>
@@ -139,7 +139,7 @@ describe("A MUC message", function () {
     pong</body>
                 <request xmlns='urn:xmpp:receipts'/>
             </message>
-        `);
+        `;
         await model.handleMessageStanza(received_stanza);
         await u.waitUntil(() => model.messages.last());
         expect(model.messages.last().get('body')).toBe('> ping\n    pong');

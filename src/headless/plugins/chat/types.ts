@@ -1,5 +1,13 @@
 import {EncryptionAttrs} from "../../shared/types";
 
+// Represents a XEP-0372 reference
+export type Reference = {
+    begin: number;
+    end: number;
+    type: string;
+    uri: string;
+}
+
 export type MessageErrorAttributes = {
     is_error: boolean; // Whether an error was received for this message
     error: string; // The error name
@@ -41,7 +49,7 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     plaintext: string; // The decrypted text of this message, in case it was encrypted.
     receipt_id: string; // The `id` attribute of a XEP-0184 <receipt> element
     received: string; // An ISO8601 string recording the time that the message was received
-    references: Array<Object>; // A list of objects representing XEP-0372 references
+    references: Array<Reference>; // A list of objects representing XEP-0372 references
     replace_id: string; // The `id` attribute of a XEP-0308 <replace> element
     retracted: string; // An ISO8601 string recording the time that the message was retracted
     retracted_id: string; // The `id` attribute of a XEP-424 <retracted> element

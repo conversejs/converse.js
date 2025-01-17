@@ -4,6 +4,8 @@ const { Promise, $msg, Strophe, sizzle, u } = converse.env;
 
 describe("A Chat Message", function () {
 
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     it("can be sent as a correction by using the up arrow",
             mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
@@ -56,16 +58,16 @@ describe("A Chat Message", function () {
 
         expect(api.connection.get().send).toHaveBeenCalled();
         const msg = api.connection.get().send.calls.all()[0].args[0];
-        expect(Strophe.serialize(msg))
-        .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}" `+
-                `to="mercutio@montague.lit" type="chat" `+
-                `xmlns="jabber:client">`+
-                    `<body>But soft, what light through yonder window breaks?</body>`+
-                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                    `<request xmlns="urn:xmpp:receipts"/>`+
-                    `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                    `<origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-            `</message>`);
+        expect(msg).toEqualStanza(
+            stx`<message from="romeo@montague.lit/orchard" id="${msg.getAttribute("id")}"
+                        to="mercutio@montague.lit" type="chat"
+                        xmlns="jabber:client">
+                    <body>But soft, what light through yonder window breaks?</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <request xmlns="urn:xmpp:receipts"/>
+                    <replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>
+                    <origin-id id="${msg.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>
+            </message>`);
         expect(view.model.messages.models.length).toBe(1);
         const corrected_message = view.model.messages.at(0);
         expect(corrected_message.get('msgid')).toBe(first_msg.get('msgid'));

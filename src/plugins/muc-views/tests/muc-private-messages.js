@@ -139,6 +139,7 @@ describe('MUC Private Messages', () => {
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
                         <request xmlns="urn:xmpp:receipts"/>
                         <origin-id xmlns="urn:xmpp:sid:0" id="${sent_stanza.querySelector('origin-id')?.getAttribute('id')}"/>
+                        <x xmlns="http://jabber.org/protocol/muc#user"/>
                     </message>`);
             })
         );

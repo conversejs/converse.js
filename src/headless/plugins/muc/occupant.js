@@ -2,6 +2,7 @@ import { Model } from '@converse/skeletor';
 import log from '../../log';
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
+import converse from '../../shared/api/public.js';
 import ColorAwareModel from '../../shared/color.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
 import { AFFILIATIONS, ROLES } from './constants.js';
@@ -9,6 +10,8 @@ import MUCMessages from './messages.js';
 import u from '../../utils/index.js';
 import { shouldCreateGroupchatMessage } from './utils';
 import { sendChatState } from '../../shared/actions';
+
+const { Strophe, stx } = converse.env;
 
 /**
  * Represents a participant in a MUC
@@ -188,6 +191,15 @@ class MUCOccupant extends ModelWithMessages(ColorAwareModel(Model)) {
          */
         attrs = await api.hook('getOutgoingMessageAttributes', this, attrs);
         return attrs;
+    }
+
+    /**
+     * @param {import('../chat/message').default} message - The message object
+     */
+    async createMessageStanza(message) {
+        const stanza = await super.createMessageStanza(message);
+        stanza.cnode(stx`<x xmlns="${Strophe.NS.MUC}#user"/>`).root();
+        return stanza;
     }
 }
 

@@ -1,5 +1,5 @@
 import { Model } from '@converse/skeletor';
-import { _converse, converse, api, log } from '@converse/headless';
+import { _converse, converse, api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import tplRequestingContact from './templates/requesting_contact.js';
 import tplRosterItem from './templates/roster_item.js';

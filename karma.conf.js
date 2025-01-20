@@ -69,6 +69,7 @@ module.exports = function(config) {
       { pattern: "src/plugins/chatview/tests/styling.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/unreads.js", type: 'module' },
       { pattern: "src/plugins/chatview/tests/xss.js", type: 'module' },
+      { pattern: "src/plugins/chatview/tests/retractions.js", type: 'module' },
       { pattern: "src/plugins/controlbox/tests/controlbox.js", type: 'module' },
       { pattern: "src/plugins/controlbox/tests/login.js", type: 'module' },
       { pattern: "src/plugins/headlines-view/tests/headline.js", type: 'module' },

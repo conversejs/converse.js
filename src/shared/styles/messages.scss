@@ -288,6 +288,10 @@
                 width: calc(100% - var(--message-avatar-width));
             }
 
+            .chat-msg__content--action {
+                width: 100%;
+            }
+
             &.chat-msg--followup {
                 .chat-msg__heading,
                 .show-msg-author-modal {

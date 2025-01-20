@@ -143,33 +143,56 @@ export function getEncryptionAttributes (stanza) {
  * @param {Element} stanza - The message stanza
  * @param {Element} original_stanza - The original stanza, that contains the
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @returns {Object}
+ * @returns {import('./types').RetractionAttrs | {}}
  */
-export function getRetractionAttributes (stanza, original_stanza) {
+export function getDeprecatedRetractionAttributes (stanza, original_stanza) {
     const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
-        const retracted = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, fastening).pop();
+        const retracted = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT0}"]`, fastening).pop();
         if (retracted) {
             const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
             const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString();
             return {
-                'editable': false,
-                'retracted': time,
-                'retracted_id': applies_to_id
-            };
-        }
-    } else {
-        const tombstone = sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
-        if (tombstone) {
-            return {
-                'editable': false,
-                'is_tombstone': true,
-                'retracted': tombstone.getAttribute('stamp')
+                editable: false,
+                retracted: time,
+                retracted_id: applies_to_id
             };
         }
     }
     return {};
+}
+
+/**
+ * @param {Element} stanza - The message stanza
+ * @param {Element} original_stanza - The original stanza, that contains the
+ *  message stanza, if it was contained, otherwise it's the message stanza itself.
+ * @returns {import('./types').RetractionAttrs | {}}
+ */
+export function getRetractionAttributes (stanza, original_stanza) {
+    const retraction = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
+    if (retraction) {
+        const delay = sizzle(`> delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+        const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString();
+        return {
+            editable: false,
+            retracted: time,
+            retracted_id: retraction.getAttribute('id')
+        };
+    } else {
+        const tombstone =
+            sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop() ||
+            sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT0}"]`, stanza).pop();
+        if (tombstone) {
+            return {
+                editable: false,
+                is_tombstone: true,
+                retracted: tombstone.getAttribute('stamp'),
+                retraction_id: tombstone.getAttribute('id')
+            };
+        }
+    }
+    return getDeprecatedRetractionAttributes(stanza, original_stanza);
 }
 
 /**

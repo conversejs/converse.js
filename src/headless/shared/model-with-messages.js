@@ -335,11 +335,12 @@ export default function ModelWithMessages(BaseModel) {
          * @param {Message} message - The message which we're retracting.
          */
         retractOwnMessage(message) {
-            sendRetractionMessage(this.get('jid'), message);
+            const retraction_id = u.getUniqueId();
+            sendRetractionMessage(this.get('jid'), message, retraction_id);
             message.save({
                 'retracted': new Date().toISOString(),
                 'retracted_id': message.get('origin_id'),
-                'retraction_id': message.get('id'),
+                'retraction_id': retraction_id,
                 'is_ephemeral': true,
                 'editable': false,
             });
@@ -853,6 +854,20 @@ export default function ModelWithMessages(BaseModel) {
                     return true;
                 }
                 message.save(pick(attrs, RETRACTION_ATTRIBUTES));
+                return true;
+            } else if (attrs.retract_id) {
+                // Handle direct retract element
+                const message = this.messages.findWhere({ 'origin_id': attrs.retract_id, 'from': attrs.from });
+                if (!message) {
+                    attrs['dangling_retraction'] = true;
+                    await this.createMessage(attrs);
+                    return true;
+                }
+                message.save({
+                    'retracted': new Date().toISOString(),
+                    'retracted_id': attrs.retract_id,
+                    'editable': false
+                });
                 return true;
             } else {
                 // Check if we have dangling retraction

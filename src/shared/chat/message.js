@@ -173,7 +173,9 @@ export default class Message extends CustomElement {
             const modname = this.model.mod ? this.model.mod.getDisplayName() : __('A moderator');
             return __('%1$s has removed this message', modname);
         } else {
-            return __('%1$s has removed this message', this.model.getDisplayName());
+            return this.model.get('sender') === 'me' ?
+                __('You have removed this message') :
+                __('%1$s has removed this message', this.model.getDisplayName());
         }
     }
 

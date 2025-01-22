@@ -347,7 +347,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {File[]} files
+         * @param {File[]} files'
          */
         async sendFiles(files) {
             const { __, session } = _converse;
@@ -831,7 +831,7 @@ export default function ModelWithMessages(BaseModel) {
             if (this.get('num_unread') > 0) {
                 this.sendMarkerForMessage(this.messages.last());
             }
-            u.safeSave(this, { 'num_unread': 0 });
+            u.safeSave(this, { num_unread: 0 });
         }
 
         /**
@@ -844,10 +844,9 @@ export default function ModelWithMessages(BaseModel) {
         async handleRetraction(attrs) {
             const RETRACTION_ATTRIBUTES = ['retracted', 'retracted_id', 'editable'];
             if (attrs.retracted) {
-                if (attrs.is_tombstone) {
-                    return false;
-                }
-                const message = this.messages.findWhere({ 'origin_id': attrs.retracted_id, 'from': attrs.from });
+                if (attrs.is_tombstone) return false;
+
+                const message = this.messages.findWhere({ origin_id: attrs.retracted_id, from: attrs.from });
                 if (!message) {
                     attrs['dangling_retraction'] = true;
                     await this.createMessage(attrs);
@@ -855,26 +854,12 @@ export default function ModelWithMessages(BaseModel) {
                 }
                 message.save(pick(attrs, RETRACTION_ATTRIBUTES));
                 return true;
-            } else if (attrs.retracted_id) {
-                // Handle direct retract element
-                const message = this.messages.findWhere({ 'origin_id': attrs.retracted_id, 'from': attrs.from });
-                if (!message) {
-                    attrs['dangling_retraction'] = true;
-                    await this.createMessage(attrs);
-                    return true;
-                }
-                message.save({
-                    'retracted': new Date().toISOString(),
-                    'retracted_id': attrs.retracted_id,
-                    'editable': false
-                });
-                return true;
             } else {
                 // Check if we have dangling retraction
                 const message = this.findDanglingRetraction(attrs);
                 if (message) {
                     const retraction_attrs = pick(message.attributes, RETRACTION_ATTRIBUTES);
-                    const new_attrs = Object.assign({ 'dangling_retraction': false }, attrs, retraction_attrs);
+                    const new_attrs = Object.assign({ dangling_retraction: false }, attrs, retraction_attrs);
                     delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
                     message.save(new_attrs);
                     return true;

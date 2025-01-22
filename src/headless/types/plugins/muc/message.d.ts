@@ -4,11 +4,10 @@ declare class MUCMessage extends Message {
     /**
      * Determines whether this messsage may be moderated,
      * based on configuration settings and server support.
-     * @async
      * @method _converse.ChatRoomMessages#mayBeModerated
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
-    mayBeModerated(): boolean;
+    mayBeModerated(): Promise<boolean>;
     checkValidity(): any;
     onOccupantRemoved(): void;
     /**

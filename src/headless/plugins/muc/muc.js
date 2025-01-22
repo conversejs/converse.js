@@ -887,16 +887,13 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      * @param {string} [reason] - The reason for retracting the message.
      */
     sendRetractionIQ (message, reason) {
-        const iq = $iq({ 'to': this.get('jid'), 'type': 'set' })
-            .c('apply-to', {
-                'id': message.get(`stanza_id ${this.get('jid')}`),
-                'xmlns': Strophe.NS.FASTEN,
-            })
-            .c('moderate', { xmlns: Strophe.NS.MODERATE })
-            .c('retract', { xmlns: Strophe.NS.RETRACT0 })
-            .up()
-            .c('reason')
-            .t(reason || '');
+        const iq = stx`
+            <iq to="${this.get('jid')}" type="set" xmlns="jabber:client">
+                <moderate id="${message.get(`stanza_id ${this.get('jid')}`)}" xmlns="${Strophe.NS.MODERATE}">
+                    <retract xmlns="${Strophe.NS.RETRACT}"/>
+                    ${reason ? stx`<reason>${reason}</reason>` : ''}
+                </moderate>
+            </iq>`;
         return api.sendIQ(iq, null, false);
     }
 
@@ -2332,8 +2329,8 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             this.handleMUCPrivateMessage(attrs) ||
             this.handleMetadataFastening(attrs) ||
             this.handleMEPNotification(attrs) ||
-            (await this.handleRetraction(attrs)) ||
             (await this.handleModeration(attrs)) ||
+            (await this.handleRetraction(attrs)) ||
             (await this.handleSubjectChange(attrs))
         ) {
             attrs.nick && this.removeNotification(attrs.nick, ['composing', 'paused']);

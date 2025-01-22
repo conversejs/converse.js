@@ -178,7 +178,7 @@ describe("A Chat Message", function () {
         spyOn(view.model, 'sendMessage').and.callThrough();
         await mock.sendMessage(view, message);
         expect(view.model.sendMessage).toHaveBeenCalled();
-        await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'), 1000);
+        await u.waitUntil(() => view.querySelector('.chat-content .chat-msg'));
         const msg = view.querySelector('.chat-content .chat-msg .chat-msg__text');
         await u.waitUntil(() => msg.innerHTML.replace(/<!-.*?->/g, '').trim() ==
             `<a target="_blank" rel="noopener" href="https://pbs.twimg.com/media/string?format=jpg&amp;name=small">https://pbs.twimg.com/media/string?format=jpg&amp;name=small</a>`, 1000);

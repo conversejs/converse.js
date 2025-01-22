@@ -41,11 +41,10 @@ class MUCMessage extends Message {
     /**
      * Determines whether this messsage may be moderated,
      * based on configuration settings and server support.
-     * @async
      * @method _converse.ChatRoomMessages#mayBeModerated
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
-    mayBeModerated () {
+    async mayBeModerated () {
         if (typeof this.get('from_muc')  === 'undefined') {
             // If from_muc is not defined, then this message hasn't been
             // reflected yet, which means we won't have a XEP-0359 stanza id.
@@ -53,8 +52,7 @@ class MUCMessage extends Message {
         }
         return (
             ['all', 'moderator'].includes(api.settings.get('allow_message_retraction')) &&
-            this.get(`stanza_id ${this.get('from_muc')}`) &&
-            this.chatbox.canModerateMessages()
+            this.get(`stanza_id ${this.get('from_muc')}`) && await this.chatbox.canModerateMessages()
         );
     }
 

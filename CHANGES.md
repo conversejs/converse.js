@@ -49,6 +49,9 @@
 - Fix: renaming getEmojisByAtrribute to getEmojisByAttribute.
 
 ### Changes and features
+- Upgrade to the latest versions of XEP-0424 and XEP-0425 (Message Retraction and Message Moderation).
+  Converse loses the ability to retract or moderate messages in the older format,
+  so you might need to upgrade your XMPP server's implementation of these as well.
 - Embed the Spotify player for links to Spotify tracks. New config option [embed_3rd_party_media_players](https://conversejs.org/docs/html/configuration.html#embed-3rd-party-media-players).
 - Add support for XEP-0191 Blocking Command
 - Upgrade to Bootstrap 5

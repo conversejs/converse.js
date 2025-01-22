@@ -87,7 +87,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          */
         retractOwnMessage(message: import("../plugins/chat/message").default): void;
         /**
-         * @param {File[]} files
+         * @param {File[]} files'
          */
         sendFiles(files: File[]): Promise<void>;
         /**

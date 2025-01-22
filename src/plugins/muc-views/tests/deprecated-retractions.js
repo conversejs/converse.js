@@ -2,13 +2,15 @@
 const { Strophe, u, stx } = converse.env;
 
 describe("Deprecated Message Retractions", function () {
+    beforeAll(() => jasmine.addMatchers({ toEqualStanza: jasmine.toEqualStanza }));
+
     describe("A groupchat message retraction", function () {
 
         it("is not applied if it's not from the right author",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
             const received_stanza = stx`
@@ -58,7 +60,7 @@ describe("Deprecated Message Retractions", function () {
 
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
             const retraction_stanza = stx`
@@ -119,7 +121,7 @@ describe("Deprecated Message Retractions", function () {
 
             const date = (new Date()).toISOString();
             const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
             const retraction_stanza = stx`
                 <message xmlns="jabber:client" from="${muc_jid}" type="groupchat" id="retraction-id-1">
@@ -294,7 +296,7 @@ describe("Deprecated Message Retractions", function () {
 
         it("can be followed up by a retraction by the author", mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
             const received_stanza = stx`
@@ -336,102 +338,6 @@ describe("Deprecated Message Retractions", function () {
             expect(msg_el.querySelector('.chat-msg--retracted q')).toBe(null);
         }));
 
-
-        it("can be retracted by a moderator, with the IQ response received before the retraction message",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
-            const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-
-            const view = _converse.chatboxviews.get(muc_jid);
-            const occupant = view.model.getOwnOccupant();
-            expect(occupant.get('role')).toBe('moderator');
-
-            const received_stanza = stx`
-                <message to="${_converse.jid}"
-                        from="${muc_jid}/mallory"
-                        type="groupchat"
-                        id="${_converse.api.connection.get().getUniqueId()}"
-                        xmlns="jabber:client">
-                    <body>Visit this site to get free Bitcoin!</body>
-                    <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
-                </message>`;
-            await view.model.handleMessageStanza(received_stanza);
-            await u.waitUntil(() => view.model.messages.length === 1);
-            expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
-
-            const reason = "This content is inappropriate for this forum!"
-            const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
-            retract_button.click();
-
-            await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
-
-            const reason_input = document.querySelector('#converse-modals .modal input[name="reason"]');
-            reason_input.value = 'This content is inappropriate for this forum!';
-            const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
-            submit_button.click();
-
-            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
-            const message = view.model.messages.at(0);
-            const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
-
-            expect(Strophe.serialize(stanza)).toBe(
-                `<iq id="${stanza.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                    `<apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">`+
-                        `<moderate xmlns="urn:xmpp:message-moderate:0">`+
-                            `<retract xmlns="urn:xmpp:message-retract:0"/>`+
-                            `<reason>This content is inappropriate for this forum!</reason>`+
-                        `</moderate>`+
-                    `</apply-to>`+
-                `</iq>`);
-
-            const result_iq = stx`
-                <iq from="${muc_jid}"
-                    id="${stanza.getAttribute('id')}"
-                    to="${_converse.bare_jid}"
-                    type="result"
-                    xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
-
-            // We opportunistically save the message as retracted, even before receiving the retraction message
-            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
-            expect(view.model.messages.length).toBe(1);
-            expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
-            expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
-            expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
-            expect(view.model.messages.at(0).get('editable')).toBe(false);
-            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
-            expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has removed this message');
-
-            const qel = msg_el.querySelector('q');
-            expect(qel.textContent.trim()).toBe('This content is inappropriate for this forum!');
-
-            // The server responds with a retraction message
-            const retraction = stx`
-                <message type="groupchat"
-                        id="retraction-id-1"
-                        from="${muc_jid}"
-                        to="${muc_jid}/romeo"
-                        xmlns="jabber:client">
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0">
-                        <retract xmlns="urn:xmpp:message-retract:0" />
-                        <reason>${reason}</reason>
-                        </moderated>
-                    </apply-to>
-                </message>`;
-            await view.model.handleMessageStanza(retraction);
-            expect(view.model.messages.length).toBe(1);
-            expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
-            expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
-            expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
-            expect(view.model.messages.at(0).get('editable')).toBe(false);
-        }));
-
         it("can not be retracted if the MUC doesn't support message moderation",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
@@ -455,83 +361,6 @@ describe("Deprecated Message Retractions", function () {
             expect(view.querySelector('.chat-msg__content .chat-msg__action-retract')).toBe(null);
             const result = await view.model.canModerateMessages();
             expect(result).toBe(false);
-        }));
-
-
-        it("can be retracted by a moderator, with the retraction message received before the IQ response",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
-
-            const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
-            const view = _converse.chatboxviews.get(muc_jid);
-            const occupant = view.model.getOwnOccupant();
-            expect(occupant.get('role')).toBe('moderator');
-
-            const received_stanza = stx`
-                <message to="${_converse.jid}"
-                        from="${muc_jid}/mallory"
-                        type="groupchat"
-                        id="${_converse.api.connection.get().getUniqueId()}"
-                        xmlns="jabber:client">
-                    <body>Visit this site to get free Bitcoin!</body>
-                    <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
-                </message>`;
-            await view.model.handleMessageStanza(received_stanza);
-            await u.waitUntil(() => view.model.messages.length === 1);
-            expect(view.model.messages.length).toBe(1);
-
-            const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
-            retract_button.click();
-            await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
-
-            const reason_input = document.querySelector('#converse-modals .modal input[name="reason"]');
-            const reason = "This content is inappropriate for this forum!"
-            reason_input.value = reason;
-            const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
-            submit_button.click();
-
-            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
-            const message = view.model.messages.at(0);
-            const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
-            // The server responds with a retraction message
-            const retraction = stx`
-                <message type="groupchat"
-                        id='retraction-id-1'
-                        from="${muc_jid}"
-                        to="${muc_jid}/romeo"
-                        xmlns="jabber:client">
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by='${_converse.bare_jid}' xmlns='urn:xmpp:message-moderate:0'>
-                            <retract xmlns='urn:xmpp:message-retract:0' />
-                            <reason>${reason}</reason>
-                        </moderated>
-                    </apply-to>
-                </message>`;
-            await view.model.handleMessageStanza(retraction);
-
-            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
-            expect(view.model.messages.length).toBe(1);
-            expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
-            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(msg_el.textContent).toBe('romeo has removed this message');
-            const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
-            expect(qel.textContent).toBe('This content is inappropriate for this forum!');
-
-            const result_iq = stx`
-                <iq from="${muc_jid}"
-                    id="${stanza.getAttribute('id')}"
-                    to="${_converse.bare_jid}"
-                    type="result"
-                    xmlns="jabber:client"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(result_iq));
-            expect(view.model.messages.length).toBe(1);
-            expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
-            expect(view.model.messages.at(0).get('moderated_by')).toBe(_converse.bare_jid);
-            expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
-            expect(view.model.messages.at(0).get('editable')).toBe(false);
         }));
     });
 
@@ -632,7 +461,7 @@ describe("Deprecated Message Retractions", function () {
                 async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
 
@@ -709,7 +538,7 @@ describe("Deprecated Message Retractions", function () {
                 async function (_converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE0];
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
 

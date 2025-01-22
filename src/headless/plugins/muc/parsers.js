@@ -85,7 +85,7 @@ function getDeprecatedModerationAttributes(stanza) {
     const fastening = sizzle(`apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
     if (fastening) {
         const applies_to_id = fastening.getAttribute('id');
-        const moderated = sizzle(`moderated[xmlns="${Strophe.NS.MODERATE}"]`, fastening).pop();
+        const moderated = sizzle(`moderated[xmlns="${Strophe.NS.MODERATE0}"]`, fastening).pop();
         if (moderated) {
             const retracted = sizzle(`retract[xmlns="${Strophe.NS.RETRACT0}"]`, moderated).pop();
             if (retracted) {
@@ -99,7 +99,7 @@ function getDeprecatedModerationAttributes(stanza) {
             }
         }
     } else {
-        const tombstone = sizzle(`> moderated[xmlns="${Strophe.NS.MODERATE}"]`, stanza).pop();
+        const tombstone = sizzle(`> moderated[xmlns="${Strophe.NS.MODERATE0}"]`, stanza).pop();
         if (tombstone) {
             const retracted = sizzle(`retracted[xmlns="${Strophe.NS.RETRACT0}"]`, tombstone).pop();
             if (retracted) {
@@ -122,6 +122,30 @@ function getDeprecatedModerationAttributes(stanza) {
  * @returns {Object}
  */
 function getModerationAttributes(stanza) {
+    const retract = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
+    if (retract) {
+        const moderated = sizzle(`moderated[xmlns="${Strophe.NS.MODERATE}"]`, retract).pop();
+        if (moderated) {
+            return {
+                editable: false,
+                moderated: 'retracted',
+                moderated_by: moderated.getAttribute('by'),
+                moderated_id: retract.getAttribute('id'),
+                moderation_reason: retract.querySelector('reason')?.textContent,
+            };
+        }
+    } else {
+        const tombstone = sizzle(`retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
+        if (tombstone) {
+            return {
+                editable: false,
+                is_tombstone: true,
+                moderated_by: tombstone.getAttribute('by'),
+                retracted: tombstone.getAttribute('stamp'),
+                moderation_reason: tombstone.querySelector('reason')?.textContent,
+            };
+        }
+    }
     return getDeprecatedModerationAttributes(stanza);
 }
 

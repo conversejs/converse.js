@@ -64,9 +64,8 @@ describe("Message Retractions", function () {
                         from="${muc_jid}/mallory"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="stanza-id-1" xmlns="urn:xmpp:fasten:0">
-                        <retract xmlns="urn:xmpp:message-retract:0" />
-                    </apply-to>
+                    <retract id="stanza-id-1" xmlns="urn:xmpp:message-retract:1"/>
+                    <body>/me retracted a message</body>
                 </message>
             `;
             spyOn(view.model, 'handleRetraction').and.callThrough();
@@ -98,11 +97,11 @@ describe("Message Retractions", function () {
                         from="${muc_jid}/eve"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="origin-id-1" xmlns="urn:xmpp:fasten:0">
-                        <retract by="${muc_jid}/eve" xmlns="urn:xmpp:message-retract:0" />
-                    </apply-to>
-                </message>
-            `;
+                    <retract id="origin-id-1" xmlns="urn:xmpp:message-retract:1"/>
+                    <fallback xmlns="urn:xmpp:fallback:0" for='urn:xmpp:message-retract:1'/>
+                    <body>/me retracted a message</body>
+                    <store xmlns="urn:xmpp:hints"/>
+                </message>`;
             const view = _converse.chatboxviews.get(muc_jid);
             spyOn(converse.env.log, 'warn');
             spyOn(view.model, 'handleRetraction').and.callThrough();
@@ -125,8 +124,7 @@ describe("Message Retractions", function () {
                     <delay xmlns="urn:xmpp:delay" stamp="${date}"/>
                     <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="origin-id-1"/>
-                </message>
-            `;
+                </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(received_stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 2);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1, 1000);
@@ -154,12 +152,10 @@ describe("Message Retractions", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
             const retraction_stanza = stx`
                 <message xmlns="jabber:client" from="${muc_jid}" type="groupchat" id="retraction-id-1">
-                    <apply-to xmlns="urn:xmpp:fasten:0" id="stanza-id-1">
-                        <moderated xmlns="urn:xmpp:message-moderate:0" by="${muc_jid}/madison">
-                            <retract xmlns="urn:xmpp:message-retract:0"/>
-                            <reason>Insults</reason>
-                        </moderated>
-                    </apply-to>
+                    <retract id="stanza-id-1" xmlns='urn:xmpp:message-retract:1'>
+                        <moderated xmlns="urn:xmpp:message-moderate:1" by="${muc_jid}/madison"/>
+                        <reason>Insults</reason>
+                    </retract>
                 </message>
             `;
             const view = _converse.chatboxviews.get(muc_jid);
@@ -397,9 +393,11 @@ describe("Message Retractions", function () {
                         from="${muc_jid}/eve"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="origin-id-1" xmlns="urn:xmpp:fasten:0">
-                        <retract by="${muc_jid}/eve" xmlns="urn:xmpp:message-retract:0" />
-                    </apply-to>
+
+                    <retract id="origin-id-1" xmlns='urn:xmpp:message-retract:1'/>
+                    <fallback xmlns="urn:xmpp:fallback:0" for='urn:xmpp:message-retract:1'/>
+                    <body>/me retracted a previous message, but it's unsupported by your client.</body>
+                    <store xmlns="urn:xmpp:hints"/>
                 </message>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(retraction_stanza));
 
@@ -451,19 +449,18 @@ describe("Message Retractions", function () {
             submit_button.click();
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
+            const stanza = await u.waitUntil(
+                () => sent_IQs.filter(iq => iq.querySelector('iq retract')).pop());
             const message = view.model.messages.at(0);
             const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
 
-            expect(Strophe.serialize(stanza)).toBe(
-                `<iq id="${stanza.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                    `<apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">`+
-                        `<moderate xmlns="urn:xmpp:message-moderate:0">`+
-                            `<retract xmlns="urn:xmpp:message-retract:0"/>`+
-                            `<reason>This content is inappropriate for this forum!</reason>`+
-                        `</moderate>`+
-                    `</apply-to>`+
-                `</iq>`);
+            expect(stanza).toEqualStanza(stx`
+                <iq id="${stanza.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">
+                    <moderate id="${stanza_id}" xmlns="urn:xmpp:message-moderate:1">
+                        <retract xmlns="urn:xmpp:message-retract:1"/>
+                        <reason>This content is inappropriate for this forum!</reason>
+                    </moderate>
+                </iq>`);
 
             const result_iq = stx`
                 <iq from="${muc_jid}"
@@ -495,12 +492,10 @@ describe("Message Retractions", function () {
                         from="${muc_jid}"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0">
-                        <retract xmlns="urn:xmpp:message-retract:0" />
+                    <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0">
+                        <retract id="${stanza_id}" xmlns="urn:xmpp:message-retract:1"/>
                         <reason>${reason}</reason>
-                        </moderated>
-                    </apply-to>
+                    </moderated>
                 </message>`;
             await view.model.handleMessageStanza(retraction);
             expect(view.model.messages.length).toBe(1);
@@ -570,7 +565,7 @@ describe("Message Retractions", function () {
             submit_button.click();
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
+            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq retract')).pop());
             const message = view.model.messages.at(0);
             const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
             // The server responds with a retraction message
@@ -580,12 +575,10 @@ describe("Message Retractions", function () {
                         from="${muc_jid}"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by='${_converse.bare_jid}' xmlns='urn:xmpp:message-moderate:0'>
-                            <retract xmlns='urn:xmpp:message-retract:0' />
-                            <reason>${reason}</reason>
-                        </moderated>
-                    </apply-to>
+                    <retract id="${stanza_id}" xmlns='urn:xmpp:message-retract:1'>
+                        <moderated by="${_converse.bare_jid}" xmlns='urn:xmpp:message-moderate:1' />
+                        <reason>${reason}</reason>
+                    </retract>
                 </message>`;
             await view.model.handleMessageStanza(retraction);
 
@@ -847,17 +840,14 @@ describe("Message Retractions", function () {
             submit_button.click();
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
-            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
+            const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('iq moderate')).pop());
 
-            expect(Strophe.serialize(stanza)).toBe(
-                `<iq id="${stanza.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
-                    `<apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">`+
-                        `<moderate xmlns="urn:xmpp:message-moderate:0">`+
-                            `<retract xmlns="urn:xmpp:message-retract:0"/>`+
-                            `<reason></reason>`+
-                        `</moderate>`+
-                    `</apply-to>`+
-                `</iq>`);
+            expect(stanza).toEqualStanza(stx`
+                <iq type="set" to="${muc_jid}" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
+                    <moderate id="${stanza_id}" xmlns="urn:xmpp:message-moderate:1">
+                        <retract xmlns="urn:xmpp:message-retract:1"/>
+                    </moderate>
+                </iq>`);
 
             const result_iq = stx`
                 <iq from="${muc_jid}"
@@ -887,11 +877,9 @@ describe("Message Retractions", function () {
                         from="${muc_jid}"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0">
-                        <retract xmlns="urn:xmpp:message-retract:0" />
-                        </moderated>
-                    </apply-to>
+                    <retract id="${stanza_id}" xmlns="urn:xmpp:message-retract:1">
+                        <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0"/>
+                    </retract>
                 </message>`;
             await view.model.handleMessageStanza(retraction);
             expect(view.model.messages.length).toBe(1);

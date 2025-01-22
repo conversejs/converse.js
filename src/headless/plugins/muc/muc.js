@@ -808,30 +808,27 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      */
     async retractOwnMessage(message) {
         const __ = _converse.__;
-        const origin_id = message.get('origin_id');
-        if (!origin_id) {
-            throw new Error("Can't retract message without a XEP-0359 Origin ID");
-        }
         const editable = message.get('editable');
-        const stanza = $msg({
-            'id': getUniqueId(),
-            'to': this.get('jid'),
-            'type': 'groupchat',
-        })
-            .c('store', { xmlns: Strophe.NS.HINTS })
-            .up()
-            .c('apply-to', {
-                'id': origin_id,
-                'xmlns': Strophe.NS.FASTEN,
-            })
-            .c('retract', { xmlns: Strophe.NS.RETRACT });
+        const retraction_id = getUniqueId();
+        const id = message.get('id');
+
+        const stanza = stx`
+            <message id="${retraction_id}"
+                     to="${this.get('jid')}"
+                     type="groupchat"
+                     xmlns="jabber:client">
+                <retract id="${id}" xmlns="${Strophe.NS.RETRACT}"/>
+                <body>/me retracted a message</body>
+                <store xmlns="${Strophe.NS.HINTS}"/>
+                <fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.RETRACT}" />
+            </message>`;
 
         // Optimistic save
         message.set({
-            'retracted': new Date().toISOString(),
-            'retracted_id': origin_id,
-            'retraction_id': stanza.tree().getAttribute('id'),
-            'editable': false
+            retracted: new Date().toISOString(),
+            retracted_id: id,
+            retraction_id: retraction_id,
+            editable: false
         });
         const result = await this.sendTimedMessage(stanza);
 
@@ -841,11 +838,11 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             log.error(result);
             message.save({
                 editable,
-                'error_type': 'timeout',
-                'error': __('A timeout happened while while trying to retract your message.'),
-                'retracted': undefined,
-                'retracted_id': undefined,
-                'retraction_id': undefined
+                error_type: 'timeout',
+                error: __('A timeout happened while trying to retract your message.'),
+                retracted: undefined,
+                retracted_id: undefined,
+                retraction_id: undefined
             });
         }
     }
@@ -896,7 +893,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
                 'xmlns': Strophe.NS.FASTEN,
             })
             .c('moderate', { xmlns: Strophe.NS.MODERATE })
-            .c('retract', { xmlns: Strophe.NS.RETRACT })
+            .c('retract', { xmlns: Strophe.NS.RETRACT0 })
             .up()
             .c('reason')
             .t(reason || '');

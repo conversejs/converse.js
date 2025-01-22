@@ -855,9 +855,9 @@ export default function ModelWithMessages(BaseModel) {
                 }
                 message.save(pick(attrs, RETRACTION_ATTRIBUTES));
                 return true;
-            } else if (attrs.retract_id) {
+            } else if (attrs.retracted_id) {
                 // Handle direct retract element
-                const message = this.messages.findWhere({ 'origin_id': attrs.retract_id, 'from': attrs.from });
+                const message = this.messages.findWhere({ 'origin_id': attrs.retracted_id, 'from': attrs.from });
                 if (!message) {
                     attrs['dangling_retraction'] = true;
                     await this.createMessage(attrs);
@@ -865,7 +865,7 @@ export default function ModelWithMessages(BaseModel) {
                 }
                 message.save({
                     'retracted': new Date().toISOString(),
-                    'retracted_id': attrs.retract_id,
+                    'retracted_id': attrs.retracted_id,
                     'editable': false
                 });
                 return true;

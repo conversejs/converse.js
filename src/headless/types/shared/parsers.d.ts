@@ -24,9 +24,16 @@ export function getEncryptionAttributes(stanza: Element): import("./types").Encr
  * @param {Element} stanza - The message stanza
  * @param {Element} original_stanza - The original stanza, that contains the
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @returns {Object}
+ * @returns {import('./types').RetractionAttrs | {}}
  */
-export function getRetractionAttributes(stanza: Element, original_stanza: Element): any;
+export function getDeprecatedRetractionAttributes(stanza: Element, original_stanza: Element): import("./types").RetractionAttrs | {};
+/**
+ * @param {Element} stanza - The message stanza
+ * @param {Element} original_stanza - The original stanza, that contains the
+ *  message stanza, if it was contained, otherwise it's the message stanza itself.
+ * @returns {import('./types').RetractionAttrs | {}}
+ */
+export function getRetractionAttributes(stanza: Element, original_stanza: Element): import("./types").RetractionAttrs | {};
 /**
  * @param {Element} stanza
  * @param {Element} original_stanza

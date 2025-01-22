@@ -5,6 +5,13 @@ type EncryptionPayloadAttrs = {
     prekey?: boolean;
     device_id: string;
 };
+export type RetractionAttrs = {
+    editable: boolean;
+    is_tombstone?: boolean;
+    retracted: string;
+    retracted_id?: string;
+    retraction_id?: string;
+};
 export type EncryptionAttrs = {
     encrypted?: EncryptionPayloadAttrs;
     is_encrypted: boolean;

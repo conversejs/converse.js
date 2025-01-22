@@ -26,7 +26,7 @@ async function sendAndThenRetractMessage (_converse, view) {
     const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');
     submit_button.click();
     const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-    return u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('message apply-to[xmlns="urn:xmpp:fasten:0"]')).pop());
+    return u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('message retract')).pop());
 }
 
 
@@ -632,27 +632,29 @@ describe("Message Retractions", function () {
 
             expect(retraction_stanza).toEqualStanza(stx`
                 <message id="${retraction_stanza.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">
-                    <retract id="${msg_obj.get('origin_id')}" xmlns="urn:xmpp:message-retract:0"/>
+                    <retract id="${msg_obj.get('origin_id')}" xmlns="urn:xmpp:message-retract:1"/>
+                    <body>/me retracted a message</body>
                     <store xmlns="urn:xmpp:hints"/>
-                    <apply-to  xmlns="urn:xmpp:fasten:0">
-                    </apply-to>
+                    <fallback xmlns="urn:xmpp:fallback:0" for="urn:xmpp:message-retract:1"/>
                 </message>`);
 
             const message = view.model.messages.last();
             expect(message.get('is_ephemeral')).toBe(false);
             expect(message.get('editable')).toBeFalsy();
 
-            const stanza_id = message.get(`stanza_id ${muc_jid}`);
             // The server responds with a retraction message
+            const stanza_id = '5f3dbc5e-e1d3-4077-a492-693f3769c7ad';
             const reflection = stx`
                 <message type="groupchat"
                         id="${retraction_stanza.getAttribute('id')}"
                         from="${muc_jid}"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <retract xmlns='urn:xmpp:message-retract:0' />
-                    </apply-to>
+                    <stanza-id xmlns="urn:xmpp:sid:0" id="${stanza_id}" by="room@muc.example.com"/>
+                    <retract id="${msg_obj.get('origin_id')}" xmlns="urn:xmpp:message-retract:1"/>
+                    <body>/me retracted a message</body>
+                    <store xmlns="urn:xmpp:hints"/>
+                    <fallback xmlns="urn:xmpp:fallback:0" for="urn:xmpp:message-retract:1"/>
                 </message>`;
 
             spyOn(view.model, 'handleRetraction').and.callThrough();
@@ -663,6 +665,7 @@ describe("Message Retractions", function () {
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             expect(view.model.messages.last().get('is_ephemeral')).toBe(false);
             expect(view.model.messages.last().get('editable')).toBe(false);
+            expect(message.get(`stanza_id ${muc_jid}`)).toBe(stanza_id);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent).toBe('You have removed this message');
@@ -700,9 +703,7 @@ describe("Message Retractions", function () {
                     <error by='${muc_jid}' type='auth'>
                         <forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <retract xmlns='urn:xmpp:message-retract:0' />
-                    </apply-to>
+                    <retract id="${stanza_id}" xmlns="urn:xmpp:message-retract:1"/>
                 </message>`;
 
             _converse.api.connection.get()._dataRecv(mock.createRequest(error));
@@ -747,7 +748,7 @@ describe("Message Retractions", function () {
             const error_messages = view.querySelectorAll('.chat-msg__error');
             expect(error_messages.length).toBe(1);
             expect(error_messages[0].textContent.trim()).toBe(
-                'Message delivery failed.\nA timeout happened while while trying to retract your message.');
+                'Message delivery failed.\nA timeout happened while trying to retract your message.');
         }));
 
 

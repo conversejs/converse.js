@@ -9,7 +9,7 @@
     --blue: #1ba2f6;
     --cyan: #32fbe2;
     --green: #3cf281;
-    --indigo: #6610f2;
+    --indigo: #955df0;
     --orange: #f1b633;
     --pink: #ea39b8;
     --purple: #6f42c1;
@@ -26,7 +26,7 @@
 
     // Bootstrap variables
     --primary-color: var(--purple) !important;
-    --secondary-color: var(--indigo) !important;
+    --secondary-color: var(--pink) !important;
     --success-color: var(--green);
     --danger-color: var(--red);
     --warning-color: var(--orange);
@@ -44,7 +44,7 @@
     --error-color: var(--red);
     --focus-color: var(--secondary-color);
     --heading-color: var(--purple);
-    --headlines-color: var(--pink);
+    --headlines-color: var(--indigo);
     --link-color: var(--cyan);
 
     // The background when selecting text with your mouse
@@ -77,6 +77,10 @@
     --success-color-hover: var(--success);
     --warning-color-hover: var(--orange);
 
+    .toggle-controlbox {
+        color: var(--foreground-color) !important;
+    }
+
     #controlbox {
         .flyout {
             box-shadow:
@@ -92,12 +96,15 @@
         }
     }
 
-    .message .separator-text {
-        border-radius: 50px;
-        box-shadow:
-            0 0 0.25rem rgba(60, 242, 129, 0.8),
-            0 0 1rem rgba(60, 242, 129, 0.2),
-            0 0 4rem rgba(60, 242, 129, 0.1) !important;
+    .date-separator {
+        margin-bottom: 1em !important;
+        .separator-text {
+            border-radius: 50px;
+            box-shadow:
+                0 0 0.25rem rgba(60, 242, 129, 0.8),
+                0 0 1rem rgba(60, 242, 129, 0.2),
+                0 0 4rem rgba(60, 242, 129, 0.1) !important;
+        }
     }
 
     .card {

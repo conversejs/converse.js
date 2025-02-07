@@ -130,6 +130,7 @@ function getModerationAttributes(stanza) {
                 editable: false,
                 moderated: 'retracted',
                 moderated_by: moderated.getAttribute('by'),
+                moderated_by_id: moderated.querySelector('occupant-id')?.getAttribute('id'),
                 moderated_id: retract.getAttribute('id'),
                 moderation_reason: retract.querySelector('reason')?.textContent,
             };
@@ -141,6 +142,7 @@ function getModerationAttributes(stanza) {
                 editable: false,
                 is_tombstone: true,
                 moderated_by: tombstone.getAttribute('by'),
+                moderated_by_id: tombstone.querySelector('occupant-id')?.getAttribute('id'),
                 retracted: tombstone.getAttribute('stamp'),
                 moderation_reason: tombstone.querySelector('reason')?.textContent,
             };

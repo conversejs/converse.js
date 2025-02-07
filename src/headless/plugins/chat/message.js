@@ -141,6 +141,13 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
     }
 
     /**
+     * @returns {boolean}
+     */
+    isRetracted () {
+        return this.get('retracted') || this.get('moderated') === 'retracted';
+    }
+
+    /**
      * Returns a boolean indicating whether this message is considered a followup
      * message from the previous one. Followup messages are shown grouped together
      * under one author heading.
@@ -161,6 +168,7 @@ class Message extends ModelWithContact(ColorAwareModel(Model)) {
         }
         const date = dayjs(this.get('time'));
         return this.get('from') === prev_model.get('from') &&
+            !this.isRetracted() && !prev_model.isRetracted() &&
             !this.isMeCommand() && !prev_model.isMeCommand() &&
             !!this.get('is_encrypted') === !!prev_model.get('is_encrypted') &&
             this.get('type') === prev_model.get('type') && this.get('type') !== 'info' &&

@@ -21,7 +21,6 @@ export default class Message extends CustomElement {
     onUnfurlAnimationEnd(): void;
     onRetryClicked(): Promise<void>;
     show_spinner: boolean;
-    isRetracted(): any;
     hasMentions(): any;
     getOccupantAffiliation(): any;
     getOccupantRole(): any;

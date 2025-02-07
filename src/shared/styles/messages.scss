@@ -280,7 +280,13 @@
                     font-size: var(--message-font-size);
                 }
                 .chat-msg__time {
+                    margin-inline-end: 0.5em;
                     margin-inline-start: 0;
+                }
+
+                .retraction {
+                    display: flex;
+                    flex-direction: column;
                 }
             }
 

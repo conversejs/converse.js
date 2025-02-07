@@ -59,7 +59,7 @@ declare class Bookmarks extends Collection {
      * @param {Object} deferred
      * @param {Element} iq
      */
-    onBookmarksReceivedError(deferred: any, iq: Element): any;
+    onBookmarksReceivedError(deferred: any, iq: Element): Promise<void>;
     getUnopenedBookmarks(): Promise<any>;
 }
 import { Collection } from '@converse/skeletor';

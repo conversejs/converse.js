@@ -8,6 +8,7 @@ import Bookmark from './model.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import { parseErrorStanza } from '../../shared/parsers.js';
 import log from '../../log.js';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
@@ -262,9 +263,9 @@ class Bookmarks extends Collection {
      * @param {Object} deferred
      * @param {Element} iq
      */
-    onBookmarksReceivedError(deferred, iq) {
-        const { __ } = _converse;
+    async onBookmarksReceivedError(deferred, iq) {
         if (iq === null) {
+            const { __ } = _converse;
             log.error('Error: timeout while fetching bookmarks');
             api.alert('error', __('Timeout Error'), [
                 __(
@@ -272,19 +273,20 @@ class Bookmarks extends Collection {
                         'You can reload the page to request them again.'
                 ),
             ]);
-        } else if (deferred) {
-            if (iq.querySelector('error[type="cancel"] item-not-found')) {
+            deferred?.reject(new Error('Could not fetch bookmarks'));
+
+        } else {
+            const { errors } = converse.env;
+            const e = await parseErrorStanza(iq);
+            if (e instanceof errors.ItemNotFoundError) {
                 // Not an exception, the user simply doesn't have any bookmarks.
                 window.sessionStorage.setItem(this.fetched_flag, 'true');
-                return deferred.resolve();
+                deferred?.resolve();
             } else {
                 log.error('Error while fetching bookmarks');
-                log.error(iq);
-                return deferred.reject(new Error('Could not fetch bookmarks'));
+                if (iq) log.error(iq);
+                deferred?.reject(new Error('Could not fetch bookmarks'));
             }
-        } else {
-            log.error('Error while fetching bookmarks');
-            log.error(iq);
         }
     }
 

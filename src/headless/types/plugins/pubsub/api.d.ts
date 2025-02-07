@@ -3,7 +3,7 @@ declare namespace _default {
         namespace config {
             /**
              * Fetches the configuration for a PubSub node
-             * @method _converse.api.pubsub.configure
+             * @method _converse.api.pubsub.config.get
              * @param {string} jid - The JID of the pubsub service where the node resides
              * @param {string} node - The node to configure
              * @returns {Promise<import('./types').PubSubConfigOptions>}
@@ -11,7 +11,7 @@ declare namespace _default {
             function get(jid: string, node: string): Promise<import("./types").PubSubConfigOptions>;
             /**
              * Configures a PubSub node
-             * @method _converse.api.pubsub.configure
+             * @method _converse.api.pubsub.config.set
              * @param {string} jid The JID of the pubsub service where the node resides
              * @param {string} node The node to configure
              * @param {PubSubConfigOptions} config The configuration options
@@ -20,7 +20,7 @@ declare namespace _default {
             function set(jid: string, node: string, config: import("./types").PubSubConfigOptions): Promise<import("./types").PubSubConfigOptions>;
         }
         /**
-         * Publshes an item to a PubSub node
+         * Publishes an item to a PubSub node
          * @method _converse.api.pubsub.publish
          * @param {string} jid The JID of the pubsub service where the node resides.
          * @param {string} node The node being published to

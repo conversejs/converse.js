@@ -47,8 +47,8 @@ describe('A received chat message', function () {
             const message = view.model.messages.at(0);
             expect(message.get('retracted')).toBeTruthy();
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
-            expect(msg_el.textContent.trim()).toBe('Mercutio has removed this message');
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
         })
     );
 });

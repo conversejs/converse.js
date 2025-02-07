@@ -616,12 +616,11 @@ describe("Message Retractions", function () {
                         from="${muc_jid}"
                         to="${muc_jid}/romeo"
                         xmlns="jabber:client">
-                    <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
-                        <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:0">
-                        <retract xmlns="urn:xmpp:message-retract:0" />
+
+                    <retract id="${stanza_id}" xmlns='urn:xmpp:message-retract:1'>
+                        <moderated by="${_converse.bare_jid}" xmlns="urn:xmpp:message-moderate:1"/>
                         <reason>${reason}</reason>
-                        </moderated>
-                    </apply-to>
+                    </retract>
                 </message>`;
             await view.model.handleMessageStanza(retraction);
             expect(view.model.messages.length).toBe(1);
@@ -749,8 +748,7 @@ describe("Message Retractions", function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="groupchat" from="${muc_jid}/eve" to="${_converse.bare_jid}" id="message-id-1">
-                                <origin-id xmlns='urn:xmpp:sid:0' id="origin-id-1"/>
-                                <retracted stamp="2019-09-20T23:09:32Z" xmlns="urn:xmpp:message-retract:0"/>
+                                <retracted stamp='2019-09-20T23:09:32Z' xmlns='urn:xmpp:message-retract:1' id='retract-message-1'/>
                             </message>
                         </forwarded>
                     </result>
@@ -765,9 +763,9 @@ describe("Message Retractions", function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="groupchat" from="${muc_jid}/eve" to="${_converse.bare_jid}" id="retract-message-1">
-                                <apply-to id="origin-id-1" xmlns="urn:xmpp:fasten:0">
-                                    <retract xmlns="urn:xmpp:message-retract:0"/>
-                                </apply-to>
+                                <retract id="message-id-1" xmlns='urn:xmpp:message-retract:1'/>
+                                <fallback xmlns="urn:xmpp:fallback:0" for='urn:xmpp:message-retract:1'/>
+                                <body>/me retracted a previous message, but it's unsupported by your client.</body>
                             </message>
                         </forwarded>
                     </result>
@@ -826,10 +824,10 @@ describe("Message Retractions", function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="groupchat" from="${muc_jid}/eve" to="${_converse.bare_jid}" id="message-id-1">
-                                <moderated by="${muc_jid}/bob" stamp="2019-09-20T23:09:32Z" xmlns='urn:xmpp:message-moderate:0'>
-                                    <retracted xmlns="urn:xmpp:message-retract:0"/>
-                                    <reason>This message contains inappropriate content</reason>
-                                </moderated>
+                                <retracted stamp='2019-09-20T23:19:12Z' xmlns='urn:xmpp:message-retract:1'>
+                                    <moderated by="${muc_jid}/bob" xmlns="urn:xmpp:message-moderate:1"/>
+                                    <reason>This message contains inappropriate content for this forum</reason>
+                                </retracted>
                             </message>
                         </forwarded>
                     </result>
@@ -844,12 +842,10 @@ describe("Message Retractions", function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="groupchat" from="${muc_jid}" to="${_converse.bare_jid}" id="retract-message-1">
-                                <apply-to id="stanza-id" xmlns="urn:xmpp:fasten:0">
-                                    <moderated by="${muc_jid}/bob" xmlns='urn:xmpp:message-moderate:0'>
-                                        <retract xmlns="urn:xmpp:message-retract:0"/>
-                                        <reason>This message contains inappropriate content</reason>
-                                    </moderated>
-                                </apply-to>
+                                <retract id="stanza-id" xmlns='urn:xmpp:message-retract:1'>
+                                    <moderated by='room@muc.example.com/macbeth' xmlns='urn:xmpp:message-moderate:1'/>
+                                    <reason>This message contains inappropriate content</reason>
+                                </retract>
                             </message>
                         </forwarded>
                     </result>

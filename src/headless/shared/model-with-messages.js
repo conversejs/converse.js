@@ -846,13 +846,17 @@ export default function ModelWithMessages(BaseModel) {
             if (attrs.retracted) {
                 if (attrs.is_tombstone) return false;
 
-                const message = this.messages.findWhere({ origin_id: attrs.retracted_id, from: attrs.from });
-                if (!message) {
-                    attrs['dangling_retraction'] = true;
-                    await this.createMessage(attrs);
-                    return true;
+                for (const m of this.messages.models) {
+                    if (m.get('from') !== attrs.from) continue;
+                    if (m.get('origin_id') === attrs.retracted_id ||
+                            m.get('msgid') === attrs.retracted_id) {
+                        m.save(pick(attrs, RETRACTION_ATTRIBUTES));
+                        return true;
+                    }
                 }
-                message.save(pick(attrs, RETRACTION_ATTRIBUTES));
+
+                attrs['dangling_retraction'] = true;
+                await this.createMessage(attrs);
                 return true;
             } else {
                 // Check if we have dangling retraction

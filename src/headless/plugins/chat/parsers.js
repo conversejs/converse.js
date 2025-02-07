@@ -121,7 +121,6 @@ export async function parseMessage (stanza) {
             'is_marker': !!marker,
             'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
             'marker_id': marker && marker.getAttribute('id'),
-            'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
             'nick': contact?.attributes?.nickname,
             'receipt_id': getReceiptId(stanza),
             'received': new Date().toISOString(),

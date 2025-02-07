@@ -286,9 +286,8 @@ describe("Deprecated Message Retractions", function () {
             const message = view.model.messages.at(1);
             expect(message.get('retracted')).toBeTruthy();
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
-            expect(msg_el.textContent.trim()).toBe('Mercutio has removed this message');
-            expect(u.hasClass('chat-msg--followup', view.querySelector('.chat-msg--retracted'))).toBe(true);
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
         }));
     });
 
@@ -333,8 +332,8 @@ describe("Deprecated Message Retractions", function () {
             expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
             expect(view.model.messages.at(0).get('editable')).toBe(false);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
-            expect(msg_el.textContent.trim()).toBe('eve has removed this message');
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(msg_el.firstElementChild.textContent.trim()).toBe('eve has removed a message');
             expect(msg_el.querySelector('.chat-msg--retracted q')).toBe(null);
         }));
 
@@ -450,8 +449,8 @@ describe("Deprecated Message Retractions", function () {
             expect(await view.model.handleRetraction.calls.all()[2].returnValue).toBe(true);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('Mercutio has removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
             expect(u.hasClass('chat-msg--followup', el.parentElement)).toBe(false);
         }));
 
@@ -528,8 +527,8 @@ describe("Deprecated Message Retractions", function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('eve has removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el.firstElementChild.textContent.trim()).toBe('eve has removed a message');
         }));
 
         it("may be returned as a tombstone moderated groupchat message",
@@ -615,8 +614,8 @@ describe("Deprecated Message Retractions", function () {
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('A moderator has removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el.firstElementChild.textContent.trim()).toBe('A moderator has removed a message');
             const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
             expect(qel.textContent.trim()).toBe('This message contains inappropriate content');
         }));

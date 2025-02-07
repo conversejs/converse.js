@@ -7,7 +7,6 @@ import { _converse, api, u, constants } from "@converse/headless";
 import 'plugins/muc-views/modals/add-muc.js';
 import 'plugins/muc-views/modals/muc-list.js';
 import { __ } from 'i18n';
-import { addBookmarkViaEvent } from 'plugins/bookmark-views/utils.js';
 import { getUnreadMsgsDisplay } from "shared/chat/utils";
 
 import '../styles/roomsgroups.scss';
@@ -18,24 +17,6 @@ const { isUniView } = u;
 /** @param {MUC} room */
 function isCurrentlyOpen (room) {
     return isUniView() && !room.get('hidden');
-}
-
-/** @param {MUC} room */
-function tplBookmark (room) {
-    const bm = room.get('bookmarked') ?? false;
-    const i18n_bookmark = __('Bookmark');
-    return html`
-        <a class="list-item-action add-bookmark"
-            tabindex="0"
-            data-room-jid="${room.get('jid')}"
-            data-bookmark-name="${room.getDisplayName()}"
-            @click=${(ev) => addBookmarkViaEvent(ev)}
-            title="${ i18n_bookmark }">
-
-            <converse-icon class="fa ${bm ? 'fa-bookmark' : 'fa-bookmark-empty'}"
-                           size="1.2em"
-                           color="${ isCurrentlyOpen(room) ? 'var(--foreground-color)' : '' }"></converse-icon>
-        </a>`;
 }
 
 /** @param {MUC} room */
@@ -74,8 +55,6 @@ function tplRoomItem (el, room) {
                             (room.get('has_activity') ? tplActivityIndicator() : '') }
                     ${room.getDisplayName()}</span>
             </a>
-
-            ${ api.settings.get('allow_bookmarks') ? tplBookmark(room) : '' }
 
             <a class="list-item-action close-room"
                 tabindex="0"

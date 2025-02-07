@@ -12,7 +12,6 @@ export default (el) => {
     const subject_hidden = el.user_settings?.get('mucs_with_hidden_subject', [])?.includes(el.model.get('jid'));
     const heading_buttons_promise = el.getHeadingButtons(subject_hidden);
     const i18n_hide_topic = __('Hide the groupchat topic');
-    const i18n_bookmarked = __('This groupchat is bookmarked');
     const subject = o.subject ? o.subject.text : '';
     const show_subject = (subject && !subject_hidden);
     return html`
@@ -37,13 +36,6 @@ export default (el) => {
                      role="heading" aria-level="2"
                      title="${ (api.settings.get('locked_muc_domain') !== 'hidden') ? o.jid : '' }">
                     ${ el.model.getDisplayName() }
-                    ${ (o.bookmarked) ?
-                        html`<converse-icon
-                                class="fa fa-bookmark chatbox-title__text--bookmarked"
-                                size="1em"
-                                color="var(--muc-color)"
-                                title="${i18n_bookmarked}">
-                            </converse-icon>` : '' }
                 </div>
             </div>
             <div class="chatbox-title__buttons btn-toolbar g-0">

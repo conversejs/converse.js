@@ -94,65 +94,6 @@ describe("A list of open groupchats", function () {
         expect(roomspanel.querySelectorAll('.available-room').length).toBe(1);
         await u.waitUntil(() => roomspanel.querySelectorAll('.msgs-indicator').length === 0);
     }));
-
-    it("uses bookmarks to determine groupchat names",
-        mock.initConverse(
-            ['chatBoxesFetched'],
-            {'view_mode': 'fullscreen'},
-            async function (_converse) {
-
-        const { Strophe, sizzle } = converse.env;
-        const u = converse.env.utils;
-
-        await mock.waitForRoster(_converse, 'current', 0);
-        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-        let stanza = stx`<presence to="romeo@montague.lit/orchard" from="lounge@montague.lit/newguy" xmlns="jabber:client">
-                <x xmlns="${Strophe.NS.MUC_USER}">
-                    <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
-                </x>
-            </presence>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-
-        spyOn(_converse.exports.Bookmarks.prototype, 'fetchBookmarks').and.callThrough();
-
-        await mock.waitUntilDiscoConfirmed(
-            _converse, _converse.bare_jid,
-            [{'category': 'pubsub', 'type':'pep'}],
-            [`${Strophe.NS.PUBSUB}#publish-options`]
-        );
-
-        const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-        const sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
-        expect(sent_stanza).toEqualStanza(
-            stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">
-                <pubsub xmlns="http://jabber.org/protocol/pubsub">
-                    <items node="storage:bookmarks"/>
-                </pubsub>
-            </iq>`);
-
-        stanza = stx`<iq to="${_converse.api.connection.get().jid}" type="result" id="${sent_stanza.getAttribute('id')}" xmlns="jabber:client">
-            <pubsub xmlns="${Strophe.NS.PUBSUB}">
-                <items node="storage:bookmarks">
-                    <item id="current">
-                        <storage xmlns="storage:bookmarks">
-                            <conference name="Bookmarked Lounge" jid="lounge@montague.lit"/>
-                        </storage>
-                    </item>
-                </items>
-            </pubsub>
-        </iq>`;
-        _converse.api.connection.get()._dataRecv(mock.createRequest(stanza));
-
-        await _converse.api.waitUntil('roomsListInitialized');
-        const controlbox = _converse.chatboxviews.get('controlbox');
-        const list = controlbox.querySelector('.list-container--openrooms');
-        expect(Array.from(list.classList).includes('hidden')).toBeFalsy();
-        const items = list.querySelectorAll('.list-item');
-        expect(items.length).toBe(1);
-
-        await u.waitUntil(() => list.querySelector('.list-item .open-room span').textContent.trim() === 'Bookmarked Lounge');
-        expect(_converse.state.bookmarks.fetchBookmarks).toHaveBeenCalled();
-    }));
 });
 
 describe("A groupchat shown in the groupchats list", function () {

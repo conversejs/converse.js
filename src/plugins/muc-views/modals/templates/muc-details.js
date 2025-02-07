@@ -11,8 +11,8 @@ const subject = (model) => {
     const i18n_topic = __('Topic');
     const i18n_topic_author = __('Topic author');
     return html`
-        <p class="room-info"><strong>${i18n_topic}</strong>: <converse-texture text=${subject.text} render_styling></converse-texture></p>
-        <p class="room-info"><strong>${i18n_topic_author}</strong>: ${subject && subject.author}</p>
+        <p class="room-info"><strong>${i18n_topic}:</strong> <converse-texture text=${subject.text} render_styling></converse-texture></p>
+        <p class="room-info"><strong>${i18n_topic_author}:</strong> ${subject && subject.author}</p>
     `;
 }
 
@@ -65,13 +65,13 @@ export default (model) => {
                 nonce=${model.vcard?.get('vcard_updated')}
                 height="72" width="72"></converse-avatar>
 
-            <p class="room-info"><strong>${i18n_name}</strong>: ${model.get('name')}</p>
-            <p class="room-info"><strong>${i18n_address}</strong>: <converse-texture text="xmpp:${model.get('jid')}?join"></converse-texture></p>
+            <p class="room-info"><strong>${i18n_name}:</strong> ${model.get('name')}</p>
+            <p class="room-info"><strong>${i18n_address}:</strong> <converse-texture text="xmpp:${model.get('jid')}?join"></converse-texture></p>
             <br/>
-            <p class="room-info"><strong>${i18n_desc}</strong>: <converse-texture text="${config.description}" render_styling></converse-texture></p>
+            <p class="room-info"><strong>${i18n_desc}:</strong> <converse-texture text="${config.description}" render_styling></converse-texture></p>
             ${ (model.get('subject')) ? subject(model) : '' }
-            <p class="room-info"><strong>${i18n_online_users}</strong>: ${num_occupants}</p>
-            <p class="room-info"><strong>${i18n_features}</strong>:
+            <p class="room-info"><strong>${i18n_online_users}:</strong> ${num_occupants}</p>
+            <p class="room-info"><strong>${i18n_features}:</strong>
                 <div class="chatroom-features">
                     <ul class="features-list">
                     ${ features.passwordprotected ? html`<li class="feature"><converse-icon size="1em" class="fa fa-lock"></converse-icon>${i18n_password_protected} - <em>${i18n_password_help}</em></li>` : '' }

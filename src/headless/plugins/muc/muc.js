@@ -1235,14 +1235,20 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      */
     async getDiscoInfoFields () {
         const fields = await api.disco.getFields(this.get('jid'));
+
         const config = fields.reduce((config, f) => {
             const name = f.get('var');
+            if (name === 'muc#roomconfig_roomname') {
+                config['roomname'] = f.get('value');
+            }
             if (name?.startsWith('muc#roominfo_')) {
                 config[name.replace('muc#roominfo_', '')] = f.get('value');
             }
             return config;
         }, {});
+
         this.config.save(config);
+        if (config['roomname']) this.save({ name: config['roomname'] });
     }
 
     /**

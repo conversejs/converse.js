@@ -26,42 +26,6 @@ describe("A chat room", function () {
             await u.waitUntil(() => room.getAndPersistNickname.calls.count());
             expect(room.get('nick')).toBe('Othello');
         }));
-
-        it("displays that it's bookmarked through its bookmark icon",
-                mock.initConverse([], {}, async function (_converse) {
-
-            const { u } = converse.env;
-            await mock.waitForRoster(_converse, 'current', 0);
-            mock.waitUntilDiscoConfirmed(
-                _converse, _converse.bare_jid,
-                [{'category': 'pubsub', 'type': 'pep'}],
-                [
-                    'http://jabber.org/protocol/pubsub#publish-options',
-                    'urn:xmpp:bookmarks:1#compat'
-                ]
-            );
-
-            const nick = 'romeo';
-            const muc_jid = 'lounge@montague.lit';
-            await _converse.api.rooms.open(muc_jid);
-            await mock.getRoomFeatures(_converse, muc_jid);
-            await mock.waitForReservedNick(_converse, muc_jid, nick);
-
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
-            expect(view.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
-
-            const { bookmarks } = _converse.state;
-            bookmarks.create({
-                'jid': view.model.get('jid'),
-                'autojoin': false,
-                'name':  'The lounge',
-                'nick': ' some1'
-            });
-            view.model.set('bookmarked', true);
-            await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') !== null);
-            view.model.set('bookmarked', false);
-            await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') === null);
-        }));
     });
 });
 

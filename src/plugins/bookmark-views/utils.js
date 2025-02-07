@@ -20,16 +20,6 @@ export async function removeBookmarkViaEvent(ev) {
 /**
  * @param {Event} ev
  */
-export function addBookmarkViaEvent(ev) {
-    ev.preventDefault();
-    const el = /** @type {Element} */ (ev.currentTarget);
-    const jid = el.getAttribute('data-room-jid');
-    api.modal.show('converse-bookmark-form-modal', { jid }, ev);
-}
-
-/**
- * @param {Event} ev
- */
 export function openRoomViaEvent(ev) {
     ev.preventDefault();
     const { Strophe } = converse.env;

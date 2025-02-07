@@ -118,11 +118,11 @@ describe('Groupchats', () => {
                     let els = modal.querySelectorAll('p.room-info');
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
 
-                    expect(els[1].querySelector('strong').textContent).toBe('XMPP address');
+                    expect(els[1].querySelector('strong').textContent).toBe('XMPP address:');
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
                         'xmpp:coven@chat.shakespeare.lit?join'
                     );
-                    expect(els[2].querySelector('strong').textContent).toBe('Description');
+                    expect(els[2].querySelector('strong').textContent).toBe('Description:');
                     expect(els[2].querySelector('converse-texture').textContent).toBe('This is the description');
 
                     expect(els[3].textContent).toBe('Online users: 1');
@@ -153,13 +153,13 @@ describe('Groupchats', () => {
                     els = modal.querySelectorAll('p.room-info');
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
 
-                    expect(els[1].querySelector('strong').textContent).toBe('XMPP address');
+                    expect(els[1].querySelector('strong').textContent).toBe('XMPP address:');
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
                         'xmpp:coven@chat.shakespeare.lit?join'
                     );
-                    expect(els[2].querySelector('strong').textContent).toBe('Description');
+                    expect(els[2].querySelector('strong').textContent).toBe('Description:');
                     expect(els[2].querySelector('converse-texture').textContent).toBe('This is the description');
-                    expect(els[3].querySelector('strong').textContent).toBe('Topic');
+                    expect(els[3].querySelector('strong').textContent).toBe('Topic:');
                     await u.waitUntil(
                         () => els[3].querySelector('converse-texture').textContent === 'Hatching dark plots'
                     );

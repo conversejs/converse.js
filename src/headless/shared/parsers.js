@@ -96,14 +96,21 @@ export async function parseErrorStanza(stanza) {
  * @returns {Object}
  */
 export function getStanzaIDs (stanza, original_stanza) {
-    const attrs = {};
-    // Store generic stanza ids
+    // Generic stanza ids
     const sids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
     const sid_attrs = sids.reduce((acc, s) => {
         acc[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id');
         return acc;
     }, {});
-    Object.assign(attrs, sid_attrs);
+
+    // Origin id
+    const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop()?.getAttribute('id');
+
+    const attrs = {
+        origin_id,
+        msgid: stanza.getAttribute('id') || original_stanza.getAttribute('id'),
+        ...sid_attrs,
+    };
 
     // Store the archive id
     const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
@@ -113,11 +120,6 @@ export function getStanzaIDs (stanza, original_stanza) {
         attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
     }
 
-    // Store the origin id
-    const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-    if (origin_id) {
-        attrs['origin_id'] = origin_id.getAttribute('id');
-    }
     return attrs;
 }
 

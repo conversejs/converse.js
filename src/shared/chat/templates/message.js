@@ -32,7 +32,6 @@ export default (el) => {
     const username = el.model.getDisplayName();
 
     const is_action = is_me_message || is_retracted;
-    debugger;
     const should_show_header = !is_action && !is_followup;
     const should_show_avatar = el.shouldShowAvatar() && should_show_header;
 

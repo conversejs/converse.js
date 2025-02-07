@@ -359,7 +359,6 @@ export default {
                 return api.disco.features.has(feature, jid);
             } catch (e) {
                 log.error(e);
-                debugger;
                 return false;
             }
         },

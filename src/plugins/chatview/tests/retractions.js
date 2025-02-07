@@ -224,7 +224,6 @@ describe('A message retraction', function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:01:15Z"/>
                             <message type="chat" from="${contact_jid}" to="${_converse.bare_jid}" id="message-id-0">
-                                <origin-id xmlns="urn:xmpp:sid:0" id="origin-id-0"/>
                                 <body>😊</body>
                             </message>
                         </forwarded>
@@ -238,7 +237,6 @@ describe('A message retraction', function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message type="chat" from="${contact_jid}" to="${_converse.bare_jid}" id="message-id-1">
-                                <origin-id xmlns="urn:xmpp:sid:0" id="origin-id-1"/>
                                 <retracted id="retract-message-1" stamp="2019-09-20T23:09:32Z" xmlns="urn:xmpp:message-retract:1"/>
                             </message>
                         </forwarded>
@@ -253,9 +251,9 @@ describe('A message retraction', function () {
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="2019-09-20T23:08:25Z"/>
                             <message from="${contact_jid}" to="${_converse.bare_jid}" id="retract-message-1">
-                                <apply-to id="origin-id-1" xmlns="urn:xmpp:fasten:0">
-                                    <retract xmlns="urn:xmpp:message-retract:0"/>
-                                </apply-to>
+                                <retract id="message-id-1" xmlns='urn:xmpp:message-retract:1'/>
+                                <fallback xmlns="urn:xmpp:fallback:0" for='urn:xmpp:message-retract:1'/>
+                                <body>/me retracted a previous message, but it's unsupported by your client.</body>
                             </message>
                         </forwarded>
                     </result>
@@ -285,8 +283,8 @@ describe('A message retraction', function () {
             expect(await view.model.handleRetraction.calls.all()[2].returnValue).toBe(true);
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('Mercutio has removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
             expect(u.hasClass('chat-msg--followup', el.parentElement)).toBe(false);
         })
     );

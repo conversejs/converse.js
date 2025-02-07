@@ -189,6 +189,10 @@ declare class Message extends Message_base {
      */
     isMeCommand(): boolean;
     /**
+     * @returns {boolean}
+     */
+    isRetracted(): boolean;
+    /**
      * Returns a boolean indicating whether this message is considered a followup
      * message from the previous one. Followup messages are shown grouped together
      * under one author heading.

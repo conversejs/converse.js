@@ -242,8 +242,8 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
             expect(view.model.messages.at(0).get('editable')).toBe(false);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
-            expect(msg_el.textContent.trim()).toBe('eve has removed this message');
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(msg_el?.textContent.trim()).toBe('eve has removed a message');
             expect(msg_el.querySelector('.chat-msg--retracted q')).toBe(null);
         }));
 
@@ -314,10 +314,10 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('editable')).toBe(false);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
 
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
-            expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has removed this message');
+            const ret_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(ret_el.firstElementChild.textContent.trim()).toBe('romeo has removed a message');
 
-            const qel = msg_el.querySelector('q');
+            const qel = ret_el.querySelector('q');
             expect(qel.textContent.trim()).toBe('This content is inappropriate for this forum!');
 
             // The server responds with a retraction message
@@ -421,8 +421,8 @@ describe("Message Retractions", function () {
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(msg_el.textContent).toBe('romeo has removed this message');
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has removed a message');
             const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
             expect(qel.textContent).toBe('This content is inappropriate for this forum!');
 
@@ -495,8 +495,8 @@ describe("Message Retractions", function () {
             expect(view.model.messages.last().get('editable')).toBe(false);
             expect(message.get(`stanza_id ${muc_jid}`)).toBe(stanza_id);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent).toBe('You have removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el?.textContent.trim()).toBe('You have removed a message');
         }));
 
         it("can be retracted by its author, causing an error message in response",
@@ -516,8 +516,8 @@ describe("Message Retractions", function () {
 
             expect(view.model.messages.length).toBe(1);
             await u.waitUntil(() => view.model.messages.last().get('retracted'), 1000);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('You have removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el?.textContent.trim()).toBe('You have removed a message');
 
             const message = view.model.messages.last();
             const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
@@ -562,8 +562,8 @@ describe("Message Retractions", function () {
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('You have removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el?.textContent.trim()).toBe('You have removed a message');
 
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
@@ -641,7 +641,7 @@ describe("Message Retractions", function () {
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
 
-            view.model.sendMessage({'body': 'Visit this site to get free bitcoin'});
+            view.model.sendMessage({body: 'Visit this site to get free bitcoin'});
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
 
             // Check that you can only edit a message before it's been
@@ -702,7 +702,7 @@ describe("Message Retractions", function () {
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
 
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message');
-            expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has removed this message');
+            expect(msg_el.querySelector('.retraction')?.textContent.trim()).toBe('romeo has removed a message');
             expect(msg_el.querySelector('q')).toBe(null);
 
             // The server responds with a retraction message
@@ -801,8 +801,8 @@ describe("Message Retractions", function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('eve has removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el?.textContent.trim()).toBe('eve has removed a message');
         }));
 
         it("may be returned as a tombstone moderated groupchat message",
@@ -888,8 +888,8 @@ describe("Message Retractions", function () {
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
-            const el = view.querySelector('.chat-msg--retracted .chat-msg__message div');
-            expect(el.textContent.trim()).toBe('A moderator has removed this message');
+            const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(el.firstElementChild.textContent.trim()).toBe('A moderator has removed a message');
             const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
             expect(qel.textContent.trim()).toBe('This message contains inappropriate content');
         }));

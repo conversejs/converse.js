@@ -244,7 +244,7 @@ describe("A XEP-0316 MEP notification", function () {
         expect(view.model.messages.at(0).get('moderation_reason')).toBeUndefined;
         expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
         expect(view.model.messages.at(0).get('editable')).toBe(false);
-        const msg_el = view.querySelector('.chat-msg--retracted .chat-info__message div');
-        expect(msg_el.textContent).toBe(`${nick} has removed this message`);
+        const msg_el = view.querySelector('.chat-msg--retracted .chat-info__message .retraction');
+        expect(msg_el.firstElementChild.textContent).toBe(`${nick} has removed a message`);
     }));
 });

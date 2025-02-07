@@ -14,7 +14,7 @@ export default (el) => {
             <div class="chat-msg__content">
                 <div class="chat-msg__body chat-msg__body--${el.model.get('type')} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : '' }">
                     <div class="chat-info__message">
-                        ${ el.isRetracted() ? el.renderRetraction() : html`
+                        ${ el.model.isRetracted() ? el.renderRetraction() : html`
                             <converse-texture
                                 .mentions=${el.model.get('references')}
                                 render_styling
@@ -25,7 +25,7 @@ export default (el) => {
                         `}
                     </div>
                     <converse-message-actions
-                        ?is_retracted=${el.isRetracted()}
+                        ?is_retracted=${el.model.isRetracted()}
                         .model=${el.model}></converse-message-actions>
                 </div>
             </div>

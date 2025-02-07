@@ -19,7 +19,7 @@ export default (el) => {
     const is_first_unread = el.model_with_messages.get('first_unread_id') === el.model.get('id');
     const is_followup = el.model.isFollowup();
     const is_me_message = el.model.isMeCommand();
-    const is_retracted = el.isRetracted();
+    const is_retracted = el.model.isRetracted();
     const msgid = el.model.get('msgid');
     const sender = el.model.get('sender');
     const time = el.model.get('time');
@@ -30,7 +30,11 @@ export default (el) => {
     const pretty_time = dayjs(edited || time).format(format);
     const hats = getHats(el.model);
     const username = el.model.getDisplayName();
-    const should_show_avatar = el.shouldShowAvatar();
+
+    const is_action = is_me_message || is_retracted;
+    debugger;
+    const should_show_header = !is_action && !is_followup;
+    const should_show_avatar = el.shouldShowAvatar() && should_show_header;
 
     // The model to use for the avatar.
     // Note: it can happen that the contact has not the vcard attribute but the message has.
@@ -52,7 +56,7 @@ export default (el) => {
             <!-- Anchor to allow us to scroll the message into view -->
             <a id="${msgid}"></a>
 
-            ${should_show_avatar && !is_followup
+            ${should_show_avatar
                 ? html`<a class="show-msg-author-modal" @click=${el.showUserModal}>
                       <converse-avatar
                           .model=${avatar_model}
@@ -65,12 +69,8 @@ export default (el) => {
                   </a>`
                 : ''}
 
-            <div
-                class="chat-msg__content chat-msg__content--${sender} ${is_me_message
-                    ? 'chat-msg__content--action'
-                    : ''}"
-            >
-                ${!is_me_message && !is_followup
+            <div class="chat-msg__content chat-msg__content--${sender} ${is_action ? 'chat-msg__content--action' : ''}">
+                ${should_show_header
                     ? html` <span class="chat-msg__heading">
                           <span class="chat-msg__author">
                               <a class="show-msg-author-modal" @click=${el.showUserModal} style="${author_style}"
@@ -91,12 +91,13 @@ export default (el) => {
                         : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
                 >
                     <div class="chat-msg__message">
-                        ${is_me_message
-                            ? html` <time timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time
-                                  >&nbsp;
-                                  <span class="chat-msg__author" style="${author_style}"
-                                      >${is_me_message ? '**' : ''}${username}</span
-                                  >&nbsp;`
+                        ${is_action
+                            ? html`<time timestamp="${edited || time}" class="chat-msg__time">${pretty_time}</time>
+                                  ${is_me_message
+                                      ? html`<span class="chat-msg__author" style="${author_style}"
+                                                >${is_me_message ? '**' : ''}${username}</span
+                                            >&nbsp;`
+                                      : ''}`
                             : ''}
                         ${is_retracted ? el.renderRetraction() : el.renderMessageText()}
                     </div>

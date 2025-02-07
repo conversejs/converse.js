@@ -2078,7 +2078,14 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
      *  whether a message was moderated or not.
      */
     async handleModeration (attrs) {
-        const MODERATION_ATTRIBUTES = ['editable', 'moderated', 'moderated_by', 'moderated_id', 'moderation_reason'];
+        const MODERATION_ATTRIBUTES = [
+            'editable',
+            'moderated',
+            'moderated_by',
+            'moderated_by_id',
+            'moderated_id',
+            'moderation_reason'
+        ];
         if (attrs.moderated === 'retracted') {
             const query = {};
             const key = `stanza_id ${this.get('jid')}`;
@@ -2096,7 +2103,7 @@ class MUC extends ModelWithMessages(ColorAwareModel(ChatBoxBase)) {
             const message = this.findDanglingModeration(attrs);
             if (message) {
                 const moderation_attrs = pick(message.attributes, MODERATION_ATTRIBUTES);
-                const new_attrs = Object.assign({ 'dangling_moderation': false }, attrs, moderation_attrs);
+                const new_attrs = Object.assign({ dangling_moderation: false }, attrs, moderation_attrs);
                 delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
                 message.save(new_attrs);
                 return true;

@@ -365,7 +365,6 @@ describe("Message Retractions", function () {
             expect(result).toBe(false);
         }));
 
-
         it("can be retracted by a moderator, with the retraction message received before the IQ response",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
 
@@ -438,6 +437,85 @@ describe("Message Retractions", function () {
             expect(view.model.messages.at(0).get('moderated_by')).toBe(_converse.bare_jid);
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
+        }));
+
+        it("can be followed up by a retraction from a different moderator",
+                mock.initConverse(['chatBoxesFetched'], {}, async function (_converse) {
+
+            const nick = 'romeo';
+            const muc_jid = 'lounge@montague.lit';
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE, Strophe.NS.OCCUPANTID];
+            const model = await mock.openAndEnterChatRoom(_converse, muc_jid, nick, features);
+
+            // The other moderator enters
+            const name = mock.chatroom_names[0];
+            const user_jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const mod_jid = `${muc_jid}/${name}`;
+            const mod_occ_id = u.getUniqueId();
+            _converse.api.connection.get()._dataRecv(mock.createRequest(
+                stx`<presence from="${mod_jid}"
+                        id="${u.getUniqueId()}"
+                        to="${_converse.bare_jid}"
+                        xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item jid="${user_jid}" affiliation="moderator" role="participant"/>
+                    </x>
+                    <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${mod_occ_id}" />
+                </presence>`));
+
+            await u.waitUntil(() => model.occupants.length === 2);
+            const mod = model.occupants.findOccupant({ occupant_id: mod_occ_id });
+            expect(mod.get('affiliation')).toBe('moderator');
+            expect(mod.get('occupant_id')).toBe(mod_occ_id);
+
+            const stanza_id = 'stanza-id-1';
+            const received_stanza = stx`
+                <message to="${_converse.jid}"
+                        from="${muc_jid}/mallory"
+                        type="groupchat"
+                        id="${_converse.api.connection.get().getUniqueId()}"
+                        xmlns="jabber:client">
+                    <body>Visit this site to get free Bitcoin!</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0" id="${stanza_id}" by="${muc_jid}"/>
+                </message>`;
+            await model.handleMessageStanza(received_stanza);
+            await u.waitUntil(() => model.messages.length === 1);
+            expect(model.messages.length).toBe(1);
+
+            const view = _converse.chatboxviews.get(muc_jid);
+            const reason = "This content is inappropriate for this forum!"
+
+            const retraction = stx`
+                <message type="groupchat"
+                        id='retraction-id-1'
+                        from="${muc_jid}"
+                        to="${muc_jid}/romeo"
+                        xmlns="jabber:client">
+                    <retract id="${stanza_id}" xmlns='urn:xmpp:message-retract:1'>
+                        <moderated by="${mod_jid}" xmlns='urn:xmpp:message-moderate:1'>
+                            <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${mod_occ_id}" />
+                        </moderated>
+                        <reason>${reason}</reason>
+                    </retract>
+                </message>`;
+            await view.model.handleMessageStanza(retraction);
+
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
+            expect(view.model.messages.length).toBe(1);
+            expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
+            expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
+            const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
+            expect(msg_el.firstElementChild.textContent.trim()).toBe('Dyon van de Wege has removed a message');
+            const qel = view.querySelector('.chat-msg--retracted .chat-msg__message q');
+            expect(qel.textContent).toBe('This content is inappropriate for this forum!');
+
+            expect(view.model.messages.length).toBe(1);
+            const message = view.model.messages.at(0);
+            expect(message.get('moderated')).toBe('retracted');
+            expect(message.get('moderated_by')).toBe(mod_jid);
+            expect(message.get('moderated_by_id')).toBe(mod_occ_id);
+            expect(message.get('moderation_reason')).toBe(reason);
+            expect(message.get('editable')).toBe(false);
         }));
     });
 
